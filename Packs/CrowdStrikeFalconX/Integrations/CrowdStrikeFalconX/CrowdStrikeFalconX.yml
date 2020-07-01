@@ -15,14 +15,14 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Fully automated malware analysis.
+description: Use the CrowdStrike Falcon X integration to submit files, file hashes, URLs, and FTPs for sandbox analysis, and to retrieve reports.
 display: CrowdStrike Falcon X
 name: CrowdStrike Falcon X
 script:
   commands:
   - arguments:
     - default: false
-      description: Name of the file
+      description: Name of the file to upload for sandbox analysis.
       isArray: false
       name: file_name
       required: true
@@ -35,7 +35,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Determines visibility of this file in Falcon MalQuery.
+      description: Determines the visibility of this file in Falcon MalQuery. Can be "true" or "false". If "true", the file is confidential.
       isArray: false
       name: is_confidential
       predefined:
@@ -51,8 +51,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default:
-      defaultValue: False
-      description: Submit the given file to the sandbox.
+      defaultValue: "no"
+      description: Whether to submit the given file to the sandbox. Can be "yes" or "no". Default is "no".
       isArray: false
       name: submit_file
       predefined:
@@ -61,27 +61,27 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Upload a file for sandbox analysis.
+    description: Uploads a file for sandbox analysis.
     execution: false
     name: cs-fx-upload-file
     outputs:
     - contextPath: csfalconx.resource.sha256
-      description: Uploaded file SHA256
+      description: SHA256 hash of the uploaded file.
       type: String
     - contextPath: csfalconx.resource.file_name
-      description: 'Uploaded file name '
+      description: 'Name of the uploaded file. '
       type: String
   - arguments:
     - default: false
       description: SHA256 ID of the sample, which is a SHA256 hash value. Find the sample
-        ID from the response when uploading a malware sample or search with - cs-fx-upload-file.
+        ID from the response when uploading a malware sample or search with the cs-fx-upload-file command.
       isArray: false
       name: sha256
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specifies the sandbox environment used for analysis.
+      description: Sandbox environment used for analysis.
       isArray: false
       name: environment_id
       predefined:
@@ -125,7 +125,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: If true, sandbox analysis routes network traffic via TOR.
+      description: Whether the sandbox analysis routes network traffic via TOR. Can be "true" or "false". If true, sandbox analysis routes network traffic via TOR.
       isArray: false
       name: enable_tor
       predefined:
@@ -134,267 +134,267 @@ script:
       required: false
       secret: false
     - default: false
-      description: Name of the malware sample that’s used for file type detection
+      description: Name of the malware sample that’s used for file type detection.
         and analysis.
       isArray: false
       name: submit_name
       required: false
       secret: false
     - default: false
-      description: Set a custom date in the format yyyy-MM-dd for the sandbox environment.
+      description: Set a custom date for the sandbox environment in the format yyyy-MM-dd.
       isArray: false
       name: system_date
       required: false
       secret: false
     - default: false
-      description: Set a custom time in the format HH:mm for the sandbox environment.
+      description: Sets a custom time for the sandbox environment in the format HH:mm.
       isArray: false
       name: system_time
       required: false
       secret: false
     deprecated: false
-    description: Submit a sample SHA256 for sandbox analysis.
+    description: Submits a sample SHA256 hash for sandbox analysis.
     execution: false
     name: cs-fx-submit-uploaded-file
     outputs:
     - contextPath: 'csfalconx.resource.id '
-      description: Analysis ID
+      description: Analysis ID.
       type: String
     - contextPath: csfalconx.resource.state
-      description: Analysis state
+      description: Analysis state.
       type: String
     - contextPath: csfalconx.resource.created_timpestamp
-      description: Time started
+      description: Analysis start time.
       type: String
     - contextPath: csfalconx.resource.sha256
-      description: SHA256 of the scanned file
+      description: SHA256 hash of the scanned file.
       type: Unknown
     - contextPath: csfalconx.resource.environment_id
-      description: 'Environment ID of the analysis '
+      description: 'Environment ID of the analysis. '
       type: Unknown
   - arguments:
     - default: false
       description: ID of a submitted malware sample. Find a submission ID from the
-        response when submitting a malware sample or search with cs-fx-submit-uploaded-file.
+        response when submitting a malware sample or search with the cs-fx-submit-uploaded-file command.
       isArray: true
       name: ids
       required: true
       secret: false
     deprecated: false
-    description: Get a full version of a sandbox report.
+    description: Gets a full version of a sandbox report.
     execution: false
     name: cs-fx-get-full-report
     outputs:
     - contextPath: csfalconx.resource.id
-      description: Analysis ID
+      description: Analysis ID.
       type: String
     - contextPath: csfalconx.resource.verdict
-      description: Analysis verdict
+      description: Analysis verdict.
       type: String
     - contextPath: csfalconx.resource.created_timpestamp
-      description: Time started
+      description: Analysis start time.
       type: String
     - contextPath: csfalconx.resource.sandbox_environment_id
-      description: Environment ID
+      description: Environment ID.
       type: String
     - contextPath: csfalconx.resource.snadbox.environment_description
-      description: Environment description
+      description: Environment description.
       type: String
     - contextPath: csfalconx.resource.sandbox_threat_score
-      description: Score of the threat
+      description: Score of the threat.
       type: Int
     - contextPath: csfalconx.resource.sandbox_submit_url
-      description: Submitted URL to analysis
+      description: URL submitted for analysis.
       type: String
     - contextPath: csfalconx.resource.sandbox_submission_type
-      description: Type of submitted artifact File/URL etc
+      description: Type of submitted artifact, for example file, URL, etc.
       type: String
     - contextPath: csfalconx.resource.sandbox_filetype
-      description: Type of the file
+      description: File type.
       type: String
     - contextPath: csfalconx.resource.sandbox_filesize
-      description: Size of the file
+      description: File size.
       type: Int
     - contextPath: csfalconx.resource.sandbox_sha256
-      description: SHS256 of the file submitted
+      description: SHA256 hash of the submitted file.
       type: String
     - contextPath: csfalconx.resource.ioc_strict_csv
-      description: ID of IOC pack to download
+      description: ID of the IOC pack to download (CSV).
       type: String
     - contextPath: csfalconx.resource.ioc_broad_csv
-      description: ID of IOC pack to download
+      description: ID of the IOC pack to download (CSV).
       type: String
-    - contextPath: csfalconx.resource.ioc_strict_jason
-      description: ID of IOC pack to download
+    - contextPath: csfalconx.resource.ioc_strict_json
+      description: ID of the IOC pack to download (JSON).
       type: Int
-    - contextPath: csfalconx.resource.ioc_broad_jason
-      description: ID of IOC pack to download
+    - contextPath: csfalconx.resource.ioc_broad_json
+      description: ID of the IOC pack to download (JSON).
       type: String
     - contextPath: csfalconx.resource.ioc_strict_stix
-      description: ID of IOC pack to download
+      description: ID of the IOC pack to download (STIX).
       type: String
     - contextPath: csfalconx.resource.ioc_broad_stix
-      description: ID of IOC pack to download
+      description: ID of the IOC pack to download (STIX).
       type: Int
     - contextPath: csfalconx.resource.ioc_strict_maec
-      description: ID of IOC pack to download
+      description: ID of the IOC pack to download (MAEC).
       type: String
     - contextPath: csfalconx.resource.ioc_broad_maec
-      description: ID of IOC pack to download
+      description: ID of the IOC pack to download (MAEC).
       type: String
   - arguments:
     - default: false
       description: ID of a submitted malware sample. Find a submission ID from the
-        response when submitting a malware sample or search with cs-fx-submit-uploaded-file.
+        response when submitting a malware sample or search with the cs-fx-submit-uploaded-file command.
       isArray: true
       name: ids
       required: true
       secret: false
     deprecated: false
-    description: Get a short summary version of a sandbox report.
+    description: Gets a short summary version of a sandbox report.
     execution: false
     name: cs-fx-get-report-summary
     outputs:
     - contextPath: csfalconx.resource.id
-      description: Analysis ID
+      description: Analysis ID.
       type: String
     - contextPath: csfalconx.resource.verdict
-      description: Analysis verdict
+      description: Analysis verdict.
       type: String
     - contextPath: csfalconx.resource.created_timpestamp
-      description: Time started
+      description: Analysis start time.
       type: String
     - contextPath: csfalconx.resource.sandbox_environment_id
-      description: Environment ID
+      description: Environment ID.
       type: String
     - contextPath: csfalconx.resource.snadbox.environment_description
-      description: Environment description
+      description: Environment description.
       type: String
     - contextPath: csfalconx.resource.sandbox_threat_score
-      description: Score of the threat
+      description: Score of the threat.
       type: Int
     - contextPath: csfalconx.resource.sandbox_submit_url
-      description: Submitted URL to analysis
+      description: URL submitted for analysis.
       type: String
     - contextPath: csfalconx.resource.sandbox_submission_type
-      description: Type of submitted artifact File/URL etc
+      description: Type of submitted artifact. For example, file, URL, etc.
       type: String
     - contextPath: csfalconx.resource.sandbox_filetype
-      description: Type of the file
+      description: File type.
       type: String
     - contextPath: csfalconx.resource.sandbox_filesize
-      description: Size of the file
+      description: File size.
       type: Int
     - contextPath: csfalconx.resource.sandbox_sha256
-      description: SHS256 of the file submitted
+      description: SHA256 hash of the submitted file.
       type: String
     - contextPath: csfalconx.resource.ioc_strict_csv
-      description: ID of IOC pack to download
+      description: ID of the IOC pack to download (CSV).
       type: String
     - contextPath: csfalconx.resource.ioc_broad_csv
-      description: ID of IOC pack to download
+      description: ID of the IOC pack to download (CSV).
       type: String
     - contextPath: csfalconx.resource.ioc_strict_jason
-      description: ID of IOC pack to download
+      description: ID of the IOC pack to download (JSON).
       type: Int
     - contextPath: csfalconx.resource.ioc_broad_jason
-      description: ID of IOC pack to download
+      description: ID of the IOC pack to download (JSON).
       type: String
     - contextPath: csfalconx.resource.ioc_strict_stix
-      description: ID of IOC pack to download
+      description: ID of the IOC pack to download (STIX).
       type: String
     - contextPath: csfalconx.resource.ioc_broad_stix
-      description: ID of IOC pack to download
+      description: ID of the IOC pack to download (STIX).
       type: Int
     - contextPath: csfalconx.resource.ioc_strict_maec
-      description: ID of IOC pack to download
+      description: ID of the IOC pack to download (MAEC).
       type: String
     - contextPath: csfalconx.resource.ioc_broad_maec
-      description: ID of IOC pack to download
+      description: ID of the IOC pack to download (MAEC).
       type: String
   - arguments:
     - default: false
       description: ID of a submitted malware sample. Find a submission ID from the
-        response when submitting a malware sample or search with cs-fx-submit-uploaded-file/url.
+        response when submitting a malware sample or search with the cs-fx-submit-uploaded-file/url command.
       isArray: true
       name: ids
       required: true
       secret: false
     deprecated: false
-    description: Check the status of a sandbox analysis.
+    description: Checks the status of a sandbox analysis.
     execution: false
     name: cs-fx-get-analysis-status
     outputs:
     - contextPath: csfalconx.resource.id
-      description: Analysis ID
+      description: Analysis ID.
       type: String
     - contextPath: csfalconx.resource.verdict
-      description: Analysis verdict
+      description: Analysis verdict.
       type: String
     - contextPath: csfalconx.resource.created_timpestamp
-      description: Time started
+      description: Analysis start time.
       type: String
     - contextPath: csfalconx.resource.sandbox_environment_id
-      description: Environment ID
+      description: Environment ID.
       type: String
     - contextPath: csfalconx.resource.snadbox.environment_description
-      description: Environment description
+      description: Environment description.
       type: String
     - contextPath: csfalconx.resource.sandbox_threat_score
-      description: Score of the threat
+      description: Score of the threat.
       type: Int
     - contextPath: csfalconx.resource.sandbox_submit_url
-      description: Submitted URL to analysis
+      description: URL submitted for analysis.
       type: String
     - contextPath: csfalconx.resource.sandbox_submission_type
-      description: Type of submitted artifact File/URL etc
+      description: Type of submitted artifact. For example, file, URL, etc.
       type: String
     - contextPath: csfalconx.resource.sandbox_filetype
-      description: Type of the file
+      description: File type.
       type: String
     - contextPath: csfalconx.resource.sandbox_filesize
-      description: Size of the file
+      description: File size.
       type: Int
     - contextPath: csfalconx.resource.sandbox_sha256
-      description: SHS256 of the file submitted
+      description: SHA256 hash of the submitted file.
       type: String
     - contextPath: csfalconx.resource.ioc_strict_csv
-      description: ID of IOC pack to download
+      description: ID of the IOC pack to download (CSV).
       type: String
     - contextPath: csfalconx.resource.ioc_broad_csv
-      description: ID of IOC pack to download
+      description: ID of the IOC pack to download (CSV).
       type: String
     - contextPath: csfalconx.resource.ioc_strict_jason
-      description: ID of IOC pack to download
+      description: ID of the IOC pack to download (JSON).
       type: Int
     - contextPath: csfalconx.resource.ioc_broad_jason
-      description: ID of IOC pack to download
+      description: ID of the IOC pack to download (JSON).
       type: String
     - contextPath: csfalconx.resource.ioc_strict_stix
-      description: ID of IOC pack to download
+      description: ID of the IOC pack to download (STIX).
       type: String
     - contextPath: csfalconx.resource.ioc_broad_stix
-      description: ID of IOC pack to download
+      description: ID of the IOC pack to download (STIX).
       type: Int
     - contextPath: csfalconx.resource.ioc_strict_maec
-      description: ID of IOC pack to download
+      description: ID of the IOC pack to download (MAEC).
       type: String
     - contextPath: csfalconx.resource.ioc_broad_maec
-      description: ID of IOC pack to download
+      description: ID of the IOC pack to download (MAEC).
       type: String
   - deprecated: false
-    description: Shows the total and the in use quota.
+    description: Returns the total quota number and the in use quota number.
     execution: false
     name: cs-fx-check-quota
     outputs:
     - contextPath: csfalconx.resource.quota.total
-      description: 'Total quota number '
+      description: 'Total quota number. '
       type: Number
     - contextPath: csfalconx.resource.quota.used
-      description: Used quota
+      description: Used quota number.
       type: Number
     - contextPath: csfalconx.resource.quota.in_progress
-      description: Analysis in progress
+      description: Analysis in progress.
       type: Number
   - arguments:
     - default: false
@@ -411,14 +411,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Maximum number of report IDs to return. Max: 5000.'
+      description: 'Maximum number of report IDs to return. Maximum is 5000.'
       isArray: false
       name: limit
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Sort order.
+      description: Sort order. Can be "asc" or "desc". 
       isArray: false
       name: sort
       predefined:
@@ -427,17 +427,16 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Find sandbox reports by providing an FQL filter and paging details.
+    description: Finds sandbox reports by providing an FQL filter and paging details.
     execution: false
     name: cs-fx-find-reports
     outputs:
     - contextPath: csfalconx.resource.id
-      description: 'Set of report IDs that match your criteria. '
+      description: 'Set of report IDs that match the search criteria. '
       type: Number
   - arguments:
     - default: false
       description: Optional filter and sort criteria in the form of an FQL query.
-        For more information about FQL queries
       isArray: false
       name: filter
       required: false
@@ -449,14 +448,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Maximum number of report IDs to return. Max: 5000.'
+      description: 'Maximum number of report IDs to return. Maximum is 5000.'
       isArray: false
       name: limit
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Sort order.
+      description: Sort order. Can be "asc" or "desc".
       isArray: false
       name: sort
       predefined:
@@ -465,26 +464,26 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Find submission IDs for uploaded files by providing an FQL filter
-      and paging details. Returns a set of submission IDs that match your criteria.
+    description: Finds submission IDs for uploaded files by providing an FQL filter
+      and paging details. Returns a set of submission IDs that match the search criteria.
     execution: false
     name: cs-fx-find-submission-id
     outputs:
     - contextPath: csfalconx.resource.id
-      description: 'Set of report IDs that match your criteria. '
+      description: 'Set of report IDs that match the search criteria. '
       type: Number
   - arguments:
     - default: false
       description: |-
         A web page or file URL. It can be HTTP(S) or FTP.
-        e.g.-“https://url.com”,“ftp://ftp.com”
+        For example: “https://url.com”,“ftp://ftp.com”
       isArray: false
       name: url
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specifies the sandbox environment used for analysis.
+      description: Sandbox environment used for analysis.
       isArray: false
       name: environment_id
       predefined:
@@ -528,8 +527,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'If true, sandbox analysis routes network traffic via TOR. Default:
-        false.'
+      description: 'Whether the sandbox analysis routes network traffic via TOR. Can be "true" or "false". If true, sandbox analysis routes network traffic via TOR. Default is false.'
       isArray: false
       name: enable_tor
       predefined:
@@ -545,36 +543,36 @@ script:
       required: false
       secret: false
     - default: false
-      description: Set a custom date in the format yyyy-MM-dd for the sandbox environment.
+      description: Sets a custom date for the sandbox environment in the format yyyy-MM-dd.
       isArray: false
       name: system_date
       required: false
       secret: false
     - default: false
-      description: Set a custom time in the format HH:mm for the sandbox environment.
+      description: Sets a custom time for the sandbox environment in the format HH:mm.
       isArray: false
       name: system_time
       required: false
       secret: false
     deprecated: false
-    description: Submit a URL or FTP for sandbox analysis.
+    description: Submits a URL or FTP for sandbox analysis.
     execution: false
     name: cs-fx-submit-url
     outputs:
     - contextPath: csfalconx.resource.id
-      description: Analysis ID
+      description: Analysis ID.
       type: String
     - contextPath: csfalconx.resource.state
-      description: Analysis state
+      description: Analysis state.
       type: String
     - contextPath: csfalconx.resource.created_timpestamp
-      description: Time started
+      description: Analysis start time.
       type: String
     - contextPath: csfalconx.resource.sha256
-      description: SHA256 of the scanned file
+      description: SHA256 hash of the scanned file.
       type: Unknown
     - contextPath: csfalconx.resource.environment_id
-      description: Environment ID of the analysis
+      description: Environment ID of the analysis.
       type: Unknown
   - arguments:
     - default: false
@@ -585,21 +583,21 @@ script:
       required: true
       secret: false
     - default: false
-      description: The name given to your downloaded file.
+      description: The name given to then downloaded file.
       isArray: false
       name: name
       required: false
       secret: false
     - default: false
       defaultValue: gzip
-      description: Format used to compress your downloaded file. Currently, you must
-        provide the value of the gzip file.
+      description: Format used to compress the downloaded file. Currently, you must
+        provide the value of the GZIP file.
       isArray: false
       name: accept_encoding
       required: false
       secret: false
     deprecated: false
-    description: Download IOC packs, PCAP files, and other analysis artifacts.
+    description: Downloads IOC packs, PCAP files, and other analysis artifacts.
     execution: false
     name: cs-fx-download-ioc
   dockerimage: demisto/python3:3.8.3.8715
