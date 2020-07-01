@@ -1,7 +1,22 @@
+## Overview
+---
 The Illusive Attack Management API allows customers to retrieve detected incidents with a forensics timeline, attack surface insights, collect forensics on-demand, and manage a variety of operations with regard to deceptive entities, deception policies, and more.
-This integration was integrated and tested with version xx of IllusiveNetworks
+This integration was integrated and tested with version 130 of IllusiveNetworks
 ## Configure IllusiveNetworks on Cortex XSOAR
+## Use Cases
+---
+- Retrieve detected incidents with a rich set of details and a forensics timeline
+- Collect forensics from any compromised host and retrieve a forensics timeline
+- Manage deceptive entities - retrieve detailed lists, approve suggested, delete, and query
+- Manage deception policy assignments per host
+- Retrieve attack surface insights for Crown Jewels and specific hosts
 
+## Configure IllusiveNetworks on Demisto
+---
+####Illusive Console
+1. Open the Illusive Management console, navigate to Settings > General, and locate the API KEYS section. Generate a new API key with all permissions and copy the token at the end of the process.
+
+####Demisto Console
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for IllusiveNetworks.
 3. Click **Add instance** to create and configure a new integration instance.
