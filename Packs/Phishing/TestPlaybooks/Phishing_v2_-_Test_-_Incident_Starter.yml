@@ -1,0 +1,361 @@
+id: Phishing v2 - Test - Incident Starter
+version: -1
+fromversion: 6.0.0
+name: Phishing v2 - Test - Incident Starter
+description: The reason for having a "starter" test and an "actual incident" test
+  is so that we can create a new incident which will have the right incident type
+  ("Phishing" incident type) from the very beginning. This is absolutely needed in
+  order to create the right incident fields for the test incident. If we create an
+  incident and CHANGE its type after creating it, we will not have the phishing incident
+  fields generated for us (fields like Email Headers, which we later set in the playbook).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c826fe4f-2e4b-4476-8e6c-950f4dd589f0
+    type: start
+    task:
+      id: c826fe4f-2e4b-4476-8e6c-950f4dd589f0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 7f5694ee-ac60-44c1-8f20-e5e7082ebb82
+    type: title
+    task:
+      id: 7f5694ee-ac60-44c1-8f20-e5e7082ebb82
+      version: -1
+      name: Begin Real Incident
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: c6507cb8-7122-450c-8a03-2c9d61cd8696
+    type: regular
+    task:
+      id: c6507cb8-7122-450c-8a03-2c9d61cd8696
+      version: -1
+      name: Delete Context
+      description: ""
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: d6990ab1-5349-4dd0-81c9-3f061cefe7b7
+    type: regular
+    task:
+      id: d6990ab1-5349-4dd0-81c9-3f061cefe7b7
+      version: -1
+      name: Create new Phishing incident
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      accountid: {}
+      accountname: {}
+      agentid: {}
+      app: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      blockedaction: {}
+      bugtraq: {}
+      city: {}
+      commandline: {}
+      country: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      dest: {}
+      desthostname: {}
+      destinationhostname: {}
+      destinationip: {}
+      destinationport: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      devicename: {}
+      duration: {}
+      emailauthenticitycheck: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      entryIDs: {}
+      eventid: {}
+      eventtype: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstseen: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      hostname: {}
+      infectedhosts: {}
+      investigationstage: {}
+      isolated: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastseen: {}
+      logsource: {}
+      macaddress: {}
+      maliciousbehavior: {}
+      malwarefamily: {}
+      name:
+        simple: Phishing v2 Test
+      occurred: {}
+      os: {}
+      owner: {}
+      parentprocessid: {}
+      phase: {}
+      phishingsubtype: {}
+      pid: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      protocol: {}
+      quarantined: {}
+      rating: {}
+      region: {}
+      regionid: {}
+      reporteremailaddress: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      samaccountname: {}
+      severity: {}
+      signature: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourceport: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      subtype: {}
+      systems: {}
+      tenantname: {}
+      terminatedaction: {}
+      threatactor: {}
+      triggeredsecurityprofile: {}
+      type:
+        simple: Phishing
+      urlsslverification: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: dfa757c0-d6bb-46ad-84d1-f09808f83abf
+    type: regular
+    task:
+      id: dfa757c0-d6bb-46ad-84d1-f09808f83abf
+      version: -1
+      name: Set playbook for new incident
+      description: commands.local.cmd.set.playbook
+      script: Builtin|||setPlaybook
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      incidentId:
+        complex:
+          root: CreatedIncidentID
+      name:
+        simple: Phishing v2 - Test - Actual Incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: ae53dde2-a718-4ef9-84a2-45d2467d1228
+    type: regular
+    task:
+      id: ae53dde2-a718-4ef9-84a2-45d2467d1228
+      version: -1
+      name: Begin investigating the incident
+      description: Start investigation of the incident, so that we can later set the
+        right playbook to run on it. This command has t be unhidden using server configuration.
+      script: Builtin|||investigate
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      id:
+        complex:
+          root: CreatedIncidentID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 950,
+        "width": 380,
+        "x": 265,
+        "y": -140
+      }
+    }
+  }
+inputs: []
+outputs: []
