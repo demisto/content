@@ -1,0 +1,380 @@
+description: This playbook searches for files via Code42 security events by either
+  MD5 or SHA256 hash. The data is output to the Code42.SecurityData context for use.
+id: f10f23fd-7db9-4544-8929-e2f76abafa46
+inputs:
+- description: MD5 hash to search for
+  key: MD5
+  playbookInputQuery: null
+  required: false
+  value:
+    complex:
+      accessor: MD5
+      root: File
+      transformers:
+      - operator: uniq
+- description: SHA256 hash to search for
+  key: SHA256
+  playbookInputQuery: null
+  required: false
+  value:
+    complex:
+      accessor: SHA256
+      root: File
+      transformers:
+      - operator: uniq
+name: Code42 File Download
+outputs:
+- contextPath: Code42.SecurityData
+  description: Returned File Results
+  type: unknown
+- contextPath: Code42.SecurityData.EventTimestamp
+  description: Timestamp for event
+- contextPath: Code42.SecurityData.FileCreated
+  description: File creation date
+- contextPath: Code42.SecurityData.EndpointID
+  description: Code42 device ID
+- contextPath: Code42.SecurityData.DeviceUsername
+  description: Username that device is associated with in Code42
+- contextPath: Code42.SecurityData.EmailFrom
+  description: Sender email address for email exfiltration events
+- contextPath: Code42.SecurityData.EmailTo
+  description: Recipient emial address for email exfiltration events
+- contextPath: Code42.SecurityData.EmailSubject
+  description: Email subject line for email exfiltration events
+- contextPath: Code42.SecurityData.EventID
+  description: Security Data event ID
+- contextPath: Code42.SecurityData.EventType
+  description: Type of Security Data event
+- contextPath: Code42.SecurityData.FileCategory
+  description: Type of file as determined by Code42 engine
+- contextPath: Code42.SecurityData.FileOwner
+  description: Owner of file
+- contextPath: Code42.SecurityData.FileName
+  description: File name
+- contextPath: Code42.SecurityData.FilePath
+  description: Path to file
+- contextPath: Code42.SecurityData.FileSize
+  description: Size of file in bytes
+- contextPath: Code42.SecurityData.FileModified
+  description: File modification date
+- contextPath: Code42.SecurityData.FileMD5
+  description: MD5 hash of file
+- contextPath: Code42.SecurityData.FileHostname
+  description: Hostname where file event was captured
+- contextPath: Code42.SecurityData.DevicePrivateIPAddress
+  description: Private IP addresses of device where event was captured
+- contextPath: Code42.SecurityData.DevicePublicIPAddress
+  description: Public IP address of device where event was captured
+- contextPath: Code42.SecurityData.RemovableMediaType
+  description: Type of removate media
+- contextPath: Code42.SecurityData.RemovableMediaCapacity
+  description: Total capacity of removable media in bytes
+- contextPath: Code42.SecurityData.RemovableMediaMediaName
+  description: Full name of removable media
+- contextPath: Code42.SecurityData.RemovableMediaName
+  description: Name of removable media
+- contextPath: Code42.SecurityData.RemovableMediaSerialNumber
+  description: Serial number for removable medial device
+- contextPath: Code42.SecurityData.RemovableMediaVendor
+  description: Vendor name for removable device
+- contextPath: Code42.SecurityData.FileSHA256
+  description: SHA256 hash of file
+- contextPath: Code42.SecurityData.FileShared
+  description: Whether file is shared using cloud file service
+- contextPath: Code42.SecurityData.FileSharedWith
+  description: Accounts that file is shared with on cloud file service
+- contextPath: Code42.SecurityData.Source
+  description: Source of file event, Cloud or Endpoint
+- contextPath: Code42.SecurityData.ApplicationTabURL
+  description: URL associated with application read event
+- contextPath: Code42.SecurityData.ProcessName
+  description: Process name for application read event
+- contextPath: Code42.SecurityData.ProcessOwner
+  description: Process owner for application read event
+- contextPath: Code42.SecurityData.WindowTitle
+  description: Process name for application read event
+- contextPath: Code42.SecurityData.FileURL
+  description: URL of file on cloud file service
+- contextPath: Code42.SecurityData.Exposure
+  description: Exposure type for event
+- contextPath: Code42.SecurityData.SharingTypeAdded
+  description: Type of sharing added to file
+- contextPath: File
+  description: The file object.
+  type: unknown
+- contextPath: File.Name
+  description: File name
+- contextPath: File.Path
+  description: File path
+- contextPath: File.Size
+  description: File size in bytes
+- contextPath: File.MD5
+  description: MD5 hash of file
+- contextPath: File.SHA256
+  description: FSHA256 hash of file
+- contextPath: File.Hostname
+  description: Hostname where file event was captured
+sourceplaybookid: Code42 File Search
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d045a003-2e7f-4f47-80c7-3882baf399b6
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: d045a003-2e7f-4f47-80c7-3882baf399b6
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": -140
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Code42
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "2"
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 746c1a4e-7084-45f1-86e6-e9764ffbbf5c
+      iscommand: false
+      name: Is Code42 Integration Active?
+      type: condition
+      version: -1
+    taskid: 746c1a4e-7084-45f1-86e6-e9764ffbbf5c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 160
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.SHA256
+          operator: isNotEmpty
+      label: "yes"
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 935cb1d6-e328-4a8e-888f-347c3b33ce11
+      iscommand: false
+      name: Does SHA256 Exist?
+      type: condition
+      version: -1
+    taskid: 935cb1d6-e328-4a8e-888f-347c3b33ce11
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 370
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.MD5
+          operator: isNotEmpty
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1d0dfb1f-6874-41e9-8593-fca2a96c58c4
+      iscommand: false
+      name: Does MD5 Exist?
+      type: condition
+      version: -1
+    taskid: 1d0dfb1f-6874-41e9-8593-fca2a96c58c4
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 532.5,
+          "y": 370
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      hash:
+        simple: ${inputs.SHA256}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Code42
+      description: Downloads a file from Code42 servers.
+      id: 4e1746f8-d275-4799-8af2-6ef87500a69b
+      iscommand: true
+      name: Code42 Download by SHA256
+      script: Code42|||code42-download-file
+      type: regular
+      version: -1
+    taskid: 4e1746f8-d275-4799-8af2-6ef87500a69b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 630
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      exposure: {}
+      hash:
+        simple: ${inputs.MD5}
+      hostname: {}
+      json: {}
+      results: {}
+      username: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cea50fb7-6903-4650-8172-5d6a324da237
+      iscommand: true
+      name: Code42 Download by MD5
+      script: '|||code42-securitydata-search'
+      type: regular
+      version: -1
+    taskid: cea50fb7-6903-4650-8172-5d6a324da237
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 532.5,
+          "y": 630
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7f03d6ab-3bb8-4bd5-867b-fe853fa38684
+      iscommand: false
+      name: Complete
+      type: title
+      version: -1
+    taskid: 7f03d6ab-3bb8-4bd5-867b-fe853fa38684
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 1040
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1245,
+        "width": 892.5,
+        "x": 20,
+        "y": -140
+      }
+    }
+  }
