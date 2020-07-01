@@ -203,6 +203,95 @@ def test_delete_policy_content_local_category_db(mocker, requests_mock):
 """
 
 
+def test_delete_policy_content_local_category_db_negative(mocker, requests_mock):
+    """
+    Given:
+     - IP, which does not exist in the content, to delete from content in category of type LOCAL_CATEGORY_DB
+
+    When:
+     - Running the delete content command
+
+    Then:
+     - Ensure an exception is raised
+     - Verify error message is raised as expected
+    """
+    content = {
+        'content': {
+            'categories': [
+                {
+                    'type': 'inline',
+                    'name': 'category1',
+                    'entries': [{'type': 'url', 'url': 'www.demisto.com', 'comment': None}]
+                },
+                {
+                    'type': 'inline',
+                    'name': 'category2',
+                    'entries': [
+                        {'type': 'url', 'url': 'www.google.com', 'comment': 'comment'},
+                        {'type': 'url', 'url': 'www.apple.com', 'comment': 'comment'},
+                    ]
+                },
+                {
+                    'type': 'inline',
+                    'name': 'category3',
+                    'entries': [{'type': 'url', 'url': 'www.demisto.com', 'comment': 'comment'}]
+                },
+                {
+                    'type': 'inline',
+                    'name': 'category4',
+                    'entries': [{'type': 'url', 'url': 'www.google.com', 'comment': 'comment'}]
+                },
+                {
+                    'type': 'inline',
+                    'name': 'category5',
+                    'entries': [{'type': 'url', 'url': '8.8.8.8', 'comment': 'comment'}]
+                },
+                {
+                    'type': 'inline',
+                    'name': 'category6',
+                    'entries': [
+                        {'type': 'url', 'url': 'www.demisto.com', 'comment': 'comment'},
+                        {'type': 'url', 'url': 'www.paloaltonetworks.net', 'comment': 'comment'}
+                    ]
+                }
+            ]
+        },
+        'schemaVersion': '1.0',
+        'revisionInfo': {
+            'revisionNumber': '1.12',
+            'revisionDescription': 'desc',
+            'author': 'admin',
+            'revisionDate': '2020-01-25T14:58:06'
+        }
+    }
+    ip_which_does_not_exist = '4.4.4.4'
+    mocker.patch.object(demisto, 'command', return_value='symantec-mc-delete-policy-content')
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={
+            'url': 'https://server',
+            'credentials': {}
+        }
+    )
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'uuid': 'uuid',
+            'content_type': LOCAL_CATEGORY_DB_TYPE,
+            'change_description': 'desc',
+            'category': 'category5',
+            'ip': ip_which_does_not_exist
+        }
+    )
+    requests_mock.get('https://server/api/policies/uuid/content', json=content)
+    return_error_mock = mocker.patch('SymantecManagementCenter.return_error')
+    main()
+    err_msg = return_error_mock.call_args[0][0]
+    assert 'Deletion failed - Could not find object to delete.' in err_msg
+
+
 def test_update_policy_content_local_category_db(mocker, requests_mock):
     """
     Given:
@@ -303,3 +392,93 @@ def test_update_policy_content_local_category_db(mocker, requests_mock):
 |---|---|---|---|---|---|
 | category1 | desc | LOCAL_CATEGORY_DB | new comment | www.demisto.com | uuid |
 """
+
+
+def test_update_policy_content_local_category_db_negative(mocker, requests_mock):
+    """
+    Given:
+     - IP, which does not exist in the content, to update in category of type LOCAL_CATEGORY_DB
+
+    When:
+     - Running the update content command
+
+    Then:
+     - Ensure an exception is raised
+     - Verify error message is raised as expected
+    """
+    content = {
+        'content': {
+            'categories': [
+                {
+                    'type': 'inline',
+                    'name': 'category1',
+                    'entries': [{'type': 'url', 'url': 'www.demisto.com', 'comment': None}]
+                },
+                {
+                    'type': 'inline',
+                    'name': 'category2',
+                    'entries': [
+                        {'type': 'url', 'url': 'www.google.com', 'comment': 'comment'},
+                        {'type': 'url', 'url': 'www.apple.com', 'comment': 'comment'},
+                    ]
+                },
+                {
+                    'type': 'inline',
+                    'name': 'category3',
+                    'entries': [{'type': 'url', 'url': 'www.demisto.com', 'comment': 'comment'}]
+                },
+                {
+                    'type': 'inline',
+                    'name': 'category4',
+                    'entries': [{'type': 'url', 'url': 'www.google.com', 'comment': 'comment'}]
+                },
+                {
+                    'type': 'inline',
+                    'name': 'category5',
+                    'entries': [{'type': 'url', 'url': '8.8.8.8', 'comment': 'comment'}]
+                },
+                {
+                    'type': 'inline',
+                    'name': 'category6',
+                    'entries': [
+                        {'type': 'url', 'url': 'www.demisto.com', 'comment': 'comment'},
+                        {'type': 'url', 'url': 'www.paloaltonetworks.net', 'comment': 'comment'}
+                    ]
+                }
+            ]
+        },
+        'schemaVersion': '1.0',
+        'revisionInfo': {
+            'revisionNumber': '1.12',
+            'revisionDescription': 'desc',
+            'author': 'admin',
+            'revisionDate': '2020-01-25T14:58:06'
+        }
+    }
+    ip_which_does_not_exist = '4.4.4.4'
+    mocker.patch.object(demisto, 'command', return_value='symantec-mc-update-policy-content')
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={
+            'url': 'https://server',
+            'credentials': {}
+        }
+    )
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'uuid': 'uuid',
+            'content_type': LOCAL_CATEGORY_DB_TYPE,
+            'change_description': 'desc',
+            'category': 'category5',
+            'ip': ip_which_does_not_exist,
+            'description': 'some desc'
+        }
+    )
+    requests_mock.get('https://server/api/policies/uuid/content', json=content)
+    return_error_mock = mocker.patch('SymantecManagementCenter.return_error')
+    main()
+    err_msg = return_error_mock.call_args[0][0]
+    assert 'Update failed - Could not find object to update.' in err_msg

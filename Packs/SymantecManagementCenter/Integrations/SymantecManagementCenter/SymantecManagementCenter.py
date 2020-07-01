@@ -1196,8 +1196,6 @@ def main():
         command_func = command_dictionary[demisto.command()]
         command_func()
     except Exception as e:
-        LOG(str(e))
-        LOG.print_log()
         return_error(str(e))
 
 
