@@ -2,24 +2,27 @@ id: Detonate File - CrowdStrike Falcon X
 version: -1
 name: Detonate File - CrowdStrike Falcon X
 description: |-
-  Detonates a file using the CrowdStrike Falcon X sandbox.
-  Advanced Threat Defense supports the following File Types:
-  32-bit Portable Executables (PE)files; 64-bit PE+files
-  exe, sys, dll, com, scr, cpl, ocx, cgi
-  Microsoft Office Suite documents
-  doc,dotm, docx, dotx, xls, ppam, xlsx, pps, xlsb, ppsx, xlsm, ppsm, ppt, ppt, pptx, pptm, rtf, shs, xltm, sldm, xltx, sldx, xlam, thmx, docm, xar
-  Just Systems Ichitaro documents
-  jtd, jtdc
-  Adobe
-  pdf, swf
-  Compressed files
-  gz, 7z, tgz, msi, zip, lzh, cab, lzma, rar
-  Android application package
-  apk, Java, JAR, CLASS, Java Script, Java bin files
-  Image files
-  jpeg, png, gif
-  Other file types
-  cmd, ace, bat, arj, vbs, chm, xml, lnk, url, mof, htm, ocx, html, potm, eml, potx, msg, ps1, vb, reg, vba, wsc, vbe, wsf, vbs, wsh
+  Detonates a File using CrowdStrike Falcon X sandbox.
+  Accepted file formats:
+  Portable executables: .exe, .scr, .pif, .dll, .com, .cpl, etc.
+  Office documents: .doc, .docx, .ppt, .pps, .pptx, .ppsx, .xls, .xlsx, .rtf, .pub
+  PDF
+  APK
+  Executable JAR
+  Windows script component: .sct
+  Windows shortcut: .lnk
+  Windows help: .chm
+  HTML application: .hta
+  Windows script file: .wsf
+  Javascript: .js
+  Visual Basic: .vbs, .vbe
+  Shockwave Flash: .swf
+  Perl: .pl
+  Powershell: .ps1, .psd1, .psm1
+  Scalable vector graphics: .svg
+  Python: .py
+  Linux ELF executables
+  Email files: MIME RFC 822 .eml, Outlook .msg.
 starttaskid: "0"
 tasks:
   "0":
@@ -76,7 +79,7 @@ tasks:
       Ids:
         complex:
           root: csfalconx
-          accessor: resource.id
+          accessor: resource.submitted_id
       Interval:
         complex:
           root: inputs.Interval
@@ -122,7 +125,7 @@ tasks:
       - "5"
     scriptarguments:
       ids:
-        simple: ${csfalconx.resource.id}
+        simple: ${csfalconx.resource.submitted_id}
     separatecontext: false
     view: |-
       {
@@ -237,7 +240,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: csfalconx.resource.id(val != -1)
+              simple: csfalconx.resource.submitted_id(val != -1)
             iscontext: true
     view: |-
       {
@@ -490,102 +493,63 @@ inputs:
   required: false
   description: How much time to wait before a timeout occurs (minutes)
 outputs:
-- contextPath: ATD.Task.taskId
-  description: The task ID of the sample uploaded
-  type: string
-- contextPath: ATD.Task.jobId
-  description: The job ID of the sample uploaded
-  type: string
-- contextPath: ATD.Task.messageId
-  description: The message Id relevant to the sample uploaded
-  type: string
-- contextPath: ATD.Task.srcIp
-  description: Source IPv4 address
-  type: string
-- contextPath: ATD.Task.destIp
-  description: Destination IPv4 address
-  type: string
-- contextPath: ATD.Task.MD5
-  description: MD5 of the sample uploaded
-  type: string
-- contextPath: ATD.Task.SHA1
-  description: SHA1 of the sample uploaded
-  type: string
-- contextPath: ATD.Task.SHA256
-  description: SHA256 of the sample uploaded
-  type: string
-- contextPath: File.Name
-  description: Filename (only in case of report type=json)
-  type: string
-- contextPath: File.Type
-  description: File type e.g. "PE" (only in case of report type=json)
-  type: string
-- contextPath: File.Size
-  description: File size (only in case of report type=json)
-  type: number
-- contextPath: File.MD5
-  description: MD5 hash of the file (only in case of report type=json)
-  type: string
-- contextPath: File.SHA1
-  description: SHA1 hash of the file (only in case of report type=json)
-  type: string
-- contextPath: File.SHA256
-  description: SHA256 hash of the file (only in case of report type=json)
-  type: string
-- contextPath: File.EntryID
-  description: The entry ID of the sample
-  type: string
-- contextPath: File.Malicious.Vendor
-  description: For malicious files, the vendor that determined the file was malicious.
-  type: string
-- contextPath: File.Malicious.Description
-  description: For malicious files, the reason for the vendor to make the decision
-  type: string
-- contextPath: DBotScore.Indicator
-  description: The indicator we tested (only in case of report type=json)
-  type: string
-- contextPath: DBotScore.Type
-  description: The type of the indicator (only in case of report type=json)
-  type: string
-- contextPath: DBotScore.Vendor
-  description: Vendor used to calculate the score (only in case of report type=json)
-  type: string
-- contextPath: DBotScore.Score
-  description: The actual score (only in case of report type=json)
-  type: number
-- contextPath: IP.Address
-  description: IP's relevant to the sample
-  type: string
-- contextPath: InfoFile.EntryID
-  description: The entry ID of the report file
-  type: string
-- contextPath: InfoFile.Extension
-  description: The extension of the report file
-  type: string
-- contextPath: InfoFile.Name
-  description: The name of the report file
-  type: string
-- contextPath: InfoFile.Info
-  description: The file info of the report file
-  type: string
-- contextPath: InfoFile.Size
-  description: The size of the report file
-  type: number
-- contextPath: InfoFile.Type
-  description: The type of the report file
-  type: string
-- contextPath: File
-  description: File object
-  type: unknown
-- contextPath: File.Malicious
-  description: File Malicious object
-  type: unknown
-- contextPath: DBotScore
-  description: DBotScore object
-  type: unknown
-- contextPath: InfoFile
-  description: Report file object
-  type: unknown
+    - contextPath: csfalconx.resource.id
+      description: Analysis ID.
+      type: String
+    - contextPath: csfalconx.resource.verdict
+      description: Analysis verdict.
+      type: String
+    - contextPath: csfalconx.resource.created_timpestamp
+      description: Analysis start time.
+      type: String
+    - contextPath: csfalconx.resource.environment_id
+      description: Environment ID.
+      type: String
+    - contextPath: csfalconx.resource.snadbox.environment_description
+      description: Environment description.
+      type: String
+    - contextPath: csfalconx.resource.threat_score
+      description: Score of the threat.
+      type: Int
+    - contextPath: csfalconx.resource.submit_url
+      description: URL submitted for analysis.
+      type: String
+    - contextPath: csfalconx.resource.submission_type
+      description: Type of submitted artifact, for example file, URL, etc.
+      type: String
+    - contextPath: csfalconx.resource.filetype
+      description: File type.
+      type: String
+    - contextPath: csfalconx.resource.filesize
+      description: File size.
+      type: Int
+    - contextPath: csfalconx.resource.sha256
+      description: SHA256 hash of the submitted file.
+      type: String
+    - contextPath: csfalconx.resource.ioc_report_strict_csv_artifact_id
+      description: ID of the IOC pack to download (CSV).
+      type: String
+    - contextPath: csfalconx.resource.ioc_report_broad_csv_artifact_id
+      description: ID of the IOC pack to download (CSV).
+      type: String
+    - contextPath: csfalconx.resource.ioc_report_strict_json_artifact_id
+      description: ID of the IOC pack to download (JSON).
+      type: Int
+    - contextPath: csfalconx.resource.ioc_report_broad_json_artifact_id
+      description: ID of the IOC pack to download (JSON).
+      type: String
+    - contextPath: csfalconx.resource.ioc_report_strict_stix_artifact_id
+      description: ID of the IOC pack to download (STIX).
+      type: String
+    - contextPath: csfalconx.resource.ioc_report_broad_stix_artifact_id
+      description: ID of the IOC pack to download (STIX).
+      type: Int
+    - contextPath: csfalconx.resource.ioc_report_strict_maec_artifact_id
+      description: ID of the IOC pack to download (MAEC).
+      type: String
+    - contextPath: csfalconx.resource.ioc_report_broad_maec_artifact_id
+      description: ID of the IOC pack to download (MAEC).
+      type: String
 fromversion: 5.0.0
 tests:
  -  No tests

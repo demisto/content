@@ -157,7 +157,7 @@ script:
     execution: false
     name: cs-fx-submit-uploaded-file
     outputs:
-    - contextPath: 'csfalconx.resource.id '
+    - contextPath: 'csfalconx.resource.uploaded_id '
       description: Analysis ID.
       type: String
     - contextPath: csfalconx.resource.state
@@ -185,7 +185,7 @@ script:
     execution: false
     name: cs-fx-get-full-report
     outputs:
-    - contextPath: csfalconx.resource.id
+    - contextPath: csfalconx.resource.submitted_id
       description: Analysis ID.
       type: String
     - contextPath: csfalconx.resource.verdict
@@ -194,52 +194,52 @@ script:
     - contextPath: csfalconx.resource.created_timpestamp
       description: Analysis start time.
       type: String
-    - contextPath: csfalconx.resource.sandbox_environment_id
+    - contextPath: csfalconx.resource.environment_id
       description: Environment ID.
       type: String
     - contextPath: csfalconx.resource.snadbox.environment_description
       description: Environment description.
       type: String
-    - contextPath: csfalconx.resource.sandbox_threat_score
+    - contextPath: csfalconx.resource.threat_score
       description: Score of the threat.
       type: Int
-    - contextPath: csfalconx.resource.sandbox_submit_url
+    - contextPath: csfalconx.resource.submit_url
       description: URL submitted for analysis.
       type: String
-    - contextPath: csfalconx.resource.sandbox_submission_type
+    - contextPath: csfalconx.resource.submission_type
       description: Type of submitted artifact, for example file, URL, etc.
       type: String
-    - contextPath: csfalconx.resource.sandbox_filetype
+    - contextPath: csfalconx.resource.filetype
       description: File type.
       type: String
-    - contextPath: csfalconx.resource.sandbox_filesize
+    - contextPath: csfalconx.resource.filesize
       description: File size.
       type: Int
-    - contextPath: csfalconx.resource.sandbox_sha256
+    - contextPath: csfalconx.resource.sha256
       description: SHA256 hash of the submitted file.
       type: String
-    - contextPath: csfalconx.resource.ioc_strict_csv
+    - contextPath: csfalconx.resource.ioc_report_strict_csv_artifact_id
       description: ID of the IOC pack to download (CSV).
       type: String
-    - contextPath: csfalconx.resource.ioc_broad_csv
+    - contextPath: csfalconx.resource.ioc_report_broad_csv_artifact_id
       description: ID of the IOC pack to download (CSV).
       type: String
-    - contextPath: csfalconx.resource.ioc_strict_json
+    - contextPath: csfalconx.resource.ioc_report_strict_json_artifact_id
       description: ID of the IOC pack to download (JSON).
       type: Int
-    - contextPath: csfalconx.resource.ioc_broad_json
+    - contextPath: csfalconx.resource.ioc_report_broad_json_artifact_id
       description: ID of the IOC pack to download (JSON).
       type: String
-    - contextPath: csfalconx.resource.ioc_strict_stix
+    - contextPath: csfalconx.resource.ioc_report_strict_stix_artifact_id
       description: ID of the IOC pack to download (STIX).
       type: String
-    - contextPath: csfalconx.resource.ioc_broad_stix
+    - contextPath: csfalconx.resource.ioc_report_broad_stix_artifact_id
       description: ID of the IOC pack to download (STIX).
       type: Int
-    - contextPath: csfalconx.resource.ioc_strict_maec
+    - contextPath: csfalconx.resource.ioc_report_strict_maec_artifact_id
       description: ID of the IOC pack to download (MAEC).
       type: String
-    - contextPath: csfalconx.resource.ioc_broad_maec
+    - contextPath: csfalconx.resource.ioc_report_broad_maec_artifact_id
       description: ID of the IOC pack to download (MAEC).
       type: String
   - arguments:
@@ -264,52 +264,52 @@ script:
     - contextPath: csfalconx.resource.created_timpestamp
       description: Analysis start time.
       type: String
-    - contextPath: csfalconx.resource.sandbox_environment_id
+    - contextPath: csfalconx.resource.environment_id
       description: Environment ID.
       type: String
-    - contextPath: csfalconx.resource.snadbox.environment_description
+    - contextPath: csfalconx.resource.environment_description
       description: Environment description.
       type: String
-    - contextPath: csfalconx.resource.sandbox_threat_score
+    - contextPath: csfalconx.resource.threat_score
       description: Score of the threat.
       type: Int
-    - contextPath: csfalconx.resource.sandbox_submit_url
+    - contextPath: csfalconx.resource.submit_url
       description: URL submitted for analysis.
       type: String
-    - contextPath: csfalconx.resource.sandbox_submission_type
+    - contextPath: csfalconx.resource.submission_type
       description: Type of submitted artifact. For example, file, URL, etc.
       type: String
-    - contextPath: csfalconx.resource.sandbox_filetype
+    - contextPath: csfalconx.resource.filetype
       description: File type.
       type: String
-    - contextPath: csfalconx.resource.sandbox_filesize
+    - contextPath: csfalconx.resource.filesize
       description: File size.
       type: Int
-    - contextPath: csfalconx.resource.sandbox_sha256
+    - contextPath: csfalconx.resource.sha256
       description: SHA256 hash of the submitted file.
       type: String
-    - contextPath: csfalconx.resource.ioc_strict_csv
+    - contextPath: csfalconx.resource.ioc_report_strict_csv_artifact_id
       description: ID of the IOC pack to download (CSV).
       type: String
-    - contextPath: csfalconx.resource.ioc_broad_csv
+    - contextPath: csfalconx.resource.ioc_report_broad_csv_artifact_id
       description: ID of the IOC pack to download (CSV).
       type: String
-    - contextPath: csfalconx.resource.ioc_strict_jason
+    - contextPath: csfalconx.resource.ioc_report_strict_json_artifact_id
       description: ID of the IOC pack to download (JSON).
       type: Int
-    - contextPath: csfalconx.resource.ioc_broad_jason
+    - contextPath: csfalconx.resource.ioc_report_broad_json_artifact_id
       description: ID of the IOC pack to download (JSON).
       type: String
-    - contextPath: csfalconx.resource.ioc_strict_stix
+    - contextPath: csfalconx.resource.ioc_report_strict_stix_artifact_id
       description: ID of the IOC pack to download (STIX).
       type: String
-    - contextPath: csfalconx.resource.ioc_broad_stix
+    - contextPath: csfalconx.resource.ioc_report_broad_stix_artifact_id
       description: ID of the IOC pack to download (STIX).
       type: Int
-    - contextPath: csfalconx.resource.ioc_strict_maec
+    - contextPath: csfalconx.resource.ioc_report_strict_maec_artifact_id
       description: ID of the IOC pack to download (MAEC).
       type: String
-    - contextPath: csfalconx.resource.ioc_broad_maec
+    - contextPath: csfalconx.resource.ioc_report_broad_maec_artifact_id
       description: ID of the IOC pack to download (MAEC).
       type: String
   - arguments:
@@ -334,52 +334,52 @@ script:
     - contextPath: csfalconx.resource.created_timpestamp
       description: Analysis start time.
       type: String
-    - contextPath: csfalconx.resource.sandbox_environment_id
+    - contextPath: csfalconx.resource.environment_id
       description: Environment ID.
       type: String
-    - contextPath: csfalconx.resource.snadbox.environment_description
+    - contextPath: csfalconx.resource.environment_description
       description: Environment description.
       type: String
-    - contextPath: csfalconx.resource.sandbox_threat_score
+    - contextPath: csfalconx.resource.threat_score
       description: Score of the threat.
       type: Int
-    - contextPath: csfalconx.resource.sandbox_submit_url
+    - contextPath: csfalconx.resource.submit_url
       description: URL submitted for analysis.
       type: String
-    - contextPath: csfalconx.resource.sandbox_submission_type
+    - contextPath: csfalconx.resource.submission_type
       description: Type of submitted artifact. For example, file, URL, etc.
       type: String
-    - contextPath: csfalconx.resource.sandbox_filetype
+    - contextPath: csfalconx.resource.filetype
       description: File type.
       type: String
-    - contextPath: csfalconx.resource.sandbox_filesize
+    - contextPath: csfalconx.resource.filesize
       description: File size.
       type: Int
-    - contextPath: csfalconx.resource.sandbox_sha256
+    - contextPath: csfalconx.resource.sha256
       description: SHA256 hash of the submitted file.
       type: String
-    - contextPath: csfalconx.resource.ioc_strict_csv
+    - contextPath: csfalconx.resource.ioc_report_strict_csv_artifact_id
       description: ID of the IOC pack to download (CSV).
       type: String
-    - contextPath: csfalconx.resource.ioc_broad_csv
+    - contextPath: csfalconx.resource.ioc_report_broad_csv_artifact_id
       description: ID of the IOC pack to download (CSV).
       type: String
-    - contextPath: csfalconx.resource.ioc_strict_jason
+    - contextPath: csfalconx.resource.ioc_report_strict_json_artifact_id
       description: ID of the IOC pack to download (JSON).
       type: Int
-    - contextPath: csfalconx.resource.ioc_broad_jason
+    - contextPath: csfalconx.resource.ioc_report_broad_json_artifact_id
       description: ID of the IOC pack to download (JSON).
       type: String
-    - contextPath: csfalconx.resource.ioc_strict_stix
+    - contextPath: csfalconx.resource.ioc_report_strict_stix_artifact_id
       description: ID of the IOC pack to download (STIX).
       type: String
-    - contextPath: csfalconx.resource.ioc_broad_stix
+    - contextPath: csfalconx.resource.ioc_report_broad_stix_artifact_id
       description: ID of the IOC pack to download (STIX).
       type: Int
-    - contextPath: csfalconx.resource.ioc_strict_maec
+    - contextPath: csfalconx.resource.ioc_report_strict_maec_artifact_id
       description: ID of the IOC pack to download (MAEC).
       type: String
-    - contextPath: csfalconx.resource.ioc_broad_maec
+    - contextPath: csfalconx.resource.ioc_report_broad_maec_artifact_id
       description: ID of the IOC pack to download (MAEC).
       type: String
   - deprecated: false
@@ -399,7 +399,6 @@ script:
   - arguments:
     - default: false
       description: Optional filter and sort criteria in the form of an FQL query.
-        For more information about FQL queries.
       isArray: false
       name: filter
       required: false
@@ -559,7 +558,7 @@ script:
     execution: false
     name: cs-fx-submit-url
     outputs:
-    - contextPath: csfalconx.resource.id
+    - contextPath: csfalconx.resource.submitted_id
       description: Analysis ID.
       type: String
     - contextPath: csfalconx.resource.state

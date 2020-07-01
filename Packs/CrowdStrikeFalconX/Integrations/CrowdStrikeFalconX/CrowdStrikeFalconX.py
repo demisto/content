@@ -556,7 +556,7 @@ def upload_file_command(
 
     resources_fields = ["file_name", "sha256"]
     filtered_outputs = parse_outputs(response, resources_fields=resources_fields)
-    entry_context = {f'csfalconx.resource(val.id === obj.id)': [filtered_outputs]}
+    entry_context = {f'csfalconx.resource(val.sha256 === obj.sha256)': [filtered_outputs]}
     if submit_file == 'no':
         return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, [response]
 
@@ -597,7 +597,9 @@ def send_uploaded_file_to_sandbox_analysis_command(
     sandbox_fields = ["environment_id", "sha256"]
     resource_fields = ['id', 'state', 'created_timestamp', 'created_timestamp']
     filtered_outputs = parse_outputs(response, sandbox_fields=sandbox_fields, resources_fields=resource_fields)
-    entry_context = {f'csfalconx.resource(val.id === obj.id)': [filtered_outputs]}
+    # in order identify the id source, upload or submit command, the id name changed
+    filtered_outputs["submitted_id"] = filtered_outputs.pop("id")
+    entry_context = {f'csfalconx.resource(val.submitted_id === obj.submitted_id)': [filtered_outputs]}
 
     return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, [response]
 
@@ -633,7 +635,9 @@ def send_url_to_sandbox_analysis_command(
     resources_fields = ['id', 'state', 'created_timestamp']
     sandbox_fields = ["environment_id", "sha256"]
     filtered_outputs = parse_outputs(response, resources_fields=resources_fields, sandbox_fields=sandbox_fields)
-    entry_context = {f'csfalconx.resource(val.id === obj.id)': [filtered_outputs]}
+    # in order identify the id source, upload or submit command, the id name changed
+    filtered_outputs["submitted_id"] = filtered_outputs.pop("id")
+    entry_context = {f'csfalconx.resource(val.submitted_id === obj.submitted_id)': [filtered_outputs]}
 
     return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, [response]
 
@@ -662,7 +666,7 @@ def get_full_report_command(
                             "ioc_report_broad_maec_artifact_id"]
 
         sandbox_fields = ["environment_id", "environment_description", "threat_score", "submit_url", "submission_type",
-                          "filetyp", "filesize", "sha256"]
+                          "filetype", "filesize", "sha256"]
         filtered_outputs_list.append(parse_outputs(response, resources_fields=resources_fields,
                                                    sandbox_fields=sandbox_fields))
 
@@ -704,7 +708,7 @@ def get_report_summary_command(
         ]
 
         sandbox_fields = ["environment_id", "environment_description", "threat_score", "submit_url", "submission_type",
-                          "filetyp", "filesize", "sha256"]
+                          "filetype", "filesize", "sha256"]
         outputs = parse_outputs(response, resources_fields=resources_fields, sandbox_fields=sandbox_fields)
         if outputs:
             # no need to add empty dict
