@@ -494,6 +494,7 @@ def setIntegrationContext(context):
 def getIntegrationContext():
     return integrationContext
 
+
 def setIntegrationContextVersioned(context, version=-1, sync=False):
     """
     Set the integration context with a version.
@@ -518,6 +519,7 @@ def getIntegrationContextVersioned(refresh=False):
         Dict with a key of context and a key of version.
     """
     return integrationContext
+
 
 def incidents(incidents=None):
     """
