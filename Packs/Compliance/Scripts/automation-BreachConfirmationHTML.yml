@@ -7,6 +7,7 @@ name: BreachConfirmationHTML
 runas: DBotWeakRole
 runonce: false
 script: |
+
   incident = demisto.incidents()
   query = incident[0].get('CustomFields', {}).get('breachconfirmation', "Pending Confirmation")
   Color = 'green'
