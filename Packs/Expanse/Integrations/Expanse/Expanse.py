@@ -197,7 +197,7 @@ def parse_behavior(risky_flows):
     incidents = []
     for flow in risky_flows['data']:
         incident = {
-            'name': "{rule} {int_}{int_port} : {ext}{ext_port}".format(
+            'name': "{rule} {int_}:{int_port} : {ext}:{ext_port}".format(
                 rule=flow['riskRule']['name'],
                 int_=flow['internalAddress'],
                 int_port=flow['internalPort'],
