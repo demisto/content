@@ -162,7 +162,9 @@ def args_to_query(args: dict) -> dict:
         if value:
             if field == 'udf_fields':
                 request_fields[field] = f"{create_udf_field(value)}"
-            elif field not in FIELDS_WITH_NAME or (value[0] == '{' and value[-1] == '}'):
+            elif field not in FIELDS_WITH_NAME or (value[0] == '{' and value[-1] == '}'):  # if the second condition
+                # holds the user entered an object as the field value and not only the name of the field. For more
+                # information please refer to the `service-desk-plus-request-create` command in the README.
                 request_fields[field] = value
             else:
                 request_fields[field] = {
