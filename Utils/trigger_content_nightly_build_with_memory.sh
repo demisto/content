@@ -10,7 +10,8 @@ post_data=$(cat <<EOF
   "branch": "${_branch}",
   "parameters": {
     "nightly": "true",
-    "mem_check": "true"
+    "mem_check": "true",
+    "time_to_live": 900
   }
 }
 EOF

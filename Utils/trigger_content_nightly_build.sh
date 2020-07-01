@@ -9,7 +9,8 @@ post_data=$(cat <<-EOF
 {
   "branch": "${_branch}",
   "parameters": {
-    "nightly": "true"
+    "nightly": "true",
+    "time_to_live": 900
   }
 }
 EOF

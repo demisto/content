@@ -24,6 +24,12 @@ parameters:
   mem_check:
     type: string
     default: ""
+  time_to_live:
+    type: string
+    default: ""
+  contrib_branch:
+    type: string
+    default: ""
 
 
 references:
@@ -37,6 +43,8 @@ references:
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
       BACKWARD_COMPATIBILITY: << pipeline.parameters.backward_compatibility >>
       MEM_CHECK: << pipeline.parameters.mem_check >>
+      TIME_TO_LIVE: << pipeline.parameters.time_to_live >>
+      CONTRIB_BRANCH: << pipeline.parameters.contrib_branch >>
 
   container_config: &container_config
     docker:
@@ -134,6 +142,11 @@ references:
     run:
       name: Destroy Instances
       command: |
+        if [ -n "${TIME_TO_LIVE}" ]
+        then
+            echo "Skipping - Time to live was set to $TIME_TO_LIVE minutes"
+            exit 0
+        fi
         echo "$INSTANCE_ROLE"
         export TEMP=$(cat ./Tests/filter_envs.json | jq '."$INSTANCE_ROLE"')
         if [[ "$TEMP" == "false" ]];
@@ -280,6 +293,24 @@ jobs:
             - venv
             - node_modules
           key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
+      - run:
+          name: Get Contributor pack
+          when: always
+          command: |
+            if [ -z $CONTRIB_BRANCH ]
+            then
+              echo "Skipping, contributor branch not given."
+              exit 0
+            else
+              USER=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
+              BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
+              PACK=$(echo $CONTRIB_BRANCH | cut -d ":" -f 3)
+              echo 'Copy the changes from the contributor branch $USER/$BRANCH in the pack $PACK'
+              git remote add $USER git@github.com:$USER/content.git
+              git fetch $USER $BRANCH
+              git checkout $USER/$BRANCH $PACK
+              exit 0
+            fi
       - *add_ssh_keys
       - *persist_to_workspace
 
@@ -419,6 +450,7 @@ jobs:
           name: Create Instance
           when: always
           command: |
+            [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=180
             if ./Tests/scripts/is_ami.sh ;
               then
                 if [ -n "${NIGHTLY}" ] ;
@@ -427,15 +459,17 @@ jobs:
                 elif [ -n "${INSTANCE_TESTS}" ] ;
                   then
                     export IFRA_ENV_TYPE="Demisto PreGA" # disable-secrets-detection
-
-                  else
-                    export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
+                elif [ -n "${CONTRIB_BRANCH}" ] ;
+                  then
+                    export IFRA_ENV_TYPE="Demisto Marketplace" # disable-secrets-detection
+                else
+                  export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
                 fi
-                python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -outfile ./env_results.json
+                python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile ./env_results.json
 
               else
                 . ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
-                python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -custombuild true -circleurl $SERVER_DOWNLOAD_LINK -circleToken $SERVER_CI_TOKEN -outfile ./env_results.json
+                python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -custombuild true -circleurl $SERVER_DOWNLOAD_LINK -circleToken $SERVER_CI_TOKEN -timetolive $TTL -outfile ./env_results.json
             fi
       - run:
           name: Setup Instance
@@ -470,6 +504,11 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
+            if [ -n "${CONTRIB_BRANCH}" ];
+              then
+                echo "Skipping - not running in contributor branch"
+                exit 0
+            fi
             echo 'export INSTANCE_ROLE="Demisto two before GA"' >> $BASH_ENV
             source $BASH_ENV
             export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto two before GA"')
@@ -508,6 +547,11 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
+            if [ -n "${CONTRIB_BRANCH}" ];
+              then
+                echo "Skipping - not running in contributor branch"
+                exit 0
+            fi
             echo 'export INSTANCE_ROLE="Demisto one before GA"' >> $BASH_ENV
             source $BASH_ENV
             export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto one before GA"')
@@ -552,6 +596,11 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
+            if [ -n "${CONTRIB_BRANCH}" ];
+              then
+                echo "Skipping - not running in contributor branch"
+                exit 0
+            fi
             export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto GA"')
             echo "Demisto GA filter=$TEMP"
             if [[ "$TEMP" == "false" ]];
@@ -590,6 +639,11 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
+            if [ -n "${CONTRIB_BRANCH}" ];
+              then
+                echo "Skipping - not running in contributor branch"
+                exit 0
+            fi
             echo 'export INSTANCE_ROLE="Demisto PreGA"' >> $BASH_ENV
             source $BASH_ENV
             export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto PreGA"')
