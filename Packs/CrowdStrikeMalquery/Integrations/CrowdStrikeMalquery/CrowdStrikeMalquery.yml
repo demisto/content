@@ -122,28 +122,28 @@ script:
       isArray: true
     outputs:
     - contextPath: Malquery.File.family
-      description: Resource family.
+      description: File family.
       type: String
     - contextPath: Malquery.File.filesize
-      description: Resource size.
+      description: File size.
       type: String
     - contextPath: Malquery.File.filetype
-      description: Resource file type.
+      description: File type.
       type: String
     - contextPath: Malquery.File.first_seen
-      description: Date when the resource was first seen.
+      description: Date when the file was first seen.
       type: String
     - contextPath: Malquery.File.label
-      description: Resource label.
+      description: File label.
       type: String
     - contextPath: Malquery.File.md5
-      description: Resource MD5.
+      description: File MD5.
       type: String
     - contextPath: Malquery.File.sha1
-      description: Resource SHA1.
+      description: File SHA1.
       type: String
     - contextPath: Malquery.File.sha256
-      description: Resource SHA256.
+      description: File SHA256.
       type: String
     description: Search Falcon MalQuery quickly, but with more potential for false
       positives. Search for a combination of hex patterns and strings in order to
@@ -160,29 +160,29 @@ script:
     - contextPath: Malquery.Status
       description: The request status.
       type: String
-    - contextPath: Malquery.Resources.family
-      description: Resource family.
+    - contextPath: Malquery.File.family
+      description: File family.
       type: String
-    - contextPath: Malquery.Resources.filesize
-      description: Resource size.
+    - contextPath: Malquery.File.filesize
+      description: File size.
       type: String
-    - contextPath: Malquery.Resources.filetype
-      description: Resource file type.
+    - contextPath: Malquery.File.filetype
+      description: File type.
       type: String
-    - contextPath: Malquery.Resources.first_seen
-      description: Date when the resource was first seen.
+    - contextPath: Malquery.File.first_seen
+      description: Date when the File was first seen.
       type: String
-    - contextPath: Malquery.Resources.label
-      description: Resource label.
+    - contextPath: Malquery.File.label
+      description: File label.
       type: String
-    - contextPath: Malquery.Resources.md5
-      description: Resource MD5.
+    - contextPath: Malquery.File.md5
+      description: File MD5.
       type: String
-    - contextPath: Malquery.Resources.sha1
-      description: Resource SHA1.
+    - contextPath: Malquery.File.sha1
+      description: File SHA1.
       type: String
-    - contextPath: Malquery.Resources.sha256
-      description: Resource SHA256.
+    - contextPath: Malquery.File.sha256
+      description: File SHA256.
       type: String
     description: Check the status and results of an asynchronous request, such as
       hunt or exact-search.  Supports a single request id at this time.
@@ -299,28 +299,28 @@ script:
       description: The vendor used to calculate the score.
       type: String
     - contextPath: Malquery.File.family
-      description: Resource family.
+      description: File family.
       type: String
     - contextPath: Malquery.File.filesize
-      description: Resource size.
+      description: File size.
       type: String
     - contextPath: Malquery.File.filetype
-      description: Resource file type.
+      description: File file type.
       type: String
     - contextPath: Malquery.File.first_seen
-      description: Date when the resource was first seen.
+      description: Date when the File was first seen.
       type: String
     - contextPath: Malquery.File.label
-      description: Resource label.
+      description: File label.
       type: String
     - contextPath: Malquery.File.md5
-      description: Resource MD5.
+      description: File MD5.
       type: String
     - contextPath: Malquery.File.sha1
-      description: Resource SHA1.
+      description: File SHA1.
       type: String
     - contextPath: Malquery.File.sha256
-      description: Resource SHA256.
+      description: File SHA256.
       type: String
     description: Retrieve indexed files metadata by their hash.
   isfetch: false

@@ -338,6 +338,7 @@ def file_download_command(client: Client, args: dict):
     return fileResult(file_id, content)
 
 
+# Malquery counts the download as the number of sha256 passed to the endpoind and not as a single download.
 def samples_multidownload_command(client: Client, args: dict) -> CommandResults:
     samples = argToList(args.get('samples'))
     body = {"samples": samples}
@@ -374,7 +375,7 @@ def get_ratelimit_command(client: Client, args: dict) -> CommandResults:
     human_readable = tableToMarkdown('Quota Data', meta, headers=headers, removeNull=True)
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='Malquery.Quota_Data',
+        outputs_prefix='Malquery.Quota',
         outputs_key_field='refresh_time',
         outputs=meta,
         raw_response=raw_response)
