@@ -372,7 +372,7 @@ def list_requests_command(client: Client, args: dict):
     context['ServiceDeskPlus(val.ID===obj.ID)'] = {
         'Request': output
     }
-    markdown = tableToMarkdown(f'Requests', t=hr)
+    markdown = tableToMarkdown('Requests', t=hr)
     return markdown, context, result
 
 

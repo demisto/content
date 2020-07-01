@@ -8,6 +8,10 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "ServiceDeskPlus",
+            "playbookID": "Service Desk Plus Test"
+        },
+        {
             "integrations": "Group-IB TDS Polygon",
             "playbookID": "Polygon-Test",
             "timeout": 1000,
