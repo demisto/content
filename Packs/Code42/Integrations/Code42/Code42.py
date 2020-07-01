@@ -136,7 +136,9 @@ def _create_alert_query(event_severity_filter, start_time):
 
 def _get_all_high_risk_employees_from_page(page, risk_tags):
     res = []
-    for employee in page["items"]:
+    # Note: page is a `Py42Response` and has no `get()` method.
+    employees = page["items"]
+    for employee in employees:
         if not risk_tags:
             res.append(employee)
             continue
@@ -178,7 +180,7 @@ class Code42Client(BaseClient):
         return self._sdk
 
     def add_user_to_departing_employee(self, username, departure_date=None, note=None):
-        user_id = self.get_user_id(username)
+        user_id = self._get_user_id(username)
         self._get_sdk().detectionlists.departing_employee.add(
             user_id, departure_date=departure_date
         )
@@ -187,7 +189,7 @@ class Code42Client(BaseClient):
         return user_id
 
     def remove_user_from_departing_employee(self, username):
-        user_id = self.get_user_id(username)
+        user_id = self._get_user_id(username)
         self._get_sdk().detectionlists.departing_employee.remove(user_id)
         return user_id
 
@@ -196,6 +198,7 @@ class Code42Client(BaseClient):
         results = int(results) if results else None
         pages = self._get_sdk().detectionlists.departing_employee.get_all()
         for page in pages:
+            # Note: page is a `Py42Response` and has no `get()` method.
             employees = page["items"]
             for employee in employees:
                 res.append(employee)
@@ -204,26 +207,26 @@ class Code42Client(BaseClient):
         return res
 
     def add_user_to_high_risk_employee(self, username, note=None):
-        user_id = self.get_user_id(username)
+        user_id = self._get_user_id(username)
         self._get_sdk().detectionlists.high_risk_employee.add(user_id)
         if note:
             self._get_sdk().detectionlists.update_user_notes(user_id, note)
         return user_id
 
     def remove_user_from_high_risk_employee(self, username):
-        user_id = self.get_user_id(username)
+        user_id = self._get_user_id(username)
         self._get_sdk().detectionlists.high_risk_employee.remove(user_id)
         return user_id
 
     def add_user_risk_tags(self, username, risk_tags):
         risk_tags = _try_convert_str_list_to_list(risk_tags)
-        user_id = self.get_user_id(username)
+        user_id = self._get_user_id(username)
         self._get_sdk().detectionlists.add_user_risk_tags(user_id, risk_tags)
         return user_id
 
     def remove_user_risk_tags(self, username, risk_tags):
         risk_tags = _try_convert_str_list_to_list(risk_tags)
-        user_id = self.get_user_id(username)
+        user_id = self._get_user_id(username)
         self._get_sdk().detectionlists.remove_user_risk_tags(user_id, risk_tags)
         return user_id
 
@@ -248,7 +251,7 @@ class Code42Client(BaseClient):
     def get_alert_details(self, alert_id):
         res = self._get_sdk().alerts.get_details(alert_id)["alerts"]
         if not res:
-            raise Exception("No alert found with ID {0}.".format(alert_id))
+            raise Code42AlertNotFoundError(alert_id)
         return res[0]
 
     def resolve_alert(self, id):
@@ -259,15 +262,88 @@ class Code42Client(BaseClient):
         res = self._get_sdk().users.get_current()
         return res
 
-    def get_user_id(self, username):
+    def get_user(self, username):
         res = self._get_sdk().users.get_by_username(username)["users"]
         if not res:
-            raise Exception("No user found with username {0}.".format(username))
-        return res[0]["userUid"]
+            raise Code42UserNotFoundError(username)
+        return res[0]
+
+    def create_user(self, org_name, username, email):
+        org_uid = self._get_org_id(org_name)
+        response = self._get_sdk().users.create_user(org_uid, username, email)
+        return json.loads(response.text)
+
+    def block_user(self, username):
+        user_id = self._get_legacy_user_id(username)
+        self._get_sdk().users.block(user_id)
+        return user_id
+
+    def unblock_user(self, username):
+        user_id = self._get_legacy_user_id(username)
+        self._get_sdk().users.unblock(user_id)
+        return user_id
+
+    def deactivate_user(self, username):
+        user_id = self._get_legacy_user_id(username)
+        self._get_sdk().users.deactivate(user_id)
+        return user_id
+
+    def reactivate_user(self, username):
+        user_id = self._get_legacy_user_id(username)
+        self._get_sdk().users.reactivate(user_id)
+        return user_id
+
+    def get_org(self, org_name):
+        org_pages = self._get_sdk().orgs.get_all()
+        for org_page in org_pages:
+            orgs = org_page["orgs"]
+            for org in orgs:
+                if org.get("orgName") == org_name:
+                    return org
+        raise Code42OrgNotFoundError(org_name)
 
     def search_file_events(self, payload):
         res = self._get_sdk().securitydata.search_file_events(payload)
         return res["fileEvents"]
+
+    def _get_user_id(self, username):
+        user_id = self.get_user(username).get("userUid")
+        if user_id:
+            return user_id
+        raise Code42UserNotFoundError(username)
+
+    def _get_legacy_user_id(self, username):
+        user_id = self.get_user(username).get("userId")
+        if user_id:
+            return user_id
+        raise Code42UserNotFoundError(username)
+
+    def _get_org_id(self, org_name):
+        org_uid = self.get_org(org_name).get("orgUid")
+        if org_uid:
+            return org_uid
+        raise Code42OrgNotFoundError(org_name)
+
+
+class Code42AlertNotFoundError(Exception):
+    def __init__(self, alert_id):
+        super(Code42AlertNotFoundError, self).__init__(
+            "No alert found with ID {0}.".format(alert_id)
+        )
+
+
+class Code42UserNotFoundError(Exception):
+    def __init__(self, username):
+        super(Code42UserNotFoundError, self).__init__(
+            "No user found with username {0}.".format(username)
+        )
+
+
+class Code42OrgNotFoundError(Exception):
+    def __init__(self, org_name):
+        super(Code42OrgNotFoundError, self).__init__(
+            "No organization found with name {0}.".format(org_name)
+        )
 
 
 class Code42SearchFilters(object):
@@ -360,7 +436,7 @@ def _create_exposure_filter(exposure_arg):
 
 
 def _create_category_filter(file_type):
-    category_value = CODE42_FILE_TYPE_MAPPER.get(file_type["category"], "UNCATEGORIZED")
+    category_value = CODE42_FILE_TYPE_MAPPER.get(file_type.get("category"), "UNCATEGORIZED")
     return FileCategory.eq(category_value)
 
 
@@ -388,11 +464,11 @@ class ObservationToSecurityQueryMapper(object):
 
     @property
     def _observation_data(self):
-        return self._obs["data"]
+        return self._obs.get("data")
 
     @property
     def _exfiltration_type(self):
-        return self._obs["type"]
+        return self._obs.get("type")
 
     @property
     def _is_endpoint_exfiltration(self):
@@ -417,16 +493,20 @@ class ObservationToSecurityQueryMapper(object):
 
     def _create_search_args(self):
         filters = FileEventQueryFilters()
-        exposure_types = self._observation_data["exposureTypes"]
-        begin_time = _convert_date_arg_to_epoch(self._observation_data["firstActivityAt"])
-        end_time = _convert_date_arg_to_epoch(self._observation_data["lastActivityAt"])
-
+        exposure_types = self._observation_data.get("exposureTypes")
+        first_activity = self._observation_data.get("firstActivityAt")
+        last_activity = self._observation_data.get("lastActivityAt")
         filters.append(self._create_user_filter())
-        filters.append(EventTimestamp.on_or_after(begin_time))
-        filters.append(EventTimestamp.on_or_before(end_time))
+        if first_activity:
+            begin_time = _convert_date_arg_to_epoch(first_activity)
+            if begin_time:
+                filters.append(EventTimestamp.on_or_after(begin_time))
+        if last_activity:
+            end_time = _convert_date_arg_to_epoch(last_activity)
+            if end_time:
+                filters.append(EventTimestamp.on_or_before(end_time))
         filters.extend(self._create_exposure_filters(exposure_types))
         filters.append(self._create_file_category_filters())
-
         return filters
 
     @logger
@@ -455,10 +535,15 @@ class ObservationToSecurityQueryMapper(object):
 
     def _create_file_category_filters(self):
         """Determine if file categorization is significant"""
-        observed_file_categories = self._observation_data["fileCategories"]
-        categories = [c["category"].upper() for c in observed_file_categories if c["isSignificant"]]
-        if categories:
-            return FileCategory.is_in(categories)
+        observed_file_categories = self._observation_data.get("fileCategories")
+        if observed_file_categories:
+            categories = [
+                c.get("category").upper()
+                for c in observed_file_categories
+                if c.get("isSignificant") and c.get("category")
+            ]
+            if categories:
+                return FileCategory.is_in(categories)
 
 
 def map_observation_to_security_query(observation, actor):
@@ -477,8 +562,9 @@ def _convert_date_arg_to_epoch(date_arg):
 def map_to_code42_event_context(obj):
     code42_context = _map_obj_to_context(obj, CODE42_EVENT_CONTEXT_FIELD_MAPPER)
     # FileSharedWith is a special case and needs to be converted to a list
-    if code42_context.get("FileSharedWith"):
-        shared_list = [u["cloudUsername"] for u in code42_context["FileSharedWith"]]
+    shared_with_list = code42_context.get("FileSharedWith")
+    if shared_with_list:
+        shared_list = [u.get("cloudUsername") for u in shared_with_list if u.get("cloudUsername")]
         code42_context["FileSharedWith"] = str(shared_list)
     return code42_context
 
@@ -508,7 +594,7 @@ def create_command_error_message(cmd, ex):
 @logger
 def alert_get_command(client, args):
     code42_securityalert_context = []
-    alert = client.get_alert_details(args["id"])
+    alert = client.get_alert_details(args.get("id"))
     if not alert:
         return CommandResults(
             readable_output="No results found",
@@ -537,7 +623,7 @@ def alert_get_command(client, args):
 @logger
 def alert_resolve_command(client, args):
     code42_securityalert_context = []
-    alert_id = client.resolve_alert(args["id"])
+    alert_id = client.resolve_alert(args.get("id"))
     if not alert_id:
         return CommandResults(
             readable_output="No results found",
@@ -568,7 +654,7 @@ def alert_resolve_command(client, args):
 @logger
 def departingemployee_add_command(client, args):
     departing_date = args.get("departuredate")
-    username = args["username"]
+    username = args.get("username")
     note = args.get("note")
     user_id = client.add_user_to_departing_employee(username, departing_date, note)
     # CaseID included but is deprecated.
@@ -591,7 +677,7 @@ def departingemployee_add_command(client, args):
 
 @logger
 def departingemployee_remove_command(client, args):
-    username = args["username"]
+    username = args.get("username")
     user_id = client.remove_user_from_departing_employee(username)
     # CaseID included but is deprecated.
     de_context = {"CaseID": user_id, "UserID": user_id, "Username": username}
@@ -615,7 +701,7 @@ def departingemployee_get_all_command(client, args):
             outputs_prefix="Code42.DepartingEmployee",
             outputs_key_field="UserID",
             outputs={"Results": []},
-            raw_response={}
+            raw_response={},
         )
 
     employees_context = [
@@ -639,7 +725,7 @@ def departingemployee_get_all_command(client, args):
 
 @logger
 def highriskemployee_add_command(client, args):
-    username = args["username"]
+    username = args.get("username")
     note = args.get("note")
     user_id = client.add_user_to_high_risk_employee(username, note)
     hr_context = {"UserID": user_id, "Username": username}
@@ -655,7 +741,7 @@ def highriskemployee_add_command(client, args):
 
 @logger
 def highriskemployee_remove_command(client, args):
-    username = args["username"]
+    username = args.get("username")
     user_id = client.remove_user_from_high_risk_employee(username)
     hr_context = {"UserID": user_id, "Username": username}
     readable_outputs = tableToMarkdown("Code42 High Risk Employee List User Removed", hr_context)
@@ -679,7 +765,7 @@ def highriskemployee_get_all_command(client, args):
             outputs_prefix="Code42.HighRiskEmployee",
             outputs_key_field="UserID",
             outputs={"Results": []},
-            raw_response={}
+            raw_response={},
         )
     employees_context = [
         {"UserID": e.get("userId"), "Username": e.get("userName"), "Note": e.get("notes")}
@@ -773,11 +859,87 @@ def securitydata_search_command(client, args):
         )
 
 
+def user_create_command(client, args):
+    org_name = args.get("orgname")
+    username = args.get("username")
+    email = args.get("email")
+    res = client.create_user(org_name, username, email)
+    outputs = {
+        "Username": res.get("username"),
+        "UserID": res.get("userUid"),
+        "Email": res.get("email"),
+    }
+    readable_outputs = tableToMarkdown("Code42 User Created", outputs)
+    return CommandResults(
+        outputs_prefix="Code42.User",
+        outputs_key_field="UserID",
+        outputs=outputs,
+        readable_output=readable_outputs,
+        raw_response=res,
+    )
+
+
+def user_block_command(client, args):
+    username = args.get("username")
+    user_id = client.block_user(username)
+    outputs = {"UserID": user_id}
+    readable_outputs = tableToMarkdown("Code42 User Blocked", outputs)
+    return CommandResults(
+        outputs_prefix="Code42.User",
+        outputs_key_field="UserID",
+        outputs=outputs,
+        readable_output=readable_outputs,
+        raw_response=user_id,
+    )
+
+
+def user_unblock_command(client, args):
+    username = args.get("username")
+    user_id = client.unblock_user(username)
+    outputs = {"UserID": user_id}
+    readable_outputs = tableToMarkdown("Code42 User Unblocked", outputs)
+    return CommandResults(
+        outputs_prefix="Code42.User",
+        outputs_key_field="UserID",
+        outputs=outputs,
+        readable_output=readable_outputs,
+        raw_response=user_id,
+    )
+
+
+def user_deactivate_command(client, args):
+    username = args.get("username")
+    user_id = client.deactivate_user(username)
+    outputs = {"UserID": user_id}
+    readable_outputs = tableToMarkdown("Code42 User Deactivated", outputs)
+    return CommandResults(
+        outputs_prefix="Code42.User",
+        outputs_key_field="UserID",
+        outputs=outputs,
+        readable_output=readable_outputs,
+        raw_response=user_id,
+    )
+
+
+def user_reactivate_command(client, args):
+    username = args.get("username")
+    user_id = client.reactivate_user(username)
+    outputs = {"UserID": user_id}
+    readable_outputs = tableToMarkdown("Code42 User Reactivated", outputs)
+    return CommandResults(
+        outputs_prefix="Code42.User",
+        outputs_key_field="UserID",
+        outputs=outputs,
+        readable_output=readable_outputs,
+        raw_response=user_id,
+    )
+
+
 """Fetching"""
 
 
 def _create_incident_from_alert_details(details):
-    return {"name": "Code42 - {}".format(details["name"]), "occurred": details["createdAt"]}
+    return {"name": "Code42 - {}".format(details.get("name")), "occurred": details.get("createdAt")}
 
 
 def _stringify_lists_if_needed(event):
@@ -928,6 +1090,11 @@ def get_command_map():
         "code42-highriskemployee-get-all": highriskemployee_get_all_command,
         "code42-highriskemployee-add-risk-tags": highriskemployee_add_risk_tags_command,
         "code42-highriskemployee-remove-risk-tags": highriskemployee_remove_risk_tags_command,
+        "code42-user-create": user_create_command,
+        "code42-user-block": user_block_command,
+        "code42-user-unblock": user_unblock_command,
+        "code42-user-deactivate": user_deactivate_command,
+        "code42_user-reactivate": user_reactivate_command,
     }
 
 

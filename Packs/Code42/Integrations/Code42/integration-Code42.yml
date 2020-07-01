@@ -1,54 +1,591 @@
+category: Endpoint
 commonfields:
   id: Code42
   version: -1
-name: Code42
-display: Code42 (Partner Contribution)
-category: Endpoint
-description: Use the Code42 integration to identify potential data exfiltration from insider threats while speeding investigation and response by providing fast access to file events and metadata across physical and cloud environments.
 configuration:
-- display: Code42 Console URL for the pod your Code42 instance is running in
+- defaultvalue: console.us.code42.com
+  display: Code42 Console URL for the pod your Code42 instance is running in
   name: console_url
-  defaultvalue: console.us.code42.com
+  required: true
   type: 0
-  required: true
-- display: "Username"
+- display: Username
   name: credentials
-  defaultvalue: ""
-  type: 9
   required: true
+  type: 9
 - display: Fetch incidents
   name: isFetch
-  type: 8
   required: false
+  type: 8
 - display: Incident type
   name: incidentType
-  type: 13
   required: false
+  type: 13
 - display: Alert severities to fetch when fetching incidents
   name: alert_severity
-  defaultvalue: ""
-  type: 16
-  required: false
   options:
   - High
   - Medium
   - Low
-- display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
+  required: false
+  type: 16
+- defaultvalue: 24 hours
+  display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
   name: fetch_time
-  defaultvalue: 24 hours
-  type: 0
   required: false
-- display: Alerts to fetch per run; note that increasing this value may result in slow performance if too many results are returned at once
+  type: 0
+- defaultvalue: '10'
+  display: Alerts to fetch per run; note that increasing this value may result in slow performance if too many results are returned at once
   name: fetch_limit
-  defaultvalue: "10"
+  required: false
   type: 0
-  required: false
-- display: Include the list of files in returned incidents.
+- defaultvalue: 'false'
+  display: Include the list of files in returned incidents.
   name: include_files
-  defaultvalue: "false"
-  type: 8
   required: false
+  type: 8
+description: Use the Code42 integration to identify potential data exfiltration from insider threats while speeding investigation and response by providing fast access to file events and metadata across physical and cloud environments.
+display: Code42 (Partner Contribution)
+name: Code42
 script:
+  commands:
+  - arguments:
+    - default: false
+      description: JSON query payload using Code42 query syntax.
+      isArray: false
+      name: json
+      required: false
+      secret: false
+    - default: false
+      description: MD5 or SHA256 hash of the file to search for.
+      isArray: false
+      name: hash
+      required: false
+      secret: false
+    - default: false
+      description: Username to search for.
+      isArray: false
+      name: username
+      required: false
+      secret: false
+    - default: false
+      description: Hostname to search for.
+      isArray: false
+      name: hostname
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Exposure types to search for. Can be "RemovableMedia", "ApplicationRead", "CloudStorage", "IsPublic", "SharedViaLink", or "SharedViaDomain".
+      isArray: true
+      name: exposure
+      predefined:
+      - RemovableMedia
+      - ApplicationRead
+      - CloudStorage
+      - IsPublic
+      - SharedViaLink
+      - SharedViaDomain
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: The number of results to return. The default is 100.
+      isArray: false
+      name: results
+      required: false
+      secret: false
+    deprecated: false
+    description: Searches for a file in Security Data by JSON query, hash, username, device hostname, exfiltration type, or a combination of parameters. At least one argument must be passed in the command. If a JSON argument is passed, it will be used to the exclusion of other parameters, otherwise parameters will be combined with an AND clause.
+    execution: false
+    name: code42-securitydata-search
+    outputs:
+    - contextPath: Code42.SecurityData.EventTimestamp
+      description: Timestamp for the event.
+      type: date
+    - contextPath: Code42.SecurityData.FileCreated
+      description: File creation date.
+      type: date
+    - contextPath: Code42.SecurityData.EndpointID
+      description: Code42 device ID.
+      type: string
+    - contextPath: Code42.SecurityData.DeviceUsername
+      description: The username that the device is associated with in Code42.
+      type: string
+    - contextPath: Code42.SecurityData.EmailFrom
+      description: The sender email address for email exfiltration events.
+      type: string
+    - contextPath: Code42.SecurityData.EmailTo
+      description: The recipient email address for email exfiltration events.
+      type: string
+    - contextPath: Code42.SecurityData.EmailSubject
+      description: The email subject line for email exfiltration events.
+      type: string
+    - contextPath: Code42.SecurityData.EventID
+      description: The Security Data event ID.
+      type: string
+    - contextPath: Code42.SecurityData.EventType
+      description: The type of Security Data event.
+      type: string
+    - contextPath: Code42.SecurityData.FileCategory
+      description: The file type, as determined by Code42 engine.
+      type: string
+    - contextPath: Code42.SecurityData.FileOwner
+      description: The owner of the file.
+      type: string
+    - contextPath: Code42.SecurityData.FileName
+      description: The file name.
+      type: string
+    - contextPath: Code42.SecurityData.FilePath
+      description: The path to file.
+      type: string
+    - contextPath: Code42.SecurityData.FileSize
+      description: The size of the file (in bytes).
+      type: number
+    - contextPath: Code42.SecurityData.FileModified
+      description: The date the file was last modified.
+      type: date
+    - contextPath: Code42.SecurityData.FileMD5
+      description: MD5 hash of the file.
+      type: string
+    - contextPath: Code42.SecurityData.FileHostname
+      description: Hostname where the file event was captured.
+      type: string
+    - contextPath: Code42.SecurityData.DevicePrivateIPAddress
+      description: Private IP addresses of the device where the event was captured.
+      type: string
+    - contextPath: Code42.SecurityData.DevicePublicIPAddress
+      description: Public IP address of the device where the event was captured.
+      type: string
+    - contextPath: Code42.SecurityData.RemovableMediaType
+      description: Type of removable media.
+      type: string
+    - contextPath: Code42.SecurityData.RemovableMediaCapacity
+      description: Total capacity of removable media (in bytes).
+      type: number
+    - contextPath: Code42.SecurityData.RemovableMediaMediaName
+      description: The full name of the removable media.
+      type: string
+    - contextPath: Code42.SecurityData.RemovableMediaName
+      description: The name of the removable media.
+      type: string
+    - contextPath: Code42.SecurityData.RemovableMediaSerialNumber
+      description: The serial number for the removable medial device.
+      type: string
+    - contextPath: Code42.SecurityData.RemovableMediaVendor
+      description: The vendor name for removable device.
+      type: string
+    - contextPath: Code42.SecurityData.FileSHA256
+      description: The SHA256 hash of the file.
+      type: string
+    - contextPath: Code42.SecurityData.FileShared
+      description: Whether the file is shared using a cloud file service.
+      type: boolean
+    - contextPath: Code42.SecurityData.FileSharedWith
+      description: Accounts that the file is shared with on a cloud file service.
+      type: string
+    - contextPath: Code42.SecurityData.Source
+      description: The source of the file event. Can be "Cloud" or "Endpoint".
+      type: string
+    - contextPath: Code42.SecurityData.ApplicationTabURL
+      description: The URL associated with the application read event.
+      type: string
+    - contextPath: Code42.SecurityData.ProcessName
+      description: The process name for the application read event.
+      type: string
+    - contextPath: Code42.SecurityData.ProcessOwner
+      description: The process owner for the application read event.
+      type: string
+    - contextPath: Code42.SecurityData.WindowTitle
+      description: The process name for the application read event.
+      type: string
+    - contextPath: Code42.SecurityData.FileURL
+      description: The URL of the file on a cloud file service.
+      type: string
+    - contextPath: Code42.SecurityData.Exposure
+      description: The event exposure type.
+      type: string
+    - contextPath: Code42.SecurityData.SharingTypeAdded
+      description: The type of sharing added to the file.
+      type: string
+    - contextPath: File.Name
+      description: The file name.
+      type: string
+    - contextPath: File.Path
+      description: The file path.
+      type: string
+    - contextPath: File.Size
+      description: The file size (in bytes).
+      type: number
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: string
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: string
+    - contextPath: File.Hostname
+      description: The hostname where the file event was captured.
+      type: string
+  - arguments:
+    - default: false
+      description: The alert ID to retrieve. Alert IDs are associated with alerts that are fetched via fetch-incidents.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve alert details by alert ID
+    execution: false
+    name: code42-alert-get
+    outputs:
+    - contextPath: Code42.SecurityAlert.Username
+      description: The username associated with the alert.
+      type: string
+    - contextPath: Code42.SecurityAlert.Occurred
+      description: The timestamp when the alert occurred.
+      type: date
+    - contextPath: Code42.SecurityAlert.Description
+      description: The description of the alert.
+      type: string
+    - contextPath: Code42.SecurityAlert.ID
+      description: The alert ID.
+      type: string
+    - contextPath: Code42.SecurityAlert.Name
+      description: The alert rule name that generated the alert.
+      type: string
+    - contextPath: Code42.SecurityAlert.State
+      description: The alert state.
+      type: string
+    - contextPath: Code42.SecurityAlert.Type
+      description: The alert type.
+      type: string
+    - contextPath: Code42.SecurityAlert.Severity
+      description: The severity of the alert.
+      type: string
+  - arguments:
+    - default: false
+      description: The alert ID to resolve. Alert IDs are associated with alerts that are fetched via fetch-incidents.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Resolves a Code42 Security alert.
+    execution: false
+    name: code42-alert-resolve
+    outputs:
+    - contextPath: Code42.SecurityAlert.ID
+      description: The alert ID of the resolved alert.
+      type: string
+  - arguments:
+    - default: false
+      description: The username to add to the Departing Employee List.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    - default: false
+      description: The departure date for the employee, in the format YYYY-MM-DD.
+      isArray: false
+      name: departuredate
+      required: false
+      secret: false
+    - default: false
+      description: Note to attach to the Departing Employee.
+      isArray: false
+      name: note
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds a user to the Departing Employee List.
+    execution: false
+    name: code42-departingemployee-add
+    outputs:
+    - contextPath: Code42.DepartingEmployee.CaseID
+      description: Internal Code42 Case ID for the Departing Employee. Deprecated. Use Code42.DepartingEmployee.UserID.
+      type: string
+    - contextPath: Code42.DepartingEmployee.UserID
+      description: Internal Code42 User ID for the Departing Employee.
+      type: string
+    - contextPath: Code42.DepartingEmployee.Username
+      description: The username of the Departing Employee.
+      type: string
+    - contextPath: Code42.DepartingEmployee.Note
+      description: Note associated with the Departing Employee.
+      type: string
+    - contextPath: Code42.DepartingEmployee.DepartureDate
+      description: The departure date for the Departing Employee.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The username to remove from the Departing Employee List.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes a user from the Departing Employee List.
+    execution: false
+    name: code42-departingemployee-remove
+    outputs:
+    - contextPath: Code42.DepartingEmployee.CaseID
+      description: Internal Code42 Case ID for the Departing Employee. Deprecated. Use Code42.DepartingEmployee.UserID.
+      type: string
+    - contextPath: Code42.DepartingEmployee.UserID
+      description: Internal Code42 User ID for the Departing Employee.
+      type: string
+    - contextPath: Code42.DepartingEmployee.Username
+      description: The username of the Departing Employee.
+      type: string
+  - arguments:
+    - default: false
+      description: The number of items to return.
+      isArray: false
+      name: results
+      required: false
+      secret: false
+    deprecated: false
+    description: Get all employees on the Departing Employee List.
+    execution: false
+    name: code42-departingemployee-get-all
+    outputs:
+    - contextPath: Code42.DepartingEmployee.UserID
+      description: Internal Code42 User ID for the Departing Employee.
+      type: string
+    - contextPath: Code42.DepartingEmployee.Username
+      description: The username of the Departing Employee.
+      type: string
+    - contextPath: Code42.DepartingEmployee.Note
+      description: Note associated with the Departing Employee.
+      type: string
+    - contextPath: Code42.DepartingEmployee.DepartureDate
+      description: The departure date for the Departing Employee.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The username to add to the High Risk Employee List.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    - default: false
+      description: Note to attach to the High Risk Employee.
+      isArray: false
+      name: note
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds a user from the High Risk Employee List.
+    execution: false
+    name: code42-highriskemployee-add
+    outputs:
+    - contextPath: Code42.HighRiskEmployee.UserID
+      description: Internal Code42 User ID for the High Risk Employee.
+      type: string
+    - contextPath: Code42.HighRiskEmployee.Username
+      description: The username of the High Risk Employee.
+      type: string
+    - contextPath: Code42.HighRiskEmployee.Note
+      description: Note associated with the High Risk Employee.
+      type: string
+  - arguments:
+    - default: false
+      description: The username to remove from the High Risk Employee List.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes a user from the High Risk Employee List.
+    execution: false
+    name: code42-highriskemployee-remove
+    outputs:
+    - contextPath: Code42.HighRiskEmployee.UserID
+      description: Internal Code42 User ID for the High Risk Employee.
+      type: Unknown
+    - contextPath: Code42.HighRiskEmployee.Username
+      description: The username of the High Risk Employee.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: To filter results by employees who have these risk tags. Space delimited.
+      isArray: false
+      name: risktags
+      required: false
+      secret: false
+    - default: false
+      description: The number of items to return.
+      isArray: false
+      name: results
+      required: false
+      secret: false
+    deprecated: false
+    description: Get all employees on the High Risk Employee List.
+    execution: false
+    name: code42-highriskemployee-get-all
+    outputs:
+    - contextPath: Code42.HighRiskEmployee.UserID
+      description: Internal Code42 User ID for the High Risk Employee.
+      type: string
+    - contextPath: Code42.HighRiskEmployee.Username
+      description: The username of the High Risk Employee.
+      type: string
+    - contextPath: Code42.HighRiskEmployee.Note
+      description: Note associated with the High Risk Employee.
+      type: string
+  - arguments:
+    - default: false
+      description: The username of the High Risk Employee.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    - default: false
+      description: Space-delimited risk tags to associate with the High Risk Employee.
+      isArray: false
+      name: risktags
+      required: true
+      secret: false
+    deprecated: false
+    description: Associates risk tags with the employee with the given username.
+    execution: false
+    name: code42-highriskemployee-add-risk-tags
+    outputs:
+    - contextPath: Code42.HighRiskEmployee.UserID
+      description: Internal Code42 User ID for the Departing Employee.
+      type: string
+    - contextPath: Code42.HighRiskEmployee.Username
+      description: The username of the High Risk Employee.
+      type: string
+    - contextPath: Code42.HighRiskEmployee.RiskTags
+      description: Risk tags to associate with the High Risk Employee.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The username of the High Risk Employee.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    - default: false
+      description: Space-delimited risk tags to disassociate from the High Risk Employee.
+      isArray: false
+      name: risktags
+      required: true
+      secret: false
+    deprecated: false
+    description: Disassociates risk tags from the user with the given username.
+    execution: false
+    name: code42-highriskemployee-remove-risk-tags
+    outputs:
+    - contextPath: Code42.HighRiskEmployee.UserID
+      description: Internal Code42 User ID for the Departing Employee.
+      type: string
+    - contextPath: Code42.HighRiskEmployee.Username
+      description: The username of the High Risk Employee.
+      type: string
+    - contextPath: Code42.HighRiskEmployee.RiskTags
+      description: Risk tags to disassociate from the High Risk Employee.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The name of the Code42 organization from which to add the user.
+      isArray: false
+      name: orgname
+      required: true
+      secret: false
+    - default: false
+      description: The username to give to the user.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    - default: false
+      defaultValue: The email to give to the user.
+      description: The email of the employee to create.
+      isArray: false
+      name: email
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a Code42 user.
+    execution: false
+    name: code42-user-create
+    outputs:
+    - contextPath: Code42.User.Username
+      description: A username for a Code42 user.
+      type: String
+    - contextPath: Code42.User.Email
+      description: An email for a Code42 user.
+      type: String
+    - contextPath: Code42.User.UserID
+      description: An ID for a Code42 user.
+      type: String
+  - arguments:
+    - default: false
+      description: The username of the user to block.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    deprecated: false
+    description: Blocks a user in Code42.  A blocked user is not allowed to log in or restore files. Backups will continue if the user is still active.
+    execution: false
+    name: code42-user-block
+    outputs:
+    - contextPath: Code42.User.UserID
+      description: An ID for a Code42 user.
+      type: String
+  - arguments:
+    - default: false
+      description: The username of the user to deactivate.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    deprecated: false
+    description: Deactivate a user in Code42; signing them out of their devices. Backups discontinue for a deactivated user, and their archives go to cold storage.
+    execution: false
+    name: code42-user-deactivate
+    outputs:
+    - contextPath: Code42.User.UserID
+      description: The ID of a Code42 User.
+      type: String
+  - arguments:
+    - default: false
+      description: The username of the user to unblock.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes a block, if one exists, on the user with the given user ID. Unblocked users are allowed to log in and restore.
+    execution: false
+    name: code42-user-unblock
+    outputs:
+    - contextPath: Code42.User.UserID
+      description: An ID for a Code42 user.
+      type: String
+  - arguments:
+    - default: false
+      description: The username of the user to reactivate.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    deprecated: false
+    description: Reactivates the user with the given username.
+    execution: false
+    name: code42-user-reactivate
+    outputs:
+    - contextPath: Code42.User.UserID
+      description: The ID of a Code42 User.
+      type: String
+  dockerimage: demisto/py42:1.0.0.9323
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
   script: >2
 
 
@@ -207,7 +744,9 @@ script:
 
     def _get_all_high_risk_employees_from_page(page, risk_tags):
         res = []
-        for employee in page["items"]:
+        # Note: page is a `Py42Response` and has no `get()` method.
+        employees = page["items"]
+        for employee in employees:
             if not risk_tags:
                 res.append(employee)
                 continue
@@ -249,7 +788,7 @@ script:
             return self._sdk
 
         def add_user_to_departing_employee(self, username, departure_date=None, note=None):
-            user_id = self.get_user_id(username)
+            user_id = self._get_user_id(username)
             self._get_sdk().detectionlists.departing_employee.add(
                 user_id, departure_date=departure_date
             )
@@ -258,7 +797,7 @@ script:
             return user_id
 
         def remove_user_from_departing_employee(self, username):
-            user_id = self.get_user_id(username)
+            user_id = self._get_user_id(username)
             self._get_sdk().detectionlists.departing_employee.remove(user_id)
             return user_id
 
@@ -267,6 +806,7 @@ script:
             results = int(results) if results else None
             pages = self._get_sdk().detectionlists.departing_employee.get_all()
             for page in pages:
+                # Note: page is a `Py42Response` and has no `get()` method.
                 employees = page["items"]
                 for employee in employees:
                     res.append(employee)
@@ -275,26 +815,26 @@ script:
             return res
 
         def add_user_to_high_risk_employee(self, username, note=None):
-            user_id = self.get_user_id(username)
+            user_id = self._get_user_id(username)
             self._get_sdk().detectionlists.high_risk_employee.add(user_id)
             if note:
                 self._get_sdk().detectionlists.update_user_notes(user_id, note)
             return user_id
 
         def remove_user_from_high_risk_employee(self, username):
-            user_id = self.get_user_id(username)
+            user_id = self._get_user_id(username)
             self._get_sdk().detectionlists.high_risk_employee.remove(user_id)
             return user_id
 
         def add_user_risk_tags(self, username, risk_tags):
             risk_tags = _try_convert_str_list_to_list(risk_tags)
-            user_id = self.get_user_id(username)
+            user_id = self._get_user_id(username)
             self._get_sdk().detectionlists.add_user_risk_tags(user_id, risk_tags)
             return user_id
 
         def remove_user_risk_tags(self, username, risk_tags):
             risk_tags = _try_convert_str_list_to_list(risk_tags)
-            user_id = self.get_user_id(username)
+            user_id = self._get_user_id(username)
             self._get_sdk().detectionlists.remove_user_risk_tags(user_id, risk_tags)
             return user_id
 
@@ -319,7 +859,7 @@ script:
         def get_alert_details(self, alert_id):
             res = self._get_sdk().alerts.get_details(alert_id)["alerts"]
             if not res:
-                raise Exception("No alert found with ID {0}.".format(alert_id))
+                raise Code42AlertNotFoundError(alert_id)
             return res[0]
 
         def resolve_alert(self, id):
@@ -330,15 +870,88 @@ script:
             res = self._get_sdk().users.get_current()
             return res
 
-        def get_user_id(self, username):
+        def get_user(self, username):
             res = self._get_sdk().users.get_by_username(username)["users"]
             if not res:
-                raise Exception("No user found with username {0}.".format(username))
-            return res[0]["userUid"]
+                raise Code42UserNotFoundError(username)
+            return res[0]
+
+        def create_user(self, org_name, username, email):
+            org_uid = self._get_org_id(org_name)
+            response = self._get_sdk().users.create_user(org_uid, username, email)
+            return json.loads(response.text)
+
+        def block_user(self, username):
+            user_id = self._get_legacy_user_id(username)
+            self._get_sdk().users.block(user_id)
+            return user_id
+
+        def unblock_user(self, username):
+            user_id = self._get_legacy_user_id(username)
+            self._get_sdk().users.unblock(user_id)
+            return user_id
+
+        def deactivate_user(self, username):
+            user_id = self._get_legacy_user_id(username)
+            self._get_sdk().users.deactivate(user_id)
+            return user_id
+
+        def reactivate_user(self, username):
+            user_id = self._get_legacy_user_id(username)
+            self._get_sdk().users.reactivate(user_id)
+            return user_id
+
+        def get_org(self, org_name):
+            org_pages = self._get_sdk().orgs.get_all()
+            for org_page in org_pages:
+                orgs = org_page["orgs"]
+                for org in orgs:
+                    if org.get("orgName") == org_name:
+                        return org
+            raise Code42OrgNotFoundError(org_name)
 
         def search_file_events(self, payload):
             res = self._get_sdk().securitydata.search_file_events(payload)
             return res["fileEvents"]
+
+        def _get_user_id(self, username):
+            user_id = self.get_user(username).get("userUid")
+            if user_id:
+                return user_id
+            raise Code42UserNotFoundError(username)
+
+        def _get_legacy_user_id(self, username):
+            user_id = self.get_user(username).get("userId")
+            if user_id:
+                return user_id
+            raise Code42UserNotFoundError(username)
+
+        def _get_org_id(self, org_name):
+            org_uid = self.get_org(org_name).get("orgUid")
+            if org_uid:
+                return org_uid
+            raise Code42OrgNotFoundError(org_name)
+
+
+    class Code42AlertNotFoundError(Exception):
+        def __init__(self, alert_id):
+            super(Code42AlertNotFoundError, self).__init__(
+                "No alert found with ID {0}.".format(alert_id)
+            )
+
+
+    class Code42UserNotFoundError(Exception):
+        def __init__(self, username):
+            super(Code42UserNotFoundError, self).__init__(
+                "No user found with username {0}.".format(username)
+            )
+
+
+    class Code42OrgNotFoundError(Exception):
+        def __init__(self, org_name):
+            super(Code42OrgNotFoundError, self).__init__(
+                "No organization found with name {0}.".format(org_name)
+            )
 
 
     class Code42SearchFilters(object):
@@ -432,7 +1045,7 @@ script:
 
 
     def _create_category_filter(file_type):
-        category_value = CODE42_FILE_TYPE_MAPPER.get(file_type["category"], "UNCATEGORIZED")
+        category_value = CODE42_FILE_TYPE_MAPPER.get(file_type.get("category"), "UNCATEGORIZED")
         return FileCategory.eq(category_value)
 
 
@@ -460,11 +1073,11 @@ script:
 
         @property
         def _observation_data(self):
-            return self._obs["data"]
+            return self._obs.get("data")
 
         @property
         def _exfiltration_type(self):
-            return self._obs["type"]
+            return self._obs.get("type")
 
         @property
         def _is_endpoint_exfiltration(self):
@@ -489,16 +1102,20 @@ script:
 
         def _create_search_args(self):
             filters = FileEventQueryFilters()
-            exposure_types = self._observation_data["exposureTypes"]
-            begin_time = _convert_date_arg_to_epoch(self._observation_data["firstActivityAt"])
-            end_time = _convert_date_arg_to_epoch(self._observation_data["lastActivityAt"])
-
+            exposure_types = self._observation_data.get("exposureTypes")
+            first_activity = self._observation_data.get("firstActivityAt")
+            last_activity = self._observation_data.get("lastActivityAt")
             filters.append(self._create_user_filter())
-            filters.append(EventTimestamp.on_or_after(begin_time))
-            filters.append(EventTimestamp.on_or_before(end_time))
+            if first_activity:
+                begin_time = _convert_date_arg_to_epoch(first_activity)
+                if begin_time:
+                    filters.append(EventTimestamp.on_or_after(begin_time))
+            if last_activity:
+                end_time = _convert_date_arg_to_epoch(last_activity)
+                if end_time:
+                    filters.append(EventTimestamp.on_or_before(end_time))
             filters.extend(self._create_exposure_filters(exposure_types))
             filters.append(self._create_file_category_filters())
-
             return filters
 
         @logger
@@ -527,10 +1144,15 @@ script:
 
         def _create_file_category_filters(self):
             """Determine if file categorization is significant"""
-            observed_file_categories = self._observation_data["fileCategories"]
-            categories = [c["category"].upper() for c in observed_file_categories if c["isSignificant"]]
-            if categories:
-                return FileCategory.is_in(categories)
+            observed_file_categories = self._observation_data.get("fileCategories")
+            if observed_file_categories:
+                categories = [
+                    c.get("category").upper()
+                    for c in observed_file_categories
+                    if c.get("isSignificant") and c.get("category")
+                ]
+                if categories:
+                    return FileCategory.is_in(categories)
 
 
     def map_observation_to_security_query(observation, actor):
@@ -550,8 +1172,9 @@ script:
     def map_to_code42_event_context(obj):
         code42_context = _map_obj_to_context(obj, CODE42_EVENT_CONTEXT_FIELD_MAPPER)
         # FileSharedWith is a special case and needs to be converted to a list
-        if code42_context.get("FileSharedWith"):
-            shared_list = [u["cloudUsername"] for u in code42_context["FileSharedWith"]]
+        shared_with_list = code42_context.get("FileSharedWith")
+        if shared_with_list:
+            shared_list = [u.get("cloudUsername") for u in shared_with_list if u.get("cloudUsername")]
             code42_context["FileSharedWith"] = str(shared_list)
         return code42_context
 
@@ -586,7 +1209,7 @@ script:
 
     def alert_get_command(client, args):
         code42_securityalert_context = []
-        alert = client.get_alert_details(args["id"])
+        alert = client.get_alert_details(args.get("id"))
         if not alert:
             return CommandResults(
                 readable_output="No results found",
@@ -616,7 +1239,7 @@ script:
 
     def alert_resolve_command(client, args):
         code42_securityalert_context = []
-        alert_id = client.resolve_alert(args["id"])
+        alert_id = client.resolve_alert(args.get("id"))
         if not alert_id:
             return CommandResults(
                 readable_output="No results found",
@@ -648,7 +1271,7 @@ script:
 
     def departingemployee_add_command(client, args):
         departing_date = args.get("departuredate")
-        username = args["username"]
+        username = args.get("username")
         note = args.get("note")
         user_id = client.add_user_to_departing_employee(username, departing_date, note)
         # CaseID included but is deprecated.
@@ -672,7 +1295,7 @@ script:
     @logger
 
     def departingemployee_remove_command(client, args):
-        username = args["username"]
+        username = args.get("username")
         user_id = client.remove_user_from_departing_employee(username)
         # CaseID included but is deprecated.
         de_context = {"CaseID": user_id, "UserID": user_id, "Username": username}
@@ -697,7 +1320,7 @@ script:
                 outputs_prefix="Code42.DepartingEmployee",
                 outputs_key_field="UserID",
                 outputs={"Results": []},
-                raw_response={}
+                raw_response={},
             )
 
         employees_context = [
@@ -722,7 +1345,7 @@ script:
     @logger
 
     def highriskemployee_add_command(client, args):
-        username = args["username"]
+        username = args.get("username")
         note = args.get("note")
         user_id = client.add_user_to_high_risk_employee(username, note)
         hr_context = {"UserID": user_id, "Username": username}
@@ -739,7 +1362,7 @@ script:
     @logger
 
     def highriskemployee_remove_command(client, args):
-        username = args["username"]
+        username = args.get("username")
         user_id = client.remove_user_from_high_risk_employee(username)
         hr_context = {"UserID": user_id, "Username": username}
         readable_outputs = tableToMarkdown("Code42 High Risk Employee List User Removed", hr_context)
@@ -764,7 +1387,7 @@ script:
                 outputs_prefix="Code42.HighRiskEmployee",
                 outputs_key_field="UserID",
                 outputs={"Results": []},
-                raw_response={}
+                raw_response={},
             )
         employees_context = [
             {"UserID": e.get("userId"), "Username": e.get("userName"), "Note": e.get("notes")}
@@ -861,12 +1484,88 @@ script:
             )
 
 
+    def user_create_command(client, args):
+        org_name = args.get("orgname")
+        username = args.get("username")
+        email = args.get("email")
+        res = client.create_user(org_name, username, email)
+        outputs = {
+            "Username": res.get("username"),
+            "UserID": res.get("userUid"),
+            "Email": res.get("email"),
+        }
+        readable_outputs = tableToMarkdown("Code42 User Created", outputs)
+        return CommandResults(
+            outputs_prefix="Code42.User",
+            outputs_key_field="UserID",
+            outputs=outputs,
+            readable_output=readable_outputs,
+            raw_response=res,
+        )
+
+
+    def user_block_command(client, args):
+        username = args.get("username")
+        user_id = client.block_user(username)
+        outputs = {"UserID": user_id}
+        readable_outputs = tableToMarkdown("Code42 User Blocked", outputs)
+        return CommandResults(
+            outputs_prefix="Code42.User",
+            outputs_key_field="UserID",
+            outputs=outputs,
+            readable_output=readable_outputs,
+            raw_response=user_id,
+        )
+
+
+    def user_unblock_command(client, args):
+        username = args.get("username")
+        user_id = client.unblock_user(username)
+        outputs = {"UserID": user_id}
+        readable_outputs = tableToMarkdown("Code42 User Unblocked", outputs)
+        return CommandResults(
+            outputs_prefix="Code42.User",
+            outputs_key_field="UserID",
+            outputs=outputs,
+            readable_output=readable_outputs,
+            raw_response=user_id,
+        )
+
+
+    def user_deactivate_command(client, args):
+        username = args.get("username")
+        user_id = client.deactivate_user(username)
+        outputs = {"UserID": user_id}
+        readable_outputs = tableToMarkdown("Code42 User Deactivated", outputs)
+        return CommandResults(
+            outputs_prefix="Code42.User",
+            outputs_key_field="UserID",
+            outputs=outputs,
+            readable_output=readable_outputs,
+            raw_response=user_id,
+        )
+
+
+    def user_reactivate_command(client, args):
+        username = args.get("username")
+        user_id = client.reactivate_user(username)
+        outputs = {"UserID": user_id}
+        readable_outputs = tableToMarkdown("Code42 User Reactivated", outputs)
+        return CommandResults(
+            outputs_prefix="Code42.User",
+            outputs_key_field="UserID",
+            outputs=outputs,
+            readable_output=readable_outputs,
+            raw_response=user_id,
+        )
+
+
     """Fetching"""
 
 
 
     def _create_incident_from_alert_details(details):
-        return {"name": "Code42 - {}".format(details["name"]), "occurred": details["createdAt"]}
+        return {"name": "Code42 - {}".format(details.get("name")), "occurred": details.get("createdAt")}
 
 
     def _stringify_lists_if_needed(event):
@@ -1018,6 +1717,11 @@ script:
             "code42-highriskemployee-get-all": highriskemployee_get_all_command,
             "code42-highriskemployee-add-risk-tags": highriskemployee_add_risk_tags_command,
             "code42-highriskemployee-remove-risk-tags": highriskemployee_remove_risk_tags_command,
+            "code42-user-create": user_create_command,
+            "code42-user-block": user_block_command,
+            "code42-user-unblock": user_unblock_command,
+            "code42-user-deactivate": user_deactivate_command,
+            "code42_user-reactivate": user_reactivate_command,
         }
 
 
@@ -1087,347 +1791,8 @@ script:
 
     if __name__ in ("__main__", "__builtin__", "builtins"):
         main()
-  type: python
-  commands:
-  - name: code42-securitydata-search
-    arguments:
-    - name: json
-      description: JSON query payload using Code42 query syntax.
-    - name: hash
-      description: MD5 or SHA256 hash of the file to search for.
-    - name: username
-      description: Username to search for.
-    - name: hostname
-      description: Hostname to search for.
-    - name: exposure
-      auto: PREDEFINED
-      predefined:
-      - RemovableMedia
-      - ApplicationRead
-      - CloudStorage
-      - IsPublic
-      - SharedViaLink
-      - SharedViaDomain
-      description: Exposure types to search for. Can be "RemovableMedia", "ApplicationRead", "CloudStorage", "IsPublic", "SharedViaLink", or "SharedViaDomain".
-      isArray: true
-    - name: results
-      description: The number of results to return. The default is 100.
-      defaultValue: "100"
-    outputs:
-    - contextPath: Code42.SecurityData.EventTimestamp
-      description: Timestamp for the event.
-      type: date
-    - contextPath: Code42.SecurityData.FileCreated
-      description: File creation date.
-      type: date
-    - contextPath: Code42.SecurityData.EndpointID
-      description: Code42 device ID.
-      type: string
-    - contextPath: Code42.SecurityData.DeviceUsername
-      description: The username that the device is associated with in Code42.
-      type: string
-    - contextPath: Code42.SecurityData.EmailFrom
-      description: The sender email address for email exfiltration events.
-      type: string
-    - contextPath: Code42.SecurityData.EmailTo
-      description: The recipient email address for email exfiltration events.
-      type: string
-    - contextPath: Code42.SecurityData.EmailSubject
-      description: The email subject line for email exfiltration events.
-      type: string
-    - contextPath: Code42.SecurityData.EventID
-      description: The Security Data event ID.
-      type: string
-    - contextPath: Code42.SecurityData.EventType
-      description: The type of Security Data event.
-      type: string
-    - contextPath: Code42.SecurityData.FileCategory
-      description: The file type, as determined by Code42 engine.
-      type: string
-    - contextPath: Code42.SecurityData.FileOwner
-      description: The owner of the file.
-      type: string
-    - contextPath: Code42.SecurityData.FileName
-      description: The file name.
-      type: string
-    - contextPath: Code42.SecurityData.FilePath
-      description: The path to file.
-      type: string
-    - contextPath: Code42.SecurityData.FileSize
-      description: The size of the file (in bytes).
-      type: number
-    - contextPath: Code42.SecurityData.FileModified
-      description: The date the file was last modified.
-      type: date
-    - contextPath: Code42.SecurityData.FileMD5
-      description: MD5 hash of the file.
-      type: string
-    - contextPath: Code42.SecurityData.FileHostname
-      description: Hostname where the file event was captured.
-      type: string
-    - contextPath: Code42.SecurityData.DevicePrivateIPAddress
-      description: Private IP addresses of the device where the event was captured.
-      type: string
-    - contextPath: Code42.SecurityData.DevicePublicIPAddress
-      description: Public IP address of the device where the event was captured.
-      type: string
-    - contextPath: Code42.SecurityData.RemovableMediaType
-      description: Type of removable media.
-      type: string
-    - contextPath: Code42.SecurityData.RemovableMediaCapacity
-      description: Total capacity of removable media (in bytes).
-      type: number
-    - contextPath: Code42.SecurityData.RemovableMediaMediaName
-      description: The full name of the removable media.
-      type: string
-    - contextPath: Code42.SecurityData.RemovableMediaName
-      description: The name of the removable media.
-      type: string
-    - contextPath: Code42.SecurityData.RemovableMediaSerialNumber
-      description: The serial number for the removable medial device.
-      type: string
-    - contextPath: Code42.SecurityData.RemovableMediaVendor
-      description: The vendor name for removable device.
-      type: string
-    - contextPath: Code42.SecurityData.FileSHA256
-      description: The SHA256 hash of the file.
-      type: string
-    - contextPath: Code42.SecurityData.FileShared
-      description: Whether the file is shared using a cloud file service.
-      type: boolean
-    - contextPath: Code42.SecurityData.FileSharedWith
-      description: Accounts that the file is shared with on a cloud file service.
-      type: string
-    - contextPath: Code42.SecurityData.Source
-      description: The source of the file event. Can be "Cloud" or "Endpoint".
-      type: string
-    - contextPath: Code42.SecurityData.ApplicationTabURL
-      description: The URL associated with the application read event.
-      type: string
-    - contextPath: Code42.SecurityData.ProcessName
-      description: The process name for the application read event.
-      type: string
-    - contextPath: Code42.SecurityData.ProcessOwner
-      description: The process owner for the application read event.
-      type: string
-    - contextPath: Code42.SecurityData.WindowTitle
-      description: The process name for the application read event.
-      type: string
-    - contextPath: Code42.SecurityData.FileURL
-      description: The URL of the file on a cloud file service.
-      type: string
-    - contextPath: Code42.SecurityData.Exposure
-      description: The event exposure type.
-      type: string
-    - contextPath: Code42.SecurityData.SharingTypeAdded
-      description: The type of sharing added to the file.
-      type: string
-    - contextPath: File.Name
-      description: The file name.
-      type: string
-    - contextPath: File.Path
-      description: The file path.
-      type: string
-    - contextPath: File.Size
-      description: The file size (in bytes).
-      type: number
-    - contextPath: File.MD5
-      description: The MD5 hash of the file.
-      type: string
-    - contextPath: File.SHA256
-      description: The SHA256 hash of the file.
-      type: string
-    - contextPath: File.Hostname
-      description: The hostname where the file event was captured.
-      type: string
-    description: Searches for a file in Security Data by JSON query, hash, username, device hostname, exfiltration type, or a combination of parameters. At least one argument must be passed in the command. If a JSON argument is passed, it will be used to the exclusion of other parameters, otherwise parameters will be combined with an AND clause.
-  - name: code42-alert-get
-    arguments:
-    - name: id
-      required: true
-      description: The alert ID to retrieve. Alert IDs are associated with alerts that are fetched via fetch-incidents.
-    outputs:
-    - contextPath: Code42.SecurityAlert.Username
-      description: The username associated with the alert.
-      type: string
-    - contextPath: Code42.SecurityAlert.Occurred
-      description: The timestamp when the alert occurred.
-      type: date
-    - contextPath: Code42.SecurityAlert.Description
-      description: The description of the alert.
-      type: string
-    - contextPath: Code42.SecurityAlert.ID
-      description: The alert ID.
-      type: string
-    - contextPath: Code42.SecurityAlert.Name
-      description: The alert rule name that generated the alert.
-      type: string
-    - contextPath: Code42.SecurityAlert.State
-      description: The alert state.
-      type: string
-    - contextPath: Code42.SecurityAlert.Type
-      description: The alert type.
-      type: string
-    - contextPath: Code42.SecurityAlert.Severity
-      description: The severity of the alert.
-      type: string
-    description: Retrieve alert details by alert ID
-  - name: code42-alert-resolve
-    arguments:
-    - name: id
-      required: true
-      description: The alert ID to resolve. Alert IDs are associated with alerts that are fetched via fetch-incidents.
-    outputs:
-    - contextPath: Code42.SecurityAlert.ID
-      description: The alert ID of the resolved alert.
-      type: string
-    description: Resolves a Code42 Security alert.
-  - name: code42-departingemployee-add
-    arguments:
-    - name: username
-      required: true
-      description: The username to add to the Departing Employee List.
-    - name: departuredate
-      description: The departure date for the employee, in the format YYYY-MM-DD.
-    - name: note
-      description: Note to attach to the Departing Employee.
-    outputs:
-    - contextPath: Code42.DepartingEmployee.CaseID
-      description: Internal Code42 Case ID for the Departing Employee. Deprecated. Use Code42.DepartingEmployee.UserID.
-      type: string
-    - contextPath: Code42.DepartingEmployee.UserID
-      description: Internal Code42 User ID for the Departing Employee.
-      type: string
-    - contextPath: Code42.DepartingEmployee.Username
-      description: The username of the Departing Employee.
-      type: string
-    - contextPath: Code42.DepartingEmployee.Note
-      description: Note associated with the Departing Employee.
-      type: string
-    - contextPath: Code42.DepartingEmployee.DepartureDate
-      description: The departure date for the Departing Employee.
-    description: Adds a user to the Departing Employee List.
-  - name: code42-departingemployee-remove
-    arguments:
-    - name: username
-      required: true
-      description: The username to remove from the Departing Employee List.
-    outputs:
-    - contextPath: Code42.DepartingEmployee.CaseID
-      description: Internal Code42 Case ID for the Departing Employee. Deprecated. Use Code42.DepartingEmployee.UserID.
-      type: string
-    - contextPath: Code42.DepartingEmployee.UserID
-      description: Internal Code42 User ID for the Departing Employee.
-      type: string
-    - contextPath: Code42.DepartingEmployee.Username
-      description: The username of the Departing Employee.
-      type: string
-    description: Removes a user from the Departing Employee List.
-  - name: code42-departingemployee-get-all
-    arguments:
-    - name: results
-      description: The number of items to return.
-      defaultvalue: "50"
-      type: number
-    outputs:
-    - contextPath: Code42.DepartingEmployee.UserID
-      description: Internal Code42 User ID for the Departing Employee.
-      type: string
-    - contextPath: Code42.DepartingEmployee.Username
-      description: The username of the Departing Employee.
-      type: string
-    - contextPath: Code42.DepartingEmployee.Note
-      description: Note associated with the Departing Employee.
-      type: string
-    - contextPath: Code42.DepartingEmployee.DepartureDate
-      description: The departure date for the Departing Employee.
-    description: Get all employees on the Departing Employee List.
-  - name: code42-highriskemployee-add
-    arguments:
-    - name: username
-      required: true
-      description: The username to add to the High Risk Employee List.
-    - name: note
-      description: Note to attach to the High Risk Employee.
-    outputs:
-    - contextPath: Code42.HighRiskEmployee.UserID
-      description: Internal Code42 User ID for the High Risk Employee.
-      type: string
-    - contextPath: Code42.HighRiskEmployee.Username
-      description: The username of the High Risk Employee.
-      type: string
-    - contextPath: Code42.HighRiskEmployee.Note
-      description: Note associated with the High Risk Employee.
-      type: string
-    description: Adds a user from the High Risk Employee List.
-  - name: code42-highriskemployee-remove
-    arguments:
-    - name: username
-      required: true
-      description: The username to remove from the High Risk Employee List.
-    outputs:
-    - contextPath: Code42.HighRiskEmployee.UserID
-      description: Internal Code42 User ID for the High Risk Employee.
-    - contextPath: Code42.HighRiskEmployee.Username
-      description: The username of the High Risk Employee.
-    description: Removes a user from the High Risk Employee List.
-  - name: code42-highriskemployee-get-all
-    arguments:
-    - name: risktags
-      description: To filter results by employees who have these risk tags. Space delimited.
-    - name: results
-      description: The number of items to return.
-      defaultvalue: 50
-      type: number
-    outputs:
-    - contextPath: Code42.HighRiskEmployee.UserID
-      description: Internal Code42 User ID for the High Risk Employee.
-      type: string
-    - contextPath: Code42.HighRiskEmployee.Username
-      description: The username of the High Risk Employee.
-      type: string
-    - contextPath: Code42.HighRiskEmployee.Note
-      description: Note associated with the High Risk Employee.
-      type: string
-    description: Get all employees on the High Risk Employee List.
-  - name: code42-highriskemployee-add-risk-tags
-    arguments:
-    - name: username
-      required: true
-      description: The username of the High Risk Employee.
-    - name: risktags
-      required: true
-      description: Space-delimited risk tags to associate with the High Risk Employee.
-    outputs:
-    - contextPath: Code42.HighRiskEmployee.UserID
-      description: Internal Code42 User ID for the Departing Employee.
-      type: string
-    - contextPath: Code42.HighRiskEmployee.Username
-      description: The username of the High Risk Employee.
-      type: string
-    - contextPath: Code42.HighRiskEmployee.RiskTags
-      description: Risk tags to associate with the High Risk Employee.
-  - name: code42-highriskemployee-remove-risk-tags
-    arguments:
-    - name: username
-      required: true
-      description: The username of the High Risk Employee.
-    - name: risktags
-      required: true
-      description: Space-delimited risk tags to disassociate from the High Risk Employee.
-    outputs:
-    - contextPath: Code42.HighRiskEmployee.UserID
-      description: Internal Code42 User ID for the Departing Employee.
-      type: string
-    - contextPath: Code42.HighRiskEmployee.Username
-      description: The username of the High Risk Employee.
-      type: string
-    - contextPath: Code42.HighRiskEmployee.RiskTags
-      description: Risk tags to disassociate from the High Risk Employee.
-  dockerimage: demisto/py42:1.0.0.9242
-  isfetch: true
-  runonce: false
   subtype: python3
+  type: python
 image: data:image/png;base64,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
 detaileddescription: >
   ### Partner Contributed Integration

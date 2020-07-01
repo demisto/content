@@ -20,8 +20,13 @@ from Code42 import (
     highriskemployee_get_all_command,
     highriskemployee_add_risk_tags_command,
     highriskemployee_remove_risk_tags_command,
-    fetch_incidents,
     securitydata_search_command,
+    user_create_command,
+    user_block_command,
+    user_unblock_command,
+    user_deactivate_command,
+    user_reactivate_command,
+    fetch_incidents,
 )
 import time
 
@@ -857,6 +862,57 @@ MOCK_GET_USER_RESPONSE = """
     ]
 }"""
 
+
+MOCK_GET_ALL_ORGS_RESPONSE = """
+{
+    "totalCount": 1,
+    "orgs":
+    [
+        {
+            "orgId": 9999,
+            "orgUid": "890854247383109999",
+            "orgName": "TestCortexOrg",
+            "orgExtRef": null,
+            "notes": null,
+            "status": "Active",
+            "active": true,
+            "blocked": false,
+            "parentOrgId": 2686,
+            "parentOrgUid": "00007871952600000",
+            "type": "ENTERPRISE",
+            "classification": "BASIC",
+            "externalId": "000054247383100000",
+            "hierarchyCounts": {},
+            "configInheritanceCounts": {},
+            "creationDate": "2019-03-04T22:21:49.749Z",
+            "modificationDate": "2020-02-26T19:21:57.684Z",
+            "deactivationDate": null,
+            "registrationKey": "0000-H74U-0000-8MMM",
+            "reporting":
+            {
+                "orgManagers": []
+            },
+            "customConfig": true,
+            "settings":
+            {
+                "maxSeats": null,
+                "maxBytes": null
+            },
+            "settingsInherited":
+            {
+                "maxSeats": "",
+                "maxBytes": ""
+            },
+            "settingsSummary":
+            {
+                "maxSeats": "",
+                "maxBytes": ""
+            }
+        }
+    ]
+}"""
+
+
 MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE = """
 {
     "items": [
@@ -904,6 +960,7 @@ MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE = """
     "totalCount": 3
 }
 """
+
 
 MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE = """
 {
@@ -988,15 +1045,50 @@ MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE = """
 """
 
 
+MOCK_CREATE_USER_RESPONSE = """
+{
+    "userId": 291999,
+    "userUid": "960849588659999999",
+    "status": "Active",
+    "username": "new.user@example.com",
+    "email": "new.user@example.com",
+    "firstName": null,
+    "lastName": null,
+    "quotaInBytes": -1,
+    "orgId": 2689,
+    "orgUid": "890854247383106706",
+    "orgName": "New Users Org",
+    "userExtRef": null,
+    "notes": null,
+    "active": true,
+    "blocked": false,
+    "emailPromo": true,
+    "invited": true,
+    "orgType": "ENTERPRISE",
+    "usernameIsAnEmail": null,
+    "creationDate": "2020-06-29T19:23:04.285Z",
+    "modificationDate": "2020-06-29T19:23:04.306Z",
+    "passwordReset": false,
+    "localAuthenticationOnly": false,
+    "licenses": []
+}
+"""
+
+
 _TEST_USER_ID = "123412341234123412"  # value found in GET_USER_RESPONSE
 _TEST_USERNAME = "user1@example.com"
+_TEST_ORG_NAME = "TestCortexOrg"
 
 
 @pytest.fixture
 def code42_sdk_mock(mocker):
     code42_mock = mocker.MagicMock(spec=SDKClient)
     get_user_response = create_mock_code42_sdk_response(mocker, MOCK_GET_USER_RESPONSE)
+    get_org_response = create_mock_code42_sdk_response_generator(
+        mocker, [MOCK_GET_ALL_ORGS_RESPONSE]
+    )
     code42_mock.users.get_by_username.return_value = get_user_response
+    code42_mock.orgs.get_all.return_value = get_org_response
     return code42_mock
 
 
@@ -1015,6 +1107,13 @@ def code42_fetch_incidents_mock(code42_sdk_mock, mocker):
     code42_mock = create_alerts_mock(code42_sdk_mock, mocker)
     code42_mock = create_file_events_mock(code42_mock, mocker)
     return code42_mock
+
+
+@pytest.fixture
+def code42_users_mock(code42_sdk_mock, mocker):
+    create_user_response = create_mock_code42_sdk_response(mocker, MOCK_CREATE_USER_RESPONSE)
+    code42_sdk_mock.users.create_user.return_value = create_user_response
+    return code42_sdk_mock
 
 
 def create_alerts_mock(c42_sdk_mock, mocker):
@@ -1066,7 +1165,7 @@ def create_mock_code42_sdk_response_generator(mocker, response_pages):
 
 
 def create_client(sdk):
-    return Code42Client(sdk=sdk, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=None)
+    return Code42Client(sdk=sdk, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=False)
 
 
 def get_empty_detectionlist_response(mocker, base_text):
@@ -1097,11 +1196,11 @@ def test_client_lazily_inits_sdk(mocker):
     mocker.patch("py42.sdk.from_local_account")
 
     # test that sdk does not init during ctor
-    client = Code42Client(sdk=None, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=None)
+    client = Code42Client(sdk=None, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=False)
     assert client._sdk is None
 
     # test that sdk init from first method call
-    client.get_user_id("Test")
+    client.get_user("Test")
     assert client._sdk is not None
 
 
@@ -1118,7 +1217,7 @@ def test_client_when_no_user_found_raises_exception(code42_sdk_mock):
     code42_sdk_mock.users.get_by_username.return_value = """{'totalCount': 0, 'users': []}"""
     client = create_client(code42_sdk_mock)
     with pytest.raises(Exception):
-        client.get_user_id("test@example.com")
+        client.get_user("test@example.com")
 
 
 def test_build_query_payload():
@@ -1292,8 +1391,8 @@ def test_departingemployee_get_all_command_when_no_employees(
     )
     assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
     assert cmd_res.outputs_key_field == "UserID"
-    assert cmd_res.raw_response == []
-    assert cmd_res.outputs == []
+    assert cmd_res.raw_response == {}
+    assert cmd_res.outputs == {"Results": []}
     assert code42_departing_employee_mock.detectionlists.departing_employee.get_all.call_count == 1
 
 
@@ -1407,8 +1506,8 @@ def test_highriskemployee_get_all_command_when_no_employees(code42_high_risk_emp
     )
     assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
     assert cmd_res.outputs_key_field == "UserID"
-    assert cmd_res.outputs == []
-    assert cmd_res.raw_response == []
+    assert cmd_res.outputs == {"Results": []}
+    assert cmd_res.raw_response == {}
     assert code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.call_count == 1
 
 
@@ -1443,6 +1542,60 @@ def test_highriskemployee_remove_risk_tags_command(code42_sdk_mock):
     code42_sdk_mock.detectionlists.remove_user_risk_tags.assert_called_once_with(
         _TEST_USER_ID, ["FLIGHT_RISK", "CONTRACT_EMPLOYEE"]
     )
+
+
+def test_user_create_command(code42_users_mock):
+    client = create_client(code42_users_mock)
+    cmd_res = user_create_command(
+        client,
+        {
+            "orgname": _TEST_ORG_NAME,
+            "username": "new.user@example.com",
+            "email": "new.user@example.com",
+        },
+    )
+    assert cmd_res.outputs_prefix == "Code42.User"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.raw_response == json.loads(MOCK_CREATE_USER_RESPONSE)
+    assert cmd_res.outputs["UserID"] == "960849588659999999"
+    assert cmd_res.outputs["Username"] == "new.user@example.com"
+    assert cmd_res.outputs["Email"] == "new.user@example.com"
+
+
+def test_user_block_command(code42_users_mock):
+    client = create_client(code42_users_mock)
+    cmd_res = user_block_command(client, {"username": "new.user@example.com"})
+    assert cmd_res.raw_response == 123456
+    assert cmd_res.outputs["UserID"] == 123456
+    assert cmd_res.outputs_prefix == "Code42.User"
+    code42_users_mock.users.block.assert_called_once_with(123456)
+
+
+def test_user_unblock_command(code42_users_mock):
+    client = create_client(code42_users_mock)
+    cmd_res = user_unblock_command(client, {"username": "new.user@example.com"})
+    assert cmd_res.raw_response == 123456
+    assert cmd_res.outputs["UserID"] == 123456
+    assert cmd_res.outputs_prefix == "Code42.User"
+    code42_users_mock.users.unblock.assert_called_once_with(123456)
+
+
+def test_user_deactivate_command(code42_users_mock):
+    client = create_client(code42_users_mock)
+    cmd_res = user_deactivate_command(client, {"username": "new.user@example.com"})
+    assert cmd_res.raw_response == 123456
+    assert cmd_res.outputs["UserID"] == 123456
+    assert cmd_res.outputs_prefix == "Code42.User"
+    code42_users_mock.users.deactivate.assert_called_once_with(123456)
+
+
+def test_user_reactivate_command(code42_users_mock):
+    client = create_client(code42_users_mock)
+    cmd_res = user_reactivate_command(client, {"username": "new.user@example.com"})
+    assert cmd_res.raw_response == 123456
+    assert cmd_res.outputs["UserID"] == 123456
+    assert cmd_res.outputs_prefix == "Code42.User"
+    code42_users_mock.users.reactivate.assert_called_once_with(123456)
 
 
 def test_security_data_search_command(code42_file_events_mock):
