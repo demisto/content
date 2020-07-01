@@ -899,9 +899,6 @@ def delete_policy_content_command():
     elif content_type == CATEGORY_LIST_TYPE:
         delete_policy_content_request(uuid, content_type, change_description, schema_version, categories=categories)
     elif content_type == LOCAL_CATEGORY_DB_TYPE:
-        delete_policy_content_request(uuid, content_type, change_description, schema_version, ips=ips,
-                                      urls=urls, categories=categories)
-    elif content_type == LOCAL_CATEGORY_DB_TYPE:
         content_deleted = delete_policy_content_request(uuid, content_type, change_description, schema_version, ips=ips,
                                                         urls=urls, categories=categories)
 
@@ -973,7 +970,7 @@ def delete_policy_content_request(uuid, content_type, change_description, schema
                     else:
                         content_deleted.append({
                             'CategoryName': category.get('name'),
-                            'ObjectDeleted': 'The category was deleted.  Category cannot be empty.'
+                            'ObjectDeleted': 'The category was deleted. Category cannot be empty.'
                         })
                 else:
                     categories_to_keep.append(category)

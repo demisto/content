@@ -193,6 +193,14 @@ def test_delete_policy_content_local_category_db(mocker, requests_mock):
     expected_request_body = dict(content)
     del expected_request_body['content']['categories'][4]
     assert requests_mock.request_history[1].json()['content'] == expected_request_body['content']
+    assert demisto.results.call_count == 1
+    results = demisto.results.call_args[0][0]
+    assert results['HumanReadable'] == """### Successfully deleted content from the policy
+|CategoryName|ObjectDeleted|
+|---|---|
+| category5 | 8.8.8.8 |
+| category5 | The category was deleted. Category cannot be empty. |
+"""
 
 
 def test_update_policy_content_local_category_db(mocker, requests_mock):
