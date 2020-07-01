@@ -293,6 +293,16 @@ class Code42Client(BaseClient):
         self._get_sdk().users.reactivate(user_id)
         return user_id
 
+    def add_user_to_legal_hold_matter(self, username, matter_id):
+        demisto.debug(username)
+        demisto.debug(matter_id)
+        user_uid = self._get_user_id(username)
+        response = self._get_sdk().legalhold.add_to_matter(user_uid, matter_id)
+        return json.loads(response.text)
+
+    def remove_user_from_legal_hold_matter(self, username, matter_id):
+        pass
+
     def get_org(self, org_name):
         org_pages = self._get_sdk().orgs.get_all()
         for org_page in org_pages:
@@ -935,6 +945,30 @@ def user_reactivate_command(client, args):
     )
 
 
+def legal_hold_add_user_command(client, args):
+    username = args.get("username")
+    matter_id = args.get("matterid")
+    demisto.debug(username)
+    demisto.debug(matter_id)
+    response = client.add_user_to_legal_hold_matter(username, matter_id)
+    legal_hold_info = response.get("legalHold")
+    user_info = response.get("user")
+    outputs = {
+        "MatterID": legal_hold_info.get("legalHoldUid") if legal_hold_info else None,
+        "MatterName": legal_hold_info.get("name") if legal_hold_info else None,
+        "UserID": user_info.get("userUid") if legal_hold_info else None,
+        "Username": user_info.get("username") if user_info else None,
+    }
+    readable_outputs = tableToMarkdown("Code42 User Added to Legal Hold Matter", outputs)
+    return CommandResults(
+        outputs_prefix="Code42.LegalHold",
+        outputs_key_field="MatterID",
+        outputs=outputs,
+        readable_output=readable_outputs,
+        raw_response=response
+    )
+
+
 """Fetching"""
 
 
@@ -1094,7 +1128,8 @@ def get_command_map():
         "code42-user-block": user_block_command,
         "code42-user-unblock": user_unblock_command,
         "code42-user-deactivate": user_deactivate_command,
-        "code42_user-reactivate": user_reactivate_command,
+        "code42-user-reactivate": user_reactivate_command,
+        "code42-legalhold-add-user": legal_hold_add_user_command,
     }
 
 

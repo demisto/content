@@ -596,7 +596,37 @@ script:
     - contextPath: Code42.User.UserID
       description: The ID of a Code42 User.
       type: String
-  dockerimage: demisto/py42:1.0.0.9323
+  - arguments:
+    - default: false
+      description: The username of the user to add to the given legal hold matter.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the legal hold matter to which to which the user will be added.
+      isArray: false
+      name: matterid
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds a Code42 user to a legal hold matter.
+    execution: false
+    name: code42-legalhold-add-user
+    outputs:
+    - contextPath: Code42.LegalHold.UserID
+      description: The ID of a Code42 user.
+      type: Unknown
+    - contextPath: Code42.LegalHolder.MatterID
+      description: The ID of a Code42 legal hold matter.
+      type: String
+    - contextPath: Code42.LegalHold.Username
+      description: A username for a Code42 user.
+      type: String
+    - contextPath: Code42.LegalHold.MatterName
+      description: A name for a Code42 legal hold matter.
+      type: String
+  dockerimage: demisto/py42:1.0.0.9653
   feed: false
   isfetch: true
   longRunning: false

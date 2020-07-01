@@ -580,6 +580,36 @@ script:
     - contextPath: Code42.User.UserID
       description: The ID of a Code42 User.
       type: String
+  - arguments:
+    - default: false
+      description: The username of the user to add to the given legal hold matter.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the legal hold matter to which to which the user will be added.
+      isArray: false
+      name: matterid
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds a Code42 user to a legal hold matter.
+    execution: false
+    name: code42-legalhold-add-user
+    outputs:
+    - contextPath: Code42.LegalHold.UserID
+      description: The ID of a Code42 user.
+      type: Unknown
+    - contextPath: Code42.LegalHolder.MatterID
+      description: The ID of a Code42 legal hold matter.
+      type: String
+    - contextPath: Code42.LegalHold.Username
+      description: A username for a Code42 user.
+      type: String
+    - contextPath: Code42.LegalHold.MatterName
+      description: A name for a Code42 legal hold matter.
+      type: String
   dockerimage: demisto/py42:1.0.0.9323
   feed: false
   isfetch: true
@@ -900,6 +930,16 @@ script:
             user_id = self._get_legacy_user_id(username)
             self._get_sdk().users.reactivate(user_id)
             return user_id
+
+        def add_user_to_legal_hold_matter(self, username, matter_id):
+            demisto.debug(username)
+            demisto.debug(matter_id)
+            user_uid = self._get_user_id(username)
+            response = self._get_sdk().legalhold.add_to_matter(user_uid, matter_id)
+            return json.loads(response.text)
+
+        def remove_user_from_legal_hold_matter(self, username, matter_id):
+            pass
 
         def get_org(self, org_name):
             org_pages = self._get_sdk().orgs.get_all()
@@ -1560,6 +1600,29 @@ script:
         )
 
 
+    def legal_hold_add_user_command(client, args):
+        username = args.get("username")
+        matter_id = args.get("matterid")
+        demisto.debug(username)
+        demisto.debug(matter_id)
+        response = client.add_user_to_legal_hold_matter(username, matter_id)
+        legal_hold_info = response.get("legalHold")
+        user_info = response.get("user")
+        outputs = {
+            "MatterID": legal_hold_info.get("legalHoldUid") if legal_hold_info else None,
+            "MatterName": legal_hold_info.get("name") if legal_hold_info else None,
+            "UserID": user_info.get("userUid") if legal_hold_info else None,
+            "Username": user_info.get("username") if user_info else None,
+        }
+        readable_outputs = tableToMarkdown("Code42 User Added to Legal Hold Matter", outputs)
+        return CommandResults(
+            outputs_prefix="Code42.LegalHold",
+            outputs_key_field="MatterID",
+            outputs=outputs,
+            readable_output=readable_outputs,
+            raw_response=response
+        )
+
     """Fetching"""
 
 
@@ -1721,7 +1784,8 @@ script:
             "code42-user-block": user_block_command,
             "code42-user-unblock": user_unblock_command,
             "code42-user-deactivate": user_deactivate_command,
-            "code42_user-reactivate": user_reactivate_command,
+            "code42-user-reactivate": user_reactivate_command,
+            "code42-legalhold-add-user": legal_hold_add_user_command,
         }
 
 
