@@ -116,7 +116,7 @@ tasks:
     task:
       id: 655229e0-3623-471f-8e41-9c686beef9df
       version: -1
-      name: Set Severity to High
+      name: Set Severity based on Critical Exposures
       description: commands.local.cmd.set.incident
       script: Builtin|||setIncident
       type: regular
@@ -443,7 +443,7 @@ tasks:
       secretarynotification: {}
       sectorofaffectedparty: {}
       severity:
-        simple: High
+        simple: ${inputs.Critical Severity}
       signature: {}
       signindatetime: {}
       sixgillalertid: {}
@@ -573,7 +573,7 @@ tasks:
       first:
         complex:
           root: Expanse
-          accessor: IP.SeverityCounts.CRITICAL
+          accessor: IP.SeverityCounts.WARNING
       second:
         simple: "0"
     separatecontext: false
@@ -596,7 +596,7 @@ tasks:
     task:
       id: 549a70a4-de89-4e2d-89b6-2ec897441a65
       version: -1
-      name: Set Severity to Medium
+      name: Set Severity based on Warning Exposures
       description: commands.local.cmd.set.incident
       script: Builtin|||setIncident
       type: regular
@@ -923,7 +923,7 @@ tasks:
       secretarynotification: {}
       sectorofaffectedparty: {}
       severity:
-        simple: Medium
+        simple: ${inputs.Warning Severity}
       signature: {}
       signindatetime: {}
       sixgillalertid: {}
@@ -1034,7 +1034,7 @@ tasks:
     task:
       id: 85298fd3-5541-4755-8edf-a2c4c2b535ea
       version: -1
-      name: Set Severity to Low
+      name: Set Severity based on Routine Exposures
       description: commands.local.cmd.set.incident
       script: Builtin|||setIncident
       type: regular
@@ -1361,7 +1361,7 @@ tasks:
       secretarynotification: {}
       sectorofaffectedparty: {}
       severity:
-        simple: Low
+        simple: ${inputs.Routine Severity}
       signature: {}
       signindatetime: {}
       sixgillalertid: {}
@@ -1519,7 +1519,7 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
-    separatecontext: true
+    separatecontext: false
     view: |-
       {
         "position": {
