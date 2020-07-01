@@ -292,7 +292,7 @@ def smart_search_command():
         data['guid'] = guid
 
     response = smart_search(data)
-    matches = json.loads(response)['result']['match']
+    matches = json.loads(response)['result']['match'] if response else None
     if matches:
         output = []
         for match in matches:
