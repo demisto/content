@@ -27,8 +27,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 class Client(BaseClient):
     """
 
-    Client will implement the service API, and should not contain any Demisto logic.
-    Should only do requests and return data.
+    This is the base client used for Bonusly http requests
 
     """
 
@@ -279,6 +278,8 @@ def fetch_incidents(client, last_run, first_fetch_time, fetch_params):
         # Update last run and add incident if the incident is newer than last fetch
         if incident_created_time.timestamp() > latest_created_time.timestamp():
             latest_created_time = incident_created_time
+
+        if last_fetch.timestamp() < incident_created_time.timestamp():
             incidents.append(incident)
 
     next_run = {'last_fetch': latest_created_time.strftime(DATE_FORMAT)}
