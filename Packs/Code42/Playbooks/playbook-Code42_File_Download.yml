@@ -111,7 +111,7 @@ outputs:
 - contextPath: File.MD5
   description: MD5 hash of file
 - contextPath: File.SHA256
-  description: FSHA256 hash of file
+  description: SHA256 hash of file
 - contextPath: File.Hostname
   description: Hostname where file event was captured
 sourceplaybookid: Code42 File Search
