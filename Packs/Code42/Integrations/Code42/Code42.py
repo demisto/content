@@ -294,8 +294,6 @@ class Code42Client(BaseClient):
         return user_id
 
     def add_user_to_legal_hold_matter(self, username, matter_id):
-        demisto.debug(username)
-        demisto.debug(matter_id)
         user_uid = self._get_user_id(username)
         response = self._get_sdk().legalhold.add_to_matter(user_uid, matter_id)
         return json.loads(response.text)
@@ -948,8 +946,6 @@ def user_reactivate_command(client, args):
 def legal_hold_add_user_command(client, args):
     username = args.get("username")
     matter_id = args.get("matterid")
-    demisto.debug(username)
-    demisto.debug(matter_id)
     response = client.add_user_to_legal_hold_matter(username, matter_id)
     legal_hold_info = response.get("legalHold")
     user_info = response.get("user")
