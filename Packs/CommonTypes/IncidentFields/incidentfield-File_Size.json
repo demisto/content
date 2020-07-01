@@ -25,7 +25,9 @@
 	"selectValues": null,
 	"sla": 0,
 	"system": false,
-	"systemAssociatedTypes": null,
+	"systemAssociatedTypes": [
+		"PCAP Analysis"
+	],
 	"threshold": 72,
 	"type": "shortText",
 	"unmapped": false,

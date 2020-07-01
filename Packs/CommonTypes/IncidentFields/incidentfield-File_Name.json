@@ -24,7 +24,9 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [],
-    "systemAssociatedTypes": null,
+    "systemAssociatedTypes": [
+        "PCAP Analysis"
+    ],
     "associatedToAll": true,
     "unmapped": false,
     "unsearchable": false
