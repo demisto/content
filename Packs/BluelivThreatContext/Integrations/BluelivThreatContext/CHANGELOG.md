@@ -1,6 +1,3 @@
-## [Unreleased]
-
-
 ## [20.06.08] - 2020-06-08
 Added initial support for Blueliv ThreatContext with the following commands:
     * __blueliv-tc-threat-actor__: Allows searching by threat actors.

@@ -40,27 +40,6 @@ You need the following information:
 7. Get information about threat actors
 8. Get information about hacking tools
 
-## Commands
----
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
-After you successfully execute a command, a DBot message appears in the War Room with the command details.
-
-1. blueliv-authenticate
-2. blueliv-tc-attack-pattern
-3. blueliv-tc-campaign
-4. blueliv-tc-cve
-5. blueliv-tc-indicator-cs
-6. blueliv-tc-indicator-fqdn
-7. blueliv-tc-indicator-ip
-8. blueliv-tc-malware
-9. blueliv-tc-signature
-10. blueliv-tc-threat-actor
-11. blueliv-tc-tool
-
-## Additional Info
----
-No addition info required
-
 ## Known Limitations
 ---
 Currently is not possible to create a user with a passwod that doesn't expire, so you need to remember to change the password and update the integration credentials used to generate the token. 
