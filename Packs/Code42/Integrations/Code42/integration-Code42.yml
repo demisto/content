@@ -934,7 +934,6 @@ script:
             else:
                 raise Exception("Unsupported hash. Must be SHA256 or MD5.")
 
-
         def _get_user_id(self, username):
             user_id = self.get_user(username).get("userUid")
             if user_id:
@@ -1659,7 +1658,7 @@ script:
                 if remaining_incidents:
                     return (
                         self._last_run,
-                        remaining_incidents[: self._fetch_limit],
+                        remaining_incidents[:self._fetch_limit],
                         remaining_incidents[self._fetch_limit:],
                     )
 
