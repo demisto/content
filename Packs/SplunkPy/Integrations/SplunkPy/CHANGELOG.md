@@ -1,5 +1,13 @@
 ## [Unreleased]
--
+- Added the ***splunk-kv-store-collection-create*** command, which creates a new KV store.
+- Added the ***splunk-kv-store-collection-config*** command, which used to configure the KV store fields.
+- Added the ***splunk-kv-store-collection-add-entries*** command, which creates a new KV store entry.
+- Added the ***splunk-kv-store-collections-list*** command, which print all KV stores.
+- Added the ***splunk-kv-store-collection-data-list*** command, which returns the KV store data.
+- Added the ***splunk-kv-store-collection-data-delete*** command, which deletes the data in a KV store.
+- Added the ***splunk-kv-store-collection-delete*** command, which deleted a KV store.
+- Added the ***splunk-kv-store-collection-search-entry*** command, which returns the KV store data for specific query.
+- Added the ***splunk-kv-store-collection-delete-entry*** command, which deletes the KV store data with specific query.
 
 ## [20.5.2] - 2020-05-26
 Added support for HTTPS handler, which uses tbhe Python **requests** library. 

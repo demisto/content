@@ -380,6 +380,255 @@ script:
     - contextPath: Splunk.JobStatus.Status
       description: Status of the job.
       type: String
+  - arguments:
+    - default: false
+      description: The name of the KV store collection
+      isArray: false
+      name: kv_store_name
+      required: true
+      secret: false
+    - default: true
+      defaultValue: search
+      description: The name of the Splunk application to create the KV store in for
+        example "search"
+      isArray: false
+      name: app_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Create a new kv store table
+    execution: false
+    name: splunk-kv-store-collection-create
+  - arguments:
+    - default: false
+      description: The name of the KV store collection
+      isArray: false
+      name: kv_store_collection_name
+      required: true
+      secret: false
+    - default: false
+      description: |
+        The list of name and value types to define the KV store collection scheme. For example field.id=number,field.name=string,field.address=string
+      isArray: true
+      name: kv_store_fields
+      required: true
+      secret: false
+    - default: true
+      defaultValue: search
+      description: The name of the Splunk application that contains the KV store collection.
+        in for example "search"
+      isArray: false
+      name: app_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Configure the KV store fields
+    execution: false
+    name: splunk-kv-store-collection-config
+  - arguments:
+    - default: false
+      description: 'the data to add to the kv store collection according to the collection
+        json format. For example {"name": "Splunk HQ", "id": 123, "address": { "street":
+        "250 Brannan Street", "city": "San Francisco", "state": "CA", "zip": "94107"}}'
+      isArray: false
+      name: kv_store_data
+      required: true
+      secret: false
+    - default: false
+      description: The name of the KV store collection
+      isArray: false
+      name: kv_store_collection_name
+      required: true
+      secret: false
+    - default: true
+      defaultValue: search
+      description: The name of the Splunk application that contains the KV store collection.
+        in for example "search"
+      isArray: false
+      name: app_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Add objects to kv store utilizing the batch-save API.
+    execution: false
+    name: splunk-kv-store-collection-add-entries
+  - arguments:
+    - default: true
+      defaultValue: search
+      description: The name of the Splunk application to create the KV store in for
+        example "search"
+      isArray: false
+      name: app_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Lists all of the collections from a specific app
+    execution: false
+    name: splunk-kv-store-collections-list
+    outputs:
+    - contextPath: Splunk.CollectionList
+      description: collections list
+      type: String
+  - arguments:
+    - default: true
+      defaultValue: search
+      description: The name of the Splunk application that contains the KV store collection.
+        in for example "search"
+      isArray: false
+      name: app_name
+      required: true
+      secret: false
+    - default: false
+      description: The name of the KV store collection can accept comma delimited
+        list of collections.
+      isArray: true
+      name: kv_store_collection_name
+      required: true
+      secret: false
+    - default: true
+      defaultValue: '50'
+      description: Limit the list of records returned.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Lists all of the data within a specific KV store collection or collections
+    execution: false
+    name: splunk-kv-store-collection-data-list
+    outputs:
+    - contextPath: Splunk.KVstoreData
+      description: collection names in an array and each collection name will have
+        an array of values
+      type: Unknown
+  - arguments:
+    - default: true
+      defaultValue: search
+      description: The name of the Splunk application that contains the KV store collection.
+        in for example "search"
+      isArray: false
+      name: app_name
+      required: true
+      secret: false
+    - default: false
+      description: The name of the KV store collection can accept comma delimited
+        list of collections.
+      isArray: true
+      name: kv_store_collection_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete all of the data within a specific KV store collection or collections.
+    execution: false
+    name: splunk-kv-store-collection-data-delete
+  - arguments:
+    - default: true
+      defaultValue: search
+      description: The name of the Splunk application that contains the KV store.
+        in for example "search"
+      isArray: false
+      name: app_name
+      required: true
+      secret: false
+    - default: false
+      description: The name of the KV store can accept comma delimited list of stores.
+      isArray: true
+      name: kv_store_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a specific KV store.
+    execution: false
+    name: splunk-kv-store-collection-delete
+  - arguments:
+    - default: true
+      defaultValue: search
+      description: The name of the Splunk application that contains the KV store collection.
+        in for example "search"
+      isArray: false
+      name: app_name
+      required: true
+      secret: false
+    - default: false
+      description: The name of the KV store collection
+      isArray: false
+      name: kv_store_collection_name
+      required: true
+      secret: false
+    - default: false
+      description: The key name to search in the store. If the query argument is used,
+        this argument will be ignored
+      isArray: false
+      name: key
+      required: false
+      secret: false
+    - default: false
+      description: The value to search in the store. If the query argument is used,
+        this argument will be ignored
+      isArray: false
+      name: value
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Complex query to search in the store with operators such as and, or, not
+        See link https://docs.splunk.com/Documentation/Splunk/8.0.3/RESTREF/RESTkvstore
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    deprecated: false
+    description: Search for specific object in store. Search can be basic key value
+      or use a full query.
+    execution: false
+    name: splunk-kv-store-collection-search-entry
+    outputs:
+    - contextPath: Splunk.KVstoreData
+      description: collection names in an array and each collection name will have
+        an array of values
+      type: Unknown
+  - arguments:
+    - default: true
+      defaultValue: search
+      description: The name of the Splunk application that contains the KV store collection.
+        in for example "search"
+      isArray: false
+      name: app_name
+      required: true
+      secret: false
+    - default: false
+      description: The name of the KV store collection
+      isArray: false
+      name: kv_store_collection_name
+      required: true
+      secret: false
+    - default: false
+      description: The key name to search in the store. If the query argument is used,
+        this argument will be ignored
+      isArray: false
+      name: key
+      required: false
+      secret: false
+    - default: false
+      description: The value to search in the store. If the query argument is used,
+        this argument will be ignored
+      isArray: false
+      name: value
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Complex query to search in the store with operators such as and, or, not
+        See link https://docs.splunk.com/Documentation/Splunk/8.0.3/RESTREF/RESTkvstore
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    deprecated: false
+    description: Delete specific object in store. Search can be basic key value or
+      use a full query.
+    execution: false
+    name: splunk-kv-store-collection-delete-entry
   dockerimage45: demisto/splunksdk:1.0
   dockerimage: demisto/splunksdk:1.0.0.8854
   feed: false
@@ -392,5 +641,6 @@ script:
   type: python
 tests:
 - SplunkPy-Test-V2
+- SplunkPy_KV_commands
 defaultClassifier: SplunkPy
 defaultMapperIn: SplunkPy-mapper

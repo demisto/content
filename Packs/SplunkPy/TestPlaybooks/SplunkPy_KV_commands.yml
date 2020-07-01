@@ -1,0 +1,739 @@
+id: SplunkPy_KV_commands
+version: -1
+name: SplunkPy_KV_commands
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 16e2b119-4bf4-44a9-8968-d26edb2809f9
+    type: start
+    task:
+      id: 16e2b119-4bf4-44a9-8968-d26edb2809f9
+      version: -1
+      name: ""
+      iscommand: false
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 000e29bd-f86b-444c-8a40-752dada5dd50
+    type: regular
+    task:
+      id: 000e29bd-f86b-444c-8a40-752dada5dd50
+      version: -1
+      name: create_store
+      description: Create a new kv store table
+      script: 'splunk-kv-store-collection-create'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      app_name: {}
+      kv_store_name:
+        simple: test_playbook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 637bb4ff-a631-419b-8a6a-12208253c11e
+    type: regular
+    task:
+      id: 637bb4ff-a631-419b-8a6a-12208253c11e
+      version: -1
+      name: configure_store
+      description: Configure the KV store fields
+      script: 'splunk-kv-store-collection-config'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      app_name: {}
+      kv_store_collection_name:
+        simple: test_playbook
+      kv_store_fields:
+        simple: field.src=cidr,field.t=number
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 4428b9af-b99a-45f1-8490-d2889082a30a
+    type: regular
+    task:
+      id: 4428b9af-b99a-45f1-8490-d2889082a30a
+      version: -1
+      name: add_entries
+      description: Add objects to kv store utilizing the batch-save API.
+      script: 'splunk-kv-store-collection-add-entries'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      app_name: {}
+      kv_store_collection_name:
+        simple: test_playbook
+      kv_store_data:
+        simple: '{"src": "8.8.8.8", "t": 9}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 02fe4e0e-b8b5-4996-8012-5bebc8aaeb4d
+    type: regular
+    task:
+      id: 02fe4e0e-b8b5-4996-8012-5bebc8aaeb4d
+      version: -1
+      name: data_list
+      description: Lists all of the data within a specific KV store collection or
+        collections
+      script: 'splunk-kv-store-collection-data-list'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      app_name: {}
+      kv_store_collection_name:
+        simple: test_playbook
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: e678f9c2-9bb8-4eb9-8083-79d3fe5c98a4
+    type: condition
+    task:
+      id: e678f9c2-9bb8-4eb9-8083-79d3fe5c98a4
+      version: -1
+      name: test_add_data
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Splunk.KVstoreData.test_playbook.src}
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Splunk.KVstoreData.test_playbook.t}
+            iscontext: true
+          right:
+            value:
+              simple: "9"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 8ffec044-7035-4793-8df1-11e7bb2f8f83
+    type: regular
+    task:
+      id: 8ffec044-7035-4793-8df1-11e7bb2f8f83
+      version: -1
+      name: add_data
+      description: Add objects to kv store utilizing the batch-save API.
+      script: 'splunk-kv-store-collection-add-entries'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      app_name: {}
+      kv_store_collection_name:
+        simple: test_playbook
+      kv_store_data:
+        simple: '{"src": "9.9.9.9", "t": 10}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 2268e9f9-9bfa-424c-825b-aa658ff915eb
+    type: regular
+    task:
+      id: 2268e9f9-9bfa-424c-825b-aa658ff915eb
+      version: -1
+      name: delete_context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: f10a2c8b-7f4f-474f-8f5d-63999677d292
+    type: condition
+    task:
+      id: f10a2c8b-7f4f-474f-8f5d-63999677d292
+      version: -1
+      name: test_data_was_added
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Splunk.KVstoreData.test_playbook.src}
+            iscontext: true
+          right:
+            value:
+              simple: 9.9.9.9
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Splunk.KVstoreData.test_playbook..t}
+            iscontext: true
+          right:
+            value:
+              simple: "10"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: e351ca10-b20a-440c-8c95-71d481d3ef1a
+    type: regular
+    task:
+      id: e351ca10-b20a-440c-8c95-71d481d3ef1a
+      version: -1
+      name: delete_data_by_query
+      description: Delete specific object in store. Search can be basic key value
+        or use a full query.
+      script: 'splunk-kv-store-collection-delete-entry'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      app_name: {}
+      key: {}
+      kv_store_collection_name:
+        simple: test_playbook
+      query:
+        simple: '{"t": 9}'
+      value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 5b285dd8-2e02-4e7f-8e78-75bf555c368a
+    type: regular
+    task:
+      id: 5b285dd8-2e02-4e7f-8e78-75bf555c368a
+      version: -1
+      name: search_entry
+      description: Search for specific object in store. Search can be basic key value
+        or use a full query.
+      script: 'splunk-kv-store-collection-search-entry'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      app_name: {}
+      key:
+        simple: t
+      kv_store_collection_name:
+        simple: test_playbook
+      query: {}
+      value:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1425
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: e3d17385-2cba-43eb-815d-bbc0b93aa7d9
+    type: regular
+    task:
+      id: e3d17385-2cba-43eb-815d-bbc0b93aa7d9
+      version: -1
+      name: delete_context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 1a74f787-11db-4b70-85fa-139b4451440b
+    type: regular
+    task:
+      id: 1a74f787-11db-4b70-85fa-139b4451440b
+      version: -1
+      name: collection_data_delete
+      description: Delete all of the data within a specific KV store collection or
+        collections.
+      script: 'splunk-kv-store-collection-data-delete'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      app_name: {}
+      kv_store_collection_name:
+        simple: test_playbook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: f6ba1a1c-294b-4388-8e24-8b286cea228d
+    type: regular
+    task:
+      id: f6ba1a1c-294b-4388-8e24-8b286cea228d
+      version: -1
+      name: get_data_list
+      description: Lists all of the data within a specific KV store collection or
+        collections
+      script: 'splunk-kv-store-collection-data-list'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      app_name: {}
+      kv_store_collection_name:
+        simple: test_playbook
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 047545af-8d8e-4a00-8b6d-555c9d582480
+    type: condition
+    task:
+      id: 047545af-8d8e-4a00-8b6d-555c9d582480
+      version: -1
+      name: check_delete
+      type: condition
+      iscommand: false
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: ${Splunk.KVstoreData}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: cc8503ef-1ab2-4172-80a4-5688abe30da1
+    type: regular
+    task:
+      id: cc8503ef-1ab2-4172-80a4-5688abe30da1
+      version: -1
+      name: stores_list
+      description: Lists all of the collections from a specific app
+      script: 'splunk-kv-store-collections-list'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      app_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 9316287b-8041-4f2e-887a-da176944bd7d
+    type: regular
+    task:
+      id: 9316287b-8041-4f2e-887a-da176944bd7d
+      version: -1
+      name: delete_store
+      description: Delete a specific KV store.
+      script: 'splunk-kv-store-collection-delete'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      app_name: {}
+      kv_store_name:
+        simple: test_playbook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 9b53da1e-02f0-4f88-8758-8b2ebddef1ae
+    type: title
+    task:
+      id: 9b53da1e-02f0-4f88-8758-8b2ebddef1ae
+      version: -1
+      name: done
+      type: title
+      iscommand: false
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: a7645e35-6c31-4c4f-8d47-ca1e15fb6a61
+    type: regular
+    task:
+      id: a7645e35-6c31-4c4f-8d47-ca1e15fb6a61
+      version: -1
+      name: delete_context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: b8c4396f-bdb9-42c5-8409-e262c4d3efcd
+    type: regular
+    task:
+      id: b8c4396f-bdb9-42c5-8409-e262c4d3efcd
+      version: -1
+      name: print error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+    scriptarguments:
+      message:
+        simple: error
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -110,
+          "y": 2685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 256ecc97-5241-422f-8cf3-bcbf64e435d0
+    type: regular
+    task:
+      id: 256ecc97-5241-422f-8cf3-bcbf64e435d0
+      version: -1
+      name: clean_start
+      description: |-
+        Should fail if some previous playbook failed.
+        so we ignore errors.
+      script: 'splunk-kv-store-collection-delete'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      app_name: {}
+      kv_store_name:
+        simple: test_playbook
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -95
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3010,
+        "width": 940,
+        "x": -110,
+        "y": -230
+      }
+    }
+  }
+inputs: []
+outputs: []

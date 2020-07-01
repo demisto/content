@@ -215,3 +215,149 @@ def test_commands(search_result, chosen_fields, expected_result):
     headers = update_headers_from_field_names(search_result, chosen_fields)
 
     assert expected_result == headers
+
+
+APPS = ['app']
+STORES = ['store']
+EMPTY_CASE = {}
+STORE_WITHOUT_APP = {"kv_store_collection_name": "test"}
+JUST_APP_NAME = {'app_name': 'app'}  # happens in splunk-kv-store-collections-list command
+CREATE_COMMAND = {'app_name': 'app', 'kv_store_name': 'not_store'}
+CORRECT = {'app_name': 'app', 'kv_store_collection_name': 'store'}
+INCORRECT_STORE_NAME = {'app_name': 'app', 'kv_store_collection_name': 'not_store'}
+data_test_check_error = [
+    (EMPTY_CASE, 'app not found'),
+    (STORE_WITHOUT_APP, 'app not found'),
+    (JUST_APP_NAME, 'empty'),
+    (CREATE_COMMAND, 'empty'),
+    (CORRECT, 'empty'),
+    (INCORRECT_STORE_NAME, 'KV Store not found'),
+]
+
+
+@pytest.mark.parametrize('args, out_error', data_test_check_error)
+def test_check_error(args, out_error):
+    class Service:
+        def __init__(self):
+            self.apps = APPS
+            self.kvstore = STORES
+
+    try:
+        splunk.check_error(Service(), args)
+        raise splunk.DemistoException('empty')
+    except splunk.DemistoException as error:
+        output = str(error)
+    assert output == out_error, 'check_error(service, {})\n\treturns: {}\n\tinstead: {}'.format(args,
+                                                                                                output, out_error)
+
+
+EMPTY_CASE = {}
+JUST_KEY = {"key": "key"}
+WITH_ALL_PARAMS = {"key": "demisto", "value": "is awesome", "limit": 1, "query": "test"}
+STANDARD_KEY_VAL = {"key": "demisto", "value": "is awesome"}
+KEY_AND_LIMIT = {"key": "key", "limit": 1}
+KEY_AND_QUERY = {"key": "key", "query": 'test_query'}
+QUERY = {"query": 'test_query'}
+QUERY_AND_VALUE = {"query": 'test_query', "value": "awesome"}
+data_test_build_kv_store_query = [
+    (EMPTY_CASE, EMPTY_CASE),
+    (JUST_KEY, EMPTY_CASE),
+    (STANDARD_KEY_VAL, {"demisto": "is awesome"}),
+    (WITH_ALL_PARAMS, {"demisto": "is awesome"}),
+    (KEY_AND_LIMIT, {"limit": 1}),
+    (KEY_AND_QUERY, 'test_query'),
+    (QUERY, 'test_query'),
+    (QUERY_AND_VALUE, 'test_query'),
+]
+
+
+@pytest.mark.parametrize('args, expected_query', data_test_build_kv_store_query)
+def test_build_kv_store_query(args, expected_query, mocker):
+    mocker.patch('SplunkPy.get_key_type', return_value=None)
+    output = splunk.build_kv_store_query(None, args)
+    assert output == expected_query, 'build_kv_store_query({})\n\treturns: {}\n\tinstead: {}'.format(args, output,
+                                                                                                     expected_query)
+
+
+data_test_build_kv_store_query_with_key_val = [
+    ({"key": "demisto", "value": "is awesome"}, str, {"demisto": "is awesome"}),
+    ({"key": "demisto", "value": "1"}, int, {"demisto": 1}),
+    ({"key": "demisto", "value": "True"}, bool, {"demisto": True}),
+]
+
+
+@pytest.mark.parametrize('args, _type, expected_query', data_test_build_kv_store_query_with_key_val)
+def test_build_kv_store_query_with_key_val(args, _type, expected_query, mocker):
+    mocker.patch('SplunkPy.get_key_type', return_value=_type)
+    output = splunk.build_kv_store_query(None, args)
+    assert output == expected_query, 'build_kv_store_query({})\n\treturns: {}\n\tinstead: {}'.format(args, output,
+                                                                                                     expected_query)
+
+    test_test_get_key_type = [
+        ({'field.key': 'number'}, float),
+        ({'field.key': 'string'}, str),
+        ({'field.key': 'cidr'}, str),
+        ({'field.key': 'boolean'}, bool),
+        ({'field.key': 'empty'}, None),
+        ({'field.key': 'time'}, str),
+    ]
+
+    @pytest.mark.parametrize('keys_and_types, expected_type', test_test_get_key_type)
+    def test_get_key_type(keys_and_types, expected_type, mocker):
+        mocker.patch('SplunkPy.get_keys_and_types', return_value=keys_and_types)
+
+        output = splunk.get_key_type(None, 'key')
+        assert output == expected_type, 'get_key_type(kv_store, key)\n\treturns: {}\n\tinstead: {}'.format(output,
+                                                                                                           expected_type)
+
+
+EMPTY_CASE = {}
+WITHOUT_FIELD = {'empty': 'number'}
+STRING_FIELD = {'field.test': 'string'}
+NUMBER_FIELD = {'field.test': 'number'}
+INDEX = {'index.test': 'string'}
+MIXED = {'field.test': 'string', 'empty': 'field'}
+data_test_get_keys_and_types = [
+    (EMPTY_CASE, EMPTY_CASE),
+    (WITHOUT_FIELD, EMPTY_CASE),
+    (STRING_FIELD, {'field.test': 'string'}),
+    (NUMBER_FIELD, {'field.test': 'number'}),
+    (INDEX, {'index.test': 'string'}),
+    (MIXED, {'field.test': 'string'}),
+]
+
+
+@pytest.mark.parametrize('raw_keys, expected_keys', data_test_get_keys_and_types)
+def test_get_keys_and_types(raw_keys, expected_keys):
+    class KVMock:
+        def __init__(self):
+            pass
+
+        def content(self):
+            return raw_keys
+
+    output = splunk.get_keys_and_types(KVMock())
+    assert output == expected_keys, 'get_keys_and_types(kv_store)\n\treturns: {}\n\tinstead: {}'.format(output,
+                                                                                                        expected_keys)
+
+
+START_OUTPUT = '#### configuration for {} store\n| field name | type |\n| --- | --- |'.format('name')
+EMPTY_OUTPUT = ''
+STANDARD_CASE = {'field.test': 'number'}
+STANDARD_OUTPUT = '\n| field.test | number |'
+data_test_get_kv_store_config = [
+    ({}, EMPTY_OUTPUT),
+    (STANDARD_CASE, STANDARD_OUTPUT)
+]
+
+
+@pytest.mark.parametrize('fields, expected_output', data_test_get_kv_store_config)
+def test_get_kv_store_config(fields, expected_output, mocker):
+    class Name:
+        def __init__(self):
+            self.name = 'name'
+
+    mocker.patch('SplunkPy.get_keys_and_types', return_value=fields)
+    output = splunk.get_kv_store_config(Name())
+    expected_output = '{}{}'.format(START_OUTPUT, expected_output)
+    assert output == expected_output

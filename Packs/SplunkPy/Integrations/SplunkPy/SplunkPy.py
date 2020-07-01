@@ -1,4 +1,4 @@
-from splunklib.binding import HTTPError
+from splunklib.binding import HTTPError, namespace
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -688,6 +688,140 @@ def replace_keys(data):
     return data
 
 
+def kv_store_collection_create(service):
+    service.kvstore.create(demisto.args()['kv_store_name'])
+    return_outputs("KV store collection {} created successfully".format(service.namespace['app']), {}, {})
+
+
+def kv_store_collection_config(service):
+    args = demisto.args()
+    app = service.namespace['app']
+    kv_store_collection_name = args['kv_store_collection_name']
+    kv_store_fields = args['kv_store_fields'].split(',')
+    for key_val in kv_store_fields:
+        try:
+            _key, val = key_val.split('=', 1)
+        except ValueError:
+            return_error('error when trying to parse {} you possibly forgot to add the field type.'.format(key_val))
+        else:
+            if _key.startswith('index.'):
+                service.kvstore[kv_store_collection_name].update_index(_key.replace('index.', ''), val)
+            else:
+                service.kvstore[kv_store_collection_name].update_field(_key.replace('field.', ''), val)
+    return_outputs("KV store collection {} configured successfully".format(app), {}, {})
+
+
+def kv_store_collection_add_entries(service):
+    args = demisto.args()
+    kv_store_data = args['kv_store_data']
+    kv_store_collection_name = args['kv_store_collection_name']
+    service.kvstore[kv_store_collection_name].data.insert(kv_store_data)
+    return_outputs("Data added to {}".format(kv_store_collection_name))
+
+
+def kv_store_collections_list(service):
+    app_name = service.namespace['app']
+    names = list(map(lambda x: x.name, service.kvstore.iter()))
+    human_readable = "list of collection names {}\n| name |\n| --- |\n|{}|".format(app_name, '|\n|'.join(names))
+    entry_context = {"Splunk.CollectionList": names}
+    return_outputs(human_readable, entry_context, entry_context)
+
+
+def kv_store_collection_data_delete(service):
+    args = demisto.args()
+    kv_store_collection_name = args['kv_store_collection_name'].split(',')
+    for store in kv_store_collection_name:
+        service.kvstore[store].data.delete()
+    return_outputs('The values of the {} were deleted successfully'.format(args['kv_store_collection_name']), {}, {})
+
+
+def kv_store_collection_delete(service):
+    kv_store_names = demisto.args()['kv_store_name']
+    for store in kv_store_names.split(','):
+        service.kvstore[store].delete()
+    return_outputs('The following KV store {} were deleted successfully'.format(kv_store_names), {}, {})
+
+
+def build_kv_store_query(kv_store, args):
+    if 'key' in args and 'value' in args:
+        _type = get_key_type(kv_store, args['key'])
+        args['value'] = _type(args['value']) if _type else args['value']
+        return {args['key']: args['value']}
+    elif 'limit' in args:
+        return {'limit': args['limit']}
+    else:
+        return args.get('query', {})
+
+
+def kv_store_collection_data(service):
+    args = demisto.args()
+    stores = args['kv_store_collection_name'].split(',')
+
+    for store in stores:
+        store = service.kvstore[store]
+        query = build_kv_store_query(store, args)
+        if 'limit' not in query:
+            query = {'query': json.dumps(query)}
+        store_res = store.data.query(**query)
+        if store_res:
+            human_readable = tableToMarkdown(name="list of collection values {}".format(store.name),
+                                             t=store_res)
+            return_outputs(human_readable, {'Splunk.KVstoreData': {store.name: store_res}}, store_res)
+        else:
+
+            return_outputs(get_kv_store_config(store), {}, {})
+
+
+def kv_store_collection_delete_entry(service):
+    args = demisto.args()
+    store = args['kv_store_collection_name']
+    query = build_kv_store_query(service, args)
+    service.kvstore[store].data.delete(query=query)
+    return_outputs('The values of the {} were deleted successfully'.format(store), {}, {})
+
+
+def check_error(service, args):
+    app = args.get('app_name')
+    store_name = args.get('kv_store_collection_name')
+    if app not in service.apps:
+        raise DemistoException('app not found')
+    elif store_name and store_name not in service.kvstore:
+        raise DemistoException('KV Store not found')
+
+
+def get_key_type(kv_store, _key):
+    keys_and_types = get_keys_and_types(kv_store)
+    types = {
+        'number': float,
+        'string': str,
+        'cidr': str,
+        'boolean': bool,
+        'time': str
+    }
+    index = 'index.{}'.format(_key)
+    field = 'field.{}'.format(_key)
+    val_type = keys_and_types.get(field) or keys_and_types.get(index)
+    return types.get(val_type)
+
+
+def get_keys_and_types(kv_store):
+    keys = kv_store.content()
+    for key_name in keys.keys():
+        if not (key_name.startswith('field.') or key_name.startswith('index.')):
+            del keys[key_name]
+    return keys
+
+
+def get_kv_store_config(kv_store):
+    keys = get_keys_and_types(kv_store)
+    readable = ['#### configuration for {} store'.format(kv_store.name),
+                '| field name | type |',
+                '| --- | --- |']
+    for _key, val in keys.items():
+        readable.append('| {} | {} |'.format(_key, val))
+    return '\n'.join(readable)
+
+
 def main():
     service = None
     proxy = demisto.params().get('proxy')
@@ -744,6 +878,29 @@ def main():
         splunk_submit_event_hec_command()
     if demisto.command() == 'splunk-job-status':
         splunk_job_status(service)
+    if demisto.command().startswith('splunk-kv-') and service is not None:
+        args = demisto.args()
+        app = args.get('app_name', 'search')
+        service.namespace = namespace(app=app, owner='nobody', sharing='app')
+        check_error(service, args)
+
+        if demisto.command() == 'splunk-kv-store-collection-create':
+            kv_store_collection_create(service)
+        elif demisto.command() == 'splunk-kv-store-collection-config':
+            kv_store_collection_config(service)
+        elif demisto.command() == 'splunk-kv-store-collection-delete':
+            kv_store_collection_delete(service)
+        elif demisto.command() == 'splunk-kv-store-collections-list':
+            kv_store_collections_list(service)
+        elif demisto.command() == 'splunk-kv-store-collection-add-entries':
+            kv_store_collection_add_entries(service)
+        elif demisto.command() in ['splunk-kv-store-collection-data-list',
+                                   'splunk-kv-store-collection-search-entry']:
+            kv_store_collection_data(service)
+        elif demisto.command() == 'splunk-kv-store-collection-data-delete':
+            kv_store_collection_data_delete(service)
+        elif demisto.command() == 'splunk-kv-store-collection-delete-entry':
+            kv_store_collection_delete_entry(service)
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
