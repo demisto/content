@@ -16,7 +16,7 @@ from demisto_sdk.commands.common.tools import run_command, print_error, print_wa
 def upload_git_snapshot(git_snapshot_path, pack_name, branch_name, pack_version, storage_bucket, repo_name, git_org):
     try:
         git_snapshot_name = f'org-{git_org}_repo-{repo_name}_branch-{branch_name}_version-{pack_version}.zip'
-        git_snapshot_storage_path = os.path.join('backup', pack_name, git_snapshot_name)
+        git_snapshot_storage_path = os.path.join('backup', pack_name, pack_version, git_snapshot_name)
         print_error(f'git_snapshot_storage_path is: {git_snapshot_storage_path}')
         print_error(f'git_snapshot_path is: {git_snapshot_path}')
         git_snapshot_blob = storage_bucket.blob(git_snapshot_storage_path)
