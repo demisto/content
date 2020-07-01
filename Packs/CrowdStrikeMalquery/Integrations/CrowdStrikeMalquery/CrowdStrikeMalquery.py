@@ -86,10 +86,7 @@ class Client(BaseClient):
             if get_passed_mins(now, valid_until) >= TOKEN_LIFE_TIME:
                 # token expired
                 access_token = self.get_token_request()
-                integration_context = {
-                                          'access_token': access_token,
-                                          'valid_until': date_to_timestamp(now) / 1000
-                                      },
+                integration_context = {'access_token': access_token, 'valid_until': date_to_timestamp(now) / 1000}
                 demisto.setIntegrationContext(integration_context)
             return access_token
         else:
