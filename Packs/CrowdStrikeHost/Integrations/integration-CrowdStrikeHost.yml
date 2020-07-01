@@ -18,12 +18,10 @@ configuration:
   required: true
 - display: API ID
   name: id
-  defaultvalue: ""
   type: 0
   required: true
 - display: API Key
   name: key
-  defaultvalue: ""
   type: 4
   required: true
 - display: Use system proxy settings
@@ -828,6 +826,8 @@ script:
       - sha1
       - md5
       - domain
+      - ipv4
+      - ipv6
       description: The type of indicator from the list of supported indicator types.
     - name: value
       required: true
