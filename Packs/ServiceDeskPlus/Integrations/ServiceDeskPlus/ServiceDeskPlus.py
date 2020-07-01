@@ -111,8 +111,8 @@ class Client(BaseClient):
                     err_msg = f'Unauthorized request - check domain location and the given credentials -\n{str(res)}'
                 raise DemistoException(err_msg)
 
-        except Exception as e:  # todo: remove the text in the error
-            raise DemistoException('FAILS HERE ' + e.args[0])
+        except Exception as e:
+            raise DemistoException(e.args[0])
 
     def get_requests(self, request_id: str = None, params: dict = None):
         if request_id:

@@ -681,7 +681,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Assignes the request with the given request id to a technician/group
+    description: Assigns the request with the given request id to a technician/group
     execution: false
     name: service-desk-plus-request-assign
   - arguments:
