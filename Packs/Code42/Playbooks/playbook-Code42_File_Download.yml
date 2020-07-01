@@ -4,7 +4,7 @@ id: f10f23fd-7db9-4544-8929-e2f76abafa46
 inputs:
 - description: MD5 hash to search for
   key: MD5
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     complex:
@@ -14,7 +14,7 @@ inputs:
       - operator: uniq
 - description: SHA256 hash to search for
   key: SHA256
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     complex:
@@ -111,7 +111,7 @@ outputs:
 - contextPath: File.MD5
   description: MD5 hash of file
 - contextPath: File.SHA256
-  description: SHA256 hash of file
+  description: FSHA256 hash of file
 - contextPath: File.Hostname
   description: Hostname where file event was captured
 sourceplaybookid: Code42 File Search
@@ -139,8 +139,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 280,
-          "y": -140
+          "x": 377.5,
+          "y": 50
         }
       }
   "1":
@@ -173,10 +173,7 @@ tasks:
     id: "1"
     ignoreworker: false
     nexttasks:
-      '#default#':
-      - "7"
       "yes":
-      - "2"
       - "3"
     note: false
     quietmode: 0
@@ -195,8 +192,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 280,
-          "y": 160
+          "x": 377.5,
+          "y": 195
         }
       }
   "2":
@@ -232,8 +229,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 20,
-          "y": 370
+          "x": 592.5,
+          "y": 545
         }
       }
   "3":
@@ -249,7 +246,7 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#default#':
-      - "7"
+      - "2"
       "yes":
       - "6"
     note: false
@@ -269,7 +266,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 532.5,
+          "x": 377.5,
           "y": 370
         }
       }
@@ -301,8 +298,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 20,
-          "y": 630
+          "x": 480,
+          "y": 720
         }
       }
   "6":
@@ -337,8 +334,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 532.5,
-          "y": 630
+          "x": 50,
+          "y": 720
         }
       }
   "7":
@@ -361,8 +358,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 280,
-          "y": 1040
+          "x": 480,
+          "y": 895
         }
       }
 version: -1
@@ -371,10 +368,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1245,
-        "width": 892.5,
-        "x": 20,
-        "y": -140
+        "height": 910,
+        "width": 922.5,
+        "x": 50,
+        "y": 50
       }
     }
   }

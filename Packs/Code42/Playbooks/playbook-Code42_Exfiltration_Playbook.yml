@@ -1,5 +1,5 @@
 id: Code42 Exfiltration Playbook
-version: 12
+version: 14
 name: Code42 Exfiltration Playbook
 description: The Code42 Exfiltration playbook acts on Code42 Security Alerts, retrieves
   file event data, and allows security teams to remediate file exfiltration events
@@ -846,12 +846,15 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: eec18ff1-2c09-4be0-87b2-34cc85619d39
+    taskid: e079cdf0-deb2-41a6-8b02-9e670600835b
     type: playbook
     task:
-      id: eec18ff1-2c09-4be0-87b2-34cc85619d39
+      id: e079cdf0-deb2-41a6-8b02-9e670600835b
       version: -1
       name: Code42 File Download
+      description: This playbook searches for files via Code42 security events by
+        either MD5 or SHA256 hash. The data is output to the Code42.SecurityData context
+        for use.
       playbookName: Code42 File Download
       type: playbook
       iscommand: false
@@ -861,9 +864,25 @@ tasks:
       - "5"
     scriptarguments:
       MD5:
-        simple: ${File.MD5}
+        complex:
+          root: incident
+          accessor: code42eventid
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: md5checksum
       SHA256:
-        simple: ${File.SHA256}
+        complex:
+          root: incident
+          accessor: code42fileevents
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: sha256checksum
     separatecontext: true
     loop:
       iscommand: false
