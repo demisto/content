@@ -1,5 +1,5 @@
 id: Code42 Exfiltration Playbook
-version: 14
+version: -1
 name: Code42 Exfiltration Playbook
 description: The Code42 Exfiltration playbook acts on Code42 Security Alerts, retrieves
   file event data, and allows security teams to remediate file exfiltration events
@@ -16,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "1"
@@ -43,6 +44,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: "Starts a timer to track how long it takes to resolve the alert."
     nexttasks:
       '#none#':
       - "25"
@@ -73,6 +75,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: "Searches the related files for malicious behavior."
     nexttasks:
       '#default#':
       - "7"
@@ -102,6 +105,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "19"
@@ -131,6 +135,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "9"
@@ -155,10 +160,11 @@ tasks:
       id: b8a80acb-a2f7-4899-88e7-16382828b9b4
       version: -1
       name: Resolve Code42 Alert
-      script: '|||code42-alert-resolve'
+      script: Code42|||code42-alert-resolve
       type: regular
       iscommand: true
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "26"
@@ -189,6 +195,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "8"
@@ -218,6 +225,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ""
     separatecontext: false
     view: |-
       {
@@ -243,6 +251,7 @@ tasks:
       type: regular
       iscommand: true
       brand: CrowdstrikeFalcon
+      description: ""
     nexttasks:
       '#none#':
       - "31"
@@ -283,6 +292,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "30"
@@ -340,6 +350,7 @@ tasks:
       type: regular
       iscommand: true
       brand: jira-v2
+      description: ""
     nexttasks:
       '#none#':
       - "30"
@@ -385,6 +396,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "30"
@@ -445,6 +457,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "30"
@@ -483,6 +496,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "5"
@@ -520,6 +534,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Builtin
+      description: ""
     nexttasks:
       '#none#':
       - "10"
@@ -555,6 +570,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "30"
@@ -585,6 +601,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "30"
@@ -645,6 +662,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "9"
@@ -672,6 +690,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "27"
@@ -722,6 +741,7 @@ tasks:
       script: '|||cs-falcon-contain-host'
       type: regular
       iscommand: true
+      description: ""
       brand: ""
     nexttasks:
       '#none#':
@@ -753,6 +773,7 @@ tasks:
       name: Is email integration enabled?
       type: condition
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#default#':
