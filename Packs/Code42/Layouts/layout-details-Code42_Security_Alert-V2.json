@@ -5,6 +5,9 @@
        "name": "",
        "sortValues": null,
        "system": false,
+       "typeId": "Code42 Security Alert",
+       "version": -1,
+       "fromVersion": "5.0.0",
        "tabs": [
               {
                      "id": "summary",
@@ -466,8 +469,5 @@
                      "name": "Canvas",
                      "type": "canvas"
               }
-       ],
-       "typeId": "Code42 Security Alert",
-       "fromVersion": "5.0.0",
-       "version": -1
+       ]
 }

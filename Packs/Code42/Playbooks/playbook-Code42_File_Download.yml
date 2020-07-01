@@ -41,6 +41,7 @@ tasks:
       id: d045a003-2e7f-4f47-80c7-3882baf399b6
       iscommand: false
       name: ""
+      description: ""
       version: -1
     taskid: d045a003-2e7f-4f47-80c7-3882baf399b6
     timertriggers: []
@@ -93,6 +94,7 @@ tasks:
       id: 746c1a4e-7084-45f1-86e6-e9764ffbbf5c
       iscommand: false
       name: Is Code42 Integration Active?
+      description: "Checks to see if a Code42 Integration is active."
       type: condition
       version: -1
     taskid: 746c1a4e-7084-45f1-86e6-e9764ffbbf5c
@@ -130,6 +132,7 @@ tasks:
       id: 935cb1d6-e328-4a8e-888f-347c3b33ce11
       iscommand: false
       name: Does SHA256 Exist?
+      description: "Checks to see if a SHA256 hash exists in the inputs."
       type: condition
       version: -1
     taskid: 935cb1d6-e328-4a8e-888f-347c3b33ce11
@@ -167,6 +170,7 @@ tasks:
       id: 1d0dfb1f-6874-41e9-8593-fca2a96c58c4
       iscommand: false
       name: Does MD5 Exist?
+      description: "Checks to see if a MD5 hash exists in the inputs."
       type: condition
       version: -1
     taskid: 1d0dfb1f-6874-41e9-8593-fca2a96c58c4
@@ -265,6 +269,7 @@ tasks:
       id: 7f03d6ab-3bb8-4bd5-867b-fe853fa38684
       iscommand: false
       name: Complete
+      description: ""
       type: title
       version: -1
     taskid: 7f03d6ab-3bb8-4bd5-867b-fe853fa38684
@@ -278,6 +283,9 @@ tasks:
         }
       }
 version: -1
+fromversion: 5.0.0
+tests:
+- No Test
 view: |-
   {
     "linkLabelsPosition": {},

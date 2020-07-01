@@ -945,4 +945,5 @@ inputs:
   required: false
   description: URL of Demisto instance for emails.
   playbookInputQuery: null
+fromversion: "5.0.0"
 outputs: []
