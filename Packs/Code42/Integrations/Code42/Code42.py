@@ -307,8 +307,15 @@ class Code42Client(BaseClient):
         response = self._get_sdk().legalhold.add_to_matter(user_uid, matter_id)
         return json.loads(response.text)
 
-    def remove_user_from_legal_hold_matter(self, username, matter_id):
-        pass
+    def remove_user_from_legal_hold_matter(self, username, matter_name):
+        user_uid = self._get_user_id(username)
+        matter_id = self._get_legal_hold_matter_id(matter_name)
+        membership_id = self._get_legal_hold_matter_membership_id(user_uid, matter_id)
+        if membership_id:
+            self._get_sdk().legalhold.remove_from_matter(membership_id)
+            return username, matter_name
+
+        raise Code42InvalidLegalHoldMembershipError(username, matter_name)
 
     def get_org(self, org_name):
         org_pages = self._get_sdk().orgs.get_all()
@@ -345,6 +352,14 @@ class Code42Client(BaseClient):
         matter_id = self.get_legal_hold_matter(matter_name).get("legalHoldUid")
         return matter_id
 
+    def _get_legal_hold_matter_membership_id(self, user_id, matter_id):
+        member_pages = self._get_sdk().legalhold.get_all_matter_custodians(legal_hold_uid=matter_id,
+                                                                           user_uid=user_id)
+        for member_page in member_pages:
+            members = member_page["legalHoldMemberships"]
+            for member in members:
+                return member
+
 
 
 class Code42AlertNotFoundError(Exception):
@@ -372,6 +387,14 @@ class Code42LegalHoldMatterNotFoundError(Exception):
     def __init__(self, matter_name):
         super(Code42LegalHoldMatterNotFoundError, self).__init__(
             "No legal hold matter found with name {0}.".format(matter_name)
+        )
+
+
+class Code42InvalidLegalHoldMembershipError(Exception):
+    def __init__(self, username, matter_name):
+        super(Code42InvalidLegalHoldMembershipError, self).__init__(
+            "User '{0}' is not an active member of legal hold matter '{1}'".format(username,
+                                                                                   matter_name)
         )
 
 
@@ -966,8 +989,8 @@ def user_reactivate_command(client, args):
 
 def legal_hold_add_user_command(client, args):
     username = args.get("username")
-    matter_id = args.get("matterid")
-    response = client.add_user_to_legal_hold_matter(username, matter_id)
+    matter_name = args.get("mattername")
+    response = client.add_user_to_legal_hold_matter(username, matter_name)
     legal_hold_info = response.get("legalHold")
     user_info = response.get("user")
     outputs = {
@@ -984,6 +1007,10 @@ def legal_hold_add_user_command(client, args):
         readable_output=readable_outputs,
         raw_response=response
     )
+
+
+def legal_hold_remove_user_command(client, args):
+    pass
 
 
 """Fetching"""
