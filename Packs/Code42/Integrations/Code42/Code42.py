@@ -1021,7 +1021,7 @@ class Code42SecurityIncidentFetcher(object):
             if remaining_incidents:
                 return (
                     self._last_run,
-                    remaining_incidents[: self._fetch_limit],
+                    remaining_incidents[:self._fetch_limit],
                     remaining_incidents[self._fetch_limit:],
                 )
 
