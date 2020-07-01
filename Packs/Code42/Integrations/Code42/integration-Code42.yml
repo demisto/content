@@ -1594,7 +1594,6 @@ script:
         for chunk in response.iter_content(chunk_size=128):
             if chunk:
                 file_chunks.append(chunk)
-
         return fileResult(file_hash, data=b"".join(file_chunks))
 
 

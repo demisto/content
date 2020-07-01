@@ -315,7 +315,6 @@ class Code42Client(BaseClient):
         else:
             raise Exception("Unsupported hash. Must be SHA256 or MD5.")
 
-
     def _get_user_id(self, username):
         user_id = self.get_user(username).get("userUid")
         if user_id:
@@ -958,7 +957,6 @@ def download_file_command(client, args):
     for chunk in response.iter_content(chunk_size=128):
         if chunk:
             file_chunks.append(chunk)
-
     return fileResult(file_hash, data=b"".join(file_chunks))
 
 
