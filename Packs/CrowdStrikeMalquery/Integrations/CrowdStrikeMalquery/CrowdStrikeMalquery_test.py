@@ -93,7 +93,7 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-@freeze_time("2020-06-29 18:04:21")
+@freeze_time("2020-06-29 18:04:21 UTC+2")
 def test_get_passed_mins():
     """
     Tests get_passed_mins helper function.
@@ -102,7 +102,7 @@ def test_get_passed_mins():
     from CrowdStrikeMalquery import get_passed_mins
     start_time = datetime.datetime.now()
     end_time_str = 1512219852.0
-    expected_time_delta = 180.15
+    expected_time_delta = 300.15
     result = get_passed_mins(start_time, end_time_str)
     assert expected_time_delta == result
 
