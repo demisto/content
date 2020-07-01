@@ -1589,8 +1589,13 @@ script:
 
     def download_file_command(client, args):
         file_hash = args.get("hash")
-        file_bytes = client.download_file(file_hash)
-        return fileResult(file_hash, data=file_bytes)
+        file_chunks = []
+        response = client.download_file(file_hash)
+        for chunk in response.iter_content(chunk_size=128):
+            if chunk:
+                file_chunks.append(chunk)
+
+        return fileResult(file_hash, data=b"".join(file_chunks))
 
 
     """Fetching"""

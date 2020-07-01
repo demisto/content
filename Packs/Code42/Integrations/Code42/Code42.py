@@ -953,10 +953,13 @@ def user_reactivate_command(client, args):
 
 def download_file_command(client, args):
     file_hash = args.get("hash")
+    file_chunks = []
     response = client.download_file(file_hash)
-    file_bytes = None
+    for chunk in response.iter_content(chunk_size=128):
+        if chunk:
+            file_chunks.append(chunk)
 
-    return fileResult(file_hash, data=file_bytes)
+    return fileResult(file_hash, data=b"".join(file_chunks))
 
 
 """Fetching"""
