@@ -16,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "1"
@@ -104,6 +105,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "19"
@@ -133,6 +135,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "9"
@@ -161,6 +164,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "26"
@@ -191,6 +195,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "8"
@@ -220,6 +225,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ""
     separatecontext: false
     view: |-
       {
@@ -245,6 +251,7 @@ tasks:
       type: regular
       iscommand: true
       brand: CrowdstrikeFalcon
+      description: ""
     nexttasks:
       '#none#':
       - "31"
@@ -285,6 +292,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "30"
@@ -342,6 +350,7 @@ tasks:
       type: regular
       iscommand: true
       brand: jira-v2
+      description: ""
     nexttasks:
       '#none#':
       - "30"
@@ -387,6 +396,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "30"
@@ -447,6 +457,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "30"
@@ -485,6 +496,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "5"
@@ -522,6 +534,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Builtin
+      description: ""
     nexttasks:
       '#none#':
       - "10"
@@ -557,6 +570,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "30"
@@ -587,6 +601,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "30"
@@ -647,6 +662,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "9"
@@ -674,6 +690,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "27"
@@ -725,6 +742,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "30"
@@ -756,6 +774,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "30"
@@ -858,6 +877,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "5"
@@ -946,6 +966,7 @@ inputs:
   required: false
   description: URL of Demisto instance for emails.
   playbookInputQuery: null
+fromversion: "5.0.0"
 tests:
 - No Test
 outputs: []
