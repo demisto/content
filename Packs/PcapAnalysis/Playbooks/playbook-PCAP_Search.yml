@@ -1313,7 +1313,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: DestinationTcpPorts
+        simple: DestinationUdpPorts
       stringify: {}
       value:
         complex:
