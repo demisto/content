@@ -104,7 +104,7 @@ tasks:
       context_path:
         simple: PCAPResultsFlow
       grid_id:
-        simple: pcapdetectedflows
+        simple: pcapflows
       keys:
         simple: SourceIP,SourcePort,DestIP,DestPort,Duration,StartTime,EndTime,Bytes
       overwrite:
