@@ -320,7 +320,7 @@ script:
       description: The username to remove from the Departing Employee List.
       isArray: false
       name: username
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Removes a user from the Departing Employee List.
@@ -610,7 +610,7 @@ script:
     - contextPath: Code42.LegalHold.MatterName
       description: A name for a Code42 legal hold matter.
       type: String
-  dockerimage: demisto/py42:1.0.0.9323
+  dockerimage: demisto/py42:1.0.0.9653
   feed: false
   isfetch: true
   longRunning: false
@@ -1622,6 +1622,7 @@ script:
             readable_output=readable_outputs,
             raw_response=response
         )
+
 
     """Fetching"""
 

@@ -331,7 +331,7 @@ script:
       description: The username to remove from the Departing Employee List.
       isArray: false
       name: username
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Removes a user from the Departing Employee List.
