@@ -949,10 +949,10 @@ def delete_policy_content_request(uuid, content_type, change_description, schema
             if not categories:
                 categories = [category.get('name') for category in content['content']['categories']]
             categories_to_keep = []
-            for category_index, category in enumerate(content['content']['categories']):
+            for category in content['content']['categories']:
                 if category.get('name') in categories:
                     entries_to_keep = []
-                    for entry_index, entry in enumerate(category.get('entries')):
+                    for entry in category.get('entries'):
                         if entry.get('url') in content_entities:
                             content_deleted.append({
                                 'CategoryName': category.get('name'),
@@ -1074,45 +1074,38 @@ def update_policy_content_request(uuid, content_type, change_description, schema
 
     found_object_to_update = False
 
-    if ips:
-        if categories:
-            if 'categories' in content['content']:
-                for category_index, category in enumerate(content['content']['categories']):
-                    if category.get('name') in categories:
-                        for entry_index, entry in enumerate(category.get('entries')):
-                            if entry.get('url') in ips:
-                                found_object_to_update = True
-                                content['content']['categories'][category_index]['entries'][entry_index][
-                                    'comment'] = content_description
-        else:
-            if 'ipAddresses' in content['content']:
-                for ip in content['content']['ipAddresses']:
-                    if ip['ipAddress'] in ips:
-                        found_object_to_update = True
-                        if content_description:
-                            ip['description'] = content_description
-                        if content_enabled:
-                            ip['enabled'] = bool(strtobool(content_enabled))
-    elif urls:
-        if categories:
-            if 'categories' in content['content']:
-                for category_index, category in enumerate(content['content']['categories']):
-                    if category.get('name') in categories:
-                        for entry_index, entry in enumerate(category.get('entries')):
-                            if entry.get('url') in urls:
-                                found_object_to_update = True
-                                content['content']['categories'][category_index]['entries'][entry_index][
-                                    'comment'] = content_description
-        else:
-            if 'urls' in content['content']:
-                for url in content['content']['urls']:
+    if content_type == LOCAL_CATEGORY_DB_TYPE:
+        if 'categories' in content['content']:
+            content_entities = []
+            if ips:
+                content_entities.extend(ips)
+            if urls:
+                content_entities.extend(urls)
+            for category in content['content']['categories']:
+                if category.get('name') in categories:
+                    for entry_index, entry in enumerate(category.get('entries')):
+                        if entry.get('url') in content_entities:
+                            found_object_to_update = True
+                            category['entries'][entry_index]['comment'] = content_description
+    elif ips:
+        if 'ipAddresses' in content['content']:
+            for ip in content['content']['ipAddresses']:
+                if ip['ipAddress'] in ips:
                     found_object_to_update = True
-                    if url['url'] in urls:
-                        found_object_to_update = True
-                        if content_description:
-                            url['description'] = content_description
-                        if content_enabled:
-                            url['enabled'] = bool(strtobool(content_enabled))
+                    if content_description:
+                        ip['description'] = content_description
+                    if content_enabled:
+                        ip['enabled'] = bool(strtobool(content_enabled))
+    elif urls:
+        if 'urls' in content['content']:
+            for url in content['content']['urls']:
+                found_object_to_update = True
+                if url['url'] in urls:
+                    found_object_to_update = True
+                    if content_description:
+                        url['description'] = content_description
+                    if content_enabled:
+                        url['enabled'] = bool(strtobool(content_enabled))
 
     if not found_object_to_update:
         raise Exception('Update failed - Could not find object to update.')
