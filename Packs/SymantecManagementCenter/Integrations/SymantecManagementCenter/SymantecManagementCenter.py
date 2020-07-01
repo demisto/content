@@ -780,6 +780,7 @@ def add_policy_content_command():
         add_policy_content_request(uuid, content_type, change_description, schema_version,
                                    urls=urls, categories=categories, ips=ips, description=description)
 
+    # parsing input arguments as outputs to display the added content
     output = demisto.args()
     human_readable = tableToMarkdown('Successfully added content to the policy', output)
     return_outputs(human_readable, {}, output)
@@ -1038,6 +1039,7 @@ def update_policy_content_command():
             categories=categories, content_description=content_description, content_enabled=content_enabled
         )
 
+    # parsing input arguments as outputs to display the updated content
     output = demisto.args()
     human_readable = tableToMarkdown('Successfully updated content in the policy', output)
     return_outputs(human_readable, {}, output)
