@@ -1076,7 +1076,7 @@ class Pack(object):
         try:
             metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
 
-            set_pack_dependencies(self._pack_name, user_metadata, packs_dependencies_mapping)
+            self.set_pack_dependencies(user_metadata, packs_dependencies_mapping)
 
             if 'displayedImages' not in user_metadata:
                 user_metadata['displayedImages'] = packs_dependencies_mapping.get(
