@@ -649,6 +649,7 @@ class Pack(object):
         except Exception as e:
             print_error(f"Failed in zipping {self._pack_name} folder.\n Additional info: {e}")
         finally:
+            print_error(f'zip_pack_path is: {zip_pack_path}')
             return task_status, zip_pack_path
 
     def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack):
