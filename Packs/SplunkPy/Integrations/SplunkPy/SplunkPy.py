@@ -715,7 +715,9 @@ def kv_store_collection_add_entries(service):
     args = demisto.args()
     kv_store_data = args['kv_store_data']
     kv_store_collection_name = args['kv_store_collection_name']
+    # indicator_path = args['indicator_path']
     service.kvstore[kv_store_collection_name].data.insert(kv_store_data)
+    # indicator = extract_indicator(indicator_path, kv_store_data)
     return_outputs("Data added to {}".format(kv_store_collection_name))
 
 
@@ -820,6 +822,15 @@ def get_kv_store_config(kv_store):
     for _key, val in keys.items():
         readable.append('| {} | {} |'.format(_key, val))
     return '\n'.join(readable)
+
+
+def extract_indicator(indicator_path, _dict_objects):
+    indicator_paths = indicator_path.split('.')
+    for indicator_obj in _dict_objects:
+        indicator = ''
+        for path in indicator_paths:
+            indicator = indicator_obj.get(path, {})
+        return str(indicator)
 
 
 def main():
