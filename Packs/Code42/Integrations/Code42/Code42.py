@@ -1153,7 +1153,7 @@ def handle_fetch_command(client):
 def run_command(command):
     try:
         results = command()
-        if not isinstance(results, tuple) and not isinstance(results, list):
+        if not isinstance(results, (tuple, list)):
             results = [results]
         for result in results:
             return_results(result)
