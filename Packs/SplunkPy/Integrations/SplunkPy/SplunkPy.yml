@@ -647,6 +647,6 @@ script:
   type: python
 tests:
 - SplunkPy-Test-V2
-- SplunkPy_KV_commands
+- SplunkPy KV commands
 defaultClassifier: SplunkPy
 defaultMapperIn: SplunkPy-mapper

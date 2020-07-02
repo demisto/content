@@ -1,6 +1,6 @@
-id: SplunkPy_KV_commands
+id: SplunkPy KV commands
 version: -1
-name: SplunkPy_KV_commands
+name: SplunkPy KV commands
 starttaskid: "0"
 fromversion: '5.0.0'
 description: testing splunk Kv commands
