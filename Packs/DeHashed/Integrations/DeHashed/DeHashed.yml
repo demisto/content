@@ -30,8 +30,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: If you select the "all fields" option, the search is performed on all fields with the specified value entered in the "value" argument, and you don't
-      have to pass the "operation" argument.
+      description: If you select the "all fields" option, the search is performed on all fields with the specified value entered in the "value" argument, and you don't have to pass the "operation" argument.
       isArray: false
       name: asset_type
       predefined:
@@ -142,5 +141,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 5.5.0
 tests:
 - No tests
