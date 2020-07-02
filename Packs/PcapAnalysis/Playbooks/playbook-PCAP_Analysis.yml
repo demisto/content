@@ -19,6 +19,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -47,6 +48,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -161,6 +163,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -421,14 +424,14 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: This playbook is used to carve (extract) files from within PCAP files
-        and perform enrichment and detonation of the extracted files. Supported PCAP file
-        types are pcap, cap, pcapng. The playbook can handle one PCAP file per incident.
-        Additional inputs allow the user to provide the WPA password for decrypting 802.11
-        (wireless) traffic and adding an RSA certificate to decrypt SSL traffic. To display
-        the results within the relevant incident fields, the playbook needs to run in a
-        PCAP Analysis incident type. For handling of PCAP files larger than 30 MB, refer
-        to the PcapMinerV2 documentation.
+      description: This playbook is used to carve (extract) files from within PCAP
+        files and perform enrichment and detonation of the extracted files. Supported
+        PCAP file types are pcap, cap, pcapng. The playbook can handle one PCAP file
+        per incident. Additional inputs allow the user to provide the WPA password
+        for decrypting 802.11 (wireless) traffic and adding an RSA certificate to
+        decrypt SSL traffic. To display the results within the relevant incident fields,
+        the playbook needs to run in a PCAP Analysis incident type. For handling of
+        PCAP files larger than 30 MB, refer to the PcapMinerV2 documentation.
     nexttasks:
       '#none#':
       - "3"
@@ -456,6 +459,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "3"
@@ -581,21 +585,21 @@ inputs:
   required: false
   description: This input specifics the file entry id for the PCAP file if the user
     provided the file in the incident. One PCAP file can run per incident.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: RunParsingAndEnrichment
   value:
     simple: "true"
   required: false
   description: This input specifies if to run the parsing and enrichment playbook.
     Values can be true or any other values for false
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: RunFileCarving
   value:
     simple: "true"
   required: false
   description: This input specifies if to run the file carving playbook. Values can
     be true or any other values for false
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: RsaDecryptKeyEntryID
   value:
     complex:
@@ -622,5 +626,7 @@ inputs:
   required: false
   description: This input specifics the file entry id for the RSA decrypt key if the
     user provided the key in the incident.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+tests:
+- No tests (auto formatted)
