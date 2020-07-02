@@ -3202,6 +3202,8 @@
         "Feodo Tracker IP Blocklist Feed",
         "AlienVault OTX TAXII Feed",
         "Prisma Access Egress IP feed",
+        "Lastline v2",
+        "McAfee DXL",
         "GCP Whitelist Feed"
     ],
     "docker_thresholds": {
