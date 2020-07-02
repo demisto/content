@@ -5,11 +5,9 @@ commonfields:
 configuration:
 - display: Fetch indicators
   name: feed
-  defaultvalue: true
   required: false
   type: 8
-- defaultvalue: Worldwide
-  display: Regions
+- display: Regions
   name: regions
   options:
   - China
@@ -19,8 +17,7 @@ configuration:
   - Worldwide
   required: true
   type: 16
-- defaultvalue: All
-  display: Services
+- display: Services
   name: services
   options:
   - Common
@@ -32,7 +29,6 @@ configuration:
   type: 16
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
-  defaultvalue: Good
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -43,7 +39,6 @@ configuration:
   required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
-  defaultvalue: A - Completely reliable
   display: Source Reliability
   name: feedReliability
   options:
@@ -55,8 +50,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- defaultvalue: suddenDeath
-  name: feedExpirationPolicy
+- name: feedExpirationPolicy
   display: ""
   options:
   - never
@@ -65,16 +59,19 @@ configuration:
   - suddenDeath
   required: false
   type: 17
-- defaultvalue: '20160'
-  display: ""
+- display: ""
   name: feedExpirationInterval
   required: false
   type: 1
-- defaultvalue: '30'
-  display: Feed Fetch Interval
+- display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
   type: 19
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
 - additionalinfo: When selected, the exclusion list is ignored for indicators from
     this feed. This means that if an indicator from this feed is on the exclusion
     list, the indicator might still be added to the system.
@@ -82,9 +79,7 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
-  defaultvalue: "true"
-- defaultvalue: ''
-  display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -92,7 +87,11 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: The Office 365 IP Address and URL web service is a read-only API provided by Microsoft to expose the URLs and IPs used by Office 365. The Office 365 Feed integration fetches indicators from the service, with which you can create a list (whitelist, blacklist, EDL, etc.) for your SIEM or firewall service to ingest and apply to its policy rules.
+description: The Office 365 IP Address and URL web service is a read-only API provided
+  by Microsoft to expose the URLs and IPs used by Office 365. The Office 365 Feed
+  integration fetches indicators from the service, with which you can create a list
+  (whitelist, blacklist, EDL, etc.) for your SIEM or firewall service to ingest and
+  apply to its policy rules.
 display: Office 365 Feed
 name: Office 365 Feed
 script:
@@ -122,7 +121,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: office365-get-indicators
-  dockerimage: demisto/python3:3.8.3.8715
+  dockerimage: demisto/python3:3.8.3.9324
   feed: true
   isfetch: false
   longRunning: false
