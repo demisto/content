@@ -518,15 +518,13 @@ view: |-
   }
 inputs:
 - key: CVES
-  value:
-    simple: CVE-2017-11882,CVE-2017-0199,CVE-2017-5638,CVE-2012-0158
+  value: {}
   required: true
   description: Specify Common Vulnerabilities and Exposures (CVE). You can mention
     multiple cves by comma-separated list.
   playbookInputQuery:
 - key: TagName
-  value:
-    simple: DHS-Top-10
+  value: {}
   required: true
   description: Tags in RiskSense can be applied to assets, web applications, and vulnerabilities.
     Tags are useful in the soft grouping, workflow creation and to identify compliance-related
