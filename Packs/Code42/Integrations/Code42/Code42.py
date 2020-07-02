@@ -1149,7 +1149,7 @@ def handle_fetch_command(client):
     demisto.setIntegrationContext(integration_context)
 
 
-def try_run_command(command):
+def run_command(command):
     try:
         results = command()
         if not isinstance(results, tuple) and not isinstance(results, list):
@@ -1160,28 +1160,32 @@ def try_run_command(command):
         return_error(create_command_error_message(demisto.command(), e))
 
 
-def run_code42_integration():
+def create_client():
     username = demisto.params().get("credentials").get("identifier")
     password = demisto.params().get("credentials").get("password")
     base_url = demisto.params().get("console_url")
     verify_certificate = not demisto.params().get("insecure", False)
     proxy = demisto.params().get("proxy", False)
-    LOG("Command being called is {0}.".format(demisto.command()))
-    client = Code42Client(
+    return Code42Client(
         base_url=base_url,
         sdk=None,
         auth=(username, password),
         verify=verify_certificate,
         proxy=proxy,
     )
+
+
+def run_code42_integration():
+    client = create_client()
     commands = get_command_map()
     command = demisto.command()
+    LOG("Command being called is {0}.".format(command))
     if command == "test-module":
         handle_test_command(client)
     elif command == "fetch-incidents":
         handle_fetch_command(client)
     elif command in commands:
-        try_run_command(lambda: commands[command](client, demisto.args()))
+        run_command(lambda: commands[command](client, demisto.args()))
 
 
 def main():
