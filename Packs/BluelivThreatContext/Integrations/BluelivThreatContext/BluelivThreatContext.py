@@ -154,7 +154,7 @@ def blueliv_threatActor(client: Client, args):
         result = client.get_threat_actor_info(threatActorId)
 
         if result:
-            name = str(result["data"]["attributes"]["name"])
+            name = str(demisto.get(result, "data.attributes.name"))
             description = str(demisto.get(result, "data.attributes.description"))
             objective = str(demisto.get(result, "data.attributes.objective"))
             sophistication = str(demisto.get(result, "data.attributes.sophistication"))
@@ -266,7 +266,7 @@ def blueliv_campaign(client: Client, args):
     campaignName = args.get('campaign', '')
     campaignId = args.get('campaign_id', '')
 
-    if campaignId:
+    if not campaignId:
         campaignId = client.search_by_name('campaign', campaignName)
     if not campaignId:
         notFound()
