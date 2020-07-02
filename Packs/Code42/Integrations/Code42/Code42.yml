@@ -419,11 +419,20 @@ script:
       description: The username of the High Risk Employee.
       type: Unknown
   - arguments:
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: To filter results by employees who have these risk tags. Space
         delimited.
       isArray: false
       name: risktags
+      predefined:
+      - PERFORMANCE_CONCERNS
+      - PERFORMANCE_CONCERNS
+      - POOR_SECURITY_PRACTICES
+      - HIGH_IMPACT_EMPLOYEE
+      - ELEVATED_ACCESS_PRIVILEGES
+      - FLIGHT_RISK
+      - CONTRACT_EMPLOYEE
       required: false
       secret: false
     - default: false
@@ -453,10 +462,19 @@ script:
       name: username
       required: true
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: Space-delimited risk tags to associate with the High Risk Employee.
       isArray: false
       name: risktags
+      predefined:
+      - PERFORMANCE_CONCERNS
+      - PERFORMANCE_CONCERNS
+      - POOR_SECURITY_PRACTICES
+      - HIGH_IMPACT_EMPLOYEE
+      - ELEVATED_ACCESS_PRIVILEGES
+      - FLIGHT_RISK
+      - CONTRACT_EMPLOYEE
       required: true
       secret: false
     deprecated: false
@@ -480,10 +498,19 @@ script:
       name: username
       required: true
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: Space-delimited risk tags to disassociate from the High Risk Employee.
       isArray: false
       name: risktags
+      predefined:
+      - PERFORMANCE_CONCERNS
+      - PERFORMANCE_CONCERNS
+      - POOR_SECURITY_PRACTICES
+      - HIGH_IMPACT_EMPLOYEE
+      - ELEVATED_ACCESS_PRIVILEGES
+      - FLIGHT_RISK
+      - CONTRACT_EMPLOYEE
       required: true
       secret: false
     deprecated: false
