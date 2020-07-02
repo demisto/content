@@ -478,8 +478,6 @@ def file_reputation(client: Client, args: Dict) -> CommandResults:
             else:
                 raise Exception(err)
 
-
-
         score = calculate_dbot_score(application_data)
 
         dbot_score = Common.DBotScore(
