@@ -127,11 +127,11 @@ def notFound():
     demisto.results({
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
-        'Contents': False,
+        'Contents': "",
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': "No results found.",
         'EntryContext': {
-            'threatContext.hasResults': False
+            'BluelivThreatContext': {}
         }
     })
     sys.exit(0)
@@ -139,8 +139,8 @@ def notFound():
 
 # Get information about threat actors #
 def blueliv_threatActor(client: Client, args):
-    threatActorId = args.get('threatActor_id', False)
-    threatActorName = args.get('threatActor', False)
+    threatActorId = args.get('threatActor_id', '')
+    threatActorName = args.get('threatActor', '')
 
     if not threatActorId and not threatActorName:
         notFound()
@@ -224,35 +224,37 @@ def blueliv_threatActor(client: Client, args):
                 'ReadableContentsFormat': formats['markdown'],
                 'HumanReadable': tableToMarkdown("Blueliv Threat Actor info", human),
                 'EntryContext': {
-                    'BluelivThreatContext.threatContext.hasResults': 'true',
-                    'BluelivThreatContext.threatActor.name': name,
-                    'BluelivThreatContext.threatActor.description': description,
-                    'BluelivThreatContext.threatActor.objective': objective,
-                    'BluelivThreatContext.threatActor.sophistication': sophistication,
-                    'BluelivThreatContext.threatActor.lastSeen': lastSeen,
-                    'BluelivThreatContext.threatActor.active': active,
-                    'BluelivThreatContext.threatActor.milestones': milestones,
-                    'BluelivThreatContext.threatActor.milestoneIds': milestoneIds,
-                    'BluelivThreatContext.threatActor.tools': tools,
-                    'BluelivThreatContext.threatActor.toolIds': toolIds,
-                    'BluelivThreatContext.threatActor.campaigns': campaigns,
-                    'BluelivThreatContext.threatActor.campaignIds': campaignIds,
-                    'BluelivThreatContext.threatActor.signatures': signatures,
-                    'BluelivThreatContext.threatActor.signatureIds': signatureIds,
-                    'BluelivThreatContext.threatAactor.onlineServices': onlineServices,
-                    'BluelivThreatContext.threatActor.onlineServiceIds': onlineServiceIds,
-                    'BluelivThreatContext.threatActor.malware': malware,
-                    'BluelivThreatContext.threatActor.malwareIds': malwareIds,
-                    'BluelivThreatContext.threatAactor.threatTypes': threatTypes,
-                    'BluelivThreatContext.threatActor.threatTypeIds': threatTypeIds,
-                    'BluelivThreatContext.threatActor.fqdns': fqdns,
-                    'BluelivThreatContext.threatActor.fqdnIds': fqdnIds,
-                    'BluelivThreatContext.threatActor.attackPatterns': attackPatterns,
-                    'BluelivThreatContext.threatActor.attackPatternIds': attackPatternIds,
-                    'BluelivThreatContext.threatActor.ips': ips,
-                    'BluelivThreatContext.threatActor,ipIds': ipIds,
-                    'BluelivThreatContext.threatActor.targets': targets,
-                    'BluelivThreatContext. threatActor.targetIds': targetIds
+                    'BluelivThreatContext.threatActor(val.name && val.id == obj.id)': {
+                        'id': threatActorId,
+                        'name': name,
+                        'description': description,
+                        'objective': objective,
+                        'sophistication': sophistication,
+                        'lastSeen': lastSeen,
+                        'active': active,
+                        'milestones': milestones,
+                        'milestoneIds': milestoneIds,
+                        'tools': tools,
+                        'toolIds': toolIds,
+                        'campaigns': campaigns,
+                        'campaignIds': campaignIds,
+                        'signatures': signatures,
+                        'signatureIds': signatureIds,
+                        'onlineServices': onlineServices,
+                        'onlineServiceIds': onlineServiceIds,
+                        'malware': malware,
+                        'malwareIds': malwareIds,
+                        'threatTypes': threatTypes,
+                        'threatTypeIds': threatTypeIds,
+                        'fqdns': fqdns,
+                        'fqdnIds': fqdnIds,
+                        'attackPatterns': attackPatterns,
+                        'attackPatternIds': attackPatternIds,
+                        'ips': ips,
+                        'ipIds': ipIds,
+                        'targets': targets,
+                        'targetIds': targetIds
+                    }
                 }
             })
         else:
@@ -261,8 +263,8 @@ def blueliv_threatActor(client: Client, args):
 
 # Get campaign information
 def blueliv_campaign(client: Client, args):
-    campaignName = args.get('campaign', False)
-    campaignId = args.get('campaign_id', False)
+    campaignName = args.get('campaign', '')
+    campaignId = args.get('campaign_id', '')
 
     if campaignId:
         campaignId = client.search_by_name('campaign', campaignName)
@@ -329,25 +331,27 @@ def blueliv_campaign(client: Client, args):
                 'ReadableContentsFormat': formats['markdown'],
                 'HumanReadable': tableToMarkdown("Blueliv Campaign info", human),
                 'EntryContext': {
-                    'BluelivThreatContext.threatContext.hasResults': 'true',
-                    'BluelivThreatContext.campaign.name': name,
-                    'BluelivThreatContext.campaign.description': description,
-                    'BluelivThreatContext.campaign.lastSeen': lastSeen,
-                    'BluelivThreatContext.campaign.botnets': botnets,
-                    'BluelivThreatContext.campaign.botnetIds': botnetIds,
-                    'BluelivThreatContext.campaign.signatures': signatures,
-                    'BluelivThreatContext.campaign.signatureIds': signatureIds,
-                    'BluelivThreatContext.campaign.ips': ips,
-                    'BluelivThreatContext.campaign,ipIds': ipIds,
-                    'BluelivThreatContext.campaign.malware': malware,
-                    'BluelivThreatContext.campaign.malwareIds': malwareIds,
-                    'BluelivThreatContext.campaign.attackPatterns': attackPatterns,
-                    'BluelivThreatContext.campaign.attackPatternIds': attackPatternIds,
-                    'BluelivThreatContext.campaign.tools': tools,
-                    'BluelivThreatContext.campaign.toolIds': toolIds,
-                    'BluelivThreatContext.campaign.fqdns': fqdns,
-                    'BluelivThreatContext.campaign.fqdnIds': fqdnIds,
-                    'BluelivThreatContext.campaign.threatActorId': threatActorId
+                    'BluelivThreatContext.campaign(val.id && val.id == obj.id)': {
+                        'id': campaignId,
+                        'name': name,
+                        'description': description,
+                        'lastSeen': lastSeen,
+                        'botnets': botnets,
+                        'botnetIds': botnetIds,
+                        'signatures': signatures,
+                        'signatureIds': signatureIds,
+                        'ips': ips,
+                        'ipIds': ipIds,
+                        'malware': malware,
+                        'malwareIds': malwareIds,
+                        'attackPatterns': attackPatterns,
+                        'attackPatternIds': attackPatternIds,
+                        'tools': tools,
+                        'toolIds': toolIds,
+                        'fqdns': fqdns,
+                        'fqdnIds': fqdnIds,
+                        'threatActorId': threatActorId
+                    }
                 }
             })
         else:
@@ -356,8 +360,8 @@ def blueliv_campaign(client: Client, args):
 
 # Get detailed malware information #
 def blueliv_malware(client: Client, args):
-    hashValue = args.get('hash', False)
-    malwareId = args.get('hash_id', False)
+    hashValue = args.get('hash', '')
+    malwareId = args.get('hash_id', '')
 
     if hashValue:
         if len(hashValue) == 40:
@@ -374,7 +378,9 @@ def blueliv_malware(client: Client, args):
 
         if not result:
             notFound()
-        malwareId = demisto.get(result, "data.[0].id")
+
+        if result.get("data", []):
+            malwareId = demisto.get(result.get("data")[0], "id")
 
     if malwareId:
         result = client.get_malware_info(malwareId)
@@ -462,39 +468,41 @@ def blueliv_malware(client: Client, args):
                 'ReadableContentsFormat': formats['markdown'],
                 'HumanReadable': tableToMarkdown("Blueliv Malware file info", human),
                 'EntryContext': {
-                    'BluelivThreatContext.threatContext.hasResults': 'true',
-                    'BluelivThreatContext.malware.hash.sha256': sha256,
-                    'BluelivThreatContext.malware.hash.sha1': sha1,
-                    'BluelivThreatContext.malware.hash.md5': md5,
-                    'BluelivThreatContext.malware.fileType': fileType,
-                    'BluelivThreatContext.malware.hasCandC': hasCandC,
-                    'BluelivThreatContext.malware.memory': memory,
-                    'BluelivThreatContext.malware.procMemory': procMemory,
-                    'BluelivThreatContext.malware.analysisStatus': analysisStatus,
-                    'BluelivThreatContext.malware.dropped': dropped,
-                    'BluelivThreatContext.malware.buffers': buffers,
-                    'BluelivThreatContext.malware.hasNetwork': hasNetwork,
-                    'BluelivThreatContext.malware.risk': risk,
-                    'BluelivThreatContext.malware.campaigns': campaigns,
-                    'BluelivThreatContext.malware.campaignIds': campaignIds,
-                    'BluelivThreatContext.malware.signatures': signatures,
-                    'BluelivThreatContext.malware.signatureIds': signatureIds,
-                    'BluelivThreatContext.malware.threatActors': threatActors,
-                    'BluelivThreatContext.malware.threatActorIds': threatActorIds,
-                    'BluelivThreatContext.malware.sources': sources,
-                    'BluelivThreatContext.malware.sourceIds': sourceIds,
-                    'BluelivThreatContext.malware.tags': tags,
-                    'BluelivThreatContext.malware.tagIds': tagIds,
-                    'BluelivThreatContext.malware.crimeServers': crimeServers,
-                    'BluelivThreatContext.malware.crimeserverIds': crimeServerIds,
-                    'BluelivThreatContext.malware.fqdns': fqdns,
-                    'BluelivThreatContext.malware.fqdnIds': fqdnIds,
-                    'BluelivThreatContext.malware.types': types,
-                    'BluelivThreatContext.malware.typeIds': typeIds,
-                    'BluelivThreatContext.malware.sparks': sparks,
-                    'BluelivThreatContext.malware.sparkIds': sparkIds,
-                    'BluelivThreatContext.malware.ips': ips,
-                    'BluelivThreatContext.malware.ipIds': ipIds
+                    'BluelivThreatContext.malware(val.id && val.id == obj.id)': {
+                        'id': malwareId,
+                        'hash.sha256': sha256,
+                        'hash.sha1': sha1,
+                        'hash.md5': md5,
+                        'fileType': fileType,
+                        'hasCandC': hasCandC,
+                        'memory': memory,
+                        'procMemory': procMemory,
+                        'analysisStatus': analysisStatus,
+                        'dropped': dropped,
+                        'buffers': buffers,
+                        'hasNetwork': hasNetwork,
+                        'risk': risk,
+                        'campaigns': campaigns,
+                        'campaignIds': campaignIds,
+                        'signatures': signatures,
+                        'signatureIds': signatureIds,
+                        'threatActors': threatActors,
+                        'threatActorIds': threatActorIds,
+                        'sources': sources,
+                        'sourceIds': sourceIds,
+                        'tags': tags,
+                        'tagIds': tagIds,
+                        'crimeServers': crimeServers,
+                        'crimeserverIds': crimeServerIds,
+                        'fqdns': fqdns,
+                        'fqdnIds': fqdnIds,
+                        'types': types,
+                        'typeIds': typeIds,
+                        'sparks': sparks,
+                        'sparkIds': sparkIds,
+                        'ips': ips,
+                        'ipIds': ipIds
+                    }
                 }
             })
         else:
@@ -504,8 +512,8 @@ def blueliv_malware(client: Client, args):
 
 
 def blueliv_indicatorIp(client: Client, args):
-    nameIP = args.get('IP', False)
-    valueIP = args.get('IP_id', False)
+    nameIP = args.get('IP', '')
+    valueIP = args.get('IP_id', '')
 
     if not valueIP and not nameIP:
         notFound()
@@ -567,6 +575,7 @@ def blueliv_indicatorIp(client: Client, args):
             botIds = client.get_relationships("ip", valueIP, "bot")
 
         human = getHuman(result)
+        ipName = valueIP.replace(".", "")
         demisto.results({
             'ContentsFormat': formats['json'],
             'Type': entryTypes['note'],
@@ -574,26 +583,28 @@ def blueliv_indicatorIp(client: Client, args):
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown("Blueliv IP info", human),
             'EntryContext': {
-                'BluelivThreatContext.threatContext.hasResults': 'true',
-                'BluelivThreatContext.indicator.lastSeen': lastSeen,
-                'BluelivThreatContext.indicator.risk': risk,
-                'BluelivThreatContext.indicator.latitude': latitude,
-                'BluelivThreatContext.indicator.longitude': longitude,
-                'BluelivThreatContext.indicator.countryId': countryId,
-                'BluelivThreatContext.indicator.campaigns': campaigns,
-                'BluelivThreatContext.indicator.campaignIds': campaignIds,
-                'BluelivThreatContext.indicator.signatures': signatures,
-                'BluelivThreatContext.indicator.signatureIds': signatureIds,
-                'BluelivThreatContext.indicator.threatActors': threatActors,
-                'BluelivThreatContext.indicator.threatActorIds': threatActorIds,
-                'BluelivThreatContext.indicator.tags': tags,
-                'BluelivThreatContext.indicator.tagIds': tagIds,
-                'BluelivThreatContext.indicator.fqdns': fqdns,
-                'BluelivThreatContext.indicator.fqdnIds': fqdnIds,
-                'BluelivThreatContext.indicator.sparks': sparks,
-                'BluelivThreatContext.indicator.sparkIds': sparkIds,
-                'BluelivThreatContext.indicator.bots': bots,
-                'BluelivThreatContext.indicator.botIds': botIds
+                'BluelivThreatContext.indicator(val.ipName && val.ipName == obj.ipName)': {
+                    "ipName": ipName,
+                    'lastSeen': lastSeen,
+                    'risk': risk,
+                    'latitude': latitude,
+                    'longitude': longitude,
+                    'countryId': countryId,
+                    'campaigns': campaigns,
+                    'campaignIds': campaignIds,
+                    'signatures': signatures,
+                    'signatureIds': signatureIds,
+                    'threatActors': threatActors,
+                    'threatActorIds': threatActorIds,
+                    'tags': tags,
+                    'tagIds': tagIds,
+                    'fqdns': fqdns,
+                    'fqdnIds': fqdnIds,
+                    'sparks': sparks,
+                    'sparkIds': sparkIds,
+                    'bots': bots,
+                    'botIds': botIds
+                }
             }
         })
     else:
@@ -601,8 +612,8 @@ def blueliv_indicatorIp(client: Client, args):
 
 
 def blueliv_indicatorFqdn(client: Client, args):
-    nameFQDN = args.get('FQDN', False)
-    valueFQDN = args.get('FQDN_id', False)
+    nameFQDN = args.get('FQDN', '')
+    valueFQDN = args.get('FQDN_id', '')
 
     if not valueFQDN and not nameFQDN:
         notFound()
@@ -668,23 +679,25 @@ def blueliv_indicatorFqdn(client: Client, args):
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown("Blueliv FQDN info", human),
             'EntryContext': {
-                'BluelivThreatContext.threatContext.hasResults': 'true',
-                'BluelivThreatContext.indicator.lastSeen': lastSeen,
-                'BluelivThreatContext.indicator.risk': risk,
-                'BluelivThreatContext.indicator.campaigns': campaigns,
-                'BluelivThreatContext.indicator.campaignIds': campaignIds,
-                'BluelivThreatContext.indicator.signatures': signatures,
-                'BluelivThreatContext.indicator.signatureIds': signatureIds,
-                'BluelivThreatContext.indicator.threatActors': threatActors,
-                'BluelivThreatContext.indicator.threatActorIds': threatActorIds,
-                'BluelivThreatContext.indicator.tags': tags,
-                'BluelivThreatContext.indicator.tagids': tagIds,
-                'BluelivThreatContext.indicator.crimeServers': crimeServers,
-                'BluelivThreatContext.indicator.crimeServerIds': crimeServerIds,
-                'BluelivThreatContext.indicator.sparks': sparks,
-                'BluelivThreatContext.indicator.sparkIds': sparkIds,
-                'BluelivThreatContext.indicator.ips': ips,
-                'BluelivThreatContext.indicator.ipIds': ipIds
+                'BluelivThreatContext.indicator(val.id && val.id == obj.id)': {
+                    'id': valueFQDN,
+                    'lastSeen': lastSeen,
+                    'risk': risk,
+                    'campaigns': campaigns,
+                    'campaignIds': campaignIds,
+                    'signatures': signatures,
+                    'signatureIds': signatureIds,
+                    'threatActors': threatActors,
+                    'threatActorIds': threatActorIds,
+                    'tags': tags,
+                    'tagids': tagIds,
+                    'crimeServers': crimeServers,
+                    'crimeServerIds': crimeServerIds,
+                    'sparks': sparks,
+                    'sparkIds': sparkIds,
+                    'ips': ips,
+                    'ipIds': ipIds
+                }
             }
         })
     else:
@@ -693,8 +706,8 @@ def blueliv_indicatorFqdn(client: Client, args):
 
 # Get information about the crime server related with the provided URL
 def blueliv_indicatorCs(client: Client, args):
-    nameCS = args.get('CS', False)
-    valueCS = args.get('CS_id', False)
+    nameCS = args.get('CS', '')
+    valueCS = args.get('CS_id', '')
 
     if not valueCS and not nameCS:
         notFound()
@@ -749,24 +762,26 @@ def blueliv_indicatorCs(client: Client, args):
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown("Blueliv Crime Server info", human),
             'EntryContext': {
-                'BluelivThreatContext.threatContext.hasResults': 'true',
-                'BluelivThreatContext.indicator.lastSeen': lastSeen,
-                'BluelivThreatContext.indicator.status': status,
-                'BluelivThreatContext.indicator.risk': risk,
-                'BluelivThreatContext.indicator.isFalsePositive': isFalsePositive,
-                'BluelivThreatContext.indicator.crimeServerUrl': crimeServerUrl,
-                'BluelivThreatContext.indicator.creditCardsCount': creditCardsCount,
-                'BluelivThreatContext.indicator.credentialsCount': credentialsCount,
-                'BluelivThreatContext.indicator.botsCount': botsCount,
-                'BluelivThreatContext.indicator.fqdnId': fqdnId,
-                'BluelivThreatContext.indicator.malware': malware,
-                'BluelivThreatContext.indicator.malwareIds': malwareIds,
-                'BluelivThreatContext.indicator.tags': tags,
-                'BluelivThreatContext.indicator.tagIds': tagIds,
-                'BluelivThreatContext.indicator.sparks': sparks,
-                'BluelivThreatContext.indicator.sparkIds': sparkIds,
-                'BluelivThreatContext.indicator.sources': sources,
-                'BluelivThreatContext.indicator.sourceIds': sourceIds
+                'BluelivThreatContext.indicator(val.id && val.id == obj.id)': {
+                    'id': valueCS,
+                    'lastSeen': lastSeen,
+                    'status': status,
+                    'risk': risk,
+                    'isFalsePositive': isFalsePositive,
+                    'crimeServerUrl': crimeServerUrl,
+                    'creditCardsCount': creditCardsCount,
+                    'credentialsCount': credentialsCount,
+                    'botsCount': botsCount,
+                    'fqdnId': fqdnId,
+                    'malware': malware,
+                    'malwareIds': malwareIds,
+                    'tags': tags,
+                    'tagIds': tagIds,
+                    'sparks': sparks,
+                    'sparkIds': sparkIds,
+                    'sources': sources,
+                    'sourceIds': sourceIds
+                }
             }
         })
     else:
@@ -775,8 +790,8 @@ def blueliv_indicatorCs(client: Client, args):
 
 # Get information about attack patterns
 def blueliv_attackPattern(client: Client, args):
-    attackPatternName = args.get('attackPattern', False)
-    attackPatternId = args.get('attackPattern_id', False)
+    attackPatternName = args.get('attackPattern', '')
+    attackPatternId = args.get('attackPattern_id', '')
 
     if attackPatternId:
         attackPatternId = int(attackPatternId)
@@ -825,19 +840,21 @@ def blueliv_attackPattern(client: Client, args):
                 'ReadableContentsFormat': formats['markdown'],
                 'HumanReadable': tableToMarkdown("Blueliv Attack Pattern info", human),
                 'EntryContext': {
-                    'BluelivThreatContext.threatContext.hasResults': 'true',
-                    'BluelivThreatContext.attackPattern.name': name,
-                    'BluelivThreatContext.attackPattern.description': description,
-                    'BluelivThreatContext.attackPattern.updatedAt': updatedAt,
-                    'BluelivThreatContext.attackPattern.serverity': serverity,
-                    'BluelivThreatContext.attackPattern.signatures': signatures,
-                    'BluelivThreatContext.attackPattern.signatureIds': signatureIds,
-                    'BluelivThreatContext.attackPattern.campaigns': campaigns,
-                    'BluelivThreatContext.attackPattern.campaignIds': campaignIds,
-                    'BluelivThreatContext.attackPattern.threatActors': threatActors,
-                    'BluelivThreatContext.attackPattern.threatActorIds': threatActorIds,
-                    'BluelivThreatContext.attackPattern.cves': cves,
-                    'BluelivThreatContext.attackPattern.cveIds': cveIds
+                    'BluelivThreatContext.attackPattern(val.id && val.id == obj.id)': {
+                        'id': attackPatternId,
+                        'name': name,
+                        'description': description,
+                        'updatedAt': updatedAt,
+                        'serverity': serverity,
+                        'signatures': signatures,
+                        'signatureIds': signatureIds,
+                        'campaigns': campaigns,
+                        'campaignIds': campaignIds,
+                        'threatActors': threatActors,
+                        'threatActorIds': threatActorIds,
+                        'cves': cves,
+                        'cveIds': cveIds
+                    }
                 }
             })
         else:
@@ -848,8 +865,8 @@ def blueliv_attackPattern(client: Client, args):
 
 # Get information about tools
 def blueliv_tool(client: Client, args):
-    toolName = args.get('tool', False)
-    toolId = args.get('tool_id', False)
+    toolName = args.get('tool', '')
+    toolId = args.get('tool_id', '')
 
     if not toolId:
         toolId = client.search_by_name('tool', toolName)
@@ -888,16 +905,18 @@ def blueliv_tool(client: Client, args):
                 'ReadableContentsFormat': formats['markdown'],
                 'HumanReadable': tableToMarkdown("Blueliv Tool info", human),
                 'EntryContext': {
-                    'BluelivThreatContext.threatContext.hasResults': 'true',
-                    'BluelivThreatContext.tool.name': name,
-                    'BluelivThreatContext.tool.description': description,
-                    'BluelivThreatContext.tool.lastSeen': lastSeen,
-                    'BluelivThreatContext.tool.campaigns': campaigns,
-                    'BluelivThreatContext.tool.campaignIds': campaignIds,
-                    'BluelivThreatContext.tool.signatures': signatures,
-                    'BluelivThreatContext.tool.signatureIds': signatureIds,
-                    'BluelivThreatContext.tool.threatActors': threatActors,
-                    'BluelivThreatContext.tool.threatActorIds': threatActorIds
+                    'BluelivThreatContext.tool(val.id && val.id == obj.id)': {
+                        'id': toolId,
+                        'name': name,
+                        'description': description,
+                        'lastSeen': lastSeen,
+                        'campaigns': campaigns,
+                        'campaignIds': campaignIds,
+                        'signatures': signatures,
+                        'signatureIds': signatureIds,
+                        'threatActors': threatActors,
+                        'threatActorIds': threatActorIds
+                    }
                 }
             })
         else:
@@ -907,8 +926,8 @@ def blueliv_tool(client: Client, args):
 
 
 def blueliv_signature(client: Client, args):
-    signatureName = args.get('signature', False)
-    signatureId = args.get('signature_id', False)
+    signatureName = args.get('signature', '')
+    signatureId = args.get('signature_id', '')
 
     if not signatureId:
         signatureId = client.search_by_name('signature', signatureName)
@@ -935,12 +954,14 @@ def blueliv_signature(client: Client, args):
                 'HumanReadable': tableToMarkdown("Blueliv Signature info", human),
                 'ReadableContentsFormat': formats['markdown'],
                 'EntryContext': {
-                    'BluelivThreatContext.threatContext.hasResults': 'true',
-                    'BluelivThreatContext.signature.name': name,
-                    'BluelivThreatContext.signature.type': signatureType,
-                    'BluelivThreatContext.signature.updatedAt': updatedAt,
-                    'BluelivThreatContext.signature.malware': malware,
-                    'BluelivThreatContext.signature.malwareIds': malwareIds
+                    'BluelivThreatContext.signature(val.id && val.id == obj.id)': {
+                        'id': signatureId,
+                        'name': name,
+                        'type': signatureType,
+                        'updatedAt': updatedAt,
+                        'malware': malware,
+                        'malwareIds': malwareIds
+                    }
                 }
             })
         else:
@@ -951,8 +972,8 @@ def blueliv_signature(client: Client, args):
 
 # Get inforamtion abouth the provided CVE code
 def blueliv_cve(client: Client, args):
-    cveCode = args.get('CVE', False)
-    vulnId = args.get('CVE_id', False)
+    cveCode = args.get('CVE', '')
+    vulnId = args.get('CVE_id', '')
 
     if not vulnId:
         vulnId = cveCode
@@ -1011,25 +1032,27 @@ def blueliv_cve(client: Client, args):
             'HumanReadable': tableToMarkdown("Blueliv CVE info", human),
             'ReadableContentsFormat': formats['markdown'],
             'EntryContext': {
-                'BluelivThreatContext.threatContext.hasResults': True,
-                'BluelivThreatContext.cve.name': name,
-                'BluelivThreatContext.cve.description': description,
-                'BluelivThreatContext.cve.updatedAt': updatedAt,
-                'BluelivThreatContext.cve.score': score,
-                'BluelivThreatContext.cve.attackPatterns': attackPatterns,
-                'BluelivThreatContext.cve.attackPatternIds': attackPatternIds,
-                'BluelivThreatContext.cve.signatures': signatures,
-                'BluelivThreatContext.cve.signatureIds': signatureIds,
-                'BluelivThreatContext.cve.tags': tags,
-                'BluelivThreatContext.cve.tagIds': tagIds,
-                'BluelivThreatContext.cve.crimeServers': crimeServers,
-                'BluelivThreatContext.cve.crimeServerIds,': crimeServerIds,
-                'BluelivThreatContext.cve.sparks': sparks,
-                'BluelivThreatContext.cve.sparkIds': sparkIds,
-                'BluelivThreatContext.cve.malware': malware,
-                'BluelivThreatContext.cve.malwareIds': malwareIds,
-                'BluelivThreatContext.cve.exploits': exploitsTableData,
-                'BluelivThreatContext.cve.platforms': platformsTableData
+                'BluelivThreatContext.cve(val.id && val.id == obj.id)': {
+                    'id': vulnId,
+                    'name': name,
+                    'description': description,
+                    'updatedAt': updatedAt,
+                    'score': score,
+                    'attackPatterns': attackPatterns,
+                    'attackPatternIds': attackPatternIds,
+                    'signatures': signatures,
+                    'signatureIds': signatureIds,
+                    'tags': tags,
+                    'tagIds': tagIds,
+                    'crimeServers': crimeServers,
+                    'crimeServerIds,': crimeServerIds,
+                    'sparks': sparks,
+                    'sparkIds': sparkIds,
+                    'malware': malware,
+                    'malwareIds': malwareIds,
+                    'exploits': exploitsTableData,
+                    'platforms': platformsTableData
+                }
             }
         })
     else:
@@ -1040,7 +1063,7 @@ def blueliv_cve(client: Client, args):
 def main():
     params = demisto.params()
     server_url = params.get('url')
-    verify_ssl = not params.get('unsecure', False)
+    verify_ssl = not params.get('unsecure', '')
     proxy = params.get('proxy')
     username = params['credentials']['identifier']
     password = params['credentials']['password']
