@@ -12,6 +12,9 @@ from typing import Optional, Pattern, Dict, Any, Tuple, Union
 # disable insecure warnings
 urllib3.disable_warnings()
 
+# Globals
+TAGS = 'feedTags'
+
 
 class Client(BaseClient):
     def __init__(self, url: str, feed_url_to_config: Optional[Dict[str, dict]] = None, fieldnames: str = '',
@@ -244,7 +247,9 @@ def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tup
     return fields_mapping
 
 
-def fetch_indicators_command(client: Client, default_indicator_type: str, auto_detect: bool, **kwargs):
+def fetch_indicators_command(client: Client, default_indicator_type: str, auto_detect: bool, tags: list = None, **kwargs):
+    if tags is None:
+        tags = []
     iterator = client.build_iterator(**kwargs)
     indicators = []
     config = client.feed_url_to_config or {}
@@ -265,6 +270,7 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
                     indicator = {
                         'value': value,
                         'type': indicator_type,
+                        'tags': tags,
                         'rawJSON': raw_json,
                         'fields': create_fields_mapping(raw_json, mapping) if mapping else {}
                     }
@@ -272,11 +278,13 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
     return indicators
 
 
-def get_indicators_command(client, args):
+def get_indicators_command(client, args, tags=None):
+    if tags is None:
+        tags = []
     itype = args.get('indicator_type', demisto.params().get('indicator_type'))
     limit = int(args.get('limit'))
     auto_detect = demisto.params().get('auto_detect_type')
-    indicators_list = fetch_indicators_command(client, itype, auto_detect)
+    indicators_list = fetch_indicators_command(client, itype, auto_detect, tags)
     entry_result = indicators_list[:limit]
     hr = tableToMarkdown('Indicators', entry_result, headers=['value', 'type', 'fields'])
     return hr, {}, indicators_list
@@ -285,6 +293,7 @@ def get_indicators_command(client, args):
 def feed_main(feed_name, params=None, prefix=''):
     if not params:
         params = {k: v for k, v in demisto.params().items() if v is not None}
+    tags = argToList(params.get(TAGS))
     handle_proxy()
     client = Client(**params)
     command = demisto.command()
@@ -299,14 +308,19 @@ def feed_main(feed_name, params=None, prefix=''):
     }
     try:
         if command == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, params.get('indicator_type'), params.get('auto_detect_type'))
+            indicators = fetch_indicators_command(
+                client,
+                params.get('indicator_type'),
+                params.get('auto_detect_type'),
+                tags=tags
+            )
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)  # type: ignore
         else:
             args = demisto.args()
             args['feed_name'] = feed_name
-            readable_output, outputs, raw_response = commands[command](client, args)
+            readable_output, outputs, raw_response = commands[command](client, args, tags)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         err_msg = f'Error in {feed_name} Integration - Encountered an issue with createIndicators' if \
