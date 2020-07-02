@@ -1,7 +1,8 @@
-id: 3635efba-6320-42ed-84fa-4795a30c7308
-version: 38
+id: Handle TD events
+version: -1
 name: Handle TD events
 starttaskid: "0"
+description: Playbook to enritch TD events
 tasks:
   "0":
     id: "0"
@@ -13,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: Start handling TD event
     nexttasks:
       '#none#':
       - "1"
@@ -159,12 +161,15 @@ tasks:
       name: Check if the Incident has a blob
       type: condition
       iscommand: false
+      description: Check if the Incident has a blob or not
       brand: ""
     nexttasks:
       '#default#':
       - "7"
       "yes":
       - "4"
+      "no":
+      - "7"
     separatecontext: false
     conditions:
     - label: "YES"
@@ -202,6 +207,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: All done!
     separatecontext: false
     view: |-
       {
@@ -264,5 +270,10 @@ inputs: []
 outputs:
 - contextPath: CTS.EventID
   type: string
+  description: Event ID
 - contextPath: CTS.OccuredTime
   type: unknown
+  description: Event Time
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
