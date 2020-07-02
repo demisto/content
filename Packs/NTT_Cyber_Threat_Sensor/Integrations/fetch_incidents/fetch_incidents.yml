@@ -1,6 +1,6 @@
 commonfields:
   id: NTT Cyber Threat Sensor
-  version: 1.0.0
+  version: -1
 name: NTT Cyber Threat Sensor
 display: NTT Cyber Threat Sensor
 category: Network Security
@@ -33,12 +33,12 @@ configuration:
   required: true
 - display: Fetch incidents
   name: isFetch
-  defaultvalue: ""
+  defaultvalue: true
   type: 8
   required: false
 - display: Incident type
   name: incidentType
-  defaultvalue: ""
+  defaultvalue: "TD Incident"
   type: 13
   required: false
 - display: The base URL for the backend to consume from
@@ -125,7 +125,7 @@ script:
       type: boolean
     description: Collecting blobs, most commonly pcap from an incident
     execution: true
-  dockerimage: demisto/python3:3.8.1.6120
+  dockerimage: demisto/python3:3.8.3.9324
   isfetch: true
   runonce: false
   subtype: python3
