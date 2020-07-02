@@ -25,7 +25,7 @@ configuration:
   name: ITEMS_TO_FETCH
   defaultvalue: 20
   type: 0
-  required: true  
+  required: true
 - display: The unique key for accessing the alerts and active response recommendations
   name: SOARTOKEN
   defaultvalue: <SOARTOKEN>
@@ -47,6 +47,14 @@ configuration:
   type: 0
   required: true
 
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
 script:
   script: '-'
   type: python
@@ -87,6 +95,7 @@ script:
     arguments:
     - name: event_id
       required: true
+      description: ID of the incident from whom to fetch blobs for
     - name: timestamp
       description: ISO timestamp for when alert was triggered
     outputs:
@@ -129,3 +138,6 @@ script:
   isfetch: true
   runonce: false
   subtype: python3
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

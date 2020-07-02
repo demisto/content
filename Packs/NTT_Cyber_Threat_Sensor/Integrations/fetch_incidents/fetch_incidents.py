@@ -32,6 +32,7 @@ HEADERS = {
 """HELPER FUNCTIONS
 """
 
+
 @logger
 def http_request(method, url_suffix, json_dict=None, params=None, headers=None, **kwargs):
     if not headers:
@@ -47,7 +48,7 @@ def http_request(method, url_suffix, json_dict=None, params=None, headers=None, 
             headers=headers,
             json=json_dict,
             **kwargs
-            )
+        )
     else:
         res = requests.request(
             method,
@@ -56,7 +57,7 @@ def http_request(method, url_suffix, json_dict=None, params=None, headers=None, 
             params=params,
             headers=headers,
             **kwargs
-            )
+        )
 
     # Handle error responses gracefully
     if res.status_code == 401:
@@ -65,6 +66,7 @@ def http_request(method, url_suffix, json_dict=None, params=None, headers=None, 
         raise DemistoException('Error in API call [{}] - {}'.format(res.status_code, res.reason))
     return res.json()
 
+
 def download(url):
     """Send the request to API and return the JSON response
     """
@@ -72,6 +74,7 @@ def download(url):
     if r.status_code != requests.codes.ok:
         return_error('Error in API call to download %s - %s' % (url, r.text))
     return r
+
 
 def item_to_incident(item):
     dt_string = item.get('last_updated')
@@ -92,6 +95,7 @@ def item_to_incident(item):
     }
 
     return incident
+
 
 def fetch_incidents():
     """Fetch incidents from the API
@@ -132,6 +136,7 @@ def fetch_incidents():
     demisto.setLastRun(last_run)
     return_results('ok')
 
+
 def fetch_blobs():
     """Download one or more blobs from provided event_id
     """
@@ -151,10 +156,10 @@ def fetch_blobs():
                 {
                     'Type': entryTypes['note'],
                     'EntryContext': ec,
-                    'HumanReadable': '### CTS blob delayd\n' +
-                                     'The download has been delayed for ' +
-                                     str(wait_delta.seconds - diff.seconds) +
-                                     ' seconds.',
+                    'HumanReadable': '### CTS blob delayd\n'
+                                     + 'The download has been delayed for '
+                                     + str(wait_delta.seconds - diff.seconds)
+                                     + ' seconds.',
                     'Contents': ec,
                     'ContentsFormat': formats['json']
                 }])
@@ -186,6 +191,7 @@ def fetch_blobs():
                 'ContentsFormat': formats['json']
             }])
 
+
 def test_module():
     """Test module to verify settings
     """
@@ -210,9 +216,9 @@ def test_module():
         errors.append('ITEMS_TO_FETCH has to be an integer')
     if len(errors) > 0:
         return_results(
-            {"Type" : entryTypes["error"],
-             "ContentsFormat" : formats["text"],
-             "Contents" : "Errors:\n{}".format("\n".join(errors))})
+            {"Type": entryTypes["error"],
+             "ContentsFormat": formats["text"],
+             "Contents": "Errors:\n{}".format("\n".join(errors))})
 
     # So far so good, now test the API call
     data['test'] = True
@@ -221,9 +227,10 @@ def test_module():
         return_results('ok')
     else:
         return_results(
-            {"Type" : entryTypes["error"],
-             "ContentsFormat" : formats["text"],
-             "Contents" : "Errors:\n%s" % repr(result)})
+            {"Type": entryTypes["error"],
+             "ContentsFormat": formats["text"],
+             "Contents": "Errors:\n%s" % repr(result)})
+
 
 """COMMANDS MANAGER / SWITCH PANEL
 """
@@ -232,6 +239,7 @@ COMMANDS = {
     'fetch-incidents': fetch_incidents,
     'fetch-blobs': fetch_blobs
 }
+
 
 def main():
     """Main function
@@ -256,6 +264,7 @@ def main():
             raise
         else:
             return_error('An error occurred: {}'.format(str(e)))
+
 
 # python2 uses __builtin__ python3 uses builtins
 if __name__ == "__builtin__" or __name__ == "builtins":
