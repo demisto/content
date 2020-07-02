@@ -1,19 +1,8 @@
-from PcapFileExtractor import say_hello, say_hello_command
+from PcapFileExtractor import find_files_protocol
 
 
-def test_say_hello():
-    result = say_hello('DBot')
+def test_find_protocol():
+    file_path = './TestData/tftp_rrq.pcap'
+    protocol, _ = find_files_protocol(file_path)
+    assert 'tftp' == protocol
 
-    assert result == 'Hello DBot'
-
-
-def test_say_hello_command():
-    args = {
-        'name': 'DBot'
-    }
-
-    readable_output, outputs, raw_response = say_hello_command(args)
-
-    assert readable_output == '## Hello DBot'
-    assert outputs['HelloWorld']['hello'] == 'Hello DBot'
-    assert raw_response == 'Hello DBot'

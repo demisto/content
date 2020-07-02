@@ -21,9 +21,6 @@ outputs:
 - contextPath: PcapExtractedFiles.FileType
   description: File type.
   type: String
-- contextPath: PcapExtractedFiles.EntryID
-  description: The entry ID of the file.
-  type: String
 - contextPath: PcapExtractedFiles.SourceIP
   description: Extracted file source IP.
   type: String
@@ -42,7 +39,7 @@ outputs:
 - contextPath: PcapExtractedFiles.FileSHA256
   description: The SHA256 hash of the file.
   type: String
-- contextPath: PcapExtractedFiles.FileExtensaion
+- contextPath: PcapExtractedFiles.FileExtension
   description: The extension of the file.
   type: String
 script: '-'
