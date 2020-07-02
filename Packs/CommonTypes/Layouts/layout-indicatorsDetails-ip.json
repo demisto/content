@@ -5,7 +5,7 @@
 		"TypeName": "",
 		"id": "ipRep",
 		"kind": "indicatorsDetails",
-		"modified": "2020-03-26T12:49:38.832835+02:00",
+		"modified": "2020-07-02T10:12:52.396985+03:00",
 		"name": "",
 		"system": false,
 		"tabs": [
@@ -149,13 +149,13 @@
 								"startCol": 0
 							},
 							{
-                                "index": 7,
-                                "endCol": 2,
-                                "height": 24,
-                                "startCol": 0,
-                                "fieldId": "aggregatedreliability",
-                                "id": "b49a3ba0-6f8d-11ea-aeac-6dbd1bcce63e"
-                            }
+								"endCol": 2,
+								"fieldId": "aggregatedreliability",
+								"height": 24,
+								"id": "b49a3ba0-6f8d-11ea-aeac-6dbd1bcce63e",
+								"index": 7,
+								"startCol": 0
+							}
 						],
 						"maxW": 3,
 						"minH": 1,
@@ -393,6 +393,32 @@
 						"w": 2,
 						"x": 1,
 						"y": 10
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "main-2ba6ff20-bc33-11ea-9755-ebbaf4d3af4d",
+						"items": [
+							{
+								"endCol": 6,
+								"fieldId": "feedrelatedindicators",
+								"height": 106,
+								"id": "49099460-bc33-11ea-9755-ebbaf4d3af4d",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Feed Related Indicators",
+						"static": false,
+						"w": 3,
+						"x": 0,
+						"y": 12
 					}
 				],
 				"type": "custom"
@@ -403,5 +429,5 @@
 	},
 	"typeId": "ipRep",
 	"version": -1,
-    "fromversion": "5.5.0"
+	"fromversion": "5.5.0"
 }
