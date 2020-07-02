@@ -1,5 +1,5 @@
 import shutil
-from typing import Dict, Tuple, Callable
+from typing import Dict, Tuple, Callable, List
 from dateparser import parse
 import urllib3
 from CommonServerPython import *
@@ -461,7 +461,7 @@ def file_reputation(client: Client, args: Dict) -> CommandResults:
     """
     hash_list = argToList(args.get('file'))
 
-    raw_response_list = []
+    raw_response_list: List = []
     file_indicator_list = []
     application_data_list = []
     headers = ['objectId', 'hash', 'name', 'version', 'classification', 'score', 'privacyEnum', 'securityEnum']
@@ -471,13 +471,14 @@ def file_reputation(client: Client, args: Dict) -> CommandResults:
         try:
             application = client.app_classification_get_request(app_hash, '')
             raw_response_list.extend(application)
+            application_data = application[0]
         except Exception as err:
             if 'Error in API call [404]' in str(err):
-                application = [{'hash': app_hash}]
+                application_data = {'hash': app_hash}
             else:
                 raise Exception(err)
 
-        application_data = application[0]
+
 
         score = calculate_dbot_score(application_data)
 
