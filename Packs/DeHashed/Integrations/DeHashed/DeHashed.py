@@ -117,7 +117,7 @@ def validate_filter_parameters(results_from_value, results_to_value):
         raise DemistoException(f'Argument "results_from" expected to be greater than zero, but given:'
                                f' {results_from_value}')
     elif results_to_value > results_from_value:
-        raise DemistoException(f'Argument "results_to" expected to be less than or equal to "results_from"')
+        raise DemistoException('Argument "results_to" expected to be less than or equal to "results_from"')
 
 
 def filter_results(
