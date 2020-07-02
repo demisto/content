@@ -3150,7 +3150,7 @@ This command is used to lookup single application details in depth. Command acce
 ### Application Details:
 |Address|Name|Network Name|Network Type|Discovered On|Last Found On|
 |---|---|---|---|---|---|
-| https://freebirddemo.dev.ccs.thatcompany.net | https://freebirddemo.dev.ccs.thatcompany.net | App-data | IP | 2019-06-12 | 2019-06-11 |
+| `https://freebirddemo.dev.ccs.thatcompany.net` | `https://freebirddemo.dev.ccs.thatcompany.net` | App-data | IP | 2019-06-12 | 2019-06-11 |
 |  |  |  |  |  |  |
 
 ### Findings Distribution:

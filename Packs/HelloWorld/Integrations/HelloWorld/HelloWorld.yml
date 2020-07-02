@@ -26,12 +26,14 @@ configuration:
   required: true
   type: 4
 - defaultvalue: '65'
-  display: Score threshold for ip reputation command (0-100)
+  display: Score threshold for IP reputation command
+  additionalinfo: Set this to determine the HelloWorld score that will determine if an IP is malicious (0-100)
   name: threshold_ip
   required: false
   type: 0
 - defaultvalue: '65'
-  display: Score threshold for domain reputation command (0-100)
+  display: Score threshold for domain reputation command
+  additionalinfo: Set this to determine the HelloWorld score that will determine if a domain is malicious (0-100)
   name: threshold_domain
   required: false
   type: 0
@@ -44,6 +46,7 @@ configuration:
   required: false
   type: 15
 - display: Fetch alerts with type
+  additionalinfo: Comma-separated list of types of alerts to fetch. Types might change over time. Some examples are 'Bug' and 'Vulnerability'
   name: alert_type
   required: false
   type: 0

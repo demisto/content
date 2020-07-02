@@ -19,7 +19,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Integration with Okta's cloud-based identity management service
+description: Integration with Okta's cloud-based identity management service.
 display: Okta v2
 name: Okta v2
 script:
@@ -66,7 +66,7 @@ script:
       secret: false
     deprecated: false
     description: Suspends a single user. This operation can only be performed on users with
-      an ACTIVE status. The user has a status of SUSPENDED when the process is completed.
+      an ACTIVE status. After the porcess is completed, the user's status is SUSPENDED.
     execution: false
     name: okta-suspend-user
   - arguments:
@@ -448,7 +448,7 @@ script:
     - default: false
       description: A comma-separated list of honorific suffix(es) of the user.
       isArray: false
-      name: honificSuffix
+      name: honorificSuffix
       required: false
       secret: false
     - default: false
@@ -909,8 +909,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Updates a user with a given login. All fields are optional, fields which
-      are not set will not be overridden.
+    description: Updates a user with a given login. All fields are optional. Fields which
+      are not set, will not be overwritten.
     execution: true
     name: okta-update-user
   - arguments:
@@ -1088,7 +1088,7 @@ script:
         OS fields can be derived from this field.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.os
-      description: The OS on which the client runs. For example, Microsoft
+      description: The operating system on which the client runs. For example, Microsoft
         Windows 10.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.browser
@@ -1197,7 +1197,7 @@ script:
       secret: false
     - default: false
       description: "The query parameter can be used to perform keyword matching against\
-        \ a LogEvents object’s attribute values. In order to satisfy the constraint,\
+        \ a LogEvents object’s attribute values. To satisfy the constraint,\
         \ all supplied keywords must be matched exactly. Note that matching is case-insensitive.\
         \  The following are some examples of common keyword filtering: \nEvents that\
         \ mention a specific city: query=San Francisco; \nEvents that mention a specific\
@@ -1259,7 +1259,7 @@ script:
         OS fields can be derived from this field.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.os
-      description: The operation system on which the client runs. For example, Microsoft
+      description: The operating system on which the client runs. For example, Microsoft
         Windows 10.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.browser
@@ -1406,7 +1406,7 @@ script:
         OS fields can be derived from this field.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.os
-      description: The OS on which the client runs. For example, Microsoft
+      description: The operating system on which the client runs. For example, Microsoft
         Windows 10.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.browser
@@ -1700,7 +1700,7 @@ script:
         OS fields can be derived from this field.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.os
-      description: The OS on which the client runs. For example, Microsoft
+      description: The operating system on which the client runs. For example, Microsoft
         Windows 10.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.browser
@@ -1825,6 +1825,131 @@ script:
       https://developer.okta.com/docs/reference/api/users/#user-sessions
     execution: false
     name: okta-clear-user-sessions
+  - name: okta-list-zones
+    arguments: []
+    outputs:
+    - contextPath: Okta.Zone.created
+      description: 'Zone creation timestamp, in the format 2020-04-06T22:23:12.000Z.'
+      type: Date
+    - contextPath: Okta.Zone.gateways.type
+      description: 'Gateways IP entry type, e.g., CIDR.'
+      type: String
+    - contextPath: Okta.Zone.gateways.value
+      description: 'Gateways IP entry value, e.g., 34.103.1.108/32.'
+      type: String
+    - contextPath: Okta.Zone.id
+      description: 'Zone ID, e.g., nzoqsmcx1qWYJ6wYF0h7.'
+      type: String
+    - contextPath: Okta.Zone.lastUpdated
+      description: 'Zone last update timestamp, e.g., 2020-04-06T22:23:12.000Z.'
+      type: Date
+    - contextPath: Okta.Zone.name
+      description: 'Zone name.'
+      type: String
+    - contextPath: Okta.Zone.proxies.type
+      description: 'Proxies IP entry type e.g. CIDR'
+      type: String
+    - contextPath: Okta.Zone.proxies.value
+      description: 'Proxies IP entry value, e.g., 34.103.1.108/32.'
+      type: Unknown
+    - contextPath: Okta.Zone.status
+      description: 'Zone status, e.g., ACTIVE.'
+      type: String
+    - contextPath: Okta.Zone.system
+      description: 'True if this is a system zone, false if user-created.'
+      type: Number
+    - contextPath: Okta.Zone.type
+      description: 'Zone type, e.g., IP.'
+      type: String
+    description: Get an Okta Zone object
+  - name: okta-update-zone
+    arguments:
+    - name: zoneID
+      required: true
+      description: Zone ID to update, e.g., nzoqsmcx1qWYJ6wYF0h7.
+    - name: zoneName
+      description: Updates the zone name.
+    - name: gatewayIPs
+      description: 'Updates Gateway IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2).'
+      isArray: true
+    - name: proxyIPs
+      description: 'Update Proxy IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2).'
+      isArray: true
+    outputs:
+    - contextPath: Okta.Zone.created
+      description: 'Zone creation timestamp, e.g., 2020-04-06T22:23:12.000Z.'
+      type: Date
+    - contextPath: Okta.Zone.gateways.type
+      description: 'Gateways IP entry type, e.g., CIDR.'
+      type: String
+    - contextPath: Okta.Zone.gateways.value
+      description: 'Gateways IP entry value, e.g., 34.103.1.108/32.'
+      type: String
+    - contextPath: Okta.Zone.id
+      description: 'Okta Zone ID, e.g., nzoqsmcx1qWYJ6wYF0h7.'
+      type: String
+    - contextPath: Okta.Zone.lastUpdated
+      description: 'Zone last update timestamp, in the format 2020-04-06T22:23:12.000Z.'
+      type: Date
+    - contextPath: Okta.Zone.name
+      description: 'Zone name.'
+      type: String
+    - contextPath: Okta.Zone.proxies.type
+      description: 'Proxies IP entry type, e.g., CIDR.'
+      type: String
+    - contextPath: Okta.Zone.proxies.value
+      description: 'Proxies IP entry value, e.g., 34.103.1.108/32.'
+      type: Unknown
+    - contextPath: Okta.Zone.status
+      description: 'Zone status, e.g., ACTIVE.'
+      type: String
+    - contextPath: Okta.Zone.system
+      description: 'True if this is a system zone, false if user-created.'
+      type: Number
+    - contextPath: Okta.Zone.type
+      description: 'Zone type, e.g., IP.'
+      type: String
+    description: Update an Okta Zone
+  - name: okta-get-zone
+    arguments:
+    - name: zoneID
+      required: true
+      description: Zone ID to get, e.g., nzoqsmcx1qWYJ6wYF0h.7
+    outputs:
+    - contextPath: Okta.Zone.created
+      description: 'Zone creation timestamp, in the format 2020-04-06T22:23:12.000Z.'
+      type: Date
+    - contextPath: Okta.Zone.gateways.type
+      description: 'Gateways IP entry type, e.g., CIDR.'
+      type: String
+    - contextPath: Okta.Zone.gateways.value
+      description: 'Gateways IP entry value, e.g., 34.103.1.108/32.'
+      type: String
+    - contextPath: Okta.Zone.id
+      description: 'Okta Zone ID, e.g., nzoqsmcx1qWYJ6wYF0h7.'
+      type: String
+    - contextPath: Okta.Zone.lastUpdated
+      description: 'Zone last update timestamp, in the format 2020-04-06T22:23:12.000Z.'
+      type: Date
+    - contextPath: Okta.Zone.name
+      description: 'Zone name.'
+      type: String
+    - contextPath: Okta.Zone.proxies.type
+      description: 'Proxies IP entry type, e.g., CIDR.'
+      type: String
+    - contextPath: Okta.Zone.proxies.value
+      description: 'Proxies IP entry value, e.g., 34.103.1.108/32.'
+      type: Unknown
+    - contextPath: Okta.Zone.status
+      description: 'Zone status, e.g,. ACTIVE.'
+      type: String
+    - contextPath: Okta.Zone.system
+      description: 'True if this is a system zone, false if user-created.'
+      type: Number
+    - contextPath: Okta.Zone.type
+      description: 'Zone type, e.g., IP.'
+      type: String
+    description: Get a Zone by its ID
   dockerimage: demisto/python3:3.8.3.8715
   feed: false
   isfetch: false

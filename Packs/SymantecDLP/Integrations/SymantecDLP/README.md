@@ -1,6 +1,13 @@
 <p>
 Symantec Data Loss Prevention let's you discover, monitor and protect your sensitive corporate information.
 </p>
+<h2>Permissions</h2>
+<p>Symantec Data Loss Prevention requires that the integration user be assigned to the "Incident Reporting API Web Service" role. Make sure to follow Symantec's documentation on how to create such a role and assign it to the user:
+<ul>
+<li>Symantec DLP 15.5: <a href="https://help.symantec.com/cs/DLP15.5/DLP/id-SF0B0167317a_v128674454/Configuring-roles?locale=EN_US">Configuring Roles</a></li>
+<li>Symantec DLP 15.7: <a href="https://apidocs.symantec.com/home/DLP15.7#_creating_a_user_and_role_for_an_incident_reporting_api_client"> Creating a user and role for an Incident Reporting API client</a></li>
+</ul>
+</p>
 <h2>Fetch Incidents</h2>
 <p>The Symantec Data Loss Prevention integration is configured to fetch incidents and integrate them into Demisto's incidents and has the fetch limit parameter.</p>
 <h2>Configure Symantec Data Loss Prevention on Demisto</h2>
@@ -1062,9 +1069,31 @@ There are no context output for this command.
  alt="image" width="749" height="412"></a>
  -->
 </p>
+<hr>
 <h2>Troubleshooting</h2>
-<p>When running the command "symantec-get-incident-details' there might be situation you are getting the following error message:</p>
-<img alt="" src="https://user-images.githubusercontent.com/53565845/69337251-19aba480-0c69-11ea-94e6-90a3b6778a91.png"/>
-<br>
-<br>
-<p>If it does happen, please check your Symantec DLP system is configured properly.</p>
+<p>If you are encountering issues authenticating the configured API user, you can perform a test that the user you've configured has the proper role by running the following curl command:</p>
+<code>curl -i --user YOUR_DLP_USER:YOUR_PASS https://YOUR_DLP_SERVER/ProtectManager/services/v2011/incidents</code>
+<p><strong>Note</strong>: you may need to add to the curl command the "-k" option if the certificate is not trusted.</p>
+<p>If the authentication fails you will receive a response similar to:</p>
+<pre>
+HTTP/1.1 200 
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+Strict-Transport-Security: max-age=31536000 ; includeSubDomains
+X-XSS-Protection: 1; mode=block
+X-Frame-Options: DENY
+X-Content-Type-Options: nosniff
+Content-Type: text/xml;charset=utf-8
+Content-Length: 769
+Date: Wed, 17 Jun 2020 13:12:43 GMT
+
+&lt;?xml version=&apos;1.0&apos; encoding=&apos;UTF-8&apos;?&gt;&lt;S:Envelope xmlns:S=&apos;http://schemas.xmlsoap.org/soap/envelope/&apos;&gt;&lt;S:Body&gt;
+&lt;S:Fault xmlns:ns4=&apos;http://www.w3.org/2003/05/soap-envelope&apos;&gt;
+&lt;faultcode&gt;S:Server&lt;/faultcode&gt;
+&lt;faultstring&gt;Authentication failed&lt;/faultstring&gt;&lt;detail&gt;
+&lt;ns4:AuthenticationFault xmlns:ns4=&apos;http://www.vontu.com/v2011/enforce/webservice/incident/schema&apos;  xmlns:ns2=&apos;http://www.vontu.com/enforce/export/incident/common/schema&apos;  xmlns:ns3=&apos;http://www.vontu.com/enforce/export/incident/schema&apos;  xmlns:ns5=&apos;http://www.vontu.com/v2011/enforce/webservice/incident/common/schema&apos;  xmlns:ns6=&apos;http://www.vontu.com/v2011/enforce/webservice/incident&apos;&gt;
+&lt;ns4:errorMessage&gt;Authentication failed&lt;/ns4:errorMessage&gt;
+&lt;/ns4:AuthenticationFault&gt;&lt;/detail&gt;&lt;/S:Fault&gt;&lt;/S:Body&gt;&lt;/S:Envelope&gt;
+</pre>
+<p>If you encounter an authentication failure, make sure to follow the instructions at the <strong>Permissions</strong> section of this document.</p>

@@ -1,5 +1,7 @@
 ## [Unreleased]
-Added a check that verifies whether the Rasterize integration is enabled before attempting to rasterize HTML-formatted emails.
+- Added a check that verifies whether the Rasterize integration is enabled before attempting to rasterize HTML-formatted emails.
+- Simplified the flow of the playbook by merging tasks where possible and renaming tasks to better reflect their purpose.
+- Email headers will now show in phishing incident layouts.
 
 ## [20.5.2] - 2020-05-26
 -

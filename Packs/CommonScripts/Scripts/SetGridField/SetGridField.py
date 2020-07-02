@@ -263,6 +263,7 @@ def build_grid_command(grid_id: str, context_path: str, keys: List[str], columns
     if sort_by and sort_by in new_table.columns:
         new_table.sort_values(by=sort_by)
 
+    new_table = new_table.where(new_table.notnull(), None)
     return new_table.to_dict(orient='records')
 
 

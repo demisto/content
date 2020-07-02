@@ -111,21 +111,40 @@ def playbook_name_to_id(name):
 
 def get_endpoint_context(res=None, endpoint_id=None):
     if res is None:
-        res = http_get('/endpoints/{}'.format(endpoint_id))['data']
+        res = http_get('/endpoints/{}'.format(endpoint_id)).get('data', [])
 
-    # Endpoint(val.Hostname == obj.Hostname)
-    return [{
-        'Hostname': endpoint['attributes']['hostname'],
-        'ID': endpoint['id'],
-        'IPAddress': [addr['attributes']['ip_address']['attributes']['ip_address']
-                      for addr in endpoint['attributes']['endpoint_network_addresses']],
-        'MACAddress': [addr['attributes']['mac_address']['attributes']['address']
-                       for addr in endpoint['attributes']['endpoint_network_addresses']],
-        'OS': endpoint['attributes']['platform'],
-        'OSVersion': endpoint['attributes']['operating_system'],
-        'IsIsolated': endpoint['attributes']['is_isolated'],
-        'IsDecommissioned': endpoint['attributes']['is_decommissioned'],
-    } for endpoint in res]
+    endpoint_context = []
+    for endpoint in res:
+        endpoint_attributes = endpoint.get('attributes', {})
+        current_endpoint_context = {
+            'Hostname': endpoint_attributes.get('hostname'),
+            'ID': endpoint.get('id'),
+            'OS': endpoint_attributes.get('platform'),
+            'OSVersion': endpoint_attributes.get('operating_system'),
+            'IsIsolated': endpoint_attributes.get('is_isolated'),
+            'IsDecommissioned': endpoint_attributes.get('is_decommissioned'),
+        }
+        ip_addresses = []
+        mac_addresses = []
+        for address in endpoint_attributes.get('endpoint_network_addresses', []):
+            address_attributes = address.get('attributes', {})
+            if address_attributes:
+                ip_address_object = address_attributes.get('ip_address', {})
+                if ip_address_object:
+                    ip_address_attributes = ip_address_object.get('attributes', {})
+                    if ip_address_attributes:
+                        ip_addresses.append(ip_address_attributes.get('ip_address'))
+                mac_address_object = address_attributes.get('mac_address', {})
+                if mac_address_object:
+                    mac_address_attributes = mac_address_object.get('attributes', {})
+                    if mac_address_attributes:
+                        mac_addresses.append(mac_address_attributes.get('address'))
+        if ip_addresses:
+            current_endpoint_context['IPAddress'] = ip_addresses
+        if mac_addresses:
+            current_endpoint_context['MACAddress'] = mac_addresses
+        endpoint_context.append(current_endpoint_context)
+    return endpoint_context
 
 
 def get_endpoint_user_context(res=None, endpoint_user_id=None):
