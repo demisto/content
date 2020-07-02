@@ -218,7 +218,7 @@ tasks:
       id: f72b29e3-c2ec-45c1-86c5-2e51f2bc76be
       version: -1
       name: PCAP Miner execution
-      description: PcapMIner V2 allows to parse pcap files by displaying the all of
+      description: PcapMiner V2 allows to parse pcap files by displaying the all of
         the relevant data within including ip addresses, ports, flows, specific protocol
         breakdown, searching by regex, decrypting encrypted  traffic and more.
       scriptName: PcapMinerV2
