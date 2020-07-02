@@ -136,7 +136,6 @@ def fetch_incidents():
         result_artifact = http_request('GET', '/artifacts/alerts/%s' % artifact_meta['event_id'])
         incidents.append(item_to_incident(result_artifact['alert']))
 
-    #demisto.debug('Incidents: {}'.format(json.dumps(incidents)))
     demisto.incidents(incidents)
     demisto.setLastRun(last_run)
     return_results('ok')
@@ -269,6 +268,7 @@ def main():
             raise
         else:
             return_error('An error occurred: {}'.format(str(e)))
+
 
 # python2 uses __builtin__ python3 uses builtins
 if __name__ == "__builtin__" or __name__ == "builtins":
