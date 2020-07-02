@@ -2,15 +2,15 @@ id: PCAP Parsing And Indicator Enrichment
 version: -1
 fromversion: 5.0.0
 name: PCAP Parsing And Indicator Enrichment
-description: This playbook is used to parse extract indicators within PCAP files and
+description: This playbook is used to parse and extract indicators within PCAP files and
   perform enrichment on the detected indicators. Supported file types are pcap, cap,
   pcapng. The playbook can handle one PCAP file per incident. The user inputs which
   indicator types are to be enriched including, email, URLs, IP addresses and domains.
   The user can specify in the inputs which indicators are internal or that will be
-  treated as internal (not enriched). The user can also specify s specific regex pattern
+  treated as internal (not enriched). The user can also specify a specific regex pattern
   to search for. Another option is to specify the protocol types to be printed to
   context for data extraction. Additional inputs allow the user to provide the WPA
-  password for decrypting 802.11 (wireless) traffic and adding an RSA certificate
+  password for decrypting 802.11 (wireless) traffic and add an RSA certificate
   to decrypt SSL traffic. To display the results within the relevant incident fields,
   the playbook needs to run in a PCAP Analysis incident type. For handling of PCAP
   files larger than 30 MB, refer to the PcapMinerV2 documentation.
@@ -218,9 +218,9 @@ tasks:
       id: f72b29e3-c2ec-45c1-86c5-2e51f2bc76be
       version: -1
       name: PCAP Miner execution
-      description: PcapMiner V2 allows to parse pcap files by displaying the all of
-        the relevant data within including ip addresses, ports, flows, specific protocol
-        breakdown, searching by regex, decrypting encrypted  traffic and more.
+      description: PcapMiner V2 parses pcap files by displaying all of
+        the relevant data within the file, including ip addresses, ports, flows, specific protocol
+        breakdown, searching by regex, decrypting encrypted traffic, and more.
       scriptName: PcapMinerV2
       type: regular
       iscommand: false
@@ -448,7 +448,7 @@ tasks:
       version: -1
       name: Set detected domains as external
       description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+        it will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -522,7 +522,7 @@ tasks:
       version: -1
       name: Set detected host names as internal
       description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+        it will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -573,7 +573,7 @@ tasks:
       version: -1
       name: Set detected host names as external
       description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+        it will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -842,7 +842,7 @@ tasks:
       version: -1
       name: Set detected IP addresses as internal
       description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+        it will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -894,7 +894,7 @@ tasks:
       version: -1
       name: Set detected IP addresses as external
       description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+        it will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1263,7 +1263,7 @@ tasks:
       version: -1
       name: Set detected emails as internal
       description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+        it will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1315,7 +1315,7 @@ tasks:
       version: -1
       name: Set detected emails as external
       description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+        it will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1433,7 +1433,7 @@ tasks:
       version: -1
       name: Set detected emails as external
       description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+        it will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1774,7 +1774,7 @@ tasks:
       version: -1
       name: Set internal URLs
       description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+        it will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1825,7 +1825,7 @@ tasks:
       version: -1
       name: Set external URLs
       description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+        it will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2021,7 +2021,7 @@ tasks:
       version: -1
       name: Set detected domains as external
       description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+        it will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2122,7 +2122,7 @@ tasks:
       version: -1
       name: Set detected protocols
       description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+        it will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2164,7 +2164,7 @@ tasks:
       version: -1
       name: Set internal IP addresses
       description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+        it will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2215,7 +2215,7 @@ tasks:
       version: -1
       name: Set external IP addresses
       description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+        it will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2266,7 +2266,7 @@ tasks:
       version: -1
       name: Set destination TCP ports
       description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+        it will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2317,7 +2317,7 @@ tasks:
       version: -1
       name: Set destination UDP ports
       description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+        it will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2609,9 +2609,9 @@ inputs:
   value: {}
   required: false
   description: |
-    This input allows to specify a search filter to be used on the pcap file. Filters can be used to search only for s specific IP, protocols and other examples. The syntax is the same as in Wireshark which can be found here: https://www.wireshark.org/docs/man-pages/wireshark-filter.html
+    This input specifies a search filter to be used on the pcap file. Filters can be used to search only for a specific IP, protocols, and other examples. The syntax is the same as in Wireshark which can be found here: https://www.wireshark.org/docs/man-pages/wireshark-filter.html
 
-    Using a filter can improve performance and decrease the outputted results.
+    Using a filter can improve performance and decrease the output results.
   playbookInputQuery:
 - key: ProtocolsToOutput
   value:
@@ -2628,7 +2628,7 @@ inputs:
   value: {}
   required: false
   description: This input value is used to provide a python regular expression to
-    search in the the packets body. An example can be \w{10} for expressions that
+    search in the the packet body. An example can be \w{10} for expressions that
     have 10 letter words.
   playbookInputQuery:
 - key: WpaPassword
@@ -2649,7 +2649,7 @@ inputs:
 - key: InternalDomainName
   value: {}
   required: false
-  description: The organizations internal domain name. This is provided for the script
+  description: The organization's internal domain name. This is provided for the script
     IsInternalHostName that checks if the detected host names are internal or external
     if the hosts contain the internal domains suffix. For example demisto.com. If
     there is more than one domain, use comma separation such as demisto.com,paloaltonetworks.com
@@ -2657,7 +2657,7 @@ inputs:
 - key: InternalEmailDomainName
   value: {}
   required: false
-  description: The organizations internal email domain name. This is provided for
+  description: The organization's internal email domain name. This is provided for
     the script IsEmailAddressInternal that checks if the detected emails are internal
     or external. This  input can contain a List of internal domains to check, comma
     separated
@@ -2768,10 +2768,10 @@ outputs:
   description: List of protocls found in the PCAP.
   type: string
 - contextPath: DestinationTcpPorts
-  description: A list of destination TCP ports that were found in the PCAP
+  description: A list of destination TCP ports that were found in the PCAP.
   type: string
 - contextPath: DestinationUdpPorts
-  description: A list of destination UDP ports that were found in the PCAP
+  description: A list of destination UDP ports that were found in the PCAP.
   type: String
 tests:
 - No tests (auto formatted)
