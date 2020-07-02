@@ -28,6 +28,8 @@ from Code42 import (
     user_reactivate_command,
     download_file_command,
     fetch_incidents,
+    highriskemployee_get_command,
+    departingemployee_get_command,
 )
 import time
 
@@ -70,8 +72,8 @@ MOCK_SECURITY_EVENT_RESPONSE = """
             "deviceUserName":"test@example.com",
             "osHostName":"HOSTNAME",
             "domainName":"host.docker.internal",
-            "publicIpAddress":"162.222.47.183",
-            "privateIpAddresses":["172.20.128.36","127.0.0.1"],
+            "publicIpAddress":"255.255.255.255",
+            "privateIpAddresses":["255.255.255.255","127.0.0.1"],
             "deviceUid":"935873453596901068",
             "userUid":"912098363086307495",
             "actor":null,
@@ -134,7 +136,7 @@ MOCK_SECURITY_EVENT_RESPONSE = """
             "deviceUserName":"test@example.com",
             "osHostName":"TEST'S MAC",
             "domainName":"host.docker.internal",
-            "publicIpAddress":"162.222.47.183",
+            "publicIpAddress":"255.2555.255.255",
             "privateIpAddresses":["127.0.0.1"],
             "deviceUid":"935873453596901068",
             "userUid":"912098363086307495",
@@ -198,7 +200,7 @@ MOCK_SECURITY_EVENT_RESPONSE = """
             "deviceUserName":"test@example.com",
             "osHostName":"Test's Windows",
             "domainName":"host.docker.internal",
-            "publicIpAddress":"162.222.47.183",
+            "publicIpAddress":"255.255.255.255",
             "privateIpAddresses":["0:0:0:0:0:0:0:1","127.0.0.1"],
             "deviceUid":"935873453596901068",
             "userUid":"912098363086307495",
@@ -248,7 +250,7 @@ MOCK_SECURITY_EVENT_RESPONSE = """
 MOCK_CODE42_EVENT_CONTEXT = [
     {
         "ApplicationTabURL": "example.com",
-        "DevicePrivateIPAddress": ["172.20.128.36", "127.0.0.1"],
+        "DevicePrivateIPAddress": ["255.255.255.255", "127.0.0.1"],
         "DeviceUsername": "test@example.com",
         "EndpointID": "935873453596901068",
         "EventID": "0_1d71796f-af5b-4231-9d8e-df6434da4663_935873453596901068_956171635867906205_5",
@@ -1075,6 +1077,20 @@ MOCK_CREATE_USER_RESPONSE = """
 }
 """
 
+MOCK_GET_DETECTIONLIST_RESPONSE = """
+{
+    "type$": "DEPARTING_EMPLOYEE_V2",
+    "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+    "userId": "942897397520286581",
+    "userName": "new.user@example.com",
+    "displayName": "New user",
+    "notes": "tests and more tests",
+    "createdAt": "2020-05-19T21:17:36.0237810Z",
+    "status": "OPEN",
+    "cloudUsernames": ["new.user.cloud@example.com"]
+}
+"""
+
 
 _TEST_USER_ID = "123412341234123412"  # value found in GET_USER_RESPONSE
 _TEST_USERNAME = "user1@example.com"
@@ -1152,6 +1168,20 @@ def code42_high_risk_employee_mock(code42_sdk_mock, mocker):
     code42_sdk_mock.detectionlists.high_risk_employee.get_all.return_value = (
         all_high_risk_employees_response
     )
+    return code42_sdk_mock
+
+
+@pytest.fixture
+def code42_departing_employee_get_mock(code42_sdk_mock, mocker):
+    response = create_mock_code42_sdk_response(mocker, MOCK_GET_DETECTIONLIST_RESPONSE)
+    code42_sdk_mock.detectionlists.departing_employee.get.return_value = response
+    return code42_sdk_mock
+
+
+@pytest.fixture
+def code42_high_risk_employee_get_mock(code42_sdk_mock, mocker):
+    response = create_mock_code42_sdk_response(mocker, MOCK_GET_DETECTIONLIST_RESPONSE)
+    code42_sdk_mock.detectionlists.high_risk_employee.get.return_value = response
     return code42_sdk_mock
 
 
@@ -1380,12 +1410,32 @@ def test_departingemployee_get_all_command_when_no_employees(
         no_employees_response
     )
     client = create_client(code42_departing_employee_mock)
-    cmd_res = departingemployee_get_all_command(client,{})
+    cmd_res = departingemployee_get_all_command(client, {})
     assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
     assert cmd_res.outputs_key_field == "UserID"
     assert cmd_res.raw_response == {}
     assert cmd_res.outputs == {"Results": []}
     assert code42_departing_employee_mock.detectionlists.departing_employee.get_all.call_count == 1
+
+
+def test_departingemployee_get_command(code42_departing_employee_get_mock):
+    client = create_client(code42_departing_employee_get_mock)
+    cmd_res = departingemployee_get_command(
+        client, {"username": _TEST_USERNAME}
+    )
+    get_func = code42_departing_employee_get_mock.detectionlists.departing_employee.get
+    get_func.assert_called_once_with(_TEST_USER_ID)
+    assert cmd_res.raw_response == _TEST_USERNAME
+
+
+def test_highriskemployee_get_command(code42_high_risk_employee_get_mock):
+    client = create_client(code42_high_risk_employee_get_mock)
+    cmd_res = highriskemployee_get_command(
+        client, {"username": _TEST_USERNAME}
+    )
+    get_func = code42_high_risk_employee_get_mock.detectionlists.high_risk_employee.get
+    get_func.assert_called_once_with(_TEST_USER_ID)
+    assert cmd_res.raw_response == _TEST_USERNAME
 
 
 def test_highriskemployee_add_command(code42_high_risk_employee_mock):

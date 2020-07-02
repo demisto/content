@@ -334,11 +334,11 @@ class Code42Client(BaseClient):
         raise Code42OrgNotFoundError(org_name)
 
     def get_departing_employee(self, username):
-        user_id = self.get_user_id(username)
+        user_id = self._get_user_id(username)
         return self._get_sdk().detectionlists.departing_employee.get(user_id)
 
     def get_high_risk_employee(self, username):
-        user_id = self.get_user_id(username)
+        user_id = self._get_user_id(username)
         return self._get_sdk().detectionlists.high_risk_employee.get(user_id)
 
 
@@ -764,7 +764,7 @@ def departingemployee_get_command(client, args):
 @logger
 def highriskemployee_get_command(client, args):
     username = args["username"]
-    high_risk_employee = client.get_departing_employee(username)
+    high_risk_employee = client.get_high_risk_employee(username)
     he_context = json.loads(high_risk_employee.text)
     readable_outputs = tableToMarkdown("Retrieve high risk employee", he_context)
     return CommandResults(
