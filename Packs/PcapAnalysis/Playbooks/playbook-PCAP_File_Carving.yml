@@ -197,7 +197,7 @@ tasks:
     task:
       id: d02128af-e5ec-48cf-87af-bb8408a5fb9f
       version: -1
-      name: Carve files unfiltered PCAP
+      name: Carve files from unfiltered PCAP
       type: regular
       iscommand: false
       brand: ""
@@ -225,7 +225,7 @@ tasks:
     task:
       id: 6e5bdb2d-0146-41a4-8e9c-5b97735de4cb
       version: -1
-      name: Carve files filtered PCAP
+      name: Carve files from filtered PCAP
       type: regular
       iscommand: false
       brand: ""
@@ -348,7 +348,7 @@ tasks:
     task:
       id: 52e21816-4f75-4c7a-84cf-a6df0d1128dd
       version: -1
-      name: Are there files that dont have a good DBOT score?
+      name: Are there files that don't have a good DBot score?
       type: condition
       iscommand: false
       brand: ""
@@ -425,7 +425,7 @@ inputs:
               simple: key
       accessor: EntryID
   required: false
-  description: This input specifics the file entry id for the RSA decrypt key if the
+  description: This input specifies the file entry id for the RSA decrypt key if the
     user provided the key in the incident.
   playbookInputQuery:
 - key: PcapFileEntryID
@@ -468,15 +468,15 @@ inputs:
               simple: pcapng
       accessor: EntryID
   required: false
-  description: This input specifics the file entry id for the PCAP file if the user
+  description: This input specifies the file entry id for the PCAP file if the user
     provided the file in the incident. One PCAP file can run per incident.
   playbookInputQuery:
 - key: PcapFilter
   value: {}
   required: false
   description: |-
-    This input allows to specify a search filter to be used on the PCAP file. Filters can be used to search only for s specific IP, protocols and other examples. The syntax is the same as in Wireshark which can be found here: https://www.wireshark.org/docs/man-pages/wireshark-filter.html
-    For this playbook using a PCAP filter will generate a new smaller PCAP file based on the provided filter therefor thus reducing the extraction of non relevant files.
+    This input specifies a search filter to be used on the PCAP file. Filters can be used to search only for a specific IP, protocols and other examples. The syntax is the same as in Wireshark which can be found here: https://www.wireshark.org/docs/man-pages/wireshark-filter.html
+    For this playbook, using a PCAP filter will generate a new smaller PCAP file based on the provided filter therefor thus reducing the extraction of non relevant files.
   playbookInputQuery:
 outputs:
 - contextPath: DBotScore
