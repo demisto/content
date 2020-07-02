@@ -6,6 +6,26 @@ This integration was integrated and tested with version xx of ServiceDeskPlus
 2. Search for ServiceDeskPlus.
 3. Click **Add instance** to create and configure a new integration instance.
 
+## Instance Creation Flow
+
+To create an instance for Service Desk Plus, a Client Id, Client secret and Refresh Token are required.
+
+Follow the next steps to create an instance:
+
+1. Choose the data center which your data resides in.
+2. Register your app using [ZOHO App Registration](https://api-console.zoho.com), copy the Client Id and Client Secret of the app to the Demisto instance and hit the **Done** button.
+3. In the registered app, select the Generate Code tab and define the desired scopes for the app (see screenshot below).
+4. In the Demisto CLI run the command !service-desk-plus-generate-refresh-token and paste the generated code into the code parameter.
+5. Copy the generated refresh token to the Demisto instance and hit the **Test** button to validate the instance.
+
+**NOTES**
+- For more details about scopes and app authorization process please refer to [App Authorization](https://www.manageengine.com/products/service-desk/sdpod-v3-api/SDPOD-V3-API.html#scopes)
+- The code generated in the app is valid for a limited time only.
+- In order to avoid repeating this process, the created Refresh Token should be saved for future use.
+
+![image](https://user-images.githubusercontent.com/61732335/86364400-cc70c600-bc80-11ea-9763-59acd31e08b7.png)
+
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | server_url | Data Center Location: Select the domain location that is applicable for you application | True |
@@ -196,7 +216,7 @@ Create new requests
 | email_ids_to_notify | Array of Email ids, which needs to be notified about the happenings of this request | Optional | 
 | is_fcr | Boolean value indicating if the request has been marked as First Call Resolution | Optional | 
 | resources | Holds the resource data mapped to the request | Optional | 
-| udf_fields | Holds udf fields' values associated with the request. Input format: "key1;value1,key2;value2". | Optional | 
+| udf_fields | Holds udf fields' values associated with the request. Input format: A string of the form "key1:value1,key2:value2" or a dictionary of the form "{'key1':'val1','key2':'val2'}" | Optional | 
 
 **Note:**
 >Fields that represent an object can be filled either by providing the name only or the entire object. For example, the technician parameter can be defined either by filling 
@@ -330,7 +350,7 @@ Update the request with the given request id.
 | email_ids_to_notify | Array of Email ids, which needs to be notified about the happenings of this request | Optional | 
 | is_fcr | Boolean value indicating if the request has been marked as First Call Resolution | Optional | 
 | resources | Holds the resource data mapped to the request | Optional | 
-| udf_fields | Holds udf fields' values associated with the request. Input format: "key1;value1,key2;value2". | Optional | 
+| udf_fields | Holds udf fields' values associated with the request. Input format: A string of the form "key1:value1,key2:value2" or a dictionary of the form "{'key1':'val1','key2':'val2'}" | Optional | 
 | update_reason | The reason for updating this request | Optional | 
 | status_change_comments | Comments added while changing the request's status | Optional | 
 

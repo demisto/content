@@ -14,8 +14,7 @@ configuration:
   - Australia
   required: true
   type: 15
-- additionalinfo: test additional
-  display: Client ID
+- display: Client ID
   name: client_id
   required: true
   type: 4
@@ -27,14 +26,6 @@ configuration:
   name: refresh_token
   required: false
   type: 4
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -43,25 +34,37 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: Open
-  display: The status of the requests that should be fetched. Multiple status can
-    be entered, separated by a comma.
-  name: fetch_status
+- display: Fetch incidents
+  name: isFetch
   required: false
-  type: 0
-- defaultvalue: 1 hour
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: Open
+  display: Incidents status. Multiple status can be selected.
+  name: fetch_status
+  options:
+  - Open
+  - Closed
+  - On Hold
+  - Resolved
+  - Canceled
+  required: false
+  type: 16
+- defaultvalue: 7 days
   display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
   name: fetch_time
   required: false
   type: 0
-- defaultvalue: '10'
+- defaultvalue: '50'
   display: The maximum number of incidents that should be fetched each time
   name: fetch_limit
   required: false
   type: 0
-- display: Use this field to filter the incidents that are being fetched according
-    to any of the request properties.  Please see additional information for exact
-    filter format. Overrides the status filter, if given.
+- display: Fetch filter - please see additional information (?). Overrides the status
+    filter, if given.
   name: fetch_filter
   required: false
   type: 12
@@ -352,7 +355,8 @@ script:
       secret: false
     - default: false
       description: 'Holds udf fields'' values associated with the request. Input format:
-        "key1;value1,key2;value2"'
+        A string of the form "key1:value1,key2:value2" or a dictionary of the form
+        "{''key1'':''val1'',''key2'':''val2''}"'
       isArray: false
       name: udf_fields
       required: false
@@ -595,7 +599,8 @@ script:
       secret: false
     - default: false
       description: 'Holds udf fields'' values associated with the request. Input format:
-        "key1;value1,key2;value2"'
+        A string of the form "key1:value1,key2:value2" or a dictionary of the form
+        "{''key1'':''val1'',''key2'':''val2''}"'
       isArray: false
       name: udf_fields
       required: false
@@ -767,7 +772,7 @@ script:
       isArray: false
       name: code
       required: true
-      secret: false
+      secret: true
     deprecated: false
     description: This function generates the refresh token that should be used in
       the instance configurations

@@ -14,36 +14,38 @@ from test_data.result_constants import EXPECTED_CREATE_REQUEST, EXPECTED_UPDATE_
 
 # test commands with context:
 @pytest.mark.parametrize('command, args, response, expected_result', [
+    # Given the create command, different fields that should be used to create the request, the response of the command
+    # and the expected result, validate that the output of the command and the expected result are identical
     (create_request_command, {'subject': 'Create request test', 'mode': 'E-Mail', 'requester': 'First Last',
                               'level': 'Tier 1', 'impact': 'Affects Group', 'priority': 'High', 'status': 'On Hold',
                               'request_type': 'Incident', 'description': 'The description of the request',
                               'urgency': 'Normal', 'group': 'Network'}, RESPONSE_CREATE_REQUEST,
      EXPECTED_CREATE_REQUEST),
+    # Given the update command, different fields that should be used to create the request, the response of the command
+    # and the expected result, validate that the output of the command and the expected result are identical
     (update_request_command, {'request_id': '123640000000240013', 'description': 'Update the description',
                               'impact': 'Affects Business'}, RESPONSE_UPDATE_REQUEST, EXPECTED_UPDATE_REQUEST),
+    # Given list requests command, the id of the single request that should be returned, validate that the output
+    # context of the command is identical to the expected output
     (list_requests_command, {'request_id': '123640000000240013'}, RESPONSE_LIST_SINGLE_REQUEST,
      EXPECTED_LIST_SINGLE_REQUEST),
+    # Given list requests command, page size equal 3 and the response for 3 requests, validate that the output
+    # context of the command is identical to the expected output
     (list_requests_command, {'page_size': '3'}, RESPONSE_LIST_MULTIPLE_REQUESTS, EXPECTED_LIST_MULTIPLE_REQUESTS),
+    # Given the linked request command, the id of the request that it's links should be checked and the response for the
+    # command, validate that the context output of the command is identical to the expected output.
     (linked_request_command, {'request_id': '123640000000246001'}, RESPONSE_LINKED_REQUEST_LIST,
      EXPECTED_LINKED_REQUEST_LIST),
+    # Given the get resolutions list command, the id of the request for which the resolution should be returned and the
+    # response in case there IS a resolution for the request, validate the context output of the command
     (get_resolutions_list_command, {'request_id': '123640000000241001'}, RESPONSE_RESOLUTION_LIST,
      EXPECTED_RESOLUTION_LIST),
+    # Given the get resolutions list command, the id of the request for which the resolution should be returned and the
+    # response in case there is NO a resolution for the request, validate the context output of the command
     (get_resolutions_list_command, {'request_id': '123640000000241001'}, RESPONSE_NO_RESOLUTION_LIST,
      EXPECTED_NO_RESOLUTION_LIST)
 ])
 def test_commands(command, args, response, expected_result, mocker):
-    """Unit test
-    Given
-    - command main func
-    - command args
-    - command raw response
-    When
-    - mock the ServiceDeskPlus response
-    Then
-    - convert the result to human readable table
-    - create the context
-    validate the entry context
-    """
     mocker.patch('ServiceDeskPlus.Client.get_access_token')
     client = Client('server_url', 'use_ssl', 'use_proxy', 'client_id', 'client_secret', 'refresh_token')
     mocker.patch.object(client, 'http_request', return_value=response)
@@ -53,41 +55,45 @@ def test_commands(command, args, response, expected_result, mocker):
 
 # test commands without context:
 @pytest.mark.parametrize('command, args, response, expected_result', [
+    # Given the delete command and the id of the request that should be deleted, validate the human readable output
     (delete_request_command, {'request_id': '1234'}, {}, "### Successfully deleted request(s) ['1234']"),
+    # Given the delete command and multiple ids of requests that should be deleted, validate the human readable output
     (delete_request_command, {'request_id': '1234,5678'}, {}, "### Successfully deleted request(s) ['1234', '5678']"),
+    # Given the close command and the id of the request that should be closed, validate the human readable output
     (close_request_command, {'request_id': '1234'}, {}, '### Successfully closed request 1234'),
+    # Given the assign command and the id of the request that should be assigned, validate the human readable output
     (assign_request_command, {'request_id': '1234'}, {}, '### Service Desk Plus request 1234 was successfully assigned'),
+    # Given the pickup command and the id of the request that should be picked up, validate the human readable output
     (pickup_request_command, {'request_id': '1234'}, {}, '### Service Desk Plus request 1234 was successfully picked up'),
+    # Given the modify linked command with the 'Link' action and the ids of the requests that should be linked, verify
+    # that the human readable indicates that the requests were successfully linked
     (modify_linked_request_command, {'action': 'Link', 'request_id': '1234', 'linked_requests_id': '5678'},
      RESPONSE_LINK_REQUEST, '## Request successfully linked'),
-    (modify_linked_request_command, {'action': 'Link', 'request_id': '1234', 'linked_requests_id': '5678'},
-     RESPONSE_LINK_REQUEST, '## Request successfully linked'),
+    # Given the modify linked command with the 'Unlink' action and the ids of the requests that should be linked, verify
+    # that the human readable indicates that the requests were successfully unlinked
     (modify_linked_request_command, {'action': 'Unlink', 'request_id': '1234', 'linked_requests_id': '5678'},
      RESPONSE_UNLINK_REQUEST, '## The request[s] link are removed successfully.'),
+    # Given the add resolution command, the id of the request the resolution should be added to, the resolution content
+    # and the add_to_linked_requests flag set to true, validate the human readable output
     (add_resolution_command, {'request_id': '1234', 'resolution_content': 'resolution message',
                               'add_to_linked_requests': 'true'}, RESPONSE_UNLINK_REQUEST,
      '### Resolution was successfully added to 1234 and the linked requests'),
+    # Given the add resolution command, the id of the request the resolution should be added to, the resolution content
+    # and the add_to_linked_requests flag set to true, validate the human readable output
     (add_resolution_command, {'request_id': '1234', 'resolution_content': 'resolution message',
                               'add_to_linked_requests': 'false'}, RESPONSE_UNLINK_REQUEST,
      '### Resolution was successfully added to 1234'),
+    # Given the generate refresh token command, a valid code that should be used and the response for this command,
+    # validate the human readable output
     (generate_refresh_token, {'code': '147852369'}, RESPONSE_GENERATE_REFRESH_TOKEN, '### Refresh Token: 987654321\n '
                                                                                      'Please paste the Refresh Token in'
                                                                                      ' the instance configuration and '
-                                                                                     'save it for future use.')
-
+                                                                                     'save it for future use.'),
+    # Given the generate refresh token command, a code and an error message as the response, validate that the human
+    # readable is indicating an error.
+    (generate_refresh_token, {'code': '147852369'}, {'error': 'invalid_code'}, '### Error: invalid_code')
 ])
 def test_command_hr(command, args, response, expected_result, mocker):
-    """Unit test
-    Given
-    - command main func
-    - command args
-    - command raw response
-    When
-    - mock the ServiceDeskPlus response
-    Then
-    - convert the result to human readable table
-    validate the human readable output
-    """
     mocker.patch('ServiceDeskPlus.Client.get_access_token')
     client = Client('server_url', 'use_ssl', 'use_proxy', 'client_id', 'client_secret', 'refresh_token')
     mocker.patch.object(client, 'http_request', return_value=response)
@@ -154,7 +160,7 @@ def test_resolution_human_readable():
 def test_create_requests_list_info():
     start_index, row_count, search_fields, filter_by = '0', '15', 'a, b, c', 'filter'
     expected_output = {'list_info': {'start_index': '0', 'row_count': '15', 'search_fields': 'a, b, c',
-                                     'filter_by': 'filter'}}
+                                     'filter_by': 'filter', 'sort_field': 'created_time', 'sort_order': 'asc'}}
     assert create_requests_list_info(start_index, row_count, search_fields, filter_by) == expected_output
 
 
@@ -190,15 +196,19 @@ def test_create_fetch_list_info():
 
 
 def test_create_udf_field():
-    udf_input = 'key1;val1'
+    udf_input = 'key1:val1'
     expected_output = {'key1': 'val1'}
     assert create_udf_field(udf_input) == expected_output
 
-    udf_input = 'key1;val1,key2;val2'
+    udf_input = "{'key1':'val1'}"
+    expected_output = {'key1': 'val1'}
+    assert create_udf_field(udf_input) == expected_output
+
+    udf_input = 'key1:val1,key2:val2'
     expected_output = {'key1': 'val1', 'key2': 'val2'}
     assert create_udf_field(udf_input) == expected_output
 
-    invalid_udf_inputs = ['key1;val1,key2', 'key1,val1', 'key1', ';val1']
+    invalid_udf_inputs = ['key1:val1,key2', 'key1,val1', 'key1', ':val1']
     for udf_input in invalid_udf_inputs:
         try:
             create_udf_field(udf_input)
@@ -215,6 +225,8 @@ def test_fetch_incidents(mocker):
     - command raw response
     When
     - mock the parse_date_range.
+    - mock the date_to_timestamp.
+    - mock the create_fetch_list_info.
     - mock the Client's get_requests command.
     Then
     - run the fetch incidents command using the Client.

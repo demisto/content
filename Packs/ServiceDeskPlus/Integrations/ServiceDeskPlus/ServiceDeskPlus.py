@@ -72,18 +72,19 @@ class Client(BaseClient):
                 if 'error' in res:
                     return_error(
                         f'Error occurred while creating an access token. Please check the Client ID, Client Secret '
-                        f'and Refresh Token - RES RETURNED.\n{res}')
+                        f'and Refresh Token.\n{res}')
                 if res.get('access_token'):
                     expiry_time = date_to_timestamp(datetime.now(), date_format='%Y-%m-%dT%H:%M:%S')
                     expiry_time += res.get('expires_in') * 1000 - 10
                     new_token = {
-                        'access_token': res.get('access_token'), 'expiry_time': expiry_time
+                        'access_token': res.get('access_token'),
+                        'expiry_time': expiry_time
                     }
                     demisto.setIntegrationContext(new_token)
                     access_token = res.get('access_token')
             except Exception as e:
                 return_error(f'Error occurred while creating an access token. Please check the Client ID, Client Secret'
-                             f' and Refresh Token\n\n{e.args[0]}')
+                             f' and Refresh Token.\n\n{e.args[0]}')
         self._headers.update({
             'Authorization': 'Bearer ' + access_token
         })
@@ -112,6 +113,9 @@ class Client(BaseClient):
                 raise DemistoException(err_msg)
 
         except Exception as e:
+            if 'SSL Certificate Verification Failed' in e.args[0]:
+                return_error('SSL Certificate Verification Failed - try selecting \'Trust any certificate\' '
+                             'checkbox in the integration configuration.')
             raise DemistoException(e.args[0])
 
     def get_requests(self, request_id: str = None, params: dict = None):
@@ -185,19 +189,24 @@ def create_udf_field(udf_input: str):
     Returns:
         A dictionary where every key is the udf_field key and the value given by the user.
     """
+    if not udf_input:
+        return {}
     try:
+        if udf_input[0] == '{' and udf_input[-1] == '}':  # check if the user entered a dict as the value
+            return ast.literal_eval(udf_input)
+
         fields = udf_input.split(',')
         udf_dict = {}
         for field in fields:
             if field:
-                field_key_value = field.split(';')
+                field_key_value = field.split(':')
                 if field_key_value[0] and field_key_value[1]:
                     udf_dict[field_key_value[0]] = field_key_value[1]
                 else:
                     raise Exception('Invalid input')
         return udf_dict
     except Exception:
-        raise Exception('Illegal udf fields format. Input format should be a string of key and value separated by ; '
+        raise Exception('Illegal udf fields format. Input format should be a string of key and value separated by : '
                         'Multiple key;value pairs can be given, separated with a comma')
 
 
@@ -288,6 +297,8 @@ def create_requests_list_info(start_index, row_count, search_fields, filter_by):
         list_info['search_fields'] = search_fields
     if filter_by:
         list_info['filter_by'] = filter_by
+    list_info['sort_field'] = 'created_time'
+    list_info['sort_order'] = 'asc'
     return {
         'list_info': list_info
     }
@@ -359,7 +370,8 @@ def create_fetch_list_info(time_from: str, time_to: str, status: str, fetch_filt
             'row_count': fetch_limit
         }
     except Exception as e:
-        return_error(f'Invalid input format. Please see detailed information (?) for valid query format.\n{e.args[0]}')
+        return_error(f'Invalid input format for fetch query. Please see detailed information (?) for valid fetch query '
+                     f'format.\n{e.args[0]}')
     return {
         'list_info': list_info
     }
@@ -674,9 +686,12 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, status: s
     date_format = '%Y-%m-%dT%H:%M:%S'
     last_run = demisto.getLastRun()
     if not last_run:  # if first time running
-        new_last_run = {
-            'time': date_to_timestamp(parse_date_range(fetch_time, date_format=date_format, utc=False)[0])
-        }
+        try:
+            new_last_run = {
+                'time': date_to_timestamp(parse_date_range(fetch_time, date_format=date_format, utc=False)[0])
+            }
+        except Exception as e:
+            return_error(f'Invalid fetch time range.\n{e.args[0]}')
     else:
         new_last_run = last_run
     demisto_incidents: List = list()
@@ -702,7 +717,8 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, status: s
         for incident in incidents:
             if count >= fetch_limit:
                 break
-            # Prevent fetching twice the same incident
+            # Prevent fetching twice the same incident - the last incident that was fetched in the last run, will be the
+            # first incident in the returned incidents from the API call this time.
             if incident.get('id') == last_run_id:
                 continue
             incident_creation_time = int(incident.get('created_time', {}).get('value'))
@@ -749,15 +765,16 @@ def test_module(client: Client):
         params: dict = demisto.params()
 
         if params.get('isFetch'):
-            fetch_time = params.get('fetch_time') if params.get('fetch_time') else '1 day'
+            fetch_time = params.get('fetch_time') if params.get('fetch_time') else '7 days'
             fetch_status = str(params.get('fetch_status')) if params.get('fetch_status') else 'Open'
             fetch_filter = str(params.get('fetch_filter')) if params.get('fetch_filter') else ''
-            fetch_limit = int(params.get('fetch_limit', '10')) if params.get('fetch_limit') else 10
+            fetch_limit = int(params.get('fetch_limit', '10')) if params.get('fetch_limit') else 50
 
             date_format = '%Y-%m-%dT%H:%M:%S'
             time_from = date_to_timestamp(parse_date_range(fetch_time, date_format=date_format, utc=False)[0])
             time_to = date_to_timestamp(datetime.now(), date_format=date_format)
-            list_info = create_fetch_list_info(str(time_from), str(time_to), fetch_status, fetch_filter, fetch_limit + 1)
+            list_info = create_fetch_list_info(str(time_from), str(time_to), fetch_status, fetch_filter,
+                                               fetch_limit + 1)
             params = {
                 'input_data': f'{list_info}'
             }
@@ -766,7 +783,7 @@ def test_module(client: Client):
             except Exception as e:
                 if 'Error in API call' in e.args[0]:
                     raise DemistoException(f'Invalid input format. Please see instructions for correct filter format.'
-                                           f'\n\n{e.args[0]}')
+                                           f'\n\nError: {e.args[0]}')
                 raise e
         return 'ok'
 
@@ -797,6 +814,8 @@ def generate_refresh_token(client: Client, args: Dict) -> Tuple[str, dict, Any]:
     if res.get('refresh_token'):
         hr = f'### Refresh Token: {res.get("refresh_token")}\n Please paste the Refresh Token in the instance ' \
              f'configuration and save it for future use.'
+    elif res.get('error'):
+        hr = f'### Error: {res.get("error")}'
     else:
         hr = res
     return hr, {}, None
@@ -834,9 +853,9 @@ def main():
         if command == 'test-module':
             demisto.results(test_module(client))
         elif command == "fetch-incidents":
-            fetch_time = params.get('fetch_time') if params.get('fetch_time') else '1 day'
+            fetch_time = params.get('fetch_time') if params.get('fetch_time') else '7 days'
             fetch_status = params.get('fetch_status') if params.get('fetch_status') else 'Open'
-            fetch_limit = int(params.get('fetch_limit')) if params.get('fetch_limit') else 10
+            fetch_limit = int(params.get('fetch_limit')) if params.get('fetch_limit') else 50
             fetch_filter = params.get('fetch_filter') if params.get('fetch_filter') else ''
             incidents = fetch_incidents(client, fetch_time=fetch_time, fetch_limit=fetch_limit,
                                         status=fetch_status, fetch_filter=fetch_filter)
