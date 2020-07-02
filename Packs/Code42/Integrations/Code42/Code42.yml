@@ -91,7 +91,7 @@ script:
       - SharedViaDomain
       - OutsideTrustedDomains
       required: false
-      secret: false
+      secret: true
     - default: false
       defaultValue: '100'
       description: The number of results to return. The default is 100.

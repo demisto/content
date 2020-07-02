@@ -999,7 +999,7 @@ class Code42SecurityIncidentFetcher(object):
         self._first_fetch_time = first_fetch_time
         self._event_severity_filter = event_severity_filter
         self._fetch_limit = fetch_limit
-        self._include_files = (include_files,)
+        self._include_files = include_files
         self._integration_context = integration_context
 
     @logger
@@ -1046,7 +1046,8 @@ class Code42SecurityIncidentFetcher(object):
     def _create_incident_from_alert(self, alert):
         details = self._client.get_alert_details(alert["id"])
         incident = _create_incident_from_alert_details(details)
-        details = self._relate_files_to_alert(details)
+        if self._include_files:
+            details = self._relate_files_to_alert(details)
         incident["rawJSON"] = json.dumps(details)
         return incident
 

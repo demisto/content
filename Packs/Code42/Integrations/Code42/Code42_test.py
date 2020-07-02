@@ -1694,8 +1694,41 @@ def test_fetch_incidents_handles_multi_severity(code42_fetch_incidents_mock):
         include_files=True,
         integration_context=None,
     )
-    assert "HIGH" in str(code42_fetch_incidents_mock.alerts.search.call_args[0][0])
-    assert "LOW" in str(code42_fetch_incidents_mock.alerts.search.call_args[0][0])
+    call_args = str(code42_fetch_incidents_mock.alerts.search.call_args[0][0])
+    assert "HIGH" in call_args
+    assert "LOW" in call_args
+
+
+def test_fetch_when_include_files_includes_files(code42_fetch_incidents_mock):
+    client = create_client(code42_fetch_incidents_mock)
+    _, incidents, _ = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": None},
+        first_fetch_time=MOCK_FETCH_TIME,
+        event_severity_filter=["High", "Low"],
+        fetch_limit=10,
+        include_files=True,
+        integration_context=None,
+    )
+    for i in incidents:
+        _json = json.loads(i["rawJSON"])
+        assert len(_json["fileevents"])
+
+
+def test_fetch_when_not_include_files_excludes_files(code42_fetch_incidents_mock):
+    client = create_client(code42_fetch_incidents_mock)
+    _, incidents, _ = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": None},
+        first_fetch_time=MOCK_FETCH_TIME,
+        event_severity_filter=["High", "Low"],
+        fetch_limit=10,
+        include_files=False,
+        integration_context=None,
+    )
+    for i in incidents:
+        _json = json.loads(i["rawJSON"])
+        assert not _json.get("fileevents")
 
 
 def test_fetch_incidents_first_run(code42_fetch_incidents_mock):
