@@ -53,18 +53,18 @@ configuration:
   - Canceled
   required: false
   type: 16
-- defaultvalue: 7 days
-  display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
+- additionalinfo: 'Input format: <number> <time unit>, e.g., 1 hour, 30 minutes'
+  defaultvalue: 7 days
+  display: First fetch time
   name: fetch_time
   required: false
   type: 0
 - defaultvalue: '50'
-  display: The maximum number of incidents that should be fetched each time
+  display: Fetch limit - maximum number of incidents to fetch each time
   name: fetch_limit
   required: false
   type: 0
-- display: Fetch filter - please see additional information (?). Overrides the status
-    filter, if given.
+- display: Fetch query -  see (?). Overrides the status filter, if given.
   name: fetch_filter
   required: false
   type: 12
