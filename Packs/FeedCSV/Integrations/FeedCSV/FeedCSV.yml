@@ -39,11 +39,6 @@ configuration:
   - suddenDeath
   required: false
   type: 17
-- additionalinfo: Supports CSV values.
-  display: Tags
-  name: feedTags
-  required: false
-  type: 0
 - name: feedExpirationInterval
   display: ""
   required: false
@@ -121,6 +116,11 @@ configuration:
   name: skipinitialspace
   required: false
   type: 8
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
