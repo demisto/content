@@ -470,15 +470,14 @@ def file_reputation(client: Client, args: Dict) -> CommandResults:
     for app_hash in hash_list:
         try:
             application = client.app_classification_get_request(app_hash, '')
+            raw_response_list.extend(application)
         except Exception as err:
             if 'Error in API call [404]' in str(err):
                 application = [{'hash': app_hash}]
             else:
                 raise Exception(err)
-        raw_response_list.extend(application)
 
         application_data = application[0]
-        application_data_list.extend(application_data)
 
         score = calculate_dbot_score(application_data)
 
@@ -488,15 +487,29 @@ def file_reputation(client: Client, args: Dict) -> CommandResults:
             integration_name='Zimperium',
             score=score
         )
-        file = Common.File(
-            md5=app_hash,
-            dbot_score=dbot_score
-        )
+        hash_type = get_hash_type(app_hash)
+        if hash_type == 'md5':
+            file = Common.File(
+                md5=app_hash,
+                dbot_score=dbot_score
+            )
+        elif hash_type == 'sha1':
+            file = Common.File(
+                sha1=app_hash,
+                dbot_score=dbot_score
+            )
+        else:
+            file = Common.File(
+                sha256=app_hash,
+                dbot_score=dbot_score
+            )
         file_indicator_list.append(file)
+
         if not score:
             readable_output = tableToMarkdown(name=f"Hash {app_hash} reputation is unknown to Zimperium.",
                                               t=application_data, headers=headers, removeNull=True)
         else:
+            application_data_list.append(application_data)
             readable_output = tableToMarkdown(name=f"Hash {app_hash} reputation:", t=application_data, headers=headers,
                                               removeNull=True)
         human_readable += readable_output

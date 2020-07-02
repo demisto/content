@@ -1049,6 +1049,12 @@ script:
       - contextPath: File.MD5
         description: MD5 hash of the file.
         type: String
+      - contextPath: File.SHA1
+        description: SHA1 hash of the file.
+        type: String
+      - contextPath: File.SHA256
+        description: SHA256 hash of the file.
+        type: String
       - contextPath: File.Malicious.Vendor
         description: For malicious files, the vendor that made the decision.
         type: String
