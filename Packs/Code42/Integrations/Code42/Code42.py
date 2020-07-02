@@ -470,7 +470,7 @@ class ObservationToSecurityQueryMapper(object):
     exposure_type_map = {
         "PublicSearchableShare": ExposureType.IS_PUBLIC,
         "PublicLinkShare": ExposureType.SHARED_VIA_LINK,
-        "SharedOutsideTrustedDomain": "OutsideTrustedDomains",
+        "SharedOutsideTrustedDomain": ExposureType.OUTSIDE_TRUSTED_DOMAINS,
     }
 
     def __init__(self, observation, actor):
