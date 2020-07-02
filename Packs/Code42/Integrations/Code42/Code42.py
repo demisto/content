@@ -152,7 +152,7 @@ def _get_all_high_risk_employees_from_page(page, risk_tags):
 
 def _try_convert_str_list_to_list(str_list):
     if isinstance(str_list, str):
-        return str_list.split()
+        return str_list.split(",")
     return str_list
 
 
