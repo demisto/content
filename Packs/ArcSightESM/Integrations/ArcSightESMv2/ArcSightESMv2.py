@@ -371,12 +371,13 @@ def fetch():
             }
 
             incidents.append(incident)
-            if len(incidents) >= FETCH_CHUNK_SIZE:
-                break
 
             if len(already_fetched) > MAX_UNIQUE:
                 already_fetched.pop(0)
             already_fetched.append(r_id)
+
+            if len(incidents) >= FETCH_CHUNK_SIZE:
+                break
 
     last_run = {
         'already_fetched': already_fetched,
@@ -677,19 +678,36 @@ def delete_case_command():
 def get_entries_command():
     resource_id = demisto.args().get('resourceId')
     entry_filter = demisto.args().get('entryFilter')
+    use_rest = demisto.params().get('use_rest', False)
 
-    query_path = 'www/manager-service/services/ActiveListService/'
-    body = REQ_SOAP_BODY(function='getEntries', auth_token=AUTH_TOKEN, resource_id=resource_id, entryList=None)
-
-    res = send_request(query_path, body=body)
+    if use_rest:
+        query_path = 'www/manager-service/rest/ActiveListService/getEntries'
+        params = {
+            'alt': 'json'
+        }
+        body = {
+            "act.getEntries": {
+                "act.authToken": AUTH_TOKEN,
+                "act.resourceId": resource_id,
+            }
+        }  # type: Union[str, Dict[str, Dict[str, Any]]]
+        res = send_request(query_path, json=body, params=params)
+    else:
+        query_path = 'www/manager-service/services/ActiveListService/'
+        body = REQ_SOAP_BODY(function='getEntries', auth_token=AUTH_TOKEN, resource_id=resource_id, entryList=None)
+        res = send_request(query_path, body=body)
 
     if not res.ok:
         demisto.debug(res.text)
         return_error("Failed to get entries:\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(
             resource_id, res.status_code, body, res.text))
 
-    res_json = json.loads(xml2json((res.text).encode('utf-8')))
-    raw_entries = demisto.get(res_json, 'Envelope.Body.getEntriesResponse.return')
+    if use_rest:
+        res_json = res.json()
+        raw_entries = res_json.get('act.getEntriesResponse', {}).get('act.return', {})
+    else:
+        res_json = json.loads(xml2json((res.text).encode('utf-8')))
+        raw_entries = demisto.get(res_json, 'Envelope.Body.getEntriesResponse.return')
 
     # retrieve columns
     cols = demisto.get(raw_entries, 'columns')
@@ -736,9 +754,24 @@ def get_entries_command():
 @logger
 def clear_entries_command():
     resource_id = demisto.args().get('resourceId')
-    query_path = 'www/manager-service/services/ActiveListService/'
-    body = REQ_SOAP_BODY(function='clearEntries', auth_token=AUTH_TOKEN, resource_id=resource_id, entryList=None)
-    res = send_request(query_path, body=body)
+    use_rest = demisto.params().get('use_rest', False)
+
+    if use_rest:
+        query_path = 'www/manager-service/rest/ActiveListService/clearEntries'
+        params = {
+            'alt': 'json'
+        }
+        body = {
+            "act.clearEntries": {
+                "act.authToken": AUTH_TOKEN,
+                "act.resourceId": resource_id,
+            }
+        }  # type: Union[str, Dict[str, Dict[str, Any]]]
+        res = send_request(query_path, json=body, params=params)
+    else:
+        query_path = 'www/manager-service/services/ActiveListService/'
+        body = REQ_SOAP_BODY(function='clearEntries', auth_token=AUTH_TOKEN, resource_id=resource_id, entryList=None)
+        res = send_request(query_path, body=body)
 
     if not res.ok:
         demisto.debug(res.text)

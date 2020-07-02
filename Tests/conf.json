@@ -19,7 +19,8 @@
         },
         {
             "integrations": "MITRE ATT&CK",
-            "playbookID": "Mitre Attack List 10 Indicators Feed Test"
+            "playbookID": "Mitre Attack List 10 Indicators Feed Test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "URLhaus",
@@ -52,7 +53,7 @@
             ],
             "playbookID": "Test Syslog",
             "fromversion": "5.5.0",
-            "timeout": 1000
+            "timeout": 600
         },
         {
             "integrations": "APIVoid",
@@ -107,7 +108,7 @@
         {
             "integrations": "GoogleKubernetesEngine",
             "playbookID": "GoogleKubernetesEngine_Test",
-            "timeout": 1200,
+            "timeout": 600,
             "fromversion": "5.5.0"
         },
         {
@@ -255,8 +256,7 @@
         },
         {
             "integrations": "CloudShark",
-            "playbookID": "CloudShark - Test Playbook",
-            "timeout": 500
+            "playbookID": "CloudShark - Test Playbook"
         },
         {
             "integrations": "Google Vision AI",
@@ -282,7 +282,7 @@
             "integrations": "HelloWorld",
             "playbookID": "HelloWorld_Scan-Test",
             "fromversion": "5.0.0",
-            "timeout": 2000
+            "timeout": 400
         },
         {
             "integrations": "ThreatQ v2",
@@ -326,7 +326,7 @@
         {
             "integrations": "SlackV2",
             "playbookID": "Slack Test Playbook",
-            "timeout": 2400,
+            "timeout": 400,
             "pid_threshold": 5,
             "fromversion": "5.0.0"
         },
@@ -582,7 +582,7 @@
         {
             "integrations": "SNDBOX",
             "playbookID": "Detonate File - SNDBOX - Test",
-            "timeout": 2400,
+            "timeout": 600,
             "nightly": true
         },
         {
@@ -824,15 +824,13 @@
             "integrations": "IntSights",
             "instance_names": "intsights_standard_account",
             "playbookID": "IntSights Test",
-            "nightly": true,
-            "timeout": 500
+            "nightly": true
         },
         {
             "integrations": "IntSights",
             "playbookID": "IntSights Mssp Test",
             "instance_names": "intsights_mssp_account",
-            "nightly": true,
-            "timeout": 500
+            "nightly": true
         },
         {
             "integrations": "dnstwist",
@@ -1085,7 +1083,7 @@
             "integrations": "Intezer v2",
             "playbookID": "Intezer Testing v2",
             "fromversion": "4.1.0",
-            "timeout": 700
+            "timeout": 600
         },
         {
             "integrations": "FalconIntel",
@@ -1216,7 +1214,8 @@
             "timeout": 500
         },
         {
-            "playbookID": "process_email_-_generic_-_test",
+            "playbookID": "Process Email - Generic - Test - Incident Starter",
+            "fromversion": "6.0.0",
             "integrations": "Rasterize",
             "timeout": 240
         },
@@ -1305,7 +1304,7 @@
         {
             "integrations": "SplunkPy",
             "playbookID": "Splunk-Test",
-            "memory_threshold": 500,
+            "memory_threshold": 200,
             "instance_names": "use_default_handler"
         },
         {
@@ -1891,26 +1890,26 @@
             "fromversion": "5.0.0"
         },
         {
-            "playbookID": "Phishing v2 Test - Attachment",
+            "playbookID": "Phishing v2 - Test - Incident Starter",
+            "fromversion": "6.0.0",
             "timeout": 1200,
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
                 "Have I Been Pwned? V2",
                 "Demisto REST API",
-                "Palo Alto Minemeld",
                 "Rasterize"
             ]
         },
-        {
-            "playbookID": "Phishing v2 Test - Inline",
-            "timeout": 1200,
+                {
+            "playbookID": "Phishing - Core - Test - Incident Starter",
+            "fromversion": "6.0.0",
+            "timeout": 1700,
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
                 "Have I Been Pwned? V2",
                 "Demisto REST API",
-                "Palo Alto Minemeld",
                 "Rasterize"
             ]
         },
@@ -2054,17 +2053,6 @@
             "playbookID": "Endpoint data collection test",
             "timeout": 500
         },
-        {
-            "playbookID": "Phishing - Core - Test",
-            "integrations": [
-                "EWS Mail Sender",
-                "Demisto REST API",
-                "Palo Alto Minemeld",
-                "Rasterize"
-            ],
-            "fromversion": "4.5.0",
-            "timeout": 1700
-        },
         {"integrations": ["epo", "McAfee Active Response"],
             "playbookID": "MAR - Endpoint data collection test",
             "timeout": 500
@@ -2077,7 +2065,7 @@
             "integrations": ["TAXII Server", "TAXIIFeed"],
             "playbookID": "TAXII_Feed_Test",
             "fromversion": "5.5.0",
-            "timeout": 600
+            "timeout": 300
         },
         {
             "integrations": "Traps",
@@ -2156,7 +2144,7 @@
             "playbookID": "PAN-OS DAG Configuration Test",
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama_9.0",
-            "timeout": 1000
+            "timeout": 300
         },
         {
             "playbookID": "PAN-OS Create Or Edit Rule Test",
@@ -2168,7 +2156,7 @@
             "playbookID": "PAN-OS EDL Setup v3 Test",
             "integrations": ["Panorama", "palo_alto_networks_pan_os_edl_management"],
             "instance_names": "palo_alto_firewall_9.0",
-            "timeout": 1000
+            "timeout": 300
         },
         {
             "integrations": "Snowflake",
@@ -2538,7 +2526,7 @@
         {
             "integrations": "QRadar",
             "playbookID": "QRadar Indicator Hunting Test",
-            "timeout": 1200,
+            "timeout": 600,
             "fromversion": "5.0.0"
         },
         {
@@ -2601,6 +2589,11 @@
         {
             "integrations": "AutoFocus Feed",
             "playbookID": "playbook-FeedAutofocus_test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "AutoFocus Daily Feed",
+            "playbookID": "playbook-FeedAutofocus_daily_test",
             "fromversion": "5.5.0"
         },
         {
@@ -2870,12 +2863,22 @@
             "fromversion": "5.5.0"
         },
         {
+            "playbookID": "PCAP Search test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Workday",
             "playbookID": "Workday - Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "hashIncidentFields-test",
+            "fromversion": "4.5.0",
+            "timeout": 60000
         }
     ],
     "skipped_tests": {
+        "AlienVaultReputationFeed_Test": "Issue 26104",
         "Workday - Test": "Issue 25896",
         "CuckooTest": "Issue 25601",
         "RedLockTest": "Issue 24600",
@@ -2889,12 +2892,10 @@
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get Prisma Access instance",
         "Prisma_Access-Test": "unskip after we will get Prisma Access instance",
         "Test-Shodan_v2": "Issue 23370",
-        "PAN-OS EDL Setup V2 Test": "Issue 23854",
-        "PAN-OS - Block IP and URL - External Dynamic List Test": "Issue 23854",
         "Symantec Deepsight Test": "Issue 22971",
         "Cybereason Test": "Issue 22683",
         "Bluecat Address Manager test": "Issue 22616",
-        "test-Expanse": "Expanse should provide domain that they have in their system",
+        "test-Expanse": "Expanse should provide domain thaPlaybook-Create Phishing Classifier V2 ML Tet they have in their system",
         "TestProofpointFeed": "Issue 22229",
         "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
@@ -2914,6 +2915,9 @@
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
         "Test Playbook TrendMicroDDA": "Issue 16501",
+        "Process Email - Generic - Test - Actual Incident": "Should never run as standalone. Issue #25947",
+        "Phishing v2 - Test - Actual Incident": "Should never run as standalone. Issue #25947",
+        "Phishing - Core - Test - Actual Incident": "Should never run as standalone. Issue #25947",
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633",
         "PAN-OS Query Logs For Indicators Test": "Issue #23505",
@@ -2931,6 +2935,7 @@
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "Symantec Management Center": "Issue 23960",
         "PerceptionPoint": "Issue 25795",
         "Infoblox": "Issue 25651",
         "Traps": "Issue 24122",
@@ -3047,6 +3052,7 @@
 
 
          "_comment5": "~~~ OTHER ~~~",
+        "Cisco ASA": "Issue 25741",
         "Endace": "Issue 24304",
         "Pentera": "authentication method will not work with testing",
         "EclecticIQ Platform": "Issue 8821",
@@ -3155,6 +3161,7 @@
         "GoogleKubernetesEngine": "SDK"
     },
     "parallel_integrations": [
+        "SNDBOX",
         "Whois",
         "Rasterize",
         "CVE Search v2",
@@ -3195,6 +3202,8 @@
         "Feodo Tracker IP Blocklist Feed",
         "AlienVault OTX TAXII Feed",
         "Prisma Access Egress IP feed",
+        "Lastline v2",
+        "McAfee DXL",
         "GCP Whitelist Feed"
     ],
     "docker_thresholds": {
