@@ -1,6 +1,6 @@
 import pytest
 from Zimperium import Client, events_search, users_search, user_get_by_id, devices_search, device_get_by_id,\
-    devices_get_last_updated, app_classification_get, fetch_incidents, report_get
+    devices_get_last_updated, app_classification_get, file_reputation, fetch_incidents, report_get
 from test_data.response_constants import RESPONSE_SEARCH_EVENTS, RESPONSE_SEARCH_USERS, RESPONSE_USER_GET_BY_ID,\
     RESPONSE_SEARCH_DEVICES, RESPONSE_DEVICE_GET_BY_ID, RESPONSE_APP_CLASSIFICATION_GET,\
     RESPONSE_MULTIPLE_APP_CLASSIFICATION_GET, RESPONSE_GET_LAST_UPDATED_DEVICES, RESPONSE_REPORT_GET_ITUNES_ID,\
@@ -44,6 +44,26 @@ def test_zimperium_commands(command, args, http_response, context, mocker):
     mocker.patch.object(Client, '_http_request', return_value=http_response)
     command_results = command(client, args)
     assert command_results.outputs == context
+
+
+def test_file_reputation(mocker):
+    """Unit test
+    Given
+    - file reputation command
+    - command args
+    - command raw response
+    When
+    - mock the Client's http_request.
+    Then
+    - run the file reputation command using the Client
+    Validate The contents of the outputs and indicator of the results
+    """
+    client = Client(base_url="https://domain.zimperium.com/", api_key="api_key", verify=False)
+    mocker.patch.object(Client, '_http_request', return_value=RESPONSE_APP_CLASSIFICATION_GET)
+    command_results = file_reputation(client,
+                                      args={'file': "aad9b2fd4606467f06931d72048ee1dff137cbc9b601860a88ad6a2c092"})
+
+    assert command_results.indicators[0].dbot_score.score == 1
 
 
 def test_fetch_incidents(mocker):

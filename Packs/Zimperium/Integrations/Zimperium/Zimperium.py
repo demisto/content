@@ -429,6 +429,89 @@ def app_classification_get(client: Client, args: Dict) -> CommandResults:
     return command_results
 
 
+def calculate_dbot_score(application_data: dict) -> int:
+    """Determines app dbot score
+
+    Args:
+        application_data: app data
+
+    Returns:
+        a number representing the dbot score
+    """
+    if not application_data:  # no response from Zimperium
+        return 0
+
+    classification = application_data.get('classification')
+    if not classification:
+        return 0
+    if classification == 'Legitimate':
+        return 1
+    return 3  # classification == Malicious
+
+
+def file_reputation(client: Client, args: Dict) -> CommandResults:
+    """Get the reputation of a hash representing an App
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs.
+    """
+    hash_list = argToList(args.get('file'))
+
+    raw_response_list = []
+    file_indicator_list = []
+    application_data_list = []
+    headers = ['objectId', 'hash', 'name', 'version', 'classification', 'score', 'privacyEnum', 'securityEnum']
+    human_readable = ''
+
+    for app_hash in hash_list:
+        try:
+            application = client.app_classification_get_request(app_hash, '')
+        except Exception as err:
+            if 'Error in API call [404]' in str(err):
+                application = [{'hash': app_hash}]
+            else:
+                raise Exception(err)
+        raw_response_list.extend(application)
+
+        application_data = application[0]
+        application_data_list.extend(application_data)
+
+        score = calculate_dbot_score(application_data)
+
+        dbot_score = Common.DBotScore(
+            indicator=app_hash,
+            indicator_type=DBotScoreType.FILE,
+            integration_name='Zimperium',
+            score=score
+        )
+        file = Common.File(
+            md5=app_hash,
+            dbot_score=dbot_score
+        )
+        file_indicator_list.append(file)
+        if not score:
+            readable_output = tableToMarkdown(name=f"Hash {app_hash} reputation is unknown to Zimperium.",
+                                              t=application_data, headers=headers, removeNull=True)
+        else:
+            readable_output = tableToMarkdown(name=f"Hash {app_hash} reputation:", t=application_data, headers=headers,
+                                              removeNull=True)
+        human_readable += readable_output
+
+    command_results = CommandResults(
+        outputs_prefix='Zimperium.Application',
+        outputs_key_field='objectId',
+        outputs=application_data_list,
+        readable_output=human_readable,
+        raw_response=raw_response_list,
+        indicators=file_indicator_list
+    )
+    return command_results
+
+
 def report_get(client: Client, args: Dict) -> CommandResults:
     """Retrieve a report.
 
@@ -471,34 +554,6 @@ def report_get(client: Client, args: Dict) -> CommandResults:
             readable_output=readable_output,
             raw_response=report
         )
-
-    return command_results
-
-
-def app_upload_for_analysis(client: Client, args: Dict) -> CommandResults:
-    """Upload an application for analysis.
-
-    Args:
-        client: Client object with request.
-        args: Usually demisto.args()
-
-    Returns:
-        Outputs.
-    """
-    entry_id = str(args.get('entry_id', ''))
-
-    upload = client.app_upload_for_analysis_request(entry_id)
-
-    # headers = ['objectId', 'hash', 'name', 'classification', 'score', 'privacyEnum', 'SecurityEnum']
-    readable_output = tableToMarkdown(name="Upload:", t=upload, removeNull=True)
-
-    command_results = CommandResults(
-        outputs_prefix='Zimperium.Analysis',
-        outputs_key_field='objectId',
-        outputs=upload,
-        readable_output=readable_output,
-        raw_response=upload
-    )
 
     return command_results
 
@@ -656,8 +711,8 @@ def main():
             'zimperium-device-get-by-id': device_get_by_id,
             'zimperium-devices-get-last-updated': devices_get_last_updated,
             'zimperium-app-classification-get': app_classification_get,
+            'file': file_reputation,
             'zimperium-report-get': report_get,
-            'zimperium-app-upload-for-analysis': app_upload_for_analysis,
         }
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.

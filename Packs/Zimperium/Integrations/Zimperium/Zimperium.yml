@@ -1027,16 +1027,35 @@ script:
       description: Total threats.
       type: Number
   - arguments:
-    - default: false
-      description: ID of the entry containing the file to upload.
+    - default: true
+      description: The MD5 hash of the file.
       isArray: false
-      name: entry_id
-      required: true
+      name: file
+      required: false
       secret: false
+    outputs:
+      - contextPath: DBotScore.Vendor
+        description: The vendor used to calculate the score.
+        type: String
+      - contextPath: DBotScore.Score
+        description: The actual score.
+        type: Number
+      - contextPath: DBotScore.Type
+        description: The indicator type.
+        type: String
+      - contextPath: DBotScore.Indicator
+        description: The indicator that was tested.
+        type: String
+      - contextPath: File.MD5
+        description: MD5 hash of the file.
+        type: String
+      - contextPath: File.Malicious.Vendor
+        description: For malicious files, the vendor that made the decision.
+        type: String
     deprecated: false
-    description: Upload application file for analysis.
+    description: Checks the reputation of an app in Zimperium.
     execution: false
-    name: zimperium-app-upload-for-analysis
+    name: file
   dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: true
