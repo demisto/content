@@ -32,7 +32,7 @@ configuration:
   name: vsys
   required: false
   type: 0
-- display: Template - Panorama instances only. routes.
+- display: Template - Panorama instances only.
   name: template
   required: false
   type: 0
@@ -1714,6 +1714,18 @@ script:
         names, or EDL object names.
       isArray: true
       name: destination
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of source zones.
+      isArray: true
+      name: source_zone
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of destination zones.
+      isArray: true
+      name: destination_zone
       required: false
       secret: false
     - auto: PREDEFINED
