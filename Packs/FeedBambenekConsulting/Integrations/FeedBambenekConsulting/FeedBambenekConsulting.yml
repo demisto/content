@@ -6,11 +6,9 @@ configuration:
 - display: Fetch indicators
   name: feed
   required: false
-  defaultvalue: true
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
-  defaultvalue: Bad
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -20,8 +18,7 @@ configuration:
   - Bad
   required: false
   type: 18
-- defaultvalue: B - Usually reliable
-  display: Source Reliability
+- display: Source Reliability
   name: feedReliability
   options:
   - A - Completely reliable
@@ -35,27 +32,28 @@ configuration:
   additionalinfo: Reliability of the source providing the intelligence data
 - display: ""
   name: feedExpirationPolicy
-  defaultvalue: indicatorType
   type: 17
   required: false
   options:
-    - never
-    - interval
-    - indicatorType
-    - suddenDeath
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
 - display: ""
   name: feedExpirationInterval
   required: false
-  defaultvalue: "20160"
   type: 1
-- defaultvalue: '360'
-  display: Feed Fetch Interval
+- display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
   type: 19
 - display: Bypass exclusion list
   name: feedBypassExclusionList
-  defaultvalue: ""
   type: 8
   required: false
   additionalinfo: When selected, the exclusion list is ignored for indicators from
@@ -88,7 +86,6 @@ configuration:
   required: false
   type: 9
 - additionalinfo: Time in seconds before http requests timeout.
-  defaultvalue: '20'
   display: Request Timeout
   name: polling_timeout
   required: true
@@ -117,7 +114,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: bambenek-get-indicators
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.8.3.9324
   feed: true
   isfetch: false
   longRunning: false
