@@ -127,7 +127,7 @@ def notFound():
     demisto.results({
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
-        'Contents': "",
+        'Contents': "No results found.",
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': "No results found.",
         'EntryContext': {
