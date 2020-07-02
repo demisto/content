@@ -1880,7 +1880,7 @@ def add_remove_member_to_group(action_type):
     return_outputs(markdown_output, entry_context, api_response)
 
 
-def create_add_remove_group_member_request(api_endpoint: str):
+def create_add_remove_group_member_request(api_endpoint):
     """Adds or remove a member from a group
 
     Args:
@@ -1913,7 +1913,7 @@ def create_add_remove_group_member_request(api_endpoint: str):
     return response
 
 
-def add_remove_api_response_to_markdown(api_response: dict, action_type: str):
+def add_remove_api_response_to_markdown(api_response, action_type):
     """Create a markdown response for the add or remove member operation
 
     Args:
