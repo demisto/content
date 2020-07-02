@@ -3064,8 +3064,7 @@
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lockpath KeyLight": "Deprecated. No tests.",
         "ThreatConnect": "Deprecated.",
-        "Cymulate": "Partner didn't provided test playbook",
-        "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR"
+        "Cymulate": "Partner didn't provided test playbook"
     },
     "nightly_integrations": [
         "Lastline v2",
