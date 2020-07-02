@@ -15,9 +15,6 @@ outputs:
 - contextPath: PcapExtractedFiles.FileName
   description: File name.
   type: String
-- contextPath: PcapExtractedFiles.FileNewEntryID
-  description: The entry ID of the extracted file.
-  type: String
 - contextPath: PcapExtractedFiles.FileSize
   description: File size.
   type: Number
@@ -44,6 +41,9 @@ outputs:
   type: String
 - contextPath: PcapExtractedFiles.FileSHA256
   description: The SHA256 hash of the file.
+  type: String
+- contextPath: PcapExtractedFiles.FileExtensaion
+  description: The extension of the file.
   type: String
 script: '-'
 subtype: python3

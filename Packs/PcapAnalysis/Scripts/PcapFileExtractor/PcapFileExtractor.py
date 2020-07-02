@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
-import pyshark
 import os
 from os.path import isfile
 from tempfile import mkdtemp
@@ -104,10 +103,10 @@ def upload_files(excluded_files, dir_path, file_path):
 
     :param excluded_files: excluded files
     :param dir_path: dir path for the files
+    :param file_path: the path to the pcap file
     :return:
     """
     filenames = []  # type: ignore
-    file_entry_id = dir_path
     # recursive call over the file system top down
     for root, directories, files in os.walk(dir_path):
         for f in files:
@@ -118,18 +117,29 @@ def upload_files(excluded_files, dir_path, file_path):
 
     if len(filenames) == 0:
         return_error('Could not find files')
+
     else:
         results = []
         context = []
-        protocol, _ = find_files_protocol(file_path)
+        protocol, packet_data = find_files_protocol(file_path)
+
         md5 = hashlib.md5()
         sha1 = hashlib.sha1()
         sha256 = hashlib.sha256()
         files_base_names = [os.path.basename(file_path) for file_path in filenames]  # noqa[F812]
         files_dic = {file_path: os.path.basename(file_path) for file_path in filenames}
+
         for file_path, file_name in files_dic.items():
+            for data in packet_data:
+                packet_number = data.split()[0]
+                for packet_number in packet_data:
+                    data = [i for i in packet_number.split()]
+                    source_ip = data[2]
+                    dest_ip = data[4]
+
             with open(file_path, 'rb') as _file:
                 demisto.results(fileResult(file_name, _file.read()))
+
             with open(file_path, 'rb') as _file:
                 data = _file.read()
                 md5.update(data)
@@ -143,11 +153,15 @@ def upload_files(excluded_files, dir_path, file_path):
                 'FileName': file_name,
                 'FileSize': os.path.getsize(file_path),
                 'DetectedInProtocol': protocol,
-                'FileNewEntryID': file_entry_id,
+                'FileExtension': os.path.splitext(file_name)[1],
+                'SourceIP': source_ip,
+                'DestinationIP': dest_ip
             })
-        ec = {
-            'PcapExtractedFiles(val.ID === obj.ID)': context
-        }
+
+            ec = {
+                'PcapExtractedFiles(val.FileMD5 === obj.FileMD5)': context
+            }
+
         results.append(
             {
                 'Type': entryTypes['note'],
