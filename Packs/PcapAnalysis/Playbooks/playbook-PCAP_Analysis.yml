@@ -3,10 +3,10 @@ version: -1
 fromversion: 5.0.0
 name: PCAP Analysis
 description: 'This playbook leverages all of the PCAP miner automation capabilities
-  including: Search for specific values in a PCAP file, Parse and enrich detected
-  indicators found by the search such as IP addresses, URLs, email addresses and domains.
-  And also carve (extract) files found in the http, smb and other protocols and perform
-  enrichment and detonation.'
+  including: 
+  * Search for specific values in a PCAP file
+  * Parse and enrich detected indicators found by the search such as IP addresses, URLs, email addresses and domains.
+  * Carve (extract) files found in the http, smb and other protocols and perform enrichment and detonation.'
 starttaskid: "0"
 tasks:
   "0":
@@ -428,7 +428,7 @@ tasks:
         files and perform enrichment and detonation of the extracted files. Supported
         PCAP file types are pcap, cap, pcapng. The playbook can handle one PCAP file
         per incident. Additional inputs allow the user to provide the WPA password
-        for decrypting 802.11 (wireless) traffic and adding an RSA certificate to
+        for decrypting 802.11 (wireless) traffic and add an RSA certificate to
         decrypt SSL traffic. To display the results within the relevant incident fields,
         the playbook needs to run in a PCAP Analysis incident type. For handling of
         PCAP files larger than 30 MB, refer to the PcapMinerV2 documentation.
@@ -583,22 +583,22 @@ inputs:
               simple: pcapng
       accessor: EntryID
   required: false
-  description: This input specifics the file entry id for the PCAP file if the user
+  description: This input specifies the file entry ID for the PCAP file if the user
     provided the file in the incident. One PCAP file can run per incident.
   playbookInputQuery:
 - key: RunParsingAndEnrichment
   value:
     simple: "true"
   required: false
-  description: This input specifies if to run the parsing and enrichment playbook.
-    Values can be true or any other values for false
+  description: This input specifies whether to run the parsing and enrichment playbook.
+    Values can be true or any other value for false
   playbookInputQuery:
 - key: RunFileCarving
   value:
     simple: "true"
   required: false
-  description: This input specifies if to run the file carving playbook. Values can
-    be true or any other values for false
+  description: This input specifies whether to run the file carving playbook. Values can
+    be true or any other value for false
   playbookInputQuery:
 - key: RsaDecryptKeyEntryID
   value:
@@ -624,7 +624,7 @@ inputs:
               simple: key
       accessor: EntryID
   required: false
-  description: This input specifics the file entry id for the RSA decrypt key if the
+  description: This input specifies the file entry ID for the RSA decrypt key if the
     user provided the key in the incident.
   playbookInputQuery:
 outputs: []
