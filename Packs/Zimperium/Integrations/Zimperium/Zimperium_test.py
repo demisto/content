@@ -66,6 +66,30 @@ def test_file_reputation(mocker):
     assert command_results.indicators[0].dbot_score.score == 1
 
 
+def test_file_reputation_404(mocker):
+    """Unit test
+    Given
+    - file reputation command
+    - command args
+    - command raw response
+    When
+    - Sending HTTP request and getting 404 status code (not found)
+    Then
+    - run the file reputation command using the Client
+    - Ensure we set the file reputation as unknown
+    """
+    client = Client(base_url="https://domain.zimperium.com/", api_key="api_key", verify=False)
+
+    def error_404_mock(message, error):
+        raise Exception('Error in API call [404]')
+
+    mocker.patch('Zimperium.Client.app_classification_get_request', side_effect=error_404_mock)
+
+    command_results = file_reputation(client,
+                                      args={'file': "aad9b2fd4606467f06931d72048ee1dff137cbc9b601860a88ad6a2c092"})
+    assert command_results.indicators[0].dbot_score.score == 0
+
+
 def test_fetch_incidents(mocker):
     """Unit test
     Given
