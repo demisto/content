@@ -1858,7 +1858,7 @@ def group_members_api_response_to_context(api_response, group_id=-1):
     return {'Mimecast.Group(val.ID && val.ID == obj.ID)': groups_after_update}
 
 
-def add_remove_member_to_group(action_type: str):
+def add_remove_member_to_group(action_type):
     """Adds or remove a member from a group
 
     Args:
