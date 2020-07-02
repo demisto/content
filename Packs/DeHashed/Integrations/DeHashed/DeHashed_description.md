@@ -6,4 +6,4 @@
 - In the "Password" field, enter your API key.
 - To generate an API key, see https://www.dehashed.com.
 ### Note
-In order to test the instance configuration, "Test" button passes your API credits.
+In order to test the instance configuration, the "Test" button passes your API credits.
