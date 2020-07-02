@@ -3,7 +3,7 @@
 	"name": "Zimperium - Classifier",
 	"type": "classification",
 	"description": "Classifies Zimperium incidents.",
-	"defaultIncidentType": "",
+	"defaultIncidentType": "Zimperium event",
 	"keyTypeMap": {
 		"ZIPS_EVENT": "Zimperium event"
 	},

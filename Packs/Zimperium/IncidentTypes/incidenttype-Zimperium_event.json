@@ -11,6 +11,7 @@
 	"id": "Zimperium event",
 	"locked": false,
 	"name": "Zimperium event",
+	"playbookId": "Zimperium Incident Enrichment",
 	"preProcessingScript": "",
 	"readonly": false,
 	"reputationCalc": 0,
