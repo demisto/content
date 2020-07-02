@@ -1,0 +1,268 @@
+category: IT Services
+commonfields:
+  id: Prisma Cloud IT Admin
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: 'Prisma Cloud url (Eg: https://<domain>.redlock.io/)'
+  name: url
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Username
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: ""
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: CustomerName
+  name: customerName
+  required: true
+  type: 0
+- additionalinfo: An optional custom mapping that takes custom values in the SCIM
+    data into the integration.
+  defaultvalue: ""
+  display: Custom Mapping for Create User
+  name: customMappingCreateUser
+  required: false
+  type: 12
+- additionalinfo: An optional custom mapping that takes custom values in the SCIM
+    data into the integration.
+  defaultvalue: ""
+  display: Custom Mapping for Update User
+  name: customMappingUpdateUser
+  required: false
+  type: 12
+description: 'The Prisma Cloud API consists of a set of API endpoints that allow customers
+  to perform CRUD operation on their user profiles. '
+display: Prisma Cloud IT Admin
+name: Prisma Cloud IT Admin
+script:
+  commands:
+  - arguments:
+    - description: SCIM content in JSON format
+      name: scim
+      required: true
+    description: Get a user
+    name: get-user
+    outputs:
+    - contextPath: GetUser
+      description: Command context path
+      type: Unknown
+    - contextPath: GetUser.active
+      description: 'Gives the active status of user. Can be true of false. '
+      type: boolean
+    - contextPath: GetUser.brand
+      description: Name of the Integration
+      type: string
+    - contextPath: GetUser.details
+      description: Gives the user Profile information if the API is success else error
+        message
+      type: string
+    - contextPath: GetUser.email
+      description: Value of email ID passed as argument
+      type: string
+    - contextPath: GetUser.errorCode
+      description: HTTP response code other than 200 (if there is error in response)
+      type: number
+    - contextPath: GetUser.errorMessage
+      description: Reason why the API is failed
+      type: string
+    - contextPath: GetUser.id
+      description: Value of id passed as argument
+      type: string
+    - contextPath: GetUser.instanceName
+      description: Name of the instance used for testing
+      type: string
+    - contextPath: GetUser.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: GetUser.userName
+      description: Value of username passed as argument
+      type: string
+  - arguments:
+    - description: SCIM content in JSON format
+      name: scim
+      required: true
+    - description: An optional custom mapping that takes custom values in the SCIM
+        data into the integration.
+      name: customMapping
+    description: Creates a user
+    name: create-user
+    outputs:
+    - contextPath: CreateUser
+      description: Command context path
+      type: Unknown
+    - contextPath: CreateUser.brand
+      description: Name of the Integration
+      type: string
+    - contextPath: CreateUser.instanceName
+      description: Name of the instance used for testing
+      type: string
+    - contextPath: CreateUser.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: CreateUser.active
+      description: 'Gives the active status of user. Can be true of false. '
+      type: boolean
+    - contextPath: CreateUser.id
+      description: Value of id passed as argument
+      type: string
+    - contextPath: CreateUser.username
+      description: Value of username passed as argument
+      type: string
+    - contextPath: CreateUser.email
+      description: Value of email ID passed as argument
+      type: string
+    - contextPath: CreateUser.errorCode
+      description: HTTP response code other than 200 (if there is error in response)
+      type: number
+    - contextPath: CreateUser.errorMessage
+      description: Reason why the API is failed
+      type: string
+    - contextPath: CreateUser.details
+      description: Gives the raw response from API
+      type: string
+  - arguments:
+    - description: Old SCIM content in JSON format
+      name: oldScim
+      required: true
+    - description: New SCIM content in JSON format
+      name: newScim
+      required: true
+    - description: An optional custom mapping that takes custom values in the SCIM
+        data into the integration.
+      name: customMapping
+    description: Update a user
+    name: update-user
+    outputs:
+    - contextPath: UpdateUser
+      description: Command context path
+      type: Unknown
+    - contextPath: UpdateUser.brand
+      description: Name of the Integration
+      type: string
+    - contextPath: UpdateUser.instanceName
+      description: Name of the instance used for testing
+      type: string
+    - contextPath: UpdateUser.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: UpdateUser.active
+      description: 'Gives the active status of user. Can be true of false. '
+      type: boolean
+    - contextPath: UpdateUser.id
+      description: Value of id passed as argument
+      type: string
+    - contextPath: UpdateUser.username
+      description: Value of username passed as argument
+      type: string
+    - contextPath: UpdateUser.email
+      description: Value of email ID passed as argument
+      type: string
+    - contextPath: UpdateUser.errorCode
+      description: HTTP response code other than 200 (if there is error in response)
+      type: string
+    - contextPath: UpdateUser.errorMessage
+      description: ' Reason why the API is failed'
+      type: string
+    - contextPath: UpdateUser.details
+      description: Gives the raw response from API
+      type: string
+  - arguments:
+    - description: SCIM content in JSON format
+      name: scim
+      required: true
+    description: Enable a disabled user
+    name: enable-user
+    outputs:
+    - contextPath: EnableUser
+      description: Command context path
+      type: Unknown
+    - contextPath: EnableUser.brand
+      description: Name of the Integration
+      type: string
+    - contextPath: EnableUser.instanceName
+      description: Name the instance used for testing
+      type: string
+    - contextPath: EnableUser.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: EnableUser.active
+      description: 'Gives the active status of user. Can be true of false. '
+      type: boolean
+    - contextPath: EnableUser.id
+      description: Value of id passed as argument
+      type: string
+    - contextPath: EnableUser.username
+      description: Value of username passed as argument
+      type: string
+    - contextPath: EnableUser.email
+      description: Value of email ID passed as argument
+      type: string
+    - contextPath: EnableUser.errorCode
+      description: HTTP response code other than 200 (if there is error in response)
+      type: number
+    - contextPath: EnableUser.errorMessage
+      description: Reason why the API is failed
+      type: string
+    - contextPath: EnableUser.details
+      description: Gives the raw response from API in case of error
+      type: string
+  - arguments:
+    - description: SCIM content in JSON format
+      name: scim
+      required: true
+    description: Disable a user
+    name: disable-user
+    outputs:
+    - contextPath: DisableUser
+      description: Command context path
+      type: unknown
+    - contextPath: DisableUser.instanceName
+      description: Name the instance used for testing
+      type: string
+    - contextPath: DisableUser.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: DisableUser.active
+      description: 'Gives the active status of user. Can be true of false. '
+      type: boolean
+    - contextPath: DisableUser.id
+      description: Value of id passed as argument
+      type: string
+    - contextPath: DisableUser.username
+      description: Value of username passed as argument
+      type: string
+    - contextPath: DisableUser.email
+      description: Value of email ID passed as argument
+      type: string
+    - contextPath: DisableUser.errorCode
+      description: HTTP response code other than 200 (if there is error in response)
+      type: number
+    - contextPath: DisableUser.errorMessage
+      description: Reason why the API is failed
+      type: string
+    - contextPath: DisableUser.details
+      description: Gives the raw response from API in case of error
+      type: string
+    - contextPath: DisableUser.brand
+      description: Name of the Integration
+      type: string
+  dockerimage: demisto/python3:3.8.3.9324
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
