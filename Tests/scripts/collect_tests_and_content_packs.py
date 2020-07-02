@@ -1131,7 +1131,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     if modified_files_with_relevant_tests:
         tests, packs_to_install = find_tests_and_content_packs_for_modified_files(modified_files_with_relevant_tests,
                                                                                   conf, id_set)
-    print_error(f'packs_to_install after getting from modified files: {",".join(packs_to_install)}')
+    tools.print_error(f'packs_to_install after getting from modified files: {",".join(packs_to_install)}')
     # Adding a unique test for a json file.
     if is_reputations_json:
         tests.add('FormattingPerformance - Test')
@@ -1147,7 +1147,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
             tests.add(test)
 
     packs_to_install = packs_to_install.union(get_content_pack_name_of_test(tests, id_set))
-    print_error(f'packs_to_install after union with tests: : {",".join(packs_to_install)}')
+    tools.print_error(f'packs_to_install after union with tests: : {",".join(packs_to_install)}')
 
     if is_conf_json:
         tests = tests.union(get_test_from_conf(branch_name, conf))
@@ -1175,13 +1175,13 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     modified_packs = get_modified_packs(files_string)
     if modified_packs:
         packs_to_install = packs_to_install.union(modified_packs)
-    print_error(f'packs_to_install after union with modified packs: {",".join(packs_to_install)}')
+    tools.print_error(f'packs_to_install after union with modified packs: {",".join(packs_to_install)}')
 
     packs_to_install.update(["DeveloperTools", "Base"])
 
     packs_of_tested_integrations = conf.get_packs_of_tested_integrations(tests, id_set)
     packs_to_install = packs_to_install.union(packs_of_tested_integrations)
-    print_error(f'packs_to_install after tested_integrations: {",".join(packs_to_install)}')
+    tools.print_error(f'packs_to_install after tested_integrations: {",".join(packs_to_install)}')
 
     packs_to_install = {pack_to_install for pack_to_install in packs_to_install if pack_to_install not in IGNORED_FILES}
 
@@ -1217,7 +1217,7 @@ def create_test_file(is_nightly, skip_save=False, file_string=''):
         print("Getting changed files from the branch: {0}".format(branch_name))
         if file_string:
             files_string = file_string
-            print_error(f'File string is: {files_string}')
+            tools.print_error(f'File string is: {files_string}')
         elif branch_name != 'master':
             files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
 
