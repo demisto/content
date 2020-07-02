@@ -333,6 +333,14 @@ class Code42Client(BaseClient):
             return org_uid
         raise Code42OrgNotFoundError(org_name)
 
+    def get_departing_employee(self, username):
+        user_id = self.get_user_id(username)
+        return self._get_sdk().detectionlists.departing_employee.get(user_id)
+
+    def get_high_risk_employee(self, username):
+        user_id = self.get_user_id(username)
+        return self._get_sdk().detectionlists.high_risk_employee.get(user_id)
+
 
 class Code42AlertNotFoundError(Exception):
     def __init__(self, alert_id):
@@ -739,6 +747,36 @@ def departingemployee_get_all_command(client, args):
 
 
 @logger
+def departingemployee_get_command(client, args):
+    username = args["username"]
+    departing_employee = client.get_departing_employee(username)
+    de_context = json.loads(departing_employee.text)
+    readable_outputs = tableToMarkdown("Retrieve departing employee", de_context)
+    return CommandResults(
+        outputs_prefix="Code42.DepartingEmployee",
+        outputs_key_field="UserID",
+        outputs=de_context,
+        readable_output=readable_outputs,
+        raw_response=username,
+    )
+
+
+@logger
+def highriskemployee_get_command(client, args):
+    username = args["username"]
+    high_risk_employee = client.get_departing_employee(username)
+    he_context = json.loads(high_risk_employee.text)
+    readable_outputs = tableToMarkdown("Retrieve high risk employee", he_context)
+    return CommandResults(
+        outputs_prefix="Code42.HighRiskEmployee",
+        outputs_key_field="UserID",
+        outputs=he_context,
+        readable_output=readable_outputs,
+        raw_response=username,
+    )
+
+
+@logger
 def highriskemployee_add_command(client, args):
     username = args.get("username")
     note = args.get("note")
@@ -1108,11 +1146,13 @@ def get_command_map():
         "code42-departingemployee-add": departingemployee_add_command,
         "code42-departingemployee-remove": departingemployee_remove_command,
         "code42-departingemployee-get-all": departingemployee_get_all_command,
+        "code42-departingemployee-get": departingemployee_get_command,
         "code42-highriskemployee-add": highriskemployee_add_command,
         "code42-highriskemployee-remove": highriskemployee_remove_command,
         "code42-highriskemployee-get-all": highriskemployee_get_all_command,
         "code42-highriskemployee-add-risk-tags": highriskemployee_add_risk_tags_command,
         "code42-highriskemployee-remove-risk-tags": highriskemployee_remove_risk_tags_command,
+        "code42-highriskemployee-get": highriskemployee_get_command,
         "code42-user-create": user_create_command,
         "code42-user-block": user_block_command,
         "code42-user-unblock": user_unblock_command,
