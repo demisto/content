@@ -203,7 +203,7 @@ class Client(BaseClient):
             'includeFullEventDetail': verbose,
         }
 
-        return self._http_request(method='GET', url_suffix=f'/events/public/search', headers=self._headers,
+        return self._http_request(method='GET', url_suffix='/events/public/search', headers=self._headers,
                                   params=params)
 
 
@@ -248,7 +248,7 @@ def users_search(client: Client, args: Dict) -> CommandResults:
     total_elements = users.get('totalElements', '0')
     table_name = ''
     if not users.get('last'):
-        table_name = f' More users are available in the next page.'
+        table_name = ' More users are available in the next page.'
     headers = ['objectId', 'alias', 'firstName', 'middleName', 'lastName', 'email']
     readable_output = tableToMarkdown(name=f"Number of users found: {total_elements}. {table_name}",
                                       t=users_data, headers=headers, removeNull=True)
@@ -279,7 +279,7 @@ def user_get_by_id(client: Client, args: Dict) -> CommandResults:
     user = client.user_get_by_id_request(object_id)
 
     headers = ['objectId', 'alias', 'firstName', 'middleName', 'lastName', 'email']
-    readable_output = tableToMarkdown(name=f"User:", t=user, headers=headers, removeNull=True)
+    readable_output = tableToMarkdown(name="User:", t=user, headers=headers, removeNull=True)
 
     command_results = CommandResults(
         outputs_prefix='Zimperium.Users',
@@ -312,7 +312,7 @@ def devices_search(client: Client, args: Dict) -> CommandResults:
     total_elements = devices.get('totalElements', '0')
     table_name = ''
     if not devices.get('last'):
-        table_name = f' More Devices are available in the next page.'
+        table_name = ' More Devices are available in the next page.'
     headers = ['deviceId', 'zdid', 'deviceHash', 'model', 'osType', 'osVersion', 'updatedDate']
     readable_output = tableToMarkdown(name=f"Number of devices found: {total_elements}. {table_name}",
                                       t=devices_data, headers=headers, removeNull=True)
@@ -380,7 +380,7 @@ def devices_get_last_updated(client: Client, args: Dict) -> CommandResults:
     total_elements = devices.get('totalElements', '0')
     table_name = ''
     if not devices.get('last'):
-        table_name = f' More Devices are available in the next page.'
+        table_name = ' More Devices are available in the next page.'
     headers = ['deviceId', 'zdid', 'model', 'osType', 'osVersion', 'updatedDate', 'deviceHash']
     readable_output = tableToMarkdown(name=f"Number of devices found: {total_elements}. {table_name}",
                                       t=devices_data, headers=headers, removeNull=True)
@@ -416,7 +416,7 @@ def app_classification_get(client: Client, args: Dict) -> CommandResults:
     else:  # or it can have only one result, if queried using a hash or if it has only one version.
         application_data = application[0]
     headers = ['objectId', 'hash', 'name', 'version', 'classification', 'score', 'privacyEnum', 'securityEnum']
-    readable_output = tableToMarkdown(name=f"Application:", t=application_data, headers=headers, removeNull=True)
+    readable_output = tableToMarkdown(name="Application:", t=application_data, headers=headers, removeNull=True)
 
     command_results = CommandResults(
         outputs_prefix='Zimperium.Application',
@@ -462,7 +462,7 @@ def report_get(client: Client, args: Dict) -> CommandResults:
         app_md5 = report.get('md5') if 'md5' in report else report_data.get('app_analysis', {}).get('md5_hash')
         if app_md5:
             report_data.update({'md5': app_md5})
-        readable_output = tableToMarkdown(name=f"Report:", t=report_data, removeNull=True)
+        readable_output = tableToMarkdown(name="Report:", t=report_data, removeNull=True)
 
         command_results = CommandResults(
             outputs_prefix='Zimperium.Reports',
@@ -490,7 +490,7 @@ def app_upload_for_analysis(client: Client, args: Dict) -> CommandResults:
     upload = client.app_upload_for_analysis_request(entry_id)
 
     # headers = ['objectId', 'hash', 'name', 'classification', 'score', 'privacyEnum', 'SecurityEnum']
-    readable_output = tableToMarkdown(name=f"Upload:", t=upload, removeNull=True)
+    readable_output = tableToMarkdown(name="Upload:", t=upload, removeNull=True)
 
     command_results = CommandResults(
         outputs_prefix='Zimperium.Analysis',
@@ -528,7 +528,7 @@ def events_search(client: Client, args: Dict) -> CommandResults:
 
     table_name = ''
     if not events.get('last'):
-        table_name = f' More events are available in the next page.'
+        table_name = ' More events are available in the next page.'
     headers = ['eventId', 'eventName', 'eventState', 'incidentSummary', 'severity', 'persistedTime']
     readable_output = tableToMarkdown(name=f"Number of events found: {total_elements}. {table_name}",
                                       t=events_data, headers=headers, removeNull=True)
