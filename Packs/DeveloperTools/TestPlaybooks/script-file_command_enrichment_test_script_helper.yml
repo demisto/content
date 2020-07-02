@@ -28,4 +28,5 @@ tags: []
 enabled: true
 scripttarget: 0
 runonce: false
+comment: ''
 runas: DBotWeakRole
