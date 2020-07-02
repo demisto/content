@@ -604,6 +604,12 @@ script:
       name: hash
       required: true
       secret: false
+    - default: false
+      description: The filename to save the file as.
+      isArray: false
+      name: filename
+      required: false
+      secret: false
     deprecated: false
     description: Downloads a file from Code42 servers.
     execution: false
