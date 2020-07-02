@@ -1,6 +1,6 @@
 id: PCAP File Carving
 version: -1
-fromversion: 5.5.0
+fromversion: 5.0.0
 name: PCAP File Carving
 description: This playbook is used to carve (extract) files from within PCAP files
   and perform enrichment and detonation of the extracted files. Supported PCAP file
