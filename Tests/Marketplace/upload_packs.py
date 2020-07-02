@@ -92,9 +92,10 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
         os.mkdir(index_folder_path)
         return index_folder_path, index_blob
 
-    index_blob.cache_control = "no-cache"  # index zip should never be cached in the memory, should be updated version
-    index_blob.reload()
+    # index zip should never be cached in the memory, should be updated version
+    index_blob.cache_control = "no-cache,max-age=0"
     index_blob.download_to_filename(download_index_path)
+    index_blob.reload()
 
     if os.path.exists(download_index_path):
         with ZipFile(download_index_path, 'r') as index_zip:
@@ -235,18 +236,8 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
     """
     with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json"), "w+") as index_file:
         index = {
-            'description': 'Master index for Demisto Content Packages',
-            'baseUrl': 'https://marketplace.demisto.ninja/content/packs',  # disable-secrets-detection
             'revision': build_number,
             'modified': datetime.utcnow().strftime(Metadata.DATE_FORMAT),
-            'landingPage': {
-                'sections': [
-                    'Trending',
-                    'Recommended by Demisto',
-                    'New',
-                    'Getting Started'
-                ]
-            },
             'packs': private_packs
         }
         json.dump(index, index_file, indent=4)
@@ -255,43 +246,61 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
     index_zip_path = shutil.make_archive(base_name=index_folder_path, format="zip",
                                          root_dir=extract_destination_path, base_dir=index_zip_name)
 
-    index_blob.cache_control = "no-cache"  # disabling caching for index blob
-    if index_blob.exists():
-        index_blob.reload()
-
+    index_blob.cache_control = "no-cache,max-age=0"  # disabling caching for index blob
     index_blob.upload_from_filename(index_zip_path)
+
     shutil.rmtree(index_folder_path)
     print_color(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.", LOG_COLORS.GREEN)
 
 
-def upload_core_packs_config(storage_bucket, packs_list, build_number):
-    """Uploads corepacks.json file configuration to bucket. corepacks file includes core packs for server installation.
+def upload_core_packs_config(storage_bucket, build_number, index_folder_path):
+    """Uploads corepacks.json file configuration to bucket. Corepacks file includes core packs for server installation.
 
      Args:
         storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is uploaded.
-        packs_list (list): list of initialized packs.
         build_number (str): circleCI build number.
+        index_folder_path (str): The index folder path.
 
     """
-    # todo later check if it is not pre release and only then upload corepacks.json
-    core_packs_public_urls = [c.public_storage_path for c in packs_list if
-                              c.name in GCPConfig.CORE_PACKS_LIST and c.public_storage_path]
+    core_packs_public_urls = []
+    found_core_packs = set()
 
-    if not core_packs_public_urls:
-        print(f"No core packs detected, skipping {GCPConfig.CORE_PACK_FILE_NAME} upload")
-        return
+    for pack in os.scandir(index_folder_path):
+        if pack.is_dir() and pack.name in GCPConfig.CORE_PACKS_LIST:
+            pack_metadata_path = os.path.join(index_folder_path, pack.name, Pack.METADATA)
 
-    if len(core_packs_public_urls) != len(GCPConfig.CORE_PACKS_LIST):
-        print_warning(f"Found core packs does not match configured core packs. "
-                      f"Found {len(core_packs_public_urls)} and configured {len(GCPConfig.CORE_PACKS_LIST)}, "
-                      f"skipping {GCPConfig.CORE_PACK_FILE_NAME} upload")
+            if not os.path.exists(pack_metadata_path):
+                print_error(f"{pack.name} pack {Pack.METADATA} is missing in {GCPConfig.INDEX_NAME}")
+                sys.exit(1)
+
+            with open(pack_metadata_path, 'r') as metadata_file:
+                metadata = json.load(metadata_file)
+
+            pack_current_version = metadata.get('currentVersion', Pack.PACK_INITIAL_VERSION)
+            core_pack_relative_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, pack.name,
+                                                   pack_current_version, f"{pack.name}.zip")
+            core_pack_public_url = os.path.join(GCPConfig.GCS_PUBLIC_URL, storage_bucket.name, core_pack_relative_path)
+
+            if not storage_bucket.blob(core_pack_relative_path).exists():
+                print_error(f"{pack.name} pack does not exist under {core_pack_relative_path} path")
+                sys.exit(1)
+
+            core_packs_public_urls.append(core_pack_public_url)
+            found_core_packs.add(pack.name)
+
+    if len(found_core_packs) != len(GCPConfig.CORE_PACKS_LIST):
+        missing_core_packs = set(GCPConfig.CORE_PACKS_LIST) ^ found_core_packs
+        print_error(f"Number of defined core packs are: {len(GCPConfig.CORE_PACKS_LIST)}")
+        print_error(f"Actual number of found core packs are: {len(found_core_packs)}")
+        print_error(f"Missing core packs are: {missing_core_packs}")
+        sys.exit(1)
 
     # construct core pack data with public gcs urls
     core_packs_data = {
         'corePacks': core_packs_public_urls,
         'buildNumber': build_number
     }
-
+    # upload core pack json file to gcs
     core_packs_config_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, GCPConfig.CORE_PACK_FILE_NAME)
     blob = storage_bucket.blob(core_packs_config_path)
     blob.upload_from_string(json.dumps(core_packs_data, indent=4))
@@ -315,8 +324,7 @@ def upload_id_set(storage_bucket, id_set_local_path=None):
 
     with open(id_set_local_path, mode='r') as f:
         blob.upload_from_file(f)
-
-    print_color(f"Finished uploading id_set.json to storage.", LOG_COLORS.GREEN)
+    print_color("Finished uploading id_set.json to storage.", LOG_COLORS.GREEN)
 
 
 def get_private_packs(private_index_path):
@@ -395,7 +403,7 @@ def update_index_with_priced_packs(private_storage_bucket, extract_destination_p
         return private_packs
 
 
-def _build_summary_table(packs_input_list):
+def _build_summary_table(packs_input_list, include_pack_status=False):
     """Build summary table from pack list
 
     Args:
@@ -405,13 +413,15 @@ def _build_summary_table(packs_input_list):
         PrettyTable: table with upload result of packs.
 
     """
-    table_fields = ["Index", "Pack Name", "Version", "Status"]
+    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Status"] if include_pack_status \
+        else ["Index", "Pack ID", "Pack Display Name", "Latest Version"]
     table = prettytable.PrettyTable()
     table.field_names = table_fields
 
     for index, pack in enumerate(packs_input_list, start=1):
         pack_status_message = PackStatus[pack.status].value
-        row = [index, pack.name, pack.latest_version, pack_status_message]
+        row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message] if include_pack_status \
+            else [index, pack.name, pack.display_name, pack.latest_version]
         table.add_row(row)
 
     return table
@@ -445,20 +455,24 @@ def print_packs_summary(packs_list):
     failed_packs = [pack for pack in packs_list if pack not in successful_packs and pack not in skipped_packs]
 
     print("\n")
-    print("--------------------------------------- Packs Upload Summary ---------------------------------------")
+    print("------------------------------------------ Packs Upload Summary ------------------------------------------")
     print(f"Total number of packs: {len(packs_list)}")
+    print("----------------------------------------------------------------------------------------------------------")
 
     if successful_packs:
         print_color(f"Number of successful uploaded packs: {len(successful_packs)}", LOG_COLORS.GREEN)
+        print_color("Uploaded packs:\n", LOG_COLORS.GREEN)
         successful_packs_table = _build_summary_table(successful_packs)
         print_color(successful_packs_table, LOG_COLORS.GREEN)
     if skipped_packs:
         print_warning(f"Number of skipped packs: {len(skipped_packs)}")
+        print_warning("Skipped packs:\n")
         skipped_packs_table = _build_summary_table(skipped_packs)
         print_warning(skipped_packs_table)
     if failed_packs:
         print_error(f"Number of failed packs: {len(failed_packs)}")
-        failed_packs_table = _build_summary_table(failed_packs)
+        print_error("Failed packs:\n")
+        failed_packs_table = _build_summary_table(failed_packs, include_pack_status=True)
         print_error(failed_packs_table)
         sys.exit(1)
 
@@ -497,7 +511,7 @@ def option_handler():
     parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
                         required=False)
     parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
-    parser.add_argument('-sb', '--storage_bash_path', help="Storage base path of the directory to upload to.",
+    parser.add_argument('-sb', '--storage_base_path', help="Storage base path of the directory to upload to.",
                         required=False)
     parser.add_argument('-rt', '--remove_test_playbooks', type=str2bool,
                         help='Should remove test playbooks from content packs or not.', default=True)
@@ -518,15 +532,15 @@ def main():
     signature_key = option.key_string
     id_set_path = option.id_set_path
     packs_dependencies_mapping = load_json(option.pack_dependencies) if option.pack_dependencies else {}
-    storage_bash_path = option.storage_bash_path
+    storage_base_path = option.storage_base_path
     remove_test_playbooks = option.remove_test_playbooks
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
 
-    if storage_bash_path:
-        GCPConfig.STORAGE_BASE_PATH = storage_bash_path
+    if storage_base_path:
+        GCPConfig.STORAGE_BASE_PATH = storage_base_path
 
     # detect packs to upload
     modified_packs = get_modified_packs(target_packs)
@@ -577,13 +591,14 @@ def main():
         task_status = pack.format_metadata(user_metadata=user_metadata, pack_content_items=pack_content_items,
                                            integration_images=integration_images, author_image=author_image,
                                            index_folder_path=index_folder_path,
-                                           packs_dependencies_mapping=packs_dependencies_mapping)
+                                           packs_dependencies_mapping=packs_dependencies_mapping,
+                                           build_number=build_number)
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack.cleanup()
             continue
 
-        task_status = pack.prepare_release_notes(index_folder_path)
+        task_status = pack.prepare_release_notes(index_folder_path, build_number)
         if not task_status:
             pack.status = PackStatus.FAILED_RELEASE_NOTES.name
             pack.cleanup()
@@ -635,11 +650,11 @@ def main():
 
         pack.status = PackStatus.SUCCESS.name
 
+    # upload core packs json to bucket
+    upload_core_packs_config(storage_bucket, build_number, index_folder_path)
+
     # finished iteration over content packs
     upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs)
-
-    # upload core packs json to bucket
-    upload_core_packs_config(storage_bucket, packs_list, build_number)
 
     # upload id_set.json to bucket
     upload_id_set(storage_bucket, id_set_path)

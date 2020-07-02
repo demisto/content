@@ -70,9 +70,9 @@ This playbook does not use any scripts.
 | File.Path | File path | unknown |
 | File.Size | File size in bytes | unknown |
 | File.MD5 | MD5 hash of file | unknown |
-| File.SHA256 | FSHA256 hash of file | unknown |
+| File.SHA256 | SHA256 hash of file | unknown |
 | File.Hostname | Hostname where file event was captured | unknown |
 
 ## Playbook Image
 ---
-![Code42 File Search](Insert the link to your image here)
+![Code42 File Search](../Integrations/Code42/Code42_image.png)

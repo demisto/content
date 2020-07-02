@@ -245,13 +245,13 @@ def resolve_alert_command(client: Client, args: dict) -> Tuple:
             "Claroty.Resolve_out": result
         }
         if result['success']:
-            readable_output = f"## Alert was resolved successfully"
+            readable_output = "## Alert was resolved successfully"
         else:
-            readable_output = f"## Alert was not resolved"
+            readable_output = "## Alert was not resolved"
     else:
         result = {}
         outputs = {}
-        readable_output = f"## Bad input"
+        readable_output = "## Bad input"
 
     return (
         readable_output,

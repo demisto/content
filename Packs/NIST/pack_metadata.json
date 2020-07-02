@@ -11,8 +11,10 @@
     "Case Management"
   ],
   "tags": [
+    "Incident Handling"
+  ],
+  "useCases": [
     "NIST"
   ],
-  "useCases": [],
   "keywords": []
 }

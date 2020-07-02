@@ -180,7 +180,7 @@ def fetch_indicators_command(client, feed_type, src_val, src_type, default_type,
     ioc_enrch_lst: list = []
     if FEED_TYPE_GENERIC not in feed_type:
         # Insight is the name of the indicator object as it's saved into the database
-        search = get_scan_insight_format(client, now, last_fetch_timestamp)
+        search = get_scan_insight_format(client, now, last_fetch_timestamp, feed_type)
         for hit in search.scan():
             hit_lst, hit_enrch_lst = extract_indicators_from_insight_hit(hit)
             ioc_lst.extend(hit_lst)

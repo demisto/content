@@ -53,6 +53,8 @@ def test_validate_entry_context(entry_context: dict, keys: list, raise_exception
                               False),
                              (["*"], ["col1", "col2"], "context_entry_dict_with_elements.json",
                               "expected_dict_with_elements_grid.json", True),
+                             (["name", "value"], ["col2", "col1"], "context_entry_list.json", "expected_list_grid.json",
+                              False),
                          ])
 def test_build_grid(datadir, mocker, keys: list, columns: list, dt_response_json: str, expected_json: str,
                     unpack_nested: bool):
@@ -63,6 +65,6 @@ def test_build_grid(datadir, mocker, keys: list, columns: list, dt_response_json
     mocker.patch.object(SetGridField, 'demisto')
     SetGridField.demisto.dt.return_value = json.load(open(datadir[dt_response_json]))
     expected_grid = json.load(open(datadir[expected_json]))
-    assert pd.DataFrame(expected_grid).to_dict() == \
-        SetGridField.build_grid(context_path=mocker.MagicMock(), keys=keys, columns=columns,
-                                unpack_nested_elements=unpack_nested).to_dict()
+    assert pd.DataFrame(expected_grid).to_dict() == SetGridField.build_grid(
+        context_path=mocker.MagicMock(), keys=keys, columns=columns, unpack_nested_elements=unpack_nested
+    ).to_dict()

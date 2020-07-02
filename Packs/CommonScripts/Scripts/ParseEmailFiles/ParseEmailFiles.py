@@ -3181,9 +3181,8 @@ def parse_email_headers(header, raw=False):
 def get_msg_mail_format(msg_dict):
     try:
         return msg_dict.get('Headers', 'Content-type:').split('Content-type:')[1].split(';')[0]
-    except ValueError:
-        return ''
-    except IndexError:
+    except Exception as e:
+        demisto.debug('Got exception while trying to get msg mail format - {}'.format(str(e)))
         return ''
 
 

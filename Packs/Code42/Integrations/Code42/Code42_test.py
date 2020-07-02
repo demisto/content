@@ -21,8 +21,14 @@ from Code42 import (
     highriskemployee_get_all_command,
     highriskemployee_add_risk_tags_command,
     highriskemployee_remove_risk_tags_command,
-    fetch_incidents,
     securitydata_search_command,
+    user_create_command,
+    user_block_command,
+    user_unblock_command,
+    user_deactivate_command,
+    user_reactivate_command,
+    download_file_command,
+    fetch_incidents,
 )
 import time
 
@@ -65,8 +71,8 @@ MOCK_SECURITY_EVENT_RESPONSE = """
             "deviceUserName":"test@example.com",
             "osHostName":"HOSTNAME",
             "domainName":"host.docker.internal",
-            "publicIpAddress":"162.222.47.183",
-            "privateIpAddresses":["172.20.128.36","127.0.0.1"],
+            "publicIpAddress":"255.255.255.255",
+            "privateIpAddresses":["255.255.255.255","127.0.0.1"],
             "deviceUid":"935873453596901068",
             "userUid":"912098363086307495",
             "actor":null,
@@ -129,7 +135,7 @@ MOCK_SECURITY_EVENT_RESPONSE = """
             "deviceUserName":"test@example.com",
             "osHostName":"TEST'S MAC",
             "domainName":"host.docker.internal",
-            "publicIpAddress":"162.222.47.183",
+            "publicIpAddress":"255.255.255.255",
             "privateIpAddresses":["127.0.0.1"],
             "deviceUid":"935873453596901068",
             "userUid":"912098363086307495",
@@ -193,7 +199,7 @@ MOCK_SECURITY_EVENT_RESPONSE = """
             "deviceUserName":"test@example.com",
             "osHostName":"Test's Windows",
             "domainName":"host.docker.internal",
-            "publicIpAddress":"162.222.47.183",
+            "publicIpAddress":"255.255.255.255",
             "privateIpAddresses":["0:0:0:0:0:0:0:1","127.0.0.1"],
             "deviceUid":"935873453596901068",
             "userUid":"912098363086307495",
@@ -243,7 +249,7 @@ MOCK_SECURITY_EVENT_RESPONSE = """
 MOCK_CODE42_EVENT_CONTEXT = [
     {
         "ApplicationTabURL": "example.com",
-        "DevicePrivateIPAddress": ["172.20.128.36", "127.0.0.1"],
+        "DevicePrivateIPAddress": ["255.255.255.255", "127.0.0.1"],
         "DeviceUsername": "test@example.com",
         "EndpointID": "935873453596901068",
         "EventID": "0_1d71796f-af5b-4231-9d8e-df6434da4663_935873453596901068_956171635867906205_5",
@@ -396,79 +402,188 @@ MOCK_ALERTS_RESPONSE = """{
 }"""
 
 MOCK_ALERT_DETAILS_RESPONSE = """{
-    "type$": "ALERT_DETAILS_RESPONSE",
-    "alerts": [
-        {"type$": "ALERT_DETAILS",
-        "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
-        "type": "FED_ENDPOINT_EXFILTRATION",
-        "name": "Departing Employee Alert",
-        "description": "Cortex XSOAR is cool.",
-        "actor": "user1@example.com",
-        "actorId": "912098363086307495",
-        "target": "N/A",
-        "severity": "HIGH",
-        "ruleId": "4576576e-13cb-4f88-be3a-ee77739de649",
-        "ruleSource": "Alerting",
-        "id": "36fb8ca5-0533-4d25-9763-e09d35d60610",
-        "createdAt": "2019-10-02T17:02:23.5867670Z",
-        "state": "OPEN",
-        "observations": [
-            {
-                "type$": "OBSERVATION",
-                "id": "240526fc-3a32-4755-85ab-c6ee6e7f31ce",
-                "observedAt": "2020-05-28T12:50:00.0000000Z",
-                "type": "FedEndpointExfiltration",
-                "data": {
-                    "type$": "OBSERVED_ENDPOINT_ACTIVITY",
-                    "id": "240526fc-3a32-4755-85ab-c6ee6e7f31ce",
-                    "sources": ["Endpoint"],
-                    "exposureTypes": ["ApplicationRead"],
-                    "firstActivityAt": "2020-05-28T12:50:00.0000000Z",
-                    "lastActivityAt": "2020-05-28T12:50:00.0000000Z",
-                    "fileCount": 3,
-                    "totalFileSize": 533846,
-                    "fileCategories": [
-                        {
-                            "type$": "OBSERVED_FILE_CATEGORY",
-                            "category": "Image",
-                            "fileCount": 3,
-                            "totalFileSize": 533846,
-                            "isSignificant": true
-                        }
-                    ],
-                    "files": [
-                        {
-                            "type$": "OBSERVED_FILE",
-                            "eventId": "0_1d71796f-af5b-4231-9d8e-df6434da4663_935873453596901068_956171635867906205_5",
-                            "path": "C:/Users/QA/Downloads/",
-                            "name": "Customers.jpg",
-                            "category": "Image",
-                            "size": 265122
-                        },
-                        {
-                            "type$": "OBSERVED_FILE",
-                            "eventId": "0_1d71796f-af5b-4231-9d8e-df6434da4663_935873453596901068_956171635867906205_6",
-                            "path": "C:/Users/QA/Downloads/",
-                            "name": "data.png",
-                            "category": "Image",
-                            "size": 129129
-                        },
-                        {
-                            "type$": "OBSERVED_FILE",
-                            "eventId": "0_1d71796f-af5b-4231-9d8e-df6434da4663_935873453596901068_956171635867906205_7",
-                            "path": "C:/Users/QA/Downloads/",
-                            "name": "company_secrets.ps",
-                            "category": "Image",
-                            "size": 139595
-                        }
-                    ],
-                    "syncToServices": [],
-                    "sendingIpAddresses": ["127.0.0.1"]
-                    }
-                }
+  "type$": "ALERT_DETAILS_RESPONSE",
+  "alerts": [
+    {
+      "type$": "ALERT_DETAILS",
+      "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+      "type": "FED_ENDPOINT_EXFILTRATION",
+      "name": "Departing Employee Alert",
+      "description": "Cortex XSOAR is cool.",
+      "actor": "user1@example.com",
+      "actorId": "912098363086307495",
+      "target": "N/A",
+      "severity": "HIGH",
+      "ruleId": "4576576e-13cb-4f88-be3a-ee77739de649",
+      "ruleSource": "Alerting",
+      "id": "36fb8ca5-0533-4d25-9763-e09d35d60610",
+      "createdAt": "2019-10-02T17:02:23.5867670Z",
+      "state": "OPEN",
+      "observations": [
+        {
+          "type$": "OBSERVATION",
+          "id": "240526fc-3a32-4755-85ab-c6ee6e7f31ce",
+          "observedAt": "2020-05-28T12:50:00.0000000Z",
+          "type": "FedEndpointExfiltration",
+          "data": {
+            "type$": "OBSERVED_ENDPOINT_ACTIVITY",
+            "id": "240526fc-3a32-4755-85ab-c6ee6e7f31ce",
+            "sources": [
+              "Endpoint"
+            ],
+            "exposureTypes": [
+              "ApplicationRead"
+            ],
+            "firstActivityAt": "2020-05-28T12:50:00.0000000Z",
+            "lastActivityAt": "2020-05-28T12:50:00.0000000Z",
+            "fileCount": 3,
+            "totalFileSize": 533846,
+            "fileCategories": [
+              {
+                "type$": "OBSERVED_FILE_CATEGORY",
+                "category": "Image",
+                "fileCount": 3,
+                "totalFileSize": 533846,
+                "isSignificant": true
+              }
+            ],
+            "files": [
+              {
+                "type$": "OBSERVED_FILE",
+                "eventId": "0_1d71796f-af5b-4231-9d8e-df6434da4663_935873453596901068_956171635867906205_5",
+                "path": "C:/Users/QA/Downloads/",
+                "name": "Customers.jpg",
+                "category": "Image",
+                "size": 265122
+              },
+              {
+                "type$": "OBSERVED_FILE",
+                "eventId": "0_1d71796f-af5b-4231-9d8e-df6434da4663_935873453596901068_956171635867906205_6",
+                "path": "C:/Users/QA/Downloads/",
+                "name": "data.png",
+                "category": "Image",
+                "size": 129129
+              },
+              {
+                "type$": "OBSERVED_FILE",
+                "eventId": "0_1d71796f-af5b-4231-9d8e-df6434da4663_935873453596901068_956171635867906205_7",
+                "path": "C:/Users/QA/Downloads/",
+                "name": "company_secrets.ps",
+                "category": "Image",
+                "size": 139595
+              }
+            ],
+            "syncToServices": [],
+            "sendingIpAddresses": [
+              "127.0.0.1"
             ]
+          }
+        },
+        {
+          "type$": "OBSERVATION",
+          "id": "7f4d125d-c7ca-4264-83fe-fa442bf270b6",
+          "observedAt": "2020-06-11T20:20:00.0000000Z",
+          "type": "FedCloudSharePermissions",
+          "data": {
+            "type$": "OBSERVED_CLOUD_SHARE_ACTIVITY",
+            "id": "7f4d125d-c7ca-4264-83fe-fa442bf270b6",
+            "sources": [
+              "GoogleDrive"
+            ],
+            "exposureTypes": [
+              "SharedOutsideTrustedDomain"
+            ],
+            "firstActivityAt": "2020-06-11T20:20:00.0000000Z",
+            "lastActivityAt": "2020-06-11T20:25:00.0000000Z",
+            "fileCount": 1,
+            "totalFileSize": 182554405,
+            "fileCategories": [
+              {
+                "type$": "OBSERVED_FILE_CATEGORY",
+                "category": "Archive",
+                "fileCount": 1,
+                "totalFileSize": 182554405,
+                "isSignificant": false
+              }
+            ],
+            "files": [
+              {
+                "type$": "OBSERVED_FILE",
+                "eventId": "14FnN9-YOhVUO_Tv8Mu-hEgevc2K4l07l_5_9e633ffd-9329-4cf4-8645-27a23b83ebc0",
+                "name": "Code42CrashPlan_8.0.0_1525200006800_778_Mac.dmg",
+                "category": "Archive",
+                "size": 182554405
+              }
+            ],
+            "outsideTrustedDomainsEmails": [
+              "user1@example.com"
+            ],
+            "outsideTrustedDomainsEmailsCount": 1,
+            "outsideTrustedDomainsCounts": [
+              {
+                "type$": "OBSERVED_DOMAIN_INFO",
+                "domain": "gmail.com",
+                "count": 1
+              }
+            ],
+            "outsideTrustedDomainsTotalDomainCount": 1,
+            "outsideTrustedDomainsTotalDomainCountTruncated": false
+          }
+        },
+        {
+          "type$": "OBSERVATION",
+          "id": "7f4d125d-c7ca-4264-83fe-fa442bf270b6",
+          "observedAt": "2020-06-11T20:20:00.0000000Z",
+          "type": "FedCloudSharePermissions",
+          "data": {
+            "type$": "OBSERVED_CLOUD_SHARE_ACTIVITY",
+            "id": "7f4d125d-c7ca-4264-83fe-fa442bf270b6",
+            "sources": [
+              "GoogleDrive"
+            ],
+            "exposureTypes": [
+              "UnknownExposureTypeThatWeDontSupportYet"
+            ],
+            "firstActivityAt": "2020-06-11T20:20:00.0000000Z",
+            "lastActivityAt": "2020-06-11T20:25:00.0000000Z",
+            "fileCount": 1,
+            "totalFileSize": 182554405,
+            "fileCategories": [
+              {
+                "type$": "OBSERVED_FILE_CATEGORY",
+                "category": "Archive",
+                "fileCount": 1,
+                "totalFileSize": 182554405,
+                "isSignificant": false
+              }
+            ],
+            "files": [
+              {
+                "type$": "OBSERVED_FILE",
+                "eventId": "14FnN9-YOhVUO_Tv8Mu-hEgevc2K4l07l_5_9e633ffd-9329-4cf4-8645-27a23b83ebc0",
+                "name": "Code42CrashPlan_8.0.0_1525200006800_778_Mac.dmg",
+                "category": "Archive",
+                "size": 182554405
+              }
+            ],
+            "outsideTrustedDomainsEmails": [
+              "user1@example.com"
+            ],
+            "outsideTrustedDomainsEmailsCount": 1,
+            "outsideTrustedDomainsCounts": [
+              {
+                "type$": "OBSERVED_DOMAIN_INFO",
+                "domain": "gmail.com",
+                "count": 1
+              }
+            ],
+            "outsideTrustedDomainsTotalDomainCount": 1,
+            "outsideTrustedDomainsTotalDomainCountTruncated": false
+          }
         }
-    ]
+      ]
+    }
+  ]
 }"""
 
 MOCK_CODE42_ALERT_CONTEXT = [
@@ -591,7 +706,7 @@ MOCK_OBSERVATION_QUERIES = [
         "groups": [
             {
                 "filterClause": "AND",
-                "filters": [{"operator": "IS", "term": "actor", "value": "user2@example.com"}],
+                "filters": [{"operator": "IS", "term": "actor", "value": "user1@example.com"}],
             },
             {
                 "filterClause": "AND",
@@ -599,7 +714,7 @@ MOCK_OBSERVATION_QUERIES = [
                     {
                         "operator": "ON_OR_AFTER",
                         "term": "eventTimestamp",
-                        "value": "2019-10-02T16:50:00.000Z",
+                        "value": "2020-06-11T20:20:00.000Z",
                     }
                 ],
             },
@@ -609,15 +724,55 @@ MOCK_OBSERVATION_QUERIES = [
                     {
                         "operator": "ON_OR_BEFORE",
                         "term": "eventTimestamp",
-                        "value": "2019-10-02T16:55:00.000Z",
+                        "value": "2020-06-11T20:25:00.000Z",
                     }
                 ],
             },
             {
-                "filterClause": "OR",
+                "filterClause": "AND",
                 "filters": [
-                    {"operator": "IS", "term": "exposure", "value": "IsPublic"},
-                    {"operator": "IS", "term": "exposure", "value": "SharedViaLink"},
+                    {"operator": "IS", "term": "exposure", "value": "OutsideTrustedDomains"}
+                ],
+            },
+        ],
+        "pgNum": 1,
+        "pgSize": 10000,
+        "srtDir": "asc",
+        "srtKey": "eventId",
+    },
+    {
+        "groupClause": "AND",
+        "groups": [
+            {
+                "filterClause": "AND",
+                "filters": [{"operator": "IS", "term": "actor", "value": "user1@example.com"}],
+            },
+            {
+                "filterClause": "AND",
+                "filters": [
+                    {
+                        "operator": "ON_OR_AFTER",
+                        "term": "eventTimestamp",
+                        "value": "2020-06-11T20:20:00.000Z",
+                    }
+                ],
+            },
+            {
+                "filterClause": "AND",
+                "filters": [
+                    {
+                        "operator": "ON_OR_BEFORE",
+                        "term": "eventTimestamp",
+                        "value": "2020-06-11T20:25:00.000Z",
+                    }
+                ],
+            },
+            {
+                "filterClause": "AND",
+                "filters": [
+                    {"operator": "IS_NOT", "term": "exposure", "value": "IsPublic"},
+                    {"operator": "IS_NOT", "term": "exposure", "value": "SharedViaLink"},
+                    {"operator": "IS_NOT", "term": "exposure", "value": "OutsideTrustedDomains"},
                 ],
             },
         ],
@@ -709,6 +864,57 @@ MOCK_GET_USER_RESPONSE = """
     ]
 }"""
 
+
+MOCK_GET_ALL_ORGS_RESPONSE = """
+{
+    "totalCount": 1,
+    "orgs":
+    [
+        {
+            "orgId": 9999,
+            "orgUid": "890854247383109999",
+            "orgName": "TestCortexOrg",
+            "orgExtRef": null,
+            "notes": null,
+            "status": "Active",
+            "active": true,
+            "blocked": false,
+            "parentOrgId": 2686,
+            "parentOrgUid": "00007871952600000",
+            "type": "ENTERPRISE",
+            "classification": "BASIC",
+            "externalId": "000054247383100000",
+            "hierarchyCounts": {},
+            "configInheritanceCounts": {},
+            "creationDate": "2019-03-04T22:21:49.749Z",
+            "modificationDate": "2020-02-26T19:21:57.684Z",
+            "deactivationDate": null,
+            "registrationKey": "0000-H74U-0000-8MMM",
+            "reporting":
+            {
+                "orgManagers": []
+            },
+            "customConfig": true,
+            "settings":
+            {
+                "maxSeats": null,
+                "maxBytes": null
+            },
+            "settingsInherited":
+            {
+                "maxSeats": "",
+                "maxBytes": ""
+            },
+            "settingsSummary":
+            {
+                "maxSeats": "",
+                "maxBytes": ""
+            }
+        }
+    ]
+}"""
+
+
 MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE = """
 {
     "items": [
@@ -736,7 +942,8 @@ MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE = """
             "status": "OPEN",
             "cloudUsernames": ["test@example.com"],
             "totalBytes": 139856482,
-            "numEvents": 11
+            "numEvents": 11,
+            "departureDate": "2020-07-20"
         },
         {
             "type$": "DEPARTING_EMPLOYEE_V2",
@@ -755,6 +962,7 @@ MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE = """
     "totalCount": 3
 }
 """
+
 
 MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE = """
 {
@@ -839,11 +1047,50 @@ MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE = """
 """
 
 
+MOCK_CREATE_USER_RESPONSE = """
+{
+    "userId": 291999,
+    "userUid": "960849588659999999",
+    "status": "Active",
+    "username": "new.user@example.com",
+    "email": "new.user@example.com",
+    "firstName": null,
+    "lastName": null,
+    "quotaInBytes": -1,
+    "orgId": 2689,
+    "orgUid": "890854247383106706",
+    "orgName": "New Users Org",
+    "userExtRef": null,
+    "notes": null,
+    "active": true,
+    "blocked": false,
+    "emailPromo": true,
+    "invited": true,
+    "orgType": "ENTERPRISE",
+    "usernameIsAnEmail": null,
+    "creationDate": "2020-06-29T19:23:04.285Z",
+    "modificationDate": "2020-06-29T19:23:04.306Z",
+    "passwordReset": false,
+    "localAuthenticationOnly": false,
+    "licenses": []
+}
+"""
+
+
+_TEST_USER_ID = "123412341234123412"  # value found in GET_USER_RESPONSE
+_TEST_USERNAME = "user1@example.com"
+_TEST_ORG_NAME = "TestCortexOrg"
+
+
 @pytest.fixture
 def code42_sdk_mock(mocker):
     code42_mock = mocker.MagicMock(spec=SDKClient)
     get_user_response = create_mock_code42_sdk_response(mocker, MOCK_GET_USER_RESPONSE)
+    get_org_response = create_mock_code42_sdk_response_generator(
+        mocker, [MOCK_GET_ALL_ORGS_RESPONSE]
+    )
     code42_mock.users.get_by_username.return_value = get_user_response
+    code42_mock.orgs.get_all.return_value = get_org_response
     return code42_mock
 
 
@@ -862,6 +1109,13 @@ def code42_fetch_incidents_mock(code42_sdk_mock, mocker):
     code42_mock = create_alerts_mock(code42_sdk_mock, mocker)
     code42_mock = create_file_events_mock(code42_mock, mocker)
     return code42_mock
+
+
+@pytest.fixture
+def code42_users_mock(code42_sdk_mock, mocker):
+    create_user_response = create_mock_code42_sdk_response(mocker, MOCK_CREATE_USER_RESPONSE)
+    code42_sdk_mock.users.create_user.return_value = create_user_response
+    return code42_sdk_mock
 
 
 def create_alerts_mock(c42_sdk_mock, mocker):
@@ -913,7 +1167,7 @@ def create_mock_code42_sdk_response_generator(mocker, response_pages):
 
 
 def create_client(sdk):
-    return Code42Client(sdk=sdk, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=None)
+    return Code42Client(sdk=sdk, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=False)
 
 
 def get_empty_detectionlist_response(mocker, base_text):
@@ -923,11 +1177,39 @@ def get_empty_detectionlist_response(mocker, base_text):
     return create_mock_code42_sdk_response_generator(mocker, [no_employees_response_text])
 
 
+def assert_departingemployee_outputs_match_response(outputs_list, response_items):
+    assert_detection_list_outputs_match_response_items(outputs_list, response_items)
+    for i in range(0, len(outputs_list)):
+        assert outputs_list[i]["DepartureDate"] == response_items[i].get("departureDate")
+
+
+def assert_detection_list_outputs_match_response_items(outputs_list, response_items):
+    assert len(outputs_list) == len(response_items)
+    for i in range(0, len(outputs_list)):
+        assert outputs_list[i]["Username"] == response_items[i]["userName"]
+        assert outputs_list[i]["UserID"] == response_items[i]["userId"]
+        assert outputs_list[i]["Note"] == response_items[i]["notes"]
+
+
 """TESTS"""
 
 
+def test_client_lazily_inits_sdk(mocker):
+    mocker.patch("py42.sdk.from_local_account")
+
+    # test that sdk does not init during ctor
+    client = Code42Client(sdk=None, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=False)
+    assert client._sdk is None
+
+    # test that sdk init from first method call
+    client.get_user("Test")
+    assert client._sdk is not None
+
+
 def test_client_when_no_alert_found_raises_exception(code42_sdk_mock):
-    code42_sdk_mock.alerts.get_details.return_value = """{'type$': 'ALERT_DETAILS_RESPONSE', 'alerts': []}"""
+    code42_sdk_mock.alerts.get_details.return_value = (
+        """{'type$': 'ALERT_DETAILS_RESPONSE', 'alerts': []}"""
+    )
     client = create_client(code42_sdk_mock)
     with pytest.raises(Exception):
         client.get_alert_details("mock-id")
@@ -937,7 +1219,7 @@ def test_client_when_no_user_found_raises_exception(code42_sdk_mock):
     code42_sdk_mock.users.get_by_username.return_value = """{'totalCount': 0, 'users': []}"""
     client = create_client(code42_sdk_mock)
     with pytest.raises(Exception):
-        client.get_user_id("test@example.com")
+        client.get_user("test@example.com")
 
 
 def test_build_query_payload():
@@ -949,14 +1231,15 @@ def test_build_query_payload():
 
 def test_map_observation_to_security_query():
     response = json.loads(MOCK_ALERT_DETAILS_RESPONSE)
-    alerts = response["alerts"]
-    for i in range(0, len(alerts)):
-        observation = alerts[i]["observations"][0]
-        actor = alerts[i]["actor"]
-        query = map_observation_to_security_query(observation, actor)
-        assert query.sort_key == MOCK_OBSERVATION_QUERIES[i]["srtKey"]
-        assert query.page_number == MOCK_OBSERVATION_QUERIES[i]["pgNum"]
-        assert json.loads(str(query)) == MOCK_OBSERVATION_QUERIES[i]
+    alert = response["alerts"][0]
+    actor = alert["actor"]
+    observations = alert["observations"]
+    actual_queries = [
+        json.loads(str(map_observation_to_security_query(o, actor))) for o in observations
+    ]
+    assert actual_queries[0] == MOCK_OBSERVATION_QUERIES[0]
+    assert actual_queries[1] == MOCK_OBSERVATION_QUERIES[1]
+    assert actual_queries[2] == MOCK_OBSERVATION_QUERIES[2]
 
 
 def test_map_to_code42_event_context():
@@ -985,14 +1268,20 @@ def test_map_to_file_context():
 
 def test_alert_get_command(code42_alerts_mock):
     client = create_client(code42_alerts_mock)
-    _, _, res = alert_get_command(client, {"id": "36fb8ca5-0533-4d25-9763-e09d35d60610"})
-    assert res["ruleId"] == "4576576e-13cb-4f88-be3a-ee77739de649"
+    cmd_res = alert_get_command(client, {"id": "4576576e-13cb-4f88-be3a-ee77739de649"})
+    assert cmd_res.raw_response["ruleId"] == "4576576e-13cb-4f88-be3a-ee77739de649"
+    assert cmd_res.outputs == [MOCK_CODE42_ALERT_CONTEXT[0]]
+    assert cmd_res.outputs_prefix == "Code42.SecurityAlert"
+    assert cmd_res.outputs_key_field == "ID"
 
 
 def test_alert_resolve_command(code42_alerts_mock):
     client = create_client(code42_alerts_mock)
-    _, _, res = alert_resolve_command(client, {"id": "36fb8ca5-0533-4d25-9763-e09d35d60610"})
-    assert res["id"] == "36fb8ca5-0533-4d25-9763-e09d35d60610"
+    cmd_res = alert_resolve_command(client, {"id": "4576576e-13cb-4f88-be3a-ee77739de649"})
+    assert cmd_res.raw_response["ruleId"] == "4576576e-13cb-4f88-be3a-ee77739de649"
+    assert cmd_res.outputs == [MOCK_CODE42_ALERT_CONTEXT[0]]
+    assert cmd_res.outputs_prefix == "Code42.SecurityAlert"
+    assert cmd_res.outputs_key_field == "ID"
 
 
 def test_alert_search_command(code42_alerts_mock):
@@ -1003,33 +1292,45 @@ def test_alert_search_command(code42_alerts_mock):
 
 def test_departingemployee_add_command(code42_sdk_mock):
     client = create_client(code42_sdk_mock)
-    _, _, res = departingemployee_add_command(
-        client,
-        {"username": "user1@example.com", "departuredate": "2020-01-01", "note": "Dummy note"},
+    date = "2020-01-01"
+    note = "Dummy note"
+    cmd_res = departingemployee_add_command(
+        client, {"username": _TEST_USERNAME, "departuredate": date, "note": note}
     )
-    expected_user_id = "123412341234123412"  # value found in GET_USER_RESPONSE
-    assert res == expected_user_id
     add_func = code42_sdk_mock.detectionlists.departing_employee.add
-    add_func.assert_called_once_with(expected_user_id, departure_date="2020-01-01")
-    code42_sdk_mock.detectionlists.update_user_notes.assert_called_once_with(
-        expected_user_id, "Dummy note"
-    )
+    assert cmd_res.raw_response == _TEST_USER_ID
+    assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs["DepartureDate"] == date
+    assert cmd_res.outputs["Note"] == note
+    assert cmd_res.outputs["Username"] == _TEST_USERNAME
+    assert cmd_res.outputs["UserID"] == _TEST_USER_ID
+    assert cmd_res.outputs["CaseID"] == _TEST_USER_ID
+    add_func.assert_called_once_with(_TEST_USER_ID, departure_date=date)
+    code42_sdk_mock.detectionlists.update_user_notes.assert_called_once_with(_TEST_USER_ID, note)
 
 
 def test_departingemployee_remove_command(code42_sdk_mock):
     client = create_client(code42_sdk_mock)
-    _, _, res = departingemployee_remove_command(client, {"username": "user1@example.com"})
-    expected = "123412341234123412"  # value found in GET_USER_RESPONSE
-    assert res == expected
-    code42_sdk_mock.detectionlists.departing_employee.remove.assert_called_once_with(expected)
+    cmd_res = departingemployee_remove_command(client, {"username": _TEST_USERNAME})
+    assert cmd_res.raw_response == _TEST_USER_ID
+    assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs["Username"] == _TEST_USERNAME
+    assert cmd_res.outputs["UserID"] == _TEST_USER_ID
+    assert cmd_res.outputs["CaseID"] == _TEST_USER_ID
+    code42_sdk_mock.detectionlists.departing_employee.remove.assert_called_once_with(_TEST_USER_ID)
 
 
 def test_departingemployee_get_all_command(code42_departing_employee_mock):
     client = create_client(code42_departing_employee_mock)
-    _, _, res = departingemployee_get_all_command(client, {"username": "user1@example.com"})
-    expected = json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)["items"]
-    assert res == expected
-    assert code42_departing_employee_mock.detectionlists.departing_employee.get_all.call_count == 1
+    cmd_res = departingemployee_get_all_command(client, {})
+    expected_raw_response = json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)["items"]
+    assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.raw_response == json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)["items"]
+    # Tests outputs
+    assert_departingemployee_outputs_match_response(cmd_res.outputs, expected_raw_response)
 
 
 def test_departingemployee_get_all_command_gets_employees_from_multiple_pages(
@@ -1045,13 +1346,35 @@ def test_departingemployee_get_all_command_gets_employees_from_multiple_pages(
         employee_page_generator
     )
     client = create_client(code42_departing_employee_mock)
-
-    _, _, res = departingemployee_get_all_command(client, {"username": "user1@example.com"})
+    cmd_res = departingemployee_get_all_command(client, {})
+    assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
 
     # Expect to have employees from 3 pages in the result
     expected_page = json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)["items"]
     expected = expected_page + expected_page + expected_page
-    assert res == expected
+    assert cmd_res.raw_response == expected
+    assert_departingemployee_outputs_match_response(cmd_res.outputs, cmd_res.raw_response)
+
+
+def test_departingemployee_get_all_command_gets_number_of_employees_equal_to_results_param(
+    code42_departing_employee_mock, mocker
+):
+
+    # Setup get all departing employees
+    page = MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE
+    # Setup 3 pages of employees
+    employee_page_generator = (
+        create_mock_code42_sdk_response(mocker, page) for page in [page, page, page]
+    )
+    code42_departing_employee_mock.detectionlists.departing_employee.get_all.return_value = (
+        employee_page_generator
+    )
+    client = create_client(code42_departing_employee_mock)
+
+    cmd_res = departingemployee_get_all_command(client, {"results": 1})
+    assert len(cmd_res.raw_response) == 1
+    assert len(cmd_res.outputs) == 1
 
 
 def test_departingemployee_get_all_command_when_no_employees(
@@ -1064,51 +1387,52 @@ def test_departingemployee_get_all_command_when_no_employees(
         no_employees_response
     )
     client = create_client(code42_departing_employee_mock)
-    _, _, res = departingemployee_get_all_command(
-        client,
-        {
-            "risktags": [
-                "PERFORMANCE_CONCERNS",
-                "SUSPICIOUS_SYSTEM_ACTIVITY",
-                "POOR_SECURITY_PRACTICES",
-            ]
-        },
-    )
-    # Only first employee has the given risk tags
-    expected = []
-    assert res == expected
+    cmd_res = departingemployee_get_all_command(client, {})
+    assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.raw_response == {}
+    assert cmd_res.outputs == {"Results": []}
     assert code42_departing_employee_mock.detectionlists.departing_employee.get_all.call_count == 1
 
 
 def test_highriskemployee_add_command(code42_high_risk_employee_mock):
     client = create_client(code42_high_risk_employee_mock)
-    _, _, res = highriskemployee_add_command(
-        client, {"username": "user1@example.com", "note": "Dummy note"}
+    cmd_res = highriskemployee_add_command(
+        client, {"username": _TEST_USERNAME, "note": "Dummy note"}
     )
-    expected_user_id = "123412341234123412"  # value found in GET_USER_RESPONSE
-    assert res == expected_user_id
+    assert cmd_res.raw_response == _TEST_USER_ID
+    assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs["UserID"] == _TEST_USER_ID
+    assert cmd_res.outputs["Username"] == _TEST_USERNAME
     code42_high_risk_employee_mock.detectionlists.high_risk_employee.add.assert_called_once_with(
-        expected_user_id
+        _TEST_USER_ID
     )
     code42_high_risk_employee_mock.detectionlists.update_user_notes.assert_called_once_with(
-        expected_user_id, "Dummy note"
+        _TEST_USER_ID, "Dummy note"
     )
 
 
 def test_highriskemployee_remove_command(code42_sdk_mock):
     client = create_client(code42_sdk_mock)
-    _, _, res = highriskemployee_remove_command(client, {"username": "user1@example.com"})
-    expected = "123412341234123412"  # value found in GET_USER_RESPONSE
-    assert res == expected
-    code42_sdk_mock.detectionlists.high_risk_employee.remove.assert_called_once_with(expected)
+    cmd_res = highriskemployee_remove_command(client, {"username": _TEST_USERNAME})
+    assert cmd_res.raw_response == _TEST_USER_ID
+    assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs["UserID"] == _TEST_USER_ID
+    assert cmd_res.outputs["Username"] == _TEST_USERNAME
+    code42_sdk_mock.detectionlists.high_risk_employee.remove.assert_called_once_with(_TEST_USER_ID)
 
 
 def test_highriskemployee_get_all_command(code42_high_risk_employee_mock):
     client = create_client(code42_high_risk_employee_mock)
-    _, _, res = highriskemployee_get_all_command(client, {})
-    expected = json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"]
-    assert res == expected
+    cmd_res = highriskemployee_get_all_command(client, {})
+    expected_response = json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"]
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
+    assert cmd_res.raw_response == expected_response
     assert code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.call_count == 1
+    assert_detection_list_outputs_match_response_items(cmd_res.outputs, expected_response)
 
 
 def test_highriskemployee_get_all_command_gets_employees_from_multiple_pages(
@@ -1125,32 +1449,46 @@ def test_highriskemployee_get_all_command_gets_employees_from_multiple_pages(
     )
     client = create_client(code42_high_risk_employee_mock)
 
-    _, _, res = highriskemployee_get_all_command(client, {"username": "user1@example.com"})
-
-    # Expect to have employees from 3 pages in the result
-    expected_page = json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"]
-    expected = expected_page + expected_page + expected_page
-    assert res == expected
+    cmd_res = highriskemployee_get_all_command(client, {"username": _TEST_USERNAME})
+    expected_response = json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"] * 3
+    assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.raw_response == expected_response
+    assert_detection_list_outputs_match_response_items(cmd_res.outputs, expected_response)
 
 
 def test_highriskemployee_get_all_command_when_given_risk_tags_only_gets_employees_with_tags(
     code42_high_risk_employee_mock
 ):
     client = create_client(code42_high_risk_employee_mock)
-    _, _, res = highriskemployee_get_all_command(
+    cmd_res = highriskemployee_get_all_command(
         client,
-        {
-            "risktags": [
-                "PERFORMANCE_CONCERNS",
-                "SUSPICIOUS_SYSTEM_ACTIVITY",
-                "POOR_SECURITY_PRACTICES",
-            ]
-        },
+        {"risktags": "PERFORMANCE_CONCERNS,SUSPICIOUS_SYSTEM_ACTIVITY,POOR_SECURITY_PRACTICES"},
     )
-    # Only first employee has the given risk tags
-    expected = [json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"][0]]
-    assert res == expected
+    expected_response = [json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"][0]]
+    assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.raw_response == expected_response
     assert code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.call_count == 1
+    assert_detection_list_outputs_match_response_items(cmd_res.outputs, expected_response)
+
+
+def test_highriskemployee_get_all_command_gets_number_of_employees_equal_to_results_param(
+    code42_high_risk_employee_mock, mocker
+):
+    # Setup get all high risk employees
+    page = MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE
+    # Setup 3 pages of employees
+    employee_page_generator = (
+        create_mock_code42_sdk_response(mocker, page) for page in [page, page, page]
+    )
+    code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.return_value = (
+        employee_page_generator
+    )
+    client = create_client(code42_high_risk_employee_mock)
+    cmd_res = highriskemployee_get_all_command(client, {"results": 1})
+    assert len(cmd_res.raw_response) == 1
+    assert len(cmd_res.outputs) == 1
 
 
 def test_highriskemployee_get_all_command_when_no_employees(code42_high_risk_employee_mock, mocker):
@@ -1161,60 +1499,181 @@ def test_highriskemployee_get_all_command_when_no_employees(code42_high_risk_emp
         no_employees_response
     )
     client = create_client(code42_high_risk_employee_mock)
-    _, _, res = highriskemployee_get_all_command(
+    cmd_res = highriskemployee_get_all_command(
         client,
-        {
-            "risktags": [
-                "PERFORMANCE_CONCERNS",
-                "SUSPICIOUS_SYSTEM_ACTIVITY",
-                "POOR_SECURITY_PRACTICES",
-            ]
-        },
+        {"risktags": "PERFORMANCE_CONCERNS,SUSPICIOUS_SYSTEM_ACTIVITY,POOR_SECURITY_PRACTICES"},
     )
-    # Only first employee has the given risk tags
-    expected = []
-    assert res == expected
+    assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs == {"Results": []}
+    assert cmd_res.raw_response == {}
     assert code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.call_count == 1
 
 
 def test_highriskemployee_add_risk_tags_command(code42_sdk_mock):
+    tags = "FLIGHT_RISK"
     client = create_client(code42_sdk_mock)
-    _, _, res = highriskemployee_add_risk_tags_command(
-        client, {"username": "user1@example.com", "risktags": "FLIGHT_RISK"}
+    cmd_res = highriskemployee_add_risk_tags_command(
+        client, {"username": _TEST_USERNAME, "risktags": tags}
     )
-    expected_user_id = "123412341234123412"  # value found in GET_USER_RESPONSE
-    assert res == expected_user_id
+    assert cmd_res.raw_response == _TEST_USER_ID
+    assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs["UserID"] == _TEST_USER_ID
+    assert cmd_res.outputs["Username"] == _TEST_USERNAME
+    assert cmd_res.outputs["RiskTags"] == tags
     code42_sdk_mock.detectionlists.add_user_risk_tags.assert_called_once_with(
-        expected_user_id, "FLIGHT_RISK"
+        _TEST_USER_ID, [tags]
     )
 
 
 def test_highriskemployee_remove_risk_tags_command(code42_sdk_mock):
     client = create_client(code42_sdk_mock)
-    _, _, res = highriskemployee_remove_risk_tags_command(
-        client, {"username": "user1@example.com", "risktags": ["FLIGHT_RISK", "CONTRACT_EMPLOYEE"]}
+    cmd_res = highriskemployee_remove_risk_tags_command(
+        client, {"username": _TEST_USERNAME, "risktags": "FLIGHT_RISK,CONTRACT_EMPLOYEE"}
     )
-    expected_user_id = "123412341234123412"  # value found in GET_USER_RESPONSE
-    assert res == expected_user_id
+    assert cmd_res.raw_response == _TEST_USER_ID
+    assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs["UserID"] == _TEST_USER_ID
+    assert cmd_res.outputs["Username"] == _TEST_USERNAME
+    assert cmd_res.outputs["RiskTags"] == "FLIGHT_RISK,CONTRACT_EMPLOYEE"
     code42_sdk_mock.detectionlists.remove_user_risk_tags.assert_called_once_with(
-        expected_user_id, ["FLIGHT_RISK", "CONTRACT_EMPLOYEE"]
+        _TEST_USER_ID, ["FLIGHT_RISK", "CONTRACT_EMPLOYEE"]
     )
+
+
+def test_user_create_command(code42_users_mock):
+    client = create_client(code42_users_mock)
+    cmd_res = user_create_command(
+        client,
+        {
+            "orgname": _TEST_ORG_NAME,
+            "username": "new.user@example.com",
+            "email": "new.user@example.com",
+        },
+    )
+    assert cmd_res.outputs_prefix == "Code42.User"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.raw_response == json.loads(MOCK_CREATE_USER_RESPONSE)
+    assert cmd_res.outputs["UserID"] == "960849588659999999"
+    assert cmd_res.outputs["Username"] == "new.user@example.com"
+    assert cmd_res.outputs["Email"] == "new.user@example.com"
+
+
+def test_user_block_command(code42_users_mock):
+    client = create_client(code42_users_mock)
+    cmd_res = user_block_command(client, {"username": "new.user@example.com"})
+    assert cmd_res.raw_response == 123456
+    assert cmd_res.outputs["UserID"] == 123456
+    assert cmd_res.outputs_prefix == "Code42.User"
+    code42_users_mock.users.block.assert_called_once_with(123456)
+
+
+def test_user_unblock_command(code42_users_mock):
+    client = create_client(code42_users_mock)
+    cmd_res = user_unblock_command(client, {"username": "new.user@example.com"})
+    assert cmd_res.raw_response == 123456
+    assert cmd_res.outputs["UserID"] == 123456
+    assert cmd_res.outputs_prefix == "Code42.User"
+    code42_users_mock.users.unblock.assert_called_once_with(123456)
+
+
+def test_user_deactivate_command(code42_users_mock):
+    client = create_client(code42_users_mock)
+    cmd_res = user_deactivate_command(client, {"username": "new.user@example.com"})
+    assert cmd_res.raw_response == 123456
+    assert cmd_res.outputs["UserID"] == 123456
+    assert cmd_res.outputs_prefix == "Code42.User"
+    code42_users_mock.users.deactivate.assert_called_once_with(123456)
+
+
+def test_user_reactivate_command(code42_users_mock):
+    client = create_client(code42_users_mock)
+    cmd_res = user_reactivate_command(client, {"username": "new.user@example.com"})
+    assert cmd_res.raw_response == 123456
+    assert cmd_res.outputs["UserID"] == 123456
+    assert cmd_res.outputs_prefix == "Code42.User"
+    code42_users_mock.users.reactivate.assert_called_once_with(123456)
 
 
 def test_security_data_search_command(code42_file_events_mock):
     client = create_client(code42_file_events_mock)
-    _, _, res = securitydata_search_command(client, MOCK_SECURITY_DATA_SEARCH_QUERY)
-    assert len(res) == 3
+    cmd_res = securitydata_search_command(client, MOCK_SECURITY_DATA_SEARCH_QUERY)
+    code42_res = cmd_res[0]
+    file_res = cmd_res[1]
+
+    assert code42_res.outputs_prefix == "Code42.SecurityData"
+    assert code42_res.outputs_key_field == "EventID"
+    assert file_res.outputs_prefix == "File"
+
     actual_query = code42_file_events_mock.securitydata.search_file_events.call_args[0][0]
     filter_groups = json.loads(str(actual_query))["groups"]
-    assert filter_groups[0]["filters"][0]["term"] == "md5Checksum"
-    assert filter_groups[0]["filters"][0]["value"] == "d41d8cd98f00b204e9800998ecf8427e"
-    assert filter_groups[1]["filters"][0]["term"] == "osHostName"
-    assert filter_groups[1]["filters"][0]["value"] == "DESKTOP-0001"
-    assert filter_groups[2]["filters"][0]["term"] == "deviceUserName"
-    assert filter_groups[2]["filters"][0]["value"] == "user3@example.com"
-    assert filter_groups[3]["filters"][0]["term"] == "exposure"
-    assert filter_groups[3]["filters"][0]["value"] == "ApplicationRead"
+    expected_query_items = [
+        ("md5Checksum", "d41d8cd98f00b204e9800998ecf8427e"),
+        ("osHostName", "DESKTOP-0001"),
+        ("deviceUserName", "user3@example.com"),
+        ("exposure", "ApplicationRead"),
+    ]
+    expected_file_events = json.loads(MOCK_SECURITY_EVENT_RESPONSE)["fileEvents"]
+
+    # Assert that the  correct query gets made
+    assert len(filter_groups) == len(expected_query_items)
+    for i in range(0, len(filter_groups)):
+        _filter = filter_groups[i]["filters"][0]
+        assert _filter["term"] == expected_query_items[i][0]
+        assert _filter["value"] == expected_query_items[i][1]
+
+    assert len(code42_res.raw_response) == len(code42_res.outputs) == 3
+    assert code42_res.raw_response == expected_file_events
+
+    # Assert that the Outputs are mapped from the file events.
+    for i in range(0, len(expected_file_events)):
+        mapped_event = map_to_code42_event_context(expected_file_events[i])
+        output_item = code42_res.outputs[i]
+        assert output_item == mapped_event
+
+
+def test_download_file_command_when_given_md5(code42_sdk_mock, mocker):
+    fr = mocker.patch("Code42.fileResult")
+    client = create_client(code42_sdk_mock)
+    _ = download_file_command(client, {"hash": "b6312dbe4aa4212da94523ccb28c5c16"})
+    code42_sdk_mock.securitydata.stream_file_by_md5.assert_called_once_with(
+        "b6312dbe4aa4212da94523ccb28c5c16"
+    )
+    assert fr.call_count == 1
+
+
+def test_download_file_command_when_given_sha256(code42_sdk_mock, mocker):
+    fr = mocker.patch("Code42.fileResult")
+    _hash = "41966f10cc59ab466444add08974fde4cd37f88d79321d42da8e4c79b51c2149"
+    client = create_client(code42_sdk_mock)
+    _ = download_file_command(client, {"hash": _hash})
+    code42_sdk_mock.securitydata.stream_file_by_sha256.assert_called_once_with(_hash)
+    assert fr.call_count == 1
+
+
+def test_fetch_when_no_significant_file_categories_ignores_filter(
+    code42_fetch_incidents_mock, mocker
+):
+    response_text = MOCK_ALERT_DETAILS_RESPONSE.replace(
+        '"isSignificant": true', '"isSignificant": false'
+    )
+    alert_details_response = create_mock_code42_sdk_response(mocker, response_text)
+    code42_fetch_incidents_mock.alerts.get_details.return_value = alert_details_response
+    client = create_client(code42_fetch_incidents_mock)
+    _, _, _ = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": None},
+        first_fetch_time=MOCK_FETCH_TIME,
+        event_severity_filter=None,
+        fetch_limit=10,
+        include_files=True,
+        integration_context=None,
+    )
+    actual_query = str(code42_fetch_incidents_mock.securitydata.search_file_events.call_args[0][0])
+    assert "fileCategory" not in actual_query
+    assert "IMAGE" not in actual_query
 
 
 def test_fetch_incidents_handles_single_severity(code42_sdk_mock):
@@ -1242,8 +1701,41 @@ def test_fetch_incidents_handles_multi_severity(code42_fetch_incidents_mock):
         include_files=True,
         integration_context=None,
     )
-    assert "HIGH" in str(code42_fetch_incidents_mock.alerts.search.call_args[0][0])
-    assert "LOW" in str(code42_fetch_incidents_mock.alerts.search.call_args[0][0])
+    call_args = str(code42_fetch_incidents_mock.alerts.search.call_args[0][0])
+    assert "HIGH" in call_args
+    assert "LOW" in call_args
+
+
+def test_fetch_when_include_files_includes_files(code42_fetch_incidents_mock):
+    client = create_client(code42_fetch_incidents_mock)
+    _, incidents, _ = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": None},
+        first_fetch_time=MOCK_FETCH_TIME,
+        event_severity_filter=["High", "Low"],
+        fetch_limit=10,
+        include_files=True,
+        integration_context=None,
+    )
+    for i in incidents:
+        _json = json.loads(i["rawJSON"])
+        assert len(_json["fileevents"])
+
+
+def test_fetch_when_not_include_files_excludes_files(code42_fetch_incidents_mock):
+    client = create_client(code42_fetch_incidents_mock)
+    _, incidents, _ = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": None},
+        first_fetch_time=MOCK_FETCH_TIME,
+        event_severity_filter=["High", "Low"],
+        fetch_limit=10,
+        include_files=False,
+        integration_context=None,
+    )
+    for i in incidents:
+        _json = json.loads(i["rawJSON"])
+        assert not _json.get("fileevents")
 
 
 def test_fetch_incidents_first_run(code42_fetch_incidents_mock):
