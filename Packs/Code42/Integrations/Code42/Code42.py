@@ -1178,14 +1178,14 @@ def create_client():
 def run_code42_integration():
     client = create_client()
     commands = get_command_map()
-    command = demisto.command()
-    LOG("Command being called is {0}.".format(command))
-    if command == "test-module":
+    command_key = demisto.command()
+    LOG("Command being called is {0}.".format(command_key))
+    if command_key == "test-module":
         handle_test_command(client)
-    elif command == "fetch-incidents":
+    elif command_key == "fetch-incidents":
         handle_fetch_command(client)
-    elif command in commands:
-        run_command(lambda: commands[command](client, demisto.args()))
+    elif command_key in commands:
+        run_command(lambda: commands[command_key](client, demisto.args()))
 
 
 def main():
