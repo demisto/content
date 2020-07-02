@@ -16,4 +16,4 @@ def test_main(mocker):
     mocker.patch.object(demisto, 'results')
     main()
     results = demisto.results.call_args
-    assert results[0][0] is False
+    assert results[0][0] is 'Test\r\nvalue\r\nvalue2'
