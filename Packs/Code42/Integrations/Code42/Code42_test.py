@@ -1494,7 +1494,7 @@ def test_highriskemployee_get_all_command_when_no_employees(code42_high_risk_emp
     client = create_client(code42_high_risk_employee_mock)
     cmd_res = highriskemployee_get_all_command(
         client,
-        {"risktags": "PERFORMANCE_CONCERNS SUSPICIOUS_SYSTEM_ACTIVITY POOR_SECURITY_PRACTICES"},
+        {"risktags": "PERFORMANCE_CONCERNS,SUSPICIOUS_SYSTEM_ACTIVITY,POOR_SECURITY_PRACTICES"},
     )
     assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
     assert cmd_res.outputs_key_field == "UserID"
@@ -1507,7 +1507,7 @@ def test_highriskemployee_add_risk_tags_command(code42_sdk_mock):
     tags = "FLIGHT_RISK"
     client = create_client(code42_sdk_mock)
     cmd_res = highriskemployee_add_risk_tags_command(
-        client, {"username": _TEST_USERNAME, "risktags": "FLIGHT_RISK"}
+        client, {"username": _TEST_USERNAME, "risktags": tags}
     )
     assert cmd_res.raw_response == _TEST_USER_ID
     assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
@@ -1516,7 +1516,7 @@ def test_highriskemployee_add_risk_tags_command(code42_sdk_mock):
     assert cmd_res.outputs["Username"] == _TEST_USERNAME
     assert cmd_res.outputs["RiskTags"] == tags
     code42_sdk_mock.detectionlists.add_user_risk_tags.assert_called_once_with(
-        _TEST_USER_ID, ["FLIGHT_RISK"]
+        _TEST_USER_ID, [tags]
     )
 
 
