@@ -2068,6 +2068,11 @@
             "timeout": 300
         },
         {
+            "integrations": "TAXII 2 Feed",
+            "playbookID": "TAXII 2 Feed Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Traps",
             "playbookID": "Traps test",
             "timeout": 600
@@ -2629,8 +2634,7 @@
         {
             "integrations": "AlienVault Reputation Feed",
             "playbookID": "AlienVaultReputationFeed_Test",
-            "fromversion": "5.5.0",
-            "timeout": 9000
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "BruteForceBlocker Feed",
@@ -2870,6 +2874,11 @@
             "integrations": "Workday",
             "playbookID": "Workday - Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Unit42 Feed",
+            "playbookID": "Unit42 Feed - Test",
+            "fromversion": "5.5.0"
         },
         {
             "playbookID": "hashIncidentFields-test",
