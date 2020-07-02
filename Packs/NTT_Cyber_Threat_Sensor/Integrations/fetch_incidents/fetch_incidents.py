@@ -1,10 +1,8 @@
 import json
 import time
 import requests
-import logging
 import base64
 import dateutil.parser
-import io
 from datetime import datetime
 from datetime import timezone
 from datetime import timedelta
@@ -112,7 +110,6 @@ def fetch_incidents():
         data['after'] = last_run['timestamp']
 
     data['limit'] = int(ITEMS_TO_FETCH)
-    metalist = list()
     artifacts_meta = list()
     results_meta = http_request('POST', '/artifacts/alerts', json_dict=data)
     if 'alerts' in results_meta:
