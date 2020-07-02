@@ -2629,8 +2629,7 @@
         {
             "integrations": "AlienVault Reputation Feed",
             "playbookID": "AlienVaultReputationFeed_Test",
-            "fromversion": "5.5.0",
-            "timeout": 9000
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "BruteForceBlocker Feed",
