@@ -54,7 +54,7 @@
         },
         "CalculateTimeDifference": {
             "mandatory": true,
-            "display_name": "Calculate Time Difference"
+            "display_name": "CalculateTimeDifference"
         },
         "Cylance_Protect": {
             "mandatory": false,
