@@ -1,11 +1,16 @@
 import json
 import time
-import requests
 import base64
-import dateutil.parser
 from datetime import datetime
 from datetime import timezone
 from datetime import timedelta
+import requests
+import dateutil.parser
+
+# Local imports
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -264,7 +269,6 @@ def main():
             raise
         else:
             return_error('An error occurred: {}'.format(str(e)))
-
 
 # python2 uses __builtin__ python3 uses builtins
 if __name__ == "__builtin__" or __name__ == "builtins":
