@@ -383,7 +383,7 @@ class Client:
         """Creating the needed arguments for the http request
         :return: http response
         """
-        url_suffix = f"/falconx/entities/submissions/v1?ids="
+        url_suffix = "/falconx/entities/submissions/v1?ids="
         return self._http_request("Get", url_suffix)
 
     def find_sandbox_reports(
@@ -556,7 +556,7 @@ def upload_file_command(
 
     resources_fields = ["file_name", "sha256"]
     filtered_outputs = parse_outputs(response, resources_fields=resources_fields)
-    entry_context = {f'csfalconx.resource(val.sha256 === obj.sha256)': [filtered_outputs]}
+    entry_context = {'csfalconx.resource(val.sha256 === obj.sha256)': [filtered_outputs]}
     if submit_file == 'no':
         return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, [response]
 
@@ -599,7 +599,7 @@ def send_uploaded_file_to_sandbox_analysis_command(
     filtered_outputs = parse_outputs(response, sandbox_fields=sandbox_fields, resources_fields=resource_fields)
     # in order identify the id source, upload or submit command, the id name changed
     filtered_outputs["submitted_id"] = filtered_outputs.pop("id")
-    entry_context = {f'csfalconx.resource(val.submitted_id === obj.submitted_id)': [filtered_outputs]}
+    entry_context = {'csfalconx.resource(val.submitted_id === obj.submitted_id)': [filtered_outputs]}
 
     return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, [response]
 
@@ -637,7 +637,7 @@ def send_url_to_sandbox_analysis_command(
     filtered_outputs = parse_outputs(response, resources_fields=resources_fields, sandbox_fields=sandbox_fields)
     # in order identify the id source, upload or submit command, the id name changed
     filtered_outputs["submitted_id"] = filtered_outputs.pop("id")
-    entry_context = {f'csfalconx.resource(val.submitted_id === obj.submitted_id)': [filtered_outputs]}
+    entry_context = {'csfalconx.resource(val.submitted_id === obj.submitted_id)': [filtered_outputs]}
 
     return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, [response]
 
@@ -670,7 +670,7 @@ def get_full_report_command(
         filtered_outputs_list.append(parse_outputs(response, resources_fields=resources_fields,
                                                    sandbox_fields=sandbox_fields))
 
-    entry_context = {f'csfalconx.resource(val.id === obj.id)': filtered_outputs_list}
+    entry_context = {'csfalconx.resource(val.id === obj.id)': filtered_outputs_list}
 
     if not filtered_outputs_list:
         # if there are no results, the sample is still being analyzed
@@ -714,7 +714,7 @@ def get_report_summary_command(
             # no need to add empty dict
             filtered_outputs_list.append(outputs)
 
-    entry_context = {f'csfalconx.resource(val.id === obj.id)': filtered_outputs_list}
+    entry_context = {'csfalconx.resource(val.id === obj.id)': filtered_outputs_list}
 
     if not filtered_outputs_list:
         # if there are no results, the sample is still being analyzed
@@ -748,7 +748,7 @@ def get_analysis_status_command(
         filtered_outputs_list.append(parse_outputs(response, resources_fields=resources_fields,
                                                    sandbox_fields=sandbox_fields))
 
-    entry_context = {f'csfalconx.resource(val.id === obj.id)': filtered_outputs_list}
+    entry_context = {'csfalconx.resource(val.id === obj.id)': filtered_outputs_list}
     return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs_list), entry_context, response_list
 
 
@@ -769,7 +769,7 @@ def download_ioc_command(
         response = client.download_ioc(id, name, accept_encoding)
     except Exception as a:
         print(a)
-    entry_context = {f'csfalconx.resource(val.id === obj.id)': [response]}
+    entry_context = {'csfalconx.resource(val.id === obj.id)': [response]}
 
     return tableToMarkdown("CrowdStrike Falcon X response:", response), entry_context, [response]
 
@@ -785,7 +785,7 @@ def check_quota_status_command(
     quota_fields = ['total', 'used', 'in_progress']
 
     filtered_outputs = parse_outputs(response, quota_fields=quota_fields)
-    entry_context = {f'csfalconx.resource(val.id === obj.id)': [filtered_outputs]}
+    entry_context = {'csfalconx.resource(val.id === obj.id)': [filtered_outputs]}
 
     return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, [response]
 
@@ -809,7 +809,7 @@ def find_sandbox_reports_command(
     resources_fields = ['id']
 
     filtered_outputs = parse_outputs(response, resources_fields=resources_fields)
-    entry_context = {f'csfalconx.resource(val.id === obj.id)': [filtered_outputs]}
+    entry_context = {'csfalconx.resource(val.id === obj.id)': [filtered_outputs]}
 
     return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, [response]
 
@@ -833,7 +833,7 @@ def find_submission_id_command(
 
     resources_fields = ['id']
     filtered_outputs = parse_outputs(response, resources_fields=resources_fields)
-    entry_context = {f'csfalconx.resource(val.id === obj.id)': [filtered_outputs]}
+    entry_context = {'csfalconx.resource(val.id === obj.id)': [filtered_outputs]}
 
     return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, [response]
 
