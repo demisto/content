@@ -82,18 +82,17 @@ def test_fetch_indicators_with_mitre_external_reference(mocker):
     for indicator in indicators:
         indicator_fields = indicator.get('fields')
         if indicator_fields.get('indicatoridentification') == 'indicator--010bb9ad-5686-485d-97e5-93c2187e56ce':
-            assert indicator_fields.get('feedrelatedindicators') == \
-                   {
-                       'type': 'MITRE ATT&CK',
-                       'value': ['T1047'],
-                       'description': [
-                           'example.com',
-                           'https://attack.mitre.org/techniques/T1047',
-                           'https://msdn.microsoft.com/en-us/library/aa394582.aspx',
-                           'https://technet.microsoft.com/en-us/library/cc787851.aspx',
-                           'https://en.wikipedia.org/wiki/Server_Message_Block'
-                       ]
-                   }
+            assert indicator_fields.get('feedrelatedindicators') == {
+                'type': 'MITRE ATT&CK',
+                'value': ['T1047'],
+                'description': [
+                    'example.com',
+                    'https://attack.mitre.org/techniques/T1047',
+                    'https://msdn.microsoft.com/en-us/library/aa394582.aspx',
+                    'https://technet.microsoft.com/en-us/library/cc787851.aspx',
+                    'https://en.wikipedia.org/wiki/Server_Message_Block'
+                ]
+            }
 
             break
 
