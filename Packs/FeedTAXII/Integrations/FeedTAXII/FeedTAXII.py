@@ -466,7 +466,7 @@ class Taxii11(object):
 class TAXIIClient(object):
     def __init__(self, insecure: bool = True, polling_timeout: int = 20, initial_interval: str = '1 day',
                  discovery_service: str = '', poll_service: str = None, collection: str = None,
-                 credentials: dict = None, cert_text: str = None, key_text: str = None, **kwargs):
+                 credentials: dict = None, cert_text: str = None, key_text: str = None, tags: str = None, **kwargs):
         """
         TAXII Client
         :param insecure: Set to true to ignore https certificate
@@ -506,7 +506,7 @@ class TAXIIClient(object):
         self.username = None
         self.password = None
         self.crt = None
-
+        self.tags = argToList(tags)
         # authentication
         if credentials:
             if '_header:' in credentials.get('identifier', None):
@@ -976,9 +976,10 @@ def fetch_indicators_command(client):
         if indicator:
             item['value'] = indicator
             indicators.append({
-                "value": indicator,
-                "type": item.get('type'),
-                "rawJSON": item,
+                'value': indicator,
+                'type': item.get('type'),
+                'tags': client.tags,
+                'rawJSON': item,
             })
     return indicators
 
