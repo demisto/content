@@ -3,12 +3,12 @@ commonfields:
   id: TAXIIFeed
   version: -1
 configuration:
-- defaultvalue: 'true'
-  display: Fetch indicators
+- display: Fetch indicators
   name: feed
   required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this reputation
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -43,12 +43,13 @@ configuration:
   name: feedExpirationInterval
   required: false
   type: 1
-- defaultvalue: '240'
-  display: Feed Fetch Interval
+- display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
   type: 19
-- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
@@ -83,7 +84,6 @@ configuration:
   required: false
   type: 4
 - additionalinfo: Time (in seconds) before HTTP requests timeout.
-  defaultvalue: '20'
   display: Request Timeout
   name: polling_timeout
   required: false
@@ -95,7 +95,6 @@ configuration:
   type: 0
 - additionalinfo: The time interval for the first fetch (retroactive). <number> <time
     unit> of type minute/hour/day. For example, 1 minute, 12 hours, 7 days.
-  defaultvalue: 1 day
   display: First Fetch Time
   hidden: false
   name: initial_interval
@@ -144,7 +143,7 @@ script:
     - contextPath: TAXII.Indicator.Rawjson
       description: The indicator rawJSON value.
       type: Unknown
-  dockerimage: demisto/taxii:1.0.0.7289
+  dockerimage: demisto/taxii:1.0.0.9263
   feed: true
   isfetch: false
   longRunning: false
