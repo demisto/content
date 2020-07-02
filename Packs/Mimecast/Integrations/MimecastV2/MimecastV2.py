@@ -1858,7 +1858,15 @@ def group_members_api_response_to_context(api_response, group_id=-1):
     return {'Mimecast.Group(val.ID && val.ID == obj.ID)': groups_after_update}
 
 
-def add_remove_member_to_group(action_type):
+def add_remove_member_to_group(action_type: str):
+    """Adds or remove a member from a group
+
+    Args:
+        action_type: the action type
+
+    Returns:
+        Demisto Outputs
+    """
     if action_type == 'add':
         api_endpoint = '/api/directory/add-group-member'
     else:
@@ -1872,7 +1880,15 @@ def add_remove_member_to_group(action_type):
     return_outputs(markdown_output, entry_context, api_response)
 
 
-def create_add_remove_group_member_request(api_endpoint):
+def create_add_remove_group_member_request(api_endpoint: str):
+    """Adds or remove a member from a group
+
+    Args:
+        api_endpoint: the add or the remove endpoint
+
+    Returns:
+        response from API
+    """
     group_id = demisto.args().get('group_id', '').encode('utf-8')
     email = demisto.args().get('email_address', '').encode('utf-8')
     domain = demisto.args().get('domain_address', '').encode('utf-8')
@@ -1897,9 +1913,18 @@ def create_add_remove_group_member_request(api_endpoint):
     return response
 
 
-def add_remove_api_response_to_markdown(api_response, action_type):
-    address_modified = api_response['data'][0]['emailAddress']
-    group_id = api_response['data'][0]['folderId']
+def add_remove_api_response_to_markdown(api_response: dict, action_type: str):
+    """Create a markdown response for the add or remove member operation
+
+    Args:
+        api_response: response from api
+        action_type: the action type
+
+    Returns:
+        response from API
+    """
+    address_modified = api_response.get('emailAddress', 'The email address')
+    group_id = api_response['data'][0].get('folderId', '')
 
     if action_type == 'add':
         return address_modified + ' had been added to group ID ' + group_id
@@ -1915,7 +1940,7 @@ def change_user_status_removed_in_context(user_info, group_id):
             for group in groups_entry_in_context:
                 if group['ID'] == group_id:
                     for user in group['Users']:
-                        if user['EmailAddress'] == user_info['EmailAddress']:
+                        if user['EmailAddress'] == user_info.get('EmailAddress', ''):
                             user['IsRemoved'] = True
                     return groups_entry_in_context
 
