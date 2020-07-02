@@ -715,10 +715,17 @@ def kv_store_collection_add_entries(service):
     args = demisto.args()
     kv_store_data = args['kv_store_data']
     kv_store_collection_name = args['kv_store_collection_name']
-    # indicator_path = args['indicator_path']
+    indicator_path = args.get('indicator_path')
     service.kvstore[kv_store_collection_name].data.insert(kv_store_data)
-    # indicator = extract_indicator(indicator_path, kv_store_data)
-    return_outputs("Data added to {}".format(kv_store_collection_name))
+    timeline = None
+    if indicator_path:
+        indicator = extract_indicator(indicator_path, [json.loads(kv_store_data)])
+        timeline = {
+            'Value': indicator,
+            'Message': 'Indicator added to {} store in Splunk'.format(kv_store_collection_name),
+            'Category': 'Integration Update'
+        }
+    return_outputs("Data added to {}".format(kv_store_collection_name), timeline=timeline)
 
 
 def kv_store_collections_list(service):
@@ -779,7 +786,13 @@ def kv_store_collection_delete_entry(service):
     store = args['kv_store_collection_name']
     query = build_kv_store_query(service, args)
     service.kvstore[store].data.delete(query=query)
-    return_outputs('The values of the {} were deleted successfully'.format(store), {}, {})
+    indicator = query.get('value')
+    timeline = {
+        'Value': indicator,
+        'Message': 'Indicator deleted from {} store in Splunk'.format(store),
+        'Category': 'Integration Update'
+    }
+    return_outputs('The values of the {} were deleted successfully'.format(store), timeline=timeline)
 
 
 def check_error(service, args):

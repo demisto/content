@@ -3,7 +3,7 @@ version: -1
 name: SplunkPy_KV_commands
 starttaskid: "0"
 fromversion: '5.0.0'
-description: testting splunk Kv commands
+description: testing splunk Kv commands
 tasks:
   "0":
     id: "0"
@@ -121,7 +121,9 @@ tasks:
       kv_store_collection_name:
         simple: test_playbook
       kv_store_data:
-        simple: '{"src": "8.8.8.8", "t": 9}'
+        simple: '{"src": "88.88.88.88", "t": 9}'
+      indicator_path:
+        simple: 'src'
     separatecontext: false
     view: |-
       {
@@ -197,7 +199,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 8.8.8.8
+              simple: 88.88.88.88
       - - operator: isEqualString
           left:
             value:
@@ -239,7 +241,9 @@ tasks:
       kv_store_collection_name:
         simple: test_playbook
       kv_store_data:
-        simple: '{"src": "9.9.9.9", "t": 10}'
+        simple: '{"src": "99.99.99.99", "t": 10}'
+      indicator_path:
+        simple: 'src'
     separatecontext: false
     view: |-
       {
@@ -316,7 +320,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 9.9.9.9
+              simple: 99.99.99.99
       - - operator: isEqualString
           left:
             value:

@@ -440,6 +440,12 @@ script:
       name: kv_store_collection_name
       required: true
       secret: false
+    - default: false
+      description: The path to the indicator value in kv_store_data.
+      isArray: false
+      name: indicator_path
+      required: false
+      secret: false
     - default: true
       defaultValue: search
       description: The name of the Splunk application that contains the KV store collection.
