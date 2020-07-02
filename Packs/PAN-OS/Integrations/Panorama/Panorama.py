@@ -4750,7 +4750,7 @@ def panorama_get_predefined_threats_list(target: str):
         'GET',
         params=params
     )
-    demisto.results(result['response']['result'])
+    demisto.results(fileResult('predefined-threats.json', json.dumps(result['response']['result']).encode('utf-8')))
 
 
 def panorama_get_predefined_threats_list_command():
@@ -4764,12 +4764,10 @@ def panorama_block_vulnerability():
     """
     threatid = demisto.args()['threat_id']
     vulnerability_profile = demisto.args()['vulnerability_profile']
-    drop_mode = "drop"
-    if demisto.args().get('drop_mode'):
-        drop_mode = demisto.args().get('drop_mode')
+    drop_mode = demisto.args().get('drop_mode', 'drop')
 
     threat = panorama_override_vulnerability(threatid, vulnerability_profile, drop_mode)
-    threat_output = {'id': threatid}
+    threat_output = {'ID': threatid, 'NewAction': drop_mode }
 
     demisto.results({
         'Type': entryTypes['note'],

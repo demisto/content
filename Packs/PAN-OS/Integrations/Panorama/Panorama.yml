@@ -205,7 +205,35 @@ script:
      - name: target
        description: If specified, retrieves the predefined threats from a specific firewall managed by Panorama. 
     execution: false
-    description: Get pre-defined threats list from a Firewall or Panorama.
+    description: Get pre-defined threats list from a Firewall or Panorama and stores as a JSON file in the context.
+    outputs:
+    - contextPath: File.Size
+      description: File size.
+      type: number
+    - contextPath: File.Name
+      description: File name.
+      type: string
+    - contextPath: File.Type
+      description: File type.
+      type: string
+    - contextPath: File.Info
+      description: File info.
+      type: string
+    - contextPath: File.Extenstion
+      description: File extension.
+      type: string
+    - contextPath: File.EntryID
+      description: FIle entryID.
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file.
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file.
+      type: string
 
   - deprecated: false
     description: Commits a configuration to Palo Alto Firewall or Panorama, but does
@@ -575,7 +603,6 @@ script:
       secret: false
       predefined:
         - drop
-        - reset-both
         - alert
         - block-ip
         - reset-both
@@ -597,6 +624,13 @@ script:
     description: Sets a vulnerability signature to block mode
     execution: false
     name: panorama-block-vulnerability
+    outputs:
+    - contextPath: Panorama.Vulnerability.ID
+      description: ID Of vulnerability that has been blocked/overridden  
+      type: string
+    - contextPath: Panorama.Vulnerability.NewAction
+      description: New action for vulnerability 
+      type: string
 
   - arguments:
     - default: false
