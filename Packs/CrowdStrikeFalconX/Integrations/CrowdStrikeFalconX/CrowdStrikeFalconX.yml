@@ -158,7 +158,7 @@ script:
     name: cs-fx-submit-uploaded-file
     outputs:
     - contextPath: 'csfalconx.resource.uploaded_id '
-      description: Analysis ID.
+      description: Analysis ID of the uploaded file.
       type: String
     - contextPath: csfalconx.resource.state
       description: Analysis state.
@@ -186,7 +186,7 @@ script:
     name: cs-fx-get-full-report
     outputs:
     - contextPath: csfalconx.resource.submitted_id
-      description: Analysis ID.
+      description: Analysis ID of the submitted file.
       type: String
     - contextPath: csfalconx.resource.verdict
       description: Analysis verdict.
@@ -559,7 +559,7 @@ script:
     name: cs-fx-submit-url
     outputs:
     - contextPath: csfalconx.resource.submitted_id
-      description: Analysis ID.
+      description: Analysis ID of the submitted file.
       type: String
     - contextPath: csfalconx.resource.state
       description: Analysis state.
