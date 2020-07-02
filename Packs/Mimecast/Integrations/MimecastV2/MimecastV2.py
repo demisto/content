@@ -1843,11 +1843,11 @@ def group_members_api_response_to_context(api_response, group_id=-1):
     users_list = list()
     for user in api_response['data'][0]['groupMembers']:
         user_entry = {
-            'Name': user['name'],
-            'EmailAddress': user['emailAddress'],
-            'Domain': user['domain'],
-            'Type': user['type'],
-            'InternalUser': user['internal'],
+            'Name': user.get('name'),
+            'EmailAddress': user.get('emailAddress'),
+            'Domain': user.get('domain'),
+            'Type': user.get('type'),
+            'InternalUser': user.get('internal'),
             'IsRemoved': False
         }
 
@@ -1923,7 +1923,9 @@ def add_remove_api_response_to_markdown(api_response: dict, action_type: str):
     Returns:
         response from API
     """
-    address_modified = api_response.get('emailAddress', 'The email address')
+    address_modified = api_response['data'][0].get('emailAddress')
+    if not address_modified:
+        address_modified = api_response['data'][0].get('domain', 'Address')
     group_id = api_response['data'][0].get('folderId', '')
 
     if action_type == 'add':
@@ -1961,7 +1963,7 @@ def add_remove_api_response_to_context(api_response, action_type):
         api_response = create_get_group_members_request(group_id=group_id)
         return group_members_api_response_to_context(api_response, group_id=group_id)
     else:
-        address_removed = api_response['data'][0]['emailAddress']
+        address_removed = api_response['data'][0].get('emailAddress', '')
 
         removed_user = {
             'EmailAddress': address_removed,
