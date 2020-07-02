@@ -4,8 +4,8 @@ commonfields:
   version: -1
 configuration:
 - additionalinfo: |-
-    Under "Username" please provide your email address and under "Password" your API key.
-    For generating an API key, consider this link: https://www.dehashed.com.
+    In the "Username" field enter your email address. In the "Password" field enter your API key.
+    For generating an API key, see https://www.dehashed.com.
   display: Username
   hidden: false
   name: credentials
@@ -30,8 +30,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: when choosing "all fields" option, it search the specified given
-        "value", no need to pass "operation" argument as well.
+      description: If you select the "all fields" option, the search is performed on all fields with the specified value entered in the "value" argument, and you don't
+      have to pass the "operation" argument.
       isArray: false
       name: asset_type
       predefined:
@@ -47,14 +47,14 @@ script:
       required: true
       secret: false
     - default: false
-      description: searched value
+      description: The searched value.
       isArray: false
       name: value
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: choose a search type that you want to perform
+      description: Search operator. Can be "is", "contains", or "regex".
       isArray: false
       name: operation
       predefined:
@@ -64,75 +64,73 @@ script:
       required: true
       secret: false
     - default: false
-      description: A number for result page to get. each page contains up to 5,000
+      description: The number of page to return. Each page contains a maximum of 5,000 results.
         entries.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
-      description: 'sets a starting point for disply range. Deshased response can
-        have over 5,000 entries. defult value is: 0.'
+      description: 'Starting result number to display. Default is 0. Dehashed response can include more than 5,000 results.'
       isArray: false
       name: results_from
       required: false
       secret: false
     - default: false
-      description: 'sets an end point for disply range. Deshased response can have
-        over 5,000 entries. defult value is: 100.'
+      description: 'Ending result number to display. Default is 100. Dehashed response can include more than 5,000 results.'
       isArray: false
       name: results_to
       required: false
       secret: false
     deprecated: false
-    description: search if an information is being compromised.
+    description: Performs a search to check if information is compromised.
     execution: false
     name: dehashed-search
     outputs:
     - contextPath: DeHashed.Search.Id
-      description: Object's id
+      description: ID of the object.
       type: String
     - contextPath: DeHashed.Search.Email
-      description: Object's email
+      description: Email address of the object.
       type: String
     - contextPath: DeHashed.Search.Username
-      description: Object's username
+      description: Username of the object.
       type: String
     - contextPath: DeHashed.Search.Password
-      description: Object's password
+      description: Password of the object.
       type: String
     - contextPath: DeHashed.Search.HashedPassword
-      description: Object's hashed password
+      description: Hashed password of the object.
       type: String
     - contextPath: DeHashed.Search.Name
-      description: Object's name
+      description: Name of the object.
       type: String
     - contextPath: DeHashed.Search.Vin
-      description: Object's vehicle identification
+      description: Vehicle identification of the object.
       type: Number
     - contextPath: DeHashed.Search.Address
-      description: Object's address
+      description: Address of the object.
       type: String
     - contextPath: DeHashed.Search.IpDddress
-      description: Object's ip address
+      description: IP address of the object.
       type: Number
     - contextPath: DeHashed.Search.Phone
-      description: Object's phone
+      description: Phone number of the object.
       type: Number
     - contextPath: DeHashed.Search.ObtainedFrom
-      description: Object's source
+      description: Source of the object.
       type: String
     - contextPath: Dehashed.LastQuery.ResultsFrom
-      description: The "results_from" value that was passed to the last query.
+      description: The value of the "results_from" argument that was passed in the last query.
       type: Number
     - contextPath: Dehashed.LastQuery.ResultsTo
-      description: The "results_to" value that was passed to the last query.
+      description: The value of the "results_to" argument that was passed in the last query.
       type: Unknown
     - contextPath: Dehashed.LastQuery.TotalResults
-      description: The total entries that returned from the last query.
+      description: The total number of entries returned from the last query.
       type: Number
     - contextPath: Dehashed.LastQuery.DisplayedResults
-      description: The number of entries that were displayed in demisto from the last
+      description: The number of entries that were displayed in Cortex XSOAR from the last
         query.
       type: Number
   dockerimage: demisto/python3:3.8.3.9324
