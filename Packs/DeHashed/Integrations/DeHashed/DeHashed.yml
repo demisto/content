@@ -1,0 +1,146 @@
+category: Utilities
+commonfields:
+  id: DeHashed
+  version: -1
+configuration:
+- additionalinfo: |-
+    In the "Username" field enter your email address. In the "Password" field enter your API key.
+    For generating an API key, see https://www.dehashed.com.
+  display: Username
+  hidden: false
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  hidden: false
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  hidden: false
+  name: proxy
+  required: false
+  type: 8
+description: This integration allows you to check if your personal information such
+  as your email, username, or password is being compromised.
+display: DeHashed
+name: DeHashed
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: If you select the "all fields" option, the search is performed on all fields with the specified value entered in the "value" argument, and you don't have to pass the "operation" argument.
+      isArray: false
+      name: asset_type
+      predefined:
+      - email
+      - ip_address
+      - username
+      - hashed_password
+      - name
+      - vin
+      - address
+      - phone
+      - all_fields
+      required: true
+      secret: false
+    - default: false
+      description: The searched value.
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Search operator. Can be "is", "contains", or "regex".
+      isArray: false
+      name: operation
+      predefined:
+      - is
+      - contains
+      - regex
+      required: true
+      secret: false
+    - default: false
+      description: The number of page to return. Each page contains a maximum of 5,000 results.
+        entries.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: 'Starting result number to display. Default is 0. Dehashed response can include more than 5,000 results.'
+      isArray: false
+      name: results_from
+      required: false
+      secret: false
+    - default: false
+      description: 'Ending result number to display. Default is 100. Dehashed response can include more than 5,000 results.'
+      isArray: false
+      name: results_to
+      required: false
+      secret: false
+    deprecated: false
+    description: Performs a search to check if information is compromised.
+    execution: false
+    name: dehashed-search
+    outputs:
+    - contextPath: DeHashed.Search.Id
+      description: ID of the object.
+      type: String
+    - contextPath: DeHashed.Search.Email
+      description: Email address of the object.
+      type: String
+    - contextPath: DeHashed.Search.Username
+      description: Username of the object.
+      type: String
+    - contextPath: DeHashed.Search.Password
+      description: Password of the object.
+      type: String
+    - contextPath: DeHashed.Search.HashedPassword
+      description: Hashed password of the object.
+      type: String
+    - contextPath: DeHashed.Search.Name
+      description: Name of the object.
+      type: String
+    - contextPath: DeHashed.Search.Vin
+      description: Vehicle identification of the object.
+      type: Number
+    - contextPath: DeHashed.Search.Address
+      description: Address of the object.
+      type: String
+    - contextPath: DeHashed.Search.IpDddress
+      description: IP address of the object.
+      type: Number
+    - contextPath: DeHashed.Search.Phone
+      description: Phone number of the object.
+      type: Number
+    - contextPath: DeHashed.Search.ObtainedFrom
+      description: Source of the object.
+      type: String
+    - contextPath: Dehashed.LastQuery.ResultsFrom
+      description: The value of the "results_from" argument that was passed in the last query.
+      type: Number
+    - contextPath: Dehashed.LastQuery.ResultsTo
+      description: The value of the "results_to" argument that was passed in the last query.
+      type: Unknown
+    - contextPath: Dehashed.LastQuery.TotalResults
+      description: The total number of entries returned from the last query.
+      type: Number
+    - contextPath: Dehashed.LastQuery.DisplayedResults
+      description: The number of entries that were displayed in Cortex XSOAR from the last
+        query.
+      type: Number
+  dockerimage: demisto/python3:3.8.3.9324
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.5.0
+tests:
+- No tests
