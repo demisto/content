@@ -1,6 +1,7 @@
 commonfields:
   id: okta
   version: -1
+deprecated: true
 name: okta
 display: okta
 category: Authentication
@@ -1216,6 +1217,7 @@ script:
       description: Unlocks a specified user.
     description: Unlock user
     execution: true
+    deprecated: true
   - name: okta-deactivate-user
     arguments:
     - name: username
@@ -1224,6 +1226,7 @@ script:
       description: Deactivates a specified user.
     description: Deactivate user
     execution: true
+    deprecated: true
   - name: okta-activate-user
     arguments:
     - name: username
@@ -1232,6 +1235,7 @@ script:
       description: Username in Okta to activate
     description: Activates a specific user.
     execution: true
+    deprecated: true
   - name: okta-suspend-user
     arguments:
     - name: username
@@ -1241,6 +1245,7 @@ script:
     description: Suspends a user.  This operation can only be performed on users with
       an ACTIVE status. The user has a status of SUSPENDED when the process is complete.
     execution: true
+    deprecated: true
   - name: okta-unsuspend-user
     arguments:
     - name: username
@@ -1250,6 +1255,7 @@ script:
     description: Returns a user to ACTIVE status.  This operation
       can only be performed on users that have a SUSPENDED status.
     execution: true
+    deprecated: true
   - name: okta-get-user-factors
     arguments:
     - name: userId
@@ -1276,6 +1282,7 @@ script:
       description: Okta account factor profile.
       type: string
     description: Returns all the enrolled factors for the specified user.
+    deprecated: true
   - name: okta-verify-push-factor
     arguments:
     - name: userId
@@ -1293,6 +1300,7 @@ script:
       type: string
     description: Enrolls and verifies a push factor for a specified user.
     execution: true
+    deprecated: true
   - name: okta-reset-factor
     arguments:
     - name: userId
@@ -1305,6 +1313,7 @@ script:
     description: Unenrolls an existing factor for the specified user, which enables the
       user to enroll a new factor.
     execution: true
+    deprecated: true
   - name: okta-get-groups
     arguments:
     - name: username
@@ -1345,6 +1354,7 @@ script:
       description: Description of the group.
       type: string
     description: Returns all user groups associated with a specified user.
+    deprecated: true
   - name: okta-set-password
     arguments:
     - name: username
@@ -1357,6 +1367,7 @@ script:
     description: Creates a user without a recovery question and answer requirement. The new user
       can log in after activation with the assigned password. 
     execution: true
+    deprecated: true
   - name: okta-search
     arguments:
     - name: term
@@ -1388,6 +1399,7 @@ script:
       description: Account type returned by search - Okta.
       type: string
     description: Search for Okta users
+    deprecated: true
   - name: okta-get-user
     arguments:
     - name: username
@@ -1420,6 +1432,7 @@ script:
       description: Okta account status.
       type: string
     description: Fetches information for a specific user. You must enter one or more parameters for the command to run.
+    deprecated: true
   - name: okta-create-user
     arguments:
     - name: firstName
@@ -1532,6 +1545,7 @@ script:
       and answer. The new user will immediately be able to login after activation
       with the assigned password. This flow is common when developing a custom user
       registration experience.
+    deprecated: true
     execution: true
   - name: okta-update-user
     arguments:
@@ -1620,6 +1634,7 @@ script:
     description: Update user with a given login, all fields are optional, fields which
       are not set will not be overriden
     execution: true
+    deprecated: true
   - name: okta-get-failed-logins
     arguments:
     - name: since
@@ -1747,6 +1762,7 @@ script:
       description: Display name of a target
       type: string
     description: Returns event details for when a user is added to a group.
+    deprecated: true
   - name: okta-get-group-assignments
     arguments:
     - name: since
@@ -1874,6 +1890,7 @@ script:
       description: Display name of a target
       type: string
     description: Get events for when a user was added to a group.
+    deprecated: true
   - name: okta-get-application-assignments
     arguments:
     - name: since
@@ -2001,6 +2018,7 @@ script:
       description: Display name of a target
       type: string
     description: Returns events for when a user was assigned to an application.
+    deprecated: true
   - name: okta-get-application-authentication
     arguments:
     - name: since
@@ -2128,6 +2146,7 @@ script:
       description: Display name of a target
       type: string
     description: Returns logs using specified filters.
+    deprecated: true
   - name: okta-get-logs
     arguments:
     - name: filter
@@ -2271,6 +2290,7 @@ script:
       description: Display name of a target
       type: string
     description: Get logs by providing optional filters
+    deprecated: true
   - name: okta-add-to-group
     arguments:
     - name: userId
@@ -2283,6 +2303,7 @@ script:
       description: Name of the group to add the user to
     description: Adds a user to a group with OKTA_GROUP type.
     execution: true
+    deprecated: true
   - name: okta-remove-from-group
     arguments:
     - name: userId
@@ -2295,6 +2316,7 @@ script:
       description: Name of the group to remove the user from
     description: Removes a user from a group with OKTA_GROUP type.
     execution: true
+    deprecated: true
   - name: okta-list-groups
     arguments:
     - name: query
@@ -2339,6 +2361,7 @@ script:
       type: string
     description: Lists groups in your organization. A subset of groups can be
       returned that match a supported filter expression or query.
+    deprecated: true
   - name: okta-get-group-members
     arguments:
     - name: groupId
@@ -2370,5 +2393,6 @@ script:
       description: Account type - Okta
       type: string
     description: Enumerates all users that are members of a group
+    deprecated: true
   runonce: false
 fromversion: 3.6.0
