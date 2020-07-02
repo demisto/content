@@ -56,7 +56,7 @@ def find_files_protocol(file_path):
             data_list.append(line)
             protocol = 'imf'
 
-        if line.endswith(')') and 'SMB' in line:
+        if line.endswith(')') and 'SMB' in line or 'DCERPC' in line:
             data_list.append(line)
             protocol = 'smb'
 
@@ -145,8 +145,11 @@ def upload_files(excluded_files, dir_path, file_path):
                 packet_number = data.split()[0]
                 for packet_number in packet_data:
                     data = packet_number.split()
-                    source_ip = data[2]
-                    dest_ip = data[4]
+                    try:
+                        source_ip = data[2]
+                        dest_ip = data[4]
+                    except:
+                        pass
 
             with open(file_path, 'rb') as file:
                 demisto.results(fileResult(file_name, file.read()))
