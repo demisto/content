@@ -458,7 +458,8 @@ def blueliv_malware(client: Client, args):
             # IPs #
             ipIds = ""
             ips = demisto.get(result, "data.relationships.ips.meta.count")
-            ipIds = client.get_relationships("malware", sha256, "ip")
+            if ips:
+                ipIds = client.get_relationships("malware", sha256, "ip")
 
             human = getHuman(result)
             demisto.results({
