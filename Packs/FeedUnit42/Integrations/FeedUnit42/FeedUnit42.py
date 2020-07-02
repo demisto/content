@@ -34,9 +34,11 @@ class Client(BaseClient):
         self._api_key = api_key
         self._proxies = handle_proxy()
 
-    def get_stix_objects(self) -> list:
+    def get_stix_objects(self, test: bool = False) -> list:
         """Retrieves all entries from the feed.
 
+        Args:
+            test: Whether it was called during clicking the test button or not - designed to save time.
         Returns:
             A list of stix objects, containing the indicators.
         """
@@ -48,6 +50,8 @@ class Client(BaseClient):
             for collection in api_root.collections:
                 for bundle in as_pages(collection.get_objects, per_request=100):
                     data.extend(bundle.get('objects'))
+                    if test:
+                        break
         return data
 
 
@@ -155,7 +159,7 @@ def test_module(client: Client) -> str:
     Returns:
         Outputs.
     """
-    client.get_stix_objects()
+    client.get_stix_objects(test=True)
     return 'ok'
 
 
