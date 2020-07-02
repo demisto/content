@@ -41,10 +41,17 @@ class Client(BaseClient):
     """
 
     def __init__(self, url: str, use_ssl: bool, use_proxy: bool, client_id: str, client_secret: str,
-                 refresh_token: str = None):
+                 refresh_token: str = None, fetch_time: str = '7 days', fetch_status: list = None,
+                 fetch_limit: int = 50, fetch_filter: str = ''):
+        if fetch_status is None:
+            fetch_status = []
         self.client_id = client_id
         self.client_secret = client_secret
         self.refresh_token = refresh_token
+        self.fetch_time = fetch_time
+        self.fetch_status = fetch_status
+        self.fetch_limit = fetch_limit
+        self.fetch_filter = fetch_filter
         super().__init__(url, verify=use_ssl, proxy=use_proxy, headers={
             'Accept': 'application/v3+json'
         })
@@ -304,7 +311,7 @@ def create_requests_list_info(start_index, row_count, search_fields, filter_by):
     }
 
 
-def create_fetch_list_info(time_from: str, time_to: str, status: str, fetch_filter: str, fetch_limit: int) -> dict:
+def create_fetch_list_info(time_from: str, time_to: str, status: list, fetch_filter: str, fetch_limit: int) -> dict:
     """
     Returning the list_info dictionary that should be used to filter the requests that are being fetched
     The requests that will be returned when using this list_info are all requests created between 'time_from' and
@@ -355,13 +362,14 @@ def create_fetch_list_info(time_from: str, time_to: str, status: str, fetch_filt
                         raise Exception('Only "AND" is allowed as a logical_operator')
                     search_criteria.append(query)
         else:
-            query = {
-                'field': 'status.name',
-                'values': status.split(','),
-                'condition': 'is',
-                'logical_operator': 'AND'
-            }
-            search_criteria.append(query)
+            if status:
+                query = {
+                    'field': 'status.name',
+                    'values': status,
+                    'condition': 'is',
+                    'logical_operator': 'AND'
+                }
+                search_criteria.append(query)
 
         list_info = {
             'search_criteria': search_criteria,
@@ -682,13 +690,16 @@ def close_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
     return hr, {}, result
 
 
-def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, status: str, fetch_filter: str) -> list:
+def fetch_incidents(client: Client, test_command: bool = False) -> list:
     date_format = '%Y-%m-%dT%H:%M:%S'
-    last_run = demisto.getLastRun()
+    last_run = {}
+    if not test_command:
+        last_run = demisto.getLastRun()
+
     if not last_run:  # if first time running
         try:
             new_last_run = {
-                'time': date_to_timestamp(parse_date_range(fetch_time, date_format=date_format, utc=False)[0])
+                'time': date_to_timestamp(parse_date_range(client.fetch_time, date_format=date_format, utc=False)[0])
             }
         except Exception as e:
             return_error(f'Invalid fetch time range.\n{e.args[0]}')
@@ -697,7 +708,8 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, status: s
     demisto_incidents: List = list()
     time_from = new_last_run.get('time')
     time_to = date_to_timestamp(datetime.now(), date_format=date_format)
-    list_info = create_fetch_list_info(str(time_from), str(time_to), status, fetch_filter, fetch_limit + 1)
+    list_info = create_fetch_list_info(str(time_from), str(time_to), client.fetch_status, client.fetch_filter,
+                                       client.fetch_limit + 1)
     params = {
         'input_data': f'{list_info}'
     }
@@ -715,7 +727,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, status: s
         incident_creation_time = new_last_run.get('time', 0)
 
         for incident in incidents:
-            if count >= fetch_limit:
+            if count >= client.fetch_limit:
                 break
             # Prevent fetching twice the same incident - the last incident that was fetched in the last run, will be the
             # first incident in the returned incidents from the API call this time.
@@ -742,7 +754,8 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, status: s
             'time': time_to
         })
 
-    demisto.setLastRun(new_last_run)
+    if not test_command:
+        demisto.setLastRun(new_last_run)
     return demisto_incidents
 
 
@@ -765,26 +778,7 @@ def test_module(client: Client):
         params: dict = demisto.params()
 
         if params.get('isFetch'):
-            fetch_time = params.get('fetch_time') if params.get('fetch_time') else '7 days'
-            fetch_status = str(params.get('fetch_status')) if params.get('fetch_status') else 'Open'
-            fetch_filter = str(params.get('fetch_filter')) if params.get('fetch_filter') else ''
-            fetch_limit = int(params.get('fetch_limit', '10')) if params.get('fetch_limit') else 50
-
-            date_format = '%Y-%m-%dT%H:%M:%S'
-            time_from = date_to_timestamp(parse_date_range(fetch_time, date_format=date_format, utc=False)[0])
-            time_to = date_to_timestamp(datetime.now(), date_format=date_format)
-            list_info = create_fetch_list_info(str(time_from), str(time_to), fetch_status, fetch_filter,
-                                               fetch_limit + 1)
-            params = {
-                'input_data': f'{list_info}'
-            }
-            try:
-                client.get_requests(params=params).get('requests', [])
-            except Exception as e:
-                if 'Error in API call' in e.args[0]:
-                    raise DemistoException(f'Invalid input format. Please see instructions for correct filter format.'
-                                           f'\n\nError: {e.args[0]}')
-                raise e
+            fetch_incidents(client, test_command=True)
         return 'ok'
 
     except Exception as e:
@@ -830,7 +824,11 @@ def main():
                     use_proxy=params.get('proxy', False),
                     client_id=params.get('client_id'),
                     client_secret=params.get('client_secret'),
-                    refresh_token=params.get('refresh_token'))
+                    refresh_token=params.get('refresh_token'),
+                    fetch_time=params.get('fetch_time') if params.get('fetch_time') else '7 days',
+                    fetch_status=params.get('fetch_status'),
+                    fetch_limit=int(params.get('fetch_limit')) if params.get('fetch_limit') else 50,
+                    fetch_filter=params.get('fetch_filter') if params.get('fetch_filter') else '')
 
     commands = {
         'service-desk-plus-generate-refresh-token': generate_refresh_token,
@@ -853,12 +851,7 @@ def main():
         if command == 'test-module':
             demisto.results(test_module(client))
         elif command == "fetch-incidents":
-            fetch_time = params.get('fetch_time') if params.get('fetch_time') else '7 days'
-            fetch_status = params.get('fetch_status') if params.get('fetch_status') else 'Open'
-            fetch_limit = int(params.get('fetch_limit')) if params.get('fetch_limit') else 50
-            fetch_filter = params.get('fetch_filter') if params.get('fetch_filter') else ''
-            incidents = fetch_incidents(client, fetch_time=fetch_time, fetch_limit=fetch_limit,
-                                        status=fetch_status, fetch_filter=fetch_filter)
+            incidents = fetch_incidents(client)
             demisto.incidents(incidents)
         elif command in commands:
             return_outputs(*commands[command](client, demisto.args()))

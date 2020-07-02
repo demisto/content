@@ -165,7 +165,15 @@ def test_create_requests_list_info():
 
 
 def test_create_fetch_list_info():
-    time_from, time_to, status, fetch_filter, fetch_limit = 'from', 'to', 'status', '', 10
+    # Check empty status list:
+    time_from, time_to, status, fetch_filter, fetch_limit = 'from', 'to', [], '', 10
+    expected_output = {'list_info': {'search_criteria': [{'field': 'created_time', 'values': ['from', 'to'],
+                                                          'condition': 'between'}],
+                                     'sort_field': 'created_time', 'sort_order': 'asc', 'row_count': 10}}
+    assert create_fetch_list_info(time_from, time_to, status, fetch_filter, fetch_limit) == expected_output
+
+    # Check one status:
+    time_from, time_to, status, fetch_filter, fetch_limit = 'from', 'to', ['status'], '', 10
     expected_output = {'list_info': {'search_criteria': [{'field': 'created_time', 'values': ['from', 'to'],
                                                           'condition': 'between'},
                                                          {'field': 'status.name', 'values': ['status'],
@@ -173,7 +181,16 @@ def test_create_fetch_list_info():
                                      'sort_field': 'created_time', 'sort_order': 'asc', 'row_count': 10}}
     assert create_fetch_list_info(time_from, time_to, status, fetch_filter, fetch_limit) == expected_output
 
-    time_from, time_to, status, fetch_limit = 'from', 'to', 'status', 15
+    # Check multiple status:
+    time_from, time_to, status, fetch_filter, fetch_limit = 'from', 'to', ['status1', 'status2'], '', 10
+    expected_output = {'list_info': {'search_criteria': [{'field': 'created_time', 'values': ['from', 'to'],
+                                                          'condition': 'between'},
+                                                         {'field': 'status.name', 'values': ['status1', 'status2'],
+                                                          'condition': 'is', 'logical_operator': 'AND'}],
+                                     'sort_field': 'created_time', 'sort_order': 'asc', 'row_count': 10}}
+    assert create_fetch_list_info(time_from, time_to, status, fetch_filter, fetch_limit) == expected_output
+
+    time_from, time_to, status, fetch_limit = 'from', 'to', ['status'], 15
     fetch_filter = "{'field': 'technician.name', 'values': 'tech1,tech2', 'condition': 'is', 'logical_operator':'AND'}"
     expected_output = {'list_info': {'search_criteria': [{'field': 'created_time', 'values': ['from', 'to'],
                                                           'condition': 'between'},
@@ -182,7 +199,7 @@ def test_create_fetch_list_info():
                                      'sort_field': 'created_time', 'sort_order': 'asc', 'row_count': 15}}
     assert create_fetch_list_info(time_from, time_to, status, fetch_filter, fetch_limit) == expected_output
 
-    time_from, time_to, status, fetch_limit = 'from', 'to', 'status', 20
+    time_from, time_to, status, fetch_limit = 'from', 'to', ['status'], 20
     fetch_filter = "{'field':'technician.name','values':'tech1,tech2','condition':'is','logical_operator':'AND'}," \
                    "{'field':'group.name','values':'group1','condition':'is','logical_operator':'AND'}"
     expected_output = {'list_info': {'search_criteria': [{'field': 'created_time', 'values': ['from', 'to'],
@@ -233,24 +250,33 @@ def test_fetch_incidents(mocker):
     Validate the length of the results and the different fields of the fetched incidents.
     """
     mocker.patch('ServiceDeskPlus.Client.get_access_token')
-    client = Client('server_url', 'use_ssl', 'use_proxy', 'client_id', 'client_secret', 'refresh_token')
     mocker.patch('ServiceDeskPlus.parse_date_range', return_value=('2020-06-23 04:18:00', 'never mind'))
     mocker.patch('ServiceDeskPlus.date_to_timestamp', return_value='1592918317168')
     mocker.patch('ServiceDeskPlus.create_fetch_list_info', return_value={})
-    mocker.patch.object(client, 'get_requests', return_value=RESPONSE_FETCH_INCIDENTS)
 
-    incidents = fetch_incidents(client, fetch_time='1 hour', fetch_limit=10, status='Open', fetch_filter='')
+    client = Client('server_url', 'use_ssl', 'use_proxy', 'client_id', 'client_secret', 'refresh_token',
+                    fetch_time='1 hour', fetch_limit=3, fetch_status=['Open'])
+    mocker.patch.object(client, 'get_requests', return_value=RESPONSE_FETCH_INCIDENTS)
+    incidents = fetch_incidents(client)
     assert len(incidents) == 3
 
-    incidents = fetch_incidents(client, fetch_time='1 hour', fetch_limit=2, status='Open', fetch_filter='')
+    client = Client('server_url', 'use_ssl', 'use_proxy', 'client_id', 'client_secret', 'refresh_token',
+                    fetch_time='1 hour', fetch_limit=2, fetch_status=['Open'])
+    mocker.patch.object(client, 'get_requests', return_value=RESPONSE_FETCH_INCIDENTS)
+    incidents = fetch_incidents(client)
     assert len(incidents) == 2
-    assert incidents[0].get('name') == 'Test fetch incidents - 1234'
 
-    incidents = fetch_incidents(client, fetch_time='1 hour', fetch_limit=1, status='Open', fetch_filter='')
+    client = Client('server_url', 'use_ssl', 'use_proxy', 'client_id', 'client_secret', 'refresh_token',
+                    fetch_time='1 hour', fetch_limit=1, fetch_status=['Open'])
+    mocker.patch.object(client, 'get_requests', return_value=RESPONSE_FETCH_INCIDENTS)
+    incidents = fetch_incidents(client)
     assert len(incidents) == 1
     assert incidents[0].get('name') == 'Test fetch incidents - 1234'
 
-    incidents = fetch_incidents(client, fetch_time='1 hour', fetch_limit=0, status='Open', fetch_filter='')
+    client = Client('server_url', 'use_ssl', 'use_proxy', 'client_id', 'client_secret', 'refresh_token',
+                    fetch_time='1 hour', fetch_limit=0, fetch_status=['Open'])
+    mocker.patch.object(client, 'get_requests', return_value=RESPONSE_FETCH_INCIDENTS)
+    incidents = fetch_incidents(client)
     assert len(incidents) == 0
 
 
