@@ -5,7 +5,7 @@ This integration was integrated and tested with version 1.0 of Microsoft Managem
 ## Grant Demisto Authorization in Microsoft Management Activity API
 To allow us to access Microsoft Management Activity API you will be required to give us authorization to access it.
 
-1. To grant authorization, click the [HERE](https://oproxy.demisto.ninja/ms-management-api).
+1. To grant authorization, click [HERE](https://oproxy.demisto.ninja/ms-management-api).
 2. After you click the link, click the **Start Authorization Process** button.
 3. When prompted, accept the Microsoft authorization request for the required permissions.
 You will get an ID, Token, and Key, which you need to enter in the corresponding fields when configuring an integration instnace..
