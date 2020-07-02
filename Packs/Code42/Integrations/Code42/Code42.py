@@ -965,7 +965,7 @@ def _create_incident_from_alert_details(details):
 
 
 def _stringify_lists_if_needed(event):
-    # We need to convert certain fields to a stringified list or React.JS will throw an error
+    # We need to convert certain fields to a stringified list else React.JS will throw an error
     shared_with = event.get("sharedWith")
     private_ip_addresses = event.get("privateIpAddresses")
     if shared_with:
