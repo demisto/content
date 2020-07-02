@@ -36,7 +36,7 @@ scripttarget: 0
 script: '-'
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.7.4.2728
+dockerimage: demisto/python3:3.8.3.9324
 runas: DBotWeakRole
 tests:
   - SetAndHandleEmpty test
