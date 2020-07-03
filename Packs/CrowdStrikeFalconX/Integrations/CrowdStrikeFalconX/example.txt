@@ -1,4 +1,4 @@
-cs-fx-upload-file file=172@07031695-ae27-49f6-8bb2-41943c7cb80c file_name=test.pdf comment="example" is_confidential="true" submit_file=no
+cs-fx-upload-file file=895@07031695-ae27-49f6-8bb2-41943c7cb80c file_name=test.pdf comment="example" is_confidential="true" submit_file=no
 cs-fx-submit-uploaded-file sha256="a381a7b679119dee5b95c9c09993885e44ad2fd9cd52fa28bc116f8bdea71679" environment_id="160: Windows 10" action_script="default" command_line="command" document_password="password" enable_tor="false" submit_name="malware_test" system_date="2020-08-10" system_time="12:48"
 cs-fx-submit-url url="https://www.google.com" environment_id="160: Windows 10" action_script="default" document_password="password" enable_tor="false" submit_name="malware_test" system_date="2020-08-10" system_time="12:48"
 cs-fx-get-full-report ids="1c9fe398b2294301aa3080ede8d77356_8511c69fa47f4188bf59e3ab80f0f39f"
