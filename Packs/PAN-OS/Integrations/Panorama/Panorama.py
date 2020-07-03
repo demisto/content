@@ -4750,12 +4750,13 @@ def panorama_get_predefined_threats_list(target: str):
         'GET',
         params=params
     )
-    demisto.results(fileResult('predefined-threats.json', json.dumps(result['response']['result']).encode('utf-8')))
+    return result
 
 
 def panorama_get_predefined_threats_list_command():
     target = str(demisto.args()['target']) if 'target' in demisto.args() else None
-    panorama_get_predefined_threats_list(target)
+    result = panorama_get_predefined_threats_list(target)
+    demisto.results(fileResult('predefined-threats.json', json.dumps(result['response']['result']).encode('utf-8')))
 
 
 def panorama_block_vulnerability():
