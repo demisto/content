@@ -589,7 +589,7 @@ There is no context output for this command.
         "resource": [
             [
                 {
-                    "ioc": "172.217.13.67",
+                    "ioc": "7.77.7.7",
                     "source": "runtime",
                     "type": "ip"
                 },
@@ -2439,7 +2439,7 @@ There is no context output for this command.
 >### CrowdStrike Falcon X response:
 >|ioc|source|type|
 >|---|---|---|
->| 172.217.13.67 | runtime | ip |
+>| 7.77.7.7 | runtime | ip |
 >| 054e58bdec6972ff4b3167b34e77612f | extracted | md5 |
 >| 05d6eeb048c90c766aece42e337dde4d | extracted | md5 |
 >| 0f109e8d4aedbf943299263b152d4f00 | extracted | md5 |
