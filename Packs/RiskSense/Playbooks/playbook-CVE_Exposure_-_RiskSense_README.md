@@ -22,8 +22,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| CVES | Specify Common Vulnerabilities and Exposures \(CVE\). You can mention multiple cves by comma\-separated list. | CVE-2017-11882,CVE-2017-0199,CVE-2017-5638,CVE-2012-0158 | Required |
-| TagName | Tags in RiskSense can be applied to assets, web applications, and vulnerabilities. Tags are useful in the soft grouping, workflow creation and to identify compliance\-related assets. | DHS-Top-10 | Required |
+| CVES | Specify Common Vulnerabilities and Exposures \(CVE\). You can mention multiple cves by comma\-separated list. |  | Required |
+| TagName | Tags in RiskSense can be applied to assets, web applications, and vulnerabilities. Tags are useful in the soft grouping, workflow creation and to identify compliance\-related assets. |  | Required |
 
 ## Playbook Outputs
 ---
