@@ -11,7 +11,7 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-"dependencies": {
+    "dependencies": {
         "VirusTotal": {
             "mandatory": false,
             "display_name": "VirusTotal"
