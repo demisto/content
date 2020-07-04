@@ -232,7 +232,7 @@ def test_mysql_integration():
 
     And then set env var: MYSQL_HOST=localhost
     """
-    host = os.getenv('MYSQL_HOST', 'localhost')
+    host = os.getenv('MYSQL_HOST', '')
     if not host:
         pytest.skip('Skipping mysql integration test as MYSQL_HOST is not set')
     dialect = 'MySQL'

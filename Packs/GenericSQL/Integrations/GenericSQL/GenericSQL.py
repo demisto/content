@@ -11,7 +11,7 @@ import logging
 from sqlalchemy.sql import text
 try:
     # if integration is using an older image (4.5 Server) we don't have expiringdict
-    from expiringdict import ExpiringDict
+    from expiringdict import ExpiringDict  # pylint: disable=E0401
 except Exception:
     pass
 
