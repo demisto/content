@@ -1946,9 +1946,7 @@
         },
         {
             "playbookID": "Docker Hardening Test",
-            "_comment": "Not testing on 5.5 yet. Waiting for #20951",
-            "fromversion": "5.0.0",
-            "toversion": "5.4.9"
+            "fromversion": "5.0.0"            
         },
         {
             "integrations": "Active Directory Query v2",
