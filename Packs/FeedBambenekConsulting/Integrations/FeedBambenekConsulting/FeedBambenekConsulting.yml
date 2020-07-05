@@ -6,9 +6,11 @@ configuration:
 - display: Fetch indicators
   name: feed
   required: false
+  defaultvalue: true
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
+  defaultvalue: Bad
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -18,7 +20,8 @@ configuration:
   - Bad
   required: false
   type: 18
-- display: Source Reliability
+- defaultvalue: B - Usually reliable
+  display: Source Reliability
   name: feedReliability
   options:
   - A - Completely reliable
@@ -32,13 +35,14 @@ configuration:
   additionalinfo: Reliability of the source providing the intelligence data
 - display: ""
   name: feedExpirationPolicy
+  defaultvalue: indicatorType
   type: 17
   required: false
   options:
-  - never
-  - interval
-  - indicatorType
-  - suddenDeath
+    - never
+    - interval
+    - indicatorType
+    - suddenDeath
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
@@ -47,13 +51,16 @@ configuration:
 - display: ""
   name: feedExpirationInterval
   required: false
+  defaultvalue: "20160"
   type: 1
-- display: Feed Fetch Interval
+- defaultvalue: '360'
+  display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
   type: 19
 - display: Bypass exclusion list
   name: feedBypassExclusionList
+  defaultvalue: ""
   type: 8
   required: false
   additionalinfo: When selected, the exclusion list is ignored for indicators from
@@ -86,6 +93,7 @@ configuration:
   required: false
   type: 9
 - additionalinfo: Time in seconds before http requests timeout.
+  defaultvalue: '20'
   display: Request Timeout
   name: polling_timeout
   required: true
