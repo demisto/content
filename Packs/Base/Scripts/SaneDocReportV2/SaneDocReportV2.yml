@@ -14,19 +14,19 @@ args:
   secret: false
 - default: false
   defaultValue: A4
-  description: the paper size of the report
+  description: The paper size for the report.
   isArray: false
   name: paperSize
   required: false
   secret: false
 - default: false
-  description: customer's logo
+  description: Custom logo image.
   isArray: false
   name: customerLogo
   required: false
   secret: false
 - default: false
-  description: demito's logo
+  description: The logo for XSOAR.
   isArray: false
   name: demistoLogo
   required: false
