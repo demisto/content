@@ -25,7 +25,7 @@ configuration:
   type: 8
 description: |-
   DUO for admins.
-  Must have access to the admin api in order to use this
+  Must have access to the admin api in order to use this.
 display: DUO Admin
 name: DUO Admin
 script:
