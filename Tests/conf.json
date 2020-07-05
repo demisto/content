@@ -2765,6 +2765,10 @@
             "playbookID": "RiskSense Get Apps Detail - Test"
         },
         {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Apply Tag - Test"
+        },
+        {
             "integrations": "Indeni",
             "playbookID": "Indeni_test",
             "fromversion": "5.0.0"
