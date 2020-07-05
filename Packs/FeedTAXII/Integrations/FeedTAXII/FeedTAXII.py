@@ -1,7 +1,9 @@
 import tempfile
 from typing import Dict
 
+import demistomock as demisto
 from CommonServerPython import *
+from CommonServerUserPython import *
 
 ''' IMPORTS '''
 import urllib3
