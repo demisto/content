@@ -1,0 +1,880 @@
+category: Authentication
+commonfields:
+  id: CyberArk
+  version: -1
+configuration:
+- display: Server URL (e.g. https://example.net)
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Concurrent Session
+  hidden: false
+  name: concurrent_session
+  required: false
+  type: 8
+description: This is the Hello World integration for getting started.
+display: CyberArk
+name: CyberArk
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The name of the user.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    - default: false
+      description: User type according to the license.
+      isArray: false
+      name: user_type
+      required: false
+      secret: false
+    - default: false
+      description: The CyberArk interfaces that this user is not authorized to use.
+        e.g. - "PSM", "PSMP"
+      isArray: true
+      name: non_authorized_interfaces
+      required: false
+      secret: false
+    - default: false
+      description: The location in the Vault where the user will be created. Must
+        begin with "\\".
+      isArray: false
+      name: location
+      required: false
+      secret: false
+    - default: false
+      description: The date when the user expires.
+      isArray: false
+      name: expiry_date
+      required: false
+      secret: false
+    - default: false
+      description: The password that the user will use to log on for the first time.
+      isArray: false
+      name: password
+      required: true
+      secret: true
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Whether or not the user must change their password from the second
+        log on onward.
+      isArray: false
+      name: change_password_on_the_next_logon
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether the user’s password will not expire unless they decide
+        to change it.
+      isArray: false
+      name: password_never_expires
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        The user permissions.
+        Valid values:
+        AddSafes
+        AuditUsers
+        AddUpdateUsers
+        ResetUsersPasswords
+        ActivateUsers
+        AddNetworkAreas
+        ManageDirectoryMapping
+        ManageServerFileCategories
+        BackupAllSafes
+        RestoreAllSafes
+      isArray: true
+      name: vault_authorization
+      required: false
+      secret: false
+    - default: false
+      description: Notes and comments.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: The user's email addresses.
+      isArray: false
+      name: email
+      required: false
+      secret: false
+    - default: false
+      description: The user's first name.
+      isArray: false
+      name: first_name
+      required: false
+      secret: false
+    - default: false
+      description: The user's last name.
+      isArray: false
+      name: last_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Whether the user will be enabled upon creation.
+      isArray: false
+      name: enable_user
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        The user’s distinguished name.
+        The usage is for PKI authentication, this will match the certificate Subject Name or domain name.
+      isArray: false
+      name: distinguished_name
+      required: false
+      secret: false
+    - default: false
+      description: The user’s profession.
+      isArray: false
+      name: profession
+      required: false
+      secret: false
+    deprecated: false
+    description: Add a new user to the Vault.
+    execution: false
+    name: cyberark-pas-add-user
+  - arguments:
+    - default: false
+      description: The name of the user.
+      isArray: false
+      name: username
+      required: false
+      secret: false
+    - default: false
+      description: User type according to the license.
+      isArray: false
+      name: user_type
+      required: false
+      secret: false
+    - default: false
+      description: The CyberArk interfaces that this user is not authorized to use.
+        e.g. - "PSM", "PSMP"
+      isArray: true
+      name: non_authorized_interfaces
+      required: false
+      secret: false
+    - default: false
+      description: The location in the Vault where the user will be created. Must
+        begin with "\\".
+      isArray: false
+      name: location
+      required: false
+      secret: false
+    - default: false
+      description: The date when the user expires.
+      isArray: false
+      name: expiry_date
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Whether or not the user must change their password from the second
+        log on onward.
+      isArray: false
+      name: change_password_on_the_next_logon
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether the user’s password will not expire unless they decide
+        to change it.
+      isArray: false
+      name: password_never_expires
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        The user permissions.
+        Valid values:
+        AddSafes
+        AuditUsers
+        AddUpdateUsers
+        ResetUsersPasswords
+        ActivateUsers
+        AddNetworkAreas
+        ManageDirectoryMapping
+        ManageServerFileCategories
+        BackupAllSafes
+        RestoreAllSafes
+      isArray: true
+      name: vault_authorization
+      required: false
+      secret: false
+    - default: false
+      description: Notes and comments.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: The user's email addresses.
+      isArray: false
+      name: email
+      required: false
+      secret: false
+    - default: false
+      description: The user's first name.
+      isArray: false
+      name: first_name
+      required: false
+      secret: false
+    - default: false
+      description: The user's last name.
+      isArray: false
+      name: last_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Whether the user will be enabled upon creation.
+      isArray: false
+      name: enable_user
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        The user’s distinguished name.
+        The usage is for PKI authentication, this will match the certificate Subject Name or domain name.
+      isArray: false
+      name: distinguished_name
+      required: false
+      secret: false
+    - default: false
+      description: The user’s profession.
+      isArray: false
+      name: profession
+      required: false
+      secret: false
+    - default: false
+      description: The user's unique ID.
+      isArray: false
+      name: userID
+      required: true
+      secret: false
+    deprecated: false
+    description: Updates an existing Vault user.
+    execution: false
+    name: cyberark-pas-update-user
+  - arguments:
+    - default: false
+      description: The user's unique ID.
+      isArray: false
+      name: userID
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a specific user in the Vault.
+    execution: false
+    name: cyberark-pas-delete-user
+  - arguments:
+    - default: false
+      description: Retrieve users using filters.
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      description: Search by the values.
+      isArray: false
+      name: search
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of all existing users in the Vault.
+    execution: false
+    name: cyberark-pas-get-users
+  - arguments:
+    - default: false
+      description: The user's unique ID.
+      isArray: false
+      name: userID
+      required: true
+      secret: false
+    deprecated: false
+    description: Activate an existing Vault user who was suspended after entering
+      incorrect credentials multiple times.
+    execution: false
+    name: cyberark-pas-activate-user
+  - deprecated: false
+    description: Returns information about all of the user’s Safes in the Vault. It
+      is demonstrated in the sample code.
+    execution: false
+    name: cyberark-pas-list-safes
+  - arguments:
+    - default: false
+      description: The name of the Safe about which information is returned.
+      isArray: false
+      name: safe_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Return information about a specific Safe in the Vault.
+    execution: false
+    name: cyberark-pas-get-safe-by-name
+  - arguments:
+    - default: false
+      description: Name of a Safe to create.
+      isArray: false
+      name: safe_name
+      required: true
+      secret: false
+    - default: false
+      description: Description of the new Safe.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: Whether or not to enable Object Level Access Control for the new
+        Safe.
+      isArray: false
+      name: OLAC_enabled
+      required: false
+      secret: false
+    - default: false
+      description: The name of the CPM user who will manage the new Safe.
+      isArray: false
+      name: managing_cmp
+      required: false
+      secret: false
+    - default: false
+      description: The number of retained versions of every password that is stored
+        in the Safe.
+      isArray: false
+      name: number_of_versions_retention
+      required: false
+      secret: false
+    - default: false
+      description: The number of days for which password versions are saved in the
+        Safe.
+      isArray: false
+      name: number_of_days_retention
+      required: false
+      secret: false
+    - default: false
+      description: The location of the safe.
+      isArray: false
+      name: location
+      required: false
+      secret: false
+    deprecated: false
+    description: Add a new Safe to the Vault.
+    execution: false
+    name: cyberark-pas-add-safe
+  - arguments:
+    - default: false
+      description: Name of a Safe to create.
+      isArray: false
+      name: safe_name
+      required: true
+      secret: false
+    - default: false
+      description: Description of the new Safe.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: Whether or not to enable Object Level Access Control for the new
+        Safe.
+      isArray: false
+      name: OLAC_enabled
+      required: false
+      secret: false
+    - default: false
+      description: The name of the CPM user who will manage the new Safe.
+      isArray: false
+      name: managing_cmp
+      required: false
+      secret: false
+    - default: false
+      description: The number of retained versions of every password that is stored
+        in the Safe.
+      isArray: false
+      name: number_of_versions_retention
+      required: false
+      secret: false
+    - default: false
+      description: The number of days for which password versions are saved in the
+        Safe.
+      isArray: false
+      name: number_of_days_retention
+      required: false
+      secret: false
+    - default: false
+      description: The new name of the Safe, if you want to change it.
+      isArray: false
+      name: safe_new_name
+      required: false
+      secret: false
+    - default: false
+      description: The location of the safe/
+      isArray: false
+      name: location
+      required: false
+      secret: false
+    deprecated: false
+    description: Update a single Safe in the Vault
+    execution: false
+    name: cyberark-pas-update-safe
+  - arguments:
+    - default: false
+      description: Name of a Safe to create.
+      isArray: false
+      name: safe_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a Safe from the Vault.
+    execution: false
+    name: cyberark-pas-delete-safe
+  - arguments:
+    - default: false
+      description: The name of the Safe whose Safe members will be listed.
+      isArray: false
+      name: safe_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Return a list of the members of the Safe.
+    execution: false
+    name: cyberark-pas-list-safe-members
+  - arguments:
+    - default: false
+      description: The name of the user to add as a Safe member.
+      isArray: false
+      name: member_name
+      required: true
+      secret: false
+    - default: false
+      description: Search for the member in the Vault or Domain.
+      isArray: false
+      name: search_in
+      required: false
+      secret: false
+    - default: false
+      description: MM\DD\YY or empty if there is no expiration date.
+      isArray: false
+      name: membership_expiration_date
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        User’s permissions in the Safe.
+        Optional values:
+        UseAccounts, RetrieveAccounts, ListAccounts, AddAccounts, UpdateAccountContent, UpdateAccountProperties, InitiateCPMAccountManagementOperations, InitiateCPMAccountManagementOperations, SpecifyNextAccountContent, RenameAccounts, DeleteAccounts, UnlockAccounts, ManageSafe, ManageSafeMembers, BackupSafe, ViewAuditLog, ViewAuditLog, ViewSafeMembers, AccessWithoutConfirmation, CreateFolders, DeleteFolders, MoveAccountsAndFolders
+      isArray: true
+      name: permissions
+      required: false
+      secret: false
+    - default: false
+      description: The name of the Safe to add a member to.
+      isArray: false
+      name: safe_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: '0'
+      description: "Requests Authorization Level.\n0 – cannot authorize\t\n1 – authorization\
+        \ level 1\t\n2 – authorization level 2"
+      isArray: false
+      name: requests_authorization_level
+      predefined:
+      - '0'
+      - '1'
+      - '2'
+      required: false
+      secret: false
+    deprecated: false
+    description: Add an existing user as a Safe member.
+    execution: false
+    name: cyberark-pas-add-safe-member
+  - arguments:
+    - default: false
+      description: The name of the user to add as a Safe member.
+      isArray: false
+      name: member_name
+      required: true
+      secret: false
+    - default: false
+      description: Search for the member in the Vault or Domain.
+      isArray: false
+      name: search_in
+      required: false
+      secret: false
+    - default: false
+      description: MM\DD\YY or empty if there is no expiration date.
+      isArray: false
+      name: membership_expiration_date
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        User’s permissions in the Safe.
+        Optional values:
+        UseAccounts, RetrieveAccounts, ListAccounts, AddAccounts, UpdateAccountContent, UpdateAccountProperties, InitiateCPMAccountManagementOperations, InitiateCPMAccountManagementOperations, SpecifyNextAccountContent, RenameAccounts, DeleteAccounts, UnlockAccounts, ManageSafe, ManageSafeMembers, BackupSafe, ViewAuditLog, ViewAuditLog, ViewSafeMembers, RequestsAuthorizationLevel, AccessWithoutConfirmation, CreateFolders, DeleteFolders, MoveAccountsAndFolders
+      isArray: true
+      name: permissions
+      required: false
+      secret: false
+    - default: false
+      description: The name of the Safe to add a member to.
+      isArray: false
+      name: safe_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: '0'
+      description: "Requests Authorization Level.\n0 – cannot authorize\t\n1 – authorization\
+        \ level 1\t\n2 – authorization level 2"
+      isArray: false
+      name: requests_authorization_level
+      predefined:
+      - '0'
+      - '1'
+      - '2'
+      required: false
+      secret: false
+    deprecated: false
+    description: Update an existing Safe member.
+    execution: false
+    name: cyberark-pas-update-safe-member
+  - arguments:
+    - default: false
+      description: The name of the Safe to add a member to.
+      isArray: false
+      name: safe_name
+      required: true
+      secret: false
+    - default: false
+      description: The name of the user to add as a Safe member.
+      isArray: false
+      name: member_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove a specific member from a Safe.
+    execution: false
+    name: cyberark-pas-delete-safe-member
+  - arguments:
+    - default: false
+      description: The name of the account.
+      isArray: false
+      name: account_name
+      required: true
+      secret: false
+    - default: false
+      description: The name or address of the machine where the account will be used.
+      isArray: false
+      name: address
+      required: true
+      secret: false
+    - default: false
+      description: The platform assigned to this account.
+      isArray: false
+      name: platformID
+      required: true
+      secret: false
+    - default: false
+      description: The Safe where the account will be created.
+      isArray: false
+      name: safe_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: password
+      description: The type of password.
+      isArray: false
+      name: secret_type
+      predefined:
+      - password
+      - ' key'
+      required: false
+      secret: false
+    - default: false
+      description: Account user's name.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    - default: false
+      description: The password value.
+      isArray: false
+      name: password
+      required: true
+      secret: true
+    - default: false
+      description: |-
+        Object containing key-value pairs to associate with the account, as defined by the account platform.
+        e.g.- {"Location": "IT", "OwnerName": "MSSPAdmin"}
+      isArray: false
+      name: properties
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Whether the account secret is automatically managed by the CPM.
+      isArray: false
+      name: automatic_management_enabled
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Reason for disabling automatic secret management.
+      isArray: false
+      name: manual_management_reason
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        List of remote machines, separated by semicolons.
+        e.g.- server1.cyberark.com;server2.cyberark.com
+      isArray: false
+      name: remote_machines
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether or not to restrict access only to specified remote machines
+      isArray: false
+      name: access_restricted_to_temote_machines
+      predefined:
+      - 'true'
+      - ' false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Add a new privileged account or SSH key to the Vault.
+    execution: false
+    name: cyberark-pas-add-account
+  - arguments:
+    - default: false
+      description: The unique ID of the account to delete.
+      isArray: false
+      name: accountID
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a specific account in the Vault
+    execution: false
+    name: cyberark-pas-delete-account
+  - arguments:
+    - default: false
+      description: The unique ID of the account to delete.
+      isArray: false
+      name: accountID
+      required: true
+      secret: false
+    - default: false
+      description: The name of the account.
+      isArray: false
+      name: account_name
+      required: false
+      secret: false
+    - default: false
+      description: The name or address of the machine where the account will be used.
+      isArray: false
+      name: address
+      required: false
+      secret: false
+    - default: false
+      description: The platform assigned to this account.
+      isArray: false
+      name: platformID
+      required: false
+      secret: false
+    - default: false
+      description: Account user's name.
+      isArray: false
+      name: username
+      required: false
+      secret: false
+    deprecated: false
+    description: Update an existing account's details.
+    execution: false
+    name: cyberark-pas-update-account
+  - arguments:
+    - default: false
+      description: |-
+        List of keywords to search for in accounts.
+        Separated with a space, e.g- Windows admin
+      isArray: false
+      name: search
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Property or properties by which to sort returned accounts, followed by asc (default) or desc to control sort direction.
+        Separated with commas. e.g - Windows,asc
+      isArray: false
+      name: sort
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Offset of the first account that is returned in the collection
+        of results.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: 'Maximum number of returned accounts. '
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Search for accounts filtered by a specific Safe.
+        e.g. - safeName eq 'mySafe'
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    deprecated: false
+    description: Return a list of all the accounts in the Vault.
+    execution: false
+    name: cyberark-pas-list-accounts
+  - arguments:
+    - default: false
+      description: The ID of the account whose activities will be retrieved.
+      isArray: false
+      name: accountID
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the activities of a specific account that is identified by
+      its account ID.
+    execution: false
+    name: cyberark-pas-list-account-activity
+  - arguments:
+    - default: false
+      description: The user's unique ID.
+      isArray: false
+      name: userID
+      required: true
+      secret: false
+    deprecated: false
+    description: Suspend an existing Vault user.
+    execution: false
+    name: cyberark-pas-suspend-user
+  - arguments:
+    - default: false
+      description: The unique ID of the account.
+      isArray: false
+      name: accountID
+      required: true
+      secret: false
+    - default: false
+      description: The new account credentials that will be allocated to the account
+        in the Vault.
+      isArray: false
+      name: new_credentials
+      required: true
+      secret: false
+    deprecated: false
+    description: Enables users to set account credentials and change them in the Vault.
+    execution: false
+    name: cyberark-pas-change-credentials-in-vault-only
+  - arguments:
+    - default: false
+      description: The unique account ID of the account.
+      isArray: false
+      name: accountID
+      required: true
+      secret: false
+    deprecated: false
+    description: Mark an account for verification by the CPM.
+    execution: false
+    name: cyberark-pas-verify-credentials
+  - arguments:
+    - default: false
+      description: The unique account ID of the account.
+      isArray: false
+      name: accountID
+      required: true
+      secret: false
+    deprecated: false
+    description: Marks an account for automatic reconciliation by the CPM.
+    execution: false
+    name: cyberark-pas-reconcile-credentials
+  - arguments:
+    - default: false
+      description: The unique ID of the account.
+      isArray: false
+      name: accountID
+      required: true
+      secret: false
+    deprecated: false
+    description: Mark an account for an immediate credentials change by the CPM to
+      a new random value.
+    execution: false
+    name: cyberark-pas-change-credentials-random-password
+  dockerimage: demisto/python3:3.7.4.2245
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
