@@ -161,7 +161,7 @@ script:
     description: Gets indicators available in the configured Elasticsearch database.
     execution: false
     name: es-get-indicators
-  dockerimage: demisto/elasticsearch:1.0.0.6227
+  dockerimage: demisto/elasticsearch:1.0.0.8935
   feed: true
   isfetch: false
   longRunning: false

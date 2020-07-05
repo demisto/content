@@ -844,15 +844,15 @@ AdvancedQuery.Read.All
 
 
 ##### Command Example
-```!microsoft-atp-advanced-hunting query="LogonEvents | take 1 | project MachineId, ReportId, tostring(EventTime)"```
+```!microsoft-atp-advanced-hunting query="DeviceLogonEvents | take 1 | project DeviceId, ReportId, tostring(Timestamp)"```
 
 ##### Context Example
 ```
 {
     "MicrosoftATP.Hunt.Result": [
         {
-            "MachineId": "4899036531e374137f63289c3267bad772c13fef", 
-            "EventTime": "2020-02-23T07:14:42.1599815Z", 
+            "DeviceId": "4899036531e374137f63289c3267bad772c13fef", 
+            "Timestamp": "2020-02-23T07:14:42.1599815Z", 
             "ReportId": "35275"
         }
     ]
@@ -861,7 +861,7 @@ AdvancedQuery.Read.All
 
 ##### Human Readable Output
 ##### Hunt results
-|EventTime|MachineId|ReportId|
+|Timestamp|DeviceId|ReportId|
 |---|---|---|
 | 2020-02-23T07:14:42.1599815Z | 4899036531e374137f63289c3267bad772c13fef | 35275 |
 
@@ -2635,3 +2635,4 @@ Machine.ReadWrite.All
 |ID|ComputerDNSName|OSPlatform|LastExternalIPAddress|HealthStatus|RiskScore|ExposureLevel|MachineTags|
 |---|---|---|---|---|---|---|---|
 | f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 | Windows10 | 81.166.99.236 | Active | Medium | Medium | test add tag, testing123 |
+

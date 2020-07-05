@@ -207,7 +207,7 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> Tuple[str, D
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
     context_entry: dict = {
         outputPaths.get("ip"): ip_ec,
-        f'AlienVaultOTX.IP(val.IP && val.IP === obj.IP)': alienvault_ec,
+        'AlienVaultOTX.IP(val.IP && val.IP === obj.IP)': alienvault_ec,
         outputPaths.get("dbotscore"): dbotscore_ec
     }
     human_readable = tableToMarkdown(t=context_entry.get(outputPaths.get("ip")),
@@ -255,13 +255,13 @@ def domain_command(client: Client, domain: str) -> Tuple[str, Dict, Union[Dict, 
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
     context_entry: dict = {
         outputPaths.get("domain"): domain_ec,
-        f'AlienVaultOTX.Domain(val.Alexa && val.Alexa === obj.Alexa &&'
-        f'val.Whois && val.Whois === obj.Whois)': alienvault_ec,
+        'AlienVaultOTX.Domain(val.Alexa && val.Alexa === obj.Alexa &&'
+        'val.Whois && val.Whois === obj.Whois)': alienvault_ec,
         outputPaths.get("dbotscore"): dbotscore_ec
     }
     human_readable = tableToMarkdown(t=context_entry.get(
-        f'AlienVaultOTX.Domain(val.Alexa && val.Alexa === obj.Alexa &&'
-        f'val.Whois && val.Whois === obj.Whois)'),
+        'AlienVaultOTX.Domain(val.Alexa && val.Alexa === obj.Alexa &&'
+        'val.Whois && val.Whois === obj.Whois)'),
         name=title)
     return human_readable, context_entry, raws
 
@@ -363,10 +363,10 @@ def url_command(client: Client, url: str) -> Tuple[str, Dict, Union[Dict, list]]
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
     context_entry: dict = {
         outputPaths.get("url"): url_ec,
-        f'AlienVaultOTX.URL(val.Url && val.Url === obj.Url)': alienvault_ec,
+        'AlienVaultOTX.URL(val.Url && val.Url === obj.Url)': alienvault_ec,
         outputPaths.get("dbotscore"): dbotscore_ec
     }
-    human_readable = tableToMarkdown(t=context_entry.get(f'AlienVaultOTX.URL(val.Url && val.Url === obj.Url)'),
+    human_readable = tableToMarkdown(t=context_entry.get('AlienVaultOTX.URL(val.Url && val.Url === obj.Url)'),
                                      name=title)
     return human_readable, context_entry, raws
 
@@ -390,8 +390,8 @@ def alienvault_search_hostname_command(client: Client, hostname: str) -> Tuple[s
             'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': {
                 'Hostname': raw_response.get('indicator')
             },
-            f'AlienVaultOTX.Endpoint(val.Alexa && val.Alexa === obj.Alexa &&'
-            f'val.Whois && val.Whois === obj.Whois)': {
+            'AlienVaultOTX.Endpoint(val.Alexa && val.Alexa === obj.Alexa &&'
+            'val.Whois && val.Whois === obj.Whois)': {
                 'Hostname': raw_response.get('indicator'),
                 'Alexa': raw_response.get('alexa'),
                 'Whois': raw_response.get('whois')
@@ -405,8 +405,8 @@ def alienvault_search_hostname_command(client: Client, hostname: str) -> Tuple[s
         }
         human_readable = tableToMarkdown(name=title,
                                          t=context_entry.get(
-                                             f'AlienVaultOTX.Endpoint(val.Alexa && val.Alexa === obj.Alexa &&'
-                                             f'val.Whois && val.Whois === obj.Whois)'))
+                                             'AlienVaultOTX.Endpoint(val.Alexa && val.Alexa === obj.Alexa &&'
+                                             'val.Whois && val.Whois === obj.Whois)'))
 
         return human_readable, context_entry, raw_response
     else:
@@ -471,7 +471,7 @@ def alienvault_get_related_urls_by_indicator_command(client: Client, indicator_t
         title = f'{INTEGRATION_NAME} - Related url list to queried indicator'
         context_entry: list = create_list_by_ec(list_entries=raw_response.get('url_list', {}), list_type='url_list')
         context: dict = {
-            f'AlienVaultOTX.URL(val.URL.Data && val.URL.Data == obj.URL.Data)': context_entry
+            'AlienVaultOTX.URL(val.URL.Data && val.URL.Data == obj.URL.Data)': context_entry
         }
         human_readable = tableToMarkdown(t=context_entry,
                                          name=title)
@@ -500,10 +500,10 @@ def alienvault_get_related_hashes_by_indicator_command(client: Client, indicator
     if raw_response:
         title = f'{INTEGRATION_NAME} - Related malware list to queried indicator'
         context_entry: dict = {
-            f'AlienVaultOTX.File(val.File.Hash && val.File.Hash == obj.File.Hash)':
+            'AlienVaultOTX.File(val.File.Hash && val.File.Hash == obj.File.Hash)':
             create_list_by_ec(list_entries=raw_response.get('data', {}), list_type='hash_list')
         }
-        human_readable = tableToMarkdown(t=context_entry.get(f'AlienVaultOTX.File(val.File.Hash && val.File.Hash \
+        human_readable = tableToMarkdown(t=context_entry.get('AlienVaultOTX.File(val.File.Hash && val.File.Hash \
                                             == obj.File.Hash)'),
                                          name=title)
 
@@ -531,15 +531,15 @@ def alienvault_get_passive_dns_data_by_indicator_command(client: Client, indicat
     if raw_response:
         title = f'{INTEGRATION_NAME} - Related passive dns list to queried indicator'
         context_entry: dict = {
-            f'AlienVaultOTX.PassiveDNS(val.PassiveDNS.Hostname && val.PassiveDNS.Hostname == obj.PassiveDNS.Hostname &&'
-            f'val.PassiveDNS.LastSeen && val.PassiveDNS.LastSeen == obj.PassiveDNS.LastSeen &&'
-            f'val.PassiveDNS.IP && val.PassiveDNS.IP == obj.PassiveDNS.IP)':
+            'AlienVaultOTX.PassiveDNS(val.PassiveDNS.Hostname && val.PassiveDNS.Hostname == obj.PassiveDNS.Hostname &&'
+            'val.PassiveDNS.LastSeen && val.PassiveDNS.LastSeen == obj.PassiveDNS.LastSeen &&'
+            'val.PassiveDNS.IP && val.PassiveDNS.IP == obj.PassiveDNS.IP)':
             create_list_by_ec(list_entries=raw_response.get('passive_dns', {}), list_type='passive_dns')
         }
         human_readable = tableToMarkdown(t=context_entry.get(
-            f'AlienVaultOTX.PassiveDNS(val.PassiveDNS.Hostname && val.PassiveDNS.Hostname == obj.PassiveDNS.Hostname &&'
-            f'val.PassiveDNS.LastSeen && val.PassiveDNS.LastSeen == obj.PassiveDNS.LastSeen &&'
-            f'val.PassiveDNS.IP && val.PassiveDNS.IP == obj.PassiveDNS.IP)'),
+            'AlienVaultOTX.PassiveDNS(val.PassiveDNS.Hostname && val.PassiveDNS.Hostname == obj.PassiveDNS.Hostname &&'
+            'val.PassiveDNS.LastSeen && val.PassiveDNS.LastSeen == obj.PassiveDNS.LastSeen &&'
+            'val.PassiveDNS.IP && val.PassiveDNS.IP == obj.PassiveDNS.IP)'),
             name=title)
         return human_readable, context_entry, raw_response
     else:
@@ -563,13 +563,13 @@ def alienvault_search_pulses_command(client: Client, page: str) -> Tuple[str, Di
     if raw_response:
         title = f'{INTEGRATION_NAME} - pulse page {page}'
         context_entry: dict = {
-            f'AlienVaultOTX.Pulses(val.ID && val.ID == obj.ID && '
-            f'val.Modified && val.Modified == obj.Modified)':
+            'AlienVaultOTX.Pulses(val.ID && val.ID == obj.ID && '
+            'val.Modified && val.Modified == obj.Modified)':
             [create_pulse_by_ec(entry) for entry in raw_response.get('results', {})]
         }
         human_readable = tableToMarkdown(t=context_entry.get(
-            f'AlienVaultOTX.Pulses(val.ID && val.ID == obj.ID && '
-            f'val.Modified && val.Modified == obj.Modified)'),
+            'AlienVaultOTX.Pulses(val.ID && val.ID == obj.ID && '
+            'val.Modified && val.Modified == obj.Modified)'),
             name=title)
 
         return human_readable, context_entry, raw_response
@@ -593,7 +593,7 @@ def alienvault_get_pulse_details_command(client: Client, pulse_id: str) -> Tuple
     if raw_response:
         title = f'{INTEGRATION_NAME} - pulse id details'
         context_entry: dict = {
-            f'AlienVaultOTX.Pulses(val.ID && val.ID == obj.ID)': {
+            'AlienVaultOTX.Pulses(val.ID && val.ID == obj.ID)': {
                 'Description': raw_response.get('description'),
                 'Created': raw_response.get('created'),
                 'Author': {
@@ -606,7 +606,7 @@ def alienvault_get_pulse_details_command(client: Client, pulse_id: str) -> Tuple
             }
         }
         human_readable = tableToMarkdown(t=context_entry.get(
-            f'AlienVaultOTX.Pulses(val.ID && val.ID == obj.ID)'),
+            'AlienVaultOTX.Pulses(val.ID && val.ID == obj.ID)'),
             name=title)
 
         return human_readable, context_entry, raw_response

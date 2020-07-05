@@ -526,7 +526,7 @@ script:
     - contextPath: Cherwell.BusinessObjectInfo.BusinessObjectName
       description: Business object name.
       type: String
-  dockerimage: demisto/python3:3.7.2.214
+  dockerimage: demisto/python3:3.8.3.8715
   isfetch: true
   runonce: false
   script: '-'

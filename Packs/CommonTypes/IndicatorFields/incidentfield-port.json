@@ -32,7 +32,9 @@
     "hidden": false,
     "associatedTypes": [
         "IP",
-        "IPv6"
+        "IPv6",
+        "Domain",
+        "URL"
     ],
     "systemAssociatedTypes": null,
     "associatedToAll": false,

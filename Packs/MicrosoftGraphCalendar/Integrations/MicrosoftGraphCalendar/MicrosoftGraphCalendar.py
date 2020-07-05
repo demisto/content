@@ -384,7 +384,7 @@ def create_event_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, 
     # display the new event and it's properties
     event_readable, event_outputs = parse_events(event)
     human_readable = tableToMarkdown(
-        name=f"Event was created successfully:",
+        name="Event was created successfully:",
         t=event_readable,
         headers=EVENT_HEADERS,
         removeNull=True
@@ -440,7 +440,7 @@ def delete_event_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, 
     event_data['Deleted'] = True  # add a field with the members to the event
     entry_context = {f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID === obj.ID)': event_data}
 
-    human_readable = f'Event was deleted successfully.'
+    human_readable = 'Event was deleted successfully.'
     return human_readable, entry_context, NO_OUTPUTS
 
 

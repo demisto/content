@@ -1,7 +1,6 @@
 commonfields:
-  elasticcommonfields: {}
   id: CreateIncidentsForEvaluateMLModllAtProduction
-  version: 20
+  version: -1
 name: CreateIncidentsForEvaluateMLModllAtProduction
 script: |+
   import random, base64, pickle
@@ -73,6 +72,7 @@ outputs:
 scripttarget: 0
 subtype: python2
 runonce: false
-dockerimage: demisto/python:2.7.16.286
+dockerimage: demisto/python:2.7.18.9326
+comment: ''
 runas: DBotWeakRole
 fromversion: 4.5.0

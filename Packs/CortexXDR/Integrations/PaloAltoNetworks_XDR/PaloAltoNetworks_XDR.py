@@ -629,6 +629,197 @@ class Client(BaseClient):
 
         return reply.get('reply').get('data', [])
 
+    def blacklist_files(self, hash_list, comment=None):
+        request_data: Dict[str, Any] = {"hash_list": hash_list}
+        if comment:
+            request_data["comment"] = comment
+
+        self._headers['content-type'] = 'application/json'
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/hash_exceptions/blacklist/',
+            json_data={'request_data': request_data},
+            ok_codes=(200, 201),
+        )
+        return reply.get('reply')
+
+    def whitelist_files(self, hash_list, comment=None):
+        request_data: Dict[str, Any] = {"hash_list": hash_list}
+        if comment:
+            request_data["comment"] = comment
+
+        self._headers['content-type'] = 'application/json'
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/hash_exceptions/whitelist/',
+            json_data={'request_data': request_data},
+            ok_codes=(201, 200),
+        )
+        return reply.get('reply')
+
+    def quarantine_files(self, endpoint_id_list, file_path, file_hash):
+        request_data: Dict[str, Any] = {}
+        filters = []
+        if endpoint_id_list:
+            filters.append({
+                'field': 'endpoint_id_list',
+                'operator': 'in',
+                'value': endpoint_id_list
+            })
+
+        if filters:
+            request_data['filters'] = filters
+
+        request_data['file_path'] = file_path
+        request_data['file_hash'] = file_hash
+
+        self._headers['content-type'] = 'application/json'
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/endpoints/quarantine/',
+            json_data={'request_data': request_data},
+            ok_codes=(200, 201)
+        )
+
+        return reply.get('reply')
+
+    def restore_file(self, file_hash, endpoint_id=None):
+        request_data: Dict[str, Any] = {'file_hash': file_hash}
+        request_data['endpoint_id'] = endpoint_id
+
+        self._headers['content-type'] = 'application/json'
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/endpoints/restore/',
+            json_data={'request_data': request_data},
+            ok_codes=(200, 201),
+        )
+        return reply.get('reply')
+
+    def endpoint_scan(self, endpoint_id_list=None, dist_name=None, gte_first_seen=None, gte_last_seen=None,
+                      lte_first_seen=None,
+                      lte_last_seen=None, ip_list=None, group_name=None, platform=None, alias=None, isolate=None,
+                      hostname=None):
+        request_data: Dict[str, Any] = {}
+        filters = []
+
+        if endpoint_id_list:
+            filters.append({
+                'field': 'endpoint_id_list',
+                'operator': 'in',
+                'value': endpoint_id_list
+            })
+
+        if dist_name:
+            filters.append({
+                'field': 'dist_name',
+                'operator': 'in',
+                'value': dist_name
+            })
+
+        if ip_list:
+            filters.append({
+                'field': 'ip_list',
+                'operator': 'in',
+                'value': ip_list
+            })
+
+        if group_name:
+            filters.append({
+                'field': 'group_name',
+                'operator': 'in',
+                'value': group_name
+            })
+
+        if platform:
+            filters.append({
+                'field': 'platform',
+                'operator': 'in',
+                'value': platform
+            })
+
+        if alias:
+            filters.append({
+                'field': 'alias_name',
+                'operator': 'in',
+                'value': alias
+            })
+
+        if isolate:
+            filters.append({
+                'field': 'isolate',
+                'operator': 'in',
+                'value': [isolate]
+            })
+
+        if hostname:
+            filters.append({
+                'field': 'hostname',
+                'operator': 'in',
+                'value': hostname
+            })
+
+        if gte_first_seen:
+            filters.append({
+                'field': 'first_seen',
+                'operator': 'gte',
+                'value': gte_first_seen
+            })
+
+        if lte_first_seen:
+            filters.append({
+                'field': 'first_seen',
+                'operator': 'lte',
+                'value': lte_first_seen
+            })
+
+        if gte_last_seen:
+            filters.append({
+                'field': 'last_seen',
+                'operator': 'gte',
+                'value': gte_last_seen
+            })
+
+        if lte_last_seen:
+            filters.append({
+                'field': 'last_seen',
+                'operator': 'lte',
+                'value': lte_last_seen
+            })
+
+        if filters:
+            request_data['filters'] = filters
+        else:
+            request_data['filters'] = 'all'
+
+        self._headers['content-type'] = 'application/json'
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/endpoints/scan/',
+            json_data={'request_data': request_data},
+            ok_codes=(200, 201)
+        )
+        return reply.get('reply')
+
+    def get_quarantine_status(self, file_path, file_hash, endpoint_id):
+        request_data: Dict[str, Any] = {'files': [{
+            'endpoint_id': endpoint_id,
+            'file_path': file_path,
+            'file_hash': file_hash
+        }]}
+        self._headers['content-type'] = 'application/json'
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/quarantine/status/',
+            json_data={'request_data': request_data}
+        )
+
+        reply_content = reply.get('reply')
+        if isinstance(reply_content, list):
+            return reply_content[0]
+        else:
+            raise TypeError(f'got unexpected response from api: {reply_content}\n')
+
 
 def get_incidents_command(client, args):
     """
@@ -1265,6 +1456,150 @@ def create_distribution_command(client, args):
     )
 
 
+def blacklist_files_command(client, args):
+    hash_list = argToList(args.get('hash_list'))
+    comment = args.get('comment')
+
+    client.blacklist_files(hash_list=hash_list, comment=comment)
+    markdown_data = [{'fileHash': file_hash} for file_hash in hash_list]
+
+    return (
+        tableToMarkdown('Blacklist Files', markdown_data, headers=['fileHash'], headerTransform=pascalToSpace),
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.blackList.fileHash(val.fileHash == obj.fileHash)': hash_list
+        },
+        argToList(hash_list)
+    )
+
+
+def whitelist_files_command(client, args):
+    hash_list = argToList(args.get('hash_list'))
+    comment = args.get('comment')
+
+    client.whitelist_files(hash_list=hash_list, comment=comment)
+    markdown_data = [{'fileHash': file_hash} for file_hash in hash_list]
+    return (
+        tableToMarkdown('Whitelist Files', markdown_data, ['fileHash'], headerTransform=pascalToSpace),
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.whiteList.fileHash(val.fileHash == obj.fileHash)': hash_list
+        },
+        argToList(hash_list)
+    )
+
+
+def quarantine_files_command(client, args):
+    endpoint_id_list = argToList(args.get("endpoint_id_list"))
+    file_path = args.get("file_path")
+    file_hash = args.get("file_hash")
+
+    reply = client.quarantine_files(
+        endpoint_id_list=endpoint_id_list,
+        file_path=file_path,
+        file_hash=file_hash
+    )
+    output = {
+        'endpointIdList': endpoint_id_list,
+        'filePath': file_path,
+        'fileHash': file_hash,
+        'actionId': reply.get("action_id")
+    }
+
+    return (
+        tableToMarkdown('Quarantine files', output, headers=[*output],
+                        headerTransform=pascalToSpace),
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.quarantineFiles.actionIds(val.actionId === obj.actionId)': output
+        },
+        reply
+    )
+
+
+def restore_file_command(client, args):
+    file_hash = args.get('file_hash')
+    endpoint_id = args.get('endpoint_id')
+
+    reply = client.restore_file(
+        file_hash=file_hash,
+        endpoint_id=endpoint_id
+    )
+    action_id = reply.get("action_id")
+
+    return (
+        tableToMarkdown('Restore files', {'Action Id': action_id}, ['Action Id']),
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.restoredFiles.actionId(val.actionId == obj.actionId)': action_id
+        },
+        action_id
+    )
+
+
+def get_quarantine_status_command(client, args):
+    file_path = args.get('file_path')
+    file_hash = args.get('file_hash')
+    endpoint_id = args.get('endpoint_id')
+
+    reply = client.get_quarantine_status(
+        file_path=file_path,
+        file_hash=file_hash,
+        endpoint_id=endpoint_id
+    )
+    output = {
+        'status': reply['status'],
+        'endpointId': reply['endpoint_id'],
+        'filePath': reply['file_path'],
+        'fileHash': reply['file_hash']
+    }
+
+    return (
+        tableToMarkdown('Quarantine files', output, headers=[*output], headerTransform=pascalToSpace),
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.quarantineFiles.status(val.fileHash === obj.fileHash &&'
+            f'val.endpointId === obj.endpointId && val.filePath === obj.filePath)': output
+        },
+        reply
+    )
+
+
+def endpoint_scan_command(client, args):
+    endpoint_id_list = args.get('endpoint_id_list')
+    dist_name = args.get('dist_name')
+    gte_first_seen = args.get('gte_first_seen')
+    gte_last_seen = args.get('gte_last_seen')
+    lte_first_seen = args.get('lte_first_seen')
+    lte_last_seen = args.get('lte_last_seen')
+    ip_list = args.get('ip_list')
+    group_name = args.get('group_name')
+    platform = args.get('platform')
+    alias = args.get('alias')
+    isolate = args.get('isolate')
+    hostname = args.get('hostname')
+
+    reply = client.endpoint_scan(
+        endpoint_id_list=argToList(endpoint_id_list),
+        dist_name=dist_name,
+        gte_first_seen=gte_first_seen,
+        gte_last_seen=gte_last_seen,
+        lte_first_seen=lte_first_seen,
+        lte_last_seen=lte_last_seen,
+        ip_list=ip_list,
+        group_name=group_name,
+        platform=platform,
+        alias=alias,
+        isolate=isolate,
+        hostname=hostname
+    )
+
+    action_id = reply.get("action_id")
+
+    return (
+        tableToMarkdown('Endpoint scan', {'Action Id': action_id}, ['Action Id']),
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.endpointScan.actionId(val.actionId == obj.actionId)': action_id
+        },
+        reply
+    )
+
+
 def fetch_incidents(client, first_fetch_time, last_run: dict = None):
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
@@ -1383,6 +1718,23 @@ def main():
         elif demisto.command() == 'xdr-get-audit-agent-reports':
             return_outputs(*get_audit_agent_reports_command(client, demisto.args()))
 
+        elif demisto.command() == 'xdr-blacklist-files':
+            return_outputs(*blacklist_files_command(client, demisto.args()))
+
+        elif demisto.command() == 'xdr-whitelist-files':
+            return_outputs(*whitelist_files_command(client, demisto.args()))
+
+        elif demisto.command() == 'xdr-quarantine-files':
+            return_outputs(*quarantine_files_command(client, demisto.args()))
+
+        elif demisto.command() == 'xdr-get-quarantine-status':
+            return_outputs(*get_quarantine_status_command(client, demisto.args()))
+
+        elif demisto.command() == 'xdr-restore-file':
+            return_outputs(*restore_file_command(client, demisto.args()))
+
+        elif demisto.command() == 'xdr-endpoint-scan':
+            return_outputs(*endpoint_scan_command(client, demisto.args()))
     except Exception as err:
         if demisto.command() == 'fetch-incidents':
             LOG(str(err))

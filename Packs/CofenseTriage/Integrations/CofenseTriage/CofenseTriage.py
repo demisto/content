@@ -138,7 +138,7 @@ def test_function() -> None:
 
     except Exception as ex:
         demisto.debug(str(ex))
-        return_error(f'API call to Cofense Triage failed, please check URL, or integration parameters.')
+        return_error('API call to Cofense Triage failed, please check URL, or integration parameters.')
 
 
 def fetch_reports() -> None:
@@ -260,7 +260,7 @@ def search_reports(subject=None, url=None, file_hash=None, reported_at=None, cre
 
 
 def get_all_reporters(time_frame) -> list:
-    res = http_request(f'/reporters', params={'start_date': time_frame})
+    res = http_request('/reporters', params={'start_date': time_frame})
     if not isinstance(res, list):
         res = [res]
     reporters = [reporter.get('email') for reporter in res]
