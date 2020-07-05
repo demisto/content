@@ -2,6 +2,7 @@ id: PCAP Parsing And Indicator Enrichment Test
 version: -1
 fromversion: 5.0.0
 name: PCAP Parsing And Indicator Enrichment Test
+description: Test playbook
 starttaskid: "0"
 tasks:
   "0":
@@ -14,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -86,6 +88,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -111,6 +114,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
