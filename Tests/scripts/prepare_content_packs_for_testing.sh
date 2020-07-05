@@ -39,7 +39,9 @@ if [ ! -n "${NIGHTLY}" ]; then
     CONTENT_PACKS_TO_INSTALL_FILE="./Tests/content_packs_to_install.txt"
 
   if [ -n "${CONTRIB_BRANCH}" ]; then
-    echo "$PACK" > $CONTENT_PACKS_TO_INSTALL_FILE
+    echo "$PACK"
+    echo "$PACK" > "$CONTENT_PACKS_TO_INSTALL_FILE"
+    cat $CONTENT_PACKS_TO_INSTALL_FILE
 
   if [ ! -f $CONTENT_PACKS_TO_INSTALL_FILE ]; then
     echo "Could not find file $CONTENT_PACKS_TO_INSTALL_FILE."
