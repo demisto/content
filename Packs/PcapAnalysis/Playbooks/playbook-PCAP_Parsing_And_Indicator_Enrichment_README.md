@@ -49,7 +49,7 @@ This playbook does not use any integrations.
 | InternalEmailAddresses | The internal email addresses that were found in the PCAP. | string |
 | ExternalUrls | The external URLs that were found in the PCAP. | String |
 | InternalUrls | The internal URLs that were found in the PCAP. | string |
-| PcapResults.Protocols | List of protocls found in the PCAP. | string |
+| PcapResults.Protocols | List of protocols found in the PCAP. | string |
 | DestinationTcpPorts | A list of destination TCP ports that were found in the PCAP. | string |
 | DestinationUdpPorts | A list of destination UDP ports that were found in the PCAP. | String |
 

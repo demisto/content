@@ -2262,7 +2262,7 @@ outputs:
   description: The internal URLs that were found in the PCAP.
   type: string
 - contextPath: PcapResults.Protocols
-  description: List of protocls found in the PCAP.
+  description: List of protocols found in the PCAP.
   type: string
 - contextPath: DestinationTcpPorts
   description: A list of destination TCP ports that were found in the PCAP.
