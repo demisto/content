@@ -55,4 +55,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![PCAP Parsing And Indicator Enrichment](Insert the link to your image here)
+![PCAP Parsing And Indicator Enrichment](https://raw.githubusercontent.com/demisto/content/8b888195dd41abbdba18f3abc0638655ed216da8/Packs/PcapAnalysis/doc_files/PCAP_Parsing_And_Indicator_Enrichment.png)
