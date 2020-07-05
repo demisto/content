@@ -596,7 +596,8 @@ def parse_indicators(sub_indicator_list, full_indicator_list, tags):
 
         indicator['value'] = indicator['indicator']
         indicator['fields'] = {
-            "description": indicator["stix_package_short_description"]
+            "description": indicator["stix_package_short_description"],
+            "tags": tags
         }
 
         temp_copy = indicator.copy()
@@ -604,7 +605,6 @@ def parse_indicators(sub_indicator_list, full_indicator_list, tags):
         del indicator['indicator']
 
         indicator['rawJSON'] = temp_copy
-        indicator['tags'] = tags
         parsed_indicator_list.append(indicator)
         full_indicator_list.append(indicator['value'])
 
