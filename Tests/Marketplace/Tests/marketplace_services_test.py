@@ -707,13 +707,6 @@ class TestSetDependencies:
                         'author': 'Cortex XSOAR',
                         'name': 'ServiceNow',
                         'certification': 'certified'
-                    },
-                    'Ipstack': {
-                        'mandatory': False,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'Ipstack',
-                        'certification': 'certified'
                     }
                 }
             }
@@ -776,3 +769,47 @@ class TestSetDependencies:
             p.set_pack_dependencies(metadata, generated_dependencies)
 
         assert str(e.value) == "New mandatory dependencies ['SlackV2'] were found in the core pack HelloWorld"
+
+    def test_set_dependencies_core_pack_mandatory_dependency_override(self):
+        """
+           Given:
+               - Core pack with new dependencies
+               - Mandatory dependencies that are not core packs that were overridden in the user metadata
+           When:
+               - Formatting metadata
+           Then:
+               - Metadata should be formatted correctly
+       """
+        from Tests.Marketplace.marketplace_services import Pack
+
+        metadata = self.get_pack_metadata()
+
+        generated_dependencies = {
+            'HelloWorld': {
+                'dependencies': {
+                    'CommonPlaybooks': {
+                        'mandatory': True,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'ServiceNow',
+                        'certification': 'certified'
+                    },
+                    'Ipstack': {
+                        'mandatory': True,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'Ipstack',
+                        'certification': 'certified'
+                    }
+                }
+            }
+        }
+
+        p = Pack('HelloWorld', 'dummy_path')
+        dependencies = json.dumps(metadata['dependencies'])
+        dependencies = json.loads(dependencies)
+        dependencies.update(generated_dependencies['HelloWorld']['dependencies'])
+
+        p.set_pack_dependencies(metadata, generated_dependencies)
+
+        assert metadata['dependencies'] == dependencies
