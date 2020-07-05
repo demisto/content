@@ -980,7 +980,7 @@ def fetch_indicators_command(client):
             indicators.append({
                 'value': indicator,
                 'type': item.get('type'),
-                'tags': client.tags,
+                'fields': {'tags': client.tags},
                 'rawJSON': item,
             })
     return indicators

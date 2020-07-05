@@ -113,4 +113,4 @@ def test_tags_parameter(mocker, tags):
         raw_indicators = json.load(f)
         mocker.patch.object(client, 'build_iterator', return_value=raw_indicators)
         res = fetch_indicators_command(client)
-        assert tags == res[0].get('tags')
+        assert tags == res[0]['fields']['tags']
