@@ -1213,7 +1213,8 @@ def create_test_file(is_nightly, skip_save=False):
         print("Getting changed files from the branch: {0}".format(branch_name))
         if branch_name != 'master':
             files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
-
+            packs_diff = tools.run_command("git diff --name-status HEAD -- Packs")
+            files_string += f"\n{packs_diff}"
         else:
             commit_string = tools.run_command("git log -n 2 --pretty='%H'")
             commit_string = commit_string.replace("'", "")
