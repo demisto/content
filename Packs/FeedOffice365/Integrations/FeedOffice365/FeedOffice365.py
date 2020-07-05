@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple, Any, Callable
+from typing import Dict, List, Tuple, Any, Callable, Optional
 
 import uuid
 import urllib3
@@ -37,7 +37,7 @@ def build_urls_dict(regions_list: list, services_list: list, unique_id) -> List[
     return urls_list
 
 
-class Client(BaseClient):
+class Client:
     """
     Client to use in the Office 365 Feed integration. Overrides BaseClient.
     Office 365 IP address and URL web service announcement:
@@ -45,13 +45,15 @@ class Client(BaseClient):
     https://techcommunity.microsoft.com/t5/Office-365-Blog/Announcing-Office-365-endpoint-categories-and-Office-365-IP/ba-p/177638
     """
 
-    def __init__(self, urls_list: list, insecure: bool = False):
+    def __init__(self, urls_list: list, insecure: bool = False, tags: Optional[list] = None):
         """
         Implements class for Office 365 feeds.
         :param urls_list: List of url, regions and service of each service.
         :param insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
         """
-        super().__init__(base_url=urls_list, verify=not insecure)
+        self._urls_list: List[dict] = urls_list
+        self._verify: bool = insecure
+        self.tags = [] if tags is None else tags
         self._proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
 
     def build_iterator(self) -> List:
@@ -61,8 +63,8 @@ class Client(BaseClient):
             A list of objects, containing the indicators.
         """
         result = []
-        for feed_obj in self._base_url:
-            feed_url = feed_obj.get('FeedURL')
+        for feed_obj in self._urls_list:
+            feed_url = feed_obj.get('FeedURL', '')
             region = feed_obj.get('Region')
             service = feed_obj.get('Service')
             try:
@@ -76,9 +78,9 @@ class Client(BaseClient):
                 indicators = [i for i in data if 'ips' in i or 'urls' in i]  # filter empty entries and add metadata]
                 for i in indicators:  # add relevant fields of services
                     i.update({
-                        "Region": region,
-                        "Service": service,
-                        "FeedURL": feed_url
+                        'Region': region,
+                        'Service': service,
+                        'FeedURL': feed_url
                     })
                 result.extend(indicators)
             except requests.exceptions.SSLError as err:
@@ -178,12 +180,13 @@ def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1)
                     indicator_mapping_fields["office365required"] = item.get('required')
                 if item.get('notes'):
                     indicator_mapping_fields["description"] = item.get('notes')
+                indicator_mapping_fields['tags'] = client.tags
 
                 indicators.append({
-                    "value": value,
-                    "type": type_,
-                    "rawJSON": raw_data,
-                    "fields": indicator_mapping_fields
+                    'value': value,
+                    'type': type_,
+                    'rawJSON': raw_data,
+                    'fields': indicator_mapping_fields
                 })
 
     return indicators
@@ -226,17 +229,19 @@ def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
+    params = demisto.params()
     unique_id = str(uuid.uuid4())
-    regions_list = argToList(demisto.params().get('regions'))
-    services_list = argToList(demisto.params().get('services'))
+    regions_list = argToList(params.get('regions'))
+    services_list = argToList(params.get('services'))
     urls_list = build_urls_dict(regions_list, services_list, unique_id)
-    insecure = demisto.params().get('insecure', False)
+    insecure = params.get('insecure', False)
+    tags = argToList(params.get('feedTags'))
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
     try:
-        client = Client(urls_list, insecure)
+        client = Client(urls_list, insecure, tags)
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
             'test-module': test_module,
             'office365-get-indicators': get_indicators_command

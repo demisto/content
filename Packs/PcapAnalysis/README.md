@@ -2,7 +2,7 @@ A common use case in incident response and forensics is analyzing network traffi
 The PCAP Analysis pack includes the PCAP Miner V2 script as well as playbooks that automate the process of searching for and summarizing data within PCAP files, extracting indicators, decrypting traffic, and more. Cortex XSOAR can leverage the power of Wireshark to parse, search, and extract data from PCAP files. 
 With this content pack, you can significantly reduce the time and effort by automating the process of analysing PCAP files and not miss out on critical data that can be extracted from them.
 
-#####What does this pack do?
+##### What does this pack do?
 
 The script and playbooks included in this pack help you automate repetitive tasks associated with PCAP files:
 Searching PCAP files for common objects such as IP addresses, ports, protocols, or custom search filters just like in Wireshark.

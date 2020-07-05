@@ -540,3 +540,276 @@ class TestLoadUserMetadata:
         assert print_error_mock.call_count == 1
         assert not task_status
         assert user_metadata == {}
+
+
+class TestSetDependencies:
+
+    @staticmethod
+    def get_pack_metadata():
+        metadata_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data', 'metadata.json')
+        with open(metadata_path, 'r') as metadata_file:
+            pack_metadata = json.load(metadata_file)
+
+        return pack_metadata
+
+    def test_set_dependencies_new_dependencies(self):
+        """
+           Given:
+               - Pack with user dependencies
+               - New generated dependencies
+           When:
+               - Formatting metadata
+           Then:
+               - The dependencies in the metadata file should be merged with the generated ones
+       """
+        from Tests.Marketplace.marketplace_services import Pack
+
+        metadata = self.get_pack_metadata()
+        generated_dependencies = {
+            'ImpossibleTraveler': {
+                'dependencies': {
+                    'HelloWorld': {
+                        'mandatory': False,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'HelloWorld',
+                        'certification': 'certified'
+                    },
+                    'ServiceNow': {
+                        'mandatory': True,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'ServiceNow',
+                        'certification': 'certified'
+                    },
+                    'Ipstack': {
+                        'mandatory': False,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'Ipstack',
+                        'certification': 'certified'
+                    },
+                    'Active_Directory_Query': {
+                        'mandatory': True,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'Active Directory Query v2',
+                        'certification': 'certified'
+                    }
+                }
+            }
+        }
+
+        p = Pack('ImpossibleTraveler', 'dummy_path')
+        dependencies = json.dumps(metadata['dependencies'])
+        dependencies = json.loads(dependencies)
+        dependencies.update(generated_dependencies['ImpossibleTraveler']['dependencies'])
+
+        p.set_pack_dependencies(metadata, generated_dependencies)
+
+        assert metadata['dependencies'] == dependencies
+
+    def test_set_dependencies_no_user_dependencies(self):
+        """
+           Given:
+               - Pack without user dependencies
+               - New generated dependencies
+           When:
+               - Formatting metadata
+           Then:
+               - The dependencies in the metadata file should be the generated ones
+       """
+        from Tests.Marketplace.marketplace_services import Pack
+
+        metadata = self.get_pack_metadata()
+
+        generated_dependencies = {
+            'ImpossibleTraveler': {
+                'dependencies': {
+                    'HelloWorld': {
+                        'mandatory': False,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'HelloWorld',
+                        'certification': 'certified'
+                    },
+                    'ServiceNow': {
+                        'mandatory': True,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'ServiceNow',
+                        'certification': 'certified'
+                    },
+                    'Ipstack': {
+                        'mandatory': False,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'Ipstack',
+                        'certification': 'certified'
+                    },
+                    'Active_Directory_Query': {
+                        'mandatory': True,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'Active Directory Query v2',
+                        'certification': 'certified'
+                    }
+                }
+            }
+        }
+
+        metadata['dependencies'] = {}
+        p = Pack('ImpossibleTraveler', 'dummy_path')
+
+        p.set_pack_dependencies(metadata, generated_dependencies)
+
+        assert metadata['dependencies'] == generated_dependencies['ImpossibleTraveler']['dependencies']
+
+    def test_set_dependencies_no_generated_dependencies(self):
+        """
+           Given:
+               - Pack with user dependencies
+               - No generated dependencies
+           When:
+               - Formatting metadata
+           Then:
+               - The dependencies in the metadata file should be the user ones
+       """
+        from Tests.Marketplace.marketplace_services import Pack
+
+        metadata = self.get_pack_metadata()
+        dependencies = metadata['dependencies']
+        p = Pack('ImpossibleTraveler', 'dummy_path')
+        p.set_pack_dependencies(metadata, {})
+
+        assert metadata['dependencies'] == dependencies
+
+    def test_set_dependencies_core_pack(self):
+        """
+           Given:
+               - Core pack with new dependencies
+               - No mandatory dependencies that are not core packs
+           When:
+               - Formatting metadata
+           Then:
+               - The dependencies in the metadata file should be merged
+       """
+        from Tests.Marketplace.marketplace_services import Pack
+
+        metadata = self.get_pack_metadata()
+
+        generated_dependencies = {
+            'HelloWorld': {
+                'dependencies': {
+                    'CommonPlaybooks': {
+                        'mandatory': True,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'ServiceNow',
+                        'certification': 'certified'
+                    }
+                }
+            }
+        }
+
+        metadata['dependencies'] = {}
+        metadata['name'] = 'HelloWorld'
+        metadata['id'] = 'HelloWorld'
+        p = Pack('HelloWorld', 'dummy_path')
+        dependencies = json.dumps(metadata['dependencies'])
+        dependencies = json.loads(dependencies)
+        dependencies.update(generated_dependencies['HelloWorld']['dependencies'])
+
+        p.set_pack_dependencies(metadata, generated_dependencies)
+
+        assert metadata['dependencies'] == dependencies
+
+    def test_set_dependencies_core_pack_new_mandatory_dependency(self):
+        """
+           Given:
+               - Core pack with new dependencies
+               - Mandatory dependencies that are not core packs
+           When:
+               - Formatting metadata
+           Then:
+               - An exception should be raised
+       """
+        from Tests.Marketplace.marketplace_services import Pack
+
+        metadata = self.get_pack_metadata()
+
+        generated_dependencies = {
+            'HelloWorld': {
+                'dependencies': {
+                    'CommonPlaybooks': {
+                        'mandatory': True,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'ServiceNow',
+                        'certification': 'certified'
+                    },
+                    'SlackV2': {
+                        'mandatory': True,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'Ipstack',
+                        'certification': 'certified'
+                    }
+                }
+            }
+        }
+
+        metadata['dependencies'] = {}
+        p = Pack('HelloWorld', 'dummy_path')
+        dependencies = json.dumps(metadata['dependencies'])
+        dependencies = json.loads(dependencies)
+        dependencies.update(generated_dependencies['HelloWorld']['dependencies'])
+
+        with pytest.raises(Exception) as e:
+            p.set_pack_dependencies(metadata, generated_dependencies)
+
+        assert str(e.value) == "New mandatory dependencies ['SlackV2'] were found in the core pack HelloWorld"
+
+    def test_set_dependencies_core_pack_mandatory_dependency_override(self):
+        """
+           Given:
+               - Core pack with new dependencies
+               - Mandatory dependencies that are not core packs that were overridden in the user metadata
+           When:
+               - Formatting metadata
+           Then:
+               - Metadata should be formatted correctly
+       """
+        from Tests.Marketplace.marketplace_services import Pack
+
+        metadata = self.get_pack_metadata()
+
+        generated_dependencies = {
+            'HelloWorld': {
+                'dependencies': {
+                    'CommonPlaybooks': {
+                        'mandatory': True,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'ServiceNow',
+                        'certification': 'certified'
+                    },
+                    'Ipstack': {
+                        'mandatory': True,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'Ipstack',
+                        'certification': 'certified'
+                    }
+                }
+            }
+        }
+
+        p = Pack('HelloWorld', 'dummy_path')
+        dependencies = json.dumps(metadata['dependencies'])
+        dependencies = json.loads(dependencies)
+        dependencies.update(generated_dependencies['HelloWorld']['dependencies'])
+
+        p.set_pack_dependencies(metadata, generated_dependencies)
+
+        assert metadata['dependencies'] == dependencies

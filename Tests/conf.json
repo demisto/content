@@ -2,10 +2,14 @@
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
-	{
+        {
             "integrations": "Humio",
             "playbookID": "Humio-Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "ServiceDeskPlus",
+            "playbookID": "Service Desk Plus Test"
         },
         {
             "integrations": "Group-IB TDS Polygon",
@@ -75,7 +79,6 @@
             "playbookID": "JSON_Feed_Test",
             "fromversion": "5.5.0",
             "instance_names": "JSON Feed no_auto_detect"
-
         },
         {
             "integrations": "JSON Feed",
@@ -595,7 +598,7 @@
         },
         {
             "integrations": "QRadar",
-            "playbookID" :  "test playbook - QRadarCorreltaions",
+            "playbookID": "test playbook - QRadarCorreltaions",
             "timeout": 600,
             "fromversion": "5.0.0"
         },
@@ -752,7 +755,10 @@
         },
         {
             "playbookID": "PAN-OS - Block IP and URL - External Dynamic List v2 Test",
-            "integrations": ["Panorama", "palo_alto_networks_pan_os_edl_management"],
+            "integrations": [
+                "Panorama",
+                "palo_alto_networks_pan_os_edl_management"
+            ],
             "instance_names": "palo_alto_firewall_9.0",
             "fromversion": "4.0.0"
         },
@@ -1901,7 +1907,7 @@
                 "Rasterize"
             ]
         },
-                {
+        {
             "playbookID": "Phishing - Core - Test - Incident Starter",
             "fromversion": "6.0.0",
             "timeout": 1700,
@@ -2049,11 +2055,18 @@
             ]
         },
         {
-            "integrations": ["epo", "McAfee Active Response"],
+            "integrations": [
+                "epo",
+                "McAfee Active Response"
+            ],
             "playbookID": "Endpoint data collection test",
             "timeout": 500
         },
-        {"integrations": ["epo", "McAfee Active Response"],
+        {
+            "integrations": [
+                "epo",
+                "McAfee Active Response"
+            ],
             "playbookID": "MAR - Endpoint data collection test",
             "timeout": 500
         },
@@ -2062,7 +2075,10 @@
             "playbookID": "DuoAdmin API test playbook"
         },
         {
-            "integrations": ["TAXII Server", "TAXIIFeed"],
+            "integrations": [
+                "TAXII Server",
+                "TAXIIFeed"
+            ],
             "playbookID": "TAXII_Feed_Test",
             "fromversion": "5.5.0",
             "timeout": 300
@@ -2159,7 +2175,10 @@
         },
         {
             "playbookID": "PAN-OS EDL Setup v3 Test",
-            "integrations": ["Panorama", "palo_alto_networks_pan_os_edl_management"],
+            "integrations": [
+                "Panorama",
+                "palo_alto_networks_pan_os_edl_management"
+            ],
             "instance_names": "palo_alto_firewall_9.0",
             "timeout": 300
         },
@@ -2761,6 +2780,10 @@
             "playbookID": "RiskSense Get Apps Detail - Test"
         },
         {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Apply Tag - Test"
+        },
+        {
             "integrations": "Indeni",
             "playbookID": "Indeni_test",
             "fromversion": "5.0.0"
@@ -2820,7 +2843,10 @@
             "playbookID": "IBM Resilient Systems Test"
         },
         {
-            "integrations": ["Prisma Access", "Prisma Access Egress IP feed"],
+            "integrations": [
+                "Prisma Access",
+                "Prisma Access Egress IP feed"
+            ],
             "playbookID": "Prisma_Access_Egress_IP_Feed-Test",
             "timeout": 60000,
             "fromversion": "5.5.0",
@@ -2868,7 +2894,13 @@
         },
         {
             "playbookID": "PCAP Search test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "VirusTotal",
+            "instance_names": "virus_total_general",
+            "playbookID": "PCAP Parsing And Indicator Enrichment Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Workday",
@@ -2884,12 +2916,16 @@
             "playbookID": "hashIncidentFields-test",
             "fromversion": "4.5.0",
             "timeout": 60000
+        },
+        {
+            "integrations": "TruSTAR v2",
+            "playbookID": "TruSTAR v2-Test",
+            "timeout": 500
         }
     ],
     "skipped_tests": {
         "PAN-OS DAG Configuration Test": "Issue 60693",
         "Phishing Classifier V2 ML Test": "Issue 26066",
-        "DuoAdmin API test playbook": "Issue 24937",
         "Workday - Test": "Issue 25896",
         "CuckooTest": "Issue 25601",
         "RedLockTest": "Issue 24600",
@@ -2906,7 +2942,7 @@
         "Symantec Deepsight Test": "Issue 22971",
         "Cybereason Test": "Issue 22683",
         "Bluecat Address Manager test": "Issue 22616",
-        "test-Expanse": "Expanse should provide domain thaPlaybook-Create Phishing Classifier V2 ML Tet they have in their system",
+        "test-Expanse": "Issue 26248",
         "TestProofpointFeed": "Issue 22229",
         "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
@@ -2939,18 +2975,17 @@
         "GCS Bucket Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "GCS Object Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "Send Email To Recipients": "used in EWS Mail Sender Test 2 as sub playbook",
-        "Cortex XDR - IOC - Test": "issue #25598",
-
-        "_comment": "~~~ DEPRECATED ~~~",
-        "Endpoint Enrichment - Generic v2 - Test": "DEPRECATED"
+        "Cortex XDR - IOC - Test": "issue #25598"
     },
     "skipped_integrations": {
+
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Symantec Management Center": "Issue 23960",
         "PerceptionPoint": "Issue 25795",
         "Infoblox": "Issue 25651",
         "Traps": "Issue 24122",
         "McAfee Advanced Threat Defense": "Issue 16909",
+        "CrowdStrike Falcon X": "Issue 26209",
         "Cisco Umbrella Investigate": "Issue 24338",
         "Deep Instinct": "The partner didn't provide an instance",
         "Cofense Triage v2": "No instance - partner integration",
@@ -3043,6 +3078,7 @@
         "VirusTotal - Private API": "Issue 22638",
 
         "_comment3": "~~~ QUOTA ISSUES ~~~",
+        "Bambenek Consulting Feed": "Issue 26184",
         "Joe Security": "Issue 25650",
         "JsonWhoIs": "Issue 25371: Out of quota",
         "XFE_v2": "Issue 22715",
@@ -3057,13 +3093,11 @@
         "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer",
         "SafeBreach v2": "it is a partner integration, no instance",
-        "CrowdStrike Falcon X": "No instance",
         "IllusiveNetworks": "supported by partner",
         "Humio": "supported by the partner",
         "Digital Guardian": "partner integration",
 
-
-         "_comment5": "~~~ OTHER ~~~",
+        "_comment5": "~~~ OTHER ~~~",
         "Cisco ASA": "Issue 25741",
         "Endace": "Issue 24304",
         "Pentera": "authentication method will not work with testing",
@@ -3219,6 +3253,7 @@
         "GCP Whitelist Feed"
     ],
     "docker_thresholds": {
+
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
