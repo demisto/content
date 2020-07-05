@@ -48,6 +48,7 @@ class Client(BaseClient):
              polling_timeout: timeout of the polling request in seconds. Default: 20
              proxy: Sets whether use proxy when sending requests
              threshold: The minimum score from the feed in order to to determine whether the indicator is malicious.
+             tags: A list of tags to add to indicators
         """
         if tags is None:
             tags = []
