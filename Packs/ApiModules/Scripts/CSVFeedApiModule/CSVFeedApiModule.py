@@ -13,7 +13,6 @@ from typing import Optional, Pattern, Dict, Any, Tuple, Union, List
 urllib3.disable_warnings()
 
 # Globals
-TAGS = 'feedTags'
 
 
 class Client(BaseClient):
@@ -21,7 +20,7 @@ class Client(BaseClient):
                  insecure: bool = False, credentials: dict = None, ignore_regex: str = None, encoding: str = 'latin-1',
                  delimiter: str = ',', doublequote: bool = True, escapechar: str = '',
                  quotechar: str = '"', skipinitialspace: bool = False, polling_timeout: int = 20, proxy: bool = False,
-                 **kwargs):
+                 feedTags: Optional[str] = None, **kwargs):
         """
         :param url: URL of the feed.
         :param feed_url_to_config: for each URL, a configuration of the feed that contains
@@ -63,6 +62,7 @@ class Client(BaseClient):
         :param polling_timeout: timeout of the polling request in seconds. Default: 20
         :param proxy: Sets whether use proxy when sending requests
         """
+        self.tags: List[str] = argToList(feedTags)
         if not credentials:
             credentials = {}
 
@@ -247,9 +247,7 @@ def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tup
     return fields_mapping
 
 
-def fetch_indicators_command(client: Client, default_indicator_type: str, auto_detect: bool, tags: list = None, **kwargs):
-    if tags is None:
-        tags = []
+def fetch_indicators_command(client: Client, default_indicator_type: str, auto_detect: bool, **kwargs):
     iterator = client.build_iterator(**kwargs)
     indicators = []
     config = client.feed_url_to_config or {}
@@ -273,7 +271,7 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
                         'rawJSON': raw_json,
                         'fields': create_fields_mapping(raw_json, mapping) if mapping else {}
                     }
-                    indicator['fields']['tags'] = tags
+                    indicator['fields']['tags'] = client.tags
                     indicators.append(indicator)
     return indicators
 
@@ -287,7 +285,7 @@ def get_indicators_command(client, args: dict, tags: Optional[List[str]] = None)
     except ValueError:
         raise ValueError('The limit argument must be a number.')
     auto_detect = demisto.params().get('auto_detect_type')
-    indicators_list = fetch_indicators_command(client, itype, auto_detect, tags)
+    indicators_list = fetch_indicators_command(client, itype, auto_detect)
     entry_result = indicators_list[:limit]
     hr = tableToMarkdown('Indicators', entry_result, headers=['value', 'type', 'fields'])
     return hr, {}, indicators_list
@@ -296,7 +294,6 @@ def get_indicators_command(client, args: dict, tags: Optional[List[str]] = None)
 def feed_main(feed_name, params=None, prefix=''):
     if not params:
         params = {k: v for k, v in demisto.params().items() if v is not None}
-    tags = argToList(params.get(TAGS))
     handle_proxy()
     client = Client(**params)
     command = demisto.command()
@@ -314,8 +311,7 @@ def feed_main(feed_name, params=None, prefix=''):
             indicators = fetch_indicators_command(
                 client,
                 params.get('indicator_type'),
-                params.get('auto_detect_type'),
-                tags=tags
+                params.get('auto_detect_type')
             )
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
@@ -323,7 +319,7 @@ def feed_main(feed_name, params=None, prefix=''):
         else:
             args = demisto.args()
             args['feed_name'] = feed_name
-            readable_output, outputs, raw_response = commands[command](client, args, tags)
+            readable_output, outputs, raw_response = commands[command](client, args)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         err_msg = f'Error in {feed_name} Integration - Encountered an issue with createIndicators' if \

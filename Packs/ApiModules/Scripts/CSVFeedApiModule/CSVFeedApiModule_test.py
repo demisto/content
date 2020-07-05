@@ -190,6 +190,7 @@ class TestTagsParam:
             client = Client(
                 url="https://ipstack.com",
                 feed_url_to_config=feed_url_to_config,
+                feedTags=tags
             )
             _, _, indicators = get_indicators_command(client, args, tags)
             assert tags == indicators[0]['fields']['tags']
@@ -225,6 +226,7 @@ class TestTagsParam:
             client = Client(
                 url="https://ipstack.com",
                 feed_url_to_config=feed_url_to_config,
+                feedTags=[]
             )
             _, _, indicators = get_indicators_command(client, args)
             assert [] == indicators[0]['fields']['tags']
