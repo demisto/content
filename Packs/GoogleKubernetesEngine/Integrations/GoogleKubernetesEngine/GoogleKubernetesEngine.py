@@ -877,7 +877,7 @@ def main():
     LOG(f'Command being called is {command}')
     commands: Dict[str, Callable] = {
         # Clusters
-        f"test-module": test_module_command,
+        "test-module": test_module_command,
         f"{INTEGRATION_COMMAND_NAME}-clusters-list": gcloud_clusters_list_command,
         f"{INTEGRATION_COMMAND_NAME}-clusters-describe": gcloud_clusters_describe_command,
         f"{INTEGRATION_COMMAND_NAME}-clusters-set-muster-auth": gcloud_clusters_set_master_auth,

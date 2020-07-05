@@ -32,7 +32,7 @@ configuration:
   name: vsys
   required: false
   type: 0
-- display: Template - Panorama instances only. routes.
+- display: Template - Panorama instances only.
   name: template
   required: false
   type: 0
@@ -1716,6 +1716,18 @@ script:
       name: destination
       required: false
       secret: false
+    - default: false
+      description: A comma-separated list of source zones.
+      isArray: true
+      name: source_zone
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of destination zones.
+      isArray: true
+      name: destination_zone
+      required: false
+      secret: false
     - auto: PREDEFINED
       default: false
       description: Whether to negate the source (address, address group). Can be "Yes"
@@ -2606,6 +2618,15 @@ script:
     - contextPath: Panorama.TrafficLogs.Logs.ToZone
       description: To zone of the traffic log.
       type: String
+    - contextPath: Panorama.TrafficLogs.Logs.Bytes
+      description: Total log bytes.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.BytesReceived
+      description: Log bytes received.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.BytesSent
+      description: Log bytes sent.
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -2969,6 +2990,15 @@ script:
       description: |-
         A list of the URL filtering categories that the firewall used to
         enforce the policy.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.Bytes
+      description: Total log bytes.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.BytesReceived
+      description: Log bytes received.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.BytesSent
+      description: Log bytes sent.
       type: String
   - arguments:
     - default: false

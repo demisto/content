@@ -313,8 +313,8 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
                 + add_argument_list(application, 'application', True)
                 + add_argument_list(category, 'category', True)
                 + add_argument_open(source_user, 'source-user', True)
-                + add_argument_open(from_, 'from', True)  # default from will always be any
-                + add_argument_open(to, 'to', True)  # default to will always be any
+                + add_argument_list(from_, 'from', True, True)  # default from will always be any
+                + add_argument_list(to, 'to', True, True)  # default to will always be any
                 + add_argument_list(service, 'service', True, True)
                 + add_argument_yes_no(negate_source, 'negate-source')
                 + add_argument_yes_no(negate_destination, 'negate-destination')
@@ -2698,6 +2698,8 @@ def panorama_create_rule_command():
     rulename = demisto.args()['rulename'] if 'rulename' in demisto.args() else ('demisto-' + (str(uuid.uuid4()))[:8])
     source = argToList(demisto.args().get('source'))
     destination = argToList(demisto.args().get('destination'))
+    source_zone = argToList(demisto.args().get('source_zone'))
+    destination_zone = argToList(demisto.args().get('destination_zone'))
     negate_source = demisto.args().get('negate_source')
     negate_destination = demisto.args().get('negate_destination')
     action = demisto.args().get('action')
@@ -2724,7 +2726,8 @@ def panorama_create_rule_command():
                                           disable=disable, application=application, source_user=source_user,
                                           disable_server_response_inspection=disable_server_response_inspection,
                                           description=description, target=target,
-                                          log_forwarding=log_forwarding, tags=tags, category=categories)
+                                          log_forwarding=log_forwarding, tags=tags, category=categories,
+                                          from_=source_zone, to=destination_zone)
     result = http_request(
         URL,
         'POST',
@@ -3921,6 +3924,12 @@ def prettify_traffic_logs(traffic_logs):
             pretty_traffic_log['ActionSource'] = traffic_log['action_source']
         if 'application' in traffic_log:
             pretty_traffic_log['Application'] = traffic_log['application']
+        if 'bytes' in traffic_log:
+            pretty_traffic_log['Bytes'] = traffic_log['bytes']
+        if 'bytes_received' in traffic_log:
+            pretty_traffic_log['BytesReceived'] = traffic_log['bytes_received']
+        if 'bytes_sent' in traffic_log:
+            pretty_traffic_log['BytesSent'] = traffic_log['bytes_sent']
         if 'category' in traffic_log:
             pretty_traffic_log['Category'] = traffic_log['category']
         if 'device_name' in traffic_log:
@@ -4214,6 +4223,12 @@ def prettify_log(log):
         pretty_log['Action'] = log['action']
     if 'app' in log:
         pretty_log['Application'] = log['app']
+    if 'bytes' in log:
+        pretty_log['Bytes'] = log['bytes']
+    if 'bytes_received' in log:
+        pretty_log['BytesReceived'] = log['bytes_received']
+    if 'bytes_sent' in log:
+        pretty_log['BytesSent'] = log['bytes_sent']
     if 'category' in log:
         pretty_log['CategoryOrVerdict'] = log['category']
     if 'device_name' in log:

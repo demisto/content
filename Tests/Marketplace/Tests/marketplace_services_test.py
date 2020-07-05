@@ -30,7 +30,7 @@ class TestMetadataParsing:
         parsed_metadata = Pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
                                                     pack_id='test_pack_id', integration_images=[], author_image="",
                                                     dependencies_data={}, server_min_version="5.5.0",
-                                                    build_number="dummy_build_number")
+                                                    build_number="dummy_build_number", commit_hash="dummy_commit")
         assert parsed_metadata['name'] == 'Test Pack Name'
         assert parsed_metadata['id'] == 'test_pack_id'
         assert parsed_metadata['description'] == 'Description of test pack'
@@ -47,6 +47,7 @@ class TestMetadataParsing:
         assert parsed_metadata['serverMinVersion'] == '5.5.0'
         assert parsed_metadata['currentVersion'] == '2.3.0'
         assert parsed_metadata['versionInfo'] == "dummy_build_number"
+        assert parsed_metadata['commit'] == "dummy_commit"
         assert parsed_metadata['tags'] == ["tag number one", "Tag number two"]
         assert parsed_metadata['categories'] == ["Messaging"]
         assert parsed_metadata['contentItems'] == {}
@@ -62,7 +63,7 @@ class TestMetadataParsing:
         parsed_metadata = Pack._parse_pack_metadata(user_metadata={}, pack_content_items={},
                                                     pack_id='test_pack_id', integration_images=[], author_image="",
                                                     dependencies_data={}, server_min_version="dummy_server_version",
-                                                    build_number="dummy_build_number")
+                                                    build_number="dummy_build_number", commit_hash="dummy_hash")
 
         assert parsed_metadata['name'] == "test_pack_id"
         assert parsed_metadata['id'] == "test_pack_id"
@@ -85,7 +86,7 @@ class TestMetadataParsing:
         parsed_metadata = Pack._parse_pack_metadata(user_metadata=pack_metadata_input, pack_content_items={},
                                                     pack_id="test_pack_id", integration_images=[], author_image="",
                                                     dependencies_data={}, server_min_version="dummy_server_version",
-                                                    build_number="dummy_build_number")
+                                                    build_number="dummy_build_number", commit_hash="dummy_hash")
 
         assert parsed_metadata['price'] == expected
 
@@ -273,8 +274,10 @@ class TestChangelogCreation:
         mocker.patch("os.path.exists", return_value=False)
         dummy_path = 'Irrelevant/Test/Path'
         build_number = random.randint(0, 100000)
-        result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
-        assert result is True
+        task_status, not_updated_build = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path,
+                                                                    build_number=build_number)
+        assert task_status is True
+        assert not_updated_build is False
 
     def test_prepare_release_notes_upgrade_version(self, mocker, dummy_pack):
         """
@@ -305,8 +308,10 @@ class TestChangelogCreation:
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         dummy_path = 'Irrelevant/Test/Path'
         build_number = random.randint(0, 100000)
-        result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
-        assert result is True
+        task_status, not_updated_build = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path,
+                                                                    build_number=build_number)
+        assert task_status is True
+        assert not_updated_build is False
 
     def test_prepare_release_notes_upgrade_version_mismatch(self, mocker, dummy_pack):
         """
@@ -338,11 +343,12 @@ class TestChangelogCreation:
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         dummy_path = 'Irrelevant/Test/Path'
         build_number = random.randint(0, 100000)
-        result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
-        assert result is False
+        task_status, not_updated_build = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path,
+                                                                    build_number=build_number)
+        assert task_status is False
+        assert not_updated_build is False
 
     def test_prepare_release_notes_upgrade_version_dup(self, mocker, dummy_pack):
-        # TODO When we move to not overriding packs in the build, we will need to change result returned.
         """
            Given:
                - Valid new version and valid current changelog found in index with existing version.
@@ -372,8 +378,10 @@ class TestChangelogCreation:
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         dummy_path = 'Irrelevant/Test/Path'
         build_number = random.randint(0, 100000)
-        result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
-        assert result is True
+        task_status, not_updated_build = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path,
+                                                                    build_number=build_number)
+        assert task_status is True
+        assert not_updated_build is False
 
     def test_clean_release_notes_lines(self):
         original_rn = '''
@@ -390,6 +398,44 @@ This is visible
 '''
         clean_rn = Pack._clean_release_notes(original_rn)
         assert expected_rn == clean_rn
+
+    def test_create_changelog_entry_new(self):
+        """
+           Given:
+               - release notes, display version and build number
+           When:
+               - new changelog entry must created
+           Then:
+               - return changelog entry with release notes and without R letter in display name
+       """
+        release_notes = "dummy release notes"
+        version_display_name = "1.2.3"
+        build_number = "5555"
+        version_changelog = Pack._create_changelog_entry(release_notes=release_notes,
+                                                         version_display_name=version_display_name,
+                                                         build_number=build_number, new_version=True)
+
+        assert version_changelog['releaseNotes'] == "dummy release notes"
+        assert version_changelog['displayName'] == f'{version_display_name} - {build_number}'
+
+    def test_create_changelog_entry_existing(self):
+        """
+           Given:
+               - release notes, display version and build number
+           When:
+               - changelog entry already exists
+           Then:
+               - return changelog entry with release notes and R letter appended in display name
+       """
+        release_notes = "dummy release notes"
+        version_display_name = "1.2.3"
+        build_number = "5555"
+        version_changelog = Pack._create_changelog_entry(release_notes=release_notes,
+                                                         version_display_name=version_display_name,
+                                                         build_number=build_number, new_version=False)
+
+        assert version_changelog['releaseNotes'] == "dummy release notes"
+        assert version_changelog['displayName'] == f'{version_display_name} - R{build_number}'
 
 
 class TestImagesUpload:

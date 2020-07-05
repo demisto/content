@@ -134,6 +134,8 @@ test_data = [
     ('https://madeup.fake.com/css?family=blah:1,2,3', 'false', ['https://madeup.fake.com/css?family=blah:1,2,3'])
 ]
 # disable-secrets-detection-end
+
+
 @pytest.mark.parametrize('url,multiple,expected_data', test_data)
 def test_url_multiple_arg(url, multiple, expected_data):
     '''Scenario: Submit a URL with commas in it
