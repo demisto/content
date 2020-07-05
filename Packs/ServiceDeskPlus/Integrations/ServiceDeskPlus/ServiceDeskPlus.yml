@@ -3,8 +3,8 @@ commonfields:
   id: ServiceDeskPlus
   version: -1
 configuration:
-- display: 'Data Center Location: Select the domain location that is applicable for
-    you application'
+- display: 'Data Center Location: Select the domain location that is applicable to
+    your application'
   name: server_url
   options:
   - United States
@@ -43,7 +43,7 @@ configuration:
   required: false
   type: 13
 - defaultvalue: Open
-  display: Incidents status. Multiple status can be selected.
+  display: Incidents status. Supports multi-select.
   name: fetch_status
   options:
   - Open
@@ -60,7 +60,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: '50'
-  display: Fetch limit - maximum number of incidents to fetch each time
+  display: Fetch limit - maximum number of incidents per fetch
   name: fetch_limit
   required: false
   type: 0
@@ -98,92 +98,90 @@ script:
       secret: false
     - default: false
       description: The column name and value to be searched for in the format of a
-        json object. e.g {“subject”:“Change like this”,“priority.name”:“High”}
+        JSON object. For example, {“subject”:“Change like this”,“priority.name”:“High”}.
       isArray: false
       name: search_fields
       required: false
       secret: false
     - default: false
-      description: The name of the filter that should be used. e.g {“name”:“My_Open”}
+      description: The name of the filter to use. For example, {“name”:“My_Open”}.
       isArray: false
       name: filter_by
       required: false
       secret: false
     deprecated: false
-    description: View the details of requests. If no parameters are given the details
-      of all requests will be shown.
+    description: View the details of requests. If no arguments are passed, details
+      of all requests are returned.
     execution: false
     name: service-desk-plus-requests-list
     outputs:
     - contextPath: ServiceDeskPlus.Request.Requester
-      description: The requester of the request
+      description: Who made the request.
       type: Unknown
     - contextPath: ServiceDeskPlus.Request.CreatedTime
-      description: The time the request was created
+      description: The time the request was created.
       type: Date
     - contextPath: ServiceDeskPlus.Request.Template
-      description: The template that was used to create the request
+      description: The template that was used to create the request.
       type: Unknown
     - contextPath: ServiceDeskPlus.Request.DisplayId
-      description: The display id of the request
+      description: The display ID of the request.
       type: String
     - contextPath: ServiceDeskPlus.Request.Id
-      description: The unique id of the request
+      description: The unique ID of the request.
       type: String
     - contextPath: ServiceDeskPlus.Request.Subject
-      description: The subject of the request
+      description: The subject of the request.
       type: String
     - contextPath: ServiceDeskPlus.Request.Technician
-      description: The technician that was assigned to the request
+      description: The technician that was assigned to the request.
       type: String
     - contextPath: ServiceDeskPlus.Request.Status
-      description: The status of the request
+      description: The status of the request.
       type: String
     - contextPath: ServiceDeskPlus.Request.DueByTime
-      description: The due date of the request
+      description: The due date of the request.
       type: Date
     - contextPath: ServiceDeskPlus.Request.Group
-      description: The group to which the request belongs
+      description: The group to which the request belongs.
       type: String
     - contextPath: ServiceDeskPlus.Request.IsServiceRequest
-      description: Indicates whether the request is a service request or not
+      description: Indicates whether the request is a service request.
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.CancellationRequested
-      description: Indicates whether a cancellation was requested
+      description: Indicates whether a cancellation was requested.
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.HasNotes
-      description: Indicates whether the command has notes or not
+      description: Indicates whether the command has notes.
       type: Boolean
   - arguments:
     - default: false
-      description: The id of the request that should be deleted
+      description: The ID of the request to delete.
       isArray: false
       name: request_id
       required: true
       secret: false
     deprecated: false
-    description: Delete the request with the given id. Multiple ids can be closed
-      by passed a string with all the ids of the requests that should be closed, separated
-      by a comma.
+    description: Deletes the request with the specified ID. To delete multiple IDs, pass a comma-separated list (string) of the IDs of the requests.
     execution: false
     name: service-desk-plus-request-delete
   - arguments:
     - default: false
-      description: Subject of this request
+      description: Subject of the request.
       isArray: false
       name: subject
       required: true
       secret: false
     - default: false
-      description: Description of this request
+      description: Description of the request.
       isArray: false
       name: description
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Type of this request. Choose one of the listed options or provide
-        a dictionary representing a request_type object.
+      description: Request type. Choose one of the listed options or provide
+        a dictionary representing a request_type object. Can be "Incident", "Request For Information", or "Service Request".
       isArray: false
       name: request_type
       predefined:
@@ -194,8 +192,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Impact of this request. Choose one of the listed options or provide
-        a dictionary representing an impact object.
+      description: Impact of the request. Choose one of the listed options or provide
+        a dictionary representing an impact object. Can be "Affects Business", "Affects Department", "Affects Group", or "Affects User".
       isArray: false
       name: impact
       predefined:
@@ -209,7 +207,7 @@ script:
       default: false
       defaultValue: Open
       description: Indicates the current status of this request. Choose one of the
-        listed options or provide a dictionary representing a status object.
+        listed options or provide a dictionary representing a status object. Can be "Open", "Closed", "On Hold", "Resolved", or "Canceled".
       isArray: false
       name: status
       predefined:
@@ -222,8 +220,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The mode in which the request is created. Choose one of the listed
-        options or provide a dictionary representing a mode object.
+      description: The mode in which to create the request. Choose one of the listed
+        options or provide a dictionary representing a mode object. Can be "E-mail", "Phone Call", or "Web Form".
       isArray: false
       name: mode
       predefined:
@@ -235,7 +233,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: Level of the request. Choose one of the listed options or provide
-        a dictionary representing a level object.
+        a dictionary representing a level object. Can be "Tier 1", "Tier 2", "Tier 3", or "Tier 4".
       isArray: false
       name: level
       predefined:
@@ -248,7 +246,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: Urgency of the request. Choose one of the listed options or provide
-        a dictionary representing an urgency object.
+        a dictionary representing an urgency object. Can be "High", "Low", "Normal", or "Urgent".
       isArray: false
       name: urgency
       predefined:
@@ -261,7 +259,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: Priority of the request. Choose one of the listed options or provide
-        a dictionary representing a priority object.
+        a dictionary representing a priority object. Can be "High", "Low", "Normal", or "Meduium".
       isArray: false
       name: priority
       predefined:
@@ -279,155 +277,155 @@ script:
       required: false
       secret: false
     - default: false
-      description: Indicates the requester of this request. Type the name of the requester
+      description: Indicates who made the request. Enter the name of the requester
         as a string or a dictionary representing a requester object.
       isArray: false
       name: requester
       required: false
       secret: false
     - default: false
-      description: Array of asset objects associated to this request
+      description: Array of asset objects associated to the request.
       isArray: false
       name: assets
       required: false
       secret: false
     - default: false
-      description: Denotes the site to which this request belongs. Type a site name
+      description: Denotes the site to which the request belongs. Enter a site name
         or provide a dictionary representing a site object.
       isArray: false
       name: site
       required: false
       secret: false
     - default: false
-      description: Group to which this request belongs. Type the name of the group
+      description: Group to which the request belongs. Enter the name of the group
         or a dictionary representing a group object.
       isArray: false
       name: group
       required: false
       secret: false
     - default: false
-      description: Technician assigned to this request. Type the name of the technician
+      description: Technician assigned to the request. Enter the name of the technician
         or a dictoinary representing a technician object.
       isArray: false
       name: technician
       required: false
       secret: false
     - default: false
-      description: Category to which the request belongs. Fill in the name of the
+      description: Category to which the request belongs. Enter the name of the
         category or a dictionary representing a category object.
       isArray: false
       name: category
       required: false
       secret: false
     - default: false
-      description: Subcategory to which this request belongs. Fill in the name of
+      description: Subcategory to which the request belongs. Enter the name of
         the subcategory or a dictionary representing a subcategory object.
       isArray: false
       name: subcategory
       required: false
       secret: false
     - default: false
-      description: Item of this request. Fill in the item's name or a dictionary representing
+      description: Item of the request. Enter the item's name or a dictionary representing
         an item object.
       isArray: false
       name: item
       required: false
       secret: false
     - default: false
-      description: Array of Email ids, which nedds to be notified about the happenings
-        of this request
+      description: Array of email IDs to notify about the happenings
+        of the request.
       isArray: false
       name: email_ids_to_notify
       required: false
       secret: false
     - default: false
       description: Boolean value indicating if the request has been marked as First
-        Call Resolution
+        Call Resolution.
       isArray: false
       name: is_fcr
       required: false
       secret: false
     - default: false
-      description: Holds the resource data mapped to the request
+      description: Holds the resource data mapped to the request.
       isArray: false
       name: resources
       required: false
       secret: false
     - default: false
-      description: 'Holds udf fields'' values associated with the request. Input format:
-        A string of the form "key1:value1,key2:value2" or a dictionary of the form
-        "{''key1'':''val1'',''key2'':''val2''}"'
+      description: 'Holds UDF fields'' values (string) associated with the request in the format:
+        "key1:value1,key2:value2" or a dictionary in the form
+        "{''key1'':''val1'',''key2'':''val2''}".'
       isArray: false
       name: udf_fields
       required: false
       secret: false
     deprecated: false
-    description: Create new requests
+    description: Creates new requests.
     execution: false
     name: service-desk-plus-request-create
     outputs:
     - contextPath: ServiceDeskPlus.Request.Requester
-      description: The requester of the request
+      description: Who made the request.
       type: Unknown
     - contextPath: ServiceDeskPlus.Request.CreatedTime
-      description: The time the request was created
+      description: The time the request was created.
       type: Date
     - contextPath: ServiceDeskPlus.Request.Template
-      description: The template that was used to create the request
+      description: The template that was used to create the request.
       type: Unknown
     - contextPath: ServiceDeskPlus.Request.DisplayId
-      description: The display id of the request
+      description: The display ID of the request.
       type: String
     - contextPath: ServiceDeskPlus.Request.Id
-      description: The unique id of the request
+      description: The unique ID of the request.
       type: String
     - contextPath: ServiceDeskPlus.Request.Subject
-      description: The subject of the request
+      description: The subject of the request.
       type: String
     - contextPath: ServiceDeskPlus.Request.Technician
-      description: The technician that was assigned to the request
+      description: The technician that was assigned to the request.
       type: String
     - contextPath: ServiceDeskPlus.Request.Status
-      description: The status of the request
+      description: The status of the request.
       type: String
     - contextPath: ServiceDeskPlus.Request.DueByTime
-      description: The due date of the request
+      description: The due date of the request.
       type: Date
     - contextPath: ServiceDeskPlus.Request.Group
-      description: The group to which the request belongs
+      description: The group to which the request belongs.
       type: String
     - contextPath: ServiceDeskPlus.Request.IsServiceRequest
-      description: Indicates whether the request is a service request or not
+      description: Indicates whether the request is a service request.
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.CancellationRequested
-      description: Indicates whether a cancellation was requested
+      description: Indicates whether a cancellation was requested.
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.HasNotes
-      description: Indicates whether the command has notes or not
+      description: Indicates whether the command has notes.
       type: Boolean
   - arguments:
     - default: false
-      description: The ID of this request
+      description: The ID of the request.
       isArray: false
       name: request_id
       required: true
       secret: false
     - default: false
-      description: Subject of this request
+      description: Subject of the request.
       isArray: false
       name: subject
       required: false
       secret: false
     - default: false
-      description: Description of this request
+      description: Description of the request.
       isArray: false
       name: description
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Type of this request. Choose one of the listed options or provide
-        a dictionary representing a request_type object.
+      description: Request type. Choose one of the listed options or provide
+        a dictionary representing a request_type object. Can be "Incident", "Request For Information", or "Service Request".
       isArray: false
       name: request_type
       predefined:
@@ -438,8 +436,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Impact of this request. Choose one of the listed options or provide
-        a dictionary representing an impact object.
+      description: Impact of the request. Choose one of the listed options or provide
+        a dictionary representing an impact object. Can be "Affects Business", "Affects Department", "Affects Group", or "Affects User".
       isArray: false
       name: impact
       predefined:
@@ -453,7 +451,7 @@ script:
       default: false
       defaultValue: Open
       description: Indicates the current status of this request. Choose one of the
-        listed options or provide a dictionary representing a status object.
+        listed options or provide a dictionary representing a status object. Can be "Open", "Closed", "On Hold", "Resolved", or "Canceled".
       isArray: false
       name: status
       predefined:
@@ -466,8 +464,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The mode in which the request is created. Choose one of the listed
-        options or provide a dictionary representing a mode object.
+      description: The mode in which to create the request. Choose one of the listed
+        options or provide a dictionary representing a mode object. Can be "E-mail", "Phone Call", or "Web Form".
       isArray: false
       name: mode
       predefined:
@@ -479,7 +477,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: Level of the request. Choose one of the listed options or provide
-        a dictionary representing a level object.
+        a dictionary representing a level object. Can be "Tier 1", "Tier 2", "Tier 3", or "Tier 4".
       isArray: false
       name: level
       predefined:
@@ -492,7 +490,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: Urgency of the request. Choose one of the listed options or provide
-        a dictionary representing an urgency object.
+        a dictionary representing an urgency object. Can be "High", "Low", "Normal", or "Urgent".
       isArray: false
       name: urgency
       predefined:
@@ -505,7 +503,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: Priority of the request. Choose one of the listed options or provide
-        a dictionary representing a priority object.
+        a dictionary representing a priority object. Can be "High", "Low", "Normal", or "Meduium".
       isArray: false
       name: priority
       predefined:
@@ -523,206 +521,206 @@ script:
       required: false
       secret: false
     - default: false
-      description: Indicates the requester of this request. Type the name of the requester
+      description: Indicates who made the request. Enter the name of the requester
         as a string or a dictionary representing a requester object.
       isArray: false
       name: requester
       required: false
       secret: false
     - default: false
-      description: Array of asset objects associated to this request
+      description: Array of asset objects associated to the request.
       isArray: false
       name: assets
       required: false
       secret: false
     - default: false
-      description: Denotes the site to which this request belongs. Type a site name
+      description: Denotes the site to which the request belongs. Enter a site name
         or provide a dictionary representing a site object.
       isArray: false
       name: site
       required: false
       secret: false
     - default: false
-      description: Group to which this request belongs. Type the name of the group
+      description: Group to which the request belongs. Enter the name of the group
         or a dictionary representing a group object.
       isArray: false
       name: group
       required: false
       secret: false
     - default: false
-      description: Technician assigned to this request. Type the name of the technician
+      description: Technician assigned to the request. Enter the name of the technician
         or a dictionary representing a technician object.
       isArray: false
       name: technician
       required: false
       secret: false
     - default: false
-      description: Category to which the request belongs. Fill in the name of the
+      description: Category to which the request belongs. Enter the name of the
         category or a dictionary representing a category object.
       isArray: false
       name: category
       required: false
       secret: false
     - default: false
-      description: Subcategory to which this request belongs. Fill in the name of
+      description: Subcategory to which this request belongs. Enter the name of
         the subcategory or a dictionary representing a subcategory object.
       isArray: false
       name: subcategory
       required: false
       secret: false
     - default: false
-      description: Item of this request. Fill in the item's name or a dictionary representing
+      description: Item of the request. Enter the item's name or a dictionary representing
         an item object.
       isArray: false
       name: item
       required: false
       secret: false
     - default: false
-      description: Array of Email ids, which needs to be notified about the happenings
-        of this request
+      description: Array of email IDs to notify about the happenings
+        of the request.
       isArray: false
       name: email_ids_to_notify
       required: false
       secret: false
     - default: false
       description: Boolean value indicating if the request has been marked as First
-        Call Resolution
+        Call Resolution.
       isArray: false
       name: is_fcr
       required: false
       secret: false
     - default: false
-      description: Holds the resource data mapped to the request
+      description: Holds the resource data mapped to the request.
       isArray: false
       name: resources
       required: false
       secret: false
     - default: false
-      description: 'Holds udf fields'' values associated with the request. Input format:
-        A string of the form "key1:value1,key2:value2" or a dictionary of the form
-        "{''key1'':''val1'',''key2'':''val2''}"'
+      description: 'Holds UDF fields'' values (string) associated with the request in the format:
+        "key1:value1,key2:value2" or a dictionary in the form
+        "{''key1'':''val1'',''key2'':''val2''}".'
       isArray: false
       name: udf_fields
       required: false
       secret: false
     - default: false
-      description: The reason for updating this request
+      description: The reason for updating the request.
       isArray: false
       name: update_reason
       required: false
       secret: false
     - default: false
-      description: Comments added while changing the request's status
+      description: Comments added while changing the request's status.
       isArray: false
       name: status_change_comments
       required: false
       secret: false
     deprecated: false
-    description: Update the request with the given request id.
+    description: Updates the specified request.
     execution: false
     name: service-desk-plus-request-update
     outputs:
     - contextPath: ServiceDeskPlus.Request.Requester
-      description: The requester of the request
+      description: Who made the request.
       type: Unknown
     - contextPath: ServiceDeskPlus.Request.CreatedTime
-      description: The time the request was created
+      description: The time the request was created.
       type: Date
     - contextPath: ServiceDeskPlus.Request.Template
-      description: The template that was used to create the request
+      description: The template that was used to create the request.
       type: Unknown
     - contextPath: ServiceDeskPlus.Request.DisplayId
-      description: The display id of the request
+      description: The display ID of the request.
       type: String
     - contextPath: ServiceDeskPlus.Request.Id
-      description: The unique id of the request
+      description: The unique ID of the request.
       type: String
     - contextPath: ServiceDeskPlus.Request.Subject
-      description: The subject of the request
+      description: The subject of the request.
       type: String
     - contextPath: ServiceDeskPlus.Request.Technician
-      description: The technician that was assigned to the request
+      description: The technician that was assigned to the request.
       type: String
     - contextPath: ServiceDeskPlus.Request.Status
-      description: The status of the request
+      description: The status of the request.
       type: String
     - contextPath: ServiceDeskPlus.Request.DueByTime
-      description: The due date of the request
+      description: The due date of the request.
       type: Date
     - contextPath: ServiceDeskPlus.Request.Group
-      description: The group to which the request belongs
+      description: The group to which the request belongs.
       type: String
     - contextPath: ServiceDeskPlus.Request.IsServiceRequest
-      description: Indicates whether the request is a service request or not
+      description: Indicates whether the request is a service request.
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.CancellationRequested
-      description: Indicates whether a cancellation was requested
+      description: Indicates whether a cancellation was requested.
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.HasNotes
-      description: Indicates whether the command has notes or not
+      description: Indicates whether the command has notes.
       type: Boolean
   - arguments:
     - default: false
-      description: The id of the request that should be assigned
+      description: The ID of the request to assign.
       isArray: false
       name: request_id
       required: true
       secret: false
     - default: false
-      description: The name of the technician that should be assigned to the request
+      description: The name of the technician to assign to the request.
       isArray: false
       name: technician
       required: false
       secret: false
     - default: false
-      description: The name of the group that should be assigned to the request
+      description: The name of the group to assign to the request.
       isArray: false
       name: group
       required: false
       secret: false
     deprecated: false
-    description: Assigns the request with the given request id to a technician/group
+    description: Assigns the specified request to a technician and/or group.
     execution: false
     name: service-desk-plus-request-assign
   - arguments:
     - default: false
-      description: The id of the request that should be picked up
+      description: The ID of the request that should be picked up.
       isArray: false
       name: request_id
       required: true
       secret: false
     deprecated: false
-    description: Allows the technician to pickup the request with the given request
-      id on his name.
+    description: Allows a technician to pickup the specified with the given request
+      ID on the technician's name.
     execution: false
     name: service-desk-plus-request-pickup
   - arguments:
     - default: false
-      description: The request for which the linked requests are requested
+      description: The request for which to get a list of linked requests.
       isArray: false
       name: request_id
       required: true
       secret: false
     deprecated: false
-    description: Gets a list with all the linked requests under a request
+    description: Gets a list with all the linked requests under the specified request.
     execution: false
     name: service-desk-plus-linked-request-list
     outputs:
     - contextPath: ServiceDeskPlus.Request.LinkRequests.Comments
-      description: The comment that was added to the linked request
+      description: The comment that was added to the linked request.
       type: Unknown
     - contextPath: ServiceDeskPlus.Request.LinkRequests.LinkedRequest
-      description: The linked request information
+      description: The linked request information.
       type: Unknown
   - arguments:
     - default: false
-      description: The id of the request for which the resolution should be added
+      description: The ID of the request to which to add the resolution.
       isArray: false
       name: request_id
       required: true
       secret: false
     - default: false
-      description: The content of the resolution that should be added to the request
+      description: The content of the resolution to add to the request.
       isArray: false
       name: resolution_content
       required: false
@@ -730,7 +728,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: A boolean value indicating whether the same resolution should be
-        added to all linked request of the request
+        added to all requests linked to the request. Can be "true" or "false".
       isArray: false
       name: add_to_linked_requests
       predefined:
@@ -739,55 +737,55 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Adds a resolution to the given request
+    description: Adds a resolution to the specified request.
     execution: false
     name: service-desk-plus-request-resolution-add
   - arguments:
     - default: false
-      description: The id of the request for which the resolution is desired
+      description: The ID of the request for which to get the resolution.
       isArray: false
       name: request_id
       required: true
       secret: false
     deprecated: false
-    description: Gets the resolution to the given request
+    description: Gets the resolution of the specified request.
     execution: false
     name: service-desk-plus-request-resolutions-list
     outputs:
     - contextPath: ServiceDeskPlus.Request.Resolution.Content
-      description: The content of the resolution of the request
+      description: The content of the resolution of the request.
       type: Unknown
     - contextPath: ServiceDeskPlus.Request.Resolution.SubmittedBy
-      description: The details of who submitted the resolution
+      description: The details of who submitted the resolution.
       type: Unknown
     - contextPath: ServiceDeskPlus.Request.Resolution.SubmittedOn
-      description: The date the resolution was submitted
+      description: The date the resolution was submitted.
       type: Unknown
     - contextPath: ServiceDeskPlus.Request.Resolution.ResolutionAttachments
-      description: The attachments that were added to the resolution
+      description: The attachments that were added to the resolution.
       type: Unknown
   - arguments:
     - default: false
-      description: The code received when creating the application
+      description: The code received when creating the application.
       isArray: false
       name: code
       required: true
       secret: true
     deprecated: false
     description: This function generates the refresh token that should be used in
-      the instance configurations
+      the instance configurations.
     execution: false
     name: service-desk-plus-generate-refresh-token
   - arguments:
     - default: false
-      description: The id of the request for which the links should be modified
+      description: The ID of the request for which the links should be modified.
       isArray: false
       name: request_id
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Link / Unlink this request with the given requests
+      description: Specifies whether to link or unlink this request with the specified requests. Can be "Link" or "Unlink".
       isArray: false
       name: action
       predefined:
@@ -796,45 +794,45 @@ script:
       required: true
       secret: false
     - default: false
-      description: The IDs of the requests that should be linked to the given request.
+      description: A comma-separated list of request IDs to link or unlink from the given request.
         Multiple IDs can be passed, separated by a comma
       isArray: false
       name: linked_requests_id
       required: true
       secret: false
     - default: false
-      description: The comment that should be added when linking requests (optional).
+      description: The comment to add when linking requests (optional).
       isArray: false
       name: comment
       required: false
       secret: false
     deprecated: false
-    description: Link or Unlink multiple commands
+    description: Links or unlinks multiple commands.
     execution: false
     name: service-desk-plus-link-request-modify
   - arguments:
     - default: false
-      description: The comments that should be added when closing the request
+      description: The comments to add when closing the request.
       isArray: false
       name: closure_comments
       required: false
       secret: false
     - default: false
-      description: 'A dictionary that represents the closure code that should be added
-        to the request. For example, {"name": "success"}'
+      description: 'A dictionary that represents the closure code to add
+        to the request. For example, {"name": "success"}.'
       isArray: false
       name: closure_code
       required: false
       secret: false
     - default: false
-      description: The requester comments that should be added to the request
+      description: The requester comments to add to the request.
       isArray: false
       name: requester_ack_comments
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Boolean.
+      description: A boolean value indicating whether the requester needs to acknowledge the resolution. Can be "true" or "false".
       isArray: false
       name: requester_ack_resolution
       predefined:
@@ -843,13 +841,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: The id of the request that should be closed
+      description: The ID of the request to close.
       isArray: false
       name: request_id
       required: true
       secret: false
     deprecated: false
-    description: Close the existing request with the given request id
+    description: Closes the specified request.
     execution: false
     name: service-desk-plus-request-close
   dockerimage: demisto/python3:3.8.3.9324
