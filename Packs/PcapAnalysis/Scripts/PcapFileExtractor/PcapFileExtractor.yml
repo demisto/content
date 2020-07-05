@@ -22,10 +22,10 @@ outputs:
   description: File type.
   type: String
 - contextPath: PcapExtractedFiles.SourceIP
-  description: Extracted file source IP.
+  description: Extracted file source IP address.
   type: String
 - contextPath: PcapExtractedFiles.DestinationIP
-  description: Extracted file destination IP.
+  description: Extracted file destination IP address.
   type: String
 - contextPath: PcapExtractedFiles.DetectedInProtocol
   description: Detected protocol.
