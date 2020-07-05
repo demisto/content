@@ -326,8 +326,10 @@ def fetch_indicators_command(client, indicator_type, limit: Optional[int] = None
                 'value': value,
                 'type': raw_json['type'],
                 'rawJSON': raw_json,
-                'tags': client.tags,
-                'fields': {'recordedfutureevidencedetails': lower_case_evidence_details_keys},
+                'fields': {
+                    'recordedfutureevidencedetails': lower_case_evidence_details_keys,
+                    'tags': client.tags
+                },
                 'score': score
             })
 

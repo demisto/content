@@ -152,4 +152,4 @@ def test_feed_tags(mocker, tags):
         return_value=[{'Name': '192.168.1.1'}]
     )
     indicators = fetch_indicators_command(client, 'ip')
-    assert tags == indicators[0].get('tags')
+    assert tags == indicators[0]['fields']['tags']
