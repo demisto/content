@@ -15,6 +15,6 @@ The playbook included in this pack helps you save time and automate repetitive t
  
 As part of this pack, you will also get out-of-the-box malware incident type views, with incident classification mapping, fields and a full layout. All of these are easily customizable to suit the needs of your organization.
 
-_For more information, visit our  [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/endpoint-malware-investigation---generic)_
+_For more information, visit our  [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/gdpr-breach-notification)_
 
-![GDPR Breach Notification](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Endpoint_Malware_Investigation_Generic.png)
+![GDPR Breach Notification](https://github.com/demisto/content/raw/e1e515a16cafef00c456eea273454ce605c23933/Packs/GDPR/doc_files/GDPR_Breach_Notification.png)
