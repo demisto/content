@@ -2,7 +2,7 @@
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
-	{
+        {
             "integrations": "Humio",
             "playbookID": "Humio-Test",
             "fromversion": "5.0.0"
@@ -75,7 +75,6 @@
             "playbookID": "JSON_Feed_Test",
             "fromversion": "5.5.0",
             "instance_names": "JSON Feed no_auto_detect"
-
         },
         {
             "integrations": "JSON Feed",
@@ -595,7 +594,7 @@
         },
         {
             "integrations": "QRadar",
-            "playbookID" :  "test playbook - QRadarCorreltaions",
+            "playbookID": "test playbook - QRadarCorreltaions",
             "timeout": 600,
             "fromversion": "5.0.0"
         },
@@ -752,7 +751,10 @@
         },
         {
             "playbookID": "PAN-OS - Block IP and URL - External Dynamic List v2 Test",
-            "integrations": ["Panorama", "palo_alto_networks_pan_os_edl_management"],
+            "integrations": [
+                "Panorama",
+                "palo_alto_networks_pan_os_edl_management"
+            ],
             "instance_names": "palo_alto_firewall_9.0",
             "fromversion": "4.0.0"
         },
@@ -1901,7 +1903,7 @@
                 "Rasterize"
             ]
         },
-                {
+        {
             "playbookID": "Phishing - Core - Test - Incident Starter",
             "fromversion": "6.0.0",
             "timeout": 1700,
@@ -2049,11 +2051,18 @@
             ]
         },
         {
-            "integrations": ["epo", "McAfee Active Response"],
+            "integrations": [
+                "epo",
+                "McAfee Active Response"
+            ],
             "playbookID": "Endpoint data collection test",
             "timeout": 500
         },
-        {"integrations": ["epo", "McAfee Active Response"],
+        {
+            "integrations": [
+                "epo",
+                "McAfee Active Response"
+            ],
             "playbookID": "MAR - Endpoint data collection test",
             "timeout": 500
         },
@@ -2062,7 +2071,10 @@
             "playbookID": "DuoAdmin API test playbook"
         },
         {
-            "integrations": ["TAXII Server", "TAXIIFeed"],
+            "integrations": [
+                "TAXII Server",
+                "TAXIIFeed"
+            ],
             "playbookID": "TAXII_Feed_Test",
             "fromversion": "5.5.0",
             "timeout": 300
@@ -2159,7 +2171,10 @@
         },
         {
             "playbookID": "PAN-OS EDL Setup v3 Test",
-            "integrations": ["Panorama", "palo_alto_networks_pan_os_edl_management"],
+            "integrations": [
+                "Panorama",
+                "palo_alto_networks_pan_os_edl_management"
+            ],
             "instance_names": "palo_alto_firewall_9.0",
             "timeout": 300
         },
@@ -2820,7 +2835,10 @@
             "playbookID": "IBM Resilient Systems Test"
         },
         {
-            "integrations": ["Prisma Access", "Prisma Access Egress IP feed"],
+            "integrations": [
+                "Prisma Access",
+                "Prisma Access Egress IP feed"
+            ],
             "playbookID": "Prisma_Access_Egress_IP_Feed-Test",
             "timeout": 60000,
             "fromversion": "5.5.0",
@@ -2945,9 +2963,10 @@
         "GCS Object Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "Send Email To Recipients": "used in EWS Mail Sender Test 2 as sub playbook",
         "Cortex XDR - IOC - Test": "issue #25598",
-
         "_comment": "~~~ DEPRECATED ~~~",
-        "Endpoint Enrichment - Generic v2 - Test": "DEPRECATED"
+        "Endpoint Enrichment - Generic v2 - Test": "DEPRECATED",
+        "test-name-placeholder": "Issue 25508",
+        "test-name-placeholder-2": "Issue 26115"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
@@ -3042,12 +3061,10 @@
         "SecBI": "Issue 22545",
         "IBM Resilient Systems": "Issue 23722",
         "VxStream": "Issue #23795",
-
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tenable.sc": "unstable instance",
         "VirusTotal - Private API": "Issue 22638",
-
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Bambenek Consulting Feed": "Issue 26184",
         "Joe Security": "Issue 25650",
@@ -3060,16 +3077,13 @@
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "reached out our monthly quota (08/03/2020)",
-
         "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer",
         "SafeBreach v2": "it is a partner integration, no instance",
         "IllusiveNetworks": "supported by partner",
         "Humio": "supported by the partner",
         "Digital Guardian": "partner integration",
-
-
-         "_comment5": "~~~ OTHER ~~~",
+        "_comment5": "~~~ OTHER ~~~",
         "Cisco ASA": "Issue 25741",
         "Endace": "Issue 24304",
         "Pentera": "authentication method will not work with testing",
