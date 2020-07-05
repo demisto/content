@@ -34,9 +34,9 @@
 <li><a href="#h_892938226971535449786604">Get a list of device IDs that an indicator ran on: cs-device-ran-on</a></li>
 <li><a href="#h_5200099537791535449799102">Get the process ID of an indicator for a device: cs-processes-ran-on</a></li>
 <li><a href="#h_4308472088591535449812936">Get process details: cs-process-details</a></li>
-<li><a href="#h_5282539089371535449827674">Set resolution status: cs-resolve-detection</a></li>
-<li><a href="#h_85888761731538978740367">Search all detection fields: cs-detection-search</a></li>
-<li><a href="#h_2636367141621538978747829">Get detection details: cs-detection-details</a></li>
+<li><a href="#h_5282539089371535449827674">Set resolution status: cs-resolve-detection (Deprecated)</a></li>
+<li><a href="#h_85888761731538978740367">Search all detection fields: cs-detection-search (Deprecated)</a></li>
+<li><a href="#h_2636367141621538978747829">Get detection details: cs-detection-details (Deprecated)</a></li>
 </ol>
 <h3 id="h_91950037141535449351719">1. Upload indicators for CS to monitor</h3>
 <hr>
@@ -594,8 +594,9 @@
 <h5> </h5>
 <h5>Context Output</h5>
 <p>There is no context output for this command.</p>
-<h3 id="h_5282539089371535449827674">12. Set resolution status</h3>
+<h3 id="h_5282539089371535449827674">12. Set resolution status (Deprecated)</h3>
 <hr>
+<p>Use the cs-falcon-resolve-detection command from the CrowdStrike Falcon integration instead.</p>
 <p>Sets the state of a detection in Falcon Host. You can obtain detection IDs from the Falcon Host UI or from the Falcon Streaming API.</p>
 <h5>Base Command</h5>
 <p><code>cs-resolve-detection</code></p>
@@ -811,8 +812,9 @@
 </table>
 <h5>Command Example</h5>
 <p><code>!cs-resolve-detection ids=cf54bb61f92e4d3e75bf4f7c11fc8f74:4295536142 status=in_progress</code></p>
-<h3 id="h_85888761731538978740367">13. Search all detection fields</h3>
+<h3 id="h_85888761731538978740367">13. Search all detection fields (Deprecated)</h3>
 <hr>
+<p>Deprecated. Use the cs-falcon-search-detection command from the CrowdStrike Falcon integration instead.</p>
 <p>Performs a string search through all CrowdStrike Detection fields. For example, provide a sensor ID to search for all detections that contain that sensor ID.</p>
 <h5>Base Command</h5>
 <pre><code>cs-detection-search</code></pre>
@@ -862,8 +864,9 @@
 <h5>Human Readable Output</h5>
 <p><a href="https://user-images.githubusercontent.com/37335599/46602938-54508d00-cafa-11e8-8f98-a8ecece76aff.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37335599/46602938-54508d00-cafa-11e8-8f98-a8ecece76aff.png" alt="screen shot 2018-10-08 at 12 12 56" width="750" height="336"></a></p>
 <h3> </h3>
-<h3 id="h_2636367141621538978747829">14. Get detection details</h3>
+<h3 id="h_2636367141621538978747829">14. Get detection details (Deprecated)</h3>
 <hr>
+<p>Deprecated. Use the cs-falcon-search-detection command from the CrowdStrike Falcon integration instead.</p>
 <p>Fetches details of a CrowdStrike Detection using the detection ID.</p>
 <h5>Base Command</h5>
 <pre><code>cs-detection-details</code></pre>
