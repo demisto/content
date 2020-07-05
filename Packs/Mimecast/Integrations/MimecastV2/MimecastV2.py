@@ -12,7 +12,7 @@ import hashlib
 import requests
 
 from datetime import timedelta
-# from urllib2 import HTTPError
+from urllib2 import HTTPError
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
