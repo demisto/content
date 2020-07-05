@@ -67,7 +67,7 @@ else
   {
     "build_parameters": {
       "TIME_TO_LIVE": ${_time_to_live},
-      "CONTRIB_BRANCH": "${_contrib_branch}:${_changed_pack}"
+      "CONTRIB_BRANCH": "${_contrib_branch}:${_changed_pack}",
       "PACK_NAME": $pack_name
     }
   }
