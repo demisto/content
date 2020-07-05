@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c08891da-47e5-4d03-85dc-0fe33a5028cf
+    taskid: d7a31bf3-42c5-4ef4-8979-805d69aad515
     type: start
     task:
-      id: c08891da-47e5-4d03-85dc-0fe33a5028cf
+      id: d7a31bf3-42c5-4ef4-8979-805d69aad515
       version: -1
       name: ""
       iscommand: false
@@ -22,8 +22,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -134
+          "x": 265,
+          "y": 65
         }
       }
     note: false
@@ -33,10 +33,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 2944ea73-dbaa-4554-8a6b-f7965e97d527
+    taskid: 80d1e291-1978-43b2-8917-9813d01cd792
     type: regular
     task:
-      id: 2944ea73-dbaa-4554-8a6b-f7965e97d527
+      id: 80d1e291-1978-43b2-8917-9813d01cd792
       version: -1
       name: Check non-malicious URL
       script: OpenPhish|||url
@@ -53,8 +53,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 185
+          "x": 265,
+          "y": 400
         }
       }
     note: false
@@ -64,13 +64,13 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 8337e288-ec0f-4dad-89cf-dbec4fbb995b
+    taskid: 5b37df0e-683b-4b73-8645-4125dafc6766
     type: condition
     task:
-      id: 8337e288-ec0f-4dad-89cf-dbec4fbb995b
+      id: 5b37df0e-683b-4b73-8645-4125dafc6766
       version: -1
       name: Check if found malicious
-      script: Exists
+      scriptName: Exists
       type: condition
       iscommand: false
       brand: ""
@@ -86,8 +86,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 346
+          "x": 265,
+          "y": 575
         }
       }
     note: false
@@ -97,10 +97,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 41095935-b8f8-4713-84dd-d4b4431d6913
+    taskid: 7db53265-2562-49c3-8a7c-39f873426169
     type: regular
     task:
-      id: 41095935-b8f8-4713-84dd-d4b4431d6913
+      id: 7db53265-2562-49c3-8a7c-39f873426169
       version: -1
       name: Check malicious URL
       script: OpenPhish|||url
@@ -117,8 +117,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 619
+          "x": 50,
+          "y": 750
         }
       }
     note: false
@@ -128,13 +128,13 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 1c5c2db3-e073-4274-89e7-c419c88fba5b
+    taskid: c5b88e7a-9e3b-4431-8c64-8b5f6ea27c5c
     type: regular
     task:
-      id: 1c5c2db3-e073-4274-89e7-c419c88fba5b
+      id: c5b88e7a-9e3b-4431-8c64-8b5f6ea27c5c
       version: -1
       name: False Positive
-      script: Print
+      scriptName: Print
       type: regular
       iscommand: false
       brand: ""
@@ -145,8 +145,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 891,
-          "y": 524
+          "x": 480,
+          "y": 750
         }
       }
     note: false
@@ -156,10 +156,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 0acab294-4534-4eae-870e-5f2322be251e
+    taskid: c25e6c71-5851-4335-88b5-b557b9e33e12
     type: regular
     task:
-      id: 0acab294-4534-4eae-870e-5f2322be251e
+      id: c25e6c71-5851-4335-88b5-b557b9e33e12
       version: -1
       name: Manual troubleshooting needed
       type: regular
@@ -169,8 +169,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 891,
-          "y": 1121
+          "x": 695,
+          "y": 50
         }
       }
     note: false
@@ -180,21 +180,19 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 31274de5-0c80-4041-8171-07dac9932450
+    taskid: 6576b7f6-bf3b-488b-83c5-b318db6cdbcb
     type: condition
     task:
-      id: 31274de5-0c80-4041-8171-07dac9932450
+      id: 6576b7f6-bf3b-488b-83c5-b318db6cdbcb
       version: -1
       name: Check if found malicious
-      script: Exists
+      scriptName: Exists
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "no":
       - "9"
-      "yes":
-      - "8"
     scriptarguments:
       value:
         simple: ${URL.Data}
@@ -202,36 +200,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 794
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "8":
-    id: "8"
-    taskid: dfc74289-ba9a-4db9-8968-0997d329522b
-    type: regular
-    task:
-      id: dfc74289-ba9a-4db9-8968-0997d329522b
-      version: -1
-      name: Closing incident
-      script: CloseInvestigation
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      notes: {}
-      reason: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1121
+          "x": 50,
+          "y": 925
         }
       }
     note: false
@@ -241,13 +211,13 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 1f515876-7ad2-4e9e-8454-3fde14722c60
+    taskid: 0ec8f008-7c74-42b6-89ff-34cb555840cb
     type: regular
     task:
-      id: 1f515876-7ad2-4e9e-8454-3fde14722c60
+      id: 0ec8f008-7c74-42b6-89ff-34cb555840cb
       version: -1
       name: False Negative
-      script: Print
+      scriptName: Print
       type: regular
       iscommand: false
       brand: ""
@@ -258,8 +228,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 675,
-          "y": 956
+          "x": 50,
+          "y": 1100
         }
       }
     note: false
@@ -269,10 +239,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 72f4341b-3cce-471a-816d-0ec51bd36b22
+    taskid: 3c42ee0e-5dcd-49c2-8469-27225beacefc
     type: regular
     task:
-      id: 72f4341b-3cce-471a-816d-0ec51bd36b22
+      id: 3c42ee0e-5dcd-49c2-8469-27225beacefc
       version: -1
       name: Check OpenPhish status
       description: Show OpenPhish database status
@@ -287,8 +257,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 11
+          "x": 265,
+          "y": 225
         }
       }
     note: false
@@ -301,10 +271,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1350,
-        "width": 821,
-        "x": 450,
-        "y": -134
+        "height": 1145,
+        "width": 1025,
+        "x": 50,
+        "y": 50
       }
     }
   }

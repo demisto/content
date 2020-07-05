@@ -104,7 +104,7 @@ class Client(BaseClient):
                     # Call to get all pages.
                     total_pages = data.get("page", {}).get("totalPages")
                     if total_pages is None:
-                        return_error(f'No "totalPages" in response')
+                        return_error('No "totalPages" in response')
                     demisto.debug(f"total_pages set to {total_pages}")
 
                 threats = data.get("threats", [])

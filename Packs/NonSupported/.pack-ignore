@@ -93,3 +93,6 @@ ignore=BA101
 
 [file:reputation-cve_5_4_9.json]
 ignore=RP102
+
+[file:reputations.json]
+ignore=RP104

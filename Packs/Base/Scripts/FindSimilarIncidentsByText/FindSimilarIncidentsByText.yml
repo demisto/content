@@ -110,4 +110,4 @@ type: python
 dockerimage: demisto/machine-learning
 runonce: false
 tests:
-- dedup_-_generic_-_test
+- Dedup - Generic v2 - Test
