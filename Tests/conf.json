@@ -2903,6 +2903,10 @@
             "integrations": "TruSTAR v2",
             "playbookID": "TruSTAR v2-Test",
             "timeout": 500
+        },
+        {
+            "integrations": "Ivanti Heat",
+            "playbookID": "Ivanti Heat - Test"
         }
     ],
     "skipped_tests": {
@@ -3056,6 +3060,7 @@
         "SecBI": "Issue 22545",
         "IBM Resilient Systems": "Issue 23722",
         "VxStream": "Issue #23795",
+        "Ivanti Heat": "Issue 26259",
 
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
