@@ -25,7 +25,7 @@ DEFAULT_POOL_TTL = 600
 
 class Client:
     """
-    Client to use in the SQL databases integration. Overrides BaseClient Overrides BaseClient
+    Client to use in the SQL databases integration. Overrides BaseClient
     makes the connection to the DB server
     """
 
@@ -80,7 +80,10 @@ class Client:
         :return: a connection object that will be used in order to execute SQL queries
         """
         module = self._convert_dialect_to_module(self.dialect)
-        db_preferences = f'{module}://{self.username}:{self.password}@{self.host}:{self.port}/{self.dbname}'
+        port_part = ''
+        if self.port:
+            port_part = f':{self.port}'
+        db_preferences = f'{module}://{self.username}:{self.password}@{self.host}{port_part}/{self.dbname}'
         ssl_connection = {}
         if self.dialect == "Microsoft SQL Server":
             db_preferences += "?driver=FreeTDS"
@@ -127,21 +130,16 @@ class Client:
 
 def generate_default_port_by_dialect(dialect: str) -> str:
     """
-    In case no port was chosen, a default port will be chosen according to the SQL db type
+    In case no port was chosen, a default port will be chosen according to the SQL db type. Only return a port for
+    Microsoft SQL Server where it seems to be required. For the other drivers an empty port is supported.
     :param dialect: sql db type
     :return: default port needed for connection
     """
-    if dialect == "MySQL":
-        return "3306"
-    elif dialect == "PostgreSQL":
-        return "5432"
-    elif dialect == "Oracle":
-        return "1521"
-    elif dialect == "Microsoft SQL Server":
+    if dialect == "Microsoft SQL Server":
         return "1433"
     else:
-        # set default to mysql
-        return "3306"
+        # use default port supported by the driver
+        return ""
 
 
 def generate_bind_vars(bind_variables_names: str, bind_variables_values: str) -> Any:
