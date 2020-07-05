@@ -1096,6 +1096,6 @@ outputs:
   description: Task analysis status.
   type: String
 fromversion: 4.0.0
-toversion: 4.5.0
+toversion: 4.9.9
 tests:
 - No tests
