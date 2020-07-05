@@ -108,7 +108,7 @@ def delete_object_command(client, args):
     object_type = args.get('object-type')
     rec_id = args.get('rec-id')
     raw_res = client.do_request('DELETE', f'odata/businessobject/{object_type}(\'{rec_id}\')')
-    return f'{rec_id} deleted successfully', {}, raw_res
+    return f'Record {rec_id} deleted successfully', {}, raw_res
 
 
 @logger

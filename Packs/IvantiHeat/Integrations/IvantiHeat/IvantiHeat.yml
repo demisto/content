@@ -134,6 +134,7 @@ script:
       description: Incident type
       type: String
     - contextPath: Ivantiheat.incidents.ActualCategory
+      description: Incident actual category
       type: String
     - contextPath: Ivantiheat.incidents.SocialTextHeader
       description: Incident text header
@@ -203,6 +204,7 @@ script:
       description: Incident type
       type: String
     - contextPath: Ivantiheat.incidents.ActualCategory
+      description: Incident actual category
       type: String
     - contextPath: Ivantiheat.incidents.SocialTextHeader
       description: Incident text header
@@ -264,10 +266,13 @@ script:
     name: ivanti-heat-object-attachment-upload
     outputs:
     - contextPath: Ivantiheat.Attachment.AttachmentId
+      description: The ID of the attachment
       type: String
     - contextPath: Ivantiheat.Attachment.FileName
+      description: The name of the attachment
       type: String
     - contextPath: Ivantiheat.Attachment.RecId
+      description: Attachement buisiness object ID
       type: String
   - arguments:
     - default: false
@@ -283,11 +288,13 @@ script:
       required: true
       secret: false
     - default: false
+      description: The action to perform
       isArray: false
       name: action
       required: true
       secret: false
     - default: false
+      description: The request body in JSON format
       isArray: false
       name: request-data
       required: true
@@ -353,6 +360,7 @@ script:
       description: Incident type
       type: String
     - contextPath: Ivantiheat.incidents.ActualCategory
+      description: Incident actual category
       type: String
     - contextPath: Ivantiheat.incidents.SocialTextHeader
       description: Incident text header
