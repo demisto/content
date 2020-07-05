@@ -181,7 +181,7 @@ class Client(BaseClient):
                 return_error("You entered a fusion file path but the 'fusion' service is not chosen. "
                              "Add the 'fusion' service to the list or remove the fusion file path.")
 
-    def get_risk_rules(self, indicator_type: Optional[str] = None):
+    def get_risk_rules(self, indicator_type: Optional[str] = None) -> dict:
         if indicator_type is None:
             indicator_type = self.indicator_type
         return self._http_request(
@@ -362,7 +362,7 @@ def get_risk_rules_command(client: Client, args) -> Tuple[str, dict, dict]:
             str, dict, list. the markdown table, context JSON and list of risk rules
         """
     indicator_type = args.get('indicator_type', demisto.params().get('indicator_type'))
-    result: dict = client.get_risk_rules(indicator_type)
+    result = client.get_risk_rules(indicator_type)
     entry_result = []
     for entry in result['data']['results']:
         entry_result.append({
