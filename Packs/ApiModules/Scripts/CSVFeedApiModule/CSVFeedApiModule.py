@@ -270,10 +270,10 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
                     indicator = {
                         'value': value,
                         'type': indicator_type,
-                        'tags': tags,
                         'rawJSON': raw_json,
                         'fields': create_fields_mapping(raw_json, mapping) if mapping else {}
                     }
+                    indicator['fields']['tags'] = tags
                     indicators.append(indicator)
     return indicators
 

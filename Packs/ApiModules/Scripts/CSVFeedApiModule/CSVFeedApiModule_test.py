@@ -192,7 +192,7 @@ class TestTagsParam:
                 feed_url_to_config=feed_url_to_config,
             )
             _, _, indicators = get_indicators_command(client, args, tags)
-            assert tags == indicators[0].get('tags')
+            assert tags == indicators[0]['fields']['tags']
 
     def test_tags_not_exists(self):
         """
@@ -227,4 +227,4 @@ class TestTagsParam:
                 feed_url_to_config=feed_url_to_config,
             )
             _, _, indicators = get_indicators_command(client, args)
-            assert [] == indicators[0].get('tags')
+            assert [] == indicators[0]['fields']['tags']
