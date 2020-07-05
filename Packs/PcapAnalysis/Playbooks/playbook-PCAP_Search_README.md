@@ -23,14 +23,7 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| QueryOperator | In case the playbook has several search inputs provided such as IPAddressToSearch, TCPPortsToSearch ,UDPPortsToSearch, ProtocolToSearch and AdvancedSearchFilter. This input will specify if the inputs will be treated as an AND or an OR search for all the PCAP search filter.
-value can be "and" or "or". The default value is "and",
-If the IPAddressToSearch was defined as 192.168.1.1,192.168.1.2
-The TCPPortsToSearch was defined as 445,443
-And the QueryOperator was defined as "and"
-The resultant query will be \(ip.addr == 192.168.1.1 or ip.addr ==  192.168.1.2\) and \(tcp.port == 445 or tcp.port == 443\)
-If the QueryOperator was defined as "or"
-The resultant query will be \(ip.addr == 192.168.1.1 or ip.addr ==  192.168.1.2\) or \(tcp.port == 445 or tcp.port == 443\) | and | Required |
+| QueryOperator | In case the playbook has several search inputs provided such as IPAddressToSearch, TCPPortsToSearch ,UDPPortsToSearch, ProtocolToSearch and AdvancedSearchFilter. This input will specify if the inputs will be treated as an AND or an OR search for all the PCAP search filter. value can be "and" or "or". The default value is "and", If the IPAddressToSearch was defined as 192.168.1.1,192.168.1.2 The TCPPortsToSearch was defined as 445,443 And the QueryOperator was defined as "and" The resultant query will be \(ip.addr == 192.168.1.1 or ip.addr ==  192.168.1.2\) and \(tcp.port == 445 or tcp.port == 443\) If the QueryOperator was defined as "or" The resultant query will be \(ip.addr == 192.168.1.1 or ip.addr ==  192.168.1.2\) or \(tcp.port == 445 or tcp.port == 443\) | and | Required |
 | IPAddressToSearch | The value of an IP address to search. Can be a single IP or a comma delimited list of IP addresses. CIDR ranges are also acceptable. All IPs will be treated with the OR operator. |  | Optional |
 | TCPPortsToSearch | The value of a TCP port number to search. Can be a single port or a comma delimited list of ports. All TCP ports will be treated with the OR operator. |  | Optional |
 | UDPPortsToSearch | The value of a UDP port number to search. Can be a single port or a comma delimited list of ports. All UDP ports will be treated with the OR operator. |  | Optional |
