@@ -2068,6 +2068,11 @@
             "timeout": 300
         },
         {
+            "integrations": "TAXII 2 Feed",
+            "playbookID": "TAXII 2 Feed Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Traps",
             "playbookID": "Traps test",
             "timeout": 600
@@ -2629,8 +2634,7 @@
         {
             "integrations": "AlienVault Reputation Feed",
             "playbookID": "AlienVaultReputationFeed_Test",
-            "fromversion": "5.5.0",
-            "timeout": 9000
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "BruteForceBlocker Feed",
@@ -2872,13 +2876,20 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Unit42 Feed",
+            "playbookID": "Unit42 Feed - Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "playbookID": "hashIncidentFields-test",
             "fromversion": "4.5.0",
             "timeout": 60000
         }
     ],
     "skipped_tests": {
-        "AlienVaultReputationFeed_Test": "Issue 26104",
+        "PAN-OS DAG Configuration Test": "Issue 60693",
+        "Phishing Classifier V2 ML Test": "Issue 26066",
+        "DuoAdmin API test playbook": "Issue 24937",
         "Workday - Test": "Issue 25896",
         "CuckooTest": "Issue 25601",
         "RedLockTest": "Issue 24600",
@@ -3046,6 +3057,7 @@
         "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer",
         "SafeBreach v2": "it is a partner integration, no instance",
+        "CrowdStrike Falcon X": "No instance",
         "IllusiveNetworks": "supported by partner",
         "Humio": "supported by the partner",
         "Digital Guardian": "partner integration",
@@ -3202,6 +3214,8 @@
         "Feodo Tracker IP Blocklist Feed",
         "AlienVault OTX TAXII Feed",
         "Prisma Access Egress IP feed",
+        "Lastline v2",
+        "McAfee DXL",
         "GCP Whitelist Feed"
     ],
     "docker_thresholds": {
