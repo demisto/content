@@ -1,0 +1,939 @@
+id: Polygon-Test
+version: -1
+name: Polygon-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0497fcfb-9b76-404a-8248-4fcfef2215c8
+    type: start
+    task:
+      id: 0497fcfb-9b76-404a-8248-4fcfef2215c8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: d5ef5653-6863-465e-8aa3-c6b573bec18c
+    type: regular
+    task:
+      id: d5ef5653-6863-465e-8aa3-c6b573bec18c
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: f2c79940-810a-4b85-8f40-2178bf01d258
+    type: regular
+    task:
+      id: f2c79940-810a-4b85-8f40-2178bf01d258
+      version: -1
+      name: polygon-upload-file
+      description: Upload file for analysis
+      script: Group-IB TDS Polygon|||polygon-upload-file
+      type: regular
+      iscommand: true
+      brand: Group-IB TDS Polygon
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      file_id:
+        simple: ${File.EntryID}
+      password: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: ac7ed051-0265-4752-8913-b313d46cedf0
+    type: condition
+    task:
+      id: ac7ed051-0265-4752-8913-b313d46cedf0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Polygon.Analysis.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Polygon.Analysis.EntryID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Polygon.Analysis.FileName
+            iscontext: true
+          right:
+            value:
+              simple: test.txt
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Polygon.Analysis.Status
+            iscontext: true
+          right:
+            value:
+              simple: In Progress
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 1057f59f-3a58-486c-8c2d-95fc59aa9158
+    type: regular
+    task:
+      id: 1057f59f-3a58-486c-8c2d-95fc59aa9158
+      version: -1
+      name: polygon-analysis-info
+      description: Get TDS Polygon analysis info
+      script: Group-IB TDS Polygon|||polygon-analysis-info
+      type: regular
+      iscommand: true
+      brand: Group-IB TDS Polygon
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      tds_analysis_id:
+        simple: ${Polygon.Analysis.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 70ca0a34-94f6-42d3-8ea9-2c19f75603bc
+    type: condition
+    task:
+      id: 70ca0a34-94f6-42d3-8ea9-2c19f75603bc
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Polygon.Analysis.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Polygon.Analysis.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Polygon.Analysis.Size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Polygon.Analysis.Started
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Polygon.Analysis.Analyzed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Polygon.Analysis.MD5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Polygon.Analysis.SHA1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Polygon.Analysis.SHA256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Polygon.Analysis.Result
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Polygon.Analysis.Status
+            iscontext: true
+          right:
+            value:
+              simple: Finished
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Polygon.Analysis.Verdict
+            iscontext: true
+          right:
+            value:
+              simple: Malicious
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Polygon.Analysis.Probability
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Polygon.Analysis.Score
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Polygon.Analysis.Internet-connection
+            iscontext: true
+          right:
+            value:
+              simple: Available
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Polygon.Analysis.Type
+            iscontext: true
+      - - operator: isTrue
+          left:
+            value:
+              simple: Polygon.Analysis.DumpExists
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 282385ad-a465-47b0-8450-c794cbbd8f74
+    type: regular
+    task:
+      id: 282385ad-a465-47b0-8450-c794cbbd8f74
+      version: -1
+      name: polygon-export-report
+      description: Export an archive with TDS Polygon report to War Room
+      script: Group-IB TDS Polygon|||polygon-export-report
+      type: regular
+      iscommand: true
+      brand: Group-IB TDS Polygon
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      tds_analysis_id:
+        simple: ${Polygon.Analysis.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: f57c1883-8949-4fc1-8dd4-d82d86df3933
+    type: condition
+    task:
+      id: f57c1883-8949-4fc1-8dd4-d82d86df3933
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.EntryID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Info
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 276e0b7c-b587-46c0-8ebe-aac50f839c80
+    type: regular
+    task:
+      id: 276e0b7c-b587-46c0-8ebe-aac50f839c80
+      version: -1
+      name: polygon-export-pcap
+      description: Network activity dump export
+      script: Group-IB TDS Polygon|||polygon-export-pcap
+      type: regular
+      iscommand: true
+      brand: Group-IB TDS Polygon
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      tds_analysis_id:
+        simple: ${Polygon.Analysis.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 0f2ee09d-7b54-4f7e-8e85-e321f037567f
+    type: condition
+    task:
+      id: 0f2ee09d-7b54-4f7e-8e85-e321f037567f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.EntryID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Info
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: ea56a856-4564-4525-851c-f451d97d4eb5
+    type: regular
+    task:
+      id: ea56a856-4564-4525-851c-f451d97d4eb5
+      version: -1
+      name: polygon-export-video
+      description: Screen activity video export
+      script: Group-IB TDS Polygon|||polygon-export-video
+      type: regular
+      iscommand: true
+      brand: Group-IB TDS Polygon
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      tds_analysis_id:
+        simple: ${Polygon.Analysis.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: dc0704c5-59ff-44a6-81c4-76558b34dd5b
+    type: condition
+    task:
+      id: dc0704c5-59ff-44a6-81c4-76558b34dd5b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.EntryID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Info
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: e3161325-9e6e-4ee7-8f09-0bd8e46c7c57
+    type: regular
+    task:
+      id: e3161325-9e6e-4ee7-8f09-0bd8e46c7c57
+      version: -1
+      name: file
+      description: Check file reputation
+      script: Group-IB TDS Polygon|||file
+      type: regular
+      iscommand: true
+      brand: Group-IB TDS Polygon
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      file:
+        simple: 5caa42414c4c9c1fcf4863bb2d8f0ba48a04f728
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 10380044-e0d7-4ac7-8a2f-08d4e1cf97eb
+    type: condition
+    task:
+      id: 10380044-e0d7-4ac7-8a2f-08d4e1cf97eb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Malicious.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Malicious.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Polygon.Analysis.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Polygon.Analysis.MD5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Polygon.Analysis.SHA1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Polygon.Analysis.SHA256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: ea6b0505-fad0-4096-891d-780777843bd3
+    type: title
+    task:
+      id: ea6b0505-fad0-4096-891d-780777843bd3
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 2684b9b4-298b-4d82-8637-3d3e7be4acb1
+    type: regular
+    task:
+      id: 2684b9b4-298b-4d82-8637-3d3e7be4acb1
+      version: -1
+      name: FileCreateAndUpload
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      data:
+        simple: 'Open this link: http://reqw.xyz/pik.zip'
+      entryId: {}
+      filename:
+        simple: test.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 1e1ee6af-d44e-4f82-8ccd-4e091e4e0a77
+    type: playbook
+    task:
+      id: 1e1ee6af-d44e-4f82-8ccd-4e091e4e0a77
+      version: -1
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${Polygon.Analysis.ID}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: tds_analysis_id
+      PollingCommandName:
+        simple: polygon-analysis-info
+      Timeout:
+        simple: "60"
+      dt:
+        simple: Polygon.Analysis(val.Status !== 'Finished').ID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 78dc0f8a-bd10-4bba-8e88-1930627c97d9
+    type: regular
+    task:
+      id: 78dc0f8a-bd10-4bba-8e88-1930627c97d9
+      version: -1
+      name: polygon-upload-url
+      description: Upload URL for analysis
+      script: Group-IB TDS Polygon|||polygon-upload-url
+      type: regular
+      iscommand: true
+      brand: Group-IB TDS Polygon
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      url:
+        simple: http://reqw.xyz/pik.zip
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: ba1d28a5-8e6a-494f-8e63-5fed77cce5c0
+    type: condition
+    task:
+      id: ba1d28a5-8e6a-494f-8e63-5fed77cce5c0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Polygon.Analysis.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Polygon.Analysis.URL
+            iscontext: true
+          right:
+            value:
+              simple: http://reqw.xyz/pik.zip
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Polygon.Analysis.Status
+            iscontext: true
+          right:
+            value:
+              simple: In Progress
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: afbecc29-b62d-42e8-841a-7ee54c29f33b
+    type: regular
+    task:
+      id: afbecc29-b62d-42e8-841a-7ee54c29f33b
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: File
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 0b722eb9-8ae9-48bb-84a1-09d7e4ff7e86
+    type: regular
+    task:
+      id: 0b722eb9-8ae9-48bb-84a1-09d7e4ff7e86
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: File
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3825,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''

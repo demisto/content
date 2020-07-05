@@ -1,20 +1,20 @@
 id: TAXII_Feed_Test
 version: -1
-contentitemfields:
-  propagationLabels: []
 name: TAXII_Feed_Test
+description: Test playbook for TAXII Feed
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 629b23e0-7b34-4e9e-8709-e40d1033914a
+    taskid: 988653ca-17d0-4f6b-8ef3-209f1a45d3de
     type: start
     task:
-      id: 629b23e0-7b34-4e9e-8709-e40d1033914a
+      id: 988653ca-17d0-4f6b-8ef3-209f1a45d3de
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -30,12 +30,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: c3764c40-9251-4198-85cb-cc403a040f1b
+    taskid: 31e30a66-72b2-48d3-8dc2-cc54e09ad486
     type: regular
     task:
-      id: c3764c40-9251-4198-85cb-cc403a040f1b
+      id: 31e30a66-72b2-48d3-8dc2-cc54e09ad486
       version: -1
       name: Get Indicators
       description: Get the feed indicators.
@@ -47,10 +48,285 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
+      initial_interval:
+        simple: 4 days
       limit:
         simple: "10"
-      initial_interval:
-        simple: "4 days"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 5402c5e6-14ae-4cd6-810e-ab992cb16115
+    type: condition
+    task:
+      id: 5402c5e6-14ae-4cd6-810e-ab992cb16115
+      version: -1
+      name: Assert Output
+      description: Asserts output.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: TAXII
+                accessor: Indicator.Value
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: TAXII
+                accessor: Indicator.Type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: TAXII
+                accessor: Indicator.Rawjson.type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: TAXII
+                accessor: Indicator.Rawjson.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: f1521e9e-4b28-43b9-8e9e-ab7df821ee8a
+    type: title
+    task:
+      id: f1521e9e-4b28-43b9-8e9e-ab7df821ee8a
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 388b3a2c-ead7-4e3a-8765-834101867a84
+    type: regular
+    task:
+      id: 388b3a2c-ead7-4e3a-8765-834101867a84
+      version: -1
+      name: Delete Context
+      description: Delete field from context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 55fe4210-fa84-4b08-82fe-12134c9e72d0
+    type: regular
+    task:
+      id: 55fe4210-fa84-4b08-82fe-12134c9e72d0
+      version: -1
+      name: createNewIndicator
+      description: Change the properties of an indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      employeehealthstatus: {}
+      employeeresponsestatus: {}
+      entryid: {}
+      expirationdate: {}
+      fileextension: {}
+      filetype: {}
+      firstname: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      jobtitle: {}
+      lastname: {}
+      lastseenbysource: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      merge: {}
+      mitrealiases: {}
+      mitrecontributors: {}
+      mitredatasources: {}
+      mitredefensebypassed: {}
+      mitredescription: {}
+      mitredetection: {}
+      mitreextendedaliases: {}
+      mitreexternalreferences: {}
+      mitreid: {}
+      mitreimpacttype: {}
+      mitrekillchainphases: {}
+      mitrelabels: {}
+      mitrename: {}
+      mitrepermissionsrequired: {}
+      mitreplatforms: {}
+      mitresystemrequirements: {}
+      mitretype: {}
+      mitreversion: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      recordedfutureevidencedetails: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      relatedIncidents: {}
+      reportedby: {}
+      reputation: {}
+      seenNow: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      source:
+        simple: taxiitest
+      sourceTimeStamp: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      subdomains: {}
+      tags: {}
+      threattypes: {}
+      trafficlightprotocol: {}
+      type:
+        simple: URL
+      updateddate: {}
+      username: {}
+      value:
+        simple: www.demisto.com
     separatecontext: false
     view: |-
       {
@@ -63,12 +339,79 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  "2":
-    id: "2"
-    taskid: 2956dd1c-409d-4154-8837-37195cefb1c1
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 215c092f-0c67-4e43-821d-5582b78833b2
+    type: regular
+    task:
+      id: 215c092f-0c67-4e43-821d-5582b78833b2
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 6d990d13-a36a-429d-8520-fd09a5f7cc6b
+    type: regular
+    task:
+      id: 6d990d13-a36a-429d-8520-fd09a5f7cc6b
+      version: -1
+      name: Get Indicators
+      description: Get the feed indicators.
+      script: TAXIIFeed|||get-indicators
+      type: regular
+      iscommand: true
+      brand: TAXIIFeed
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      initial_interval:
+        simple: 4 days
+      limit:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 7a0a42b7-e339-4e18-8c75-86f705bedc16
     type: condition
     task:
-      id: 2956dd1c-409d-4154-8837-37195cefb1c1
+      id: 7a0a42b7-e339-4e18-8c75-86f705bedc16
       version: -1
       name: Assert Output
       description: Asserts output.
@@ -113,80 +456,23 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 545
+          "x": 350,
+          "y": 1245
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  "3":
-    id: "3"
-    taskid: 012a601e-ed7e-4091-80ee-d9071f0c9937
-    type: title
-    task:
-      id: 012a601e-ed7e-4091-80ee-d9071f0c9937
-      version: -1
-      name: Done
-      description: Done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  "4":
-    id: "4"
-    taskid: 4e5d7a78-4f39-481d-8168-de2e970706e5
-    type: regular
-    task:
-      id: 4e5d7a78-4f39-481d-8168-de2e970706e5
-      version: -1
-      name: Delete Context
-      description: Delete field from context.
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
-        "width": 380,
+        "height": 1435,
+        "width": 680,
         "x": 50,
         "y": 50
       }
@@ -194,4 +480,4 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: 8b67d530-5b0f-4085-82b9-4429228f211e
+fromversion: 4.1.0

@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 9f1790b9-f686-4ef0-88a1-67a99c6fd22a
+    taskid: 2ac07fca-26e2-4263-8b08-c3944731d448
     type: start
     task:
-      id: 9f1790b9-f686-4ef0-88a1-67a99c6fd22a
+      id: 2ac07fca-26e2-4263-8b08-c3944731d448
       version: -1
       name: ""
       description: Playbook start point
@@ -44,10 +44,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: d792cc3a-8145-4a6d-8b64-70659abb4a3b
+    taskid: 0fb13cc0-f182-49f6-8ced-38ddfe5c5d6e
     type: title
     task:
-      id: d792cc3a-8145-4a6d-8b64-70659abb4a3b
+      id: 0fb13cc0-f182-49f6-8ced-38ddfe5c5d6e
       version: -1
       name: Done
       description: Done
@@ -69,10 +69,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 741e8a36-af99-4a71-8bea-7a9a29a19cf6
+    taskid: eb680898-4271-4270-8249-7de1acc7cea9
     type: playbook
     task:
-      id: 741e8a36-af99-4a71-8bea-7a9a29a19cf6
+      id: eb680898-4271-4270-8249-7de1acc7cea9
       version: -1
       name: Detonate File - JoeSecurity
       description: |-
@@ -86,19 +86,6 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
-    scriptarguments:
-      Comments: {}
-      File:
-        complex:
-          root: inputs.File
-      InternetAccess:
-        simple: "True"
-      Interval:
-        simple: "1"
-      ReportFileType: {}
-      Systems: {}
-      Timeout:
-        simple: "15"
     separatecontext: true
     loop:
       iscommand: false
@@ -119,10 +106,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 3699b4d4-4b78-40fb-854b-4685fc11884d
+    taskid: de2bc919-5bdb-4bdf-8346-dea2f40822d1
     type: playbook
     task:
-      id: 3699b4d4-4b78-40fb-854b-4685fc11884d
+      id: de2bc919-5bdb-4bdf-8346-dea2f40822d1
       version: -1
       name: ATD - Detonate File
       description: |-
@@ -179,10 +166,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 1e1e8ced-8254-4e0f-87df-6a66361990ac
+    taskid: 579d4c4e-ea47-490e-85ba-eb2b8d985873
     type: playbook
     task:
-      id: 1e1e8ced-8254-4e0f-87df-6a66361990ac
+      id: 579d4c4e-ea47-490e-85ba-eb2b8d985873
       version: -1
       name: Detonate File - ThreatGrid
       description: Detonate one or more files using the ThreatGrid integration. This
@@ -234,10 +221,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 9936b2c1-6b2d-4dd0-8ad1-5a4a20d8d2a4
+    taskid: 8fcc8803-c38d-4aae-8900-ccbc9d9a19ae
     type: playbook
     task:
-      id: 9936b2c1-6b2d-4dd0-8ad1-5a4a20d8d2a4
+      id: 8fcc8803-c38d-4aae-8900-ccbc9d9a19ae
       version: -1
       name: CrowdStrike Falcon Sandbox - Detonate file
       description: Detonate one or more files using the CrowdStrike Falcon Sandbox
@@ -283,10 +270,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: f642e2fa-ccad-4649-8dec-9efc24383a97
+    taskid: 5d6a8999-d509-45d4-81c8-3d86758f09ff
     type: playbook
     task:
-      id: f642e2fa-ccad-4649-8dec-9efc24383a97
+      id: 5d6a8999-d509-45d4-81c8-3d86758f09ff
       version: -1
       name: WildFire - Detonate file
       description: |-
@@ -330,10 +317,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 3c9fb593-0fd1-4add-8ec0-9b9c90df990a
+    taskid: 2ea061e9-20ec-4db2-8561-833ebfb9924e
     type: playbook
     task:
-      id: 3c9fb593-0fd1-4add-8ec0-9b9c90df990a
+      id: 2ea061e9-20ec-4db2-8561-833ebfb9924e
       version: -1
       name: Detonate File - Lastline v2
       description: |-
@@ -375,10 +362,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: d5773904-ddd5-4fa7-83f0-9df15bd55a53
+    taskid: f46bc6da-5b3b-4acd-8d8a-7d21e02c12f3
     type: playbook
     task:
-      id: d5773904-ddd5-4fa7-83f0-9df15bd55a53
+      id: f46bc6da-5b3b-4acd-8d8a-7d21e02c12f3
       version: -1
       name: Detonate File - Cuckoo
       description: Detonating file with Cuckoo
@@ -416,10 +403,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: f6f3e837-e456-4391-82b6-fd155d458556
+    taskid: b8804e5e-310a-43fe-86a9-ad68ed0641f4
     type: playbook
     task:
-      id: f6f3e837-e456-4391-82b6-fd155d458556
+      id: b8804e5e-310a-43fe-86a9-ad68ed0641f4
       version: -1
       name: Detonate File - SNDBOX
       description: |-
@@ -468,10 +455,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 4022a15a-2575-4d34-886f-0ca4e6b1832d
+    taskid: b10694a4-f49b-48f7-8e43-e6448541ff65
     type: playbook
     task:
-      id: 4022a15a-2575-4d34-886f-0ca4e6b1832d
+      id: b10694a4-f49b-48f7-8e43-e6448541ff65
       version: -1
       name: Detonate File - HybridAnalysis
       description: |-
@@ -520,10 +507,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: fb7c44ba-da96-430f-88b0-6a4b70c2300f
+    taskid: 08685dd3-4865-4dda-8b8a-4018c98e1518
     type: playbook
     task:
-      id: fb7c44ba-da96-430f-88b0-6a4b70c2300f
+      id: 08685dd3-4865-4dda-8b8a-4018c98e1518
       version: -1
       name: Detonate File - ANYRUN
       description: |-
@@ -565,10 +552,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: b268ceda-3965-44c9-8313-e836f32e0bb0
+    taskid: 0d0261e2-a689-46c1-8321-79cc173dac64
     type: playbook
     task:
-      id: b268ceda-3965-44c9-8313-e836f32e0bb0
+      id: 0d0261e2-a689-46c1-8321-79cc173dac64
       version: -1
       name: Detonate File - FireEye AX
       description: Detonate one or more files using the FireEye AX integration. This
@@ -584,14 +571,6 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
-    scriptarguments:
-      File:
-        complex:
-          root: inputs.File
-      Interval:
-        simple: "1"
-      Timeout:
-        simple: "30"
     separatecontext: true
     loop:
       iscommand: false
@@ -608,14 +587,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "20":
     id: "20"
-    taskid: 2804e4f1-1eb7-46ea-8b1d-af6affff25e2
+    taskid: 330dba59-a610-47a5-852d-5d9e4d39c7e9
     type: playbook
     task:
-      id: 2804e4f1-1eb7-46ea-8b1d-af6affff25e2
+      id: 330dba59-a610-47a5-852d-5d9e4d39c7e9
       version: -1
       name: Detonate File - VMRay
       description: Detonating file with VMRay
@@ -652,7 +631,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4350,
+          "x": 4780,
           "y": 195
         }
       }
@@ -667,7 +646,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 385,
-        "width": 4680,
+        "width": 5110,
         "x": 50,
         "y": 50
       }

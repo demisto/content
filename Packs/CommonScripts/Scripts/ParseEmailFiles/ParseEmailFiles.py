@@ -3181,9 +3181,8 @@ def parse_email_headers(header, raw=False):
 def get_msg_mail_format(msg_dict):
     try:
         return msg_dict.get('Headers', 'Content-type:').split('Content-type:')[1].split(';')[0]
-    except ValueError:
-        return ''
-    except IndexError:
+    except Exception as e:
+        demisto.debug('Got exception while trying to get msg mail format - {}'.format(str(e)))
         return ''
 
 
@@ -3654,7 +3653,8 @@ def main():
         if is_error(result):
             return_error(get_error(result))
 
-        file_type = result[0]['FileMetadata'].get('info', '')
+        file_metadata = result[0]['FileMetadata']
+        file_type = file_metadata.get('info', '') or file_metadata.get('type', '')
 
     except Exception as ex:
         return_error(
@@ -3668,8 +3668,8 @@ def main():
             email_data, attached_emails = handle_msg(file_path, file_name, parse_only_headers, max_depth)
             output = create_email_output(email_data, attached_emails)
 
-        elif 'rfc 822 mail' in file_type_lower or 'smtp mail' in file_type_lower or 'multipart/signed' \
-                in file_type_lower:
+        elif any(eml_candidate in file_type_lower for eml_candidate in
+                 ['rfc 822 mail', 'smtp mail', 'multipart/signed', 'message/rfc822']):
             if 'unicode (with bom) text' in file_type_lower:
                 email_data, attached_emails = handle_eml(
                     file_path, False, file_name, parse_only_headers, max_depth, bom=True

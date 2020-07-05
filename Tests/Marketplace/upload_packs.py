@@ -6,10 +6,11 @@ import shutil
 import uuid
 import prettytable
 import glob
+import git
 from datetime import datetime
 from zipfile import ZipFile
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack, PackStatus, GCPConfig, PACKS_FULL_PATH, \
-    IGNORED_FILES, PACKS_FOLDER, IGNORED_PATHS, Metadata
+    IGNORED_FILES, PACKS_FOLDER, IGNORED_PATHS, Metadata, CONTENT_ROOT_PATH
 from demisto_sdk.commands.common.tools import run_command, print_error, print_warning, print_color, LOG_COLORS, str2bool
 
 
@@ -92,9 +93,10 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
         os.mkdir(index_folder_path)
         return index_folder_path, index_blob
 
-    index_blob.cache_control = "no-cache"  # index zip should never be cached in the memory, should be updated version
-    index_blob.reload()
+    # index zip should never be cached in the memory, should be updated version
+    index_blob.cache_control = "no-cache,max-age=0"
     index_blob.download_to_filename(download_index_path)
+    index_blob.reload()
 
     if os.path.exists(download_index_path):
         with ZipFile(download_index_path, 'r') as index_zip:
@@ -235,18 +237,8 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
     """
     with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json"), "w+") as index_file:
         index = {
-            'description': 'Master index for Demisto Content Packages',
-            'baseUrl': 'https://marketplace.demisto.ninja/content/packs',  # disable-secrets-detection
             'revision': build_number,
             'modified': datetime.utcnow().strftime(Metadata.DATE_FORMAT),
-            'landingPage': {
-                'sections': [
-                    'Trending',
-                    'Recommended by Demisto',
-                    'New',
-                    'Getting Started'
-                ]
-            },
             'packs': private_packs
         }
         json.dump(index, index_file, indent=4)
@@ -255,11 +247,9 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
     index_zip_path = shutil.make_archive(base_name=index_folder_path, format="zip",
                                          root_dir=extract_destination_path, base_dir=index_zip_name)
 
-    index_blob.cache_control = "no-cache"  # disabling caching for index blob
-    if index_blob.exists():
-        index_blob.reload()
-
+    index_blob.cache_control = "no-cache,max-age=0"  # disabling caching for index blob
     index_blob.upload_from_filename(index_zip_path)
+
     shutil.rmtree(index_folder_path)
     print_color(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.", LOG_COLORS.GREEN)
 
@@ -414,7 +404,7 @@ def update_index_with_priced_packs(private_storage_bucket, extract_destination_p
         return private_packs
 
 
-def _build_summary_table(packs_input_list):
+def _build_summary_table(packs_input_list, include_pack_status=False):
     """Build summary table from pack list
 
     Args:
@@ -424,13 +414,15 @@ def _build_summary_table(packs_input_list):
         PrettyTable: table with upload result of packs.
 
     """
-    table_fields = ["Index", "Pack Name", "Version", "Status"]
+    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Status"] if include_pack_status \
+        else ["Index", "Pack ID", "Pack Display Name", "Latest Version"]
     table = prettytable.PrettyTable()
     table.field_names = table_fields
 
     for index, pack in enumerate(packs_input_list, start=1):
         pack_status_message = PackStatus[pack.status].value
-        row = [index, pack.name, pack.latest_version, pack_status_message]
+        row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message] if include_pack_status \
+            else [index, pack.name, pack.display_name, pack.latest_version]
         table.add_row(row)
 
     return table
@@ -452,6 +444,32 @@ def load_json(file_path):
     return result
 
 
+def get_content_git_client(content_repo_path):
+    """ Initializes content repo client.
+
+    Args:
+        content_repo_path (str): content repo full path
+
+    Returns:
+        git.repo.base.Repo: content repo object.
+
+    """
+    return git.Repo(content_repo_path)
+
+
+def get_recent_commits_data(content_repo):
+    """ Returns recent commits hashes (of head and remote master)
+
+    Args:
+        content_repo (git.repo.base.Repo): content repo object.
+
+    Returns:
+        str: last commit hash of head.
+        str: previous commit of origin/master (origin/master~1)
+    """
+    return content_repo.head.commit.hexsha, content_repo.commit('origin/master~1').hexsha
+
+
 def print_packs_summary(packs_list):
     """Prints summary of packs uploaded to gcs.
 
@@ -460,24 +478,31 @@ def print_packs_summary(packs_list):
 
     """
     successful_packs = [pack for pack in packs_list if pack.status == PackStatus.SUCCESS.name]
-    skipped_packs = [pack for pack in packs_list if pack.status == PackStatus.PACK_ALREADY_EXISTS.name]
+    skipped_packs = [pack for pack in packs_list if
+                     pack.status == PackStatus.PACK_ALREADY_EXISTS.name
+                     or pack.status == PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name
+                     or pack.status == PackStatus.FAILED_DETECTING_MODIFIED_FILES.name]
     failed_packs = [pack for pack in packs_list if pack not in successful_packs and pack not in skipped_packs]
 
     print("\n")
-    print("--------------------------------------- Packs Upload Summary ---------------------------------------")
+    print("------------------------------------------ Packs Upload Summary ------------------------------------------")
     print(f"Total number of packs: {len(packs_list)}")
+    print("----------------------------------------------------------------------------------------------------------")
 
     if successful_packs:
         print_color(f"Number of successful uploaded packs: {len(successful_packs)}", LOG_COLORS.GREEN)
+        print_color("Uploaded packs:\n", LOG_COLORS.GREEN)
         successful_packs_table = _build_summary_table(successful_packs)
         print_color(successful_packs_table, LOG_COLORS.GREEN)
     if skipped_packs:
         print_warning(f"Number of skipped packs: {len(skipped_packs)}")
+        print_warning("Skipped packs:\n")
         skipped_packs_table = _build_summary_table(skipped_packs)
         print_warning(skipped_packs_table)
     if failed_packs:
         print_error(f"Number of failed packs: {len(failed_packs)}")
-        failed_packs_table = _build_summary_table(failed_packs)
+        print_error("Failed packs:\n")
+        failed_packs_table = _build_summary_table(failed_packs, include_pack_status=True)
         print_error(failed_packs_table)
         sys.exit(1)
 
@@ -511,8 +536,8 @@ def option_handler():
                         required=False, default="All")
     parser.add_argument('-n', '--ci_build_number',
                         help="CircleCi build number (will be used as hash revision at index file)", required=False)
-    parser.add_argument('-o', '--override_pack', help="Override existing packs in cloud storage", default=False,
-                        action='store_true', required=False)
+    parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
+                        default=False, action='store_true', required=False)
     parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
                         required=False)
     parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
@@ -533,7 +558,7 @@ def main():
     service_account = option.service_account
     target_packs = option.pack_names if option.pack_names else ""
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
-    override_pack = option.override_pack
+    override_all_packs = option.override_all_packs
     signature_key = option.key_string
     id_set_path = option.id_set_path
     packs_dependencies_mapping = load_json(option.pack_dependencies) if option.pack_dependencies else {}
@@ -543,6 +568,10 @@ def main():
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
+
+    # content repo client initialized
+    content_repo = get_content_git_client(CONTENT_ROOT_PATH)
+    current_commit_hash, remote_previous_commit_hash = get_recent_commits_data(content_repo)
 
     if storage_base_path:
         GCPConfig.STORAGE_BASE_PATH = storage_base_path
@@ -597,15 +626,20 @@ def main():
                                            integration_images=integration_images, author_image=author_image,
                                            index_folder_path=index_folder_path,
                                            packs_dependencies_mapping=packs_dependencies_mapping,
-                                           build_number=build_number)
+                                           build_number=build_number, commit_hash=current_commit_hash)
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack.cleanup()
             continue
 
-        task_status = pack.prepare_release_notes(index_folder_path, build_number)
+        task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number)
         if not task_status:
             pack.status = PackStatus.FAILED_RELEASE_NOTES.name
+            pack.cleanup()
+            continue
+
+        if not_updated_build:
+            pack.status = PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name
             pack.cleanup()
             continue
 
@@ -627,8 +661,15 @@ def main():
             pack.cleanup()
             continue
 
+        task_status, pack_was_modified = pack.detect_modified(content_repo, index_folder_path, current_commit_hash,
+                                                              remote_previous_commit_hash)
+        if not task_status:
+            pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
+            pack.cleanup()
+            continue
+
         task_status, skipped_pack_uploading = pack.upload_to_storage(zip_pack_path, pack.latest_version, storage_bucket,
-                                                                     override_pack)
+                                                                     override_all_packs or pack_was_modified)
         if not task_status:
             pack.status = PackStatus.FAILED_UPLOADING_PACK.name
             pack.cleanup()
