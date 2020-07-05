@@ -2212,7 +2212,8 @@ inputs:
               simple: pcapng
       accessor: EntryID
   required: false
-  description: ""
+  description: This input specifics the file entry id for the PCAP file if the user
+    provided the file in the incident. One PCAP file can run per incident.
   playbookInputQuery:
 - key: RsaDecryptKeyEntryID
   value:
@@ -2238,7 +2239,8 @@ inputs:
               simple: key
       accessor: EntryID
   required: false
-  description: ""
+  description: This input specifics the file entry id for the RSA decrypt key if the
+    user provided the key in the incident.
   playbookInputQuery:
 outputs:
 - contextPath: InternalIPAddresses
