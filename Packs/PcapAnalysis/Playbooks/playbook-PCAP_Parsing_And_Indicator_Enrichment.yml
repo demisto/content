@@ -120,96 +120,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "11":
-    id: "11"
-    taskid: f5cf6b87-cf24-4b22-8320-196fbfdb43a7
-    type: condition
-    task:
-      id: f5cf6b87-cf24-4b22-8320-196fbfdb43a7
-      version: -1
-      name: Are there external domain names?
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#default#':
-      - "30"
-      "yes":
-      - "21"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: PcapResults
-                filters:
-                - - operator: notEndWith
-                    left:
-                      value:
-                        simple: PcapResults.DNS.Request
-                      iscontext: true
-                    right:
-                      value:
-                        simple: localdomain
-                accessor: DNS.Request
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": -1860,
-          "y": 2360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "12":
-    id: "12"
-    taskid: 334d4c79-c0ed-4ee2-8bfb-40b54301036a
-    type: regular
-    task:
-      id: 334d4c79-c0ed-4ee2-8bfb-40b54301036a
-      version: -1
-      name: Enrich Domains
-      description: Checks the reputation of a domain in AutoFocus.
-      script: '|||domain'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "30"
-    scriptarguments:
-      domain:
-        complex:
-          root: ExternalDomains
-          transformers:
-          - operator: uniq
-      fullResponse: {}
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold: {}
-      wait: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -1580,
-          "y": 2760
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "14":
     id: "14"
     taskid: f72b29e3-c2ec-45c1-86c5-2e51f2bc76be
@@ -230,15 +140,13 @@ tasks:
       - "32"
       - "58"
       - "45"
-      - "23"
     scriptarguments:
       convs_to_display: {}
       custom_regex:
         simple: ${inputs.RegexToSearch}
       entry_id:
         simple: ${inputs.PcapFileEntryID}
-      extract_ips:
-        simple: "True"
+      extract_ips: {}
       extract_strings:
         simple: "True"
       filtered_file_name: {}
@@ -259,411 +167,6 @@ tasks:
         "position": {
           "x": -2910,
           "y": 710
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "21":
-    id: "21"
-    taskid: 89684e32-7d72-476e-83af-b91a8180860d
-    type: condition
-    task:
-      id: 89684e32-7d72-476e-83af-b91a8180860d
-      version: -1
-      name: Auto enrich domains?
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#default#':
-      - "30"
-      "yes":
-      - "12"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: inputs.WhichIndicatorTypeToEnrich
-            iscontext: true
-          right:
-            value:
-              simple: domain
-    view: |-
-      {
-        "position": {
-          "x": -1750,
-          "y": 2590
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "22":
-    id: "22"
-    taskid: 61646917-52bd-43fa-83da-4512ba8d9dce
-    type: title
-    task:
-      id: 61646917-52bd-43fa-83da-4512ba8d9dce
-      version: -1
-      name: Sort internal and external domains
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "25"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -1140,
-          "y": 1340
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "23":
-    id: "23"
-    taskid: 1df0c63e-c103-4ade-851c-500f02a12e9a
-    type: title
-    task:
-      id: 1df0c63e-c103-4ade-851c-500f02a12e9a
-      version: -1
-      name: DNS domains
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "24"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -2150,
-          "y": 890
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "24":
-    id: "24"
-    taskid: 297fe54b-ab04-4920-8748-0c15c4162956
-    type: condition
-    task:
-      id: 297fe54b-ab04-4920-8748-0c15c4162956
-      version: -1
-      name: Are there domain results?
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#default#':
-      - "30"
-      "yes":
-      - "22"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PcapResultsDNS.Request
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": -2150,
-          "y": 1015
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "25":
-    id: "25"
-    taskid: 9e669981-7ea4-4f98-880a-07b89d38e89c
-    type: condition
-    task:
-      id: 9e669981-7ea4-4f98-880a-07b89d38e89c
-      version: -1
-      name: Has the internal domain name been provided?
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#default#':
-      - "26"
-      "yes":
-      - "27"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.InternalDomainName
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": -1140,
-          "y": 1480
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "26":
-    id: "26"
-    taskid: 36549c67-68af-4654-819d-e32b15bc0fce
-    type: regular
-    task:
-      id: 36549c67-68af-4654-819d-e32b15bc0fce
-      version: -1
-      name: Set detected domains as external
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context.
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "30"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: ExternalDomains
-      stringify: {}
-      value:
-        simple: ${PCAPResultsDNS.Request}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -1140,
-          "y": 2655
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "27":
-    id: "27"
-    taskid: 47e2c46d-9a30-4616-8416-ffbc5ccb8f3b
-    type: regular
-    task:
-      id: 47e2c46d-9a30-4616-8416-ffbc5ccb8f3b
-      version: -1
-      name: Determine whether the domain names are internal or external
-      description: Checks if the supplied hostnames match either the organization's
-        internal naming convention or the domain suffix.
-      scriptName: IsInternalHostName
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "28"
-    scriptarguments:
-      domainName:
-        simple: ${inputs.InternalDomainName}
-      hostName:
-        simple: ${PcapResultsDNS.Request}
-      internalRegex: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -1860,
-          "y": 1660
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "28":
-    id: "28"
-    taskid: 30682caa-5a4c-42c0-841a-7d95e02e0bdc
-    type: regular
-    task:
-      id: 30682caa-5a4c-42c0-841a-7d95e02e0bdc
-      version: -1
-      name: Set detected host names as internal
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context.
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "29"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: InternalDomains
-      stringify: {}
-      value:
-        complex:
-          root: Endpoint
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Endpoint.IsInternal
-                iscontext: true
-              right:
-                value:
-                  simple: "true"
-          accessor: Hostname
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -1860,
-          "y": 1840
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "29":
-    id: "29"
-    taskid: 9bb21941-55aa-463c-8ae5-a5ea86cb1ca2
-    type: regular
-    task:
-      id: 9bb21941-55aa-463c-8ae5-a5ea86cb1ca2
-      version: -1
-      name: Set detected host names as external
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context.
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "31"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: ExternalDomains
-      stringify: {}
-      value:
-        complex:
-          root: Endpoint
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Endpoint.IsInternal
-                iscontext: true
-              right:
-                value:
-                  simple: "false"
-          accessor: Hostname
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -1860,
-          "y": 2025
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "30":
-    id: "30"
-    taskid: b4ac4556-38eb-4022-8bef-3871a62e4135
-    type: title
-    task:
-      id: b4ac4556-38eb-4022-8bef-3871a62e4135
-      version: -1
-      name: Done domains
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "3"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -2150,
-          "y": 2940
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "31":
-    id: "31"
-    taskid: 27661325-e18a-4db1-8bda-45a9444988f0
-    type: title
-    task:
-      id: 27661325-e18a-4db1-8bda-45a9444988f0
-      version: -1
-      name: Enrich domains
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "11"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -1860,
-          "y": 2220
         }
       }
     note: false
@@ -1559,7 +1062,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -500,
+          "x": -2000,
           "y": 890
         }
       }
@@ -1602,7 +1105,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -500,
+          "x": -2000,
           "y": 1025
         }
       }
@@ -1630,7 +1133,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -500,
+          "x": -2000,
           "y": 2940
         }
       }
@@ -1658,7 +1161,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 520,
+          "x": -980,
           "y": 1380
         }
       }
@@ -1696,7 +1199,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 520,
+          "x": -980,
           "y": 1490
         }
       }
@@ -1756,7 +1259,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -230,
+          "x": -1730,
           "y": 1660
         }
       }
@@ -1807,7 +1310,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -230,
+          "x": -1730,
           "y": 1850
         }
       }
@@ -1858,7 +1361,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -230,
+          "x": -1730,
           "y": 2025
         }
       }
@@ -1886,7 +1389,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -230,
+          "x": -1730,
           "y": 2220
         }
       }
@@ -1924,7 +1427,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -230,
+          "x": -1730,
           "y": 2360
         }
       }
@@ -1965,7 +1468,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -110,
+          "x": -1610,
           "y": 2590
         }
       }
@@ -2003,7 +1506,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 70,
+          "x": -1430,
           "y": 2760
         }
       }
@@ -2041,7 +1544,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 520,
+          "x": -980,
           "y": 2655
         }
       }
@@ -2590,7 +2093,6 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "24_30_#default#": 0.71,
       "2_3_#default#": 0.71,
       "59_60_#default#": 0.7,
       "62_70_#default#": 0.76
@@ -2598,7 +2100,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 3615,
-        "width": 6310,
+        "width": 4810,
         "x": -5410,
         "y": 410
       }
