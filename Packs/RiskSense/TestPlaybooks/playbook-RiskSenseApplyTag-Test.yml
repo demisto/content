@@ -1,16 +1,16 @@
-id: RiskSense Get Unique Open Findings - Test
+id: RiskSense Apply Tag - Test
 version: -1
-name: RiskSense Get Unique Open Findings - Test
-description: This playbook uses the RiskSense integration and tests the various scenarios
-  of the "risksense-get-unique-open-findings" command.
+name: RiskSense Apply Tag - Test
+description: This playbook uses the RiskSense integration and tests the various scenarios
+  of the "risksense-apply-tag" command.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 6405ebcc-5846-438a-8fc5-7178032e76a6
+    taskid: 57ee33fd-17d6-485d-821b-81a5085259c3
     type: start
     task:
-      id: 6405ebcc-5846-438a-8fc5-7178032e76a6
+      id: 57ee33fd-17d6-485d-821b-81a5085259c3
       version: -1
       name: ""
       iscommand: false
@@ -18,7 +18,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - "11"
     separatecontext: false
     view: |-
       {
@@ -30,14 +30,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 4da9aca8-c158-4b3e-89b0-04fda2363886
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 6d541e11-b443-4ce8-883d-8a56aa5f86b7
     type: regular
     task:
-      id: 4da9aca8-c158-4b3e-89b0-04fda2363886
+      id: 6d541e11-b443-4ce8-883d-8a56aa5f86b7
       version: -1
-      name: Delete Context
+      name: Delete context
       description: Delete field from context
       scriptName: DeleteContext
       type: regular
@@ -45,7 +47,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "14"
     scriptarguments:
       all:
         simple: "yes"
@@ -64,38 +66,36 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 0949edc8-1edc-44e2-854a-c08c91b5a740
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: b7035cd1-1446-43b5-872f-14f3335c53da
     type: regular
     task:
-      id: 0949edc8-1edc-44e2-854a-c08c91b5a740
+      id: b7035cd1-1446-43b5-872f-14f3335c53da
       version: -1
-      name: Execute Risksense-get-unique-open-findings command from Demisto.
-      description: This command is used to find unique open host findings. The open
-        findings can be searched based on input parameters like fieldname (severity,
-        title, source etc), operator (exact, in, like), page and size.
-      script: '|||risksense-get-unique-open-findings'
+      name: Execute risksense-apply-tag command from Demisto.
+      description: Apply the new or existing tag to the asset, creates a new tag if
+        it does not exist in RiskSense.
+      script: RiskSense|||risksense-apply-tag
       type: regular
       iscommand: true
-      brand: ""
+      brand: RiskSense
     nexttasks:
       '#none#':
-      - "5"
+      - "15"
     scriptarguments:
-      exclusivity:
-        simple: "false"
+      assettype:
+        simple: host
+      exclusive_operator: {}
       fieldname:
-        simple: title
-      operator:
-        simple: EXACT
-      page: {}
-      size:
-        simple: "5"
-      sort_by: {}
-      sort_direction: {}
+        simple: id
+      operator: {}
+      tagname:
+        simple: Test-Tag
       value:
-        simple: NetBIOS Name Accessible
+        simple: "3842115"
     separatecontext: false
     view: |-
       {
@@ -107,21 +107,23 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "5":
-    id: "5"
-    taskid: b10c440b-e24e-41c2-835d-f12eeb6d0e7e
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: ee3ace19-8e40-43c2-8f58-bc4d4d36b80a
     type: condition
     task:
-      id: b10c440b-e24e-41c2-835d-f12eeb6d0e7e
+      id: ee3ace19-8e40-43c2-8f58-bc4d4d36b80a
       version: -1
-      name: Is context data matched ?
-      description: This section matches the context data with response from API.
+      name: Is context data exists?
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       "yes":
-      - "6"
+      - "16"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -131,64 +133,42 @@ tasks:
             value:
               complex:
                 root: RiskSense
-                accessor: UniqueHostFinding.Title
-                transformers:
-                - operator: uniq
+                accessor: TagAssociation.AssociationID
             iscontext: true
       - - operator: isExists
           left:
             value:
               complex:
                 root: RiskSense
-                accessor: UniqueHostFinding.Severity
-                transformers:
-                - operator: uniq
+                accessor: TagAssociation.TagName
             iscontext: true
       - - operator: isExists
           left:
             value:
               complex:
                 root: RiskSense
-                accessor: UniqueHostFinding.HostCount
-                transformers:
-                - operator: uniq
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: RiskSense
-                accessor: UniqueHostFinding.Source
-                transformers:
-                - operator: uniq
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: RiskSense
-                accessor: UniqueHostFinding.SourceID
-                transformers:
-                - operator: uniq
+                accessor: TagAssociation.Created
             iscontext: true
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 540
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "6":
-    id: "6"
-    taskid: e58acd28-b303-4f21-82b3-6220cedb208f
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 81cd7cec-0c31-4f24-898e-dc750ce939a6
     type: regular
     task:
-      id: e58acd28-b303-4f21-82b3-6220cedb208f
+      id: 81cd7cec-0c31-4f24-898e-dc750ce939a6
       version: -1
-      name: Delete Context
+      name: Delete context
       description: Delete field from context
       scriptName: DeleteContext
       type: regular
@@ -196,7 +176,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "24"
+      - "22"
     scriptarguments:
       all:
         simple: "yes"
@@ -215,22 +195,49 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "24":
-    id: "24"
-    taskid: 3fb5b0e7-8bf4-4476-8589-1a39123b67fb
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 33f0fb69-28cf-4f19-8aa0-9c6037201e43
+    type: title
+    task:
+      id: 33f0fb69-28cf-4f19-8aa0-9c6037201e43
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 05b7fee1-df0f-4efc-8acb-a1954a91863e
     type: regular
     task:
-      id: 3fb5b0e7-8bf4-4476-8589-1a39123b67fb
+      id: 05b7fee1-df0f-4efc-8acb-a1954a91863e
       version: -1
-      name: Close Investigation
-      description: commands.local.cmd.close.inv
+      name: closeInvestigation
+      description: Close the current incident
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
       brand: Builtin
     nexttasks:
       '#none#':
-      - "25"
+      - "21"
     scriptarguments:
       assetid: {}
       closeNotes: {}
@@ -249,29 +256,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "25":
-    id: "25"
-    taskid: 8d74e4e2-a9d2-4287-8f9f-eed4dc093734
-    type: title
-    task:
-      id: 8d74e4e2-a9d2-4287-8f9f-eed4dc093734
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
