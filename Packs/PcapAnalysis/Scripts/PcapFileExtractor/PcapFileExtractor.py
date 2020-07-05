@@ -1,12 +1,9 @@
 import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
-from os.path import isfile
 from tempfile import mkdtemp
 import shutil
-import glob
 import subprocess
 import hashlib
-import shlex
 
 
 def get_pcap_path(args):
@@ -30,7 +27,7 @@ def get_pcap_path(args):
     return res[0]['Contents']['path']
 
 
-def find_files_protocol(file_path):
+def find_files_packets(file_path):
     """
 
     Args:
@@ -43,8 +40,7 @@ def find_files_protocol(file_path):
     """
     protocol = ''
     data_list = []
-    command_ = f'tshark -r {file_path}'
-    process = subprocess.Popen(shlex.split(command_), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process = subprocess.Popen(['tshark', '-r', f'{file_path}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout = process.communicate()
     stdout = str(stdout).split('\\n')
     for line in stdout:
@@ -71,47 +67,10 @@ def find_files_protocol(file_path):
     return protocol, data_list
 
 
-def extract_files(file_path, dir_path):
+def upload_files(dir_path, file_path):
     """
 
     Args:
-        file_path: the pcap file path.
-        dir_path: directory for the files will be extract to
-
-    Returns: excluded_files: the excludedfiles which are in dir_path
-
-    """
-    protocol, _ = find_files_protocol(file_path)
-    if not protocol:
-        return_error('Could not find a valid protocol for extracting the files')
-
-    if protocol == 'http':
-        command_ = f'tshark -r {file_path} --export-objects http,{dir_path}'
-
-    elif protocol == 'smb':
-        command_ = f'tshark -r {file_path} --export-objects smb,{dir_path}'
-
-    elif protocol == 'imf':
-        command_ = f'tshark -r {file_path} --export-objects imf,{dir_path}'
-
-    elif protocol == 'tftp':
-        command_ = f'tshark -r {file_path} --export-objects tftp,{dir_path}'
-
-    elif protocol == 'dicom':
-        command_ = f'tshark -r {file_path} --export-objects dicom,{dir_path}'
-
-    process = subprocess.Popen(shlex.split(command_), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    process.communicate()
-    excluded_files = [f for f in glob.glob(dir_path + '/*')]
-
-    return excluded_files
-
-
-def upload_files(excluded_files, dir_path, file_path):
-    """
-
-    Args:
-        excluded_files: excluded files
         dir_path: dir path for the files
         file_path: the path to the pcap file
 
@@ -119,40 +78,38 @@ def upload_files(excluded_files, dir_path, file_path):
         Extracted files to download
 
     """
-    filenames = []
-    # recursive call over the file system top down
+
+    process = subprocess.Popen(['tshark', '-r', f'{file_path}', '--export-objects', f'http,{dir_path}',
+                                '--export-objects', f'smb,{dir_path}', '--export-objects', f'imf,{dir_path}',
+                                '--export-objects', f'tftp,{dir_path}', '--export-objects', f'dicom,{dir_path}'],
+                               stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process.communicate()
+
+    context = []
+    protocol, packet_data = find_files_packets(file_path)
+
+    md5 = hashlib.md5()
+    sha1 = hashlib.sha1()
+    sha256 = hashlib.sha256()
     for root, directories, files in os.walk(dir_path):
+        if len(files) == 0:
+            raise Exception('Could not find files')
+
         for f in files:
-            # skipping previously existing files
-            # adding it to the extracted pcap files list
-            if f not in excluded_files and isfile(os.path.join(root, f)):
-                filenames.append(os.path.join(root, f))
+            file_path = os.path.join(root, f)
+            file_name = os.path.join(f)
 
-    if len(filenames) == 0:
-        return_error('Could not find files')
-
-    else:
-        context = []
-        protocol, packet_data = find_files_protocol(file_path)
-
-        md5 = hashlib.md5()
-        sha1 = hashlib.sha1()
-        sha256 = hashlib.sha256()
-        files_dic = {file_path: os.path.basename(file_path) for file_path in filenames}
-
-        for file_path, file_name in files_dic.items():
             for data in packet_data:
-                packet_number = data.split()[0]
-                for packet_number in packet_data:
-                    data = packet_number.split()
-                    try:
-                        source_ip = data[2]
-                        dest_ip = data[4]
-                    except:
-                        pass
+                packet = data.split()
+                try:
+                    source_ip = packet[2]
+                    dest_ip = packet[4]
+                except:
+                    pass
 
             with open(file_path, 'rb') as file:
                 demisto.results(fileResult(file_name, file.read()))
+
                 data = file.read()
                 md5.update(data)
                 sha1.update(data)
@@ -170,8 +127,8 @@ def upload_files(excluded_files, dir_path, file_path):
                 'DestinationIP': dest_ip
             })
 
-        readable_output = tableToMarkdown('Pcap Extracted Files', [{'name': file_name} for file_name in
-                                                                   files_dic.values()])
+        readable_output = tableToMarkdown('Pcap Extracted Files', [{'name': file_name} for file_name in files])
+
         results = CommandResults(
             outputs_prefix='PcapExtractedFiles',
             outputs_key_field='FileName',
@@ -187,8 +144,7 @@ def main():
     try:
         args = demisto.args()
         file_path = get_pcap_path(args)
-        excluded_files = extract_files(file_path=file_path, dir_path=dir_path)
-        return_results(upload_files(excluded_files, dir_path, file_path))
+        return_results(upload_files(dir_path, file_path))
 
     except Exception as e:
         return_error(f'Failed to execute PcapFileExtracor. Error: {str(e)}')
