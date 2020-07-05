@@ -1,4 +1,4 @@
-The ransomware exposure playbook quickly reveals an organization's exposure to the specific vulnerabilities that are being exploited to launch ransomware attacks.
+The ransomware exposure playbook reveals an organization's exposure to the specific vulnerabilities that are being exploited to launch ransomware attacks.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -26,8 +26,8 @@ There are no inputs for this playbook.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| RiskSense.RansomwareCves | List of ransomware cves including threats and vulnerabilities. | unknown |
-| RiskSense.RansomwareTrendingCves | List of trending \(Last 7 days\) ransomware cves including threats and vulnerabilities. | unknown |
+| RiskSense.RansomwareCves | List of ransomware CVEs, including threats and vulnerabilities. | unknown |
+| RiskSense.RansomwareTrendingCves | List of trending \(Last 7 days\) ransomware CVEs, including threats and vulnerabilities. | unknown |
 | RiskSense.HostFinding | List of host finding details. | unknown |
 | RiskSense.Host | List of host details. | unknown |
 
