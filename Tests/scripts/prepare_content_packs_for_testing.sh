@@ -40,7 +40,7 @@ if [ ! -n "${NIGHTLY}" ]; then
 
   if [ -n "${CONTRIB_BRANCH}" ]; then
     echo "contributor pack: $PACK_NAME"
-    echo "$PACK_NAME" > $CONTENT_PACKS_TO_INSTALL_FILE
+    echo "$PACK_NAME" >> $CONTENT_PACKS_TO_INSTALL_FILE
     cat $CONTENT_PACKS_TO_INSTALL_FILE
   fi
   if [ ! -f $CONTENT_PACKS_TO_INSTALL_FILE ]; then
