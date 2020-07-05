@@ -109,7 +109,7 @@ tasks:
     task:
       id: ec572e1b-78cf-4daf-8185-688d7b04041b
       version: -1
-      name: Is CarbonBlack Protection enabled?
+      name: Is CarbonBlack Protection v2 enabled?
       description: Check if a given value exists in the context. Will return 'no'
         for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
@@ -123,7 +123,7 @@ tasks:
       - "12"
     scriptarguments:
       value:
-        simple: ${modules(val.brand == 'carbonblackprotection' && val.state == 'active')}
+        simple: ${modules(val.brand == 'CarbonBlackProtectionV2' && val.state == 'active')}
     separatecontext: false
     view: |-
       {
