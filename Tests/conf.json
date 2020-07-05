@@ -3057,7 +3057,7 @@
         "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer",
         "SafeBreach v2": "it is a partner integration, no instance",
-        "CrowdStrike Falcon X": "No instance",
+        "CrowdStrike Falcon X": "No instance - issue 26209",
         "IllusiveNetworks": "supported by partner",
         "Humio": "supported by the partner",
         "Digital Guardian": "partner integration",
