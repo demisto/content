@@ -5,9 +5,11 @@ commonfields:
 configuration:
 - display: Fetch indicators
   name: feed
+  defaultvalue: true
   required: false
   type: 8
-- display: Regions
+- defaultvalue: Worldwide
+  display: Regions
   name: regions
   options:
   - China
@@ -17,7 +19,8 @@ configuration:
   - Worldwide
   required: true
   type: 16
-- display: Services
+- defaultvalue: All
+  display: Services
   name: services
   options:
   - Common
@@ -29,6 +32,7 @@ configuration:
   type: 16
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
+  defaultvalue: Good
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -39,6 +43,7 @@ configuration:
   required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: A - Completely reliable
   display: Source Reliability
   name: feedReliability
   options:
@@ -50,7 +55,8 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- name: feedExpirationPolicy
+- defaultvalue: suddenDeath
+  name: feedExpirationPolicy
   display: ""
   options:
   - never
@@ -59,11 +65,13 @@ configuration:
   - suddenDeath
   required: false
   type: 17
-- display: ""
+- defaultvalue: '20160'
+  display: ""
   name: feedExpirationInterval
   required: false
   type: 1
-- display: Feed Fetch Interval
+- defaultvalue: '30'
+  display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
   type: 19
@@ -79,7 +87,9 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
-- display: Trust any certificate (not secure)
+  defaultvalue: "true"
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
