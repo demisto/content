@@ -240,7 +240,7 @@ def main():
         ssl_connect = params.get('ssl_connect')
         connect_parameters = params.get('connect_parameters')
         use_pool = params.get('use_pool', False)
-        pool_ttl = int(params.get('pool_ttl', DEFAULT_POOL_TTL))
+        pool_ttl = int(params.get('pool_ttl') or DEFAULT_POOL_TTL)
         if pool_ttl <= 0:
             pool_ttl = DEFAULT_POOL_TTL
         command = demisto.command()
