@@ -39,8 +39,8 @@ if [ ! -n "${NIGHTLY}" ]; then
     CONTENT_PACKS_TO_INSTALL_FILE="./Tests/content_packs_to_install.txt"
 
   if [ -n "${CONTRIB_BRANCH}" ]; then
-    echo "$PACK"
-    echo "$PACK" > $CONTENT_PACKS_TO_INSTALL_FILE
+    echo "contributor pack: $PACK_NAME"
+    echo "$PACK_NAME" > $CONTENT_PACKS_TO_INSTALL_FILE
     cat $CONTENT_PACKS_TO_INSTALL_FILE
   fi
   if [ ! -f $CONTENT_PACKS_TO_INSTALL_FILE ]; then

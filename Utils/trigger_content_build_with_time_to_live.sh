@@ -62,11 +62,13 @@ then
 EOF
 )
 else
+  pack_name=$(echo $_changed_pack | cut -d "/" -f 2)
   post_data=$(cat <<-EOF
   {
     "build_parameters": {
       "TIME_TO_LIVE": ${_time_to_live},
       "CONTRIB_BRANCH": "${_contrib_branch}:${_changed_pack}"
+      "PACK_NAME": $pack_name
     }
   }
 EOF
