@@ -2926,7 +2926,6 @@
     "skipped_tests": {
         "PAN-OS DAG Configuration Test": "Issue 60693",
         "Phishing Classifier V2 ML Test": "Issue 26066",
-        "DuoAdmin API test playbook": "Issue 24937",
         "Workday - Test": "Issue 25896",
         "CuckooTest": "Issue 25601",
         "RedLockTest": "Issue 24600",
