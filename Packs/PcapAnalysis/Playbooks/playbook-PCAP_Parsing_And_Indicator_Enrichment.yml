@@ -5,7 +5,7 @@ name: PCAP Parsing And Indicator Enrichment
 description: This playbook is used to parse and extract indicators within PCAP files and
   perform enrichment on the detected indicators. Supported file types are pcap, cap,
   pcapng. The playbook can handle one PCAP file per incident. The user inputs which
-  indicator types are to be enriched including, email, URLs, IP addresses and domains.
+  indicator types are to be enriched including, email, URLs, IP addresses.
   The user can specify in the inputs which indicators are internal or that will be
   treated as internal (not enriched). The user can also specify a specific regex pattern
   to search for. Another option is to specify the protocol types to be printed to
@@ -2150,8 +2150,8 @@ inputs:
 - key: InternalUrlName
   value: {}
   required: false
-  description: The organization's internal domain name. This is provided for the script
-    IsInternalHostName that checks if the detected host names are internal or external
+  description: The organization's internal URL name. This is provided for the script
+    IsInternalHostName that checks if the detected URLs are internal or external
     if the hosts contain the internal domains suffix. For example demisto.com. If
     there is more than one domain, use comma separation such as demisto.com,paloaltonetworks.com
   playbookInputQuery:
