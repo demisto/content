@@ -41,7 +41,7 @@ def patched_requests_mocker(requests_mock):
     requests_mock.get(version_path, text=mock_version_xml, status_code=200)
     mock_response_xml = """
     <response status="success" code="20">
-        <msg>command succeeded</msg>
+    <msg>command succeeded</msg>
     </response>
     """
     requests_mock.post(base_url, text=mock_response_xml, status_code=200)
