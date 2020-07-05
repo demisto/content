@@ -2925,6 +2925,10 @@
     ],
     "skipped_tests": {
         "PAN-OS DAG Configuration Test": "Issue 60693",
+        "Pwned v2 test": "Issue 26258",
+        "Phishing v2 - Test - Incident Starter": "Issue 26258",
+        "Phishing - Core - Test - Incident Starter": "Issue 26258",
+        "EmailReputationTest": "Issue 26258",
         "Phishing Classifier V2 ML Test": "Issue 26066",
         "DuoAdmin API test playbook": "Issue 24937",
         "Workday - Test": "Issue 25896",
@@ -2981,6 +2985,7 @@
     "skipped_integrations": {
 
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "Have I Been Pwned? V2": "Issue 26258",
         "Symantec Management Center": "Issue 23960",
         "PerceptionPoint": "Issue 25795",
         "Infoblox": "Issue 25651",
