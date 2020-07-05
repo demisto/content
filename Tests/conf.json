@@ -2893,7 +2893,9 @@
         {
             "integrations": "CrowdStrikeMalquery",
             "playbookID": "CrowdStrikeMalquery-Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 1500
+
         },
         {
             "playbookID": "hashIncidentFields-test",
