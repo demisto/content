@@ -4,5 +4,5 @@ malware samples and understand their behavior.
 API key and API token are generate by Lastline and given at the subscription time.
 
 ### How to use the `threshold` parameter.
-by default `threshold` is set to 70. it means that for every file with severity over 70
-the Dbot score will be high. you can change it as you want.
+By default, the `threshold` parameter is set to 70. This means that for every file with a severity of over 70
+the Dbot score will be set to *high*. This parameter is configurable.
