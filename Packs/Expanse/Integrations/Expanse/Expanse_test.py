@@ -52,7 +52,7 @@ def test_fetch_incidents(mocker):
     results = demisto.results.call_args[0]
     r = json.loads(results[0]['Contents'])
     assert r[0]['name'] == "NTP_SERVER on 203.215.173.113:123/UDP"
-    assert r[0]['severity'] == 1
+    assert r[0]['severity'] == 2
 
 
 def test_fetch_incidents_with_behavior(mocker):
@@ -68,7 +68,7 @@ def test_fetch_incidents_with_behavior(mocker):
     results = demisto.results.call_args[0]
     r = json.loads(results[0]['Contents'])
     assert r[0]['name'] == "NTP_SERVER on 203.215.173.113:123/UDP"
-    assert r[0]['severity'] == 1
+    assert r[0]['severity'] == 2
 
 
 def test_ip(mocker):
@@ -737,7 +737,7 @@ MOCK_EVENTS = {
                         }
                     }
                 },
-                'severity': 'ROUTINE',
+                'severity': 'WARNING',
                 'tags': {
                     'ipRange': ['untagged']
                 },

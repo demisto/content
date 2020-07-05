@@ -5,7 +5,12 @@ import demistomock as demisto
 import pytest
 
 
-def exec_command_for_file(file_path, info="RFC 822 mail text, with CRLF line terminators", file_name=None):
+def exec_command_for_file(
+        file_path,
+        info="RFC 822 mail text, with CRLF line terminators",
+        file_name=None,
+        file_type="",
+):
     """
     Return a executeCommand function which will return the passed path as an entry to the call 'getFilePath'
 
@@ -38,7 +43,8 @@ def exec_command_for_file(file_path, info="RFC 822 mail text, with CRLF line ter
                 {
                     'Type': entryTypes['file'],
                     'FileMetadata': {
-                        'info': info
+                        'info': info,
+                        'type': file_type
                     }
                 }
             ]
@@ -300,6 +306,56 @@ def test_eml_utf_text(mocker):
     assert results[0]['EntryContext']['Email']['Subject'] == 'Test UTF Email'
 
 
+def test_eml_utf_text_with_bom(mocker):
+    '''Scenario: Parse an eml file that is UTF-8 Unicode (with BOM) text
+
+    Given
+    - A UTF-8 encoded eml file with BOM
+
+    When
+    - Executing ParseEmailFiles automation on the uploaded eml file
+
+    Then
+    - Ensure eml email file is properly parsed
+    '''
+    def executeCommand(name, args=None):
+        if name == 'getFilePath':
+            return [
+                {
+                    'Type': entryTypes['note'],
+                    'Contents': {
+                        'path': 'test_data/utf_8_with_bom.eml',
+                        'name': 'utf_8_with_bom.eml'
+                    }
+                }
+            ]
+        elif name == 'getEntry':
+            return [
+                {
+                    'Type': entryTypes['file'],
+                    'FileMetadata': {
+                        'info': 'RFC 822 mail text, UTF-8 Unicode (with BOM) text, '
+                                'with very long lines, with CRLF line terminators'
+                    }
+                }
+            ]
+        else:
+            raise ValueError('Unimplemented command called: {}'.format(name))
+
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+    main()
+    assert demisto.results.call_count == 1
+    # call_args is tuple (args list, kwargs). we only need the first one
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert results[0]['EntryContext']['Email']['Subject'] == 'Test UTF Email'
+
+
 def test_email_with_special_character(mocker):
     def executeCommand(name, args=None):
         if name == 'getFilePath':
@@ -512,15 +568,20 @@ def test_no_content_type_file(mocker):
 
 
 def test_get_msg_mail_format():
-    format = get_msg_mail_format({
+    msg_mail_format = get_msg_mail_format({
         'Headers': 'Content-type:text/plain;'
     })
-    assert format == 'text/plain'
+    assert msg_mail_format == 'text/plain'
 
-    format = get_msg_mail_format({
+    msg_mail_format = get_msg_mail_format({
         'Something': 'else'
     })
-    assert format == ''
+    assert msg_mail_format == ''
+
+    msg_mail_format = get_msg_mail_format({
+        'Headers': None
+    })
+    assert msg_mail_format == ''
 
 
 def test_no_content_file(mocker):
@@ -592,3 +653,32 @@ def test_eml_base64_header_comment_although_string(mocker):
     assert 'Attacker+email+.msg' in results[0]['EntryContext']['Email'][0]['Attachments']
     assert results[0]['EntryContext']['Email'][1]["Subject"] == 'Attacker email'
     assert results[0]['EntryContext']['Email'][1]['Depth'] == 1
+
+
+def test_message_rfc822_without_info(mocker):
+    """
+    Given:
+     - EML file with content type message/rfc822
+     - Demisto entry metadata returned without info, but with type
+
+    When:
+     - Running the script on the email file
+
+    Then:
+     - Verify the script runs successfully
+     - Ensure 2 entries are returned as expected
+    """
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test', 'max_depth': '1'})
+    mocker.patch.object(
+        demisto,
+        'executeCommand',
+        side_effect=exec_command_for_file('eml_contains_base64_eml2.eml', info='', file_type='message/rfc822')
+    )
+    mocker.patch.object(demisto, 'results')
+    main()
+    assert demisto.results.call_count == 2
+    results = demisto.results.call_args_list
+    assert len(results) == 2
+    assert results[0][0][0]['Type'] == entryTypes['file']
+    assert results[1][0][0]['Type'] == entryTypes['note']
+    assert results[1][0][0]['EntryContext']['Email']['From'] == 'koko@demisto.com'

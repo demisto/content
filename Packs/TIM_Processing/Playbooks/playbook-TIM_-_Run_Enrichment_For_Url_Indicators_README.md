@@ -11,7 +11,40 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-This playbook does not use any integrations.
+* Malwr
+* aws
+* Mimecast
+* KeyLight
+* AzureSecurityCenter_v2
+* SlashNextPhishingIncidentResponse
+* Panorama
+* RiskSense
+* SecurityAdvisor
+* Shodan
+* AlienVaultOTX
+* SymantecEndpointProtectionDeprecated
+* PaloAltoNetworksCortex
+* PaloAlto_MineMeld
+* Intezer
+* ExtraHop
+* jira
+* Cylance_Protect
+* AzureSecurityCenter
+* MISP
+* CveInfo
+* PhishMe
+* DemistoRESTAPI
+* Flashpoint
+* opswat-metadefender
+* Mimecast-Auth
+* Lastline
+* Pwned
+* Kenna
+* ArcSightESM
+* PaloAltoNetworks_Traps
+* LightCyberMagna
+* Wildfire
+* ProofpointTAP
 
 ### Scripts
 This playbook does not use any scripts.
@@ -22,13 +55,13 @@ This playbook does not use any scripts.
 ## Playbook Inputs
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-|  |  |  |  | Optional |
-| EnrichBadIndicators | Enter a value of True to enrich indicators whose reputation from the feed is bad. |  |  | Optional |
-| EnrichGoodIndicators | Enter a value of True to enrich indicators whose reputation from the feed is good. |  |  | Optional |
-| EnrichSuspiciousIndicators | Enter a value of True to enrich indicators whose reputation from the feed is suspicious. |  |  | Optional |
-| EnrichUnknownIndicators | Enter a value of True to enrich indicators whose reputation from the feed is unknown. |  |  | Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| Indicator Query | Indicators matching the indicator query will be used as playbook input |  | Optional |
+| EnrichBadIndicators | Enter a value of True to enrich indicators whose reputation from the feed is bad. |  | Optional |
+| EnrichGoodIndicators | Enter a value of True to enrich indicators whose reputation from the feed is good. |  | Optional |
+| EnrichSuspiciousIndicators | Enter a value of True to enrich indicators whose reputation from the feed is suspicious. |  | Optional |
+| EnrichUnknownIndicators | Enter a value of True to enrich indicators whose reputation from the feed is unknown. |  | Optional |
 
 ## Playbook Outputs
 ---

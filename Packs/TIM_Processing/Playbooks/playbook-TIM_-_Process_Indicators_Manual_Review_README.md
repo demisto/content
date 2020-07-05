@@ -8,7 +8,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * TIM - Indicator Auto Processing
 
 ### Integrations
-* Builtin
+This playbook does not use any integrations.
 
 ### Scripts
 This playbook does not use any scripts.
@@ -20,10 +20,10 @@ This playbook does not use any scripts.
 ## Playbook Inputs
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-|  |  |  |  | Optional |
-| OpenIncidentToReviewIndicatorsManually | This input determines if processed indicators that have the manual review tag are reviewed in a new incident. To create an incident, enter any value other than &\#x27;No&\#x27;. | No |  | Required |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| Indicator Query | Indicators matching the indicator query will be used as playbook input |  | Optional |
+| OpenIncidentToReviewIndicatorsManually | This input determines if processed indicators that have the manual review tag are reviewed in a new incident. To create an incident, enter any value other than 'No'. | No | Required |
 
 ## Playbook Outputs
 ---

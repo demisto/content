@@ -1,8 +1,10 @@
 ## [Unreleased]
--
+- Fixed an issue where URL screenshots did not show in the layout.
+- Merged 2 conditions into 1 to clean up playbook.
 
-## [20.5.0] - 2020-05-12
-The playbook now uses Block Indicators - Generic v2 to block malicious indicators (off by default).
+## [20.5.2] - 2020-05-26
+- The playbook now uses Block Indicators - Generic v2 to block malicious indicators (off by default).
+- Replaced the deprecated SendEmail automation with the send-mail command. 
 
 ## [20.4.1] - 2020-04-29
 - Added the *OnCall* input to assign only users that are on shift.

@@ -1,0 +1,2 @@
+[file:playbook-PrismaCloudRemediation_-_AWSSecurityGroupsTrafficToTCPPort.yml]
+ignore=BA101

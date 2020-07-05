@@ -1,0 +1,887 @@
+id: IllusiveNetworks-Test
+version: -1
+name: IllusiveNetworks-Test
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: a399e96b-03a4-4731-8345-7e849d0d8367
+    type: start
+    task:
+      id: a399e96b-03a4-4731-8345-7e849d0d8367
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '1':
+    id: '1'
+    taskid: d50faadb-7433-4628-89bd-ac50bafd0579
+    type: regular
+    task:
+      id: d50faadb-7433-4628-89bd-ac50bafd0579
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 200\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '2':
+    id: '2'
+    taskid: 2797e085-950f-4ff1-8459-2872283d0a3f
+    type: regular
+    task:
+      id: 2797e085-950f-4ff1-8459-2872283d0a3f
+      version: -1
+      name: illusive-get-forensics-timeline
+      script: '|||illusive-get-forensics-timeline'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      end_date: {}
+      incident_id:
+        simple: ${inputs.incident_id}
+      start_date: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 400\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '3':
+    id: '3'
+    taskid: 95dd7e64-5fef-4bfa-8490-e8e916a1c323
+    type: condition
+    task:
+      id: 95dd7e64-5fef-4bfa-8490-e8e916a1c323
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illusive.Forensics.Evidence.details
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Illusive.Forensics.IncidentId
+            iscontext: true
+          right:
+            value:
+              simple: inputs.incident_id
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 600\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '4':
+    id: '4'
+    taskid: 598be859-aee5-4609-8e93-53b75738322b
+    type: regular
+    task:
+      id: 598be859-aee5-4609-8e93-53b75738322b
+      version: -1
+      name: illusive-get-asm-host-insight
+      script: '|||illusive-get-asm-host-insight'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      hostnameOrIp:
+        simple: ${inputs.ip}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 800\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '5':
+    id: '5'
+    taskid: 77ebac93-59d6-48e8-8152-d5bdf8c4ade5
+    type: condition
+    task:
+      id: 77ebac93-59d6-48e8-8152-d5bdf8c4ade5
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: Illusive.AttackSurfaceInsightsHost
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 980\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '6':
+    id: '6'
+    taskid: dac17ecc-e6f4-4b5b-8204-e7b1ef29e180
+    type: regular
+    task:
+      id: dac17ecc-e6f4-4b5b-8204-e7b1ef29e180
+      version: -1
+      name: illusive-get-asm-cj-insight
+      script: '|||illusive-get-asm-cj-insight'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1200\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '7':
+    id: '7'
+    taskid: f5fc487d-5742-47a9-87b3-5b42a5eee29b
+    type: condition
+    task:
+      id: f5fc487d-5742-47a9-87b3-5b42a5eee29b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Illusive.AttackSurfaceInsightsCrownJewel.hostname
+            iscontext: true
+          right:
+            value:
+              simple: inputs.ip
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1400\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '8':
+    id: '8'
+    taskid: 1eed4a02-74a4-43c8-8f92-562bd3ad8fd1
+    type: regular
+    task:
+      id: 1eed4a02-74a4-43c8-8f92-562bd3ad8fd1
+      version: -1
+      name: illusive-get-deceptive-users
+      script: '|||illusive-get-deceptive-users'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      type:
+        simple: ' APPROVED'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1600\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '9':
+    id: '9'
+    taskid: 5a3452a5-933b-4f8b-8148-aa6de1ac7f73
+    type: condition
+    task:
+      id: 5a3452a5-933b-4f8b-8148-aa6de1ac7f73
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illusive.DeceptiveUser.domainName
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1800\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '10':
+    id: '10'
+    taskid: b9666766-1d9c-4c70-8761-316c29d847b1
+    type: regular
+    task:
+      id: b9666766-1d9c-4c70-8761-316c29d847b1
+      version: -1
+      name: illusive-get-deceptive-servers
+      script: '|||illusive-get-deceptive-servers'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      type: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2000\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '11':
+    id: '11'
+    taskid: d790284d-db71-4744-8c79-3d1e954760a0
+    type: condition
+    task:
+      id: d790284d-db71-4744-8c79-3d1e954760a0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '16'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illusive.DeceptiveServer.host
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illusive.DeceptiveServer.policyNames
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illusive.DeceptiveServer.deceptiveState
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2200\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '12':
+    id: '12'
+    taskid: 698f03bd-8567-48eb-8459-595201e1b0db
+    type: regular
+    task:
+      id: 698f03bd-8567-48eb-8459-595201e1b0db
+      version: -1
+      name: illusive-is-deceptive-user
+      script: '|||illusive-is-deceptive-user'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      username:
+        simple: userToAdd
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3230\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '13':
+    id: '13'
+    taskid: 11a42698-82c2-479a-8a30-1cabb57c008b
+    type: condition
+    task:
+      id: 11a42698-82c2-479a-8a30-1cabb57c008b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '14'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illusive.IsDeceptive.Username
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Illusive.IsDeceptive.IsDeceptiveUser
+            iscontext: true
+          right:
+            value:
+              simple: 'false'
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3440\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '14':
+    id: '14'
+    taskid: 49f24052-f72a-4ad6-8d58-206e35e64a71
+    type: regular
+    task:
+      id: 49f24052-f72a-4ad6-8d58-206e35e64a71
+      version: -1
+      name: illusive-is-deceptive-server
+      script: '|||illusive-is-deceptive-server'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      hostname:
+        simple: serverToAdd.domain.com
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3630\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '15':
+    id: '15'
+    taskid: 04141021-f714-4aa6-8d1f-79fc4fda8931
+    type: condition
+    task:
+      id: 04141021-f714-4aa6-8d1f-79fc4fda8931
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '20'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Illusive.IsDeceptive.IsDeceptiveServer
+            iscontext: true
+          right:
+            value:
+              simple: 'false'
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illusive.IsDeceptive.Hostname
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3800\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '16':
+    id: '16'
+    taskid: f718b6c7-4973-4b3f-85ea-b6333c36abc1
+    type: regular
+    task:
+      id: f718b6c7-4973-4b3f-85ea-b6333c36abc1
+      version: -1
+      name: illusive-add-deceptive-users
+      script: '|||illusive-add-deceptive-users'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments:
+      domain_name:
+        simple: domain.com
+      password:
+        simple: password
+      policy_names: {}
+      username:
+        simple: userToAdd
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2410\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '17':
+    id: '17'
+    taskid: 290c52ec-939e-498f-8149-fdea1f712898
+    type: regular
+    task:
+      id: 290c52ec-939e-498f-8149-fdea1f712898
+      version: -1
+      name: illusive-add-deceptive-servers
+      script: '|||illusive-add-deceptive-servers'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '18'
+    scriptarguments:
+      host:
+        simple: serverToAdd.domain.com
+      policy_names: {}
+      service_types:
+        simple: FTP
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2610\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '18':
+    id: '18'
+    taskid: ab0e48dd-7444-44c1-853e-7d7a2441fd8f
+    type: regular
+    task:
+      id: ab0e48dd-7444-44c1-853e-7d7a2441fd8f
+      version: -1
+      name: illusive-delete-deceptive-users
+      script: '|||illusive-delete-deceptive-users'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments:
+      deceptive_users:
+        simple: userToAdd
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2845\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '19':
+    id: '19'
+    taskid: 96ef7ccf-d395-486a-898b-57b20b00192c
+    type: regular
+    task:
+      id: 96ef7ccf-d395-486a-898b-57b20b00192c
+      version: -1
+      name: illusive-delete-deceptive-servers
+      script: '|||illusive-delete-deceptive-servers'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments:
+      deceptive_hosts:
+        simple: serverToAdd
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3045\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '20':
+    id: '20'
+    taskid: 3f2806a6-4c66-4934-80ed-9d0132c17b63
+    type: regular
+    task:
+      id: 3f2806a6-4c66-4934-80ed-9d0132c17b63
+      version: -1
+      name: illusive-assign-host-to-policy
+      script: '|||illusive-assign-host-to-policy'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments:
+      hosts:
+        simple: ${inputs.host_name}
+      policy_name:
+        simple: Full Protection
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 4000\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '21':
+    id: '21'
+    taskid: f43fa0fd-6a7d-4ef7-8093-a0584bc38dd2
+    type: regular
+    task:
+      id: f43fa0fd-6a7d-4ef7-8093-a0584bc38dd2
+      version: -1
+      name: illusive-remove-host-from-policy
+      script: '|||illusive-remove-host-from-policy'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '22'
+    scriptarguments:
+      hosts:
+        simple: ${inputs.host_name}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 4200\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '22':
+    id: '22'
+    taskid: 51efc6cc-f3f0-4987-84da-0798078479ca
+    type: regular
+    task:
+      id: 51efc6cc-f3f0-4987-84da-0798078479ca
+      version: -1
+      name: illusive-run-forensics-on-demand
+      script: '|||illusive-run-forensics-on-demand'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '23'
+    scriptarguments:
+      fqdn_or_ip:
+        simple: ${inputs.ip}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 4400\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '23':
+    id: '23'
+    taskid: 0d2a3f41-5c43-42e8-80d8-03b6dc5db145
+    type: condition
+    task:
+      id: 0d2a3f41-5c43-42e8-80d8-03b6dc5db145
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '24'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illusive.Event.eventId
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 4600\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '24':
+    id: '24'
+    taskid: 9ba656a7-c4a1-4a52-856f-6c75f6d7cc70
+    type: regular
+    task:
+      id: 9ba656a7-c4a1-4a52-856f-6c75f6d7cc70
+      version: -1
+      name: illusive-get-incidents
+      script: '|||illusive-get-incidents'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments:
+      has_forensics: {}
+      hostnames: {}
+      incident_id:
+        simple: ${inputs.incident_id}
+      limit: {}
+      offset: {}
+      start_date: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 4800\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '25':
+    id: '25'
+    taskid: 4f5d3349-32a5-4a8b-8fc0-fe85b29606fa
+    type: condition
+    task:
+      id: 4f5d3349-32a5-4a8b-8fc0-fe85b29606fa
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '26'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Illusive.Incident.incidentId
+            iscontext: true
+          right:
+            value:
+              simple: inputs.incident_id
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 5000\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '26':
+    id: '26'
+    taskid: 14ac4cec-6000-43e6-8d5c-c646e6a3076f
+    type: regular
+    task:
+      id: 14ac4cec-6000-43e6-8d5c-c646e6a3076f
+      version: -1
+      name: illusive-get-event-incident-id
+      script: '|||illusive-get-event-incident-id'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '27'
+    scriptarguments:
+      event_id:
+        simple: ${inputs.event_id}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 5190\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '27':
+    id: '27'
+    taskid: 704dddaa-9993-4793-88c8-7e3fb8c67df0
+    type: condition
+    task:
+      id: 704dddaa-9993-4793-88c8-7e3fb8c67df0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '29'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Illusive.Event.incidentId
+            iscontext: true
+          right:
+            value:
+              simple: inputs.incident_id
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Illusive.Event.eventId
+            iscontext: true
+          right:
+            value:
+              simple: inputs.event_id
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 5400\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '29':
+    id: '29'
+    taskid: 9b87ee34-2982-4fb1-880b-33def7b74775
+    type: title
+    task:
+      id: 9b87ee34-2982-4fb1-880b-33def7b74775
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 5600\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 5615,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"
+inputs:
+- key: incident_id
+  value:
+    simple: '2'
+  required: true
+  description: ''
+  playbookInputQuery:
+- key: event_id
+  value:
+    simple: '3'
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: ip
+  value:
+    simple: 172.27.118.14
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: host_name
+  value:
+    simple: WIN8@illusive.com
+  required: false
+  description: ''
+  playbookInputQuery:
+outputs: []
+fromversion: 5.0.0
+description: ''

@@ -724,9 +724,14 @@ def wildfire_get_sample_command():
     for element in inputs:
         try:
             result = wildfire_get_sample(element)
-            headers_string = str(result.headers)
-            file_name = headers_string.split("filename=", 1)[1]
-            # will be saved under 'File' in the context, can be farther investigated.
+            # filename will be found under the Content-Disposition header in the format
+            # attachment; filename=<FILENAME>.000
+            content_disposition = result.headers.get('Content-Disposition')
+            raw_filename = content_disposition.split('filename=')[1]
+            # there are 2 dots in the filename as the response saves the packet capture file
+            # need to extract the string until the second occurrence of the dot char
+            file_name = '.'.join(raw_filename.split('.')[:2])
+            # will be saved under 'File' in the context, can be further investigated.
             file_entry = fileResult(file_name, result.content)
             demisto.results(file_entry)
         except NotFoundError:

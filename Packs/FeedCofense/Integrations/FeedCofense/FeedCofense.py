@@ -17,7 +17,7 @@ _RESULTS_PER_PAGE = 50  # Max for Cofense is 100
 class Client(BaseClient):
     """Implements class for miners of Cofense feed over http/https."""
 
-    available_fields = ["all", "malware", "phish"]
+    available_fields = ["all", "malware"]
 
     cofense_to_indicator = {
         "IPv4 Address": FeedIndicatorType.IP,
@@ -104,7 +104,7 @@ class Client(BaseClient):
                     # Call to get all pages.
                     total_pages = data.get("page", {}).get("totalPages")
                     if total_pages is None:
-                        return_error(f'No "totalPages" in response')
+                        return_error('No "totalPages" in response')
                     demisto.debug(f"total_pages set to {total_pages}")
 
                 threats = data.get("threats", [])
@@ -194,7 +194,8 @@ def test_module(client: Client) -> Tuple[str, dict, dict]:
     Returns:
         str -- "ok" if succeeded, else raises a error.
     """
-    client.build_iterator()
+    for _ in client.build_iterator():
+        return "ok", {}, {}
     return "ok", {}, {}
 
 
@@ -303,6 +304,10 @@ def main():
     # handle params
     url = "https://www.threathq.com"
     credentials = params.get("credentials", {})
+    if not credentials:
+        raise DemistoException("Credentials are empty. "
+                               "Fill up the username/password fields in the integration configuration.")
+
     auth = (credentials.get("identifier"), credentials.get("password"))
     verify = not params.get("insecure")
     proxy = params.get("proxy")

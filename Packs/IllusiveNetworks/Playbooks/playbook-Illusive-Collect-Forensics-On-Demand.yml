@@ -1,0 +1,275 @@
+id: Illusive-Collect-Forensics-On-Demand
+version: -1
+name: Illusive-Collect-Forensics-On-Demand
+description: This playbook is used to collect forensics on-demand on any compromised
+  host and retrieve the forensics timeline upon successful collection.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 5c5a46fa-b621-45ab-8b8b-dc78415f2965
+    type: start
+    task:
+      id: 5c5a46fa-b621-45ab-8b8b-dc78415f2965
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": -10\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '1':
+    id: '1'
+    taskid: 13c5e084-170f-4e60-80d4-7043b8d57542
+    type: regular
+    task:
+      id: 13c5e084-170f-4e60-80d4-7043b8d57542
+      version: -1
+      name: illusive-run-forensics-on-demand
+      description: Collect forensics on a specified host and retrieve the forensics
+        timeline
+      script: IllusiveNetworks|||illusive-run-forensics-on-demand
+      type: regular
+      iscommand: true
+      brand: IllusiveNetworks
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      fqdn_or_ip:
+        complex:
+          root: 'inputs.fqdn_or_ip '
+      hostname_or_ip:
+        complex:
+          root: 'inputs.fqdn_or_ip '
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 150\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '2':
+    id: '2'
+    taskid: da5eee43-a8b5-48bc-889a-923df50b909d
+    type: playbook
+    task:
+      id: da5eee43-a8b5-48bc-889a-923df50b909d
+      version: -1
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: Illusive
+          accessor: Event.eventId
+      Interval:
+        simple: '1'
+      PollingCommandArgName:
+        simple: event_id
+      PollingCommandName:
+        simple: illusive-get-event-incident-id
+      Timeout:
+        simple: '5'
+      dt:
+        simple: Illusive.Event(val.status != 'Done').eventId
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 0
+    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 360\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '3':
+    id: '3'
+    taskid: 17a4a75a-fba1-4981-8b02-347d75fd10ba
+    type: regular
+    task:
+      id: 17a4a75a-fba1-4981-8b02-347d75fd10ba
+      version: -1
+      name: illusive-get-event-incident-id
+      description: event_id
+      script: IllusiveNetworks|||illusive-get-event-incident-id
+      type: regular
+      iscommand: true
+      brand: IllusiveNetworks
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      event_id:
+        complex:
+          root: Illusive
+          accessor: Event.eventId
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 540\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '4':
+    id: '4'
+    taskid: d1a6b201-4d05-46f2-8781-daf8c46d9f37
+    type: playbook
+    task:
+      id: d1a6b201-4d05-46f2-8781-daf8c46d9f37
+      version: -1
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: Illusive
+          accessor: Event.incidentId
+      Interval:
+        simple: '2'
+      PollingCommandArgName:
+        simple: incident_id
+      PollingCommandName:
+        simple: illusive-get-forensics-timeline
+      Timeout:
+        simple: '15'
+      dt:
+        simple: Illusive.Forensics(val.Status != 'Done').IncidentId
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 0
+    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 730\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '5':
+    id: '5'
+    taskid: 17e61225-ffe1-4c2f-8f57-f444f9cb0902
+    type: regular
+    task:
+      id: 17e61225-ffe1-4c2f-8f57-f444f9cb0902
+      version: -1
+      name: illusive-get-forensics-timeline
+      description: Retrieve forensics timeline for a specific incident
+      script: IllusiveNetworks|||illusive-get-forensics-timeline
+      type: regular
+      iscommand: true
+      brand: IllusiveNetworks
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      end_date:
+        complex:
+          root: inputs.end_date
+      incident_id:
+        complex:
+          root: Illusive
+          accessor: Event.incidentId
+      start_date:
+        complex:
+          root: inputs.end_date
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 910\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '6':
+    id: '6'
+    taskid: f38a8250-8ff9-4035-85e6-d0414d5bb63d
+    type: regular
+    task:
+      id: f38a8250-8ff9-4035-85e6-d0414d5bb63d
+      version: -1
+      name: Print Forensics Timeline
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      value:
+        complex:
+          root: Illusive
+          accessor: Forensics.Evidence
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 1090\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1195,\n      \"width\": 380,\n      \"x\": 440,\n      \"y\":\
+  \ -10\n    }\n  }\n}"
+inputs:
+- key: 'fqdn_or_ip '
+  value: {}
+  required: true
+  description: The host fqdn or IP address on which to collect forensics
+  playbookInputQuery:
+- key: start_date
+  value: {}
+  required: false
+  description: "The starting date of the forensics timeline.\n"
+  playbookInputQuery:
+- key: end_date
+  value: {}
+  required: false
+  description: "The last date of the forensics timeline.\n"
+  playbookInputQuery:
+outputs:
+- contextPath: Illusive.Forensics.Evidence.details
+  description: The forensics evidence details
+- contextPath: Illusive.Forensics.Evidence.eventId
+  description: The event ID
+- contextPath: Illusive.Forensics.Evidence.id
+  description: The forensics evidence ID
+- contextPath: Illusive.Forensics.Evidence.source
+  description: The Evidence source
+- contextPath: Illusive.Forensics.Evidence.starred
+  description: Whether the forensics evidence has been starred
+- contextPath: Illusive.Forensics.Evidence.time
+  description: 'Date and time of the forensics evidence '
+- contextPath: Illusive.Forensics.Evidence.title
+  description: The forensics evidence description
+- contextPath: Illusive.Forensics.IncidentId
+  description: The Incident Id
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

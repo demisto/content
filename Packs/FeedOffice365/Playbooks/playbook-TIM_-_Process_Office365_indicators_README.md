@@ -7,7 +7,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* Builtin
+This playbook does not use any integrations.
 
 ### Scripts
 This playbook does not use any scripts.
@@ -31,4 +31,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Playbook Image](https://github.com/demisto/content/blob/8206fc4ae62e42cb218085fab9a4b0cd10496300/Packs/FeedOffice365/doc_files/TIM_-_Process_Office365_indicators.png)
+![Playbook Image](https://github.com/demisto/content/raw/8206fc4ae62e42cb218085fab9a4b0cd10496300/Packs/FeedOffice365/doc_files/TIM_-_Process_Office365_indicators.png)

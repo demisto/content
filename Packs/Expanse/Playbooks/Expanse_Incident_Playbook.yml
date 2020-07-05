@@ -71,3 +71,5 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+- No tests (auto formatted)

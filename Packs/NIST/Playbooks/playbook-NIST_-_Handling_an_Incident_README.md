@@ -26,3 +26,10 @@ There are no outputs for this playbook.
 ## Playbook Image
 ---
 ![NIST_Handling_an_Incident](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/NIST_Handling_an_Incident_Template.png)
+
+## Playbook Demo Video
+<video controls>
+    <source src="https://github.com/demisto/content-assets/raw/7982404664dc68c2035b7c701d093ec026628802/Assets/NIST/NIST-Demo.mp4"
+            type="video/mp4"/>
+    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content-assets/blob/7982404664dc68c2035b7c701d093ec026628802/Assets/NIST/NIST-Demo.mp4
+</video>

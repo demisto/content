@@ -1,5 +1,9 @@
 ## [Unreleased]
-Fixed an issue with header parsing.
+
+
+## [20.5.2] - 2020-05-26
+- Fixed an issue parsing EML files encoded with a BOM.
+- Fixed an issue with header parsing.
 
 ## [20.4.1] - 2020-04-29
 Fixed an issue with base64 headers padding.

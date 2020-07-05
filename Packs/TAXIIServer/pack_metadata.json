@@ -1,24 +1,16 @@
 {
-    "name": "TAXII Server",
-    "description": "This pack provides TAXII Services for system indicators (Outbound feed).",
-    "support": "xsoar",
-    "serverMinVersion": "5.0.0",
-    "currentVersion": "1.0.0",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "categories": [
-        "Data Enrichment & Threat Intelligence"
-    ],
-    "tags": [],
-    "created": "2020-03-10T08:37:18Z",
-    "updated": "2020-03-10T08:37:18Z",
-    "beta": false,
-    "deprecated": false,
-    "certification": "certified",
-    "useCases": [],
-    "keywords": [],
-    "price": 0,
-    "dependencies": {},
-    "displayedImages": []
+  "name": "TAXII Server",
+  "description": "This pack provides TAXII Services for system indicators (Outbound feed).",
+  "support": "xsoar",
+  "currentVersion": "1.0.0",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-03-10T08:37:18Z",
+  "categories": [
+    "Data Enrichment & Threat Intelligence"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": []
 }

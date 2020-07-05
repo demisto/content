@@ -7,11 +7,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* Builtin
+This playbook does not use any integrations.
 
 ### Scripts
-* SetAndHandleEmpty
 * FilterByList
+* SetAndHandleEmpty
 
 ### Commands
 * appendIndicatorField
@@ -19,10 +19,10 @@ This playbook does not use any sub-playbooks.
 ## Playbook Inputs
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-| ApprovedHashList | A Cortex XSOAR list containing approved hash values. Hash indicators that appear in the list are tagged as approved. |  |  | Optional |
-|  |  |  |  | Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| ApprovedHashList | A Cortex XSOAR list containing approved hash values. Hash indicators that appear in the list are tagged as approved. |  | Optional |
+| Indicator Query | Indicators matching the indicator query will be used as playbook input |  | Optional |
 
 ## Playbook Outputs
 ---

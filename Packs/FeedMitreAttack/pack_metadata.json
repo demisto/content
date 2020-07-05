@@ -2,9 +2,8 @@
     "name": "MITRE ATT&CK",
     "description": "Fetches indicators from MITRE ATT&CK.",
     "support": "xsoar",
-    "serverMinVersion": "5.5.0",
-    "currentVersion": "1.0.0",
-    "author": "Adam Burt",
+    "currentVersion": "1.0.4",
+    "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
@@ -12,17 +11,10 @@
     ],
     "tags": [],
     "created": "2020-04-23T17:32:00Z",
-    "updated": "2020-04-23T17:32:00Z",
-    "beta": false,
-    "deprecated": false,
-    "certification": "certified",
     "useCases": [],
     "keywords": [
-    	"MITRE",
-    	"Feed",
-    	"ATT&CK"
-    ],
-    "price": 0,
-    "dependencies": {},
-    "displayedImages": []
+        "MITRE",
+        "Feed",
+        "ATT&CK"
+    ]
 }

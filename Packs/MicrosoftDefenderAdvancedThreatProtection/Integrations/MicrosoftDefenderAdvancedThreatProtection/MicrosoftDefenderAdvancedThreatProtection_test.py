@@ -1,34 +1,34 @@
 import demistomock as demisto
 import json
+import pytest
+from MicrosoftDefenderAdvancedThreatProtection import MsClient
 
-RETURN_ERROR_TARGET = 'MicrosoftDefenderAdvancedThreatProtection.return_error'
+ARGS = {'id': '123', 'limit': '2', 'offset': '0'}
 
 
 def mock_demisto(mocker):
-    mocker.patch.object(demisto, 'params', return_value={'proxy': True,
-                                                         'url': 'https://api.securitycenter.windows.com',
-                                                         'tenant_id': '1234',
-                                                         'enc_key': 'key',
-                                                         'auth_id': '1234567@1234567',
-                                                         'fetch_severity': 'Informational,Low,Medium,High',
-                                                         'fetch_status': 'New'})
     mocker.patch.object(demisto, 'getLastRun', return_value={'last_alert_fetched_time': "2018-11-26T16:19:21"})
     mocker.patch.object(demisto, 'incidents')
 
 
+client_mocker = MsClient(
+    tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name', base_url='url', verify='use_ssl',
+    proxy='proxy', self_deployed='self_deployed', alert_severities_to_fetch='Informational,Low,Medium,High',
+    alert_time_to_fetch='3 days', alert_status_to_fetch='New')
+
+
 def atp_mocker(mocker, file_name):
-    import MicrosoftDefenderAdvancedThreatProtection as atp
     with open(f'test_data/{file_name}', 'r') as f:
         alerts = json.loads(f.read())
-    mocker.patch.object(atp, 'list_alerts_request', return_value=alerts)
+    mocker.patch.object(client_mocker, 'list_alerts', return_value=alerts)
 
 
 def test_first_fetch_incidents(mocker):
+    from MicrosoftDefenderAdvancedThreatProtection import fetch_incidents
     mock_demisto(mocker)
-    import MicrosoftDefenderAdvancedThreatProtection as atp
     atp_mocker(mocker, 'first_response_alerts.json')
 
-    atp.fetch_incidents()
+    fetch_incidents(client_mocker, {'last_alert_fetched_time': "2018-11-26T16:19:21"})
     # Check that all 3 incidents are extracted
     assert 3 == len(demisto.incidents.call_args[0][0])
     assert 'Microsoft Defender ATP Alert da636983472338927033_-2077013687' == \
@@ -36,42 +36,30 @@ def test_first_fetch_incidents(mocker):
 
 
 def test_second_fetch_incidents(mocker):
+    from MicrosoftDefenderAdvancedThreatProtection import fetch_incidents
     mock_demisto(mocker)
-    import MicrosoftDefenderAdvancedThreatProtection as atp
     atp_mocker(mocker, 'second_response_alerts.json')
     # Check that incident isn't extracted again
-
-    mocker.patch.object(demisto, 'getLastRun', return_value={'last_alert_fetched_time': "2019-09-01T13:31:08",
-                                                             'existing_ids': ['da637029414680409372_735564929']})
-    atp.fetch_incidents()
+    fetch_incidents(client_mocker, {'last_alert_fetched_time': "2019-09-01T13:31:08",
+                                    'existing_ids': ['da637029414680409372_735564929']})
     assert [] == demisto.incidents.call_args[0][0]
 
 
 def test_third_fetch_incidents(mocker):
+    from MicrosoftDefenderAdvancedThreatProtection import fetch_incidents
     mock_demisto(mocker)
-    import MicrosoftDefenderAdvancedThreatProtection as atp
     atp_mocker(mocker, 'third_response_alerts.json')
     # Check that new incident is extracted
-    mocker.patch.object(demisto, 'getLastRun', return_value={'last_alert_fetched_time': "2019-09-01T13:29:37",
-                                                             'existing_ids': ['da637029413772554314_295039533']})
-    atp.fetch_incidents()
+    fetch_incidents(client_mocker, {'last_alert_fetched_time': "2019-09-01T13:29:37",
+                                    'existing_ids': ['da637029413772554314_295039533']})
     assert 'Microsoft Defender ATP Alert da637029414680409372_735564929' == \
            demisto.incidents.call_args[0][0][0].get('name')
 
 
-def test_get_file_data(mocker):
-    import MicrosoftDefenderAdvancedThreatProtection as atp
-    mocker.patch.object(atp, 'get_file_data_request', return_value=FILE_DATA_API_RESPONSE)
-    res = atp.get_file_data(FILE_DATA_API_RESPONSE)
-    assert res['Sha1'] == "123abc"
-    assert res['SizeInBytes'] == 42
-
-
 def test_get_alert_related_ips_command(mocker):
-    import MicrosoftDefenderAdvancedThreatProtection as atp
-    mocker.patch.object(demisto, 'args', return_value={'id': '123', 'limit': '1', 'offset': '0'})
-    mocker.patch.object(atp, 'get_alert_related_ips_request', return_value=ALERT_RELATED_IPS_API_RESPONSE)
-    _, res, _ = atp.get_alert_related_ips_command()
+    from MicrosoftDefenderAdvancedThreatProtection import get_alert_related_ips_command
+    mocker.patch.object(client_mocker, 'get_alert_related_ips', return_value=ALERT_RELATED_IPS_API_RESPONSE)
+    _, res, _ = get_alert_related_ips_command(client_mocker, {'id': '123', 'limit': '1', 'offset': '0'})
     assert res['MicrosoftATP.AlertIP(val.AlertID === obj.AlertID)'] == {
         'AlertID': '123',
         'IPs': ['1.1.1.1']
@@ -79,10 +67,9 @@ def test_get_alert_related_ips_command(mocker):
 
 
 def test_get_alert_related_domains_command(mocker):
-    import MicrosoftDefenderAdvancedThreatProtection as atp
-    mocker.patch.object(demisto, 'args', return_value={'id': '123', 'limit': '2', 'offset': '0'})
-    mocker.patch.object(atp, 'get_alert_related_domains_request', return_value=ALERT_RELATED_DOMAINS_API_RESPONSE)
-    _, res, _ = atp.get_alert_related_domains_command()
+    from MicrosoftDefenderAdvancedThreatProtection import get_alert_related_domains_command
+    mocker.patch.object(client_mocker, 'get_alert_related_domains', return_value=ALERT_RELATED_DOMAINS_API_RESPONSE)
+    _, res, _ = get_alert_related_domains_command(client_mocker, ARGS)
     assert res['MicrosoftATP.AlertDomain(val.AlertID === obj.AlertID)'] == {
         'AlertID': '123',
         'Domains': ['www.example.com', 'www.example2.com']
@@ -90,10 +77,9 @@ def test_get_alert_related_domains_command(mocker):
 
 
 def test_get_alert_related_user_command(mocker):
-    import MicrosoftDefenderAdvancedThreatProtection as atp
-    mocker.patch.object(demisto, 'args', return_value={'id': '123', 'limit': '2', 'offset': '0'})
-    mocker.patch.object(atp, 'get_alert_related_user_request', return_value=ALERT_RELATED_USER_API_RESPONSE)
-    _, res, _ = atp.get_alert_related_user_command()
+    from MicrosoftDefenderAdvancedThreatProtection import get_alert_related_user_command
+    mocker.patch.object(client_mocker, 'get_alert_related_user', return_value=ALERT_RELATED_USER_API_RESPONSE)
+    _, res, _ = get_alert_related_user_command(client_mocker, {'id': '123', 'limit': '2', 'offset': '0'})
     assert res['MicrosoftATP.AlertUser(val.AlertID === obj.AlertID)'] == {
         'AlertID': '123',
         'User': USER_DATA
@@ -101,25 +87,26 @@ def test_get_alert_related_user_command(mocker):
 
 
 def test_get_action_data(mocker):
-    import MicrosoftDefenderAdvancedThreatProtection as atp
-    mocker.patch.object(atp, 'get_machine_action_by_id_request', return_value=ACTION_DATA_API_RESPONSE)
-    res = atp.get_machine_action_data(ACTION_DATA_API_RESPONSE)
+    from MicrosoftDefenderAdvancedThreatProtection import get_machine_action_data
+    mocker.patch.object(client_mocker, 'get_machine_action_by_id', return_value=ACTION_DATA_API_RESPONSE)
+    res = get_machine_action_data(ACTION_DATA_API_RESPONSE)
     assert res['ID'] == "123456"
     assert res['Status'] == "Succeeded"
 
 
 def test_get_machine_investigation_package_command(mocker):
     import MicrosoftDefenderAdvancedThreatProtection as atp
-    mocker.patch.object(atp, 'get_investigation_package_request', return_value=INVESTIGATION_PACKAGE_API_RESPONSE)
+    from MicrosoftDefenderAdvancedThreatProtection import get_machine_investigation_package_command
+    mocker.patch.object(client_mocker, 'get_investigation_package', return_value=INVESTIGATION_PACKAGE_API_RESPONSE)
     mocker.patch.object(atp, 'get_machine_action_data', return_value=INVESTIGATION_ACTION_DATA)
-    _, res, _ = atp.get_machine_investigation_package_command()
+    _, res, _ = get_machine_investigation_package_command(client_mocker, {'machine_id': '123', 'comment': 'test'})
     assert res['MicrosoftATP.MachineAction(val.ID === obj.ID)'] == INVESTIGATION_ACTION_DATA
 
 
 def test_get_investigation_package_sas_uri_command(mocker):
-    import MicrosoftDefenderAdvancedThreatProtection as atp
-    mocker.patch.object(atp, 'get_investigation_package_sas_uri_request', return_value=INVESTIGATION_SAS_URI_API_RES)
-    _, res, _ = atp.get_investigation_package_sas_uri_command()
+    from MicrosoftDefenderAdvancedThreatProtection import get_investigation_package_sas_uri_command
+    mocker.patch.object(client_mocker, 'get_investigation_package_sas_uri', return_value=INVESTIGATION_SAS_URI_API_RES)
+    _, res, _ = get_investigation_package_sas_uri_command(client_mocker, {})
     assert res['MicrosoftATP.InvestigationURI(val.Link === obj.Link)'] == {
         'Link': 'https://userrequests-us.securitycenter.windows.com:443/safedownload/'
                 'WDATP_Investigation_Package.zip?token=test1'}
@@ -127,59 +114,63 @@ def test_get_investigation_package_sas_uri_command(mocker):
 
 def test_restrict_app_execution_command(mocker):
     import MicrosoftDefenderAdvancedThreatProtection as atp
-    mocker.patch.object(atp, 'restrict_app_execution_request', return_value=MACHINE_ACTION_API_RESPONSE)
+    from MicrosoftDefenderAdvancedThreatProtection import restrict_app_execution_command
+    mocker.patch.object(client_mocker, 'restrict_app_execution', return_value=MACHINE_ACTION_API_RESPONSE)
     mocker.patch.object(atp, 'get_machine_action_data', return_value=MACHINE_ACTION_DATA)
-    _, res, _ = atp.restrict_app_execution_command()
+    _, res, _ = restrict_app_execution_command(client_mocker, {})
     assert res['MicrosoftATP.MachineAction(val.ID === obj.ID)'] == MACHINE_ACTION_DATA
 
 
 def test_remove_app_restriction_command(mocker):
     import MicrosoftDefenderAdvancedThreatProtection as atp
-    mocker.patch.object(atp, 'remove_app_restriction_request', return_value=MACHINE_ACTION_API_RESPONSE)
+    from MicrosoftDefenderAdvancedThreatProtection import remove_app_restriction_command
+    mocker.patch.object(client_mocker, 'remove_app_restriction', return_value=MACHINE_ACTION_API_RESPONSE)
     mocker.patch.object(atp, 'get_machine_action_data', return_value=MACHINE_ACTION_DATA)
-    _, res, _ = atp.remove_app_restriction_command()
+    _, res, _ = remove_app_restriction_command(client_mocker, {})
     assert res['MicrosoftATP.MachineAction(val.ID === obj.ID)'] == MACHINE_ACTION_DATA
 
 
 def test_stop_and_quarantine_file_command(mocker):
     import MicrosoftDefenderAdvancedThreatProtection as atp
-    mocker.patch.object(atp, 'stop_and_quarantine_file_request', return_value=STOP_AND_QUARANTINE_FILE_RAW_RESPONSE)
+    from MicrosoftDefenderAdvancedThreatProtection import stop_and_quarantine_file_command
+    mocker.patch.object(client_mocker, 'stop_and_quarantine_file', return_value=STOP_AND_QUARANTINE_FILE_RAW_RESPONSE)
     mocker.patch.object(atp, 'get_machine_action_data', return_value=MACHINE_ACTION_STOP_AND_QUARANTINE_FILE_DATA)
-    _, res, _ = atp.stop_and_quarantine_file_command()
+    _, res, _ = stop_and_quarantine_file_command(client_mocker, {})
     assert res['MicrosoftATP.MachineAction(val.ID === obj.ID)'] == MACHINE_ACTION_STOP_AND_QUARANTINE_FILE_DATA
 
 
 def test_get_investigations_by_id_command(mocker):
     import MicrosoftDefenderAdvancedThreatProtection as atp
-    mocker.patch.object(demisto, 'args', return_value={'id': '123', 'limit': '1', 'offset': '0'})
-    mocker.patch.object(atp, 'get_investigation_by_id_request', return_value=INVESTIGATION_API_RESPONSE)
+    from MicrosoftDefenderAdvancedThreatProtection import get_investigations_by_id_command
+    mocker.patch.object(client_mocker, 'get_investigation_by_id', return_value=INVESTIGATION_API_RESPONSE)
     mocker.patch.object(atp, 'get_investigation_data', return_value=INVESTIGATION_DATA)
-    _, res, _ = atp.get_investigations_by_id_command()
+    _, res, _ = get_investigations_by_id_command(client_mocker, ARGS)
     assert res['MicrosoftATP.Investigation(val.ID === obj.ID)'] == INVESTIGATION_DATA
 
 
 def test_get_investigation_data(mocker):
-    import MicrosoftDefenderAdvancedThreatProtection as atp
-    mocker.patch.object(atp, 'get_investigation_by_id_request', return_value=INVESTIGATION_API_RESPONSE)
-    res = atp.get_investigation_data(INVESTIGATION_API_RESPONSE)
+    from MicrosoftDefenderAdvancedThreatProtection import get_investigation_data
+    mocker.patch.object(client_mocker, 'get_investigation_by_id', return_value=INVESTIGATION_API_RESPONSE)
+    res = get_investigation_data(INVESTIGATION_API_RESPONSE)
     assert res['ID'] == '123'
     assert res['InvestigationState'] == "Running"
 
 
 def test_start_investigation_command(mocker):
     import MicrosoftDefenderAdvancedThreatProtection as atp
-    mocker.patch.object(atp, 'start_investigation_request', return_value=INVESTIGATION_API_RESPONSE)
+    from MicrosoftDefenderAdvancedThreatProtection import start_investigation_command
+    mocker.patch.object(client_mocker, 'start_investigation', return_value=INVESTIGATION_API_RESPONSE)
     mocker.patch.object(atp, 'get_investigation_data', return_value=INVESTIGATION_DATA)
-    _, res, _ = atp.start_investigation_command()
+    _, res, _ = start_investigation_command(client_mocker, {})
     assert res['MicrosoftATP.Investigation(val.ID === obj.ID)'] == INVESTIGATION_DATA
 
 
 def test_get_domain_alerts_command(mocker):
     import MicrosoftDefenderAdvancedThreatProtection as atp
-    mocker.patch.object(demisto, 'args', return_value={'domain': 'test'})
-    mocker.patch.object(atp, 'get_domain_alerts_request', return_value=ALERTS_API_RESPONSE)
+    from MicrosoftDefenderAdvancedThreatProtection import get_domain_alerts_command
+    mocker.patch.object(client_mocker, 'get_domain_alerts', return_value=ALERTS_API_RESPONSE)
     mocker.patch.object(atp, 'get_alert_data', return_value=ALERT_DATA)
-    _, res, _ = atp.get_domain_alerts_command()
+    _, res, _ = get_domain_alerts_command(client_mocker, {'domain': 'test'})
     assert res['MicrosoftATP.DomainAlert(val.Domain === obj.Domain)'] == {
         'Domain': 'test',
         'Alerts': [ALERT_DATA]
@@ -187,19 +178,19 @@ def test_get_domain_alerts_command(mocker):
 
 
 def test_get_alert_data(mocker):
-    import MicrosoftDefenderAdvancedThreatProtection as atp
-    mocker.patch.object(atp, 'get_alert_by_id_request', return_value=SINGLE_ALERT_API_RESPONSE)
-    res = atp.get_alert_data(SINGLE_ALERT_API_RESPONSE)
+    from MicrosoftDefenderAdvancedThreatProtection import get_alert_data
+    mocker.patch.object(client_mocker, 'get_alert_by_id', return_value=SINGLE_ALERT_API_RESPONSE)
+    res = get_alert_data(SINGLE_ALERT_API_RESPONSE)
     assert res['ID'] == '123'
     assert res['Title'] == 'Network connection to a risky host'
 
 
 def test_get_domain_machine_command(mocker):
     import MicrosoftDefenderAdvancedThreatProtection as atp
-    mocker.patch.object(demisto, 'args', return_value={'domain': 'test'})
-    mocker.patch.object(atp, 'get_domain_machines_request', return_value=MACHINE_RESPONSE_API)
+    from MicrosoftDefenderAdvancedThreatProtection import get_domain_machine_command
+    mocker.patch.object(client_mocker, 'get_domain_machines', return_value=MACHINE_RESPONSE_API)
     mocker.patch.object(atp, 'get_machine_data', return_value=MACHINE_DATA)
-    _, res, _ = atp.get_domain_machine_command()
+    _, res, _ = get_domain_machine_command(client_mocker, {'domain': 'test'})
     assert res['MicrosoftATP.DomainMachine(val.Domain === obj.Domain)'] == {
         'Domain': 'test',
         'Machines': [MACHINE_DATA]
@@ -207,19 +198,19 @@ def test_get_domain_machine_command(mocker):
 
 
 def test_get_machine_data(mocker):
-    import MicrosoftDefenderAdvancedThreatProtection as atp
-    mocker.patch.object(atp, 'get_machine_details_request', return_value=SINGLE_MACHINE_RESPONSE_API)
-    res = atp.get_machine_data(SINGLE_MACHINE_RESPONSE_API)
+    from MicrosoftDefenderAdvancedThreatProtection import get_machine_data
+    mocker.patch.object(client_mocker, 'get_machine_details', return_value=SINGLE_MACHINE_RESPONSE_API)
+    res = get_machine_data(SINGLE_MACHINE_RESPONSE_API)
     assert res['ID'] == '123'
     assert res['HealthStatus'] == 'Active'
 
 
 def test_get_ip_alerts_command(mocker):
     import MicrosoftDefenderAdvancedThreatProtection as atp
-    mocker.patch.object(demisto, 'args', return_value={'ip': '1.1.1.1'})
-    mocker.patch.object(atp, 'get_ip_alerts_request', return_value=ALERTS_API_RESPONSE)
+    from MicrosoftDefenderAdvancedThreatProtection import get_ip_alerts_command
+    mocker.patch.object(client_mocker, 'get_ip_alerts', return_value=ALERTS_API_RESPONSE)
     mocker.patch.object(atp, 'get_alert_data', return_value=ALERT_DATA)
-    _, res, _ = atp.get_ip_alerts_command()
+    _, res, _ = get_ip_alerts_command(client_mocker, {'ip': '1.1.1.1'})
     assert res['MicrosoftATP.IPAlert(val.IPAddress === obj.IPAddress)'] == {
         'IPAddress': '1.1.1.1',
         'Alerts': [ALERT_DATA]
@@ -228,47 +219,41 @@ def test_get_ip_alerts_command(mocker):
 
 def test_run_antivirus_scan_command(mocker):
     import MicrosoftDefenderAdvancedThreatProtection as atp
-    mocker.patch.object(atp, 'run_antivirus_scan_request', return_value=MACHINE_ACTION_API_RESPONSE)
+    from MicrosoftDefenderAdvancedThreatProtection import run_antivirus_scan_command
+    mocker.patch.object(client_mocker, 'run_antivirus_scan', return_value=MACHINE_ACTION_API_RESPONSE)
     mocker.patch.object(atp, 'get_machine_action_data', return_value=MACHINE_ACTION_DATA)
-    _, res, _ = atp.run_antivirus_scan_command()
+    _, res, _ = run_antivirus_scan_command(client_mocker, {})
     assert res['MicrosoftATP.MachineAction(val.ID === obj.ID)'] == MACHINE_ACTION_DATA
 
 
 def test_check_limit_and_offset_values_no_error():
-    import MicrosoftDefenderAdvancedThreatProtection as atp
-    res = atp.check_limit_and_offset_values(limit='2', offset='1')
+    from MicrosoftDefenderAdvancedThreatProtection import check_limit_and_offset_values
+    res = check_limit_and_offset_values(limit='2', offset='1')
     assert res == (2, 1)
 
 
-def test_check_limit_and_offset_values_invalid_limit(mocker):
-    import MicrosoftDefenderAdvancedThreatProtection as atp
-    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
-    atp.check_limit_and_offset_values(limit='abc', offset='1')
-    # call_args last call with a tuple of args list and kwargs
-    err_msg = return_error_mock.call_args[0][0]
-    assert err_msg == 'Error: You can only enter a positive integer or zero to limit argument.'
+def test_check_limit_and_offset_values_invalid_limit():
+    from MicrosoftDefenderAdvancedThreatProtection import check_limit_and_offset_values
+    with pytest.raises(Exception) as e:
+        assert check_limit_and_offset_values(limit='abc', offset='1')
+    assert str(e.value) == "Error: You can only enter a positive integer or zero to limit argument."
 
 
-def test_check_limit_and_offset_values_invalid_offset(mocker):
-    import MicrosoftDefenderAdvancedThreatProtection as atp
-    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
-    atp.check_limit_and_offset_values(limit='1', offset='-4')
-    # call_args last call with a tuple of args list and kwargs
-    err_msg = return_error_mock.call_args[0][0]
-    assert err_msg == 'Error: You can only enter a positive integer to offset argument.'
+def test_check_limit_and_offset_values_invalid_offset():
+    from MicrosoftDefenderAdvancedThreatProtection import check_limit_and_offset_values
+    with pytest.raises(Exception) as e:
+        assert check_limit_and_offset_values(limit='1', offset='-4')
+    assert str(e.value) == "Error: You can only enter a positive integer to offset argument."
 
 
 def test_check_limit_and_offset_values_limit_zero(mocker):
-    import MicrosoftDefenderAdvancedThreatProtection as atp
-    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
-    atp.check_limit_and_offset_values(limit='0', offset='1')
-    # call_args last call with a tuple of args list and kwargs
-    err_msg = return_error_mock.call_args[0][0]
-    assert err_msg == 'Error: The value of the limit argument must be a positive integer.'
+    from MicrosoftDefenderAdvancedThreatProtection import check_limit_and_offset_values
+    with pytest.raises(Exception) as e:
+        assert check_limit_and_offset_values(limit='0', offset='1')
+    assert str(e.value) == "Error: The value of the limit argument must be a positive integer."
 
 
 """ API RAW RESULTS """
-
 
 FILE_DATA_API_RESPONSE = {
     "sha1": "123abc",

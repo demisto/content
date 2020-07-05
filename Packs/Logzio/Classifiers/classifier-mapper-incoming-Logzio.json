@@ -1,0 +1,36 @@
+{
+    "defaultIncidentType": "Logz.io Alert",
+    "id": "Logz.io-mapper",
+    "name": "Logz.io - Incoming Mapper",
+    "type": "mapping-incoming",
+    "description": "Maps incoming Logz.io alerts fields.",
+    "mapping": {
+        "Logz.io Alert": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Logz.Io Alert ID": {
+                    "complex": null,
+                    "simple": "alertId"
+                },
+                "Logz.io Alert Event ID": {
+                    "complex": null,
+                    "simple": "alertEventId"
+                },
+                "Logz.io Alert Summary": {
+                    "complex": null,
+                    "simple": "alertSummary"
+                },
+                "Logz.io Tags": {
+                    "complex": null,
+                    "simple": "tags"
+                },
+                "details": {
+                    "complex": null,
+                    "simple": "description"
+                }
+            }
+        }
+    },
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

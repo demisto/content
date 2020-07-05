@@ -72,7 +72,6 @@ configuration:
   options:
   - all
   - malware
-  - phish
   required: false
   type: 15
 - additionalinfo: This value also will be used as an expiration time - all indicators
@@ -117,7 +116,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: cofense-get-indicators
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.8.3.8715
   feed: true
   isfetch: false
   longRunning: false

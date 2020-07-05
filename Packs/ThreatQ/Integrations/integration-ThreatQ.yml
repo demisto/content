@@ -14,31 +14,31 @@ detaileddescription: "You must have a ThreatQ user account to retrieve an api to
 
   Note: This is a beta Integration, which lets you implement and test pre-release software. Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help us identify issues, fix them, and continually improve."
 configuration:
-- display: TQ API URL E.g. https://192.168.1.136/api
-  name: apiUrl
-  defaultvalue: ''
-  type: 0
-  required: true
-- display: TQ Client ID
-  name: client_id
-  defaultvalue: ''
-  type: 0
-  required: true
-- display: Email
-  name: credentials
-  defaultvalue: ''
-  type: 9
-  required: true
-- display: Trust any certificate (not secure)
-  name: insecure
-  defaultvalue: 'false'
-  type: 8
-  required: false
-- display: Use system proxy settings
-  name: proxy
-  defaultvalue: 'false'
-  type: 8
-  required: false
+  - display: TQ API URL E.g. https://192.168.1.136/api
+    name: apiUrl
+    defaultvalue: ''
+    type: 0
+    required: true
+  - display: TQ Client ID
+    name: client_id
+    defaultvalue: ''
+    type: 0
+    required: true
+  - display: Email
+    name: credentials
+    defaultvalue: ''
+    type: 9
+    required: true
+  - display: Trust any certificate (not secure)
+    name: insecure
+    defaultvalue: 'false'
+    type: 8
+    required: false
+  - display: Use system proxy settings
+    name: proxy
+    defaultvalue: 'false'
+    type: 8
+    required: false
 script:
   script: |-
     ''' IMPORTS '''
@@ -441,3 +441,4 @@ script:
 beta: true
 tests:
 - No test
+fromversion: 4.1.0

@@ -118,6 +118,7 @@ class Client(BaseClient):
     """
     Client to use in the Securonix integration. Overrides BaseClient
     """
+
     def __init__(self, tenant: str, server_url: str, username: str, password: str, verify: bool,
                  proxy: bool):
         super().__init__(base_url=server_url, verify=verify)
@@ -316,13 +317,15 @@ class Client(BaseClient):
                                            params=params)
         return violation_data
 
-    def list_incidents_request(self, from_epoch: str, to_epoch: str, incident_status: str) -> Dict:
+    def list_incidents_request(self, from_epoch: str, to_epoch: str, incident_status: str, max_incidents: str = '50')\
+            -> Dict:
         """List all incidents by sending a GET request.
 
         Args:
             from_epoch: from time in epoch
             to_epoch: to time in epoch
             incident_status: incident status e.g:closed, opened
+            max_incidents: max incidents to get
 
         Returns:
             Response from API.
@@ -331,7 +334,9 @@ class Client(BaseClient):
             'type': 'list',
             'from': from_epoch,
             'to': to_epoch,
-            'rangeType': incident_status
+            'rangeType': incident_status,
+            'max': max_incidents,
+            'order': 'asc',
         }
         incidents = self.http_request('GET', '/incident/get', headers={'token': self._token}, params=params)
         return incidents.get('result').get('data')
@@ -594,7 +599,7 @@ def list_workflows(client: Client, *_) -> Tuple[str, Dict, Dict]:
     human_readable = tableToMarkdown(name="Available workflows:", t=workflows_readable,
                                      headers=['Workflow', 'Type', 'Value'],
                                      removeNull=True)
-    entry_context = {f'Securonix.Workflows(val.Workflow == obj.Workflow)': workflows_outputs}
+    entry_context = {'Securonix.Workflows(val.Workflow == obj.Workflow)': workflows_outputs}
     return human_readable, entry_context, workflows
 
 
@@ -615,7 +620,7 @@ def get_default_assignee_for_workflow(client: Client, args: Dict) -> Tuple[str, 
         'Type': default_assignee.get("type"),
         'Value': default_assignee.get("value"),
     }
-    entry_context = {f'Securonix.Workflows(val.Workflow === obj.Workflow)': workflow_output}
+    entry_context = {'Securonix.Workflows(val.Workflow === obj.Workflow)': workflow_output}
     human_readable = f'Default assignee for the workflow {workflow} is: {default_assignee.get("value")}.'
     return human_readable, entry_context, default_assignee
 
@@ -632,7 +637,7 @@ def list_possible_threat_actions(client: Client, *_) -> Tuple[str, Dict, Dict]:
     """
     threat_actions = client.list_possible_threat_actions_request()
     human_readable = f'Possible threat actions are: {", ".join(threat_actions)}.'
-    entry_context = {f'Securonix.ThreatActions': threat_actions}
+    entry_context = {'Securonix.ThreatActions': threat_actions}
     return human_readable, entry_context, threat_actions
 
 
@@ -653,7 +658,7 @@ def list_policies(client: Client, *_) -> Tuple[str, Dict, Dict]:
     policies_readable, policies_outputs = parse_data_arr(policies_arr)
     headers = ['ID', 'Name', 'Criticality', 'Created On', 'Created By', 'Description']
     human_readable = tableToMarkdown(name="Policies:", t=policies_readable, headers=headers, removeNull=True)
-    entry_context = {f'Securonix.Policies(val.ID === obj.ID)': policies_outputs}
+    entry_context = {'Securonix.Policies(val.ID === obj.ID)': policies_outputs}
 
     return human_readable, entry_context, policies
 
@@ -678,7 +683,7 @@ def list_resource_groups(client: Client, *_) -> Tuple[str, Dict, Dict]:
     headers = ['Name', 'Type']
     human_readable = tableToMarkdown(name="Resource groups:", t=resource_groups_readable, headers=headers,
                                      removeNull=True)
-    entry_context = {f'Securonix.ResourceGroups(val.Name === obj.Name)': resource_groups_outputs}
+    entry_context = {'Securonix.ResourceGroups(val.Name === obj.Name)': resource_groups_outputs}
 
     return human_readable, entry_context, resource_groups
 
@@ -702,7 +707,7 @@ def list_users(client: Client, *_) -> Tuple[str, Dict, Dict]:
     users_readable, users_outputs = parse_data_arr(users_arr)
     headers = ['Employee Id', 'First Name', 'Last Name', 'Criticality', 'Title', 'Email']
     human_readable = tableToMarkdown(name="Resource groups:", t=users_readable, headers=headers, removeNull=True)
-    entry_context = {f'Securonix.Users(val.EmployeeID === obj.EmployeeID)': users_outputs}
+    entry_context = {'Securonix.Users(val.EmployeeID === obj.EmployeeID)': users_outputs}
 
     return human_readable, entry_context, users
 
@@ -737,7 +742,7 @@ def list_activity_data(client: Client, args) -> Tuple[str, Dict, Dict]:
     activity_readable, activity_outputs = parse_data_arr(activity_events, fields_to_include=fields_to_include)
     headers = ['Eventid', 'Eventtime', 'Message', 'Accountname']
     human_readable = tableToMarkdown(name="Activity data:", t=activity_readable, headers=headers, removeNull=True)
-    entry_context = {f'Securonix.ActivityData(val.EventID === obj.EventID)': activity_outputs}
+    entry_context = {'Securonix.ActivityData(val.EventID === obj.EventID)': activity_outputs}
 
     return human_readable, entry_context, activity_data
 
@@ -776,7 +781,7 @@ def list_violation_data(client: Client, args) -> Tuple[str, Dict, Dict]:
     violation_readable, violation_outputs = parse_data_arr(violation_events, fields_to_include=fields_to_include)
     headers = ['EventID', 'Eventtime', 'Message', 'Policyname', 'Accountname']
     human_readable = tableToMarkdown(name="Activity data:", t=violation_readable, headers=headers, removeNull=True)
-    entry_context = {f'Securonix.ViolationData(val.Uniquecode === obj.Uniquecode)': violation_outputs}
+    entry_context = {'Securonix.ViolationData(val.Uniquecode === obj.Uniquecode)': violation_outputs}
 
     return human_readable, entry_context, violation_data
 
@@ -797,7 +802,8 @@ def list_incidents(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     to_ = args.get('to') if 'to_' in args else datetime.now()
     to_epoch = date_to_timestamp(to_, date_format=timestamp_format)
     incident_types = str(args.get('incident_types')) if 'incident_types' in args else 'opened'
-    incidents = client.list_incidents_request(from_epoch, to_epoch, incident_types)
+    max_incidents = str(args.get('max', '50'))
+    incidents = client.list_incidents_request(from_epoch, to_epoch, incident_types, max_incidents)
 
     total_incidents = incidents.get('totalIncidents')
     if not total_incidents or float(total_incidents) <= 0.0:
@@ -808,7 +814,7 @@ def list_incidents(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     headers = ['Incident Id', 'Incident Status', 'Incident Type', 'Priority', 'Reason']
     human_readable = tableToMarkdown(name="Incidents:", t=incidents_readable,
                                      headers=headers, removeNull=True)
-    entry_context = {f'Securonix.Incidents(val.IncidentID === obj.IncidentID)': incidents_outputs}
+    entry_context = {'Securonix.Incidents(val.IncidentID === obj.IncidentID)': incidents_outputs}
     return human_readable, entry_context, incidents
 
 
@@ -830,7 +836,7 @@ def get_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         raise Exception('Incident ID is not in Securonix.')
     incident_readable, incident_outputs = parse_data_arr(incident_items)
     human_readable = tableToMarkdown(name="Incident:", t=incident_readable, removeNull=True)
-    entry_context = {f'Securonix.Incidents(val.IncidentID === obj.IncidentID)': incident_outputs}
+    entry_context = {'Securonix.Incidents(val.IncidentID === obj.IncidentID)': incident_outputs}
     return human_readable, entry_context, incident
 
 
@@ -851,7 +857,7 @@ def get_incident_status(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         'IncidentID': incident_id,
         'IncidentStatus': incident_status
     }
-    entry_context = {f'Securonix.Incidents(val.IncidentID === obj.IncidentID)': incident_outputs}
+    entry_context = {'Securonix.Incidents(val.IncidentID === obj.IncidentID)': incident_outputs}
     return f'Incident {incident_id} status is {incident_status}.', entry_context, incident
 
 
@@ -873,7 +879,7 @@ def get_incident_workflow(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         'IncidentID': incident_id,
         'WorkflowName': incident_workflow
     }
-    entry_context = {f'Securonix.Incidents(val.IncidentId === obj.IncidentId)': incident_outputs}
+    entry_context = {'Securonix.Incidents(val.IncidentId === obj.IncidentId)': incident_outputs}
     return f'Incident {incident_id} workflow is {incident_workflow}.', entry_context, incident
 
 
@@ -900,7 +906,7 @@ def get_incident_available_actions(client: Client, args: Dict) -> Tuple[str, Dic
         'IncidentID': incident_id,
         'AvailableActions': actions
     }
-    entry_context = {f'Securonix.Incidents(val.IncidentID === obj.IncidentID)': incident_outputs}
+    entry_context = {'Securonix.Incidents(val.IncidentID === obj.IncidentID)': incident_outputs}
     return f'Incident {incident_id} available actions: {actions}.', entry_context, incident_actions
 
 
@@ -983,7 +989,7 @@ def create_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     headers = ['Entity', 'Incident Status', 'Incident Type', 'IncidentID', 'Priority', 'Reason', 'Url']
     human_readable = tableToMarkdown(name="Incident was created successfully", t=incident_readable,
                                      headers=headers, removeNull=True)
-    entry_context = {f'Securonix.Incidents(val.IncidentID === obj.IncidentID)': incident_outputs}
+    entry_context = {'Securonix.Incidents(val.IncidentID === obj.IncidentID)': incident_outputs}
     return human_readable, entry_context, response
 
 
@@ -998,10 +1004,10 @@ def list_watchlists(client: Client, *_) -> Tuple[str, Dict, Dict]:
     """
     watchlists = client.list_watchlist_request()
     if not watchlists:
-        raise Exception(f'Failed to list watchlists.')
+        raise Exception('Failed to list watchlists.')
 
     human_readable = f'Watchlists: {", ".join(watchlists)}.'
-    entry_context = {f'Securonix.WatchlistsNames': watchlists}
+    entry_context = {'Securonix.WatchlistsNames': watchlists}
     return human_readable, entry_context, watchlists
 
 
@@ -1019,8 +1025,8 @@ def get_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
 
     watchlist_events = watchlist.get('events')
     if not watchlist_events:
-        raise Exception(f'Watchlist does not contain items.\n'
-                        f'Make sure the watchlist is not empty and that the watchlist name is correct.')
+        raise Exception('Watchlist does not contain items.\n'
+                        'Make sure the watchlist is not empty and that the watchlist name is correct.')
     fields_to_drop = ['decayflag', 'tenantid', 'tenantname', 'watchlistname', 'type']
     watchlist_readable, watchlist_events_outputs = parse_data_arr(watchlist_events, fields_to_drop=fields_to_drop)
     watchlist_outputs = {
@@ -1033,7 +1039,7 @@ def get_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
     headers = ['Entityname', 'Fullname', 'Workemail', 'Expired']
     human_readable = tableToMarkdown(name=f"Watchlist {watchlist_name} of type {watchlist_outputs.get('Type')}:",
                                      t=watchlist_readable, headers=headers, removeNull=True)
-    entry_context = {f'Securonix.Watchlists(val.Watchlistname === obj.Watchlistname)': watchlist_outputs}
+    entry_context = {'Securonix.Watchlists(val.Watchlistname === obj.Watchlistname)': watchlist_outputs}
     return human_readable, entry_context, watchlist
 
 
@@ -1053,7 +1059,7 @@ def create_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
     if 'successfully' not in response:
         raise Exception(f'Failed to list watchlists.\nResponse from Securonix is:{str(response)}')
     human_readable = f'Watchlist {watchlist_name} was created successfully.'
-    entry_context = {f'Securonix.Watchlists(val.Watchlistname === obj.Watchlistname)': watchlist_name}
+    entry_context = {'Securonix.Watchlists(val.Watchlistname === obj.Watchlistname)': watchlist_name}
     return human_readable, entry_context, response
 
 
@@ -1080,7 +1086,7 @@ def check_entity_in_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
             'Entityname': entity_name,
             'Watchlistname': watchlist_name
         }
-    entry_context = {f'Securonix.EntityInWatchlist(val.Entityname === obj.Entityname)': output}
+    entry_context = {'Securonix.EntityInWatchlist(val.Entityname === obj.Entityname)': output}
     return human_readable, entry_context, watchlist
 
 
@@ -1107,7 +1113,8 @@ def add_entity_to_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
     return human_readable, {}, response
 
 
-def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: str, last_run: Dict) -> list:
+def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: str, max_fetch: str, last_run: Dict)\
+        -> list:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
 
@@ -1116,12 +1123,12 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: 
         fetch_time: From when to fetch if first time, e.g. `3 days`
         incident_status: Incident statuses to fetch, can be: all, opened, closed, updated
         last_run: Last fetch object.
+        max_fetch: maximum amount of incidents to fetch
 
     Returns:
         incidents, new last_run
     """
     timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
-    now = datetime.now().strftime(timestamp_format)
     if not last_run:  # if first time running
         new_last_run = {'time': parse_date_range(fetch_time, date_format=timestamp_format)[0]}
     else:
@@ -1132,14 +1139,15 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: 
     to_epoch = date_to_timestamp(datetime.now(), date_format=timestamp_format)
     # Get incidents from Securonix
     demisto.info(f'Fetching Securonix incidents. From: {from_epoch}. To: {to_epoch}')
-    securonix_incidents = client.list_incidents_request(from_epoch, to_epoch, incident_status)
+    securonix_incidents = client.list_incidents_request(from_epoch, to_epoch, incident_status, max_fetch)
 
     if securonix_incidents:
+        already_fetched = last_run.get('already_fetched', [])
         incidents_items = list(securonix_incidents.get('incidentItems'))  # type: ignore
-        last_incident_id = last_run.get('id', '0')
         for incident in incidents_items:
-            incident_id = incident.get('incidentId')
-            if incident_id > last_incident_id:
+            incident_id = str(incident.get('incidentId', 0))
+            # check if incident was already fetched due to updating over lastUpdateDate
+            if incident_id not in already_fetched:
                 incident_name = get_incident_name(incident, incident_id)  # Try to get incident reason as incident name
                 demisto_incidents.append({
                     'name': incident_name,
@@ -1147,12 +1155,15 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: 
                     'severity': incident_priority_to_dbot_score(incident.get('priority')),
                     'rawJSON': json.dumps(incident)
                 })
-        if demisto_incidents:
-            last_incident_id = incidents_items[-1].get('incidentId')
-            new_last_run.update({'id': last_incident_id})
+                already_fetched.append(str(incident_id))  # add already fetched incidents ids to the set
 
-    new_last_run.update({'time': now})
-    demisto.setLastRun(new_last_run)
+        if incidents_items:
+            now = timestamp_to_datestring(incidents_items[-1].get('lastUpdateDate'))
+        else:
+            now = datetime.now().strftime(timestamp_format)
+        new_last_run.update({'time': now, 'already_fetched': already_fetched})
+
+    demisto.setLastRun({'value': json.dumps(new_last_run)})
     return demisto_incidents
 
 
@@ -1241,7 +1252,10 @@ def main():
         if command == 'fetch-incidents':
             fetch_time = params.get('fetch_time', '1 hour')
             incident_status = params.get('incident_status') if 'incident_status' in params else 'opened'
-            incidents = fetch_incidents(client, fetch_time, incident_status, last_run=demisto.getLastRun())
+            max_fetch = str(params.get('max_fetch', '50'))
+            max_fetch = str(min('50', max_fetch))  # fetch size should no exceed 50
+            last_run = json.loads(demisto.getLastRun().get('value', '{}'))
+            incidents = fetch_incidents(client, fetch_time, incident_status, max_fetch, last_run=last_run)
             demisto.incidents(incidents)
         elif command in commands:
             return_outputs(*commands[command](client, demisto.args()))

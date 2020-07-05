@@ -1,0 +1,222 @@
+id: PCAP Parsing And Indicator Enrichment Test
+version: -1
+fromversion: 5.0.0
+name: PCAP Parsing And Indicator Enrichment Test
+description: Test playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 63b52c29-6aa3-4a49-878e-7f5c255ce466
+    type: start
+    task:
+      id: 63b52c29-6aa3-4a49-878e-7f5c255ce466
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: fef5774f-2eea-4763-82ad-e798402da545
+    type: regular
+    task:
+      id: fef5774f-2eea-4763-82ad-e798402da545
+      version: -1
+      name: http
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: smb.pcapng
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://github.com/demisto/content/raw/master/Packs/PcapAnalysis/Scripts/PcapMinerV2/TestData/smb-on-windows-10.pcapng
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: ea2012c5-13e9-4493-8199-646e3c1f80df
+    type: title
+    task:
+      id: ea2012c5-13e9-4493-8199-646e3c1f80df
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: ce019393-1926-4876-884e-f3aac71e69c2
+    type: playbook
+    task:
+      id: ce019393-1926-4876-884e-f3aac71e69c2
+      version: -1
+      name: PCAP Parsing And Indicator Enrichment
+      playbookName: PCAP Parsing And Indicator Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      InternalDomainName: {}
+      InternalEmailDomainName: {}
+      InternalIPRange: {}
+      PcapFileEntryID:
+        complex:
+          root: File
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: incident.pcapfile.name
+                iscontext: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: pcap
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: cap
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: pcapng
+          accessor: EntryID
+      PcapFilter: {}
+      ProtocolsToOutput:
+        simple: DNS,SMB2,HTTP,LLMNR,SYSLOG,SMTP,NETBIOS,ICMP,KERBEROS,TELNET,SSH,IRC,FTP
+      RegexToSearch: {}
+      RsaDecryptKeyEntryID:
+        complex:
+          root: File
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: incident.pcapencryptionkey.name
+                iscontext: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: key
+          accessor: EntryID
+      WhichIndicatorTypeToEnrich: {}
+      WpaPassword: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 685,
+        "width": 380,
+        "x": 430,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

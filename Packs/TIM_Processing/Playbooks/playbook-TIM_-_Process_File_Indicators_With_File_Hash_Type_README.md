@@ -7,7 +7,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* Builtin
+This playbook does not use any integrations.
 
 ### Scripts
 This playbook does not use any scripts.
@@ -18,9 +18,9 @@ This playbook does not use any scripts.
 ## Playbook Inputs
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-|  |  |  |  | Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| Indicator Query | Indicators matching the indicator query will be used as playbook input |  | Optional |
 
 ## Playbook Outputs
 ---

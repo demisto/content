@@ -1,14 +1,14 @@
-id: "Test-Shodan_v2"
+id: Test-Shodan_v2
 version: -1
-name: "Test-Shodan_v2"
+name: Test-Shodan_v2
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: db741c2e-ae26-4d03-84f8-a81a9d66aeba
+    taskid: 204fcaf1-054c-4415-8ff0-da3be89ae4c9
     type: start
     task:
-      id: db741c2e-ae26-4d03-84f8-a81a9d66aeba
+      id: 204fcaf1-054c-4415-8ff0-da3be89ae4c9
       version: -1
       name: ""
       iscommand: false
@@ -27,12 +27,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 8c9a5be8-e968-47bf-8aff-71ba53e93b2f
+    taskid: 47c1ff05-ecb1-4c5d-8247-ef95d65f5132
     type: regular
     task:
-      id: 8c9a5be8-e968-47bf-8aff-71ba53e93b2f
+      id: 47c1ff05-ecb1-4c5d-8247-ef95d65f5132
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -61,12 +63,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 3f86ee67-ced1-4e22-8b6c-6a7cd2f7093c
+    taskid: f73bcd3a-1cc2-4ce6-89d9-d9609b6ba4bb
     type: regular
     task:
-      id: 3f86ee67-ced1-4e22-8b6c-6a7cd2f7093c
+      id: f73bcd3a-1cc2-4ce6-89d9-d9609b6ba4bb
       version: -1
       name: shodan-create-network-alert
       script: Shodan_v2|||shodan-create-network-alert
@@ -93,12 +97,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: 1a42daa5-782a-468a-83aa-e79e772cb4ab
+    taskid: a3246754-2693-426f-8d58-eff13f1a4d2c
     type: regular
     task:
-      id: 1a42daa5-782a-468a-83aa-e79e772cb4ab
+      id: a3246754-2693-426f-8d58-eff13f1a4d2c
       version: -1
       name: shodan-network-get-alerts
       script: Shodan_v2|||shodan-network-get-alerts
@@ -119,12 +125,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: a594c4b7-c673-4968-85b7-fd7eda13c4f2
+    taskid: 39ed4697-3374-412a-8339-57a857b380db
     type: regular
     task:
-      id: a594c4b7-c673-4968-85b7-fd7eda13c4f2
+      id: 39ed4697-3374-412a-8339-57a857b380db
       version: -1
       name: shodan-network-delete-alert
       script: Shodan_v2|||shodan-network-delete-alert
@@ -148,12 +156,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    taskid: a4a29a82-8640-42e5-8bf5-b83c24d2eda7
+    taskid: 05e65baa-023b-40c1-8a97-a291fae12dd0
     type: title
     task:
-      id: a4a29a82-8640-42e5-8bf5-b83c24d2eda7
+      id: 05e65baa-023b-40c1-8a97-a291fae12dd0
       version: -1
       name: success
       type: title
@@ -164,18 +174,20 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 4920
+          "y": 5270
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    taskid: 30b3c649-612f-4e90-8392-762c30f7cb98
+    taskid: b529b689-31c2-4366-8f4b-1ae8009c5942
     type: regular
     task:
-      id: 30b3c649-612f-4e90-8392-762c30f7cb98
+      id: b529b689-31c2-4366-8f4b-1ae8009c5942
       version: -1
       name: shodan-network-alert-set-trigger
       script: Shodan_v2|||shodan-network-alert-set-trigger
@@ -201,12 +213,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: 5603a464-1372-4318-8e62-696e0bc6df75
+    taskid: 855afa4f-fca5-4fb3-882a-5e423abebc14
     type: regular
     task:
-      id: 5603a464-1372-4318-8e62-696e0bc6df75
+      id: 855afa4f-fca5-4fb3-882a-5e423abebc14
       version: -1
       name: shodan-network-alert-whitelist-service
       script: Shodan_v2|||shodan-network-alert-whitelist-service
@@ -236,12 +250,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
-    taskid: 2d0690f4-62c4-4e36-8dae-fc09666b89bf
+    taskid: 3e2a9b13-3c41-4c8d-8917-0fcfef9cb451
     type: regular
     task:
-      id: 2d0690f4-62c4-4e36-8dae-fc09666b89bf
+      id: 3e2a9b13-3c41-4c8d-8917-0fcfef9cb451
       version: -1
       name: 'shodan-network-alert-remove-service-from-whitelist '
       script: Shodan_v2|||shodan-network-alert-remove-service-from-whitelist
@@ -271,12 +287,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: 1a9e2836-fff4-4847-8224-1a1bff9367d7
+    taskid: 568d9075-73b0-450b-8ca1-9423b3489218
     type: regular
     task:
-      id: 1a9e2836-fff4-4847-8224-1a1bff9367d7
+      id: 568d9075-73b0-450b-8ca1-9423b3489218
       version: -1
       name: shodan-network-alert-remove-trigger
       script: Shodan_v2|||shodan-network-alert-remove-trigger
@@ -302,12 +320,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
-    taskid: 9575c7fd-41e9-45c6-8017-41ce5ea7e695
+    taskid: 8afb7beb-87ed-4b27-845b-4b575ab464e6
     type: regular
     task:
-      id: 9575c7fd-41e9-45c6-8017-41ce5ea7e695
+      id: 8afb7beb-87ed-4b27-845b-4b575ab464e6
       version: -1
       name: shodan-network-get-alert-by-id
       script: Shodan_v2|||shodan-network-get-alert-by-id
@@ -331,12 +351,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "19":
     id: "19"
-    taskid: 73a2c00d-1332-4663-8caf-cdc940f6bd26
+    taskid: 71ca2987-be3f-41bd-8898-e40d93fae2b0
     type: regular
     task:
-      id: 73a2c00d-1332-4663-8caf-cdc940f6bd26
+      id: 71ca2987-be3f-41bd-8898-e40d93fae2b0
       version: -1
       name: ip
       description: Returns all services that have been found on the given host IP.
@@ -361,12 +383,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "21":
     id: "21"
-    taskid: 69a44bf8-8e03-47b7-8246-c51268bb5e9c
+    taskid: aef3efa8-5b8c-4cdf-8250-616826938076
     type: condition
     task:
-      id: 69a44bf8-8e03-47b7-8246-c51268bb5e9c
+      id: aef3efa8-5b8c-4cdf-8250-616826938076
       version: -1
       name: verify context
       type: condition
@@ -397,12 +421,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "22":
     id: "22"
-    taskid: 6af9b3cd-68d1-47db-8ecb-74b087f79fc8
+    taskid: 03034089-6818-4b6d-8674-e1c209dde605
     type: regular
     task:
-      id: 6af9b3cd-68d1-47db-8ecb-74b087f79fc8
+      id: 03034089-6818-4b6d-8674-e1c209dde605
       version: -1
       name: search
       description: Search Shodan using the same query syntax as the website and use
@@ -430,12 +456,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "23":
     id: "23"
-    taskid: 3670a93d-7b58-4201-82dc-7bdf902e174c
+    taskid: 9057154a-ad8e-4af8-86d1-358dd2440959
     type: regular
     task:
-      id: 3670a93d-7b58-4201-82dc-7bdf902e174c
+      id: 9057154a-ad8e-4af8-86d1-358dd2440959
       version: -1
       name: shodan-search-count
       script: Shodan_v2|||shodan-search-count
@@ -459,12 +487,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "24":
     id: "24"
-    taskid: 64b90c78-53e3-401d-85a6-208ddef55219
+    taskid: 06fddedc-fa4c-449c-827c-849043529c08
     type: condition
     task:
-      id: 64b90c78-53e3-401d-85a6-208ddef55219
+      id: 06fddedc-fa4c-449c-827c-849043529c08
       version: -1
       name: verify context
       type: condition
@@ -472,7 +502,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "9"
+      - "47"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -495,12 +525,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "26":
     id: "26"
-    taskid: 70b9c599-c534-4f06-8662-e3637d92863b
+    taskid: 213af32d-cb78-4514-8550-a3d97abe0dfe
     type: regular
     task:
-      id: 70b9c599-c534-4f06-8662-e3637d92863b
+      id: 213af32d-cb78-4514-8550-a3d97abe0dfe
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -525,12 +557,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "27":
     id: "27"
-    taskid: f5732241-ff5b-4b58-8f0d-8c66c44c6cd7
+    taskid: e4e769bc-3a5c-4b4a-8893-257b8c78788d
     type: regular
     task:
-      id: f5732241-ff5b-4b58-8f0d-8c66c44c6cd7
+      id: e4e769bc-3a5c-4b4a-8893-257b8c78788d
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -555,12 +589,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "31":
     id: "31"
-    taskid: fa38c3c4-770f-4c19-8ed1-636ba7a5cc85
+    taskid: a8704b82-f432-4d3b-8ed8-c1b2d1fdc2e6
     type: regular
     task:
-      id: fa38c3c4-770f-4c19-8ed1-636ba7a5cc85
+      id: a8704b82-f432-4d3b-8ed8-c1b2d1fdc2e6
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -585,12 +621,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "32":
     id: "32"
-    taskid: 625b584c-42cc-4c61-8446-7dffdd80a691
+    taskid: 4adae114-072d-4b02-8e81-6a08a4109fae
     type: regular
     task:
-      id: 625b584c-42cc-4c61-8446-7dffdd80a691
+      id: 4adae114-072d-4b02-8e81-6a08a4109fae
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -615,12 +653,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "33":
     id: "33"
-    taskid: c9aee2e3-bcb6-4e0b-81c8-ab4575bd3239
+    taskid: 2e6c697c-368f-4159-8f43-98395af799b3
     type: regular
     task:
-      id: c9aee2e3-bcb6-4e0b-81c8-ab4575bd3239
+      id: 2e6c697c-368f-4159-8f43-98395af799b3
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -645,12 +685,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "34":
     id: "34"
-    taskid: 022aa42c-c465-4ffc-8cd4-00926e4b29f8
+    taskid: 60123edb-ff47-45a8-80a2-fee0b16b44ba
     type: regular
     task:
-      id: 022aa42c-c465-4ffc-8cd4-00926e4b29f8
+      id: 60123edb-ff47-45a8-80a2-fee0b16b44ba
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -675,12 +717,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "37":
     id: "37"
-    taskid: efe55027-434a-4fc8-8ec9-db0c18ea495a
+    taskid: f098f7c4-d614-451c-8e3c-d57d44b3d7f9
     type: regular
     task:
-      id: efe55027-434a-4fc8-8ec9-db0c18ea495a
+      id: f098f7c4-d614-451c-8e3c-d57d44b3d7f9
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -705,12 +749,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "38":
     id: "38"
-    taskid: a9c84284-e006-4065-8628-092a59203cbe
+    taskid: 39025921-fa18-424c-806f-5ebd81c828e0
     type: regular
     task:
-      id: a9c84284-e006-4065-8628-092a59203cbe
+      id: 39025921-fa18-424c-806f-5ebd81c828e0
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -735,12 +781,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "39":
     id: "39"
-    taskid: 00391863-3fdb-48e9-849d-57e3e6496aab
+    taskid: e2f8adcb-99d4-4fb0-898a-814897eedae9
     type: regular
     task:
-      id: 00391863-3fdb-48e9-849d-57e3e6496aab
+      id: e2f8adcb-99d4-4fb0-898a-814897eedae9
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -765,12 +813,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "41":
     id: "41"
-    taskid: a9621715-c86d-4e3e-80ea-e6f22766d86c
+    taskid: 97567ab5-509c-43c1-8759-2cba5522e7f3
     type: regular
     task:
-      id: a9621715-c86d-4e3e-80ea-e6f22766d86c
+      id: 97567ab5-509c-43c1-8759-2cba5522e7f3
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -795,12 +845,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "42":
     id: "42"
-    taskid: 45cbca1d-9416-48f1-896f-d258b229d9bb
+    taskid: 3e9ba401-a9b1-406b-894e-69416149402a
     type: condition
     task:
-      id: 45cbca1d-9416-48f1-896f-d258b229d9bb
+      id: 3e9ba401-a9b1-406b-894e-69416149402a
       version: -1
       name: Alerts exist
       type: condition
@@ -830,12 +882,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "43":
     id: "43"
-    taskid: 34949ba1-82ce-46d7-8ba3-be137409b330
+    taskid: da606666-e1aa-4a71-8565-010ded68e368
     type: regular
     task:
-      id: 34949ba1-82ce-46d7-8ba3-be137409b330
+      id: da606666-e1aa-4a71-8565-010ded68e368
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -864,12 +918,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "45":
     id: "45"
-    taskid: e11834e6-1dcb-4002-8f2f-8d1cae9953ab
+    taskid: 2db1ba49-95b7-40ef-8a97-0afd5272dfe3
     type: condition
     task:
-      id: e11834e6-1dcb-4002-8f2f-8d1cae9953ab
+      id: 2db1ba49-95b7-40ef-8a97-0afd5272dfe3
       version: -1
       name: verify context
       type: condition
@@ -897,12 +953,78 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: 49058e53-8635-439b-83c9-a3be498a4bb6
+    type: regular
+    task:
+      id: 49058e53-8635-439b-83c9-a3be498a4bb6
+      version: -1
+      name: Search for IP without information available
+      description: Returns all services that have been found on the given host IP.
+      script: Shodan_v2|||ip
+      type: regular
+      iscommand: true
+      brand: Shodan_v2
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      ip:
+        simple: 63.128.21.124
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: fee3975c-bcd0-4169-8038-6bd7f14b18e4
+    type: regular
+    task:
+      id: fee3975c-bcd0-4169-8038-6bd7f14b18e4
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      seconds:
+        simple: "1.2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4935,
+        "height": 5285,
         "width": 492.5,
         "x": 50,
         "y": 50

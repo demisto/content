@@ -1,0 +1,37 @@
+{
+    "id": "Indeni-mapper",
+    "name": "Indeni - Incoming Mapper",
+    "type": "mapping-incoming",
+    "description": "Maps incoming Indeni alert fields.",
+	"defaultIncidentType": "Indeni Incident",
+	"mapping": {
+		"Indeni Incident": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Indeni Device ID": {
+					"complex": null,
+					"simple": "device_id"
+				},
+				"Indeni Issue ID": {
+					"complex": null,
+					"simple": "id"
+				},
+				"details": {
+					"complex": {
+						"accessor": "body",
+						"filters": [],
+						"root": "alert_blocks",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"name": {
+					"complex": null,
+					"simple": "headline"
+				}
+			}
+		}
+	},
+	"version": -1,
+	"fromVersion": "6.0.0"
+}
