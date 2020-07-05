@@ -104,7 +104,7 @@ def upload_files(dir_path, file_path):
                 try:
                     source_ip = packet[2]
                     dest_ip = packet[4]
-                except:
+                except Exception:
                     pass
 
             with open(file_path, 'rb') as file:
