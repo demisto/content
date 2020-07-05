@@ -7,7 +7,7 @@ import csv
 import gzip
 import urllib3
 from dateutil.parser import parse
-from typing import Optional, Pattern, Dict, Any, Tuple, Union
+from typing import Optional, Pattern, Dict, Any, Tuple, Union, List
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -278,11 +278,14 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
     return indicators
 
 
-def get_indicators_command(client, args, tags=None):
+def get_indicators_command(client, args: dict, tags: Optional[List[str]] = None):
     if tags is None:
         tags = []
     itype = args.get('indicator_type', demisto.params().get('indicator_type'))
-    limit = int(args.get('limit'))
+    try:
+        limit = int(args.get('limit', 50))
+    except ValueError:
+        raise ValueError('The limit argument must be a number.')
     auto_detect = demisto.params().get('auto_detect_type')
     indicators_list = fetch_indicators_command(client, itype, auto_detect, tags)
     entry_result = indicators_list[:limit]
