@@ -47,7 +47,6 @@ def patched_requests_mocker(requests_mock):
     requests_mock.post(base_url, text=mock_response_xml, status_code=200)
     return requests_mock
 
-
 def test_panoram_get_os_version(patched_requests_mocker):
     from Panorama import get_pan_os_version 
     r = get_pan_os_version()
