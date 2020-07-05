@@ -2882,7 +2882,7 @@
         },
         {
             "integrations": "CrowdStrikeMalquery",
-            "playbookID": "CrowdStrikeMalquery Test",
+            "playbookID": "CrowdStrikeMalquery-Test",
             "fromversion": "5.0.0"
         },
         {

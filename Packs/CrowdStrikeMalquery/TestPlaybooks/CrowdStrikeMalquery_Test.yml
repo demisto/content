@@ -1,7 +1,7 @@
 id: CrowdStrikeMalquery Test
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: CrowdStrikeMalquery Test
+name: CrowdStrikeMalquery-Test
 starttaskid: "0"
 tasks:
   "0":
