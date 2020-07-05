@@ -30,6 +30,7 @@ HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
 }
+ISO_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 TIME_FORMAT = demisto.params().get('time_format', 'auto-discovery')
 AUTH_TOKEN = ''
 
@@ -43,7 +44,7 @@ def parse_time(time_str):
 
     regex_to_format = {
         r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z': '%Y-%m-%dT%H:%M:%SZ',
-        r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z': '%Y-%m-%dT%H:%M:%S.%fZ'
+        r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z': ISO_DATE_FORMAT
     }
 
     selected_format = '%Y-%m-%dT%H:%M:%SZ'
@@ -236,10 +237,17 @@ def dict_value_to_int(target_dict: Dict, key: str):
 
 
 def item_to_incident(item):
+    occurred = item.get('timestamp_occured_iso8601')
+    if not occurred:
+        # if no iso8601 time provided, try to parse timestamp
+        occurred = dateparser.parse(item.get('timestamp_occured', ''))
+        if not occurred:
+            raise DemistoException(f'Incident has no valid occured fields:\n{json.dumps(item)}')
+        occurred = occurred.strftime(ISO_DATE_FORMAT)
     incident = {
         'Type': 'AlienVault USM',
         'name': 'Alarm: ' + item.get('uuid'),
-        'occurred': item.get('timestamp_occured_iso8601'),
+        'occurred': occurred,
         'rawJSON': json.dumps(item),
     }
 
@@ -424,7 +432,7 @@ def fetch_incidents():
         time_str = str(incidents[-1].get('occurred'))
 
         # add one second to last incident occurred time to avoid duplications
-        occurred = datetime.strptime(time_str, '%Y-%m-%dT%H:%M:%S.%fZ')
+        occurred = datetime.strptime(time_str, ISO_DATE_FORMAT)
         occurred = occurred + timedelta(seconds=1)
         time_str = occurred.strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
