@@ -1,9 +1,14 @@
 Service management suite that comprises ticketing, workflow automation, and notification.
-This integration was integrated and tested with version xx of OTRS copy
-## Configure OTRS copy on Demisto
+This integration was integrated and tested with versions 5, 6 and 7 of OTRS.
+
+## Prerequisite
+
+You have to enable the webservices in your OTRS instance. It is recommended to use the provided [template](https://gitlab.com/rhab/PyOTRS/raw/master/webservices_templates/GenericTicketConnectorREST.yml). This YAML configuration template includes the Route: /TicketList endpoint that is required for PyOTRS but which is not included in the default OTRS webservice setup.
+
+## Configure OTRS on Demisto
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for OTRS copy.
+2. Search for OTRS.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |

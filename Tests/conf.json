@@ -2068,6 +2068,11 @@
             "timeout": 300
         },
         {
+            "integrations": "TAXII 2 Feed",
+            "playbookID": "TAXII 2 Feed Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Traps",
             "playbookID": "Traps test",
             "timeout": 600
@@ -2629,8 +2634,7 @@
         {
             "integrations": "AlienVault Reputation Feed",
             "playbookID": "AlienVaultReputationFeed_Test",
-            "fromversion": "5.5.0",
-            "timeout": 9000
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "BruteForceBlocker Feed",
@@ -2878,13 +2882,25 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Unit42 Feed",
+            "playbookID": "Unit42 Feed - Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "playbookID": "hashIncidentFields-test",
             "fromversion": "4.5.0",
             "timeout": 60000
+        },
+        {
+            "integrations": "TruSTAR v2",
+            "playbookID": "TruSTAR v2-Test",
+            "timeout": 500
         }
     ],
     "skipped_tests": {
-        "AlienVaultReputationFeed_Test": "Issue 26104",
+        "PAN-OS DAG Configuration Test": "Issue 60693",
+        "Phishing Classifier V2 ML Test": "Issue 26066",
+        "DuoAdmin API test playbook": "Issue 24937",
         "Workday - Test": "Issue 25896",
         "CuckooTest": "Issue 25601",
         "RedLockTest": "Issue 24600",
@@ -2946,6 +2962,7 @@
         "Infoblox": "Issue 25651",
         "Traps": "Issue 24122",
         "McAfee Advanced Threat Defense": "Issue 16909",
+        "CrowdStrike Falcon X": "Issue 26209",
         "Cisco Umbrella Investigate": "Issue 24338",
         "Deep Instinct": "The partner didn't provide an instance",
         "Cofense Triage v2": "No instance - partner integration",
@@ -3038,6 +3055,7 @@
         "VirusTotal - Private API": "Issue 22638",
 
         "_comment3": "~~~ QUOTA ISSUES ~~~",
+        "Bambenek Consulting Feed": "Issue 26184",
         "Joe Security": "Issue 25650",
         "JsonWhoIs": "Issue 25371: Out of quota",
         "XFE_v2": "Issue 22715",
@@ -3208,6 +3226,8 @@
         "Feodo Tracker IP Blocklist Feed",
         "AlienVault OTX TAXII Feed",
         "Prisma Access Egress IP feed",
+        "Lastline v2",
+        "McAfee DXL",
         "GCP Whitelist Feed"
     ],
     "docker_thresholds": {
