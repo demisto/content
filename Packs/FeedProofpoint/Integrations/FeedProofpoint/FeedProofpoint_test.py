@@ -38,6 +38,14 @@ def test_fetch_domains(requests_mock):
 
 @pytest.mark.parametrize('tags', (['tag1, tag2'], []))
 def test_feed_param(tags, requests_mock):
+    """
+    Given:
+    - tags parameters
+    When:
+    - Executing any command on feed
+    Then:
+    - Validate the tags supplied exists in the indicators
+    """
     client._tags = tags
     ip_path = "./TestData/detailed-iprep.txt"
     with open(ip_path) as f:
