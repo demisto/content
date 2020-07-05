@@ -8,6 +8,10 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "ServiceDeskPlus",
+            "playbookID": "Service Desk Plus Test"
+        },
+        {
             "integrations": "Group-IB TDS Polygon",
             "playbookID": "Polygon-Test",
             "timeout": 1000,
@@ -1214,7 +1218,8 @@
             "timeout": 500
         },
         {
-            "playbookID": "process_email_-_generic_-_test",
+            "playbookID": "Process Email - Generic - Test - Incident Starter",
+            "fromversion": "6.0.0",
             "integrations": "Rasterize",
             "timeout": 240
         },
@@ -1889,26 +1894,26 @@
             "fromversion": "5.0.0"
         },
         {
-            "playbookID": "Phishing v2 Test - Attachment",
-            "timeout": 600,
+            "playbookID": "Phishing v2 - Test - Incident Starter",
+            "fromversion": "6.0.0",
+            "timeout": 1200,
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
                 "Have I Been Pwned? V2",
                 "Demisto REST API",
-                "Palo Alto Minemeld",
                 "Rasterize"
             ]
         },
-        {
-            "playbookID": "Phishing v2 Test - Inline",
-            "timeout": 600,
+                {
+            "playbookID": "Phishing - Core - Test - Incident Starter",
+            "fromversion": "6.0.0",
+            "timeout": 1700,
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
                 "Have I Been Pwned? V2",
                 "Demisto REST API",
-                "Palo Alto Minemeld",
                 "Rasterize"
             ]
         },
@@ -2052,17 +2057,6 @@
             "playbookID": "Endpoint data collection test",
             "timeout": 500
         },
-        {
-            "playbookID": "Phishing - Core - Test",
-            "integrations": [
-                "EWS Mail Sender",
-                "Demisto REST API",
-                "Palo Alto Minemeld",
-                "Rasterize"
-            ],
-            "fromversion": "4.5.0",
-            "timeout": 600
-        },
         {"integrations": ["epo", "McAfee Active Response"],
             "playbookID": "MAR - Endpoint data collection test",
             "timeout": 500
@@ -2076,6 +2070,11 @@
             "playbookID": "TAXII_Feed_Test",
             "fromversion": "5.5.0",
             "timeout": 300
+        },
+        {
+            "integrations": "TAXII 2 Feed",
+            "playbookID": "TAXII 2 Feed Test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "Traps",
@@ -2639,8 +2638,7 @@
         {
             "integrations": "AlienVault Reputation Feed",
             "playbookID": "AlienVaultReputationFeed_Test",
-            "fromversion": "5.5.0",
-            "timeout": 9000
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "BruteForceBlocker Feed",
@@ -2873,18 +2871,40 @@
             "fromversion": "5.5.0"
         },
         {
+            "playbookID": "PCAP Search test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "VirusTotal",
+            "instance_names": "virus_total_general",
+            "playbookID": "PCAP Parsing And Indicator Enrichment Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Workday",
             "playbookID": "Workday - Test",
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Unit42 Feed",
+            "playbookID": "Unit42 Feed - Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "playbookID": "hashIncidentFields-test",
             "fromversion": "4.5.0",
             "timeout": 60000
+        },
+        {
+            "integrations": "TruSTAR v2",
+            "playbookID": "TruSTAR v2-Test",
+            "timeout": 500
         }
     ],
     "skipped_tests": {
-        "AlienVaultReputationFeed_Test": "Issue 26104",
+        "PAN-OS DAG Configuration Test": "Issue 60693",
+        "Phishing Classifier V2 ML Test": "Issue 26066",
+        "DuoAdmin API test playbook": "Issue 24937",
         "Workday - Test": "Issue 25896",
         "CuckooTest": "Issue 25601",
         "RedLockTest": "Issue 24600",
@@ -2921,6 +2941,9 @@
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
         "Test Playbook TrendMicroDDA": "Issue 16501",
+        "Process Email - Generic - Test - Actual Incident": "Should never run as standalone. Issue #25947",
+        "Phishing v2 - Test - Actual Incident": "Should never run as standalone. Issue #25947",
+        "Phishing - Core - Test - Actual Incident": "Should never run as standalone. Issue #25947",
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633",
         "PAN-OS Query Logs For Indicators Test": "Issue #23505",
@@ -2938,10 +2961,12 @@
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "Symantec Management Center": "Issue 23960",
         "PerceptionPoint": "Issue 25795",
         "Infoblox": "Issue 25651",
         "Traps": "Issue 24122",
         "McAfee Advanced Threat Defense": "Issue 16909",
+        "CrowdStrike Falcon X": "Issue 26209",
         "Cisco Umbrella Investigate": "Issue 24338",
         "Deep Instinct": "The partner didn't provide an instance",
         "Cofense Triage v2": "No instance - partner integration",
@@ -3034,6 +3059,7 @@
         "VirusTotal - Private API": "Issue 22638",
 
         "_comment3": "~~~ QUOTA ISSUES ~~~",
+        "Bambenek Consulting Feed": "Issue 26184",
         "Joe Security": "Issue 25650",
         "JsonWhoIs": "Issue 25371: Out of quota",
         "XFE_v2": "Issue 22715",
@@ -3163,6 +3189,7 @@
         "GoogleKubernetesEngine": "SDK"
     },
     "parallel_integrations": [
+        "SNDBOX",
         "Whois",
         "Rasterize",
         "CVE Search v2",
@@ -3203,6 +3230,8 @@
         "Feodo Tracker IP Blocklist Feed",
         "AlienVault OTX TAXII Feed",
         "Prisma Access Egress IP feed",
+        "Lastline v2",
+        "McAfee DXL",
         "GCP Whitelist Feed"
     ],
     "docker_thresholds": {
