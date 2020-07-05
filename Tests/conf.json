@@ -2868,7 +2868,13 @@
         },
         {
             "playbookID": "PCAP Search test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "VirusTotal",
+            "instance_names": "virus_total_general",
+            "playbookID": "PCAP Parsing And Indicator Enrichment Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Workday",
