@@ -26,4 +26,4 @@ As part of this pack, you will also get out-of-the-box “NIST” incident type 
 
 _For more information, visit our  [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/nist---handling-an-incident-template)_
 
-![NIST - Handling an Incident Template](https://github.com/demisto/content/raw/e1e515a16cafef00c456eea273454ce605c23933/Packs/GDPR/doc_files/GDPR_Breach_Notification.png)
+![NIST - Handling an Incident Template](https://github.com/demisto/content/raw/27bbaa2687b4925c24ce03487675960f0c73a42e/Packs/NIST/doc_files/NIST_-_Handling_an_Incident_Template.png)
