@@ -100,6 +100,14 @@ class TestCommands:
 
 @pytest.mark.parametrize('tags', (['tags1, tags2'], []))
 def test_tags_parameter(mocker, tags):
+    """
+    Given:
+    - tags parameters
+    When:
+    - Executing any command on feed
+    Then:
+    - Validate the tags supplied exists in the indicators
+    """
     client = TAXIIClient(collection='a collection', tags=json.dumps(tags))
     with open('FeedTAXII_test/TestCommands/raw_indicators.json', 'r') as f:
         raw_indicators = json.load(f)
