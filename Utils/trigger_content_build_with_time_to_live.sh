@@ -9,7 +9,7 @@
 # in this case, if you don’t specify time to live argument the default will be 180 minutes.
 
 # 2. Running the script with the contributor changes
-# The script will get local_branch_name, circleCi token, time to love argument(in minutes), contributor_user_name:contributor_branch_name and the pack path of the pack that has been changed/added.
+# The script will get local_branch_name, circleCi token, time to live argument(in minutes), contributor_user_name:contributor_branch_name and the pack path of the pack that has been changed/added.
 # For example:
 # ./Utils/trigger_content_build_with_time_to_live.sh content_branch_name <CircleCiToken> 420 contrib_name:contrib_branch_name Packs/New_Pack/
 # In this case, the script will trigger a build and the demisto-marketplace instance will live for 7 hours.
