@@ -54,4 +54,4 @@ def test_feed_param(tags, requests_mock):
         "https://example.com/cool/reputation/detailed-iprepdata.txt", text=data
     )
     indicators = fetch_indicators_command(client, client.IP_TYPE)
-    assert tags == indicators[0].get('tags')
+    assert tags == indicators[0]['fields']['tags']

@@ -112,8 +112,8 @@ class Client(BaseClient):
             "value": item["value"],
             "type": item["type"],
             "rawJSON": item,
-            "tags": tags,
             "fields": {
+                "tags": tags,
                 "port": item.get("ports", "").split() if isinstance(item.get("ports"), str) else item.get("ports"),
                 "firstseenbysource": item.get("first_seen", ""),
                 "lastseenbysource": item.get("last_seen", ""),
