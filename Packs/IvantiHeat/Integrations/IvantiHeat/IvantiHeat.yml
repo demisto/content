@@ -97,48 +97,48 @@ script:
     execution: false
     name: ivanti-heat-objects-list
     outputs:
-    - contextPath: ivantiHeat.incidents.RecId
+    - contextPath: Ivantiheat.incidents.RecId
       description: Incident ID
       type: String
-    - contextPath: ivantiHeat.incidents.Subject
+    - contextPath: Ivantiheat.incidents.Subject
       description: Incident subject
       type: String
-    - contextPath: ivantiHeat.incidents.Status
+    - contextPath: Ivantiheat.incidents.Status
       description: Incident status
       type: String
-    - contextPath: ivantiHeat.incidents.CreatedDateTime
+    - contextPath: Ivantiheat.incidents.CreatedDateTime
       description: Incident createion time
       type: Date
-    - contextPath: ivantiHeat.incidents.Symptom
+    - contextPath: Ivantiheat.incidents.Symptom
       description: Incident description
       type: String
-    - contextPath: ivantiHeat.incidents.OwnerTeam
+    - contextPath: Ivantiheat.incidents.OwnerTeam
       description: Incident owner team
       type: String
-    - contextPath: ivantiHeat.incidents.IncidentNumber
+    - contextPath: Ivantiheat.incidents.IncidentNumber
       description: The incident number
       type: Number
-    - contextPath: ivantiHeat.incidents.CreatedBy
+    - contextPath: Ivantiheat.incidents.CreatedBy
       description: The user who created the incident
       type: String
-    - contextPath: ivantiHeat.incidents.Owner
+    - contextPath: Ivantiheat.incidents.Owner
       description: Incident owner
       type: String
-    - contextPath: ivantiHeat.incidents.Category
+    - contextPath: Ivantiheat.incidents.Category
       description: Incident category
       type: String
-    - contextPath: ivantiHeat.incidents.Priority
+    - contextPath: Ivantiheat.incidents.Priority
       description: Incident priority
       type: Number
-    - contextPath: ivantiHeat.incidents.TypeOfIncident
+    - contextPath: Ivantiheat.incidents.TypeOfIncident
       description: Incident type
       type: String
-    - contextPath: ivantiHeat.incidents.ActualCategory
+    - contextPath: Ivantiheat.incidents.ActualCategory
       type: String
-    - contextPath: ivantiHeat.incidents.SocialTextHeader
+    - contextPath: Ivantiheat.incidents.SocialTextHeader
       description: Incident text header
       type: String
-    - contextPath: ivantiHeat.incidents.Email
+    - contextPath: Ivantiheat.incidents.Email
       description: Incident owner Email
       type: String
   - arguments:
@@ -166,48 +166,48 @@ script:
     execution: false
     name: ivanti-heat-object-update
     outputs:
-    - contextPath: ivantiHeat.incidents.RecId
+    - contextPath: Ivantiheat.incidents.RecId
       description: Incident ID
       type: String
-    - contextPath: ivantiHeat.incidents.Subject
+    - contextPath: Ivantiheat.incidents.Subject
       description: Incident subject
       type: String
-    - contextPath: ivantiHeat.incidents.Status
+    - contextPath: Ivantiheat.incidents.Status
       description: Incident status
       type: String
-    - contextPath: ivantiHeat.incidents.CreatedDateTime
+    - contextPath: Ivantiheat.incidents.CreatedDateTime
       description: Incident createion time
       type: Date
-    - contextPath: ivantiHeat.incidents.Symptom
+    - contextPath: Ivantiheat.incidents.Symptom
       description: Incident description
       type: String
-    - contextPath: ivantiHeat.incidents.OwnerTeam
+    - contextPath: Ivantiheat.incidents.OwnerTeam
       description: Incident owner team
       type: String
-    - contextPath: ivantiHeat.incidents.IncidentNumber
+    - contextPath: Ivantiheat.incidents.IncidentNumber
       description: The incident number
       type: Number
-    - contextPath: ivantiHeat.incidents.CreatedBy
+    - contextPath: Ivantiheat.incidents.CreatedBy
       description: The user who created the incident
       type: String
-    - contextPath: ivantiHeat.incidents.Owner
+    - contextPath: Ivantiheat.incidents.Owner
       description: Incident owner
       type: String
-    - contextPath: ivantiHeat.incidents.Category
+    - contextPath: Ivantiheat.incidents.Category
       description: Incident category
       type: String
-    - contextPath: ivantiHeat.incidents.Priority
+    - contextPath: Ivantiheat.incidents.Priority
       description: Incident priority
       type: Number
-    - contextPath: ivantiHeat.incidents.TypeOfIncident
+    - contextPath: Ivantiheat.incidents.TypeOfIncident
       description: Incident type
       type: String
-    - contextPath: ivantiHeat.incidents.ActualCategory
+    - contextPath: Ivantiheat.incidents.ActualCategory
       type: String
-    - contextPath: ivantiHeat.incidents.SocialTextHeader
+    - contextPath: Ivantiheat.incidents.SocialTextHeader
       description: Incident text header
       type: String
-    - contextPath: ivantiHeat.incidents.Email
+    - contextPath: Ivantiheat.incidents.Email
       description: Incident owner Email
       type: String
   - arguments:
@@ -263,11 +263,11 @@ script:
     execution: false
     name: ivanti-heat-object-attachment-upload
     outputs:
-    - contextPath: ivantiHeat.Attachment.AttachmentId
+    - contextPath: Ivantiheat.Attachment.AttachmentId
       type: String
-    - contextPath: ivantiHeat.Attachment.FileName
+    - contextPath: Ivantiheat.Attachment.FileName
       type: String
-    - contextPath: ivantiHeat.Attachment.RecId
+    - contextPath: Ivantiheat.Attachment.RecId
       type: String
   - arguments:
     - default: false
@@ -316,48 +316,48 @@ script:
     execution: false
     name: ivanti-heat-object-create
     outputs:
-    - contextPath: ivantiHeat.incidents.RecId
+    - contextPath: Ivantiheat.incidents.RecId
       description: Incident ID
       type: String
-    - contextPath: ivantiHeat.incidents.Subject
+    - contextPath: Ivantiheat.incidents.Subject
       description: Incident subject
       type: String
-    - contextPath: ivantiHeat.incidents.Status
+    - contextPath: Ivantiheat.incidents.Status
       description: Incident status
       type: String
-    - contextPath: ivantiHeat.incidents.CreatedDateTime
+    - contextPath: Ivantiheat.incidents.CreatedDateTime
       description: Incident createion time
       type: Date
-    - contextPath: ivantiHeat.incidents.Symptom
+    - contextPath: Ivantiheat.incidents.Symptom
       description: Incident description
       type: String
-    - contextPath: ivantiHeat.incidents.OwnerTeam
+    - contextPath: Ivantiheat.incidents.OwnerTeam
       description: Incident owner team
       type: String
-    - contextPath: ivantiHeat.incidents.IncidentNumber
+    - contextPath: Ivantiheat.incidents.IncidentNumber
       description: The incident number
       type: Number
-    - contextPath: ivantiHeat.incidents.CreatedBy
+    - contextPath: Ivantiheat.incidents.CreatedBy
       description: The user who created the incident
       type: String
-    - contextPath: ivantiHeat.incidents.Owner
+    - contextPath: Ivantiheat.incidents.Owner
       description: Incident owner
       type: String
-    - contextPath: ivantiHeat.incidents.Category
+    - contextPath: Ivantiheat.incidents.Category
       description: Incident category
       type: String
-    - contextPath: ivantiHeat.incidents.Priority
+    - contextPath: Ivantiheat.incidents.Priority
       description: Incident priority
       type: Number
-    - contextPath: ivantiHeat.incidents.TypeOfIncident
+    - contextPath: Ivantiheat.incidents.TypeOfIncident
       description: Incident type
       type: String
-    - contextPath: ivantiHeat.incidents.ActualCategory
+    - contextPath: Ivantiheat.incidents.ActualCategory
       type: String
-    - contextPath: ivantiHeat.incidents.SocialTextHeader
+    - contextPath: Ivantiheat.incidents.SocialTextHeader
       description: Incident text header
       type: String
-    - contextPath: ivantiHeat.incidents.Email
+    - contextPath: Ivantiheat.incidents.Email
       description: Incident owner Email
       type: String
   dockerimage: demisto/python3:3.7.4.2245

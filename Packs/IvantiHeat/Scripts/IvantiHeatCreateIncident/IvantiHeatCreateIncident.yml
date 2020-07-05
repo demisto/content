@@ -1,0 +1,40 @@
+commonfields:
+  id: IvantiHeatCreateIncident
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: IvantiHeatCreateIncident
+script: ''
+type: python
+tags: []
+comment: This script is an example script of how to create an incident in Ivanti heat.
+  The script generates the create incident data in JSON format and write it to IvantiHeat.CreateIncidentJSON
+  context path.
+enabled: true
+args:
+- name: category
+  required: true
+  description: Incident category
+- name: service
+  required: true
+  description: Incident service
+- name: owner
+  required: true
+  description: Incident owner
+- name: team
+  required: true
+  description: Incident owner team
+- name: summary
+  required: true
+  description: Incident subject
+- name: description
+  required: true
+  description: Incident description
+- name: customer
+  required: true
+  description: Incident customer
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.8.3.9324
+runas: DBotWeakRole

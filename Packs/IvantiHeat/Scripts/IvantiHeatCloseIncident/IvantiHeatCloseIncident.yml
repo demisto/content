@@ -1,0 +1,22 @@
+commonfields:
+  id: IvantiHeatCloseIncident
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: IvantiHeatCloseIncident
+script: ''
+type: python
+tags: []
+comment: This script is an example script of how close an incident in Ivanti heat.
+  The script generates the close incident data in JSON format and write it to IvantiHeat.CloseIncidentJSON
+  context path.
+enabled: true
+args:
+- name: rec_id
+  required: true
+  description: Incident object ID
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.8.3.9324
+runas: DBotWeakRole

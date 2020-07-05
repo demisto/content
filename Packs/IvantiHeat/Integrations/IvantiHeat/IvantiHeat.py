@@ -78,7 +78,7 @@ def objects_list_command(client, args):
         human_readable = tableToMarkdown(f'{object_type} results', t=raw_res.get('value'), headers=OBJECT_HEADERS,
                                          removeNull=True)
 
-        entry_context = {f'ivantiHeat.{object_type}(val.RecId===obj.RecId)': raw_res.get('value')}
+        entry_context = {f'IvantiHeat.{object_type}(val.RecId===obj.RecId)': raw_res.get('value')}
         return human_readable, entry_context, raw_res
 
     return 'No records found', {}, raw_res
@@ -99,7 +99,7 @@ def update_object_command(client, args):
     raw_res = client.do_request('PUT', f'odata/businessobject/{object_type}(\'{rec_id}\')', json_data=body)
 
     human_readable = tableToMarkdown(f'{rec_id} updated successfully', t=raw_res, headers=OBJECT_HEADERS, removeNull=True)
-    entry_context = {f'ivantiHeat.{object_type}(val.RecId===obj.RecId)': raw_res}
+    entry_context = {f'IvantiHeat.{object_type}(val.RecId===obj.RecId)': raw_res}
     return human_readable, entry_context, raw_res
 
 
@@ -136,7 +136,7 @@ def upload_attachment_command(client, args):
         attachment = raw_res[0]
         attachment_id = attachment.get('Message')
         file_name = attachment.get('FileName')
-        entry_context = {'ivantiHeat.Attachment':
+        entry_context = {'IvantiHeat.Attachment':
                          {'RecId': rec_id, 'AttachmentId': attachment_id, 'FileName': file_name}}
         return f'{file_name} uploaded successfully, attachment ID: {attachment_id}', entry_context, raw_res
 
@@ -156,7 +156,7 @@ def perform_action_command(client, args):
     raw_res = client.do_request('POST', f'odata/businessobject/{object_type}(\'{object_id}\')/{action}',
                                 json_data=request_data, resp_type='other')
 
-    return f'{action} action success', {}, raw_res
+    return f'{action} action success', {}, raw_res.content
 
 
 @logger
@@ -179,7 +179,7 @@ def create_object_command(client, args):
     human_readable = tableToMarkdown(f'{object_type} object created successfully', t=raw_res, headers=OBJECT_HEADERS,
                                      removeNull=True)
 
-    entry_context = {f'ivantiHeat.{object_type}(val.RecId===obj.RecId)': raw_res}
+    entry_context = {f'IvantiHeat.{object_type}(val.RecId===obj.RecId)': raw_res}
     return human_readable, entry_context, raw_res
 
 
