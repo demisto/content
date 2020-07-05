@@ -12,7 +12,7 @@ import hashlib
 import requests
 
 from datetime import timedelta
-from urllib2 import HTTPError
+# from urllib2 import HTTPError
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -1803,11 +1803,11 @@ def group_members_api_response_to_markdown(api_response):
     users_list = list()
     for user in api_response['data'][0]['groupMembers']:
         user_entry = {
-            'Name': user['name'],
-            'Email address': user['emailAddress'],
-            'Domain': user['domain'],
-            'Type': user['type'],
-            'Internal user': user['internal']
+            'Name': user.get('name'),
+            'Email address': user.get('emailAddress'),
+            'Domain': user.get('domain'),
+            'Type': user.get('type'),
+            'Internal user': user.get('internal')
         }
 
         users_list.append(user_entry)
@@ -1877,7 +1877,7 @@ def add_remove_member_to_group(action_type):
     markdown_output = add_remove_api_response_to_markdown(api_response, action_type)
     entry_context = add_remove_api_response_to_context(api_response, action_type)
 
-    return_outputs(markdown_output, entry_context, api_response)
+    return markdown_output, entry_context, api_response
 
 
 def create_add_remove_group_member_request(api_endpoint):
@@ -2357,9 +2357,9 @@ def main():
         elif demisto.command() == 'mimecast-get-group-members':
             get_group_members()
         elif demisto.command() == 'mimecast-add-group-member':
-            add_remove_member_to_group('add')
+            return_outputs(add_remove_member_to_group('add'))
         elif demisto.command() == 'mimecast-remove-group-member':
-            add_remove_member_to_group('remove')
+            return_outputs(add_remove_member_to_group('remove'))
         elif demisto.command() == 'mimecast-create-group':
             create_group()
         elif demisto.command() == 'mimecast-update-group':

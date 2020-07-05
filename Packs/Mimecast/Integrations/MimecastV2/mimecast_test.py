@@ -163,11 +163,11 @@ add_member_req_response = {'data': [{'emailAddress': 'test@gmail.com', 'folderId
 get_group_members_req_response = {'data': [{'groupMembers': {}}]}
 
 
-def test_mimecast_add_remove_member_to_group(mocker):
+def test_mimecast_add_remove_member_to_group_with_email(mocker):
     """Unit test
     Given
     - add_remove_member_to_group command
-    - command args
+    - command args - email and group id.
     - command raw response
     When
     - mock the server response to create_add_remove_group_member_request.
@@ -180,3 +180,26 @@ def test_mimecast_add_remove_member_to_group(mocker):
     mocker.patch.object(MimecastV2, 'create_get_group_members_request', return_value=get_group_members_req_response)
     readable, _, _ = MimecastV2.add_remove_member_to_group('add')
     assert readable == 'test@gmail.com had been added to group ID folder_id'
+
+
+add_member_req_response_no_email = {'data': [{'folderId': 'folder_id'}]}
+
+
+def test_mimecast_add_remove_member_to_group_with_domain(mocker):
+    """Unit test
+    Given
+    - add_remove_member_to_group command
+    - command args - domain and group id.
+    - command raw response
+    When
+    - mock the server response to create_add_remove_group_member_request.
+    - mock the server response to create_get_group_members_request
+    Then
+    Validate the content of the HumanReadable.
+    """
+    mocker.patch.object(demisto, 'args', return_value={'group_id': '1234', 'domain': 'test.com'})
+    mocker.patch.object(MimecastV2, 'create_add_remove_group_member_request',
+                        return_value=add_member_req_response_no_email)
+    mocker.patch.object(MimecastV2, 'create_get_group_members_request', return_value=get_group_members_req_response)
+    readable, _, _ = MimecastV2.add_remove_member_to_group('add')
+    assert readable == 'Address had been added to group ID folder_id'
