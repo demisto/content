@@ -1,8 +1,8 @@
 {
     "name": "Compliance",
-    "description": "This pack contains essential incidents fields for compliance packs.",
+    "description": " ",
     "support": "xsoar",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
