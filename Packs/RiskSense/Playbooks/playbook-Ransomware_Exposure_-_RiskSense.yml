@@ -1,7 +1,7 @@
 id: Ransomware Exposure - RiskSense
 version: -1
 name: Ransomware Exposure - RiskSense
-description: The ransomware exposure playbook quickly reveals an organization's exposure
+description: The ransomware exposure playbook reveals an organization's exposure
   to the specific vulnerabilities that are being exploited to launch ransomware attacks.
 starttaskid: "0"
 tasks:
@@ -40,8 +40,8 @@ tasks:
       id: d9274292-d91a-46fe-8c77-8f658406b37a
       version: -1
       name: Is RiskSense enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if RiskSense is enabled. Otherwise returns
+        'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -80,7 +80,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: 'Get list of ransomware and trending ransomware CVEs'
+      description: 'Get list of ransomware and trending ransomware CVEs.'
     nexttasks:
       '#none#':
       - "6"
@@ -109,7 +109,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      description: 'Retrieving information of ransomware CVEs using automation script
+      description: 'Retrieve information of ransomware CVEs using the automation script
         and store it to context.'
     nexttasks:
       '#none#':
@@ -144,7 +144,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      description: 'Retrieving information of trending ransomware CVEs using automation
+      description: 'Retrieve information regarding trending ransomware CVEs using the automation
         script and store it to context.'
     nexttasks:
       '#none#':
@@ -206,7 +206,7 @@ tasks:
       name: Get impacted assets by ransomware CVEs
       description: Gets details of the supplied host. The host details can be searched
         based on input parameters like fieldname (Host Name, IP Address, Criticality,
-        etc), operator (EXACT, IN, LIKE, BETWEEN), page, size, sort by and sort direction.
+        etc), operator (EXACT, IN, LIKE, BETWEEN), page, size, sort by, and sort direction.
       script: '|||risksense-get-hosts'
       type: regular
       iscommand: true
@@ -252,7 +252,7 @@ tasks:
       name: Get impacted assets by trending ransomware CVEs
       description: Gets details of the supplied host. The host details can be searched
         based on input parameters like fieldname (Host Name, IP Address, Criticality,
-        etc), operator (EXACT, IN, LIKE, BETWEEN), page, size, sort by and sort direction.
+        etc), operator (EXACT, IN, LIKE, BETWEEN), page, size, sort by, and sort direction.
       script: '|||risksense-get-hosts'
       type: regular
       iscommand: true
@@ -395,10 +395,10 @@ view: |-
 inputs: []
 outputs:
 - contextPath: RiskSense.RansomwareCves
-  description: List of ransomware cves including threats and vulnerabilities.
+  description: List of ransomware CVEs, including threats and vulnerabilities.
   type: unknown
 - contextPath: RiskSense.RansomwareTrendingCves
-  description: List of trending (Last 7 days) ransomware cves including threats and
+  description: List of trending (Last 7 days) ransomware CVEs, including threats and
     vulnerabilities.
   type: unknown
 - contextPath: RiskSense.HostFinding
