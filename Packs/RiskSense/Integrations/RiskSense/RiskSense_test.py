@@ -359,13 +359,97 @@ class MyTestCase(unittest.TestCase):
         args['value'] = "2017-02-20,2020-01-01"
         validate_values_for_between_operator(args)
 
-        with pytest.raises(SystemExit):
+        with pytest.raises(ValueError):
             args['value'] = "2020-20-20,123.0.0"
             validate_values_for_between_operator(args)
 
-        with pytest.raises(SystemExit):
+        with pytest.raises(ValueError):
             args['value'] = "2020-20-20,123"
             validate_values_for_between_operator(args)
+
+    @patch("RiskSense.get_client_detail_from_context")
+    @patch("RiskSense.Client.http_request")
+    def test_apply_tag_using_search_tag_id(self, mocker_res, mocker_client_id):
+        """
+        When "risksense-apply-tag" command when tag found using search tag,
+        executes successfully then context output and response should match.
+
+        :param mocker_res: mocker object of response.
+        :param mocker_client_id: mocker object of client id.
+        :return: None
+        """
+        from RiskSense import apply_tag_command
+        mocker_client_id.return_value = CLIENT_DETAILS
+        args = {
+            'tagname': 'TestForMe',
+            'fieldname': 'id',
+            'value': '3571259'
+        }
+
+        resp_list = []
+
+        # Search Tag response
+        with open("TestData/search_tag_resp.json", encoding='utf-8') as f:
+            resp_list.append(json.load(f))
+
+        # Associate tag response.
+        resp_list.append({
+            'id': 2542063,
+            'created': '2020-04-29T08:46:54'
+        })
+
+        # Expected EC
+        with open("./TestData/tag_asset_ec.json", encoding='utf-8') as f:
+            expected_ec = json.load(f)
+
+        mocker_res.side_effect = resp_list
+
+        hr, ec, resp = apply_tag_command(self.client, args)
+
+        assert resp_list[1] == resp
+        assert expected_ec == ec
+
+    @patch("RiskSense.get_client_detail_from_context")
+    @patch("RiskSense.Client.http_request")
+    def test_apply_tag_using_create_tag(self, mocker_res, mocker_client_id):
+        """
+        When "risksense-apply-tag" command when tag not found and creates tag,
+        executes successfully then context output and response should match.
+
+        :param mocker_res: mocker object of response.
+        :param mocker_client_id: mocker object of client id.
+        :return: None
+        """
+        from RiskSense import apply_tag_command
+        mocker_client_id.return_value = CLIENT_DETAILS
+        args = {
+            'tagname': 'TestForMe',
+            'fieldname': 'id',
+            'value': '3571259'
+        }
+
+        # Search tag Response & Get user from integration context response
+        resp_list = [{}, {'userId': 123}]
+
+        # Create Tag response
+        with open("TestData/create_tag_resp.json", encoding='utf-8') as f:
+            resp_list.append(json.load(f))
+
+        # Associate tag response.
+        resp_list.append({
+            'id': 2542063,
+            'created': '2020-04-29T08:46:54'
+        })
+
+        # Expected EC
+        with open("./TestData/tag_asset_ec.json", encoding='utf-8') as f:
+            expected_ec = json.load(f)
+
+        mocker_res.side_effect = resp_list
+
+        hr, ec, resp = apply_tag_command(self.client, args)
+        assert resp_list[3] == resp
+        assert expected_ec == ec
 
 
 if __name__ == '__main__':
