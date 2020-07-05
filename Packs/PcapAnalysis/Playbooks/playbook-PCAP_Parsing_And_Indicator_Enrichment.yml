@@ -1194,7 +1194,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.InternalDomainName
+              simple: inputs.InternalUrlName
             iscontext: true
     view: |-
       {
@@ -1228,7 +1228,7 @@ tasks:
     scriptarguments:
       domainName:
         complex:
-          root: inputs.InternalDomainName
+          root: inputs.InternalUrlName
           transformers:
           - operator: split
             args:
@@ -2144,10 +2144,10 @@ inputs:
   required: false
   description: "This input checks which indicator types that will be extracted from\
     \ the PCAP will be enriched. Values can be\nip\nemail\nurl\ndomain\nTo provide\
-    \ more than one indicator type use comma separation such as \nip,url,domain,email\n\
+    \ more than one indicator type use comma separation such as \nip,url,email\n\
     \n"
   playbookInputQuery:
-- key: InternalDomainName
+- key: InternalUrlName
   value: {}
   required: false
   description: The organization's internal domain name. This is provided for the script
@@ -2252,12 +2252,6 @@ outputs:
   type: string
 - contextPath: InternalEmailAddresses
   description: The internal email addresses that were found in the PCAP.
-  type: string
-- contextPath: ExternalDomains
-  description: The external domain names that were found in the PCAP.
-  type: string
-- contextPath: InternalDomains
-  description: The internal domain names that were found in the PCAP.
   type: string
 - contextPath: ExternalUrls
   description: The external URLs that were found in the PCAP.
