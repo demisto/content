@@ -93,16 +93,16 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-@freeze_time("2020-06-29 18:04:21 UTC")
+@freeze_time("2020-06-29 18:04:21")
 def test_get_passed_mins():
     """
     Tests get_passed_mins helper function.
     Using @freeze_time decorator in order to make the datetime.now() method to permanent value.
     """
     from CrowdStrikeMalquery import get_passed_mins
-    start_time = datetime.datetime.utcnow()
-    end_time_str = 1512219852.0
-    expected_time_delta = 180.15
+    start_time = datetime.datetime.now()
+    end_time_str = start_time.replace(hour=16).timestamp()
+    expected_time_delta = 120
     result = get_passed_mins(start_time, end_time_str)
     assert expected_time_delta == result
 

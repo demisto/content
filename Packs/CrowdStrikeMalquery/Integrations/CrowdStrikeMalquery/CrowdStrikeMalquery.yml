@@ -54,11 +54,11 @@ script:
         YYYY/MM/DD - 2018/01/31.
     - name: filter_filetypes
       description: Limit results to files of certain types such as EMAIL, PCAP, PDF,
-        PE32. Full list can be found in the documentation. Comma seperated values.
+        PE32. Full list can be found in the documentation. Comma separated values.
       isArray: true
     - name: filter_meta
       description: Specify a subset of metadata fields to return in the results. Possible
-        values - sha256, md5, type, size, first_seen, label, family. Comma seperated values.
+        values - sha256, md5, type, size, first_seen, label, family. Comma separated values.
       isArray: true
     outputs:
     - contextPath: Malquery.Request_ID
@@ -90,11 +90,11 @@ script:
         YYYY/MM/DD - 2018/01/31.
     - name: filter_filetypes
       description: Limit results to files of certain types such as EMAIL, PCAP, PDF,
-        PE32. Full list can be found in the documentation. Comma seperated values.
+        PE32. Full list can be found in the documentation. Comma separated values.
       isArray: true
     - name: filter_meta
       description: Specify a subset of metadata fields to return in the results. Possible
-        values - sha256, md5, type, size, first_seen, label, family. Comma seperated values.
+        values - sha256, md5, type, size, first_seen, label, family. Comma separated values.
       isArray: true
     outputs:
     - contextPath: Malquery.Request_ID
@@ -118,7 +118,7 @@ script:
       description: Maximum number of results to be returned.
     - name: filter_meta
       description: Specify a subset of metadata fields to return in the results. Possible
-        values - sha256, md5, type, size, first_seen, label, family. Comma seperated values.
+        values - sha256, md5, type, size, first_seen, label, family. Comma separated values.
       isArray: true
     outputs:
     - contextPath: Malquery.File.family
@@ -224,8 +224,8 @@ script:
     arguments:
     - name: samples
       required: true
-      description: Hex pattern to search. e.g. deadbeef0102 (for bytes de, ad, be,
-        ef, 01, 02).
+      isArray: true
+      description: Sample sha256 ids. Comma separated values.
     outputs:
     - contextPath: Malquery.Request_ID
       description: The request ID.
@@ -238,13 +238,12 @@ script:
       returns a request ID. 2. Provide that request ID to the cs-malquery-get-request,
       in order to check the status of the operation. 3. When the request status is
       “done”, use cs-malquery-sample-fetch to download the results as a password-protected
-      archive. The password to extract results from the archive: infected''    '
+      archive. The password to extract results from the archive: infected'' '
   - name: cs-malquery-file-download
     arguments:
     - name: file_id
       required: true
-      description: Hex pattern to search. e.g. deadbeef0102 (for bytes de, ad, be,
-        ef, 01, 02).
+      description: The file SHA256.
     description: Download a file indexed by MalQuery. Specify the file using its SHA256.
       Only one file is supported at this time.
     outputs:
@@ -279,6 +278,31 @@ script:
       description: Identifier of a MalQuery request.
     description: Fetch a zip archive with password infected containing the samples.
       Call this once the cs-malquery-samples-multidownload request has finished processing
+    outputs:
+      - contextPath: File.SHA256
+        description: SHA256 hash of the file.
+        type: String
+      - contextPath: File.SHA1
+        description: SHA1 hash of the file.
+        type: String
+      - contextPath: File.SHA512
+        description: SHA512 hash of the file.
+        type: String
+      - contextPath: File.Name
+        description: Name of the file.
+        type: String
+      - contextPath: File.EntryID
+        description: Entry ID.
+        type: String
+      - contextPath: File.Info
+        description: File info.
+        type: String
+      - contextPath: File.Type
+        description: Type of the file.
+        type: String
+      - contextPath: File.MD5
+        description: MD5 hash of the file.
+        type: String
   - name: file
     arguments:
     - name: file
@@ -330,3 +354,5 @@ script:
   subtype: python3
   dockerimage: demisto/python3:3.8.3.9324
 fromversion: 5.0.0
+tests:
+- CrowdStrikeMalquery Test

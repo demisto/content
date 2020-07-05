@@ -20,14 +20,14 @@ DBOT_SCORE = {
 TOKEN_LIFE_TIME = 28
 
 
-def get_passed_mins(start_time, end_time_str):
+def get_passed_mins(start_time, end_time_str, tz=None):
     """
         Returns the time passed in mins
         :param start_time: Start time in datetime
         :param end_time_str: End time in str
         :return: The passed mins in int
     """
-    time_delta = start_time - datetime.fromtimestamp(end_time_str)
+    time_delta = start_time - datetime.fromtimestamp(end_time_str, tz)
     return time_delta.seconds / 60
 
 
@@ -191,7 +191,7 @@ def exact_search_command(client: Client, args: dict) -> CommandResults:
 
     # dates format: YYYY/MM/DD
     query_filters = {
-        "limit": int(args.get('limit')) if args.get('limit') else None,
+        "limit": int(args.get('limit', '')) if args.get('limit') else None,
         "filter_meta": argToList(args.get('filter_meta')),
         "filter_filetypes": argToList(args.get('file_types')),
         "max_size": args.get('max_size'),
@@ -226,7 +226,7 @@ def fuzzy_search_command(client: Client, args: dict) -> CommandResults:
         raise DemistoException("You must provide a query to search in the following patterns: Hex, ASCII, Wide string")
 
     query_filters = {
-        "limit": int(args.get('limit')) if args.get('limit') else None,
+        "limit": int(args.get('limit', '')) if args.get('limit') else None,
         "filter_meta": argToList(args.get('filter_meta')) if args.get('filter_meta') else None,
     }
     options = remove_None_values_keys(query_filters)
@@ -248,7 +248,7 @@ def hunt_command(client: Client, args: dict) -> CommandResults:
 
     # dates format: YYYY/MM/DD
     query_filters = {
-        "limit": int(args.get('limit')) if args.get('limit') else None,
+        "limit": int(args.get('limit', '')) if args.get('limit') else None,
         "filter_meta": argToList(args.get('filter_meta')),
         "filter_filetypes": argToList(args.get('file_types')),
         "max_size": args.get('max_size'),
