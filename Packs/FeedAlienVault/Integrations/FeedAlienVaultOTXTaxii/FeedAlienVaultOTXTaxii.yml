@@ -56,7 +56,7 @@ configuration:
 - additionalinfo: Supports CSV values.
   display: Tags
   hidden: false
-  name: feed_tags
+  name: feedTags
   required: false
   type: 0
 - additionalinfo: When selected, the exclusion list is ignored for indicators from

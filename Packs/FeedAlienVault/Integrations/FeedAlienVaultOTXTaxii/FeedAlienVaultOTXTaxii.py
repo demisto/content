@@ -650,7 +650,7 @@ def fetch_indicators_command(client: Client, limit=None):
 
 def main():
     params = demisto.params()
-    tags = argToList(params.get('feed_tags'))
+    tags = argToList(params.get('feedTags'))
     client = Client(params.get('api_key'), params.get('collections'), params.get('insecure'), params.get('proxy'),
                     params.get('all_collections'), tags=tags)
 
