@@ -290,7 +290,7 @@ script:
       predefined:
       - batch
       - single
-      description: The target for which to run the command.
+      description: The target for which to run the command. Can be "single" or "batch".
       defaultValue: batch
     outputs:
     - contextPath: CrowdStrike.Command.HostID
@@ -592,19 +592,19 @@ script:
     arguments:
     - name: host_ids
       required: true
-      description: List of host agent ID’s to run RTR command on.
+      description: List of host agent IDs to run the RTR command on.
       isArray: true
     - name: file_path
       required: true
-      description: Full path to the file that is to be retrieved from each host in
+      description: Full path to the file that will be retrieved from each host in
         the batch.
     - name: optional_hosts
-      description: List of a subset of hosts we want to run the command on.
+      description: List of a subset of hosts to run the command on.
     - name: timeout
-      description: Timeout for how long to wait for the request in seconds
+      description: Timeout for how long to wait for the request in seconds.
     - name: timeout_duration
-      description: Timeout duration for for how long to wait for the request in duration
-        syntax
+      description: Timeout duration for for how long to wait for the request, in duration
+        syntax.
     outputs:
     - contextPath: CrowdStrike.Command.HostID
       description: The ID of the host for which the command was running.
@@ -619,13 +619,13 @@ script:
       description: The base command.
       type: string
     - contextPath: CrowdStrike.Command.TaskID
-      description: The ID of the command which is running on a host.
+      description: The ID of the command that is running on a host.
       type: string
     - contextPath: CrowdStrike.Command.GetRequestID
-      description: The ID of the command request which has been accepted.
+      description: The ID of the command request that was accepted.
       type: string
     - contextPath: CrowdStrike.Command.Complete
-      description: True if the command has done.
+      description: True if the command was completed.
       type: boolean
     - contextPath: CrowdStrike.Command.FilePath
       description: The file path.
@@ -635,19 +635,19 @@ script:
     arguments:
     - name: request_ids
       required: true
-      description: List of the ID to the command requested.
+      description: List of the IDs to the command requested.
       isArray: true
     - name: timeout
-      description: Timeout for how long to wait for the request in seconds
+      description: Timeout for how long to wait for the request in seconds.
     - name: timeout_duration
-      description: Timeout duration for for how long to wait for the request in duration
-        syntax
+      description: Timeout duration for for how long to wait for the request, in duration
+        syntax.
     outputs:
     - contextPath: CrowdStrike.File.ID
       description: The ID of the file.
       type: string
     - contextPath: CrowdStrike.File.TaskID
-      description: The ID of the command which is running .
+      description: The ID of the command that is running.
       type: string
     - contextPath: CrowdStrike.File.CreatedAt
       description: The creation date of the file.
@@ -662,7 +662,7 @@ script:
       description: The full file name.
       type: string
     - contextPath: CrowdStrike.File.SHA256
-      description: The SHA-256 hash of the file.
+      description: The SHA256 hash of the file.
       type: string
     - contextPath: CrowdStrike.File.Size
       description: The size of the file in bytes.
@@ -674,14 +674,14 @@ script:
       description: The size of the file in bytes.
       type: number
     - contextPath: File.SHA256
-      description: The SHA-256 hash of the file.
+      description: The SHA256 hash of the file.
       type: string
     description: Retrieves the status of the specified batch get command.
   - name: cs-falcon-status-command
     arguments:
     - name: request_id
       required: true
-      description: The ID to the command requested.
+      description: The ID of the command requested.
     - name: sequence_id
       description: The sequence ID in chunk requests.
     - name: scope
@@ -690,11 +690,11 @@ script:
       - read
       - write
       - admin
-      description: The scope for which to run the command.
+      description: The scope for which to run the command. Can be "read", "write", or "admin". Default is "read".
       defaultValue: read
     outputs:
     - contextPath: CrowdStrike.Command.TaskID
-      description: The ID of the command request which has been accepted.
+      description: The ID of the command request that was accepted.
       type: string
     - contextPath: CrowdStrike.Command.Stdout
       description: The standard output of the command.
@@ -706,15 +706,15 @@ script:
       description: The base command.
       type: string
     - contextPath: CrowdStrike.Command.Complete
-      description: True if the command has done.
+      description: True if the command was completed.
       type: boolean
     - contextPath: CrowdStrike.Command.SequenceID
       description: The sequence ID in the current request.
       type: number
     - contextPath: CrowdStrike.Command.NextSequenceID
-      description: The sequence ID for the next request  in the chunk request.
+      description: The sequence ID for the next request in the chunk request.
       type: number
-    description: Get status of an executed command on a host
+    description: Gets the status of a command executed on a host.
   - name: cs-falcon-get-extracted-file
     arguments:
     - name: host_id
@@ -722,21 +722,21 @@ script:
       description: The host agent ID.
     - name: sha256
       required: true
-      description: The SHA-256 hash of the file.
+      description: The SHA256 hash of the file.
     - name: filename
       description: Filename to use for the archive name and the file within the archive.
-    description: Get RTR extracted file contents for specified session and sha256.
+    description: Gets the RTR extracted file contents for the specified session and SHA256 hash.
   - name: cs-falcon-list-host-files
     arguments:
     - name: host_id
       required: true
-      description: The ID of the host agent of which it lists files in the session
+      description: The ID of the host agent of which it lists files in the session.
     outputs:
     - contextPath: CrowdStrike.Command.HostID
       description: The ID of the host for which the command was running.
       type: string
     - contextPath: CrowdStrike.Command.TaskID
-      description: The ID of the command request which has been accepted.
+      description: The ID of the command request that was accepted.
       type: string
     - contextPath: CrowdStrike.Command.SessionID
       description: The ID of the session of the host.
@@ -757,7 +757,7 @@ script:
       description: The full file name.
       type: string
     - contextPath: CrowdStrike.File.SHA256
-      description: The SHA-256 hash of the file.
+      description: The SHA256 hash of the file.
       type: string
     - contextPath: CrowdStrike.File.Size
       description: The size of the file in bytes.
@@ -769,9 +769,9 @@ script:
       description: The size of the file in bytes.
       type: number
     - contextPath: File.SHA256
-      description: The SHA-256 hash of the file.
+      description: The SHA256 hash of the file.
       type: string
-    description: Get a list of files for the specified RTR session on a host.
+    description: Gets a list of files for the specified RTR session on a host.
   - name: cs-falcon-refresh-session
     arguments:
     - name: host_id
