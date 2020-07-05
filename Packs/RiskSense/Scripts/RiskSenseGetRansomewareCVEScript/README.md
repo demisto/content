@@ -1,4 +1,4 @@
-This script is a helper script of Ransomware Exposure - RiskSense playbook and retrieve information of cves and trending cves from host finding details.
+This script is a helper script for the Ransomware Exposure - RiskSense playbook and retrieves information of CVEs and trending CVEs from host finding details.
 ## Script Data
 ---
 
@@ -13,7 +13,7 @@ This script is a helper script of Ransomware Exposure - RiskSense playbook and r
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| trending | Trending is defined by RiskSense as vulnerabilities that are being actively abused by attackers in the wild based on activity in hacker forums, Twitter feeds as well as analysis of 3rd party threat intelligence sources. |
+| trending | Trending is defined by RiskSense as vulnerabilities that are being actively abused by attackers in the wild based on activity in hacker forums and Twitter feeds, as well as analysis of 3rd party threat intelligence sources. |
 
 ## Outputs
 ---
