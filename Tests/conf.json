@@ -2929,7 +2929,7 @@
         "Symantec Deepsight Test": "Issue 22971",
         "Cybereason Test": "Issue 22683",
         "Bluecat Address Manager test": "Issue 22616",
-        "test-Expanse": "Expanse should provide domain thaPlaybook-Create Phishing Classifier V2 ML Tet they have in their system",
+        "test-Expanse": "Issue 26248",
         "TestProofpointFeed": "Issue 22229",
         "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
@@ -2962,11 +2962,7 @@
         "GCS Bucket Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "GCS Object Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "Send Email To Recipients": "used in EWS Mail Sender Test 2 as sub playbook",
-        "Cortex XDR - IOC - Test": "issue #25598",
-        "_comment": "~~~ DEPRECATED ~~~",
-        "Endpoint Enrichment - Generic v2 - Test": "DEPRECATED",
-        "test-name-placeholder": "Issue 25508",
-        "test-name-placeholder-2": "Issue 26115"
+        "Cortex XDR - IOC - Test": "issue #25598"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
