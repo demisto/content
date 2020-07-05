@@ -1,16 +1,16 @@
-id: PCAP Search test
+id: PCAP Parsing And Indicator Enrichment Test
 version: -1
 fromversion: 5.0.0
-name: PCAP Search test
-description: test
+name: PCAP Parsing And Indicator Enrichment Test
+description: Test playbook
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 92e2b54e-1bdd-4b04-8563-8741693cc199
+    taskid: 63b52c29-6aa3-4a49-878e-7f5c255ce466
     type: start
     task:
-      id: 92e2b54e-1bdd-4b04-8563-8741693cc199
+      id: 63b52c29-6aa3-4a49-878e-7f5c255ce466
       version: -1
       name: ""
       iscommand: false
@@ -18,12 +18,12 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "2"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 430,
           "y": 50
         }
       }
@@ -32,12 +32,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
-    taskid: 9e2ec942-0077-4a54-8984-e352a840b26c
+  "2":
+    id: "2"
+    taskid: fef5774f-2eea-4763-82ad-e798402da545
     type: regular
     task:
-      id: 9e2ec942-0077-4a54-8984-e352a840b26c
+      id: fef5774f-2eea-4763-82ad-e798402da545
       version: -1
       name: http
       description: Sends http request. Returns the response as json.
@@ -47,7 +47,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "4"
     scriptarguments:
       body: {}
       filename:
@@ -68,8 +68,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 230
+          "x": 430,
+          "y": 250
         }
       }
     note: false
@@ -77,15 +77,40 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "2":
-    id: "2"
-    taskid: 90177069-d0a3-4eb1-8e71-e19d55815078
+  "3":
+    id: "3"
+    taskid: ea2012c5-13e9-4493-8199-646e3c1f80df
+    type: title
+    task:
+      id: ea2012c5-13e9-4493-8199-646e3c1f80df
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: ce019393-1926-4876-884e-f3aac71e69c2
     type: playbook
     task:
-      id: 90177069-d0a3-4eb1-8e71-e19d55815078
+      id: ce019393-1926-4876-884e-f3aac71e69c2
       version: -1
-      name: PCAP Search
-      playbookName: PCAP Search
+      name: PCAP Parsing And Indicator Enrichment
+      playbookName: PCAP Parsing And Indicator Enrichment
       type: playbook
       iscommand: false
       brand: ""
@@ -94,9 +119,8 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      AdvancedSearchFilter: {}
-      IPAddressToSearch:
-        simple: 192.168.199.0/24
+      InternalDomainName: {}
+      InternalEmailDomainName: {}
       InternalIPRange: {}
       PcapFileEntryID:
         complex:
@@ -136,10 +160,10 @@ tasks:
                 value:
                   simple: pcapng
           accessor: EntryID
-      ProtocolToSearch:
-        simple: smb,smb2
-      QueryOperator:
-        simple: and
+      PcapFilter: {}
+      ProtocolsToOutput:
+        simple: DNS,SMB2,HTTP,LLMNR,SYSLOG,SMTP,NETBIOS,ICMP,KERBEROS,TELNET,SSH,IRC,FTP
+      RegexToSearch: {}
       RsaDecryptKeyEntryID:
         complex:
           root: File
@@ -162,9 +186,7 @@ tasks:
                 value:
                   simple: key
           accessor: EntryID
-      TCPPortsToSearch:
-        simple: "445"
-      UDPPortsToSearch: {}
+      WhichIndicatorTypeToEnrich: {}
       WpaPassword: {}
     separatecontext: true
     loop:
@@ -175,33 +197,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "3":
-    id: "3"
-    taskid: 8ef97acc-4f45-4b9f-843d-d63242fb96f4
-    type: title
-    task:
-      id: 8ef97acc-4f45-4b9f-843d-d63242fb96f4
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 710
+          "x": 430,
+          "y": 450
         }
       }
     note: false
@@ -214,9 +211,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 725,
+        "height": 685,
         "width": 380,
-        "x": 450,
+        "x": 430,
         "y": 50
       }
     }
