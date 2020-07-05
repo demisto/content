@@ -38,4 +38,3 @@ except Exception:
     wrap = "=====sane-doc-reports error====="
     err = f'{wrap}\n{tb}{wrap}\n'
     return_error(f'[SaneDocReports Automation Error] - {err}')
-
