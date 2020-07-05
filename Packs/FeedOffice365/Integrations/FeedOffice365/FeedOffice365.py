@@ -180,13 +180,13 @@ def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1)
                     indicator_mapping_fields["office365required"] = item.get('required')
                 if item.get('notes'):
                     indicator_mapping_fields["description"] = item.get('notes')
+                indicator_mapping_fields['tags'] = client.tags
 
                 indicators.append({
                     'value': value,
                     'type': type_,
-                    "tags": client.tags,
                     'rawJSON': raw_data,
-                    'fieget_indicators_commandlds': indicator_mapping_fields
+                    'fields': indicator_mapping_fields
                 })
 
     return indicators

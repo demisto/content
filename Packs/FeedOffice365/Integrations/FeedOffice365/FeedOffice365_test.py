@@ -66,4 +66,4 @@ class TestFeedTags:
         client = Client(self.urls, False, tags)
         mocker.patch.object(client, 'build_iterator', return_value=RESPONSE_DATA)
         _, _, raw_json = get_indicators_command(client, {'limit': 2, 'indicator_type': 'IPs'})
-        assert tags == raw_json.get('raw_response')[0].get('tags')
+        assert tags == raw_json.get('raw_response')[0]['fields']['tags']
