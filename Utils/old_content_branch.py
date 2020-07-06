@@ -3,6 +3,8 @@ import argparse
 import os
 import click
 import yaml
+from ruamel.yaml import YAML
+from ruamel.yaml.scalarstring import FoldedScalarString
 import io
 import json
 from pkg_resources import parse_version
@@ -95,9 +97,14 @@ def rewrite_json(file_path, json_content, new_to_version):
 
 def rewrite_yml(file_path, yml_content, new_to_version):
     yml_content['toversion'] = new_to_version
+    if isinstance(yml_content.get('script'), str):
+        yml_content['script'] = FoldedScalarString(yml_content.get('script'))
+
+    else:
+        yml_content['script']['script'] = FoldedScalarString(yml_content.get('script').get('script'))
 
     with open(file_path, 'w') as f:
-        yaml.dump(yml_content, f)
+        YAML().dump(yml_content, f)
         print(f" - Updating {file_path}")
 
 
