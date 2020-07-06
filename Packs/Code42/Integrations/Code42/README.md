@@ -776,8 +776,6 @@ Adds a Code42 user to a legal hold matter.
 #### Base Command
 
 `code42-legalhold-remove-user`
-=======
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -827,8 +825,6 @@ Downloads a file from Code42 servers.
 #### Base Command
 
 `code42-download-file`
-=======
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
