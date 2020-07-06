@@ -468,7 +468,7 @@ def get_mapping_fields_command(client: Client) -> Dict[str, dict]:
         res[incident_type] = fields  # type: ignore
 
     default_fields = {}
-    demisto.info('Collecting the default incident scheme')
+    demisto.debug('Collecting the default incident scheme')
     for field in incident_fields:
         if field.get('group') == 0 and field.get('associatedToAll'):
             default_fields[field.get('cliName')] = f"{field.get('name')} - {field.get('type')} - " \
@@ -497,7 +497,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
     """
 
     incident_id = args.get('id')  # type: ignore
-    demisto.info(f'Getting update for remote [{incident_id}]')
+    demisto.debug(f'Getting update for remote [{incident_id}]')
     last_update = arg_to_timestamp(
         arg=args.get('lastUpdate'),
         arg_name='lastUpdate',
@@ -551,7 +551,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
             })
 
     # Handle if the incident closed remotely
-    if is_incident_closed(incident.get('status')):
+    if incident.get('status') == IncidentStatus.DONE:
         formatted_entries.append({
             'Type': EntryType.NOTE,
             'Contents': {
@@ -563,7 +563,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
         })
 
     if last_update >= modified and not formatted_entries:
-        demisto.info(f'Nothing new in the incident, incident id {incident_id}')
+        demisto.debug(f'Nothing new in the incident, incident id {incident_id}')
         incident = {}  # this empties out the incident, which will result in not updating the local one
 
     mirror_data = IncidentMirror(
@@ -600,9 +600,9 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     delta: dict = args.get('delta')  # type: ignore
 
     if delta:
-        demisto.info(f'Got the following delta keys {str(list(delta.keys()))}')
+        demisto.debug(f'Got the following delta keys {str(list(delta.keys()))}')
 
-    demisto.info(f'Sending incident with remote ID [{incident_id}] to remote system\n')
+    demisto.debug(f'Sending incident with remote ID [{incident_id}] to remote system\n')
 
     new_incident_id: str = incident_id  # type: ignore
     updated_incident = {}
@@ -625,19 +625,19 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
 
         updated_incident = client.update_incident(incident=data)
         new_incident_id = updated_incident['id']
-        demisto.info(f'Got back ID [{new_incident_id}]')
+        demisto.debug(f'Got back ID [{new_incident_id}]')
 
     else:
-        demisto.info(f'Skipping updating remote incident fields [{incident_id}] as it is not new nor changed.')
+        demisto.debug(f'Skipping updating remote incident fields [{incident_id}] as it is not new nor changed.')
 
     if entries:
         for entry in entries:
-            demisto.info(f'Sending entry {entry.get("id")}')
+            demisto.debug(f'Sending entry {entry.get("id")}')
             client.add_incident_entry(incident_id=new_incident_id, entry=entry)
 
     # Close incident if relevant
-    if updated_incident and is_incident_closed(inc_status):
-        demisto.info(f'Closing remote incident {new_incident_id}')
+    if updated_incident and inc_status == IncidentStatus.DONE:
+        demisto.debug(f'Closing remote incident {new_incident_id}')
         client.close_incident(
             new_incident_id,
             updated_incident.get('version'),  # type: ignore
@@ -660,7 +660,7 @@ def main() -> None:
         required=True
     )
     proxy = demisto.params().get('proxy', False)
-    demisto.info(f'Command being called is {demisto.command()}')
+    demisto.debug(f'Command being called is {demisto.command()}')
     try:
         headers = {
             'Authorization': api_key

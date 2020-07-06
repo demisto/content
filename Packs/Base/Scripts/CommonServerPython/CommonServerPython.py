@@ -80,6 +80,16 @@ class EntryType(object):
     WIDGET = 17
 
 
+class IncidentStatus(object):
+    """
+    Enum: contains all the incidents status types (e.g. pending, active, done, archive)
+    """
+    PENDING = 0
+    ACTIVE = 1
+    DONE = 2
+    ARCHIVE = 3
+
+
 # DEPRECATED - use EntryFormat enum instead
 formats = {
     'html': 'html',
@@ -4041,17 +4051,3 @@ class IncidentMirror(object):
             demisto.info(f'Updating incident {self.incident["id"]}')
             return_list = [self.incident] + self.entries
             demisto.results(return_list)
-
-def is_incident_closed(status):
-    """Checks if the status marks the incident as a closed one
-
-    :type status: ``int``
-    :param status: status representation of a given incident.
-
-    :rtype: ``bool``
-    :return:: True if status marks the incident as closed, False otherwise.
-    """
-    if status == 2:
-        return True
-
-    return False
