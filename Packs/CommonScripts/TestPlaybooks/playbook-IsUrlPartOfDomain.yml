@@ -48,7 +48,7 @@ tasks:
       - "2"
     scriptarguments:
       domain_name:
-        simple: https://example.com
+        simple: example.com
       urls:
         simple: md.example.com,http://example.com,www.example.com,example.com
     separatecontext: false

@@ -1,3 +1,5 @@
+from typing import List, Dict
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -14,26 +16,21 @@ def main(domain_name: str, urls: str) -> CommandResults:
         Results to display in CortexXSOAR
     """
     urls = argToList(urls)
-    results = demisto.executeCommand('ExtractDomainFromUrlAndEmail', {'input': domain_name})
+    domain = domain_name.lower()
 
-    if is_error(results):
-        return_error(get_error(results))
-
-    domain = results[0]['Contents']
-
-    if not domain:
-        return_error(f'Could not find a domain in "{domain_name}"')
-    domain = domain.lower()
-
-    outputs: list = list()
+    outputs: List[Dict] = list()
     for url in urls:
         results = demisto.executeCommand('ExtractDomainFromUrlAndEmail', {'input': url.lower()})
-        domain_from_url = results[0]['Contents']
-        outputs.append({
-            'URL': url,
-            'Domain': domain,
-            'IsInternal': domain == domain_from_url
-        })
+        if is_error(results):
+            demisto.debug(f'Could not get domain from url {url}')
+            return_warning(get_error(results))
+        else:
+            domain_from_url = results[0]['Contents']
+            outputs.append({
+                'URL': url,
+                'Domain': domain,
+                'IsInternal': domain == domain_from_url
+            })
     return CommandResults('IsUrlPartOfDomain', 'Data', outputs)
 
 
