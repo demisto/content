@@ -1,7 +1,6 @@
 commonfields:
   id: IvantiHeatCreateIncident
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: IvantiHeatCreateIncident
 script: ''
 type: python
@@ -34,7 +33,9 @@ args:
   description: Incident customer
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.8.3.9324
 runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- Ivanti Heat - Test

@@ -1,4 +1,4 @@
-category: Ticketing
+category: Case Management
 commonfields:
   id: Ivanti Heat
   version: -1
@@ -368,7 +368,7 @@ script:
     - contextPath: Ivantiheat.incidents.Email
       description: Incident owner Email
       type: String
-  dockerimage: demisto/python3:3.7.4.2245
+  dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: true
   longRunning: false

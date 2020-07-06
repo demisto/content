@@ -1,7 +1,6 @@
 commonfields:
   id: IvantiHeatCloseIncident
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: IvantiHeatCloseIncident
 script: ''
 type: python
@@ -16,7 +15,7 @@ args:
   description: Incident object ID
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.8.3.9324
 runas: DBotWeakRole
+fromversion: 5.0.0
