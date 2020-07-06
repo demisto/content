@@ -51,7 +51,7 @@ def upload_files(dir_path: str, file_path: str) -> Union[CommandResults, str]:
     sha256 = hashlib.sha256()
     for root, _, files in os.walk(dir_path):
         if len(files) == 0:
-            return 'could not find files'
+            return 'No files found.'
 
         for f in files:
             file_path = os.path.join(root, f)
