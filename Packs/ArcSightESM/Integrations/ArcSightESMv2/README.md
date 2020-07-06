@@ -57,6 +57,7 @@ Demisto is designed for an automatic response, so make sure to define conditions
     - **Use system proxy settings**: Select whether to communicate via the system proxy server or not.
     - **Fetch incidents**: Mark the Fetch incidents checkbox to automatically create Demisto incidents from this integration instance.
     - **Incident type**: Select the incident type to trigger.
+    - **Use REST Endpoints**: Mark this checkbox to use REST endpoints for the commands related to 'entries' instead of the default legacy SOAP endpoints.
 4. Click **Test** to validate the URLs, token, and connection.
     If you are experiencing issues with the service configuration, please contact Demisto support at support@demisto.com.
 5. After completing the test successfully, press the ‘Done’ button.
