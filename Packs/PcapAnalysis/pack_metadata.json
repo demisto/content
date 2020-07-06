@@ -1,8 +1,8 @@
 {
     "name": "PCAP Analysis",
     "description": "Analyse your PCAP file.",
-    "support": "demisto",
-    "currentVersion": "2.1.0",
+    "support": "xsoar",
+    "currentVersion": "2.1.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
