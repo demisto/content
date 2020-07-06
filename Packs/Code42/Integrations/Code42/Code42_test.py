@@ -3,7 +3,7 @@ import pytest
 from requests import Response
 from py42.sdk import SDKClient
 from py42.response import Py42Response
-from .Code42 import (
+from Code42 import (
     Code42Client,
     build_query_payload,
     map_observation_to_security_query,
@@ -26,7 +26,6 @@ from .Code42 import (
     user_unblock_command,
     user_deactivate_command,
     user_reactivate_command,
-    legal_hold_add_user_command,
     fetch_incidents,
 )
 import time
@@ -44,7 +43,6 @@ MOCK_SECURITY_DATA_SEARCH_QUERY = {
     "exposure": "ApplicationRead",
     "results": 50,
 }
-
 
 
 MOCK_SECURITY_EVENT_RESPONSE = """
