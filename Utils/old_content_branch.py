@@ -195,7 +195,7 @@ def edit_reputations_json(new_to_version):
     rep_content = get_json(rep_json_path)
     for reputation in rep_content.get('reputations', []):
         if parse_version(reputation.get('toVersion', "99.99.99")) > parse_version(new_to_version) > \
-                parse_version("fromVersion", "0.0.0"):
+                parse_version(reputation.get("fromVersion", "0.0.0")):
             reputation['toVersion'] = new_to_version
 
     with open(rep_json_path, 'w') as f:
