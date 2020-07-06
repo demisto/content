@@ -19,12 +19,9 @@ The EWS integration can be used for the following use cases.
 *   Search for an email message across mailboxes and folders.  
     This can be achieved in the following ways:
 
-    1.  Use the `ews-search-mailboxes` command to search for all emails in a specific scope of mailboxes.  
-        Use the filter argument to narrow the search for emails sent from a specific account and more.
-    2.  Use the `ews-search-mailbox` command to search for all emails in a specific folder within the target mailbox.  
+    1.  Use the `ews-search-mailbox` command to search for all emails in a specific folder within the target mailbox.  
         Use the query argument to narrow the search for emails sent from a specific account and more.
-    *   Both of these commands retrieve the _ItemID_ field for each email item listed in the results. The `ItemID` can be used in the `ews-get-items` command in order to get more information about the email item itself.
-    *   For instance, use the `ews-search-mailboxes` command to hunt for emails that were marked as malicious in prior investigations, across organization mailboxes. Focus your hunt on emails sent from a specific mail account, emails with a specific subject and more.
+    *   This command retrieve the _ItemID_ field for each email item listed in the results. The `ItemID` can be used in the `ews-get-items` command in order to get more information about the email item itself.
 *   Get email attachment information.  
     Use the `ews-get-attachment` command to retrieve information on one attachment or all attachments of a message at once. It supports both file attachments and item attachments (e.g., email messages).
 
@@ -78,24 +75,24 @@ Pay special attention to the following fields in the instance settings:
 
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-1.  [Get the attachments of an item: ews-get-attachment](#h_22ec0bbb-12b3-4f1c-9159-b1a4daa114c7)
-2.  [Delete the attachments of an item: ews-delete-attachment](#h_cae18768-1dd5-4cd1-b2c9-abfd0e7787f3)
-3.  [Get a list of searchable mailboxes: ews-get-searchable-mailboxes](#h_7bdec9fe-e3d9-4645-8da4-337ee3798a84)
-5.  [Move an item to a different folder: ews-move-item](#h_0661f657-850a-430a-8fe1-aacf7e3ce40b)
-6.  [Delete an item from a mailbox: ews-delete-items](#h_712791a3-5937-4641-8e02-1fd773ab3211)
-7.  [Search a single mailbox: ews-search-mailbox](#h_2b4fd205-165c-489f-b58c-3bb77a86acfc)
-8.  [Get the contacts for a mailbox: ews-get-contacts](#h_3b6dc53b-4c1a-4479-a529-0ff3300dc4f5)
-9.  [Get the out-of-office status for a mailbox: ews-get-out-of-office](#h_b592e5fe-af2a-4d3c-90aa-b933e69a7526)
-10.  [Recover soft-deleted messages: ews-recover-messages](#h_212102bb-4ad8-4bb8-9c05-1b1197e2a9c9)
-11.  [Create a folder: ews-create-folder](#h_4ab168b9-21e9-4ce1-b18c-56bc22c0e0bd)
-12.  [Mark an item as junk: ews-mark-item-as-junk](#h_01b093ea-bc1c-46a3-b694-8cd45effeaa0)
-13.  [Search for folders: ews-find-folders](#h_3f9e1f1e-e634-4f92-b2a2-cdca5ca662eb)
-14.  [Get items of a folder: ews-get-items-from-folder](#h_0035899d-fdd0-43b7-bf7b-11a38a2e575a)
-15.  [Get items: ews-get-items](#h_e8f449a2-aecf-4d65-8d04-a38c6d4bfe62)
-16.  [Move an item to a different mailbox: ews-move-item-between-mailboxes](#h_88c0edd5-09b0-42a1-a671-b36b73772898)
-17.  [Get a folder: ews-get-folder](#h_87ca72d4-d98a-462e-9829-c940321663c2)
-18.  [Expand a distribution list: ews-expand-group](#h_d91ca450-7004-4a19-a88d-840389b21556)
-19.  [Mark items as read: ews-mark-items-as-read](#h_e278dc88-b4b0-4330-b849-3069b770e5ba)
+1.  Get the attachments of an item: ews-get-attachment
+2.  Delete the attachments of an item: ews-delete-attachment
+3.  Get a list of searchable mailboxes: ews-get-searchable-mailboxes
+5.  Move an item to a different folder: ews-move-item
+6.  Delete an item from a mailbox: ews-delete-items
+7.  Search a single mailbox: ews-search-mailbox
+8.  Get the contacts for a mailbox: ews-get-contacts
+9.  Get the out-of-office status for a mailbox: ews-get-out-of-office
+10.  Recover soft-deleted messages: ews-recover-messages
+11.  Create a folder: ews-create-folder
+12.  Mark an item as junk: ews-mark-item-as-junk
+13.  Search for folders: ews-find-folders
+14.  Get items of a folder: ews-get-items-from-folder
+15.  Get items: ews-get-items
+16.  Move an item to a different mailbox: ews-move-item-between-mailboxes
+17.  Get a folder: ews-get-folder
+18.  Expand a distribution list: ews-expand-group
+19.  Mark items as read: ews-mark-items-as-read
 
 ### 1\. Get the attachments of an item
 
