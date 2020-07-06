@@ -83,7 +83,7 @@ def upload_files(dir_path: str, file_path: str) -> Union[CommandResults, str]:
             readable_output=readable_output
         )
 
-        return results
+    return results
 
 
 def main():
