@@ -22,12 +22,18 @@ This automation extracts all possible files from a PCAP file.
 | --- | --- | --- |
 | PcapExtractedFiles.FileName | File name. | String |
 | PcapExtractedFiles.FileSize | File size. | Number |
-| PcapExtractedFiles.FileType | File type. | String |
-| PcapExtractedFiles.EntryID | The entry ID of the file. | String |
-| PcapExtractedFiles.SourceIP | Extracted file source IP. | String |
-| PcapExtractedFiles.DestinationIP | Extracted file destination IP. | String |
-| PcapExtractedFiles.DetectedInProtocol | Detected protocol. | String |
 | PcapExtractedFiles.FileMD5 | The MD5 hash of the file. | String |
 | PcapExtractedFiles.FileSHA1 | The SHA1 hash of the file. | String |
 | PcapExtractedFiles.FileSHA256 | The SHA256 hash of the file. | String |
-| PcapExtractedFiles.FileExtensaion | The extension of the file. | String |
+| PcapExtractedFiles.FileExtension | The extension of the file. | String |
+| File.Size | The size of the file in bytes. | Number |
+| File.SHA1 | The SHA1 hash of the file. | String |
+| File.SHA256 | The SHA256 hash of the file. | String |
+| File.SHA512 | The SHA512 hash of the file. | String |
+| File.Name | The full file name. | String |
+| File.SSDeep | The ssdeep hash of the file. | String |
+| File.EntryID | The ID for locating the file in the War Room. | String |
+| File.Info | The file information. | String |
+| File.Type | The file type. | String |
+| File.MD5 | The MD5 hash of the file. | String |
+| File.Extension | The file extension, for example: 'txt'. | String |
