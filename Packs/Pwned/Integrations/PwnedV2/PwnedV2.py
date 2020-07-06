@@ -29,7 +29,6 @@ DEFAULT_DBOT_SCORE_EMAIL = 2 if demisto.params().get('default_dbot_score_email')
 DEFAULT_DBOT_SCORE_DOMAIN = 2 if demisto.params().get('default_dbot_score_domain') == 'SUSPICIOUS' else 3
 
 SUFFIXES = {
-    "test": '/breaches?domain=demisto.com',
     "email": '/breachedaccount/',
     "domain": '/breaches?domain=',
     "username": '/breachedaccount/',
@@ -219,13 +218,12 @@ def set_retry_end_time():
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def test_module(args_dict):
+def test_module(*_):
     """
     If the http request was successful the test will return OK
-    :param args_dict: needed in order to keep the commands convention.
     :return: 3 arrays of outputs
     """
-    http_request('GET', SUFFIXES.get("test"))
+    http_request('GET', SUFFIXES.get("username") + 'test')
     return ['ok'], [None], [None]
 
 
