@@ -4768,7 +4768,7 @@ def panorama_block_vulnerability():
     drop_mode = demisto.args().get('drop_mode', 'drop')
 
     threat = panorama_override_vulnerability(threatid, vulnerability_profile, drop_mode)
-    threat_output = {'ID': threatid, 'NewAction': drop_mode }
+    threat_output = {'ID': threatid, 'NewAction': drop_mode}
 
     demisto.results({
         'Type': entryTypes['note'],

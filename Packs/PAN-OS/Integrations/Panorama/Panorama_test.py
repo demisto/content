@@ -47,8 +47,9 @@ def patched_requests_mocker(requests_mock):
     requests_mock.post(base_url, text=mock_response_xml, status_code=200)
     return requests_mock
 
+
 def test_panoram_get_os_version(patched_requests_mocker):
-    from Panorama import get_pan_os_version 
+    from Panorama import get_pan_os_version
     r = get_pan_os_version()
     assert r == '9.0.6'
 
@@ -56,7 +57,7 @@ def test_panoram_get_os_version(patched_requests_mocker):
 def test_panoram_override_vulnerability(patched_requests_mocker):
     from Panorama import panorama_override_vulnerability
     r = panorama_override_vulnerability(mock_demisto_args['threat_id'], mock_demisto_args['vulnerability_profile'], 'reset-both')
-    assert r['response']['@status'] == 'success'  
+    assert r['response']['@status'] == 'success'
 
 
 def test_add_argument_list():
