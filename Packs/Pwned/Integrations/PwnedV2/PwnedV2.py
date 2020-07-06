@@ -1,6 +1,4 @@
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 ''' IMPORTS '''
 
@@ -37,7 +35,6 @@ SUFFIXES = {
     "domain_truncate_verified": '&truncateResponse=false&includeUnverified=true',
     "username_truncate_verified": '?truncateResponse=false&includeUnverified=true'
 }
-
 
 RETRIES_END_TIME = datetime.min
 
@@ -76,7 +73,8 @@ def http_request(method, url_suffix, params=None, data=None):
         return None
     if not res.status_code == 200:
         if not res.status_code == 401:
-            demisto.error('Error from Pwned v2: {}'.format(res.text))
+            demisto.error(
+                'Error in API call to Pwned Integration [%d]. Full text: %s'.format(res.status_code, res.text))
         return_error('Error in API call to Pwned Integration [%d] - %s' % (res.status_code, res.reason))
         return None
 
