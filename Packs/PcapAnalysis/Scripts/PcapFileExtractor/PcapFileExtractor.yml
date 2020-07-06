@@ -18,18 +18,6 @@ outputs:
 - contextPath: PcapExtractedFiles.FileSize
   description: File size.
   type: Number
-- contextPath: PcapExtractedFiles.FileType
-  description: File type.
-  type: String
-- contextPath: PcapExtractedFiles.SourceIP
-  description: Extracted file source IP address.
-  type: String
-- contextPath: PcapExtractedFiles.DestinationIP
-  description: Extracted file destination IP address.
-  type: String
-- contextPath: PcapExtractedFiles.DetectedInProtocol
-  description: Detected protocol.
-  type: String
 - contextPath: PcapExtractedFiles.FileMD5
   description: The MD5 hash of the file.
   type: String
@@ -41,6 +29,39 @@ outputs:
   type: String
 - contextPath: PcapExtractedFiles.FileExtension
   description: The extension of the file.
+  type: String
+- contextPath: File.Size
+  description: The size of the file in bytes.
+  type: Number
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+  type: String
+- contextPath: File.SHA256
+  description: The SHA256 hash of the file.
+  type: String
+- contextPath: File.SHA512
+  description: The SHA512 hash of the file.
+  type: String
+- contextPath: File.Name
+  description: The full file name.
+  type: String
+- contextPath: File.SSDeep
+  description: The ssdeep hash of the file.
+  type: String
+- contextPath: File.EntryID
+  description: The ID for locating the file in the War Room.
+  type: String
+- contextPath: File.Info
+  description: The file information.
+  type: String
+- contextPath: File.Type
+  description: The file type.
+  type: String
+- contextPath: File.MD5
+  description: The MD5 hash of the file.
+  type: String
+- contextPath: File.Extension
+  description: 'The file extension, for example: ''txt''.'
   type: String
 script: '-'
 subtype: python3

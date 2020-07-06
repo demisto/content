@@ -23,7 +23,6 @@ beautifulsoup4 = "==4.8.1"
 pypdf2 = "==1.26.0"
 freezegun = "==0.3.12"
 vulture = "==1.5"
-pyshark = "*"
 
 [requires]
 # python_version = "3.7"
