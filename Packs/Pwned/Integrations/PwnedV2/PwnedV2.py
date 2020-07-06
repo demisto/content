@@ -75,6 +75,8 @@ def http_request(method, url_suffix, params=None, data=None):
     if res.status_code == 404:
         return None
     if not res.status_code == 200:
+        if not res.status_code == 401:
+            demisto.error('Error from Pwned v2: %s'.format(res.text))
         return_error('Error in API call to Pwned Integration [%d] - %s' % (res.status_code, res.reason))
         return None
 
