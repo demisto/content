@@ -15,6 +15,10 @@ def main(domain_name: str, urls: str) -> CommandResults:
     """
     urls = argToList(urls)
     results = demisto.executeCommand('ExtractDomainFromUrlAndEmail', {'input': domain_name})
+
+    if is_error(results):
+        return_error(get_error(results))
+
     domain = results[0]['Contents']
 
     if not domain:

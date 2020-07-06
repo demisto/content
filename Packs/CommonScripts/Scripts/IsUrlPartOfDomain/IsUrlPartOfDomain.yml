@@ -22,7 +22,7 @@ outputs:
   description: The path of the URLs.
   type: String
 - contextPath: IsUrlPartOfDomain.Domain
-  description: The path of the URLs.
+  description: The domain checked with the URL.
   type: String
 - contextPath: IsUrlPartOfDomain.IsInternal
   description: Is the url is the domain.
@@ -32,6 +32,6 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/tld:1.0.0.8854
+dockerimage: demisto/python3:3.8.3.9324
 tests:
 - IsUrlPartOfDomain Test
