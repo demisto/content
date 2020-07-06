@@ -1,0 +1,1 @@
+Triage can scale up to 500,000 analyses per day

@@ -1,0 +1,104 @@
+commonfields:
+  id: Hatchling Triage
+  version: -1
+name: Hatchling Triage
+display: Hatchling Triage
+category: Forensics & Malware Analysis
+description: Submit a high volume of samples to run in a sandbox and view reports
+configuration:
+- display: ""
+  name: URL
+  defaultvalue: https://api.tria.ge/v0/
+  type: 0
+  required: true
+  additionalinfo: Private url is https://private.tria.ge/api/v0/
+- display: ""
+  name: API Key
+  type: 4
+  required: true
+script:
+  script: ''
+  type: python
+  commands:
+  - name: triage-query-samples
+    arguments:
+    - name: subset
+      auto: PREDEFINED
+      predefined:
+      - owned
+      - public
+      description: Get samples from either private or public reports
+  - name: triage-submit-sample
+    arguments:
+    - name: kind
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - url
+      - file
+      description: Select if sample if a URL or a file
+    - name: interactive
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Choose if the sample should be interacted with in the GUI glovebox
+      defaultValue: "false"
+    - name: profiles
+      description: Select what profile to run the sample with. Requires the user to
+        be registered with a company
+    - name: data
+      description: Data to submit for analysis. For URLs give the URL. For files,
+        give the entry-id of the file
+    description: Submits a file or url for analysis
+  - name: triage-get-sample
+    arguments:
+    - name: sample_id
+      required: true
+    outputs:
+    - contextPath: Triage
+    description: Pulls back basic information about the sample id given
+  - name: triage-get-sample-summary
+    arguments:
+    - name: sample_id
+      required: true
+    description: Gets a summary report of the sample id provided
+  - name: triage-delete-sample
+    arguments:
+    - name: sample_id
+    description: Deletes a sample from the sandbox
+  - name: triage-set-sample-profile
+    arguments:
+    - name: sample_id
+      required: true
+    - name: auto
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - name: pick
+      description: If submitting an archive file, select which files to analyze
+    - name: profiles
+      description: Comma separated list of profile-ids to use
+  - name: triage-get-static-report
+    arguments:
+    - name: sample_id
+      required: true
+  - name: triage-get-report-triage
+    arguments:
+    - name: sample_id
+      required: true
+    - name: task_id
+      required: true
+  - name: triage-get-sample-events
+    arguments:
+    - name: sample_id
+      required: true
+    description: Gets a stream of events on a sample
+  - name: triage-get-all-sample-events
+    arguments:
+    - name: sample_id
+    description: Gets a stream of events from all samples
+  dockerimage: demisto/python3:3.8.2.6981
+  runonce: false
+  subtype: python3
