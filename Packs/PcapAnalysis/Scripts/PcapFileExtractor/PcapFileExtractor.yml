@@ -1,0 +1,76 @@
+args:
+- default: false
+  description: The EntryID of the PCAP file to extract the files from.
+  isArray: false
+  name: entry_id
+  required: true
+  secret: false
+comment: This automation extracts all possible files from a PCAP file.
+commonfields:
+  id: PcapFileExtractor
+  version: -1
+enabled: false
+name: PcapFileExtractor
+outputs:
+- contextPath: PcapExtractedFiles.FileName
+  description: File name.
+  type: String
+- contextPath: PcapExtractedFiles.FileSize
+  description: File size.
+  type: Number
+- contextPath: PcapExtractedFiles.FileMD5
+  description: The MD5 hash of the file.
+  type: String
+- contextPath: PcapExtractedFiles.FileSHA1
+  description: The SHA1 hash of the file.
+  type: String
+- contextPath: PcapExtractedFiles.FileSHA256
+  description: The SHA256 hash of the file.
+  type: String
+- contextPath: PcapExtractedFiles.FileExtension
+  description: The extension of the file.
+  type: String
+- contextPath: File.Size
+  description: The size of the file in bytes.
+  type: Number
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+  type: String
+- contextPath: File.SHA256
+  description: The SHA256 hash of the file.
+  type: String
+- contextPath: File.SHA512
+  description: The SHA512 hash of the file.
+  type: String
+- contextPath: File.Name
+  description: The full file name.
+  type: String
+- contextPath: File.SSDeep
+  description: The ssdeep hash of the file.
+  type: String
+- contextPath: File.EntryID
+  description: The ID for locating the file in the War Room.
+  type: String
+- contextPath: File.Info
+  description: The file information.
+  type: String
+- contextPath: File.Type
+  description: The file type.
+  type: String
+- contextPath: File.MD5
+  description: The MD5 hash of the file.
+  type: String
+- contextPath: File.Extension
+  description: 'The file extension, for example: ''txt''.'
+  type: String
+script: '-'
+subtype: python3
+system: false
+tags:
+- pcap
+- file
+- Utility
+timeout: '0'
+type: python
+dockerimage: demisto/pcap-miner:1.0.0.9360
+fromversion: 5.0.0

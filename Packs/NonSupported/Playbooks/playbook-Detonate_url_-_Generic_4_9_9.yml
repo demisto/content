@@ -24,7 +24,6 @@ tasks:
       - "15"
       - "16"
       - "17"
-      - "18"
     separatecontext: false
     view: |-
       {
@@ -308,55 +307,15 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-  "18":
-    id: "18"
-    taskid: ddbaa888-9228-487f-8a48-a34b8f96bde6
-    type: playbook
-    task:
-      id: ddbaa888-9228-487f-8a48-a34b8f96bde6
-      version: -1
-      name: Detonate URL - Group-IB TDS Polygon
-      playbookName: Detonate URL - Group-IB TDS Polygon
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      Interval:
-        simple: "1"
-      Timeout:
-        simple: "60"
-      url:
-        simple: ${URL.Data}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": -390,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 385,
-        "width": 3400,
-        "x": -390,
+        "width": 2960,
+        "x": 50,
         "y": 50
       }
     }
@@ -699,6 +658,7 @@ outputs:
 - contextPath: ANYRUN.Task.Status
   description: Task analysis status.
   type: String
-fromversion: 5.0.0
+fromversion: 4.0.0
+toversion: 4.9.9
 tests:
-- Detonate URL - Generic Test
+- No tests

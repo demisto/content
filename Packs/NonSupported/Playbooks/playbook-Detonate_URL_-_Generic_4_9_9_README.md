@@ -1,22 +1,16 @@
-Detonate file through active integrations that support file detonation
+Detonate URL through active integrations that support URL detonation
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Detonate File - Group-IB TDS Polygon
-* Detonate File - HybridAnalysis
-* WildFire - Detonate file
-* CrowdStrike Falcon Sandbox - Detonate file
-* Detonate File - FireEye AX
-* Detonate File - JoeSecurity
-* Detonate File - ANYRUN
-* Detonate File - ThreatGrid
-* ATD - Detonate File
-* Detonate File - SNDBOX
-* Detonate File - Cuckoo
-* Detonate File - Lastline v2
-* Detonate File - VMRay
+* Detonate URL - Cuckoo
+* Detonate URL - JoeSecurity
+* Detonate URL - Lastline v2
+* Detonate URL - CrowdStrike
+* Detonate URL - ThreatGrid
+* Detonate URL - ANYRUN
+* Detonate URL - McAfee ATD
 
 ### Integrations
 This playbook does not use any integrations.
@@ -32,38 +26,29 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| EntryID | Entry ID of file to be detonated | File.EntryID | Optional |
-| File | File object of file to be detonated | File.None | Optional |
+| URL | URL object of url to be detonated. | URL.None | Optional |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Joe.Analysis.Status | Analysis Status | string |
-| Joe.Analysis.WebID | Web ID | string |
-| File.Name | Filename \(only in case of report type=json\) | string |
-| File.SHA1 | SHA1 of the file | string |
-| File.SHA256 | SHA256 of the file | string |
-| File.Size | File size \(only in case of report type=json\) | number |
-| File.Type | File type e.g. "PE" \(only in case of report type=json\) | string |
-| File.Malicious | The File malicious description | unknown |
-| File.Malicious.Description | For malicious files, the reason for the vendor to make the decision | string |
-| File.Malicious.Vendor | For malicious files, the vendor that made the decision | string |
-| DBotScore | The Indicator's object | unknown |
-| DBotScore.Indicator | The indicator that was tested | string |
-| DBotScore.Score | The actual score | number |
-| DBotScore.Type | The type of the indicator | string |
-| DBotScore.Vendor | Vendor used to calculate the score | string |
-| IP.Address | IP's relevant to the sample | string |
-| DBotScore.Malicious.Vendor | Vendor used to calculate the score | string |
-| DBotScore.Malicious.Detections | The sub analysis detection statuses | string |
-| DBotScore.Malicious.SHA1 | The SHA1 of the file | string |
-| Sample.State | The sample state | unknown |
-| Sample.ID | The sample ID | unknown |
 | File | The File's object | unknown |
+| File.Name | Filename | string |
+| File.Size | File size | number |
+| File.Type | File type e.g. "PE" \(only in case of report type=json\) | string |
+| File.SHA256 | SHA256 of the file | string |
+| File.SHA1 | SHA1 of the file | string |
 | File.MD5 | MD5 of the file | string |
-| Joe.Analysis.SampleName | Sample Data, could be a file name or URL | string |
+| File.Malicious.Vendor | For malicious files, the vendor that made the decision | string |
+| File.Malicious.Description | For malicious files, the reason for the vendor to make the decision | string |
+| DBotScore | The Indicator's object | unknown |
+| DBotScore.Type | The type of the indicator | string |
+| DBotScore.Indicator | The indicator we tested | string |
+| DBotScore.Vendor | Vendor used to calculate the score | string |
+| DBotScore.Score | The actual score | number |
+| Joe.Analysis.WebID | Web ID | string |
+| Joe.Analysis.Status | Analysis Status | string |
 | Joe.Analysis.Comments | Analysis Comments | string |
 | Joe.Analysis.Time | Submitted Time | date |
 | Joe.Analysis.Runs | Sub\-Analysis Information | unknown |
@@ -73,20 +58,16 @@ This playbook does not use any commands.
 | Joe.Analysis.MD5 | MD5 of analysis sample | string |
 | Joe.Analysis.SHA1 | SHA1 of analysis sample | string |
 | Joe.Analysis.SHA256 | SHA256 of analysis sample | string |
-| InfoFile.Name | FileName of the report file | string |
-| InfoFile.EntryID | The EntryID of the report file | string |
+| Joe.Analysis.SampleName | Sample Data, could be a file name or URL | string |
+| InfoFile.Name | FileName | string |
+| InfoFile.EntryID | The EntryID of the sample | string |
 | InfoFile.Size | File Size | number |
 | InfoFile.Type | File type e.g. "PE" | string |
 | InfoFile.Info | Basic information of the file | string |
-| File.Extension | File Extension | string |
+| Sample.State | The sample state | string |
+| Sample.ID | The sample ID | string |
+| IP.Address | IP's relevant to the sample | string |
 | InfoFile | The report file's object | unknown |
-| WildFire.Report | The submission object | unknown |
-| WildFire.Report.Status | The status of the submission | string |
-| WildFire.Report.SHA256 | SHA256 of the submission | string |
-| WildFire.Report.MD5 | MD5 of the submission | string |
-| WildFire.Report.FileType | The type of the submission | string |
-| WildFire.Report.Size | The size of the submission | number |
-| Joe.Analysis | Thee Analysis object | unknown |
 | Cuckoo.Task.Category | Category of task | unknown |
 | Cuckoo.Task.Machine | Machine of task | unknown |
 | Cuckoo.Task.Errors | Errors of task | unknown |
@@ -109,22 +90,6 @@ This playbook does not use any commands.
 | Cuckoo.Task.CompletedOn | Date on which the task was completed | unknown |
 | Cuckoo.Task.Score | Reported score of the the task | unknown |
 | Cuckoo.Task.Monitor | Monitor of the reported task | unknown |
-| SNDBOX.Analysis.ID | Analysis ID | string |
-| SNDBOX.Analysis.SampleName | Sample Data, could be a file name or URL | string |
-| SNDBOX.Analysis.Status | Analysis Status | string |
-| SNDBOX.Analysis.Time | Submitted Time | date |
-| SNDBOX.Analysis.Result | Analysis Results | string |
-| SNDBOX.Analysis.Errors | Raised errors during sampling | unknown |
-| SNDBOX.Analysis.Link | Analysis Link | string |
-| SNDBOX.Analysis.MD5 | MD5 of analysis sample | string |
-| SNDBOX.Analysis.SHA1 | SHA1 of analysis sample | string |
-| SNDBOX.Analysis.SHA256 | SHA256 of analysis sample | string |
-| SNDBOX.Analysis | SNDBOX analysis | unknown |
-| HybridAnalysis.Submit.State | The state of the process | string |
-| HybridAnalysis.Submit.SHA256 | The submission SHA256 | string |
-| HybridAnalysis.Submit.JobID | The JobID of the submission | string |
-| HybridAnalysis.Submit.EnvironmentID | The environmentID of the submission | string |
-| HybridAnalysis.Submit | The HybridAnalysis object | unknown |
 | ANYRUN.Task.AnalysisDate | Date and time the analysis was executed. | String |
 | ANYRUN.Task.Behavior.Category | Category of a process behavior. | String |
 | ANYRUN.Task.Behavior.Action | Actions performed by a process. | String |
@@ -163,10 +128,6 @@ This playbook does not use any commands.
 | ANYRUN.Task.OS | OS of the sandbox in which the file was analyzed. | String |
 | ANYRUN.Task.ID | The unique ID of the task. | String |
 | ANYRUN.Task.MIME | The MIME of the file submitted for analysis. | String |
-| ANYRUN.Task.MD5 | The MD5 hash of the file submitted for analysis. | String |
-| ANYRUN.Task.SHA1 | The SHA1 hash of the file submitted for analysis. | String |
-| ANYRUN.Task.SHA256 | The SHA256 hash of the file submitted for analysis. | String |
-| ANYRUN.Task.SSDeep | SSDeep hash of the file submitted for analysis. | String |
 | ANYRUN.Task.Verdict | ANY.RUN verdict for the maliciousness of the submitted file or URL. | String |
 | ANYRUN.Task.Process.FileName | File name of the process. | String |
 | ANYRUN.Task.Process.PID | Process identification number. | Number |
@@ -181,16 +142,15 @@ This playbook does not use any commands.
 | ANYRUN.Task.Process.Version.Company | Company responsible for the program executed. | String |
 | ANYRUN.Task.Process.Version.Description | Description of the type of program. | String |
 | ANYRUN.Task.Process.Version.Version | Version of the program executed. | String |
-| File.Extension | Extension of the file submitted for analysis. | String |
-| File.Name | The name of the file submitted for analysis. | String |
-| File.MD5 | MD5 hash of the file submitted for analysis. | String |
-| File.SHA1 | SHA1 hash of the file submitted for analysis. | String |
-| File.SHA256 | SHA256 hash of the file submitted for analysis. | String |
-| File.SSDeep | SSDeep hash of the file submitted for analysis. | String |
-| File.Malicious.Vendor | For malicious files, the vendor that made the decision. | String |
-| File.Malicious.Description | For malicious files, the reason that the vendor made the decision. | String |
+| DBotScore.Indicator | The indicator that was tested. | String |
+| DBotScore.Score | The actual score. | Number |
+| DBotScore.Type | Type of indicator. | String |
+| DBotScore.Vendor | Vendor used to calculate the score. | String |
+| URL.Data | URL data. | String |
+| URL.Malicious.Vendor | For malicious URLs, the vendor that made the decision. | String |
+| URL.Malicious.Description | For malicious URLs, the reason for the vendor to make the decision. | String |
 | ANYRUN.Task.Status | Task analysis status. | String |
 
 ## Playbook Image
 ---
-![Detonate File - Generic](Insert the link to your image here)
+![Detonate URL - Generic](Insert the link to your image here)
