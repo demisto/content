@@ -258,7 +258,7 @@ script:
     - contextPath: DisableUser.brand
       description: Name of the Integration
       type: string
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.7.4.2245
   runonce: false
   script: ''
   subtype: python3
