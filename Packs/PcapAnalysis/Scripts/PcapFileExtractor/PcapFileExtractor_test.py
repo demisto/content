@@ -25,8 +25,8 @@ def test_extract_files(tmpdir):
     - ensure outputs are correct.
     """
 
-    file_path = 'TestData/tftp_rrq.pcap'
-    results = upload_files(file_path=file_path, dir_path=tmpdir)
+    file_path = './TestData/tftp_rrq.pcap'
+    results = upload_files(file_path, tmpdir)
     assert 'Pcap Extracted Files' in results.readable_output
     assert OUTPUTS == results.outputs
     assert os.path.isfile(os.path.join(tmpdir, 'rfc1350.txt'))

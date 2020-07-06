@@ -5,6 +5,62 @@ args:
   name: entry_id
   required: true
   secret: false
+- default: false
+  description: The entry ID for the RSA decryption key.
+  isArray: false
+  name: rsa_decrypt_key_entry_id
+  required: false
+  secret: false
+- default: false
+  description: The WPA password. By providing the password you will be able to decrypt.
+    Can be password or ssid:password.
+  isArray: false
+  name: wpa_password
+  required: false
+  secret: false
+- default: false
+  defaultValue: '5'
+  description: Maximum number of files to extract.
+  isArray: false
+  name: limit
+  required: false
+  secret: false
+- default: false
+  description: 'A comma-separated list of file extension to include/exclude (example:
+    image/gif)'
+  isArray: false
+  name: types
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: inclusive
+  description: Is the type list inclusive or exclusive
+  isArray: false
+  name: types_inclusive_or_exclusive
+  predefined:
+  - inclusive
+  - exclusive
+  required: false
+  secret: false
+- default: false
+  description: 'A comma-separated list of file extension to include/exclude (example:
+    .gif)'
+  isArray: false
+  name: types
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: inclusive
+  description: Is the type list inclusive or exclusive
+  isArray: false
+  name: extensions_inclusive_or_exclusive
+  predefined:
+  - inclusive
+  - exclusive
+  required: false
+  secret: false
 comment: This automation extracts all possible files from a PCAP file.
 commonfields:
   id: PcapFileExtractor
@@ -72,5 +128,7 @@ tags:
 - Utility
 timeout: '0'
 type: python
-dockerimage: demisto/pcap-miner:1.0.0.9360
+dockerimage: devtesting/pcap-miner:1.0.0.1594130242
+tests:
+- No tests (auto formatted)
 fromversion: 5.0.0
