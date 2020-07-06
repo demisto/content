@@ -565,10 +565,6 @@ def option_handler():
     return parser.parse_args()
 
 
-def update_and_upload_pack(upload_config):
-
-
-
 def main():
     upload_config = option_handler()
     packs_artifacts_path = upload_config.artifacts_path
