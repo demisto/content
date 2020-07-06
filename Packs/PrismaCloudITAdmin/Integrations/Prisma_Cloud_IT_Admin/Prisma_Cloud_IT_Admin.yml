@@ -24,7 +24,7 @@ configuration:
   required: false
   type: 8
 - defaultvalue: ""
-  display: CustomerName
+  display: Customer Name
   name: customerName
   required: true
   type: 0
