@@ -314,6 +314,54 @@ Get all employees on the Departing Employee List.
 |  | leaving for competition | 951984198921509692 | user7@example.com.com |
 |  | Leaving for competitor | 895005723650937319 | user8@example.com |
 
+### code42-departingemployee-get
+***
+Fetch user details from the Departing Employee List.
+
+#### Base Command
+
+`code42-departingemployee-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | The username of the Departing Employee. | Required |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Code42.DepartingEmployee.TenantID | string | Internal Code42 tenant ID for the Departing Employee. |
+| Code42.DepartingEmployee.Username | string | The username of the Departing Employee. |
+| Code42.DepartingEmployee.DisplayName | string | Display name associated to the Departing Employee. |
+| Code42.DepartingEmployee.Notes | string | Notes associated to the Departing Employee. |
+| Code42.DepartingEmployee.CreatedAt | unknown | Timestamp at which the employee was added to Departing Employee List. |
+| Code42.DepartingEmployee.Status | string | Status associated to the Departing Employee. |
+| Code42.DepartingEmployee.CloudUsernames | unknown | Cloud user IDs associated to the Departing Employee. |
+| Code42.DepartingEmployee.Type | string | Internal Code42 API version number. |
+
+
+#### Command Example
+```!code42-departingemployee-get username="partner.demisto@example.com```
+
+#### Context Example
+```
+{
+    "Code42": {
+        "DepartingEmployee": {
+            "type$": "DEPARTING_EMPLOYEE_V2"
+            "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663""userId": "9212869298179098"
+            "userName": "partner.demisto@example.com"
+            "displayName": "Demisto Parnter"
+            "notes": "Test"
+            "createdAt": "2020-06-26T13:53:03.5662390Z"
+            "status": "OPEN"
+            "cloudUsernames": ["partner.demisto@cloudexmaple.com"]
+        }
+    }
+}
+```
 
 ### code42-highriskemployee-add
 ***
@@ -361,6 +409,54 @@ Adds a user from the High Risk Employee List.
 |---|---|
 | 942876157732602741 | partner.demisto@example.com |
 
+### code42-highriskemployee-get
+***
+Fetch user details from the High Risk Employee List.
+
+#### Base Command
+
+`code42-highriskemployee-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | The username of the High Risk Employee. | Required |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Code42.HighRiskEmployee.TenantID | string | Internal Code42 tenant ID for the High Risk Employee. |
+| Code42.HighRiskEmployee.Username | string | The username of the High Risk Employee. |
+| Code42.HighRiskEmployee.DisplayName | string | Display name associated to the High Risk Employee. |
+| Code42.HighRiskEmployee.Notes | string | Notes associated to the High Risk Employee. |
+| Code42.HighRiskEmployee.CreatedAt | unknown | Timestamp at which the employee was added to High Risk Employee List. |
+| Code42.HighRiskEmployee.Status | string | Status associated to the High Risk Employee. |
+| Code42.HighRiskEmployee.CloudUsernames | unknown | Cloud user IDs associated to the High Risk Employee. |
+| Code42.HighRiskEmployee.Type | string | Internal Code42 API version number. |
+
+
+#### Command Example
+```!code42-highriskemployee-get username="partner.demisto@example.com```
+
+#### Context Example
+```
+{
+    "Code42": {
+        "HighRiskEmployee": {
+            "type$": "HIGH_RISK_EMPLOYEE_V2"
+            "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663""userId": "9212869298179098"
+            "userName": "partner.demisto@example.com"
+            "displayName": "Demisto Parnter"
+            "notes": "Test"
+            "createdAt": "2020-06-26T13:53:03.5662390Z"
+            "status": "OPEN"
+            "cloudUsernames": ["partner.demisto@cloudexmaple.com"]
+        }
+    }
+}
+```
 
 ### code42-highriskemployee-remove
 ***
