@@ -739,7 +739,7 @@ Adds a Code42 user to a legal hold matter.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Code42.LegalHold.UserID | Unknown | The ID of a Code42 user. | 
-| Code42.LegalHolder.MatterID | String | The ID of a Code42 legal hold matter. | 
+| Code42.LegalHold.MatterID | String | The ID of a Code42 legal hold matter. |
 | Code42.LegalHold.Username | String | A username for a Code42 user. | 
 | Code42.LegalHold.MatterName | String | A name for a Code42 legal hold matter. | 
 
@@ -789,7 +789,7 @@ Removes a Code42 user from a legal hold matter.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Code42.LegalHold.UserID | Unknown | The ID of a Code42 user. | 
-| Code42.LegalHolder.MatterID | String | The ID of a Code42 legal hold matter. | 
+| Code42.LegalHold.MatterID | String | The ID of a Code42 legal hold matter. |
 | Code42.LegalHold.Username | String | A username for a Code42 user. | 
 | Code42.LegalHold.MatterName | String | A name for a Code42 legal hold matter. | 
 

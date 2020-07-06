@@ -618,7 +618,7 @@ script:
     - contextPath: Code42.LegalHold.UserID
       description: The ID of a Code42 user.
       type: Unknown
-    - contextPath: Code42.LegalHolder.MatterID
+    - contextPath: Code42.LegalHold.MatterID
       description: The ID of a Code42 legal hold matter.
       type: String
     - contextPath: Code42.LegalHold.Username
@@ -648,7 +648,7 @@ script:
       - contextPath: Code42.LegalHold.UserID
         description: The ID of a Code42 user.
         type: Unknown
-      - contextPath: Code42.LegalHolder.MatterID
+      - contextPath: Code42.LegalHold.MatterID
         description: The ID of a Code42 legal hold matter.
         type: String
       - contextPath: Code42.LegalHold.Username
