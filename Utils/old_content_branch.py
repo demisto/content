@@ -191,6 +191,7 @@ parser.add_argument('-v', '--new-to-version', help='The new to version to assign
 
 
 def edit_reputations_json(new_to_version):
+    print("Updating reputations.json\n")
     rep_json_path = "Packs/NonSupported/IndicatorTypes/reputations.json"
     rep_content = get_json(rep_json_path)
     for reputation in rep_content.get('reputations', []):
@@ -200,7 +201,6 @@ def edit_reputations_json(new_to_version):
 
     with open(rep_json_path, 'w') as f:
         json.dump(rep_content, f, indent=4)
-        print("Updating reputations.json")
 
 
 def main():
