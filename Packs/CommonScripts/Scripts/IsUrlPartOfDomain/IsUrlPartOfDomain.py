@@ -26,7 +26,8 @@ def main(domain_name: str, urls: str) -> CommandResults:
         results = demisto.executeCommand('ExtractDomainFromUrlAndEmail', {'input': url.lower()})
         domain_from_url = results[0]['Contents']
         outputs.append({
-            'Data': url,
+            'URL': url,
+            'Domain': domain,
             'IsInternal': domain == domain_from_url
         })
     return CommandResults('IsUrlPartOfDomain', 'Data', outputs)
