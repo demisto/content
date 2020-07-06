@@ -650,6 +650,12 @@
         },
         {
             "integrations": "Generic SQL",
+            "playbookID": "generic-sql",
+            "instance_names": "Oracle instance",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Generic SQL",
             "playbookID": "generic-sql-mssql-encrypted-connection",
             "instance_names": "Microsoft SQL instance using encrypted connection",
             "fromversion": "5.0.0"
