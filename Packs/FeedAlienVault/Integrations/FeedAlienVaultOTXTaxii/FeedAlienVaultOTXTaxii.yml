@@ -79,7 +79,7 @@ configuration:
   required: false
   type: 8
 - additionalinfo: Supports a CSV of collections to fetch from. If an inactive or empty
-    collection is supplied, n error will be raised. If not set, will raise an error
+    collection is supplied, an error will be raised. If not set, it will raise an error
     listing all the available collections.
   display: Collections to Fetch From
   hidden: false
