@@ -26,7 +26,7 @@ def get_pcap_path(args: Dict) -> str:
     return res[0]['Contents']['path']
 
 
-def upload_files(dir_path: str, file_path: str) -> CommandResults:
+def upload_files(dir_path: str, file_path: str) -> Union[CommandResults, str]:
     """
 
     Args:
@@ -51,7 +51,7 @@ def upload_files(dir_path: str, file_path: str) -> CommandResults:
     sha256 = hashlib.sha256()
     for root, _, files in os.walk(dir_path):
         if len(files) == 0:
-            return_error('Could not find files')
+            return 'could not find files'
 
         for f in files:
             file_path = os.path.join(root, f)
