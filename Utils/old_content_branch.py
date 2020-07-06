@@ -97,11 +97,12 @@ def rewrite_json(file_path, json_content, new_to_version):
 
 def rewrite_yml(file_path, yml_content, new_to_version):
     yml_content['toversion'] = new_to_version
-    if isinstance(yml_content.get('script'), str):
-        yml_content['script'] = FoldedScalarString(yml_content.get('script'))
+    if 'script' in yml_content:
+        if isinstance(yml_content.get('script'), str) and yml_content.get('script') != '-':
+            yml_content['script'] = FoldedScalarString(yml_content.get('script'))
 
-    else:
-        yml_content['script']['script'] = FoldedScalarString(yml_content.get('script').get('script'))
+        elif yml_content.get('script').get('script') != '-':
+            yml_content['script']['script'] = FoldedScalarString(yml_content.get('script').get('script'))
 
     with open(file_path, 'w') as f:
         YAML().dump(yml_content, f)
@@ -111,7 +112,8 @@ def rewrite_yml(file_path, yml_content, new_to_version):
 def edit_json_content_entity_directory(new_to_version, dir_path):
     for file_name in os.listdir(dir_path):
         file_path = os.path.join(dir_path, file_name)
-        if os.path.isfile(file_path) and file_name.endswith('.json'):
+        if os.path.isfile(file_path) and file_name.endswith('.json') and \
+                file_path != '"Packs/NonSupported/IndicatorTypes/reputations.json"':
             json_content = get_json(file_path)
             if should_keep_json_file(json_content, new_to_version):
                 rewrite_json(file_path, json_content, new_to_version)
