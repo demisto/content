@@ -641,7 +641,7 @@ script:
         required: true
         secret: false
     deprecated: false
-    description: Adds a Code42 user to a legal hold matter.
+    description: Removes a Code42 user from a legal hold matter.
     execution: false
     name: code42-legalhold-remove-user
     outputs:

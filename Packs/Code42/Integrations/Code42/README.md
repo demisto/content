@@ -770,7 +770,7 @@ Adds a Code42 user to a legal hold matter.
 
 ### code42-legalhold-remove-user
 ***
-Adds a Code42 user to a legal hold matter.
+Removes a Code42 user from a legal hold matter.
 
 
 #### Base Command
