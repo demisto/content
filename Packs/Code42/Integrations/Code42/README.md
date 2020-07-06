@@ -767,3 +767,53 @@ Adds a Code42 user to a legal hold matter.
 |---|---|---|---|
 | 932880202064992021 | test | 942876157732602741 | partner.demisto@example.com |
 
+### code42-legalhold-remove-user
+***
+Adds a Code42 user to a legal hold matter.
+
+
+#### Base Command
+
+`code42-legalhold-remove-user`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | The username of the user to remove from the given legal hold matter. | Required | 
+| mattername | The name of the legal hold matter from which to which the user will be removed. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Code42.LegalHold.UserID | Unknown | The ID of a Code42 user. | 
+| Code42.LegalHolder.MatterID | String | The ID of a Code42 legal hold matter. | 
+| Code42.LegalHold.Username | String | A username for a Code42 user. | 
+| Code42.LegalHold.MatterName | String | A name for a Code42 legal hold matter. | 
+
+
+#### Command Example
+```!code42-legalhold-remove-user username="partner.demisto@example.com" mattername="test"```
+
+#### Context Example
+```
+{
+    "Code42": {
+        "LegalHold": {
+            "MatterID": "932880202064992021",
+            "MatterName": "test",
+            "UserID": "942876157732602741",
+            "Username": "partner.demisto@example.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Code42 User Removed from Legal Hold Matter
+|MatterID|MatterName|UserID|Username|
+|---|---|---|---|
+| 932880202064992021 | test | 942876157732602741 | partner.demisto@example.com |
+
