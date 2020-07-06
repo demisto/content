@@ -440,9 +440,11 @@ def load_json(file_path):
         dict: loaded json file.
 
     """
-    with open(file_path, 'r') as json_file:
-        result = json.load(json_file)
-
+    if file_path:
+        with open(file_path, 'r') as json_file:
+            result = json.load(json_file)
+    else:
+        result = {}
     return result
 
 
@@ -542,7 +544,8 @@ def option_handler():
                               "Default is set to `All`"),
                         required=False, default="All")
     parser.add_argument('-n', '--ci_build_number',
-                        help="CircleCi build number (will be used as hash revision at index file)", required=False)
+                        help="CircleCi build number (will be used as hash revision at index file)", required=False,
+                        default=str(uuid.uuid4()))
     parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
                         default=False, action='store_true', required=False)
     parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
@@ -556,35 +559,46 @@ def option_handler():
                         help='Should encrypt pack or not.', default=False)
     parser.add_argument('-ek', '--encryption_key', type=str,
                         help='The encryption key for the pack, if it should be encrypted.', default='')
+    parser.add_argument('-pr', '--is_private', type=str2bool,
+                        help='The encryption key for the pack, if it should be encrypted.', default=False)
     # disable-secrets-detection-end
     return parser.parse_args()
 
 
-def main():
-    option = option_handler()
-    packs_artifacts_path = option.artifacts_path
-    extract_destination_path = option.extract_path
-    storage_bucket_name = option.bucket_name
-    private_bucket_name = option.private_bucket_name
-    service_account = option.service_account
-    target_packs = option.pack_names if option.pack_names else ""
-    build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
-    override_all_packs = option.override_all_packs
-    signature_key = option.key_string
-    id_set_path = option.id_set_path
-    should_encrypt_pack = option.encrypt_pack
-    enc_key = option.encryption_key
-    packs_dependencies_mapping = load_json(option.pack_dependencies) if option.pack_dependencies else {}
-    storage_base_path = option.storage_base_path
-    remove_test_playbooks = option.remove_test_playbooks
+def update_and_upload_pack(upload_config):
 
+
+
+def main():
+    upload_config = option_handler()
+    packs_artifacts_path = upload_config.artifacts_path
+    extract_destination_path = upload_config.extract_path
+    storage_bucket_name = upload_config.bucket_name
+    private_bucket_name = upload_config.private_bucket_name
+    service_account = upload_config.service_account
+    target_packs = upload_config.pack_names
+    build_number = upload_config.ci_build_number
+    override_all_packs = upload_config.override_all_packs
+    signature_key = upload_config.key_string
+    id_set_path = upload_config.id_set_path
+    should_encrypt_pack = upload_config.encrypt_pack
+    enc_key = upload_config.encryption_key
+    packs_dependencies_mapping = load_json(upload_config.pack_dependencies) if upload_config.pack_dependencies else {}
+    storage_base_path = upload_config.storage_base_path
+    remove_test_playbooks = upload_config.remove_test_playbooks
+    is_private_build = upload_config.is_private
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
+    private_storage_bucket = storage_client.bucket(private_bucket_name)  # TODO : when is private_bucket_name None?
+    default_storage_bucket = private_storage_bucket if is_private_build else storage_bucket
 
     # content repo client initialized
-    content_repo = get_content_git_client(CONTENT_ROOT_PATH)
-    current_commit_hash, remote_previous_commit_hash = get_recent_commits_data(content_repo)
+    if not is_private_build:
+        content_repo = get_content_git_client(CONTENT_ROOT_PATH)
+        current_commit_hash, remote_previous_commit_hash = get_recent_commits_data(content_repo)
+    else:
+        current_commit_hash, remote_previous_commit_hash = "", ""
 
     if storage_base_path:
         GCPConfig.STORAGE_BASE_PATH = storage_base_path
@@ -596,11 +610,11 @@ def main():
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
     # download and extract index from public bucket
-    index_folder_path, index_blob = download_and_extract_index(storage_bucket, extract_destination_path)
+    index_folder_path, index_blob = download_and_extract_index(default_storage_bucket, extract_destination_path)
     print_error(index_folder_path)
 
     if private_bucket_name:  # Add private packs to the index
-        private_storage_bucket = storage_client.bucket(private_bucket_name)
+        # TODO : maybe remove this line - private_storage_bucket = storage_client.bucket(private_bucket_name)
         private_packs = update_index_with_priced_packs(private_storage_bucket, extract_destination_path,
                                                        index_folder_path)
     else:  # skipping private packs
@@ -609,7 +623,7 @@ def main():
 
     # clean index and gcs from non existing or invalid packs
     print_error(f'packs_list length: {len(packs_list)}')
-    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket)
+    clean_non_existing_packs(index_folder_path, private_packs, default_storage_bucket)
     print_error(f'packs_list length: {len(packs_list)}')
     # starting iteration over packs
     for pack in packs_list:
@@ -690,7 +704,8 @@ def main():
             continue
 
         print_error(f'BEFORE STORAGE - packs_list length: {len(packs_list)}')
-        task_status, skipped_pack_uploading = pack.upload_to_storage(zip_pack_path, pack.latest_version, storage_bucket,
+        task_status, skipped_pack_uploading = pack.upload_to_storage(zip_pack_path, pack.latest_version,
+                                                                     default_storage_bucket,
                                                                      override_all_packs or pack_was_modified)
         if not task_status:
             pack.status = PackStatus.FAILED_UPLOADING_PACK.name
@@ -721,13 +736,13 @@ def main():
     # upload core packs json to bucket
 
     if should_upload_core_packs(storage_bucket_name):
-        upload_core_packs_config(storage_bucket, build_number, index_folder_path)
+        upload_core_packs_config(default_storage_bucket, build_number, index_folder_path)
     print_error(f'packs_list length: {len(packs_list)}')
     # finished iteration over content packs
     upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs)
 
     # upload id_set.json to bucket
-    upload_id_set(storage_bucket, id_set_path)
+    upload_id_set(default_storage_bucket, id_set_path)
 
     # summary of packs status
     print_packs_summary(packs_list)
