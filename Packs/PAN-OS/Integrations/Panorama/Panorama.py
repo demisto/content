@@ -4767,7 +4767,7 @@ def panorama_block_vulnerability():
     Ovverride a vulnerability signature such that it is in block mode
     """
     threatid = demisto.args().get('threat_id')
-    vulnerability_profile = demisto.args()['vulnerability_profile']
+    vulnerability_profile = demisto.args().get('vulnerability_profile')
     drop_mode = demisto.args().get('drop_mode', 'drop')
 
     threat = panorama_override_vulnerability(threatid, vulnerability_profile, drop_mode)
