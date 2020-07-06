@@ -18,7 +18,7 @@ commonfields:
 enabled: false
 name: IsUrlPartOfDomain
 outputs:
-- contextPath: isInternalURL.Data
+- contextPath: IsUrlPartOfDomain.Data
   description: The path of the URLs.
   type: String
 - contextPath: IsUrlPartOfDomain.IsInternal
