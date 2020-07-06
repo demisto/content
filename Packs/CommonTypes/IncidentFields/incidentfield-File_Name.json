@@ -23,8 +23,12 @@
     "content": true,
     "group": 0,
     "hidden": false,
-    "associatedTypes": [],
-    "systemAssociatedTypes": null,
+    "associatedTypes": [
+        "Pcap Analysis"
+    ],
+    "systemAssociatedTypes": [
+        "Pcap Analysis"
+    ],
     "associatedToAll": true,
     "unmapped": false,
     "unsearchable": false
