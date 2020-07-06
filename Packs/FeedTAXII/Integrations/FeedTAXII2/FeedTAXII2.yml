@@ -1,0 +1,220 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: TAXII 2 Feed
+  version: -1
+configuration:
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- display: ''
+  name: feedExpirationPolicy
+  options:
+    - never
+    - interval
+    - indicatorType
+    - suddenDeath
+  required: false
+  type: 17
+- display: ''
+  name: feedExpirationInterval
+  required: false
+  type: 1
+- defaultvalue: '240'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+- display: Discovery Service URL (e.g. https://example.net/taxii)
+  name: url
+  required: true
+  type: 0
+- display: Username / API Key (see '?')
+  name: credentials
+  required: false
+  type: 9
+- additionalinfo: Indicators will be fetched from this collection. Run "taxii2-get-collections"
+    command to get a valid value. If left empty, the instance will try to fetch from
+    all the collections in the given discovery service.
+  display: Collection Name To Fetch Indicators From
+  name: collection_to_fetch
+  required: false
+  type: 0
+- additionalinfo: When enabled, fetch-indicators will try to fetch the entire feed
+    for every fetch. When disabled, fetch-indicators will try to fetch just the latest
+    entries (since the last fetch).
+  defaultvalue: 'true'
+  display: Full Feed Fetch
+  name: fetch_full_feed
+  required: false
+  type: 8
+- additionalinfo: The maximum number of indicators that can be fetched per fetch.
+    If this field is left empty, there will be no limit on the number of indicators
+    fetched.
+  display: Max Indicators Per Fetch (disabled for Full Feed Fetch)
+  hidden: false
+  name: limit
+  required: false
+  type: 0
+- additionalinfo: The time interval for the first fetch (retroactive). <number> <time
+    unit> of type minute/hour/day/year. For example, 1 minute, 12 hour
+  defaultvalue: 1 year
+  display: First Fetch Time
+  hidden: false
+  name: initial_interval
+  required: false
+  type: 0
+- additionalinfo: "TAXII 2 filter arguments. Comma-separated values, e.g.: `added_after=<date>,revoked=true`."
+  display: Filter Arguments
+  hidden: false
+  name: filter_args
+  required: false
+  type: 0
+- additionalinfo: Set the number of stix object that will be requested with each taxii
+    poll (http request). A single fetch is made of several taxii polls. Changing this
+    setting can help speed up fetches, or fix issues on slower networks. Please note
+    server restrictions may apply, overriding and limiting the "requested limit".
+  defaultvalue: '100'
+  display: Max STIX Objects Per Poll
+  hidden: false
+  name: limit_per_request
+  required: false
+  type: 0
+- additionalinfo: Choose how to handle complex observations. Two or more Observation
+    Expressions MAY be combined using a complex observation operator such as "AND",
+    "OR". e.g. `[ IP = 'b' ] AND [ URL = 'd' ]`
+  defaultvalue: Skip indicators with more than a single observation
+  display: Complex Observation Mode
+  hidden: false
+  name: observation_operator_mode
+  options:
+  - Create indicator for each observation
+  - Skip indicators with more than a single observation
+  required: false
+  type: 15
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: Comma-separated list of tags, which will be added to indicators created
+    by this feed.
+  display: Tags
+  hidden: false
+  name: feedTags
+  required: false
+  type: 0
+description: Ingests indicator feeds from TAXII 2.0 and 2.1 servers.
+display: TAXII 2 Feed
+name: TAXII 2 Feed
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Will return only the rawJSON of the indicator object.
+      isArray: false
+      name: raw
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: Maximum number of indicators to fetch.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Fetch only indicators that were added to the server after the given time.
+        Please provide a <number> and <time unit> of type minute/hour/day. For example,
+        1 minute, 12 hour, 24 days.
+      isArray: false
+      name: added_after
+      required: false
+      secret: false
+    - default: false
+      description: 'TAXII filter arguments. Comma-separated values, e.g.: "added_after=<date>,revoked=true".'
+      isArray: false
+      name: filter_args
+      required: false
+      secret: false
+    deprecated: false
+    description: Allows you to test your feed and to make sure you can fetch indicators
+      successfuly.
+    execution: false
+    name: taxii2-get-indicators
+    outputs:
+    - contextPath: TAXII2.Indicators.type
+      description: Indicator type.
+      type: String
+    - contextPath: TAXII2.Indicators.value
+      description: Indicator value.
+      type: String
+    - contextPath: TAXII2.Indicators.rawJSON
+      description: Indicator rawJSON.
+      type: String
+  - deprecated: false
+    description: Gets the list of collections from the discovery service.
+    execution: false
+    name: taxii2-get-collections
+    outputs:
+    - contextPath: TAXII2.Collections.ID
+      description: Collection ID.
+      type: String
+    - contextPath: TAXII2.Collections.Name
+      description: Collection Name.
+      type: String
+  - deprecated: false
+    description: 'WARNING: This command will reset your fetch history.'
+    execution: false
+    name: taxii2-reset-fetch-indicators
+  dockerimage: demisto/taxii2:1.0.0.9219
+  feed: true
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- TAXII 2 Feed Test
+fromversion: 5.5.0
