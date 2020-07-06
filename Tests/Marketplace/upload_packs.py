@@ -696,12 +696,13 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, pack_was_modified = pack.detect_modified(content_repo, index_folder_path, current_commit_hash,
-                                                              remote_previous_commit_hash)
-        if not task_status:
-            pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
-            pack.cleanup()
-            continue
+        if not is_private_build:
+            task_status, pack_was_modified = pack.detect_modified(content_repo, index_folder_path, current_commit_hash,
+                                                                  remote_previous_commit_hash)
+            if not task_status:
+                pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
+                pack.cleanup()
+                continue
 
         print_error(f'BEFORE STORAGE - packs_list length: {len(packs_list)}')
         task_status, skipped_pack_uploading = pack.upload_to_storage(zip_pack_path, pack.latest_version,
