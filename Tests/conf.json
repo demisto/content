@@ -8,6 +8,10 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "ServiceDeskPlus",
+            "playbookID": "Service Desk Plus Test"
+        },
+        {
             "integrations": "Group-IB TDS Polygon",
             "playbookID": "Polygon-Test",
             "timeout": 1000,
@@ -1942,7 +1946,8 @@
         },
         {
             "playbookID": "Docker Hardening Test",
-            "_comment": "Not testing on 5.5 yet. Waiting for #20951",
+            
+        "_comment": "Not testing on 5.5 yet. Waiting for #20951",
             "fromversion": "5.0.0",
             "toversion": "5.4.9"
         },
@@ -2776,6 +2781,10 @@
             "playbookID": "RiskSense Get Apps Detail - Test"
         },
         {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Apply Tag - Test"
+        },
+        {
             "integrations": "Indeni",
             "playbookID": "Indeni_test",
             "fromversion": "5.0.0"
@@ -2886,7 +2895,13 @@
         },
         {
             "playbookID": "PCAP Search test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "VirusTotal",
+            "instance_names": "virus_total_general",
+            "playbookID": "PCAP Parsing And Indicator Enrichment Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Workday",
@@ -2912,7 +2927,6 @@
     "skipped_tests": {
         "PAN-OS DAG Configuration Test": "Issue 60693",
         "Phishing Classifier V2 ML Test": "Issue 26066",
-        "DuoAdmin API test playbook": "Issue 24937",
         "Workday - Test": "Issue 25896",
         "CuckooTest": "Issue 25601",
         "RedLockTest": "Issue 24600",
@@ -2962,10 +2976,12 @@
         "GCS Bucket Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "GCS Object Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "Send Email To Recipients": "used in EWS Mail Sender Test 2 as sub playbook",
-        "Cortex XDR - IOC - Test": "issue #25598"
+        "Cortex XDR - IOC - Test": "issue #25598",
+        "test-name-placeholder": "Issue 25508",
+        "test-name-placeholder-2": "Issue 26115"
     },
     "skipped_integrations": {
-
+        
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Symantec Management Center": "Issue 23960",
         "PerceptionPoint": "Issue 25795",
@@ -3058,12 +3074,12 @@
         "SecBI": "Issue 22545",
         "IBM Resilient Systems": "Issue 23722",
         "VxStream": "Issue #23795",
-
+        
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tenable.sc": "unstable instance",
         "VirusTotal - Private API": "Issue 22638",
-
+        
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Bambenek Consulting Feed": "Issue 26184",
         "Joe Security": "Issue 25650",
@@ -3076,14 +3092,14 @@
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "reached out our monthly quota (08/03/2020)",
-
+        
         "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer",
         "SafeBreach v2": "it is a partner integration, no instance",
         "IllusiveNetworks": "supported by partner",
         "Humio": "supported by the partner",
         "Digital Guardian": "partner integration",
-
+        
         "_comment5": "~~~ OTHER ~~~",
         "Cisco ASA": "Issue 25741",
         "Endace": "Issue 24304",
@@ -3240,7 +3256,7 @@
         "GCP Whitelist Feed"
     ],
     "docker_thresholds": {
-
+        
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
