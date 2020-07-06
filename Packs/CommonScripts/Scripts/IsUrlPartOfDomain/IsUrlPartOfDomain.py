@@ -3,9 +3,17 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 
-def main(args: dict) -> CommandResults:
-    domain_name = args.get('domain_name')
-    urls = argToList(args.get('urls'))
+def main(domain_name: str, urls: str) -> CommandResults:
+    """Checks that the urls are in the domain in the domain name.
+
+    Args:
+        domain_name: A domain
+        urls: URLs to check if the domain in them.
+
+    Returns:
+        Results to display in CortexXSOAR
+    """
+    urls = argToList(urls)
     results = demisto.executeCommand('ExtractDomainFromUrlAndEmail', {'input': domain_name})
     domain = results[0]['Contents']
 
@@ -25,4 +33,4 @@ def main(args: dict) -> CommandResults:
 
 
 if __name__ in ('builtins', '__builtin__'):
-    return_results(main(demisto.args()))
+    return_results(main(**demisto.args()))
