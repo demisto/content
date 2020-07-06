@@ -716,9 +716,8 @@ class TestSetDependencies:
         metadata['name'] = 'HelloWorld'
         metadata['id'] = 'HelloWorld'
         p = Pack('HelloWorld', 'dummy_path')
-        dependencies = json.dumps(metadata['dependencies'])
+        dependencies = json.dumps(generated_dependencies['HelloWorld']['dependencies'])
         dependencies = json.loads(dependencies)
-        dependencies.update(generated_dependencies['HelloWorld']['dependencies'])
 
         p.set_pack_dependencies(metadata, generated_dependencies)
 
@@ -761,9 +760,6 @@ class TestSetDependencies:
 
         metadata['dependencies'] = {}
         p = Pack('HelloWorld', 'dummy_path')
-        dependencies = json.dumps(metadata['dependencies'])
-        dependencies = json.loads(dependencies)
-        dependencies.update(generated_dependencies['HelloWorld']['dependencies'])
 
         with pytest.raises(Exception) as e:
             p.set_pack_dependencies(metadata, generated_dependencies)
@@ -806,9 +802,10 @@ class TestSetDependencies:
         }
 
         p = Pack('HelloWorld', 'dummy_path')
-        dependencies = json.dumps(metadata['dependencies'])
+        user_dependencies = metadata['dependencies']
+        dependencies = json.dumps(generated_dependencies['HelloWorld']['dependencies'])
         dependencies = json.loads(dependencies)
-        dependencies.update(generated_dependencies['HelloWorld']['dependencies'])
+        dependencies.update(user_dependencies)
 
         p.set_pack_dependencies(metadata, generated_dependencies)
 
