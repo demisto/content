@@ -156,7 +156,7 @@ jobs:
               BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
               PACK=$(echo $CONTRIB_BRANCH | cut -d ":" -f 3)
 
-              echo 'Copy the changes from the contributor branch $USER/$BRANCH in the pack $PACK'
+              echo "Copy the changes from the contributor branch $USER/$BRANCH in the pack $PACK"
               git remote add $USER git@github.com:$USER/content.git
               git fetch $USER $BRANCH
               git checkout $USER/$BRANCH $PACK
