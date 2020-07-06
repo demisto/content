@@ -1426,6 +1426,9 @@ def test_departingemployee_get_command(code42_departing_employee_get_mock):
     get_func = code42_departing_employee_get_mock.detectionlists.departing_employee.get
     get_func.assert_called_once_with(_TEST_USER_ID)
     assert cmd_res.raw_response == _TEST_USERNAME
+    assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs == json.loads(MOCK_GET_DETECTIONLIST_RESPONSE)
 
 
 def test_highriskemployee_get_command(code42_high_risk_employee_get_mock):
@@ -1436,6 +1439,9 @@ def test_highriskemployee_get_command(code42_high_risk_employee_get_mock):
     get_func = code42_high_risk_employee_get_mock.detectionlists.high_risk_employee.get
     get_func.assert_called_once_with(_TEST_USER_ID)
     assert cmd_res.raw_response == _TEST_USERNAME
+    assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs == json.loads(MOCK_GET_DETECTIONLIST_RESPONSE)
 
 
 def test_highriskemployee_add_command(code42_high_risk_employee_mock):

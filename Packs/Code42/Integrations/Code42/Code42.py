@@ -335,11 +335,13 @@ class Code42Client(BaseClient):
 
     def get_departing_employee(self, username):
         user_id = self._get_user_id(username)
-        return self._get_sdk().detectionlists.departing_employee.get(user_id)
+        response = self._get_sdk().detectionlists.departing_employee.get(user_id)
+        return json.loads(response.text)
 
     def get_high_risk_employee(self, username):
         user_id = self._get_user_id(username)
-        return self._get_sdk().detectionlists.high_risk_employee.get(user_id)
+        response = self._get_sdk().detectionlists.high_risk_employee.get(user_id)
+        return json.loads(response.text)
 
 
 class Code42AlertNotFoundError(Exception):
@@ -748,9 +750,8 @@ def departingemployee_get_all_command(client, args):
 
 @logger
 def departingemployee_get_command(client, args):
-    username = args["username"]
-    departing_employee = client.get_departing_employee(username)
-    de_context = json.loads(departing_employee.text)
+    username = args.get("username")
+    de_context = client.get_departing_employee(username)
     readable_outputs = tableToMarkdown("Retrieve departing employee", de_context)
     return CommandResults(
         outputs_prefix="Code42.DepartingEmployee",
@@ -763,9 +764,8 @@ def departingemployee_get_command(client, args):
 
 @logger
 def highriskemployee_get_command(client, args):
-    username = args["username"]
-    high_risk_employee = client.get_high_risk_employee(username)
-    he_context = json.loads(high_risk_employee.text)
+    username = args.get("username")
+    he_context = client.get_high_risk_employee(username)
     readable_outputs = tableToMarkdown("Retrieve high risk employee", he_context)
     return CommandResults(
         outputs_prefix="Code42.HighRiskEmployee",
