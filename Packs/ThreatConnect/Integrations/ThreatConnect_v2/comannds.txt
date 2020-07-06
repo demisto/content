@@ -1,0 +1,40 @@
+!ip ip=88.88.88.88
+!file file=4a4a4e885f7189bbaa2fcc2f2403b128f79e951826c57c0e1ab50e085ae390e7
+!domain domain=domain.info
+!url url=https://www.domain.com
+!tc-create-campaign name=test_campaign description="test campaign"
+#!tc-create-document-group entry_id=<> file_name=test.txt name=test_document
+#!tc-download-document document_id=<>
+!tc-create-event name=test_event
+!tc-create-incident incidentName=test_incident
+!tc-create-threat name=test_threat
+!tc-add-group-tag group_id=5101576 group_type=incidents tag_name="malicious ip"
+!tc-get-group-tags group_id=5101576 group_type=incidents
+!tc-add-group-security-label group_id=5101576 group_type=incidents security_label_name=TLP:GREEN
+!tc-add-group-attribute group_id=5101576 group_type=incidents attribute_type=description attribute_value="test add group attribute"
+!tc-associate-group-to-group group_id=5101576 group_type=incidents associated_group_id=5101578 associated_group_type=campaigns
+!tc-get-associated-groups group_id=5101576 group_type=incidents
+!tc-get-group-indicators group_id=5101576 group_type=incidents
+!tc-get-incident-associate-indicators incidentId=5101576 owner="Demisto Inc."
+!tc-fetch-incidents incidentId=5101576
+!tc-get-groups group_type=incidents
+!tc-get-group group_id=5101576 group_type=incidents
+!tc-get-group-security-labels group_id=5101576 group_type=incidents
+!tc-get-group-attributes group_id=5101576 group_type=incidents
+!tc-get-events
+!tc-delete-group groupID=5101578 type=Campaigns
+!tc-add-indicator indicator=99.99.99.99 confidence=70 rating=2
+!tc-tag-indicator indicator=99.99.99.99 tag="malicious ip"
+!tc-get-indicators-by-tag tag="malicious ip"
+!tc-delete-indicator-tag indicator=99.99.99.99 tag="malicious ip"
+!tc-update-indicator indicator=99.99.99.99 rating=1
+!tc-get-indicator indicator=99.99.99.99 group_associations=false
+!tc-get-indicator-owners indicator=99.99.99.99
+!tc-get-indicator-types
+!tc-group-associate-indicator indicator_type=Addresses group_id=5101576 group_type=incidents indicator=99.99.99.99
+!tc-incident-associate-indicator indicator=99.99.99.99 indicatorType=ADDRESSES incidentId=5101577
+!tc-delete-indicator indicator=99.99.99.99
+!tc-get-tags
+!tc-indicators limit=3 owner="Demisto Inc."
+!tc-owners
+!tc-get-tags

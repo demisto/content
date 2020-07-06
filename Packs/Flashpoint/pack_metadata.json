@@ -1,11 +1,11 @@
 {
   "name": "Flashpoint",
   "description": "Use the Flashpoint integration to reduce business risk.",
-  "support": "xsoar",
+  "support": "partner",
   "currentVersion": "1.0.0",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
+  "author": "Flashpoint",
+  "url": "",
+  "email": "demisto_support@flashpoint-intel.com",
   "created": "2020-04-14T00:00:00Z",
   "categories": [
     "Data Enrichment & Threat Intelligence"

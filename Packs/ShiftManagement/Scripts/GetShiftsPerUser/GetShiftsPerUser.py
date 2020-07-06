@@ -42,7 +42,7 @@ def main():
         if contents and len(contents.get("Contents")) == 1:
             user_id = contents.get("Contents")[0].get("id")
         else:
-            return_error(f'Failed to get users: User object is empty')
+            return_error('Failed to get users: User object is empty')
 
     get_roles_response: List = demisto.executeCommand('getRoles', {})
     if is_error(get_roles_response):

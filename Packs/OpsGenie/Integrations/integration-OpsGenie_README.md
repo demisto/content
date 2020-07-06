@@ -20,7 +20,7 @@
 <li>Locate the OpsGenie integration by searching for it using the search box on the top of the page.</li>
 </ol>
 <ol start="3">
-<li>Click ‘Add instance’ to create and configure a new integration. You should configure the following settings:<br><strong>Name</strong>: A textual name for the integration instance.<br> <strong>Base URL</strong>: The base OpsGenie service URL. The default value should be used (<a style="background-color: #ffffff;" href="https://api.opsgenie.com/v2)">https://api.opsgenie.com/v2)</a>, unless otherwise instructed by Demisto.<br><strong>API Key</strong>: The API Key acquired from the OpsGenie interface in the previous step.<br><strong>Use system proxy configuration</strong>: Check this box in case there is a proxy server configures on the platform.<br><strong>Demisto engine</strong>: If relevant, select the engine that acts as a proxy to the server. Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc. that prevent the Demisto server from accessing the remote networks.</li>
+<li>Click ‘Add instance’ to create and configure a new integration. You should configure the following settings:<br><strong>Name</strong>: A textual name for the integration instance.<br> <strong>Base URL</strong>: The base OpsGenie service URL. The default value should be used (https://api.opsgenie.com/v2), unless otherwise instructed by Demisto.<br><strong>API Key</strong>: The API Key acquired from the OpsGenie interface in the previous step.<br><strong>Use system proxy configuration</strong>: Check this box in case there is a proxy server configures on the platform.<br><strong>Demisto engine</strong>: If relevant, select the engine that acts as a proxy to the server. Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc. that prevent the Demisto server from accessing the remote networks.</li>
 </ol>
 <p class="wysiwyg-indent4">For more information on Demisto engines see:<br> <a href="https://support.demisto.com/hc/en-us/articles/226274727-Settings-Integrations-Engines">https://demisto.zendesk.com/hc/en-us/articles/226274727-Settings-Integrations-Engines</a><br> Require users to enter additional password: Select whether you’d like an additional step where users are required to authenticate themselves with a password.</p>
 <ol start="4">
@@ -163,7 +163,7 @@ Use-cases:</h3>
 </table>
 <h3>Troubleshooting</h3>
 <ul>
-<li>Make sure to have the web-proxy open to the OpsGenie API URL (<a href="https://api.opsgenie.com/v2">https://api.opsgenie.com/v2</a>)</li>
+<li>Make sure to have the web-proxy open to the OpsGenie API URL (https://api.opsgenie.com/v2)</li>
 <li>Make sure API Key is enabled in the OpsGenie interface, and it is copies correctly</li>
 <li>Make sure API Key is created with a user that has access to the relevant on call schedules.</li>
 </ul>

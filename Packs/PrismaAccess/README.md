@@ -7,7 +7,7 @@ This content pack enables XSOAR to integrate with Palo Alto Networks Prisma Acce
 ### Prisma Access Egress IP feed
 ---
 
-Dynamically retrieve and whitelist IPs Prisma Access uses to egress traffic to the internet and SaaS apps.
+Dynamically retrieve and allow IPs Prisma Access uses to egress traffic to the internet and SaaS apps.
 
 This integration can be used as a TIM feed to fetch indicators, or if a playbook starts from a non-indicator trigger it can use the command to get the IPs.
 

@@ -118,6 +118,7 @@ class Client(BaseClient):
     """
     Client to use in the Securonix integration. Overrides BaseClient
     """
+
     def __init__(self, tenant: str, server_url: str, username: str, password: str, verify: bool,
                  proxy: bool):
         super().__init__(base_url=server_url, verify=verify)
@@ -598,7 +599,7 @@ def list_workflows(client: Client, *_) -> Tuple[str, Dict, Dict]:
     human_readable = tableToMarkdown(name="Available workflows:", t=workflows_readable,
                                      headers=['Workflow', 'Type', 'Value'],
                                      removeNull=True)
-    entry_context = {f'Securonix.Workflows(val.Workflow == obj.Workflow)': workflows_outputs}
+    entry_context = {'Securonix.Workflows(val.Workflow == obj.Workflow)': workflows_outputs}
     return human_readable, entry_context, workflows
 
 
@@ -619,7 +620,7 @@ def get_default_assignee_for_workflow(client: Client, args: Dict) -> Tuple[str, 
         'Type': default_assignee.get("type"),
         'Value': default_assignee.get("value"),
     }
-    entry_context = {f'Securonix.Workflows(val.Workflow === obj.Workflow)': workflow_output}
+    entry_context = {'Securonix.Workflows(val.Workflow === obj.Workflow)': workflow_output}
     human_readable = f'Default assignee for the workflow {workflow} is: {default_assignee.get("value")}.'
     return human_readable, entry_context, default_assignee
 
@@ -636,7 +637,7 @@ def list_possible_threat_actions(client: Client, *_) -> Tuple[str, Dict, Dict]:
     """
     threat_actions = client.list_possible_threat_actions_request()
     human_readable = f'Possible threat actions are: {", ".join(threat_actions)}.'
-    entry_context = {f'Securonix.ThreatActions': threat_actions}
+    entry_context = {'Securonix.ThreatActions': threat_actions}
     return human_readable, entry_context, threat_actions
 
 
@@ -657,7 +658,7 @@ def list_policies(client: Client, *_) -> Tuple[str, Dict, Dict]:
     policies_readable, policies_outputs = parse_data_arr(policies_arr)
     headers = ['ID', 'Name', 'Criticality', 'Created On', 'Created By', 'Description']
     human_readable = tableToMarkdown(name="Policies:", t=policies_readable, headers=headers, removeNull=True)
-    entry_context = {f'Securonix.Policies(val.ID === obj.ID)': policies_outputs}
+    entry_context = {'Securonix.Policies(val.ID === obj.ID)': policies_outputs}
 
     return human_readable, entry_context, policies
 
@@ -682,7 +683,7 @@ def list_resource_groups(client: Client, *_) -> Tuple[str, Dict, Dict]:
     headers = ['Name', 'Type']
     human_readable = tableToMarkdown(name="Resource groups:", t=resource_groups_readable, headers=headers,
                                      removeNull=True)
-    entry_context = {f'Securonix.ResourceGroups(val.Name === obj.Name)': resource_groups_outputs}
+    entry_context = {'Securonix.ResourceGroups(val.Name === obj.Name)': resource_groups_outputs}
 
     return human_readable, entry_context, resource_groups
 
@@ -706,7 +707,7 @@ def list_users(client: Client, *_) -> Tuple[str, Dict, Dict]:
     users_readable, users_outputs = parse_data_arr(users_arr)
     headers = ['Employee Id', 'First Name', 'Last Name', 'Criticality', 'Title', 'Email']
     human_readable = tableToMarkdown(name="Resource groups:", t=users_readable, headers=headers, removeNull=True)
-    entry_context = {f'Securonix.Users(val.EmployeeID === obj.EmployeeID)': users_outputs}
+    entry_context = {'Securonix.Users(val.EmployeeID === obj.EmployeeID)': users_outputs}
 
     return human_readable, entry_context, users
 
@@ -741,7 +742,7 @@ def list_activity_data(client: Client, args) -> Tuple[str, Dict, Dict]:
     activity_readable, activity_outputs = parse_data_arr(activity_events, fields_to_include=fields_to_include)
     headers = ['Eventid', 'Eventtime', 'Message', 'Accountname']
     human_readable = tableToMarkdown(name="Activity data:", t=activity_readable, headers=headers, removeNull=True)
-    entry_context = {f'Securonix.ActivityData(val.EventID === obj.EventID)': activity_outputs}
+    entry_context = {'Securonix.ActivityData(val.EventID === obj.EventID)': activity_outputs}
 
     return human_readable, entry_context, activity_data
 
@@ -780,7 +781,7 @@ def list_violation_data(client: Client, args) -> Tuple[str, Dict, Dict]:
     violation_readable, violation_outputs = parse_data_arr(violation_events, fields_to_include=fields_to_include)
     headers = ['EventID', 'Eventtime', 'Message', 'Policyname', 'Accountname']
     human_readable = tableToMarkdown(name="Activity data:", t=violation_readable, headers=headers, removeNull=True)
-    entry_context = {f'Securonix.ViolationData(val.Uniquecode === obj.Uniquecode)': violation_outputs}
+    entry_context = {'Securonix.ViolationData(val.Uniquecode === obj.Uniquecode)': violation_outputs}
 
     return human_readable, entry_context, violation_data
 
@@ -813,7 +814,7 @@ def list_incidents(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     headers = ['Incident Id', 'Incident Status', 'Incident Type', 'Priority', 'Reason']
     human_readable = tableToMarkdown(name="Incidents:", t=incidents_readable,
                                      headers=headers, removeNull=True)
-    entry_context = {f'Securonix.Incidents(val.IncidentID === obj.IncidentID)': incidents_outputs}
+    entry_context = {'Securonix.Incidents(val.IncidentID === obj.IncidentID)': incidents_outputs}
     return human_readable, entry_context, incidents
 
 
@@ -835,7 +836,7 @@ def get_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         raise Exception('Incident ID is not in Securonix.')
     incident_readable, incident_outputs = parse_data_arr(incident_items)
     human_readable = tableToMarkdown(name="Incident:", t=incident_readable, removeNull=True)
-    entry_context = {f'Securonix.Incidents(val.IncidentID === obj.IncidentID)': incident_outputs}
+    entry_context = {'Securonix.Incidents(val.IncidentID === obj.IncidentID)': incident_outputs}
     return human_readable, entry_context, incident
 
 
@@ -856,7 +857,7 @@ def get_incident_status(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         'IncidentID': incident_id,
         'IncidentStatus': incident_status
     }
-    entry_context = {f'Securonix.Incidents(val.IncidentID === obj.IncidentID)': incident_outputs}
+    entry_context = {'Securonix.Incidents(val.IncidentID === obj.IncidentID)': incident_outputs}
     return f'Incident {incident_id} status is {incident_status}.', entry_context, incident
 
 
@@ -878,7 +879,7 @@ def get_incident_workflow(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         'IncidentID': incident_id,
         'WorkflowName': incident_workflow
     }
-    entry_context = {f'Securonix.Incidents(val.IncidentId === obj.IncidentId)': incident_outputs}
+    entry_context = {'Securonix.Incidents(val.IncidentId === obj.IncidentId)': incident_outputs}
     return f'Incident {incident_id} workflow is {incident_workflow}.', entry_context, incident
 
 
@@ -905,7 +906,7 @@ def get_incident_available_actions(client: Client, args: Dict) -> Tuple[str, Dic
         'IncidentID': incident_id,
         'AvailableActions': actions
     }
-    entry_context = {f'Securonix.Incidents(val.IncidentID === obj.IncidentID)': incident_outputs}
+    entry_context = {'Securonix.Incidents(val.IncidentID === obj.IncidentID)': incident_outputs}
     return f'Incident {incident_id} available actions: {actions}.', entry_context, incident_actions
 
 
@@ -988,7 +989,7 @@ def create_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     headers = ['Entity', 'Incident Status', 'Incident Type', 'IncidentID', 'Priority', 'Reason', 'Url']
     human_readable = tableToMarkdown(name="Incident was created successfully", t=incident_readable,
                                      headers=headers, removeNull=True)
-    entry_context = {f'Securonix.Incidents(val.IncidentID === obj.IncidentID)': incident_outputs}
+    entry_context = {'Securonix.Incidents(val.IncidentID === obj.IncidentID)': incident_outputs}
     return human_readable, entry_context, response
 
 
@@ -1003,10 +1004,10 @@ def list_watchlists(client: Client, *_) -> Tuple[str, Dict, Dict]:
     """
     watchlists = client.list_watchlist_request()
     if not watchlists:
-        raise Exception(f'Failed to list watchlists.')
+        raise Exception('Failed to list watchlists.')
 
     human_readable = f'Watchlists: {", ".join(watchlists)}.'
-    entry_context = {f'Securonix.WatchlistsNames': watchlists}
+    entry_context = {'Securonix.WatchlistsNames': watchlists}
     return human_readable, entry_context, watchlists
 
 
@@ -1024,8 +1025,8 @@ def get_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
 
     watchlist_events = watchlist.get('events')
     if not watchlist_events:
-        raise Exception(f'Watchlist does not contain items.\n'
-                        f'Make sure the watchlist is not empty and that the watchlist name is correct.')
+        raise Exception('Watchlist does not contain items.\n'
+                        'Make sure the watchlist is not empty and that the watchlist name is correct.')
     fields_to_drop = ['decayflag', 'tenantid', 'tenantname', 'watchlistname', 'type']
     watchlist_readable, watchlist_events_outputs = parse_data_arr(watchlist_events, fields_to_drop=fields_to_drop)
     watchlist_outputs = {
@@ -1038,7 +1039,7 @@ def get_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
     headers = ['Entityname', 'Fullname', 'Workemail', 'Expired']
     human_readable = tableToMarkdown(name=f"Watchlist {watchlist_name} of type {watchlist_outputs.get('Type')}:",
                                      t=watchlist_readable, headers=headers, removeNull=True)
-    entry_context = {f'Securonix.Watchlists(val.Watchlistname === obj.Watchlistname)': watchlist_outputs}
+    entry_context = {'Securonix.Watchlists(val.Watchlistname === obj.Watchlistname)': watchlist_outputs}
     return human_readable, entry_context, watchlist
 
 
@@ -1058,7 +1059,7 @@ def create_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
     if 'successfully' not in response:
         raise Exception(f'Failed to list watchlists.\nResponse from Securonix is:{str(response)}')
     human_readable = f'Watchlist {watchlist_name} was created successfully.'
-    entry_context = {f'Securonix.Watchlists(val.Watchlistname === obj.Watchlistname)': watchlist_name}
+    entry_context = {'Securonix.Watchlists(val.Watchlistname === obj.Watchlistname)': watchlist_name}
     return human_readable, entry_context, response
 
 
@@ -1085,7 +1086,7 @@ def check_entity_in_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
             'Entityname': entity_name,
             'Watchlistname': watchlist_name
         }
-    entry_context = {f'Securonix.EntityInWatchlist(val.Entityname === obj.Entityname)': output}
+    entry_context = {'Securonix.EntityInWatchlist(val.Entityname === obj.Entityname)': output}
     return human_readable, entry_context, watchlist
 
 

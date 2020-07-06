@@ -78,6 +78,11 @@ configuration:
   - domain
   required: true
   type: 15
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -117,7 +122,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: proofpoint-get-indicators
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.8.3.9324
   feed: true
   isfetch: false
   longRunning: false

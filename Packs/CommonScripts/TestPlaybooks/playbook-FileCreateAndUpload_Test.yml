@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 579bf7e6-490a-4a92-81de-0c94e4cff9c8
+    taskid: 2efc1a8b-2917-44b1-859f-3ef25c5305ce
     type: start
     task:
-      id: 579bf7e6-490a-4a92-81de-0c94e4cff9c8
+      id: 2efc1a8b-2917-44b1-859f-3ef25c5305ce
       version: -1
       name: ""
       iscommand: false
@@ -31,10 +31,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: c854074a-b1c3-4611-861d-2b362b96bb11
+    taskid: 4cb52547-2af7-4f02-837d-58436097f902
     type: regular
     task:
-      id: c854074a-b1c3-4611-861d-2b362b96bb11
+      id: 4cb52547-2af7-4f02-837d-58436097f902
       version: -1
       name: Print Something
       scriptName: Print
@@ -62,10 +62,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: c3157dad-7569-4802-8a55-99e6b85f4e8e
+    taskid: 1fd08984-45a8-42d5-888d-2a38e8cd3cc4
     type: regular
     task:
-      id: c3157dad-7569-4802-8a55-99e6b85f4e8e
+      id: 1fd08984-45a8-42d5-888d-2a38e8cd3cc4
       version: -1
       name: FileCreateAndUpload from entry
       scriptName: FileCreateAndUpload
@@ -96,10 +96,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: bb1872e9-bdea-40f6-8e33-a31c6f1d2064
+    taskid: 03d8983e-0bd4-4b0b-8c7f-440ae938f931
     type: regular
     task:
-      id: bb1872e9-bdea-40f6-8e33-a31c6f1d2064
+      id: 03d8983e-0bd4-4b0b-8c7f-440ae938f931
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -128,10 +128,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 339b8304-28a1-4354-8c31-b9ecd521a66c
+    taskid: d7a2f2fa-449d-43a3-8798-5ec3bce0091b
     type: regular
     task:
-      id: 339b8304-28a1-4354-8c31-b9ecd521a66c
+      id: d7a2f2fa-449d-43a3-8798-5ec3bce0091b
       version: -1
       name: Verify we got the right filename
       scriptName: Print
@@ -159,10 +159,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: b5f82ac1-91f3-41c8-83cd-386b0416ae87
+    taskid: 203d25ec-a22d-4d4b-898a-ba40c52b6887
     type: regular
     task:
-      id: b5f82ac1-91f3-41c8-83cd-386b0416ae87
+      id: 203d25ec-a22d-4d4b-898a-ba40c52b6887
       version: -1
       name: FileCreateAndUpload from data
       scriptName: FileCreateAndUpload
@@ -193,19 +193,16 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: aaf51824-9eca-4e9e-816a-a5398682b311
+    taskid: df2a2365-b1c6-4171-84ae-a0c579a88f7a
     type: regular
     task:
-      id: aaf51824-9eca-4e9e-816a-a5398682b311
+      id: df2a2365-b1c6-4171-84ae-a0c579a88f7a
       version: -1
       name: Verify we got the right filename
       scriptName: Print
       type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
     scriptarguments:
       value:
         simple: ${File.Name(val=="testPlaybookForFileCreateAndUpload-FileFromData.txt")}
@@ -222,40 +219,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "7":
-    id: "7"
-    taskid: ad011c37-ccb8-45d9-8be6-3ced3bb350e2
-    type: regular
-    task:
-      id: ad011c37-ccb8-45d9-8be6-3ced3bb350e2
-      version: -1
-      name: Close incident
-      scriptName: CloseInvestigation
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      notes: {}
-      reason: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1310
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1355,
+        "height": 1150,
         "width": 380,
         "x": 50,
         "y": 50

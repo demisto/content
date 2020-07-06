@@ -1,0 +1,10 @@
+{
+    "data": {
+        "found": true,
+        "verdict": true,
+        "score": 21.0,
+        "malware_families": [
+            "Trojan"
+        ]
+    }
+}

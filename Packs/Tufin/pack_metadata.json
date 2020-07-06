@@ -17,11 +17,7 @@
         "SecureChange",
         "SecureTrack"
     ],
-    "useCases": [
-        "Network Security",
-        "Network Automation",
-        "Network Orchestration"
-    ],
+    "useCases": [],
     "keywords": [
         "Tufin",
         "TOS",
