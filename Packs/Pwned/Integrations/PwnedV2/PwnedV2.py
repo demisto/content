@@ -218,7 +218,7 @@ def set_retry_end_time():
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def test_moduleargs_dict:
+def test_module():
     """
     If the http request was successful the test will return OK
     :return: 3 arrays of outputs
