@@ -1,0 +1,38 @@
+commonfields:
+  id: IvantiHeatCreateProblem
+  version: -1
+name: IvantiHeatCreateProblem
+script: ''
+type: python
+tags: []
+comment: This script is an example script of how to create a problem in Ivanti heat.
+  The script generates the create problem data in JSON format and write it to IvantiHeat.CreateProblemJSON
+  context path.
+enabled: true
+args:
+- name: owner
+  required: true
+  description: Problem owner
+- name: source
+  required: true
+  description: Problem source
+- name: status
+  required: true
+  description: Problem status
+- name: category
+  required: true
+  description: Problem category
+- name: subject
+  required: true
+  description: Problem subject
+- name: description
+  required: true
+  description: Problem description
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.8.3.9324
+runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
