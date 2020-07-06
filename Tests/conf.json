@@ -1599,10 +1599,6 @@
             "playbookID": "Symantec Messaging Gateway Test"
         },
         {
-            "integrations": "ThreatConnect",
-            "playbookID": "test-ThreatConnect"
-        },
-        {
             "integrations": "ThreatConnect v2",
             "playbookID": "ThreatConnect v2 - Test",
             "fromversion": "5.0.0"
@@ -1946,7 +1942,7 @@
         },
         {
             "playbookID": "Docker Hardening Test",
-            "fromversion": "5.0.0"            
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Active Directory Query v2",
@@ -2976,7 +2972,7 @@
         "Cortex XDR - IOC - Test": "issue #25598"
     },
     "skipped_integrations": {
-
+        
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Symantec Management Center": "Issue 23960",
         "PerceptionPoint": "Issue 25795",
@@ -3069,33 +3065,33 @@
         "SecBI": "Issue 22545",
         "IBM Resilient Systems": "Issue 23722",
         "VxStream": "Issue #23795",
-
+        "Bambenek Consulting Feed": "Issue 26184",
+        "AWS - Athena - Beta": "Issue 19834",
+        
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tenable.sc": "unstable instance",
         "VirusTotal - Private API": "Issue 22638",
-
+        
         "_comment3": "~~~ QUOTA ISSUES ~~~",
-        "Bambenek Consulting Feed": "Issue 26184",
         "Joe Security": "Issue 25650",
         "JsonWhoIs": "Issue 25371: Out of quota",
         "XFE_v2": "Issue 22715",
-        "XFE": "We have the new integration XFE_v2, so n`o need to test the old one because they use the same quote",
         "AlphaSOC Wisdom": "API key has expired",
-        "AWS - Athena - Beta": "Issue 19834",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
-        "Ipstack": "reached out our monthly quota (08/03/2020)",
-
+        "Ipstack": "Issue 26266",
+        
         "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer",
         "SafeBreach v2": "it is a partner integration, no instance",
         "IllusiveNetworks": "supported by partner",
         "Humio": "supported by the partner",
         "Digital Guardian": "partner integration",
-
+        
         "_comment5": "~~~ OTHER ~~~",
+        "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
         "Cisco ASA": "Issue 25741",
         "Endace": "Issue 24304",
         "Pentera": "authentication method will not work with testing",
@@ -3106,8 +3102,6 @@
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
-        "Lockpath KeyLight": "Deprecated. No tests.",
-        "ThreatConnect": "Deprecated.",
         "Cymulate": "Partner didn't provided test playbook",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR"
     },
@@ -3251,7 +3245,7 @@
         "GCP Whitelist Feed"
     ],
     "docker_thresholds": {
-
+        
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
