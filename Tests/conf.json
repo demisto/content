@@ -1599,10 +1599,6 @@
             "playbookID": "Symantec Messaging Gateway Test"
         },
         {
-            "integrations": "ThreatConnect",
-            "playbookID": "test-ThreatConnect"
-        },
-        {
             "integrations": "ThreatConnect v2",
             "playbookID": "ThreatConnect v2 - Test",
             "fromversion": "5.0.0"
@@ -3106,8 +3102,6 @@
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
-        "Lockpath KeyLight": "Deprecated. No tests.",
-        "ThreatConnect": "Deprecated.",
         "Cymulate": "Partner didn't provided test playbook",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR"
     },
