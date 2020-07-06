@@ -762,8 +762,8 @@ Adds a Code42 user to a legal hold matter.
 
 #### Human Readable Output
 
->### Code42 User Added to Legal Hold Matter
->|MatterID|MatterName|UserID|Username|
->|---|---|---|---|
->| 932880202064992021 | test | 942876157732602741 | partner.demisto@example.com |
+### Code42 User Added to Legal Hold Matter
+|MatterID|MatterName|UserID|Username|
+|---|---|---|---|
+| 932880202064992021 | test | 942876157732602741 | partner.demisto@example.com |
 

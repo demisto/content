@@ -313,7 +313,7 @@ class Code42Client(BaseClient):
         membership_id = self._get_legal_hold_matter_membership_id(user_uid, matter_id)
         if membership_id:
             self._get_sdk().legalhold.remove_from_matter(membership_id)
-            return username, matter_name
+            return user_uid, matter_id
 
         raise Code42InvalidLegalHoldMembershipError(username, matter_name)
 
@@ -358,8 +358,7 @@ class Code42Client(BaseClient):
         for member_page in member_pages:
             members = member_page["legalHoldMemberships"]
             for member in members:
-                return member
-
+                return member["legalHoldMembershipUid"]
 
 
 class Code42AlertNotFoundError(Exception):
@@ -1010,7 +1009,23 @@ def legal_hold_add_user_command(client, args):
 
 
 def legal_hold_remove_user_command(client, args):
-    pass
+    username = args.get("username")
+    matter_name = args.get("mattername")
+    user_uid, matter_id = client.remove_user_from_legal_hold_matter(username, matter_name)
+    outputs = {
+        "MatterID": matter_id,
+        "MatterName": matter_name,
+        "UserID": user_uid,
+        "Username": username
+    }
+    readable_outputs = tableToMarkdown("Code42 User Removed from Legal Hold Matter", outputs)
+    return CommandResults(
+        outputs_prefix="Code42.LegalHold",
+        outputs_key_field="MatterID",
+        outputs=outputs,
+        readable_output=readable_outputs,
+        raw_response=user_uid
+    )
 
 
 """Fetching"""
@@ -1174,6 +1189,7 @@ def get_command_map():
         "code42-user-deactivate": user_deactivate_command,
         "code42-user-reactivate": user_reactivate_command,
         "code42-legalhold-add-user": legal_hold_add_user_command,
+        "code42-legalhold-remove-user": legal_hold_remove_user_command,
     }
 
 
