@@ -33,7 +33,7 @@ def main():
     else:
         hours_per_user: Dict[str, int] = {}
         get_users_response: List = demisto.executeCommand('getUsers', {})
-        if is_error(get_roles_response):
+        if is_error(get_users_response):
             demisto.error(f'Failed to get users: {str(get_error(get_users_response))}')
         else:
             users = get_users_response[0]['Contents']

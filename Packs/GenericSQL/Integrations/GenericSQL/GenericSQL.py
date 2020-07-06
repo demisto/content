@@ -6,20 +6,31 @@ from typing import Any, Tuple, Dict, List, Callable
 import sqlalchemy
 import pymysql
 import traceback
+import hashlib
+import logging
 from sqlalchemy.sql import text
+try:
+    # if integration is using an older image (4.5 Server) we don't have expiringdict
+    from expiringdict import ExpiringDict  # pylint: disable=E0401
+except Exception:
+    pass
+
 
 # In order to use and convert from pymysql to MySQL this line is necessary
 pymysql.install_as_MySQLdb()
 
+GLOBAL_CACHE_ATTR = '_generic_sql_engine_cache'
+DEFAULT_POOL_TTL = 600
+
 
 class Client:
     """
-    Client to use in the SQL databases integration. Overrides BaseClient Overrides BaseClient
+    Client to use in the SQL databases integration. Overrides BaseClient
     makes the connection to the DB server
     """
 
     def __init__(self, dialect: str, host: str, username: str, password: str, port: str,
-                 database: str, connect_parameters: str, ssl_connect: bool):
+                 database: str, connect_parameters: str, ssl_connect: bool, use_pool=False, pool_ttl=DEFAULT_POOL_TTL):
         self.dialect = dialect
         self.host = host
         self.username = username
@@ -28,6 +39,8 @@ class Client:
         self.dbname = database
         self.connect_parameters = connect_parameters
         self.ssl_connect = ssl_connect
+        self.use_pool = use_pool
+        self.pool_ttl = pool_ttl
         self.connection = self._create_engine_and_connect()
 
     @staticmethod
@@ -49,29 +62,53 @@ class Client:
             module = str(dialect)
         return module
 
+    @staticmethod
+    def _get_cache_string(url: str, connect_args: dict) -> str:
+        to_hash = url + repr(connect_args)
+        return hashlib.sha256(to_hash.encode('utf-8')).hexdigest()
+
+    def _get_global_cache(self) -> dict:
+        cache = getattr(sqlalchemy, GLOBAL_CACHE_ATTR, None)
+        if cache is None:
+            cache = ExpiringDict(100, max_age_seconds=self.pool_ttl)
+            setattr(sqlalchemy, GLOBAL_CACHE_ATTR, cache)
+        return cache
+
     def _create_engine_and_connect(self) -> sqlalchemy.engine.base.Connection:
         """
         Creating and engine according to the instance preferences and connecting
         :return: a connection object that will be used in order to execute SQL queries
         """
-        try:
-            module = self._convert_dialect_to_module(self.dialect)
-            db_preferences = f'{module}://{self.username}:{self.password}@{self.host}:{self.port}/{self.dbname}'
-            ssl_connection = {}
-            if self.dialect == "Microsoft SQL Server":
-                db_preferences += "?driver=FreeTDS"
-            if self.connect_parameters and self.dialect == "Microsoft SQL Server":
-                db_preferences += f'&{self.connect_parameters}'
-            elif self.connect_parameters and self.dialect != "Microsoft SQL Server":
-                # a "?" was already added when the driver was defined
-                db_preferences += f'?{self.connect_parameters}'
+        module = self._convert_dialect_to_module(self.dialect)
+        port_part = ''
+        if self.port:
+            port_part = f':{self.port}'
+        db_preferences = f'{module}://{self.username}:{self.password}@{self.host}{port_part}/{self.dbname}'
+        ssl_connection = {}
+        if self.dialect == "Microsoft SQL Server":
+            db_preferences += "?driver=FreeTDS"
+        if self.connect_parameters and self.dialect == "Microsoft SQL Server":
+            db_preferences += f'&{self.connect_parameters}'
+        elif self.connect_parameters and self.dialect != "Microsoft SQL Server":
+            # a "?" was already added when the driver was defined
+            db_preferences += f'?{self.connect_parameters}'
 
-            if self.ssl_connect:
-                ssl_connection = {'ssl': {'ssl-mode': 'preferred'}}
-
-            return sqlalchemy.create_engine(db_preferences, connect_args=ssl_connection).connect()
-        except Exception as err:
-            raise Exception(err)
+        if self.ssl_connect:
+            ssl_connection = {'ssl': {'ssl-mode': 'preferred'}}
+        engine: sqlalchemy.engine.Engine = None
+        if self.use_pool:
+            if 'expiringdict' not in sys.modules:
+                raise ValueError('Usage of connection pool is not support in this docker image')
+            cache = self._get_global_cache()
+            cache_key = self._get_cache_string(db_preferences, ssl_connection)
+            engine = cache.get(cache_key, None)
+            if engine is None:  # (first time or expired) need to initialize
+                engine = sqlalchemy.create_engine(db_preferences, connect_args=ssl_connection)
+                cache[cache_key] = engine
+        else:
+            demisto.debug('Initializing engine with no pool (NullPool)')
+            engine = sqlalchemy.create_engine(db_preferences, connect_args=ssl_connection, poolclass=sqlalchemy.pool.NullPool)
+        return engine.connect()
 
     def sql_query_execute_request(self, sql_query: str, bind_vars: Any) -> Tuple[Dict, List]:
         """Execute query in DB via engine
@@ -93,21 +130,16 @@ class Client:
 
 def generate_default_port_by_dialect(dialect: str) -> str:
     """
-    In case no port was chosen, a default port will be chosen according to the SQL db type
+    In case no port was chosen, a default port will be chosen according to the SQL db type. Only return a port for
+    Microsoft SQL Server where it seems to be required. For the other drivers an empty port is supported.
     :param dialect: sql db type
     :return: default port needed for connection
     """
-    if dialect == "MySQL":
-        return "3306"
-    elif dialect == "PostgreSQL":
-        return "5432"
-    elif dialect == "Oracle":
-        return "1521"
-    elif dialect == "Microsoft SQL Server":
+    if dialect == "Microsoft SQL Server":
         return "1433"
     else:
-        # set default to mysql
-        return "3306"
+        # use default port supported by the driver
+        return ""
 
 
 def generate_bind_vars(bind_variables_names: str, bind_variables_values: str) -> Any:
@@ -166,7 +198,7 @@ def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, An
             'Query': sql_query,
             'InstanceName': f'{client.dialect}_{client.dbname}'
         }
-        entry_context: Dict = {f'GenericSQL(val.Query && val.Query === obj.Query)': {'GenericSQL': context}}
+        entry_context: Dict = {'GenericSQL(val.Query && val.Query === obj.Query)': {'GenericSQL': context}}
         return human_readable, entry_context, table
 
     except Exception as err:
@@ -178,23 +210,44 @@ def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, An
         raise err
 
 
+# list of loggers we should set to debug when running in debug_mode
+# taken from: https://docs.sqlalchemy.org/en/13/core/engines.html#configuring-logging
+DEBUG_LOGGERS = [
+    'sqlalchemy.engine',
+    'sqlalchemy.pool',
+    'sqlalchemy.dialects',
+]
+
+
 def main():
-    params = demisto.params()
-    dialect = params.get('dialect')
-    port = params.get('port')
-    if port is None:
-        port = generate_default_port_by_dialect(dialect)
-    user = params.get("credentials").get("identifier")
-    password = params.get("credentials").get("password")
-    host = params.get('host')
-    database = params.get('dbname')
-    ssl_connect = params.get('ssl_connect')
-    connect_parameters = params.get('connect_parameters')
+    sql_loggers: list = []  # saves the debug loggers
     try:
+        if is_debug_mode():
+            for lgr_name in DEBUG_LOGGERS:
+                lgr = logging.getLogger(lgr_name)
+                sql_loggers.append(lgr)
+                demisto.debug(f'setting DEBUG for logger: {repr(lgr)}')
+                lgr.setLevel(logging.DEBUG)
+        params = demisto.params()
+        dialect = params.get('dialect')
+        port = params.get('port')
+        if not port:
+            port = generate_default_port_by_dialect(dialect)
+        user = params.get("credentials").get("identifier")
+        password = params.get("credentials").get("password")
+        host = params.get('host')
+        database = params.get('dbname')
+        ssl_connect = params.get('ssl_connect')
+        connect_parameters = params.get('connect_parameters')
+        use_pool = params.get('use_pool', False)
+        pool_ttl = int(params.get('pool_ttl') or DEFAULT_POOL_TTL)
+        if pool_ttl <= 0:
+            pool_ttl = DEFAULT_POOL_TTL
         command = demisto.command()
         LOG(f'Command being called in SQL is: {command}')
         client = Client(dialect=dialect, host=host, username=user, password=password,
-                        port=port, database=database, connect_parameters=connect_parameters, ssl_connect=ssl_connect)
+                        port=port, database=database, connect_parameters=connect_parameters,
+                        ssl_connect=ssl_connect, use_pool=use_pool, pool_ttl=pool_ttl)
         commands: Dict[str, Callable[[Client, Dict[str, str], str], Tuple[str, Dict[Any, Any], List[Any]]]] = {
             'test-module': test_module,
             'query': sql_query_execute,
@@ -204,9 +257,18 @@ def main():
             return_outputs(*commands[command](client, demisto.args(), command))
         else:
             raise NotImplementedError(f'{command} is not an existing Generic SQL command')
-        client.connection.close()
     except Exception as err:
         return_error(f'Unexpected error: {str(err)} \nquery: {demisto.args().get("query")} \n{traceback.format_exc()}')
+    finally:
+        try:
+            if client.connection:
+                client.connection.close()
+        except Exception as ex:
+            demisto.error(f'Failed clossing connection: {str(ex)}')
+        if sql_loggers:
+            for lgr in sql_loggers:
+                demisto.debug(f'setting WARN for logger: {repr(lgr)}')
+                lgr.setLevel(logging.WARN)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

@@ -42,7 +42,7 @@
 <p><strong>Integration Instance Configuration</strong></p>
 <p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/Cybereason_Cybereason_Fetched_Incidents_2.jpg" alt="Cybereason_Fetched_Incidents_2.jpg"></p>
 <p><strong>Malware Indicator Type Configuration</strong></p>
-<p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/Cybereason_Cybereason_Fetched_Incidents_1.jpg" alt="Cybereason_Fetched_Incidents_1.jpg"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/adbe33e4dbaa55c40ea737851e421729e4858297/docs/images/Integrations/Cybereason_Cybereason_Fetched_Incidents_1.jpg" alt="Cybereason_Fetched_Incidents_1.jpg"></p>
 <h2>Commands</h2>
 <p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>

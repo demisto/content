@@ -455,7 +455,7 @@
 </thead>
 <tbody>
 <tr>
-<td style="width: 330px;"><a href="http://mar.services.name/">MAR.Services.Name</a></td>
+<td style="width: 330px;">MAR.Services.Name</td>
 <td style="width: 133px;">unknown</td>
 <td style="width: 277px;">Service name.</td>
 </tr>
@@ -594,12 +594,12 @@
 </thead>
 <tbody>
 <tr>
-<td style="width: 337px;"><a href="http://mar.processes.name/">MAR.Processes.Name</a></td>
+<td style="width: 337px;">MAR.Processes.Name</td>
 <td style="width: 123px;">unknown</td>
 <td style="width: 280px;">Process name.</td>
 </tr>
 <tr>
-<td style="width: 337px;"><a href="http://mar.processes.id/">MAR.Processes.Id</a></td>
+<td style="width: 337px;">MAR.Processes.Id</td>
 <td style="width: 123px;">unknown</td>
 <td style="width: 280px;">Process ID.</td>
 </tr>
@@ -873,7 +873,7 @@
 </thead>
 <tbody>
 <tr>
-<td style="width: 257px;"><a href="http://mar.files.name/">MAR.Files.Name</a></td>
+<td style="width: 257px;">MAR.Files.Name</td>
 <td style="width: 121px;">unknown</td>
 <td style="width: 362px;">File name.</td>
 </tr>

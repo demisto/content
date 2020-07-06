@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.5.2] - 2020-05-26
 - Breaking changes:
   - `normalized_triage_score` argument replaced by `priority_event_score` in `trustar-get-phishing-submissions` and `trustar-get-phishing-indicators` command.
   - `normalized_source_score` argument replaced by `normalized_indicator_score` in `trustar-get-phishing-indicators` command.

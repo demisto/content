@@ -107,3 +107,5 @@ script:
   type: python
 tests:
 - No tests
+defaultClassifier: Cymulate
+defaultMapperIn: Cymulate-mapper

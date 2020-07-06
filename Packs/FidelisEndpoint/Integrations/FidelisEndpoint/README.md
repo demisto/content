@@ -72,7 +72,7 @@ The required permissions: View Alerts
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of alerts to return. | Optional | 
-| sort | Sorts the result before applying take and skip. Can be any property name of the alert object.<br>For example: "insertionDate Descending"</br> | Optional | 
+| sort | Sorts the result before applying take and skip. Can be any property name of the alert object.<br/>For example: "insertionDate Descending" | Optional | 
 | start_date | The start of the time range of returned values in UTC format. For example: 0001-01-01T00:00:00Z | Optional | 
 | end_date | The end of the time range of returned values in UTC format. For example: 0001-01-01T00:00:00Z | Optional | 
 
@@ -682,7 +682,7 @@ The required permissions: View Behaviors
 ### Fidelis Endpoint script manifest
 |ID|Name|Description|Platform|Command|Questions|TimeoutSeconds|ResultColumns|WizardOverridePassword|
 |---|---|---|---|---|---|---|---|---|
-| 2d32a530-0716-4542-afdc-8da3bd47d8bf | Process List | Obtain the list of currently running processes.<br>Optionally, information about open sockets, handles and loaded DLLs can be included. Cerberus Stage One analysis verifies digital signatures of the processes and performs a risk assessment of known system calls assigning an aggregate score</br>.The filter field limits the results to processes that match the given text in any column. | windows32,windows64 | Volatile.bat sockets {[T:B,V:true]Include Sockets} handles {[T:B,V:true]Include Handles} dlls {[T:B,V:true]Include DLLs} injected {[T:B,?]Check for injected DLLs} jam {[T:B,?]Perform Cerberus Stage 1 Analysis (approximately 5 seconds per process)} filter {[T:T,?] Filter} | {'paramNumber': 1, 'question': 'Include Sockets', 'answer': 'true', 'isOptional': False, 'inputType': 'checkbox'},<br>{'paramNumber': 2, 'question': 'Include Handles', 'answer': 'true', 'isOptional': False, 'inputType': 'checkbox'}</br>,<br>{'paramNumber': 3, 'question': 'Include DLLs', 'answer': 'true', 'isOptional': False, 'inputType': 'checkbox'}</br>,<br>{'paramNumber': 4, 'question': 'Check for injected DLLs', 'answer': 'false', 'isOptional': True, 'inputType': 'checkbox'}</br>,<br>{'paramNumber': 5, 'question': 'Perform Cerberus Stage 1 Analysis (approximately 5 seconds per process)', 'answer': 'false', 'isOptional': True, 'inputType': 'checkbox'}</br>,<br>{'paramNumber': 6, 'question': ' Filter', 'answer': None, 'isOptional': True, 'inputType': 'text'}</br> | 0 | __detail,<br>PID</br>,<br>Parent PID</br>,<br>Name</br>,<br>User</br>,<br>MD5</br>,<br>SHA1</br>,<br>Path</br>,<br>Start Time</br>,<br>Working Directory</br>,<br>Command Line</br>,<br>Is Hidden</br> | false |
+| 2d32a530-0716-4542-afdc-8da3bd47d8bf | Process List | Obtain the list of currently running processes.<br/>Optionally, information about open sockets, handles and loaded DLLs can be included. Cerberus Stage One analysis verifies digital signatures of the processes and performs a risk assessment of known system calls assigning an aggregate score.The filter field limits the results to processes that match the given text in any column. | windows32,windows64 | Volatile.bat sockets {[T:B,V:true]Include Sockets} handles {[T:B,V:true]Include Handles} dlls {[T:B,V:true]Include DLLs} injected {[T:B,?]Check for injected DLLs} jam {[T:B,?]Perform Cerberus Stage 1 Analysis (approximately 5 seconds per process)} filter {[T:T,?] Filter} | {'paramNumber': 1, 'question': 'Include Sockets', 'answer': 'true', 'isOptional': False, 'inputType': 'checkbox'},<br/>{'paramNumber': 2, 'question': 'Include Handles', 'answer': 'true', 'isOptional': False, 'inputType': 'checkbox'},<br/>{'paramNumber': 3, 'question': 'Include DLLs', 'answer': 'true', 'isOptional': False, 'inputType': 'checkbox'},<br/>{'paramNumber': 4, 'question': 'Check for injected DLLs', 'answer': 'false', 'isOptional': True, 'inputType': 'checkbox'},<br/>{'paramNumber': 5, 'question': 'Perform Cerberus Stage 1 Analysis (approximately 5 seconds per process)', 'answer': 'false', 'isOptional': True, 'inputType': 'checkbox'},<br/>{'paramNumber': 6, 'question': ' Filter', 'answer': None, 'isOptional': True, 'inputType': 'text'} | 0 | __detail,<br/>PID,<br/>Parent PID,<br/>Name,<br/>User,<br/>MD5,<br/>SHA1,<br/>Path,<br/>Start Time,<br/>Working Directory,<br/>Command Line,<br/>Is Hidden | false |
 ### 10. fidelis-endpoint-list-processes
 ---
 Gets a list all processes according to the OS system.
@@ -1056,8 +1056,8 @@ The required permissions: Read groups, View Behaviors, View Task Results.
 ##### Input
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_time | The start time of the event in the system in UTC format.<br>Supported values: "2019-10-21T23:45:00" (date).</br> | Optional | 
-| end_time | The end time of the event in the system in UTC format.<br>Supported values:"2019-10-21T23:45:00" (date).</br> | Optional | 
+| start_time | The start time of the event in the system in UTC format.<br/>Supported values: "2019-10-21T23:45:00" (date). | Optional | 
+| end_time | The end time of the event in the system in UTC format.<br/>Supported values:"2019-10-21T23:45:00" (date). | Optional | 
 | logic | The logic of the query. Can be "and" or "or". | Required | 
 | file_hash | The MD5 file hash to search for. | Required | 
 | limit | The maximum number of results to return. The default is 50. | Optional | 
@@ -1332,8 +1332,8 @@ The required permissions: Read groups, View Behaviors, View Task Results
 ##### Input
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_time | The start time of the event in the system in UTC format.<br>Supported values: "2019-10-21T23:45:00" (date).</br> | Optional | 
-| end_time | The end time of the event in the system in UTC format.<br>Supported values:"2019-10-21T23:45:00" (date).</br> | Optional | 
+| start_time | The start time of the event in the system in UTC format.<br/>Supported values: "2019-10-21T23:45:00" (date). | Optional | 
+| end_time | The end time of the event in the system in UTC format.<br/>Supported values:"2019-10-21T23:45:00" (date). | Optional | 
 | logic | The logic of the query. Can be "and" or "or". | Required | 
 | process_name | The process name to query. | Required | 
 | limit | The maximum number of results to return. The default is 50. | Optional | 
@@ -1479,8 +1479,8 @@ The required permissions: Read groups, View Behaviors, View Task Results
 ##### Input
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_time | The start time of the event in the system in UTC format.<br>Supported values: "2019-10-21T23:45:00" (date).</br> | Optional | 
-| end_time | The end time of the event in the system in UTC format.<br>Supported values:"2019-10-21T23:45:00" (date).</br> | Optional | 
+| start_time | The start time of the event in the system in UTC format.<br/>Supported values: "2019-10-21T23:45:00" (date). | Optional | 
+| end_time | The end time of the event in the system in UTC format.<br/>Supported values:"2019-10-21T23:45:00" (date). | Optional | 
 | logic | The logic of the query. Can be "and" or "or". | Required | 
 | remote_ip | The remote IP address on which to query. | Required | 
 | limit | The maximum number of results to return. The default is 50. | Optional | 
@@ -1606,8 +1606,8 @@ The required permissions: Read groups, View Behaviors, View Task Results
 ##### Input
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_time | The start time of the event in the system in UTC format.<br>Supported values: "2019-10-21T23:45:00" (date).</br> | Optional | 
-| end_time | The end time of the event in the system in UTC format.<br>Supported values:"2019-10-21T23:45:00" (date).</br> | Optional | 
+| start_time | The start time of the event in the system in UTC format.<br/>Supported values: "2019-10-21T23:45:00" (date). | Optional | 
+| end_time | The end time of the event in the system in UTC format.<br/>Supported values:"2019-10-21T23:45:00" (date). | Optional | 
 | logic | The logic of the query. Can be "and" or "or". | Required | 
 | url | URL or domain on which to query. | Required | 
 | limit | The maximum number of results to return. The default is 50. | Optional | 
@@ -1736,8 +1736,8 @@ The required permissions: Read groups, View Behaviors, View Task Results
 ##### Input
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_time | The start time of the event in the system in UTC format.<br>Supported values: "2019-10-21T23:45:00" (date).</br> | Optional | 
-| end_time | The end time of the event in the system in UTC format.<br>Supported values:"2019-10-21T23:45:00" (date). </br>| Optional | 
+| start_time | The start time of the event in the system in UTC format.<br/>Supported values: "2019-10-21T23:45:00" (date). | Optional | 
+| end_time | The end time of the event in the system in UTC format.<br/>Supported values:"2019-10-21T23:45:00" (date). | Optional | 
 | logic | The logic of the query. Can be "and" or "or". | Required | 
 | remote_ip | The remote IP on which to query. | Required | 
 | limit | The maximum number of results to return. The default is 50. | Optional | 
@@ -1890,8 +1890,8 @@ The required permissions: Read groups, View Behaviors, View Task Results
 ##### Input
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_time | The start time of the event in the system in UTC format.<br>Supported values: "2019-10-21T23:45:00" (date).</br> | Optional | 
-| end_time | The end time of the event in the system in UTC format.<br>Supported values: "2019-10-21T23:45:00" (date).</br> | Optional | 
+| start_time | The start time of the event in the system in UTC format.<br/>Supported values: "2019-10-21T23:45:00" (date). | Optional | 
+| end_time | The end time of the event in the system in UTC format.<br/>Supported values: "2019-10-21T23:45:00" (date). | Optional | 
 | logic | The logic of the query. Can be "and" or "or". | Required | 
 | source_ip | The source IP address to query. | Required | 
 | domain | The domain to query. | Optional | 
@@ -2059,8 +2059,8 @@ The required permissions: Read groups, View Behaviors, View Task Results
 ##### Input
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_time | The start time of the event in the system in UTC format.<br>Supported values: "2019-10-21T23:45:00"</br> (date). | Optional | 
-| end_time | The end time of the event in the system in UTC format.<br>Supported values:"2019-10-21T23:45:00" (date).</br> | Optional | 
+| start_time | The start time of the event in the system in UTC format.<br/>Supported values: "2019-10-21T23:45:00" (date). | Optional | 
+| end_time | The end time of the event in the system in UTC format.<br/>Supported values:"2019-10-21T23:45:00" (date). | Optional | 
 | logic | The logic of the query. Can be "and" or "or". | Required | 
 | entity_type | Query entity type. Can be "antiMalware", "dns", "file", "network", "process", "registry", "remoteThread", "script", "usb", or "windowsevent". | Required | 
 | column | Column to query. For example: hash, name, remoteIP, dnsQuestion, localIP. | Required | 

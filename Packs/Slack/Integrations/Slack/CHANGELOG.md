@@ -1,4 +1,8 @@
 ## [Unreleased]
+  - Added details about direct messages and changing the app name in the README file.
+
+
+## [20.5.2] - 2020-05-26
 - Update default "bot name", "bot icon" integration parameters to new brand name Cortex XSOAR (formerly Demisto).
 
 ## [20.5.0] - 2020-05-12

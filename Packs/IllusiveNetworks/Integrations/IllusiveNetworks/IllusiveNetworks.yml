@@ -527,3 +527,5 @@ script:
   type: python
 tests:
 - No tests
+defaultClassifier: Illusive Networks
+defaultMapperIn: Illusive Networks-mapper

@@ -356,3 +356,30 @@ RESPONSE_FETCH_INCIDENT_ITEM_MULTIPLE_REASONS = {
     "watchlisted": False,
     "workflowName": "SOCTeamReview"
 }
+RESPONSE_FETCH_INCIDENTS = {
+    "totalIncidents": 1.0,
+    "incidentItems": [
+        {
+            "violatorText": "Cyndi Converse",
+            "lastUpdateDate": 1566232568502,
+            "violatorId": "96",
+            "incidentType": "Policy",
+            "incidentId": "100107",
+            "incidentStatus": "COMPLETED",
+            "riskscore": 0.0,
+            "assignedUser": "Admin Admin",
+            "priority": "low",
+            "reason": [
+                "Resource: Symantec Email DLP",
+                "Policy: Emails with large File attachments",
+                "Threat: Data egress attempts"
+            ],
+            "violatorSubText": "1096",
+            "entity": "Users",
+            "workflowName": "SOCTeamReview",
+            "url": "https://source_url.com",
+            "isWhitelisted": False,
+            "watchlisted": False
+        }
+    ]
+}

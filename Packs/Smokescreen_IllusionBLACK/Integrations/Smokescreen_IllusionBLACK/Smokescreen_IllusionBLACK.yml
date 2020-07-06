@@ -197,3 +197,5 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
+defaultClassifier: Smokescreen IllusionBLACK
+defaultMapperIn: Smokescreen IllusionBLACK-mapper

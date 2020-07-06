@@ -129,7 +129,7 @@ tasks:
         fieldassociated: ""
         placeholder: ""
         tooltip: Risk - The resulting risk of the impact of the breach on individuals.
-          When assessing the risk to individuals as a result of a breach, the controller should consider the specific
+          When assessing the risk to individuals as a result of a breach, the comptroller should consider the specific
           circumstances of the breach, including the severity of the potential impact and the likelihood of this
           occurring. If the answer is 'Likely' to result in a risk to individuals, please process to fill out the next
           question, and the section regarding the information for the breach report.

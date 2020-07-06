@@ -313,8 +313,8 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
                 + add_argument_list(application, 'application', True)
                 + add_argument_list(category, 'category', True)
                 + add_argument_open(source_user, 'source-user', True)
-                + add_argument_open(from_, 'from', True)  # default from will always be any
-                + add_argument_open(to, 'to', True)  # default to will always be any
+                + add_argument_list(from_, 'from', True, True)  # default from will always be any
+                + add_argument_list(to, 'to', True, True)  # default to will always be any
                 + add_argument_list(service, 'service', True, True)
                 + add_argument_yes_no(negate_source, 'negate-source')
                 + add_argument_yes_no(negate_destination, 'negate-destination')
@@ -480,7 +480,7 @@ def panorama_command():
     result = http_request(
         URL,
         'POST',
-        params=params
+        body=params
     )
 
     demisto.results({
@@ -502,7 +502,7 @@ def panorama_commit():
     result = http_request(
         URL,
         'POST',
-        params=params
+        body=params
     )
 
     return result
@@ -603,7 +603,7 @@ def panorama_push_to_device_group():
     result = http_request(
         URL,
         'POST',
-        params=params
+        body=params
     )
 
     return result
@@ -868,7 +868,7 @@ def panorama_create_address(address_name: str, fqdn: str = None, ip_netmask: str
     http_request(
         URL,
         'POST',
-        params=params,
+        body=params,
     )
 
 
@@ -930,7 +930,7 @@ def panorama_delete_address(address_name: str):
     result = http_request(
         URL,
         'POST',
-        params=params,
+        body=params,
     )
 
     return result
@@ -1109,7 +1109,7 @@ def panorama_create_static_address_group(address_group_name: str, addresses: lis
     result = http_request(
         URL,
         'POST',
-        params=params,
+        body=params,
     )
 
     return result
@@ -1130,7 +1130,7 @@ def panorama_create_dynamic_address_group(address_group_name: str, match: str,
     result = http_request(
         URL,
         'POST',
-        params=params,
+        body=params,
     )
 
     return result
@@ -1200,7 +1200,7 @@ def panorama_delete_address_group(address_group_name: str):
     result = http_request(
         URL,
         'POST',
-        params=params,
+        body=params,
     )
 
     return result
@@ -1284,7 +1284,7 @@ def panorama_edit_address_group_command():
         result = http_request(
             URL,
             'POST',
-            params=params
+            body=params
         )
         address_group_output['Match'] = match
 
@@ -1294,7 +1294,7 @@ def panorama_edit_address_group_command():
         result = http_request(
             URL,
             'POST',
-            params=params
+            body=params
         )
         address_group_output['Addresses'] = addresses
 
@@ -1306,7 +1306,7 @@ def panorama_edit_address_group_command():
         result = http_request(
             URL,
             'POST',
-            params=params
+            body=params
         )
         address_group_output['Description'] = description
 
@@ -1318,7 +1318,7 @@ def panorama_edit_address_group_command():
         result = http_request(
             URL,
             'POST',
-            params=params
+            body=params
         )
         address_group_output['Tags'] = tags
 
@@ -1503,7 +1503,7 @@ def panorama_create_service(service_name: str, protocol: str, destination_port: 
     result = http_request(
         URL,
         'POST',
-        params=params,
+        body=params,
     )
 
     return result
@@ -1560,7 +1560,7 @@ def panorama_delete_service(service_name: str):
     result = http_request(
         URL,
         'POST',
-        params=params,
+        body=params,
     )
 
     return result
@@ -1719,7 +1719,7 @@ def panorama_create_service_group(service_group_name, services, tags):
     result = http_request(
         URL,
         'POST',
-        params=params,
+        body=params,
     )
 
     return result
@@ -1768,7 +1768,7 @@ def panorama_delete_service_group(service_group_name):
     result = http_request(
         URL,
         'POST',
-        params=params,
+        body=params,
     )
 
     return result
@@ -1815,7 +1815,7 @@ def panorama_edit_service_group(service_group_name, services, tag):
         result = http_request(
             URL,
             'POST',
-            params=params
+            body=params
         )
 
     if tag:
@@ -1826,7 +1826,7 @@ def panorama_edit_service_group(service_group_name, services, tag):
         result = http_request(
             URL,
             'POST',
-            params=params
+            body=params
         )
 
     return result
@@ -1981,7 +1981,7 @@ def panorama_create_custom_url_category(custom_url_category_name: str, type_: An
     result = http_request(
         URL,
         'POST',
-        params=params,
+        body=params,
     )
 
     custom_url_category_output = {'Name': custom_url_category_name}
@@ -2036,7 +2036,7 @@ def panorama_delete_custom_url_category(custom_url_category_name):
     result = http_request(
         URL,
         'POST',
-        params=params,
+        body=params,
     )
 
     return result
@@ -2089,7 +2089,7 @@ def panorama_edit_custom_url_category(custom_url_category_name, type_, items, de
     result = http_request(
         URL,
         'POST',
-        params=params,
+        body=params,
     )
 
     custom_url_category_output = {'Name': custom_url_category_name,
@@ -2112,6 +2112,7 @@ def panorama_custom_url_category_add_items(custom_url_category_name, items, type
     """
     custom_url_category = panorama_get_custom_url_category(custom_url_category_name)
     if '@dirtyId' in custom_url_category:
+        LOG(f'Found uncommitted item:\n{custom_url_category}')
         raise Exception('Please commit the instance prior to editing the Custom URL Category.')
     description = custom_url_category.get('description')
 
@@ -2143,6 +2144,7 @@ def panorama_custom_url_category_remove_items(custom_url_category_name, items, t
     """
     custom_url_category = panorama_get_custom_url_category(custom_url_category_name)
     if '@dirtyId' in custom_url_category:
+        LOG(f'Found uncommitted item:\n{custom_url_category}')
         raise Exception('Please commit the instance prior to editing the Custom URL Category.')
     description = custom_url_category.get('description')
 
@@ -2192,7 +2194,7 @@ def panorama_get_url_category(url_cmd, url):
     raw_result = http_request(
         URL,
         'POST',
-        params=params,
+        body=params,
     )
     result = raw_result['response']['result']
     if url_cmd == 'url-info-host':
@@ -2256,9 +2258,9 @@ def panorama_get_url_category_command(url_cmd: str):
 
     title = 'URL Filtering'
     if url_cmd == 'url-info-cloud':
-        title += f' from cloud'
+        title += ' from cloud'
     elif url_cmd == 'url-info-host':
-        title += f' from host'
+        title += ' from host'
     human_readable = tableToMarkdown(f'{title}:', url_category_output_hr, ['URL', 'Category'], removeNull=True)
 
     demisto.results({
@@ -2381,7 +2383,7 @@ def panorama_create_url_filter(
     result = http_request(
         URL,
         'POST',
-        params=params,
+        body=params,
     )
     return result
 
@@ -2432,6 +2434,7 @@ def panorama_create_url_filter_command():
 def panorama_edit_url_filter(url_filter_name, element_to_change, element_value, add_remove_element=None):
     url_filter_prev = panorama_get_url_filter(url_filter_name)
     if '@dirtyId' in url_filter_prev:
+        LOG(f'Found uncommitted item:\n{url_filter_prev}')
         raise Exception('Please commit the instance prior to editing the URL Filter.')
 
     url_filter_output = {'Name': url_filter_name}
@@ -2447,7 +2450,7 @@ def panorama_edit_url_filter(url_filter_name, element_to_change, element_value, 
         params['xpath'] = XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + url_filter_name + "']/"
         + element_to_change
         params['element'] = add_argument_open(element_value, 'description', False)
-        result = http_request(URL, 'POST', params=params)
+        result = http_request(URL, 'POST', body=params)
         url_filter_output['Description'] = element_value
 
     elif element_to_change == 'override_allow_list':
@@ -2459,7 +2462,7 @@ def panorama_edit_url_filter(url_filter_name, element_to_change, element_value, 
 
         params['xpath'] = XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + url_filter_name + "']/allow-list"
         params['element'] = add_argument_list(new_override_allow_list, 'allow-list', True)
-        result = http_request(URL, 'POST', params=params)
+        result = http_request(URL, 'POST', body=params)
         url_filter_output[element_to_change] = new_override_allow_list
 
     # element_to_change == 'override_block_list'
@@ -2472,7 +2475,7 @@ def panorama_edit_url_filter(url_filter_name, element_to_change, element_value, 
 
         params['xpath'] = XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + url_filter_name + "']/block-list"
         params['element'] = add_argument_list(new_override_block_list, 'block-list', True)
-        result = http_request(URL, 'POST', params=params)
+        result = http_request(URL, 'POST', body=params)
         url_filter_output[element_to_change] = new_override_block_list
 
     return result, url_filter_output
@@ -2515,7 +2518,7 @@ def panorama_delete_url_filter(url_filter_name):
     result = http_request(
         URL,
         'POST',
-        params=params,
+        body=params,
     )
 
     return result
@@ -2667,7 +2670,7 @@ def panorama_move_rule_command():
     if 'dst' in demisto.args():
         params['dst'] = demisto.args()['dst']
 
-    result = http_request(URL, 'POST', params=params)
+    result = http_request(URL, 'POST', body=params)
     rule_output = {'Name': rulename}
     if DEVICE_GROUP:
         rule_output['DeviceGroup'] = DEVICE_GROUP
@@ -2695,6 +2698,8 @@ def panorama_create_rule_command():
     rulename = demisto.args()['rulename'] if 'rulename' in demisto.args() else ('demisto-' + (str(uuid.uuid4()))[:8])
     source = argToList(demisto.args().get('source'))
     destination = argToList(demisto.args().get('destination'))
+    source_zone = argToList(demisto.args().get('source_zone'))
+    destination_zone = argToList(demisto.args().get('destination_zone'))
     negate_source = demisto.args().get('negate_source')
     negate_destination = demisto.args().get('negate_destination')
     action = demisto.args().get('action')
@@ -2721,11 +2726,12 @@ def panorama_create_rule_command():
                                           disable=disable, application=application, source_user=source_user,
                                           disable_server_response_inspection=disable_server_response_inspection,
                                           description=description, target=target,
-                                          log_forwarding=log_forwarding, tags=tags, category=categories)
+                                          log_forwarding=log_forwarding, tags=tags, category=categories,
+                                          from_=source_zone, to=destination_zone)
     result = http_request(
         URL,
         'POST',
-        params=params
+        body=params
     )
 
     rule_output = {SECURITY_RULE_ARGS[key]: value for key, value in demisto.args().items() if key in SECURITY_RULE_ARGS}
@@ -2763,6 +2769,7 @@ def panorama_get_current_element(element_to_change: str, xpath: str) -> list:
 
     result = response.get('response').get('result')
     if '@dirtyId' in result:
+        LOG(f'Found uncommitted item:\n{result}')
         raise Exception('Please commit the instance prior to editing the Security rule.')
     current_object = result.get(element_to_change)
     if 'list' in current_object:
@@ -2806,7 +2813,7 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
             raise Exception(f'The object: {element_to_change} must have at least one item.')
 
     params['element'] = add_argument_list(values, element_to_change, True)
-    result = http_request(URL, 'POST', params=params)
+    result = http_request(URL, 'POST', body=params)
     rule_output = {
         'Name': rulename,
         SECURITY_RULE_ARGS[element_to_change]: values
@@ -2870,7 +2877,7 @@ def panorama_edit_rule_command():
             params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
         params['xpath'] += '/' + element_to_change
 
-        result = http_request(URL, 'POST', params=params)
+        result = http_request(URL, 'POST', body=params)
 
         rule_output = {
             'Name': rulename,
@@ -2915,7 +2922,7 @@ def panorama_delete_rule_command():
     result = http_request(
         URL,
         'POST',
-        params=params
+        body=params
     )
 
     demisto.results({
@@ -2967,12 +2974,12 @@ def panorama_custom_block_rule_command():
             params = prepare_security_rule_params(api_action='set', action='drop', source=object_value,
                                                   destination=['any'], rulename=rulename + '-from', target=target,
                                                   log_forwarding=log_forwarding, tags=tags)
-            result = http_request(URL, 'POST', params=params)
+            result = http_request(URL, 'POST', body=params)
         if block_destination:
             params = prepare_security_rule_params(api_action='set', action='drop', destination=object_value,
                                                   source=['any'], rulename=rulename + '-to', target=target,
                                                   log_forwarding=log_forwarding, tags=tags)
-            result = http_request(URL, 'POST', params=params)
+            result = http_request(URL, 'POST', body=params)
         custom_block_output['IP'] = object_value
 
     elif object_type in ['address-group', 'edl']:
@@ -2980,26 +2987,26 @@ def panorama_custom_block_rule_command():
             params = prepare_security_rule_params(api_action='set', action='drop', source=object_value,
                                                   destination=['any'], rulename=rulename + '-from', target=target,
                                                   log_forwarding=log_forwarding, tags=tags)
-            result = http_request(URL, 'POST', params=params)
+            result = http_request(URL, 'POST', body=params)
         if block_destination:
             params = prepare_security_rule_params(api_action='set', action='drop', destination=object_value,
                                                   source=['any'], rulename=rulename + '-to', target=target,
                                                   log_forwarding=log_forwarding, tags=tags)
-            result = http_request(URL, 'POST', params=params)
+            result = http_request(URL, 'POST', body=params)
         custom_block_output['AddressGroup'] = object_value
 
     elif object_type == 'url-category':
         params = prepare_security_rule_params(api_action='set', action='drop', source=['any'], destination=['any'],
                                               category=object_value, rulename=rulename, target=target,
                                               log_forwarding=log_forwarding, tags=tags)
-        result = http_request(URL, 'POST', params=params)
+        result = http_request(URL, 'POST', body=params)
         custom_block_output['CustomURLCategory'] = object_value
 
     elif object_type == 'application':
         params = prepare_security_rule_params(api_action='set', action='drop', source=['any'], destination=['any'],
                                               application=object_value, rulename=rulename, target=target,
                                               log_forwarding=log_forwarding, tags=tags)
-        result = http_request(URL, 'POST', params=params)
+        result = http_request(URL, 'POST', body=params)
         custom_block_output['Application'] = object_value
 
     demisto.results({
@@ -3176,7 +3183,7 @@ def panorama_list_applications(predefined: bool):
     result = http_request(
         URL,
         'POST',
-        params=params
+        body=params
     )
     applications = result['response']['result']
     if predefined:
@@ -3357,7 +3364,7 @@ def panorama_create_edl(edl_name, url, type_, recurring, certificate_profile=Non
     result = http_request(
         URL,
         'POST',
-        params=params,
+        body=params,
     )
 
     return result
@@ -3406,6 +3413,7 @@ def panorama_create_edl_command():
 def panorama_edit_edl(edl_name, element_to_change, element_value):
     edl_prev = panorama_get_edl(edl_name)
     if '@dirtyId' in edl_prev:
+        LOG(f'Found uncommitted item:\n{edl_prev}')
         raise Exception('Please commit the instance prior to editing the External Dynamic List')
     edl_type = ''.join(edl_prev['type'].keys())
     edl_output = {'Name': edl_name}
@@ -3417,17 +3425,17 @@ def panorama_edit_edl(edl_name, element_to_change, element_value):
 
     if element_to_change == 'url':
         params['element'] = add_argument_open(element_value, 'url', False)
-        result = http_request(URL, 'POST', params=params)
+        result = http_request(URL, 'POST', body=params)
         edl_output['URL'] = element_value
 
     elif element_to_change == 'certificate_profile':
         params['element'] = add_argument_open(element_value, 'certificate-profile', False)
-        result = http_request(URL, 'POST', params=params)
+        result = http_request(URL, 'POST', body=params)
         edl_output['CertificateProfile'] = element_value
 
     elif element_to_change == 'description':
         params['element'] = add_argument_open(element_value, 'description', False)
-        result = http_request(URL, 'POST', params=params)
+        result = http_request(URL, 'POST', body=params)
         edl_output['Description'] = element_value
 
     # element_to_change == 'recurring'
@@ -3435,7 +3443,7 @@ def panorama_edit_edl(edl_name, element_to_change, element_value):
         if element_value not in ['five-minute', 'hourly']:
             raise Exception('Recurring segment must be five-minute or hourly')
         params['element'] = '<recurring><' + element_value + '/></recurring>'
-        result = http_request(URL, 'POST', params=params)
+        result = http_request(URL, 'POST', body=params)
         edl_output['Recurring'] = element_value
 
     return result, edl_output
@@ -3476,7 +3484,7 @@ def panorama_delete_edl(edl_name):
     result = http_request(
         URL,
         'POST',
-        params=params,
+        body=params,
     )
 
     return result
@@ -3518,7 +3526,7 @@ def panorama_refresh_edl(edl_name):
     result = http_request(
         URL,
         'POST',
-        params=params,
+        body=params,
     )
 
     return result
@@ -3563,7 +3571,7 @@ def panorama_register_ip_tag(tag: str, ips: List, persistent: str):
     result = http_request(
         URL,
         'POST',
-        params=params,
+        body=params,
     )
 
     return result
@@ -3624,7 +3632,7 @@ def panorama_unregister_ip_tag(tag: str, ips: list):
     result = http_request(
         URL,
         'POST',
-        params=params,
+        body=params,
     )
 
     return result
@@ -3667,7 +3675,7 @@ def panorama_register_user_tag(tag: str, users: List):
     result = http_request(
         URL,
         'POST',
-        params=params,
+        body=params,
     )
 
     return result
@@ -3725,7 +3733,7 @@ def panorama_unregister_user_tag(tag: str, users: list):
     result = http_request(
         URL,
         'POST',
-        params=params,
+        body=params,
     )
 
     return result
@@ -3916,6 +3924,12 @@ def prettify_traffic_logs(traffic_logs):
             pretty_traffic_log['ActionSource'] = traffic_log['action_source']
         if 'application' in traffic_log:
             pretty_traffic_log['Application'] = traffic_log['application']
+        if 'bytes' in traffic_log:
+            pretty_traffic_log['Bytes'] = traffic_log['bytes']
+        if 'bytes_received' in traffic_log:
+            pretty_traffic_log['BytesReceived'] = traffic_log['bytes_received']
+        if 'bytes_sent' in traffic_log:
+            pretty_traffic_log['BytesSent'] = traffic_log['bytes_sent']
         if 'category' in traffic_log:
             pretty_traffic_log['Category'] = traffic_log['category']
         if 'device_name' in traffic_log:
@@ -4209,6 +4223,12 @@ def prettify_log(log):
         pretty_log['Action'] = log['action']
     if 'app' in log:
         pretty_log['Application'] = log['app']
+    if 'bytes' in log:
+        pretty_log['Bytes'] = log['bytes']
+    if 'bytes_received' in log:
+        pretty_log['BytesReceived'] = log['bytes_received']
+    if 'bytes_sent' in log:
+        pretty_log['BytesSent'] = log['bytes_sent']
     if 'category' in log:
         pretty_log['CategoryOrVerdict'] = log['category']
     if 'device_name' in log:
@@ -4791,7 +4811,7 @@ def panorama_download_latest_content_update_content(target: str):
     result = http_request(
         URL,
         'POST',
-        params=params
+        body=params
     )
 
     return result
@@ -5498,5 +5518,5 @@ def main():
         LOG.print_log()
 
 
-if __name__ in ["__builtin__", "builtins"]:
+if __name__ in ["__builtin__", "builtins", '__main__']:
     main()

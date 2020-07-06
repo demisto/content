@@ -16,6 +16,7 @@ tasks:
     nexttasks:
       '#none#':
       - "7"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -23,6 +24,11 @@ tasks:
           "y": -508
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
     taskid: 0beb15d1-90b4-4218-8304-ec896f6af105
@@ -40,8 +46,10 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      scanId: ${NessusScan.ID}
-      targets: ""
+      scanId:
+        simple: ${NessusScan.ID}
+      targets: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -49,6 +57,11 @@ tasks:
           "y": -181
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
     taskid: 9bc05400-6be1-4208-8d15-4e0518a1f6f1
@@ -66,9 +79,11 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      historyId: ""
-      scanId: ${NessusScan.ID}
-      tables: ""
+      historyId: {}
+      scanId:
+        simple: ${NessusScan.ID}
+      tables: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -76,6 +91,11 @@ tasks:
           "y": 414
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
     taskid: b171dde1-d2c5-4b60-8256-e017b005980f
@@ -93,11 +113,14 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
-      chapters: ""
-      format: nessus
-      historyId: ""
-      password: ""
-      scanId: ${NessusScan.ID}
+      chapters: {}
+      format:
+        simple: nessus
+      historyId: {}
+      password: {}
+      scanId:
+        simple: ${NessusScan.ID}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -105,6 +128,11 @@ tasks:
           "y": 573
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
     taskid: 09e2163e-6510-4deb-8a42-8bc15465687c
@@ -119,9 +147,12 @@ tasks:
       iscommand: true
       brand: Nessus3
     scriptarguments:
-      fileId: ${NessusScan.ScanReportID}
-      scanId: ${NessusScan.ID}
+      fileId:
+        simple: ${NessusScan.ScanReportID}
+      scanId:
+        simple: ${NessusScan.ID}
     continueonerror: true
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -129,6 +160,11 @@ tasks:
           "y": 889
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
     taskid: c81f2cea-adce-490a-8cec-9278ae2a7095
@@ -146,21 +182,26 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      acls: ""
-      description: ""
-      editor: 731a8e52-3ea6-a291-ec0a-d2ff0619c19d7bd788d6be818b65
-      emails: ""
-      fileTargets: ""
-      folderId: ""
-      launch: ""
-      name: Test Playbook
-      policyId: ""
-      rules: ""
-      scannerId: ""
-      schedule: "false"
-      startTime: ""
-      targets: localhost
-      timeZone: ""
+      acls: {}
+      description: {}
+      editor:
+        simple: 731a8e52-3ea6-a291-ec0a-d2ff0619c19d7bd788d6be818b65
+      emails: {}
+      fileTargets: {}
+      folderId: {}
+      launch: {}
+      name:
+        simple: Test Playbook
+      policyId: {}
+      rules: {}
+      scannerId: {}
+      schedule:
+        simple: "false"
+      startTime: {}
+      targets:
+        simple: localhost
+      timeZone: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -168,6 +209,11 @@ tasks:
           "y": -353
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
     taskid: 02a14261-c9f0-4c56-8091-7964175897f4
@@ -184,7 +230,9 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
-      scanId: ${NessusScan.ID}
+      scanId:
+        simple: ${NessusScan.ID}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -192,6 +240,11 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
     taskid: 23696810-e065-4004-8b1d-a58968d091f3
@@ -203,7 +256,7 @@ tasks:
       description: |
         While loop is utility script, to do while loops on specific commands or scripts, it will allow you to loop over until some condition is fulfilled (${keyToWatch} == value).
         Please make sure timeout of the script also sufficient for the loop.
-      scriptName: WhileLoop
+      script: WhileLoop
       type: regular
       iscommand: false
       brand: ""
@@ -211,13 +264,19 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      cmdArguments: ${NessusScan='scanId=' + val.ID}
-      cmdToRun: nessus-scan-status
-      keyToWatch: ${NessusScan='NessusScan(val.ID \u0026\u0026 val.ID == ' + val.ID
-        + ').Status'}
-      maxIterations: ""
-      sleepTime: "10"
-      value: completed
+      cmdArguments:
+        simple: ${NessusScan='scanId=' + val.ID}
+      cmdToRun:
+        simple: nessus-scan-status
+      keyToWatch:
+        simple: ${NessusScan='NessusScan(val.ID \u0026\u0026 val.ID == ' + val.ID
+          + ').Status'}
+      maxIterations: {}
+      sleepTime:
+        simple: "10"
+      value:
+        simple: completed
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -225,6 +284,11 @@ tasks:
           "y": 260
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
     taskid: 283f0217-7466-4be9-8ca8-05303e5d2292
@@ -236,7 +300,7 @@ tasks:
       description: |
         While loop is utility script, to do while loops on specific commands or scripts, it will allow you to loop over until some condition is fulfilled (${keyToWatch} == value).
         Please make sure timeout of the script also sufficient for the loop.
-      scriptName: WhileLoop
+      script: WhileLoop
       type: regular
       iscommand: false
       brand: ""
@@ -244,13 +308,19 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      cmdArguments: ${NessusScan='scanId=' + val.ID +',fileId='+val.ScanReportID}
-      cmdToRun: nessus-scan-export-status
-      keyToWatch: ${NessusScan='NessusScan(val.ID \u0026\u0026 val.ID == ' + val.ID
-        + ').ScanReportStatus'}
-      maxIterations: ""
-      sleepTime: "10"
-      value: ready
+      cmdArguments:
+        simple: ${NessusScan='scanId=' + val.ID +',fileId='+val.ScanReportID}
+      cmdToRun:
+        simple: nessus-scan-export-status
+      keyToWatch:
+        simple: ${NessusScan='NessusScan(val.ID \u0026\u0026 val.ID == ' + val.ID
+          + ').ScanReportStatus'}
+      maxIterations: {}
+      sleepTime:
+        simple: "10"
+      value:
+        simple: ready
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -258,6 +328,11 @@ tasks:
           "y": 733
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -271,3 +346,4 @@ view: |-
     }
   }
 inputs: []
+outputs: []

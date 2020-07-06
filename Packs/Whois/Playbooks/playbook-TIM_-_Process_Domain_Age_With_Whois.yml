@@ -1,0 +1,939 @@
+id: TIM - Process Domain Age With Whois
+version: -1
+fromversion: 5.5.0
+name: TIM - Process Domain Age With Whois
+description: This playbook compares the domain creation time against a provided time
+  value such as one month ago. The period can be configured within the playbook inputs
+  MinimumAgeOfDomainMonths or MinimumAgeOfDomainHours. The playbook calculates the
+  timestamp for the relevant period and compares it to the domain creation time value
+  provided by Whois. The domains are outputted accordingly if they were created before
+  or after the compared time, respectively.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b5dcd092-6098-4462-8098-93767c879127
+    type: start
+    task:
+      id: b5dcd092-6098-4462-8098-93767c879127
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": -950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 57efd3b2-b4d3-4d10-8cba-f34a35a35ea9
+    type: title
+    task:
+      id: 57efd3b2-b4d3-4d10-8cba-f34a35a35ea9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 855b93ac-bf59-4e64-869d-2a10ee19b6eb
+    type: regular
+    task:
+      id: 855b93ac-bf59-4e64-869d-2a10ee19b6eb
+      version: -1
+      name: Calculate timestamp to compare
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat:
+        simple: Date
+      daysAgo:
+        simple: ${inputs.MinimumAgeDayValue}
+      hoursAgo: {}
+      minutesAgo: {}
+      monthsAgo:
+        simple: ${inputs.MinimumAgeMonthValue}
+      yearsAgo:
+        simple: ${inputs.MinimumAgeYearValue}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": -240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: f17738b2-b782-483d-8408-251a67da11be
+    type: condition
+    task:
+      id: f17738b2-b782-483d-8408-251a67da11be
+      version: -1
+      name: Was a domain value provided?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.WhoisResults
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": -830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 91fe3ce8-5148-4d26-8aab-a816ab33124f
+    type: regular
+    task:
+      id: 91fe3ce8-5148-4d26-8aab-a816ab33124f
+      version: -1
+      name: Compare domain creation time to input
+      description: Compare a single timestamp to a list of timestamps;
+      scriptName: TimeStampCompare
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+      - "33"
+      - "34"
+    scriptarguments:
+      tested_time:
+        simple: ${TimeNow}
+      time_format: {}
+      values_to_compare:
+        simple: ${Results.WHOIS.CreationDate}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": -40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 5f8abed8-9254-4f70-82ab-04a8afd3394a
+    type: condition
+    task:
+      id: 5f8abed8-9254-4f70-82ab-04a8afd3394a
+      version: -1
+      name: Are there domains that were created after the tested time?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: TimeStampCompare.Result
+            iscontext: true
+          right:
+            value:
+              simple: after
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 3b540998-d0db-4efe-8eb1-932288102468
+    type: regular
+    task:
+      id: 3b540998-d0db-4efe-8eb1-932288102468
+      version: -1
+      name: Set new times
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: NewTimes
+      stringify: {}
+      value:
+        complex:
+          root: TimeStampCompare
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: TimeStampCompare.Result
+                iscontext: true
+              right:
+                value:
+                  simple: after
+          accessor: ComparedTime
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 2f57103b-e23c-4c72-8df1-f3fbfb4f570f
+    type: regular
+    task:
+      id: 2f57103b-e23c-4c72-8df1-f3fbfb4f570f
+      version: -1
+      name: Set new domains
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: NewDomains
+      stringify: {}
+      value:
+        complex:
+          root: Results
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: Results.CreationDate
+                iscontext: true
+              right:
+                value:
+                  simple: NewTimes
+                iscontext: true
+          accessor: Whois.QueryValue
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 08d2ef21-b0b5-4283-8ef3-4063e69eaea8
+    type: regular
+    task:
+      id: 08d2ef21-b0b5-4283-8ef3-4063e69eaea8
+      version: -1
+      name: Set Results
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Results
+      stringify: {}
+      value:
+        simple: ${inputs.WhoisResults}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": -660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 3d41f234-7930-4f05-802a-0f16e181ec7a
+    type: regular
+    task:
+      id: 3d41f234-7930-4f05-802a-0f16e181ec7a
+      version: -1
+      name: Set not new times
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: NotNewTimes
+      stringify: {}
+      value:
+        complex:
+          root: TimeStampCompare
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: TimeStampCompare.Result
+                iscontext: true
+              right:
+                value:
+                  simple: before
+            - operator: isEqualString
+              left:
+                value:
+                  simple: TimeStampCompare.Result
+                iscontext: true
+              right:
+                value:
+                  simple: equal
+          accessor: ComparedTime
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -290,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 9e3cae13-9835-4e9b-800c-22f26e4a9808
+    type: condition
+    task:
+      id: 9e3cae13-9835-4e9b-800c-22f26e4a9808
+      version: -1
+      name: Are there domains that were created before the tested time?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: TimeStampCompare.Result
+            iscontext: true
+          right:
+            value:
+              simple: before
+        - operator: isEqualString
+          left:
+            value:
+              simple: TimeStampCompare.Result
+            iscontext: true
+          right:
+            value:
+              simple: equal
+    view: |-
+      {
+        "position": {
+          "x": -290,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 5f3d2d17-849a-479a-8a67-c6a6acf578e0
+    type: regular
+    task:
+      id: 5f3d2d17-849a-479a-8a67-c6a6acf578e0
+      version: -1
+      name: Set non new domains
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: NotNewDomains
+      stringify: {}
+      value:
+        complex:
+          root: Results
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: Results.CreationDate
+                iscontext: true
+              right:
+                value:
+                  simple: NotNewTimes
+                iscontext: true
+          accessor: Whois.QueryValue
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -290,
+          "y": 935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 9097f11d-3b16-4cc5-8ff2-4b9fc8270915
+    type: title
+    task:
+      id: 9097f11d-3b16-4cc5-8ff2-4b9fc8270915
+      version: -1
+      name: New domains
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 165
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: c7c9f728-62d4-4025-8af8-4616331dbaaf
+    type: title
+    task:
+      id: c7c9f728-62d4-4025-8af8-4616331dbaaf
+      version: -1
+      name: Non new domains
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -290,
+          "y": 165
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 6933c0d3-3a96-4d85-8428-2ac937274f06
+    type: title
+    task:
+      id: 6933c0d3-3a96-4d85-8428-2ac937274f06
+      version: -1
+      name: Domain not resolved by Whois
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1090,
+          "y": 165
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 644f08f8-d551-46e2-8407-4f7166cbef3c
+    type: condition
+    task:
+      id: 644f08f8-d551-46e2-8407-4f7166cbef3c
+      version: -1
+      name: Are there domains without Whois query results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: Results.Whois.QueryResult
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": -1090,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 35ee6a01-47a6-45e6-80df-d32a91a8c5f8
+    type: regular
+    task:
+      id: 35ee6a01-47a6-45e6-80df-d32a91a8c5f8
+      version: -1
+      name: Tag domain with no Whois resolution
+      description: Tag domains with no Whois result.
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: no_whois_resolution
+      indicatorsValues:
+        simple: ${DomainsNotResolvedByWhois}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1090,
+          "y": 935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: e5feb9c4-141d-4674-8206-b4c7bf72895d
+    type: regular
+    task:
+      id: e5feb9c4-141d-4674-8206-b4c7bf72895d
+      version: -1
+      name: Tag domain as new
+      description: Tag domain as new.
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: new_domain
+      indicatorsValues:
+        simple: ${NewDomains}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 58ae4e3b-0ca4-4d7f-85ea-eafe95629a21
+    type: regular
+    task:
+      id: 58ae4e3b-0ca4-4d7f-85ea-eafe95629a21
+      version: -1
+      name: Set domains without Whois results
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: DomainsNotResolvedByWhois
+      stringify: {}
+      value:
+        complex:
+          root: Results
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: Results.Whois.QueryResult
+                iscontext: true
+              right:
+                value:
+                  simple: "true"
+          accessor: Whois.QueryValue
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1090,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 0742873b-a508-4dc3-8f95-ca6a3214a257
+    type: condition
+    task:
+      id: 0742873b-a508-4dc3-8f95-ca6a3214a257
+      version: -1
+      name: Was a time to compare value provided?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "40"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.MinimumAgeMonthValue
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.MinimumAgeDayValue
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.MinimumAgeYearValue
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": -490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 32b1cba2-a442-487d-8769-c5085340763a
+    type: title
+    task:
+      id: 32b1cba2-a442-487d-8769-c5085340763a
+      version: -1
+      name: No compare time was provided
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "41"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": -290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: c5039e71-fa41-43d1-8cc6-7dfd43ec42ca
+    type: regular
+    task:
+      id: c5039e71-fa41-43d1-8cc6-7dfd43ec42ca
+      version: -1
+      name: Set domains that couldnt be processed
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: DomainsNotProcessed
+      stringify: {}
+      value:
+        complex:
+          root: Results
+          accessor: Whois.QueryValue
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": -115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2175,
+        "width": 2580,
+        "x": -1090,
+        "y": -950
+      }
+    }
+  }
+inputs:
+- key: MinimumAgeMonthValue
+  value: {}
+  required: false
+  description: The number of months that a domain must exist for it to be considered
+    not new. For example, specifying the value 1 means that if the tested domain was
+    registered less than a month ago, it will be considered a new domain.
+  playbookInputQuery: null
+- key: MinimumAgeDayValue
+  value: {}
+  required: false
+  description: The number of days that a domain must exist for it to be considered
+    not new. Specifying the value 1 will mean that if the tested domain was registered
+    less than one day ago, it will be considered a new domain.
+  playbookInputQuery: null
+- key: MinimumAgeYearValue
+  value: {}
+  required: false
+  description: The number of years that a domain must exist for it to be considered
+    not new. Specifying the value 1 will mean that if the tested domain was registered
+    less than one year ago, it will be considered a new domain.
+  playbookInputQuery: null
+- key: WhoisResults
+  value: {}
+  required: false
+  description: This input receives the Whois results from the parent playbook.
+  playbookInputQuery: null
+outputs:
+- contextPath: NewDomains
+  description: Domains whose create value is after the tested date.
+  type: string
+- contextPath: NotNewDomains
+  description: Domains whose create value is before the tested date.
+  type: string
+- contextPath: DomainsNotResolvedByWhois
+  description: Domains that could not be resolved by Whois.
+  type: string
+- contextPath: DomainsNotProcessed
+  description: In case no time value to compare was provided, all domains will be
+    outputted here.
+  type: string
+quiet: true
+tests:
+- No test

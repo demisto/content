@@ -5,7 +5,7 @@
         "TypeName": "",
         "id": "US Breach Notification",
         "kind": "details",
-        "modified": "2020-05-20T09:23:07.03466325Z",
+        "modified": "2020-06-21T11:46:35.679641751Z",
         "name": "",
         "system": false,
         "tabs": [
@@ -17,7 +17,7 @@
                     {
                         "description": "All 50 US states, Washington, DC, and most US territories (including Puerto Rico, Guam, and the Virgin Islands) have passed breach notification laws that require notifying state residents and the Attorney General in case of personally identifiable information (PII) security breach.\nA security breach involving personal information, such as Social Security numbers and other government identifiers, credit card and financial account numbers, health or medical information, insurance ID, tax ID, birthdate, as well as online account credentials, digital signatures and/or biometrics.",
                         "displayType": "ROW",
-                        "h": 4,
+                        "h": 3,
                         "hideName": false,
                         "i": "sfmcsjvzpo-824b5140-d878-11e9-b030-ad5c55d12ecb",
                         "items": [
@@ -38,11 +38,13 @@
                                 "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "occurred",
                                 "height": 24,
                                 "id": "69fe3900-d881-11e9-b030-ad5c55d12ecb",
                                 "index": 2,
+                                "listId": "sfmcsjvzpo-824b5140-d878-11e9-b030-ad5c55d12ecb",
                                 "startCol": 0
                             },
                             {
@@ -77,20 +79,28 @@
                             },
                             {
                                 "dropEffect": "move",
-                                "endCol": 2,
+                                "endCol": 4,
                                 "fieldId": "measurestomitigate",
                                 "height": 24,
                                 "id": "9c0c8dc0-d881-11e9-b030-ad5c55d12ecb",
-                                "index": 6,
+                                "index": 7,
                                 "listId": "sfmcsjvzpo-824b5140-d878-11e9-b030-ad5c55d12ecb",
                                 "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "dataencryptionstatus",
+                                "height": 24,
+                                "id": "8c74dac0-d881-11e9-b030-ad5c55d12ecb",
+                                "index": 0,
+                                "startCol": 2
                             },
                             {
                                 "endCol": 4,
                                 "fieldId": "whereisdatahosted",
                                 "height": 24,
                                 "id": "71feb710-d881-11e9-b030-ad5c55d12ecb",
-                                "index": 0,
+                                "index": 1,
                                 "startCol": 2
                             },
                             {
@@ -98,31 +108,7 @@
                                 "fieldId": "maliciouscauseifthecauseisamaliciousattack",
                                 "height": 24,
                                 "id": "7e0ef100-d881-11e9-b030-ad5c55d12ecb",
-                                "index": 1,
-                                "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "likelyimpact",
-                                "height": 24,
-                                "id": "8362ecb0-d881-11e9-b030-ad5c55d12ecb",
                                 "index": 2,
-                                "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "possiblecauseofthebreach",
-                                "height": 24,
-                                "id": "765232b0-d881-11e9-b030-ad5c55d12ecb",
-                                "index": 3,
-                                "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "dataencryptionstatus",
-                                "height": 24,
-                                "id": "8c74dac0-d881-11e9-b030-ad5c55d12ecb",
-                                "index": 4,
                                 "startCol": 2
                             },
                             {
@@ -131,18 +117,24 @@
                                 "fieldId": "affecteddata",
                                 "height": 24,
                                 "id": "86c9e570-d881-11e9-b030-ad5c55d12ecb",
-                                "index": 5,
+                                "index": 3,
                                 "listId": "sfmcsjvzpo-824b5140-d878-11e9-b030-ad5c55d12ecb",
                                 "startCol": 2
                             },
                             {
-                                "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "piidatatype",
+                                "fieldId": "likelyimpact",
                                 "height": 24,
-                                "id": "f7f49920-99c9-11ea-9e17-5dc3e5f41e56",
-                                "index": 6,
-                                "listId": "sfmcsjvzpo-824b5140-d878-11e9-b030-ad5c55d12ecb",
+                                "id": "8362ecb0-d881-11e9-b030-ad5c55d12ecb",
+                                "index": 4,
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "possiblecauseofthebreach",
+                                "height": 24,
+                                "id": "765232b0-d881-11e9-b030-ad5c55d12ecb",
+                                "index": 5,
                                 "startCol": 2
                             }
                         ],
@@ -211,8 +203,8 @@
                         "name": "Details of Company",
                         "static": false,
                         "w": 1,
-                        "x": 2,
-                        "y": 0
+                        "x": 0,
+                        "y": 5
                     },
                     {
                         "displayType": "ROW",
@@ -222,42 +214,10 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "healthinsurancebreached",
-                                "height": 24,
-                                "id": "7763d970-904f-11ea-8355-67a9bcbc519c",
-                                "index": 0,
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "medicalinformationbreached",
-                                "height": 24,
-                                "id": "73ccd000-904f-11ea-8355-67a9bcbc519c",
-                                "index": 1,
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "accountinformationbreached",
-                                "height": 24,
-                                "id": "7a781e50-904f-11ea-8355-67a9bcbc519c",
-                                "index": 2,
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "financialinformationbreached",
                                 "height": 24,
                                 "id": "7bdeb330-904f-11ea-8355-67a9bcbc519c",
-                                "index": 3,
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "uniquebiometricdatabreached",
-                                "height": 24,
-                                "id": "7e0b7e40-904f-11ea-8355-67a9bcbc519c",
-                                "index": 4,
+                                "index": 0,
                                 "startCol": 0
                             },
                             {
@@ -265,7 +225,7 @@
                                 "fieldId": "uniqueidentificationnumberbreached",
                                 "height": 24,
                                 "id": "801494b0-904f-11ea-8355-67a9bcbc519c",
-                                "index": 5,
+                                "index": 1,
                                 "startCol": 0
                             },
                             {
@@ -273,6 +233,44 @@
                                 "fieldId": "otherpiidatabreached",
                                 "height": 24,
                                 "id": "818ab9f0-904f-11ea-8355-67a9bcbc519c",
+                                "index": 2,
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "accountinformationbreached",
+                                "height": 24,
+                                "id": "7a781e50-904f-11ea-8355-67a9bcbc519c",
+                                "index": 4,
+                                "listId": "sfmcsjvzpo-61df1f10-904f-11ea-8355-67a9bcbc519c",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "medicalinformationbreached",
+                                "height": 24,
+                                "id": "73ccd000-904f-11ea-8355-67a9bcbc519c",
+                                "index": 5,
+                                "listId": "sfmcsjvzpo-61df1f10-904f-11ea-8355-67a9bcbc519c",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "uniquebiometricdatabreached",
+                                "height": 24,
+                                "id": "7e0b7e40-904f-11ea-8355-67a9bcbc519c",
+                                "index": 6,
+                                "listId": "sfmcsjvzpo-61df1f10-904f-11ea-8355-67a9bcbc519c",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "healthinsurancebreached",
+                                "height": 24,
+                                "id": "7763d970-904f-11ea-8355-67a9bcbc519c",
                                 "index": 7,
                                 "startCol": 0
                             }
@@ -284,8 +282,8 @@
                         "name": "Affected PII types",
                         "static": false,
                         "w": 1,
-                        "x": 2,
-                        "y": 2
+                        "x": 0,
+                        "y": 3
                     },
                     {
                         "displayType": "ROW",
@@ -333,40 +331,12 @@
                         "name": "Contact Information",
                         "static": false,
                         "w": 1,
-                        "x": 2,
-                        "y": 4
-                    },
-                    {
-                        "displayType": "CARD",
-                        "h": 2,
-                        "hideItemTitleOnlyOne": true,
-                        "hideName": false,
-                        "i": "sfmcsjvzpo-088e1080-943f-11ea-8a99-d7b88973db45",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "incident_attachment",
-                                "height": 55,
-                                "id": "0880f121-943f-11ea-8a99-d7b88973db45",
-                                "index": 1,
-                                "isVisible": true,
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Attachments",
-                        "static": false,
-                        "type": "",
-                        "w": 1,
                         "x": 1,
-                        "y": 4
+                        "y": 5
                     },
                     {
                         "displayType": "ROW",
-                        "h": 2,
+                        "h": 6,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "sfmcsjvzpo-4cae4bf0-947f-11ea-b67b-e1b3c6a3210f",
@@ -389,8 +359,86 @@
                         "name": "Residents Email Address",
                         "static": false,
                         "w": 1,
-                        "x": 0,
-                        "y": 4
+                        "x": 2,
+                        "y": 1
+                    },
+                    {
+                        "description": "",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "sfmcsjvzpo-7d51dbd0-af07-11ea-a169-995a487457b1",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Breach Confirmation",
+                        "query": "732935e9-448a-457f-86e3-325f3fd9f51d",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "sfmcsjvzpo-22257de0-af23-11ea-a169-995a487457b1",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "dponotification",
+                                "height": 24,
+                                "id": "f8fabe90-b16f-11ea-a1d8-23f656e53e19",
+                                "index": 0,
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "attorneygeneralnotification",
+                                "height": 24,
+                                "id": "f9fc2900-b16f-11ea-a1d8-23f656e53e19",
+                                "index": 1,
+                                "listId": "sfmcsjvzpo-22257de0-af23-11ea-a169-995a487457b1",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "individualsnotification",
+                                "height": 24,
+                                "id": "fc4a37b0-b16f-11ea-a1d8-23f656e53e19",
+                                "index": 2,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "consumerreportingagenciesnotification",
+                                "height": 24,
+                                "id": "d0f231c0-b3b4-11ea-a1d8-23f656e53e19",
+                                "index": 3,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "statecisonotification",
+                                "height": 24,
+                                "id": "d4287d90-b3b4-11ea-a1d8-23f656e53e19",
+                                "index": 4,
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Notification Status",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 3
                     }
                 ],
                 "type": "custom"
