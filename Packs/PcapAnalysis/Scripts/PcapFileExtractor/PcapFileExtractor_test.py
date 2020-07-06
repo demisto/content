@@ -15,6 +15,16 @@ OUTPUTS = [
 
 
 def test_extract_files(tmpdir):
+    """
+    Given
+    - Valid Pcap File.
+    When
+    - Extracting the file from the pcap.
+    Then
+    - ensure file is being extracted correctly.
+    - ensure outputs are correct.
+    """
+
     file_path = 'TestData/tftp_rrq.pcap'
     results = upload_files(file_path=file_path, dir_path=tmpdir)
     assert 'Pcap Extracted Files' in results.readable_output
