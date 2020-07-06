@@ -1,0 +1,300 @@
+description: This playbook downloads a file via Code42 by either MD5 or SHA256 hash.
+id: Code42 File Download
+inputs:
+- description: MD5 hash to search for
+  key: MD5
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: MD5
+      root: File
+      transformers:
+      - operator: uniq
+- description: SHA256 hash to search for
+  key: SHA256
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: SHA256
+      root: File
+      transformers:
+      - operator: uniq
+name: Code42 File Download
+outputs: []
+sourceplaybookid: Code42 File Search
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d045a003-2e7f-4f47-80c7-3882baf399b6
+      iscommand: false
+      name: ""
+      description: ""
+      version: -1
+    taskid: d045a003-2e7f-4f47-80c7-3882baf399b6
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 50
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Code42
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 746c1a4e-7084-45f1-86e6-e9764ffbbf5c
+      iscommand: false
+      name: Is Code42 Integration Active?
+      description: "Checks to see if a Code42 Integration is active."
+      type: condition
+      version: -1
+    taskid: 746c1a4e-7084-45f1-86e6-e9764ffbbf5c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 195
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.SHA256
+          operator: isNotEmpty
+      label: "yes"
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 935cb1d6-e328-4a8e-888f-347c3b33ce11
+      iscommand: false
+      name: Does SHA256 Exist?
+      description: "Checks to see if a SHA256 hash exists in the inputs."
+      type: condition
+      version: -1
+    taskid: 935cb1d6-e328-4a8e-888f-347c3b33ce11
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 545
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.MD5
+          operator: isNotEmpty
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1d0dfb1f-6874-41e9-8593-fca2a96c58c4
+      iscommand: false
+      name: Does MD5 Exist?
+      description: "Checks to see if a MD5 hash exists in the inputs."
+      type: condition
+      version: -1
+    taskid: 1d0dfb1f-6874-41e9-8593-fca2a96c58c4
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 370
+        }
+      }
+  "5":
+    continueonerror: true
+    evidencedata:
+      customfields: {}
+      description:
+        simple: The file that caused the alert.
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      hash:
+        simple: ${inputs.SHA256}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Code42
+      description: Downloads a file from Code42 servers.
+      id: c83baa5d-207c-44de-868c-8b131dc0357b
+      iscommand: true
+      name: Code42 Download by SHA256
+      script: Code42|||code42-download-file
+      type: regular
+      version: -1
+    taskid: c83baa5d-207c-44de-868c-8b131dc0357b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+  "6":
+    continueonerror: true
+    evidencedata:
+      customfields: {}
+      description:
+        simple: The file that caused the alert.
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      hash:
+        simple: ${inputs.MD5}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Code42
+      description: Downloads a file from Code42 servers.
+      id: 687edce2-d09d-4ad1-845e-a3ed7b7b7d4a
+      iscommand: true
+      name: Code42 Download by MD5
+      script: Code42|||code42-download-file
+      type: regular
+      version: -1
+    taskid: 687edce2-d09d-4ad1-845e-a3ed7b7b7d4a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7f03d6ab-3bb8-4bd5-867b-fe853fa38684
+      iscommand: false
+      name: Complete
+      description: ""
+      type: title
+      version: -1
+    taskid: 7f03d6ab-3bb8-4bd5-867b-fe853fa38684
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+version: -1
+fromversion: 5.0.0
+tests:
+- No Test
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 922.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

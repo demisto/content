@@ -330,6 +330,15 @@ class Code42Client(BaseClient):
         res = self._get_sdk().securitydata.search_file_events(payload)
         return res["fileEvents"]
 
+    def download_file(self, hash_arg):
+        security_module = self._get_sdk().securitydata
+        if _hash_is_md5(hash_arg):
+            return security_module.stream_file_by_md5(hash_arg)
+        elif _hash_is_sha256(hash_arg):
+            return security_module.stream_file_by_sha256(hash_arg)
+        else:
+            raise Exception("Unsupported hash. Must be SHA256 or MD5.")
+
     def _get_user_id(self, username):
         user_id = self.get_user(username).get("userUid")
         if user_id:
@@ -470,12 +479,18 @@ def build_query_payload(args):
     return query
 
 
+def _hash_is_sha256(hash_arg):
+    return hash_arg and len(hash_arg) == 64
+
+
+def _hash_is_md5(hash_arg):
+    return hash_arg and len(hash_arg) == 32
+
+
 def _create_hash_filter(hash_arg):
-    if not hash_arg:
-        return None
-    elif len(hash_arg) == 32:
+    if _hash_is_md5(hash_arg):
         return MD5.eq(hash_arg)
-    elif len(hash_arg) == 64:
+    elif _hash_is_sha256(hash_arg):
         return SHA256.eq(hash_arg)
 
 
@@ -506,7 +521,7 @@ class ObservationToSecurityQueryMapper(object):
     exposure_type_map = {
         "PublicSearchableShare": ExposureType.IS_PUBLIC,
         "PublicLinkShare": ExposureType.SHARED_VIA_LINK,
-        "SharedOutsideTrustedDomain": "OutsideTrustedDomains",
+        "SharedOutsideTrustedDomain": ExposureType.OUTSIDE_TRUSTED_DOMAINS,
     }
 
     def __init__(self, observation, actor):
@@ -1026,6 +1041,11 @@ def legal_hold_remove_user_command(client, args):
         readable_output=readable_outputs,
         raw_response=user_uid
     )
+def download_file_command(client, args):
+    file_hash = args.get("hash")
+    response = client.download_file(file_hash)
+    file_chunks = [c for c in response.iter_content(chunk_size=128) if c]
+    return fileResult(file_hash, data=b"".join(file_chunks))
 
 
 """Fetching"""
@@ -1036,7 +1056,7 @@ def _create_incident_from_alert_details(details):
 
 
 def _stringify_lists_if_needed(event):
-    # We need to convert certain fields to a stringified list or React.JS will throw an error
+    # We need to convert certain fields to a stringified list else React.JS will throw an error
     shared_with = event.get("sharedWith")
     private_ip_addresses = event.get("privateIpAddresses")
     if shared_with:
@@ -1067,7 +1087,7 @@ class Code42SecurityIncidentFetcher(object):
         self._first_fetch_time = first_fetch_time
         self._event_severity_filter = event_severity_filter
         self._fetch_limit = fetch_limit
-        self._include_files = (include_files,)
+        self._include_files = include_files
         self._integration_context = integration_context
 
     @logger
@@ -1089,7 +1109,7 @@ class Code42SecurityIncidentFetcher(object):
             if remaining_incidents:
                 return (
                     self._last_run,
-                    remaining_incidents[: self._fetch_limit],
+                    remaining_incidents[:self._fetch_limit],
                     remaining_incidents[self._fetch_limit:],
                 )
 
@@ -1114,7 +1134,8 @@ class Code42SecurityIncidentFetcher(object):
     def _create_incident_from_alert(self, alert):
         details = self._client.get_alert_details(alert["id"])
         incident = _create_incident_from_alert_details(details)
-        details = self._relate_files_to_alert(details)
+        if self._include_files:
+            details = self._relate_files_to_alert(details)
         incident["rawJSON"] = json.dumps(details)
         return incident
 
@@ -1190,6 +1211,7 @@ def get_command_map():
         "code42-user-reactivate": user_reactivate_command,
         "code42-legalhold-add-user": legal_hold_add_user_command,
         "code42-legalhold-remove-user": legal_hold_remove_user_command,
+        "code42-download-file": download_file_command,
     }
 
 
@@ -1218,10 +1240,10 @@ def handle_fetch_command(client):
     demisto.setIntegrationContext(integration_context)
 
 
-def try_run_command(command):
+def run_command(command):
     try:
         results = command()
-        if not isinstance(results, tuple) and not isinstance(results, list):
+        if not isinstance(results, (tuple, list)):
             results = [results]
         for result in results:
             return_results(result)
@@ -1229,28 +1251,32 @@ def try_run_command(command):
         return_error(create_command_error_message(demisto.command(), e))
 
 
-def run_code42_integration():
+def create_client():
     username = demisto.params().get("credentials").get("identifier")
     password = demisto.params().get("credentials").get("password")
     base_url = demisto.params().get("console_url")
     verify_certificate = not demisto.params().get("insecure", False)
     proxy = demisto.params().get("proxy", False)
-    LOG("Command being called is {0}.".format(demisto.command()))
-    client = Code42Client(
+    return Code42Client(
         base_url=base_url,
         sdk=None,
         auth=(username, password),
         verify=verify_certificate,
         proxy=proxy,
     )
+
+
+def run_code42_integration():
+    client = create_client()
     commands = get_command_map()
-    command = demisto.command()
-    if command == "test-module":
+    command_key = demisto.command()
+    LOG("Command being called is {0}.".format(command_key))
+    if command_key == "test-module":
         handle_test_command(client)
-    elif command == "fetch-incidents":
+    elif command_key == "fetch-incidents":
         handle_fetch_command(client)
-    elif command in commands:
-        try_run_command(lambda: commands[command](client, demisto.args()))
+    elif command_key in commands:
+        run_command(lambda: commands[command_key](client, demisto.args()))
 
 
 def main():

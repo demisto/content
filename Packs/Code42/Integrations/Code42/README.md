@@ -713,10 +713,11 @@ Reactivates the user with the given username.
 ```!code42-user-reactivate username="partner.demisto@example.com"```
 
 #### Human Readable Output
-### Code42 User Deactivated
+### Code42 User Reactivated
 | UserID |
 | ------ |
 | 123456790 |
+
 ### code42-legalhold-add-user
 ***
 Adds a Code42 user to a legal hold matter.
@@ -775,6 +776,8 @@ Adds a Code42 user to a legal hold matter.
 #### Base Command
 
 `code42-legalhold-remove-user`
+=======
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -812,8 +815,32 @@ Adds a Code42 user to a legal hold matter.
 
 #### Human Readable Output
 
->### Code42 User Removed from Legal Hold Matter
+### Code42 User Removed from Legal Hold Matter
 |MatterID|MatterName|UserID|Username|
 |---|---|---|---|
 | 932880202064992021 | test | 942876157732602741 | partner.demisto@example.com |
 
+### code42-download-file
+***
+Downloads a file from Code42 servers.
+
+#### Base Command
+
+`code42-download-file`
+=======
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hash | Either the SHA256 or MD5 hash of the file. | Required | 
+
+#### Command Example
+```!code42-download-file hash="bf6b326107d4d85eb485eed84b28133a"```
+
+#### Human Readable Output
+
+### Code42 User Deactivated
+| Type   | Size | Info | MD5 | SHA1 | SHA256 | SHA512 | SSDeep |
+| ------ | ---- | ---- | --- | ---- | ------ | ------ | ------ |
+| application/vnd.ms-excel | 41,472 bytes | Composite Document File V2 Document, Little Endian, Os: MacOS, Version 14.10, Code page: 10000, Last Saved By: John Doe, Name of Creating Application: Microsoft Macintosh Excel, Create Time/Date: Fri Feb 21 17:35:19 2020, Last Saved Time/Date: Mon Apr 13 11:54:08 2020, Security: 0 | 2e45562437ec4f41387f2e14c3850dd6 | 59e552e637bfe5254b163bb4e426a2322d10f50d | d3f8566d04df5dc34bf2607ac803a585ac81e06f28afe81f35cc2e5fe63d2ab5 | 776bd9626761cd567a4b498bafe4f5f896c3f4bc9f3c60513ccacd14251a2568fa3ba44060000affa8b57fb768c417cf271500086e4e49272f26b26a90627abb | 768:pudkQzl3ZpWh+QO3uMdS9dSttRJwyE/KtxA1almvy6mhk+GlESOwWoqSY7bTKCUv:siQzl3ZpWh+QO3uMdS9dSttRJwyE/KtF |  

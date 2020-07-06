@@ -32,6 +32,7 @@ from Code42 import (
     user_reactivate_command,
     legal_hold_add_user_command,
     legal_hold_remove_user_command,
+    download_file_command,
     fetch_incidents,
 )
 import time
@@ -1522,16 +1523,7 @@ def test_departingemployee_get_all_command_when_no_employees(
         no_employees_response
     )
     client = create_client(code42_departing_employee_mock)
-    cmd_res = departingemployee_get_all_command(
-        client,
-        {
-            "risktags": [
-                "PERFORMANCE_CONCERNS",
-                "SUSPICIOUS_SYSTEM_ACTIVITY",
-                "POOR_SECURITY_PRACTICES",
-            ]
-        },
-    )
+    cmd_res = departingemployee_get_all_command(client,{})
     assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
     assert cmd_res.outputs_key_field == "UserID"
     assert cmd_res.raw_response == {}
@@ -1806,6 +1798,25 @@ def test_security_data_search_command(code42_file_events_mock):
         assert output_item == mapped_event
 
 
+def test_download_file_command_when_given_md5(code42_sdk_mock, mocker):
+    fr = mocker.patch("Code42.fileResult")
+    client = create_client(code42_sdk_mock)
+    _ = download_file_command(client, {"hash": "b6312dbe4aa4212da94523ccb28c5c16"})
+    code42_sdk_mock.securitydata.stream_file_by_md5.assert_called_once_with(
+        "b6312dbe4aa4212da94523ccb28c5c16"
+    )
+    assert fr.call_count == 1
+
+
+def test_download_file_command_when_given_sha256(code42_sdk_mock, mocker):
+    fr = mocker.patch("Code42.fileResult")
+    _hash = "41966f10cc59ab466444add08974fde4cd37f88d79321d42da8e4c79b51c2149"
+    client = create_client(code42_sdk_mock)
+    _ = download_file_command(client, {"hash": _hash})
+    code42_sdk_mock.securitydata.stream_file_by_sha256.assert_called_once_with(_hash)
+    assert fr.call_count == 1
+
+
 def test_fetch_when_no_significant_file_categories_ignores_filter(
     code42_fetch_incidents_mock, mocker
 ):
@@ -1854,8 +1865,41 @@ def test_fetch_incidents_handles_multi_severity(code42_fetch_incidents_mock):
         include_files=True,
         integration_context=None,
     )
-    assert "HIGH" in str(code42_fetch_incidents_mock.alerts.search.call_args[0][0])
-    assert "LOW" in str(code42_fetch_incidents_mock.alerts.search.call_args[0][0])
+    call_args = str(code42_fetch_incidents_mock.alerts.search.call_args[0][0])
+    assert "HIGH" in call_args
+    assert "LOW" in call_args
+
+
+def test_fetch_when_include_files_includes_files(code42_fetch_incidents_mock):
+    client = create_client(code42_fetch_incidents_mock)
+    _, incidents, _ = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": None},
+        first_fetch_time=MOCK_FETCH_TIME,
+        event_severity_filter=["High", "Low"],
+        fetch_limit=10,
+        include_files=True,
+        integration_context=None,
+    )
+    for i in incidents:
+        _json = json.loads(i["rawJSON"])
+        assert len(_json["fileevents"])
+
+
+def test_fetch_when_not_include_files_excludes_files(code42_fetch_incidents_mock):
+    client = create_client(code42_fetch_incidents_mock)
+    _, incidents, _ = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": None},
+        first_fetch_time=MOCK_FETCH_TIME,
+        event_severity_filter=["High", "Low"],
+        fetch_limit=10,
+        include_files=False,
+        integration_context=None,
+    )
+    for i in incidents:
+        _json = json.loads(i["rawJSON"])
+        assert not _json.get("fileevents")
 
 
 def test_fetch_incidents_first_run(code42_fetch_incidents_mock):

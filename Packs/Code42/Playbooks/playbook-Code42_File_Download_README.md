@@ -7,13 +7,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-This playbook does not use any integrations.
+* Code42
 
 ### Scripts
 This playbook does not use any scripts.
 
 ### Commands
 * code42-securitydata-search
+* code42-download-file
 
 ## Playbook Inputs
 ---
@@ -34,7 +35,7 @@ This playbook does not use any scripts.
 | Code42.SecurityData.EndpointID | Code42 device ID | unknown |
 | Code42.SecurityData.DeviceUsername | Username that device is associated with in Code42 | unknown |
 | Code42.SecurityData.EmailFrom | Sender email address for email exfiltration events | unknown |
-| Code42.SecurityData.EmailTo | Recipient email address for email exfiltration events | unknown |
+| Code42.SecurityData.EmailTo | Recipient emial address for email exfiltration events | unknown |
 | Code42.SecurityData.EmailSubject | Email subject line for email exfiltration events | unknown |
 | Code42.SecurityData.EventID | Security Data event ID | unknown |
 | Code42.SecurityData.EventType | Type of Security Data event | unknown |
@@ -48,7 +49,7 @@ This playbook does not use any scripts.
 | Code42.SecurityData.FileHostname | Hostname where file event was captured | unknown |
 | Code42.SecurityData.DevicePrivateIPAddress | Private IP addresses of device where event was captured | unknown |
 | Code42.SecurityData.DevicePublicIPAddress | Public IP address of device where event was captured | unknown |
-| Code42.SecurityData.RemovableMediaType | Type of removable media | unknown |
+| Code42.SecurityData.RemovableMediaType | Type of removate media | unknown |
 | Code42.SecurityData.RemovableMediaCapacity | Total capacity of removable media in bytes | unknown |
 | Code42.SecurityData.RemovableMediaMediaName | Full name of removable media | unknown |
 | Code42.SecurityData.RemovableMediaName | Name of removable media | unknown |
@@ -75,4 +76,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Code42 File Search](../Integrations/Code42/Code42_image.png)
+![Code42 Exfiltration Playbook](../Integrations/Code42/Code42_image.png)
