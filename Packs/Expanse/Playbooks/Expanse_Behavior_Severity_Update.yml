@@ -25,7 +25,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -180
+          "y": -430
         }
       }
     note: false
@@ -1518,13 +1518,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "10"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": -40
+          "y": -260
         }
       }
     note: false
@@ -1557,15 +1557,55 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "10":
+    id: "10"
+    taskid: 281f8884-cfb3-4a42-8533-56a5737001d1
+    type: condition
+    task:
+      id: 281f8884-cfb3-4a42-8533-56a5737001d1
+      version: -1
+      name: Is there an IP address?
+      description: This checks whether an IP was returned for the IP enrichment command
+        in Expanse. If not, it means that the requested IP was not included in Expanse's
+        list on "on-prem" IP Ranges.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+        - "9"
+      "yes":
+        - "1"
+    scriptarguments:
+      value:
+        complex:
+          root: Expanse
+          accessor: IP.Address
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "10_1_yes": 0.74
+    },
     "paper": {
       "dimensions": {
-        "height": 1655,
+        "height": 1905,
         "width": 1410,
         "x": 190,
-        "y": -180
+        "y": -430
       }
     }
   }
