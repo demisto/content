@@ -3065,6 +3065,8 @@
         "SecBI": "Issue 22545",
         "IBM Resilient Systems": "Issue 23722",
         "VxStream": "Issue #23795",
+        "Bambenek Consulting Feed": "Issue 26184",
+        "AWS - Athena - Beta": "Issue 19834",
 
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -3072,17 +3074,14 @@
         "VirusTotal - Private API": "Issue 22638",
 
         "_comment3": "~~~ QUOTA ISSUES ~~~",
-        "Bambenek Consulting Feed": "Issue 26184",
         "Joe Security": "Issue 25650",
         "JsonWhoIs": "Issue 25371: Out of quota",
         "XFE_v2": "Issue 22715",
-        "XFE": "We have the new integration XFE_v2, so n`o need to test the old one because they use the same quote",
         "AlphaSOC Wisdom": "API key has expired",
-        "AWS - Athena - Beta": "Issue 19834",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
-        "Ipstack": "reached out our monthly quota (08/03/2020)",
+        "Ipstack": "Issue 26266",
 
         "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer",
@@ -3092,6 +3091,7 @@
         "Digital Guardian": "partner integration",
 
         "_comment5": "~~~ OTHER ~~~",
+        "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
         "Cisco ASA": "Issue 25741",
         "Endace": "Issue 24304",
         "Pentera": "authentication method will not work with testing",
