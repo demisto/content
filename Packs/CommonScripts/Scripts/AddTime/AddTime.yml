@@ -1,0 +1,24 @@
+args:
+- name: value
+  required: true
+  default: true
+  description: Input value
+- name: variation
+  required: true
+  description: 'Variation of time (for example: ''in 1 day'', or ''3 months ago'').'
+comment: Takes a date / time input and adds or subtracts a determined amount of time.
+  Returns a string in date / time in ISO Format.
+commonfields:
+  id: AddTime
+  version: -1
+enabled: true
+name: AddTime
+script: '-'
+system: false
+tags:
+- transformer
+- date
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.8.3.9324
