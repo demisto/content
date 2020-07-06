@@ -113,7 +113,7 @@ def edit_json_content_entity_directory(new_to_version, dir_path):
     for file_name in os.listdir(dir_path):
         file_path = os.path.join(dir_path, file_name)
         if os.path.isfile(file_path) and file_name.endswith('.json') and \
-                file_path != '"Packs/NonSupported/IndicatorTypes/reputations.json"':
+                file_path != "Packs/NonSupported/IndicatorTypes/reputations.json":
             json_content = get_json(file_path)
             if should_keep_json_file(json_content, new_to_version):
                 rewrite_json(file_path, json_content, new_to_version)
