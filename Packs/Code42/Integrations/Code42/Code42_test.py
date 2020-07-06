@@ -30,6 +30,8 @@ from Code42 import (
     user_unblock_command,
     user_deactivate_command,
     user_reactivate_command,
+    legal_hold_add_user_command,
+    legal_hold_remove_user_command,
     fetch_incidents,
 )
 import time
@@ -1082,20 +1084,19 @@ MOCK_CREATE_USER_RESPONSE = """
 
 MOCK_ADD_TO_MATTER_RESPONSE = """
 {
-    "legalHoldUid":"645576513911664484",
-    "name":"Patent Lawsuit",
-    "description":"Lawsuit from Acme Inc demanding we license their software patents.",
-    "notes":"Engineering is still reviewing what, if any, of our components are actually infringing.",
-    "holdExtRef":"Case 13a-32f",
+    "legalHoldMembershipUid":"645579283748927372",
     "active":true,
     "creationDate":"2015-05-16T15:07:44.820-05:00",
-    "lastModified":"2015-05-16T15:07:44.820-05:00",
-    "holdPolicyUid":"5678943518943513",
-    "creator":{
-      "userUid":"6ea61522a8526cc4",
-      "username":"jon.doe",
-      "email":"jdoe@example.com",
+    "legalHold":{
+      "legalHoldUid":"645576513911664484",
+      "name":"Patent Lawsuit"
+    },
+    "user":{
+      "userUid":"123412341234123412",
+      "username":"user1@example.com",
+      "email":"user1@example.com",
       "userExtRef":null
+    }
 }
 """
 
@@ -1113,9 +1114,9 @@ MOCK_GET_ALL_MATTERS_RESPONSE = """
         "lastModified":"2015-05-16T15:07:44.820-05:00",
         "holdPolicyUid":"23456753135798456",
         "creator":{
-          "userUid":"6ea61522a8526cc4",
-          "username":"jon.doe",
-          "email":"jdoe@example.com",
+          "userUid":"123412341234123412",
+          "username":"user1@example.com",
+          "email":"user1@example.com",
           "userExtRef":null
         }
       }
@@ -1135,9 +1136,9 @@ MOCK_GET_ALL_MATTER_CUSTODIANS_RESPONSE = """
               "name":"Patent Lawsuit"
             },
             "user":{
-              "userUid":"6ea61522a8526cc4",
-              "username":"jon.doe",
-              "email":"jdoe@example.com",
+              "userUid":"123412341234123412",
+              "username":"user1@example.com",
+              "email":"user1@example.com",
               "userExtRef":null
             }
           }
@@ -1232,7 +1233,10 @@ def code42_legal_hold_mock(code42_sdk_mock, mocker):
     code42_sdk_mock.legalhold.get_all_matter_custodians.return_value = (
         create_mock_code42_sdk_response_generator(mocker, [MOCK_GET_ALL_MATTER_CUSTODIANS_RESPONSE])
     )
-    code42_sdk_mock.legalhold.add_to_matter.return_value = MOCK_ADD_TO_MATTER_RESPONSE
+    code42_sdk_mock.legalhold.add_to_matter.return_value = (
+        create_mock_code42_sdk_response(mocker, MOCK_ADD_TO_MATTER_RESPONSE)
+    )
+
     return code42_sdk_mock
 
 
@@ -1681,6 +1685,34 @@ def test_highriskemployee_remove_risk_tags_command(code42_sdk_mock):
     code42_sdk_mock.detectionlists.remove_user_risk_tags.assert_called_once_with(
         _TEST_USER_ID, ["FLIGHT_RISK", "CONTRACT_EMPLOYEE"]
     )
+
+
+def test_legalhold_add_user_command(code42_legal_hold_mock):
+    client = create_client(code42_legal_hold_mock)
+    cmd_res = legal_hold_add_user_command(
+        client, {"username": _TEST_USERNAME, "mattername": "Patent Lawsuit"}
+    )
+    assert cmd_res.raw_response == json.loads(MOCK_ADD_TO_MATTER_RESPONSE)
+    assert cmd_res.outputs_prefix == "Code42.LegalHold"
+    assert cmd_res.outputs_key_field == "MatterID"
+    assert cmd_res.outputs["UserID"] == _TEST_USER_ID
+    assert cmd_res.outputs["MatterName"] == "Patent Lawsuit"
+    assert cmd_res.outputs["MatterID"] == "645576513911664484"
+    code42_legal_hold_mock.legalhold.add_to_matter.assert_called_once_with("123412341234123412",
+                                                                           "645576513911664484")
+
+
+def test_legalhold_remove_user_command(code42_legal_hold_mock):
+    client = create_client(code42_legal_hold_mock)
+    cmd_res = legal_hold_remove_user_command(
+        client, {"username": _TEST_USERNAME, "mattername": "Patent Lawsuit"}
+    )
+    assert cmd_res.outputs_prefix == "Code42.LegalHold"
+    assert cmd_res.outputs_key_field == "MatterID"
+    assert cmd_res.outputs["UserID"] == _TEST_USER_ID
+    assert cmd_res.outputs["MatterName"] == "Patent Lawsuit"
+    assert cmd_res.outputs["MatterID"] == "645576513911664484"
+    code42_legal_hold_mock.legalhold.remove_from_matter.assert_called_once_with("645579283748927372")
 
 
 def test_user_create_command(code42_users_mock):
