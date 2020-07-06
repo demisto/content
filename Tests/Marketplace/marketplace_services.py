@@ -1076,10 +1076,7 @@ class Pack(object):
         try:
             metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
 
-            if 'dependencies' not in user_metadata:
-                user_metadata['dependencies'] = packs_dependencies_mapping.get(
-                    self._pack_name, {}).get('dependencies', {})
-                print(f"Adding auto generated dependencies for {self._pack_name} pack")
+            self.set_pack_dependencies(user_metadata, packs_dependencies_mapping)
 
             if 'displayedImages' not in user_metadata:
                 user_metadata['displayedImages'] = packs_dependencies_mapping.get(
@@ -1108,6 +1105,24 @@ class Pack(object):
             print_error(f"Failed in formatting {self._pack_name} pack metadata. Additional info:\n{e}")
         finally:
             return task_status
+
+    def set_pack_dependencies(self, user_metadata, packs_dependencies_mapping):
+        pack_dependencies = packs_dependencies_mapping.get(self._pack_name, {}).get('dependencies', {})
+        if 'dependencies' not in user_metadata:
+            user_metadata['dependencies'] = {}
+
+        # If it is a core pack, check that no new mandatory packs (that are not core packs) were added
+        # They can be overridden in the user metadata to be not mandatory so we need to check there as well
+        if self._pack_name in GCPConfig.CORE_PACKS_LIST:
+            mandatory_dependencies = [k for k, v in pack_dependencies.items()
+                                      if v.get('mandatory', False) is True
+                                      and k not in GCPConfig.CORE_PACKS_LIST
+                                      and k not in user_metadata['dependencies'].keys()]
+            if mandatory_dependencies:
+                raise Exception(f'New mandatory dependencies {mandatory_dependencies} were '
+                                f'found in the core pack {self._pack_name}')
+
+        user_metadata['dependencies'].update(pack_dependencies)
 
     def prepare_for_index_upload(self):
         """ Removes and leaves only necessary files in pack folder.
