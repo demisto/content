@@ -243,7 +243,8 @@ def test_module(client, args):
     if res.status_code == 200 or res.status_code == 400:
         return 'ok', None, None
     else:
-        raise Exception(f"{res.status_code} - {res.text}")
+        error_response = str(res.headers.get('x-redlock-status'))
+        raise Exception(f"Failed to execuete test_module. Error Code: {res.status_code}. Error Response: {error_response}")
 
 
 def get_user_command(client, args):
@@ -255,7 +256,7 @@ def get_user_command(client, args):
     email = scim_flat_data.get('email')
 
     if not (user_id or username or email):
-        raise Exception('You must provide either the id,, email or username of the user')
+        raise Exception('You must provide either the id, email or username of the user')
 
     if user_id:
         user_term = user_id
