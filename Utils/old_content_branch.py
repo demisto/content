@@ -190,6 +190,19 @@ parser = argparse.ArgumentParser("Alter the branch to assign a new toVersion to 
 parser.add_argument('-v', '--new-to-version', help='The new to version to assign.', required=True)
 
 
+def edit_reputations_json(new_to_version):
+    rep_json_path = "Packs/NonSupported/IndicatorTypes/reputations.json"
+    rep_content = get_json(rep_json_path)
+    for reputation in rep_content.get('reputations', []):
+        if parse_version(reputation.get('toVersion', "99.99.99")) > parse_version(new_to_version) > \
+                parse_version("fromVersion", "0.0.0"):
+            reputation['toVersion'] = new_to_version
+
+    with open(rep_json_path, 'w') as f:
+        json.dump(rep_content, f, indent=4)
+        print("Updating reputations.json")
+
+
 def main():
     new_to_version = parser.parse_args().new_to_version
     if new_to_version.count('.') == 1:
@@ -197,6 +210,8 @@ def main():
 
     click.secho("Starting Branch Editing")
     edit_all_packs(new_to_version)
+
+    edit_reputations_json(new_to_version)
 
     click.secho("Deleting empty directories\n")
     subprocess.call(["find", "Packs", "-type", "d", "-empty", "-delete"])
