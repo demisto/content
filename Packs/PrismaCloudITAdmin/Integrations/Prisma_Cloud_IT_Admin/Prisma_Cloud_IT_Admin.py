@@ -255,7 +255,7 @@ def get_user_command(client, args):
     email = scim_flat_data.get('email')
 
     if not (user_id or username or email):
-        raise Exception('You must provide either the id,, email or username of the user')
+        raise Exception('You must provide either the id, email or username of the user')
 
     if user_id:
         user_term = user_id
