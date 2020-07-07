@@ -474,7 +474,7 @@ def test_module(client: Client) -> str:
 
 
 def search_applications_command(client: Client, args: Dict[str, str]):
-    app_id = args.get('application-id')
+    app_id = args.get('applicationId')
     limit = args.get('limit')
     endpoint_url = 'rsaarcher/api/core/system/application/'
 
@@ -509,7 +509,7 @@ def search_applications_command(client: Client, args: Dict[str, str]):
 
 
 def get_application_fields_command(client: Client, args: Dict[str, str]):
-    app_id = args.get('application-id')
+    app_id = args.get('applicationId')
 
     res = client.do_request('GET', f'rsaarcher/api/core/system/fielddefinition/application/{app_id}')
 
@@ -533,7 +533,7 @@ def get_application_fields_command(client: Client, args: Dict[str, str]):
 
 
 def get_field_command(client: Client, args: Dict[str, str]):
-    field_id = args.get('field-id')
+    field_id = args.get('fieldId')
 
     res = client.do_request('GET', f'rsaarcher/api/core/system/fielddefinition/{field_id}')
 
@@ -588,8 +588,8 @@ def get_mapping_by_level_command(client: Client, args: Dict[str, str]):
 
 
 def get_record_command(client: Client, args: Dict[str, str]):
-    record_id = args.get('record-id')
-    app_id = args.get('application-id')
+    record_id = args.get('contentId')
+    app_id = args.get('applicationId')
 
     record, res, errors = client.get_record(app_id, record_id)
     if errors:
@@ -604,8 +604,8 @@ def get_record_command(client: Client, args: Dict[str, str]):
 
 
 def create_record_command(client: Client, args: Dict[str, str]):
-    app_id = args.get('application-id')
-    fields_values = args.get('fields-to-values')
+    app_id = args.get('applicationId')
+    fields_values = args.get('fieldsToValues')
 
     level_data = client.get_level_by_app_id(app_id)[0]
     field_contents = generate_field_contents(fields_values, level_data['mapping'])
@@ -624,7 +624,7 @@ def create_record_command(client: Client, args: Dict[str, str]):
 
 
 def delete_record_command(client: Client, args: Dict[str, str]):
-    record_id = args.get('record-id')
+    record_id = args.get('contentId')
     res = client.do_request('Delete', f'rsaarcher/api/core/content/{record_id}')
 
     errors = get_errors_from_res(res)
@@ -634,9 +634,9 @@ def delete_record_command(client: Client, args: Dict[str, str]):
 
 
 def update_record_command(client: Client, args: Dict[str, str]):
-    app_id = args.get('application-id')
-    record_id = args.get('record-id')
-    fields_values = args.get('fields-to-values')
+    app_id = args.get('applicationId')
+    record_id = args.get('contentId')
+    fields_values = args.get('fieldsToValues')
     level_data = client.get_level_by_app_id(app_id)[0]
     field_contents = generate_field_contents(fields_values, level_data['mapping'])
 
@@ -654,8 +654,8 @@ def update_record_command(client: Client, args: Dict[str, str]):
 
 
 def execute_statistics_command(client: Client, args: Dict[str, str]):
-    report_guid = args.get('report-guid')
-    max_results = args.get('max-results')
+    report_guid = args.get('reportGuid')
+    max_results = args.get('maxResults')
     res, raw_res = client.do_soap_request('archer-execute-statistic-search-by-report',
                                           report_guid=report_guid, max_results=max_results)
     if res:
@@ -675,7 +675,7 @@ def get_reports_command(client: Client, args: Dict[str, str]):
 
 
 def search_options_command(client: Client, args: Dict[str, str]):
-    report_guid = args.get('report-guid')
+    report_guid = args.get('reportGuid')
     res, raw_res = client.do_soap_request('archer-get-search-options-by-guid', report_guid=report_guid)
     if res.startswith('<'):
         res = json.loads(xml2json(res))
@@ -688,7 +688,7 @@ def reset_cache_command(client: Client, args: Dict[str, str]):
 
 
 def get_value_list_command(client: Client, args: Dict[str, str]):
-    field_id = args.get('field-id')
+    field_id = args.get('fieldID')
     res = client.do_request('GET', f'rsaarcher/api/core/system/fielddefinition/{field_id}')
 
     errors = get_errors_from_res(res)
@@ -716,7 +716,7 @@ def get_value_list_command(client: Client, args: Dict[str, str]):
 
 
 def upload_file_command(client: Client, args: Dict[str, str]):
-    entry_id = args.get('entry-id')
+    entry_id = args.get('entryId')
     file_name, file_bytes = get_file(entry_id)
     body = {'AttachmentName': file_name, 'AttachmentBytes': file_bytes}
 
@@ -734,7 +734,7 @@ def upload_file_command(client: Client, args: Dict[str, str]):
 
 
 def download_file_command(client: Client, args: Dict[str, str]):
-    attachment_id = args.get('attachment-id')
+    attachment_id = args.get('fileId')
     res = client.do_request('GET', f'rsaarcher/api/core/content/attachment/{attachment_id}')
 
     errors = get_errors_from_res(res)
@@ -750,7 +750,7 @@ def download_file_command(client: Client, args: Dict[str, str]):
 
 
 def list_users_command(client: Client, args: Dict[str, str]):
-    user_id = args.get('user-id')
+    user_id = args.get('userId')
     if user_id:
         res = client.do_request('GET', f'rsaarcher/api/core/system/user/{user_id}')
     else:
@@ -785,15 +785,15 @@ def list_users_command(client: Client, args: Dict[str, str]):
 
 
 def search_records_command(client: Client, args: Dict[str, str]):
-    app_id = args.get('application-id')
-    field_to_search = args.get('field-to-search-on')
-    search_value = args.get('search-value')
-    max_results = args.get('max-results', 10)
-    date_operator = args.get('date-operator')
+    app_id = args.get('applicationId')
+    field_to_search = args.get('fieldToSearchOn')
+    search_value = args.get('searchValue')
+    max_results = args.get('maxResults', 10)
+    date_operator = args.get('dateOperator')
     numeric_operator = args.get('numeric-operator')
-    fields_to_display = argToList(args.get('fields-to-display'))
-    fields_to_get = argToList(args.get('fields-to-get'))
-    full_data = args.get('full-data', 'true') == 'true'
+    fields_to_display = argToList(args.get('fieldsToDisplay'))
+    fields_to_get = argToList(args.get('fieldsToGet'))
+    full_data = args.get('fullData', 'true') == 'true'
 
     if fields_to_get and 'Id' not in fields_to_get:
         fields_to_get.append('Id')
@@ -833,7 +833,7 @@ def search_records_command(client: Client, args: Dict[str, str]):
 
 
 def search_records_by_report_command(client: Client, args: Dict[str, str]):
-    report_guid = args.get('report-guid')
+    report_guid = args.get('reportGuid')
     res, raw_res = client.do_soap_request('archer-search-records-by-report', report_guid=report_guid)
     if not res:
         return_outputs(f'No records found for report {report_guid}', {}, json.loads(xml2json(raw_res)))

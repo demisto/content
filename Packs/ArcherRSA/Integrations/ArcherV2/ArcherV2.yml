@@ -85,7 +85,7 @@ script:
       description: The application ID for which to get details. Leave empty to get
         a list of all applications.
       isArray: false
-      name: application-id
+      name: applicationId
       required: false
       secret: false
     - default: false
@@ -119,7 +119,7 @@ script:
     - default: false
       description: The application ID for which to get the application fields.
       isArray: false
-      name: application-id
+      name: applicationId
       required: true
       secret: false
     deprecated: false
@@ -143,7 +143,7 @@ script:
     - default: false
       description: ID of the field.
       isArray: false
-      name: field-id
+      name: fieldId
       required: true
       secret: false
     deprecated: false
@@ -191,13 +191,13 @@ script:
     - default: false
       description: The record ID.
       isArray: false
-      name: record-id
+      name: contentId
       required: true
       secret: false
     - default: false
       description: The application ID.
       isArray: false
-      name: application-id
+      name: applicationId
       required: true
       secret: false
     deprecated: false
@@ -212,14 +212,14 @@ script:
     - default: false
       description: The application ID.
       isArray: false
-      name: application-id
+      name: applicationId
       required: true
       secret: false
     - default: false
       description: 'Record fields in JSON format: { "Name1": Value1, "Name2": Value2
         }. Field names are case sensitive.'
       isArray: false
-      name: fields-to-values
+      name: fieldsToValues
       required: true
       secret: false
     deprecated: false
@@ -234,7 +234,7 @@ script:
     - default: false
       description: The ID of the record to delete.
       isArray: false
-      name: record-id
+      name: contentId
       required: true
       secret: false
     deprecated: false
@@ -245,20 +245,20 @@ script:
     - default: false
       description: The application ID.
       isArray: false
-      name: application-id
+      name: applicationId
       required: true
       secret: false
     - default: false
       description: 'Record fields in JSON format: { "Name1": Value1, "Name2": Value2
         }. Field names are case sensitive.'
       isArray: false
-      name: fields-to-values
+      name: fieldsToValues
       required: true
       secret: false
     - default: false
       description: The ID of the record to update.
       isArray: false
-      name: record-id
+      name: contentId
       required: true
       secret: false
     deprecated: false
@@ -269,14 +269,14 @@ script:
     - default: false
       description: The report GUID.
       isArray: false
-      name: report-guid
+      name: reportGuid
       required: true
       secret: false
     - default: false
       defaultValue: '100'
       description: Maximum number of pages for the reports.
       isArray: false
-      name: max-results
+      name: maxResults
       required: true
       secret: false
     deprecated: false
@@ -291,7 +291,7 @@ script:
     - default: false
       description: The report GUID.
       isArray: false
-      name: report-guid
+      name: reportGuid
       required: true
       secret: false
     deprecated: false
@@ -307,7 +307,7 @@ script:
     - default: false
       description: The field ID.
       isArray: false
-      name: field-id
+      name: fieldID
       required: true
       secret: false
     deprecated: false
@@ -329,7 +329,7 @@ script:
     - default: false
       description: The entry ID of the file in Cortex XSOAR context.
       isArray: false
-      name: entry-id
+      name: entryId
       required: true
       secret: false
     deprecated: false
@@ -340,7 +340,7 @@ script:
     - default: false
       description: The attachment ID.
       isArray: false
-      name: attachment-id
+      name: fileId
       required: true
       secret: false
     deprecated: false
@@ -352,7 +352,7 @@ script:
       description: The ID of the user for which to get details. Leave empty to get
         a list of all users.
       isArray: false
-      name: user-id
+      name: userId
       required: false
       secret: false
     deprecated: false
@@ -388,20 +388,20 @@ script:
     - default: false
       description: ID of the application in which to search for records.
       isArray: false
-      name: application-id
+      name: applicationId
       required: true
       secret: false
     - default: false
       description: Name of the field on which to search. Leave empty to search for
         all fields.
       isArray: false
-      name: field-to-search-on
+      name: fieldToSearchOn
       required: false
       secret: false
     - default: false
       description: Search value. Leave empty to search for all.
       isArray: false
-      name: search-value
+      name: searchValue
       required: false
       secret: false
     - default: false
@@ -409,14 +409,14 @@ script:
       description: Maximum number of results to return from the search. Default is
         10.
       isArray: false
-      name: max-results
+      name: maxResults
       required: false
       secret: false
     - default: false
       description: 'Fields to present in the search results (in array format). For
         example: "Title,Incident Summary".'
       isArray: false
-      name: fields-to-display
+      name: fieldsToDisplay
       required: false
       secret: false
     - auto: PREDEFINED
@@ -424,7 +424,7 @@ script:
       description: Numeric search operator. Can be "Equals", "NotEqual", "GreaterThan",
         or "LessThan".
       isArray: false
-      name: numeric-operator
+      name: numericOperator
       predefined:
       - Equals
       - NotEqual
@@ -437,7 +437,7 @@ script:
       description: Date search operator. Can be "Equals", "DoesNotEqual", "GreaterThan",
         or "LessThan".
       isArray: false
-      name: date-operator
+      name: dateOperator
       predefined:
       - Equals
       - DoesNotEqual
@@ -448,7 +448,7 @@ script:
     - default: false
       description: Fields to fetch from the the application.
       isArray: false
-      name: fields-to-get
+      name: fieldsToGet
       required: false
       secret: false
     - auto: PREDEFINED
@@ -457,7 +457,7 @@ script:
       description: Whether to get extended responses with all of the data regarding
         this search. For example, "fullData=true".
       isArray: false
-      name: full-data
+      name: fullData
       predefined:
       - 'True'
       - 'False'
@@ -478,7 +478,7 @@ script:
     - default: false
       description: The report GUID.
       isArray: false
-      name: report-guid
+      name: reportGuid
       required: true
       secret: false
     deprecated: false

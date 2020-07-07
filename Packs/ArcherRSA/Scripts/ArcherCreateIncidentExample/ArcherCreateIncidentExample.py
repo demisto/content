@@ -22,7 +22,7 @@ def main():
     }
 
     create_record_res = demisto.executeCommand(
-        "archer-create-record", {'application-id': 75, 'fields-to-values': json.dumps(data)})
+        "archer-create-record", {'applicationId': 75, 'fieldsToValues': json.dumps(data)})
 
     return_outputs(create_record_res[0].get('HumanReadable'), create_record_res[0].get('EntryContext'), {})
 
