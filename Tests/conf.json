@@ -650,6 +650,12 @@
         },
         {
             "integrations": "Generic SQL",
+            "playbookID": "generic-sql",
+            "instance_names": "Oracle instance",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Generic SQL",
             "playbookID": "generic-sql-mssql-encrypted-connection",
             "instance_names": "Microsoft SQL instance using encrypted connection",
             "fromversion": "5.0.0"
@@ -3075,7 +3081,6 @@
         
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Issue 25650",
-        "JsonWhoIs": "Issue 25371: Out of quota",
         "XFE_v2": "Issue 22715",
         "AlphaSOC Wisdom": "API key has expired",
         "Lastline": "issue 20323",
