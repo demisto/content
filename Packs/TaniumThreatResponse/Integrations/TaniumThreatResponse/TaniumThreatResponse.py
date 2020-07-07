@@ -14,6 +14,7 @@ from typing import Any
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 ''' GLOBALS/PARAMS '''
+￿REQUEST_TIMEOUT = 60
 FETCH_TIME = demisto.params().get('fetch_time')
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
@@ -49,17 +50,17 @@ class Client(BaseClient):
         self.session = ''
         super(Client, self).__init__(base_url, **kwargs)
 
-    def do_request(self, method, url_suffix, data=None, params=None, resp_type='json'):
+    def do_request(self, method, url_suffix, data=None, params=None, resp_type='json', timeout=REQUEST_TIMEOUT):
         if not self.session:
             self.update_session()
-        res = self._http_request(method, url_suffix, headers={'session': self.session}, json_data=data,
+        res = self._http_request(method, url_suffix, headers={'session': self.session}, json_data=data, timeout=timeout,
                                  params=params, resp_type='response', ok_codes=(200, 201, 202, 204, 400, 403, 404))
 
         # if session expired
         if res.status_code == 403:
             self.update_session()
             res = self._http_request(method, url_suffix, headers={'session': self.session}, json_data=data,
-                                     params=params, ok_codes=(200, 400, 404))
+                                     timeout=timeout, params=params, ok_codes=(200, 400, 404))
             return res
 
         if res.status_code == 404 or res.status_code == 400:
