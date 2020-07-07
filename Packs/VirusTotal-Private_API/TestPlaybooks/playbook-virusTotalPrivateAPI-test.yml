@@ -1,4 +1,4 @@
-id: playbook-virusTotalPrivateAPI-test
+id: virusTotalPrivateAPI-test-playbook
 version: -1
 name: playbook-virusTotalPrivateAPI-test
 starttaskid: "0"
