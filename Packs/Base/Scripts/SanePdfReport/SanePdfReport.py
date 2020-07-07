@@ -87,3 +87,10 @@ except Exception:
     wrap = "=====sane-pdf-reports error====="
     err = f'{wrap}\n{tb}{wrap}\n'
     return_error(f'[SanePdfReports Automation Error] - {err}')
+
+
+def parseList():
+    return
+
+
+parseList()
