@@ -1,38 +1,26 @@
+comment: Displays the latest updated CVE entries
 commonfields:
   id: 5d44a5d9-d91a-4420-801f-755f26b60c47
   version: -1
-name: cveLatest
-script: |2
-
-  var resCmd = executeCommand('cve-latest', args);
-
-  function markdownTableHeader(columnNames) {
-      var header="|";
-      var divider="|"
-      for (var idx=0;idx<columnNames.length;idx++) {
-          header += columnNames[idx] + "|";
-          divider+= "-|";
-      }
-      return header+"\n"+divider+"\n";
-  }
-  var data=resCmd[0].Contents.results;
-  //return JSON.stringify(data);
-  var res = "";//markdownTableHeader(['CVE ID','Summary']);
-  for (var cveIdx=0;cveIdx<data.length;cveIdx++) {
-      res += "**" + data[cveIdx].id + "**" + ": " + data[cveIdx].summary + "\n";
-  }
-
-  return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: res } ;
-type: javascript
-tags:
-- cve
-comment: Displays the latest updated CVE entries
-system: true
-deprecated: true
-scripttarget: 0
 dependson:
   must:
   - cve-latest
-timeout: 0s
+deprecated: true
+name: cveLatest
+script: "\nvar resCmd = executeCommand('cve-latest', args);\n\nfunction markdownTableHeader(columnNames)\
+  \ {\n    var header=\"|\";\n    var divider=\"|\"\n    for (var idx=0;idx<columnNames.length;idx++)\
+  \ {\n        header += columnNames[idx] + \"|\";\n        divider+= \"-|\";\n  \
+  \  }\n    return header+\"\\n\"+divider+\"\\n\";\n}\nvar data=resCmd[0].Contents.results;\n\
+  //return JSON.stringify(data);\nvar res = \"\";//markdownTableHeader(['CVE ID','Summary']);\n\
+  for (var cveIdx=0;cveIdx<data.length;cveIdx++) {\n    res += \"**\" + data[cveIdx].id\
+  \ + \"**\" + \": \" + data[cveIdx].summary + \"\\n\";\n}\n\nreturn { ContentsFormat:\
+  \ formats.markdown, Type: entryTypes.note, Contents: res } ;\n"
+scripttarget: 0
+system: true
+tags:
+- cve
 tests:
 - No tests (auto formatted)
+timeout: 0s
+toversion: 4.1.9
+type: javascript

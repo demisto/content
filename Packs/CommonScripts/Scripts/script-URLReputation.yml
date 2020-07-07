@@ -1,25 +1,21 @@
+args:
+- default: true
+  description: URL to look up
+  name: url
+  required: true
+comment: A context script for URL entities
 commonfields:
   id: URLReputation
   version: -1
+enabled: true
 name: URLReputation
-script: |-
-  results = demisto.executeCommand('url', {'url': demisto.get(demisto.args(),'url')})
-
-  for item in results:
-      if isError(item):
-          item['Contents'] = item['Brand'] + ' returned an error.\n' + item['Contents']
-
-  demisto.results(results)
-type: python
+runonce: false
+script: "results = demisto.executeCommand('url', {'url': demisto.get(demisto.args(),'url')})\n\
+  \nfor item in results:\n    if isError(item):\n        item['Contents'] = item['Brand']\
+  \ + ' returned an error.\\n' + item['Contents']\n\ndemisto.results(results)"
+scripttarget: 0
 subtype: python2
 tags:
 - enhancement
-comment: A context script for URL entities
-enabled: true
-args:
-- name: url
-  required: true
-  default: true
-  description: URL to look up
-scripttarget: 0
-runonce: false
+toversion: 4.1.9
+type: python

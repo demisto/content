@@ -1,52 +1,21 @@
+args:
+- defaultValue: Investigation Summary
+  description: Name of the report to generate.
+  name: name
+- defaultValue: pdf
+  description: Report type to generate.
+  name: type
+- description: Incident IDs for which to generate.
+  isArray: true
+  name: ids
+  required: true
+comment: Generate report summaries for the passed incidents.
 commonfields:
   id: GenerateSummaryReports
   version: -1
-name: GenerateSummaryReports
-fromversion: 4.1.0
-script: |
-  var res = [];
-  var ids = argToList(args.ids);
-  if(!Array.isArray(ids)) {
-      ids = [ids]; //single element case
-  }
-  ids = ids.filter(function(value, index, self) { // make sure array is unique
-      return self.indexOf(value) === index;
-  });
-  var ec = {SummaryReports: []};
-  ids.forEach(function(id) {
-      var reportEntries =  executeCommand("generateSummaryReport", {name: args.name, type: args.type, incidentId: id});
-      res = res.concat(reportEntries);
-      if(reportEntries[0] && reportEntries[0].File) {
-          ec.SummaryReports.push({IncidentID: id, ReportName: args.name, File: reportEntries[0].File, FileID: reportEntries[0].FileID})
-      }
-      wait(1); //required to avoid generated file name conflicts
-  });
-  if(ec.SummaryReports.length > 0) {
-      res.push({
-          Type: entryTypes.note,
-          Contents: ec,
-          ContentsFormat: formats.json,
-          HumanReadable: tableToMarkdown("Summary Reports", ec.SummaryReports),
-          EntryContext: ec
-      });
-  }
-  return res;
-type: javascript
-tags:
-- Utility
-comment: Generate report summaries for the passed incidents.
 enabled: true
-args:
-- name: name
-  description: Name of the report to generate.
-  defaultValue: Investigation Summary
-- name: type
-  description: Report type to generate.
-  defaultValue: pdf
-- name: ids
-  required: true
-  description: Incident IDs for which to generate.
-  isArray: true
+fromversion: 4.1.0
+name: GenerateSummaryReports
 outputs:
 - contextPath: SummaryReports.IncidentID
   description: Incident ID of each generated report.
@@ -60,8 +29,25 @@ outputs:
 - contextPath: SummaryReports.FileID
   description: File ID of the generated report.
   type: string
-scripttarget: 0
-runonce: false
 runas: DBotWeakRole
+runonce: false
+script: "var res = [];\nvar ids = argToList(args.ids);\nif(!Array.isArray(ids)) {\n\
+  \    ids = [ids]; //single element case\n}\nids = ids.filter(function(value, index,\
+  \ self) { // make sure array is unique\n    return self.indexOf(value) === index;\n\
+  });\nvar ec = {SummaryReports: []};\nids.forEach(function(id) {\n    var reportEntries\
+  \ =  executeCommand(\"generateSummaryReport\", {name: args.name, type: args.type,\
+  \ incidentId: id});\n    res = res.concat(reportEntries);\n    if(reportEntries[0]\
+  \ && reportEntries[0].File) {\n        ec.SummaryReports.push({IncidentID: id, ReportName:\
+  \ args.name, File: reportEntries[0].File, FileID: reportEntries[0].FileID})\n  \
+  \  }\n    wait(1); //required to avoid generated file name conflicts\n});\nif(ec.SummaryReports.length\
+  \ > 0) {\n    res.push({\n        Type: entryTypes.note,\n        Contents: ec,\n\
+  \        ContentsFormat: formats.json,\n        HumanReadable: tableToMarkdown(\"\
+  Summary Reports\", ec.SummaryReports),\n        EntryContext: ec\n    });\n}\nreturn\
+  \ res;\n"
+scripttarget: 0
+tags:
+- Utility
 tests:
-  - Send Investigation Summary Reports - Test
+- Send Investigation Summary Reports - Test
+toversion: 4.1.9
+type: javascript

@@ -1,46 +1,24 @@
+args:
+- description: IP addresses to exclude (separated by commas)
+  name: excludedIps
+comment: Gets all IP addresses in context, excluding ones given.
 commonfields:
   id: ContextGetIps
   version: -1
-name: ContextGetIps
-script: |+
-  var excludedIps;
-  if (args.excludedIps) {
-      excludedIps = args.excludedIps.split(',');
-  }
-  var flat = {};
-  var res = [];
-  var currentValue;
-  flattenFields(invContext,undefined,flat);
-  keysArr = Object.keys(flat);
-  for (var i = 0; i < keysArr.length; i++) {
-      currentValue=flat[keysArr[i]];
-      if (ipRegex.test(currentValue) && res.indexOf(currentValue) === -1) {
-          if (excludedIps) {
-              if (excludedIps.indexOf(currentValue) === -1) {
-                  res.push(currentValue);
-              }
-          } else {
-              res.push(currentValue);
-          }
-      }
-  }
-
-  var md = '### IP addresses in context\n';
-  for (var i = 0; i<res.length; i++) {
-      md += '- ' + res[i] + '\n';
-  }
-  return {
-          Type: entryTypes.note,
-          Contents: res,
-          ContentsFormat: formats.json,
-          HumanReadable: md
-          };
-
-type: javascript
-tags: []
-comment: Gets all IP addresses in context, excluding ones given.
 enabled: true
-args:
-- name: excludedIps
-  description: IP addresses to exclude (separated by commas)
+name: ContextGetIps
+script: "var excludedIps;\nif (args.excludedIps) {\n    excludedIps = args.excludedIps.split(',');\n\
+  }\nvar flat = {};\nvar res = [];\nvar currentValue;\nflattenFields(invContext,undefined,flat);\n\
+  keysArr = Object.keys(flat);\nfor (var i = 0; i < keysArr.length; i++) {\n    currentValue=flat[keysArr[i]];\n\
+  \    if (ipRegex.test(currentValue) && res.indexOf(currentValue) === -1) {\n   \
+  \     if (excludedIps) {\n            if (excludedIps.indexOf(currentValue) ===\
+  \ -1) {\n                res.push(currentValue);\n            }\n        } else\
+  \ {\n            res.push(currentValue);\n        }\n    }\n}\n\nvar md = '### IP\
+  \ addresses in context\\n';\nfor (var i = 0; i<res.length; i++) {\n    md += '-\
+  \ ' + res[i] + '\\n';\n}\nreturn {\n        Type: entryTypes.note,\n        Contents:\
+  \ res,\n        ContentsFormat: formats.json,\n        HumanReadable: md\n     \
+  \   };\n\n"
 scripttarget: 0
+tags: []
+toversion: 4.1.9
+type: javascript

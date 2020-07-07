@@ -1,416 +1,74 @@
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: XFE
   version: -1
-name: XFE
-display: IBM X-Force Exchange
-category: Data Enrichment & Threat Intelligence
-image: data:image/png;base64,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
-description: IBM X-Force Exchange lets you receive threat intelligence about applications,
-  IP addresses, URls and hashes
-detaileddescription: |-
-  Don’t have XFE credentials?
-  Create IBM ID: https://www.ibm.com/account/profile/us?page=reg
-  Login to XFE: https://exchange.xforce.ibmcloud.com/
-  Select the “Show User Menu” icon
-  Choose settings / API Access / Generate
-
-  Indicators threshold:
-  Configure the default threshold for each indicator type in the instance settings.
-  Note that it is also possible to specify the threshold when runing the command.
-  Indicators with risk score equal or bigger than the threshold will be considered malicious.
-  Indicators with risk score equal or bigger than half of the threshold value, and lower than the threshold, will be considered suspicious.
 configuration:
-- display: Language
+- defaultvalue: en-US
+  display: Language
   name: Language
-  defaultvalue: en-US
+  required: true
   type: 0
-  required: true
-- display: API Key
+- defaultvalue: ''
+  display: API Key
   name: authentication
-  defaultvalue: ""
-  type: 9
   required: true
-- display: Use system proxy settings
+  type: 9
+- defaultvalue: 'true'
+  display: Use system proxy settings
   name: useproxy
-  defaultvalue: "true"
-  type: 8
   required: false
-- display: Trust any certificate (not secure)
+  type: 8
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "false"
-  type: 8
   required: false
-- display: IP Threshold. Minimum risk score for the IP to be consodered malicious
+  type: 8
+- defaultvalue: '7'
+  display: IP Threshold. Minimum risk score for the IP to be consodered malicious
     (ranges from 1 to 10).
   name: ipThreshold
-  defaultvalue: "7"
-  type: 0
   required: false
-- display: URL Threshold. Minimum risk score for the URL to be consodered malicious
+  type: 0
+- defaultvalue: '7'
+  display: URL Threshold. Minimum risk score for the URL to be consodered malicious
     (ranges from 1 to 10).
   name: urlThreshold
-  defaultvalue: "7"
-  type: 0
   required: false
+  type: 0
+description: IBM X-Force Exchange lets you receive threat intelligence about applications,
+  IP addresses, URls and hashes
+detaileddescription: "Don\u2019t have XFE credentials?\nCreate IBM ID: https://www.ibm.com/account/profile/us?page=reg\n\
+  Login to XFE: https://exchange.xforce.ibmcloud.com/\nSelect the \u201CShow User\
+  \ Menu\u201D icon\nChoose settings / API Access / Generate\n\nIndicators threshold:\n\
+  Configure the default threshold for each indicator type in the instance settings.\n\
+  Note that it is also possible to specify the threshold when runing the command.\n\
+  Indicators with risk score equal or bigger than the threshold will be considered\
+  \ malicious.\nIndicators with risk score equal or bigger than half of the threshold\
+  \ value, and lower than the threshold, will be considered suspicious."
+display: IBM X-Force Exchange
+fromversion: 2.5.0
+image: data:image/png;base64,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
+name: XFE
 script:
-  script: |-
-    var SERVER = 'https://api.xforce.ibmcloud.com/';
-
-
-    function doReq(method, path, query, body) {
-        var result = http(
-            SERVER + path + encodeToURLQuery(query),
-            {
-                Headers: {'Content-Type': ['application/json'], 'Accept': ['application/json'], 'Accept-Language': [params.Language]},
-                Method: method,
-                Body: body ? JSON.stringify(body) : '',
-                Username: params.authentication.identifier,
-                Password: params.authentication.password
-            },
-            params.insecure,
-            params.useproxy
-        );
-
-        if (result.StatusCode == 401) {
-            throw '401 Unauthorized - Wrong or invalid API key.';
-        }
-        if (result.StatusCode < 200 || result.StatusCode > 299 && result.StatusCode != 404) {
-            throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode + ', body: ' + result.Body;
-        }
-        if (result.Body === '') {
-            throw 'No content recieved.';
-        }
-        var obj;
-        try {
-            obj = JSON.parse(result.Body);
-        } catch (ex) {
-            throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
-        }
-        if (obj.error && result.StatusCode != 404) {
-            throw 'XFE error - ' + obj.error;
-        }
-        return {body: result.Body, obj: obj, statusCode: result.StatusCode};
-    }
-
-
-    function doFile(hash, longFormat) {
-        var res = doReq('GET', 'malware/' + hash);
-        if (res.statusCode === 404) {
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
-                HumanReadable: 'XFE does not have details about ' + hash};
-        }
-        var o = res.obj.malware;
-        var ec = {};
-        var dbotScore = 0;
-        if (o && o.family) {
-            dbotScore = 3;
-        } else if (o && o.risk === 'high') {
-            dbotScore = 3;
-        } else if (o && o.risk === 'medium') {
-            dbotScore = 2;
-        } else if (o) {
-            dbotScore = 1;
-        }
-        ec.DBotScore = {Indicator: hash, Type: 'hash', Vendor: 'XFE', Score: dbotScore};
-        if (dbotScore === 3) {
-            var malFile = {Malicious: {Vendor: 'XFE', Description: 'Risk: ' + o.risk + ' Family: ' + o.family, Score: o.risk}};
-            malFile[o.type.toUpperCase()] = hash;
-            addMalicious(ec, outputPaths.file, malFile);
-        }
-        var md = '## X-Force Hash Reputation for: ' + hash + '\n';
-        md += 'Type: **' + o.type + '**\n';
-        md += 'Risk: **' + o.risk + '**\n';
-        md += 'Created: **' + o.created + '**\n';
-        md += 'Family: **' + (o.family ? o.family.join(', ') : 'N/A') + '**\n';
-        md += 'Family members: **' + (o.familyMembers ? Object.keys(o.familyMembers).map(function(curr) {return curr + ' (' + o.familyMembers[curr].count + ')';}).join(', ') : 'N/A') + '**\n';
-        md += 'XFE Link: [' + hash + '](https://exchange.xforce.ibmcloud.com/malware/' + hash + ')\n';
-        if (longFormat === 'true' && o.origins) {
-            if (o.origins.CnCServers && o.origins.CnCServers.rows) {
-                md += '### CNC Servers\n';
-                md += arrToMd(o.origins.CnCServers.rows) + '\n';
-            }
-            if (o.origins.downloadServers && o.origins.downloadServers.rows) {
-                md += '### Download Servers\n';
-                md += arrToMd(o.origins.downloadServers.rows) + '\n';
-            }
-            if (o.origins.emails && o.origins.emails.rows) {
-                md += '### Emails\n';
-                md += arrToMd(o.origins.emails.rows) + '\n';
-            }
-            if (o.origins.subjects && o.origins.subjects.rows) {
-                md += '### Subjects\n';
-                md += arrToMd(o.origins.subjects.rows) + '\n';
-            }
-            if (o.origins.external) {
-                md += '### External\n';
-                md += objToMd(o.origins.external) + '\n';
-            }
-        }
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
-    }
-
-
-    var doIP = function(ip, longFormat, threshold) {
-        if (!threshold) {
-            threshold = params.ipThreshold || 7;
-        }
-        threshold = parseInt(threshold);
-        // Need to make sure to be backwards compatible with the JSON
-        var res = {};
-        var ipRes = doReq('GET', 'ipr/' + ip);
-        if (ipRes.statusCode === 404) {
-            return {Type: entryTypes.note, Contents: ipRes.body, ContentsFormat: formats.json,
-                HumanReadable: 'XFE does not have details about ' + ip};
-        }
-        var malwareRes = doReq('GET', 'ipr/malware/' + ip);
-        res.reputation = ipRes.obj;
-        res.malware = malwareRes.obj;
-        var o = res.reputation;
-        var ec = {};
-        var dbotScore = 0;
-        if (o.score && o.score >= threshold) {
-            dbotScore = 3;
-            addMalicious(ec, outputPaths.ip, {Address: ip, Malicious: {Vendor: 'XFE', Description: 'Score above ' + threshold, Score: o.score}});
-        } else if (o.score && o.score >= threshold / 2) {
-            dbotScore = 2;
-        } else if (o.score) {
-            dbotScore = 1;
-        }
-        ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'XFE', Score: dbotScore};
-        var md = '## X-Force IP Reputation for: ' + ip + '\n';
-        md += 'Score: **' + o.score + '**\n';
-        md += 'Categories: **' + Object.keys(o.cats).map(function(curr) {return curr + ' (' + o.cats[curr] + ')';}).join(', ') + '**\n';
-        md += 'Country: **' + (o.geo && o.geo.country ? o.geo.country : 'N/A') + '**\n';
-        md += 'Reason: **' + o.reason + '**\n';
-        md += 'Reason description: **' + o.reasonDescription + '**\n';
-        md += 'XFE Link: [' + ip + '](https://exchange.xforce.ibmcloud.com/ip/' + ip + ')\n';
-        if (o.subnets) {
-            md += '### Subnets\n';
-            md += arrToMd(o.subnets) + '\n';
-        }
-        if (longFormat === 'true') {
-            if (o.history) {
-                md += '### History\n';
-                md += arrToMd(o.history) + '\n';
-            }
-            if (res.malware.malware) {
-                md += '### Malware\n';
-                md += arrToMd(res.malware.malware) + '\n';
-            }
-        }
-        return {Type: entryTypes.note, Contents: JSON.stringify(res), ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
-    };
-
-    var doURL = function(url, longFormat, threshold) {
-        if (!threshold) {
-            threshold = params.urlThreshold || 7;
-        }
-        threshold = parseInt(threshold);
-        // Need to make sure to be backwards compatible with the JSON
-        var res = {};
-        var resolutionRes = doReq('GET', 'resolve/' + url);
-        if (resolutionRes.statusCode === 404) {
-            return {Type: entryTypes.note, Contents: resolutionRes.body, ContentsFormat: formats.json,
-                HumanReadable: 'XFE does not have details about ' + url};
-        }
-        var urlRes = doReq('GET', 'url/' + url);
-        if (urlRes.statusCode === 404) {
-            return {Type: entryTypes.note, Contents: urlRes.body, ContentsFormat: formats.json,
-                HumanReadable: 'XFE does not have details about ' + url};
-        }
-        var malwareRes = doReq('GET', 'url/malware/' + url);
-        res.resolution = resolutionRes.obj;
-        res.url = urlRes.obj;
-        res.malware = malwareRes.obj;
-        if (res.resolution && res.resolution.A) {
-            var countryRes = doReq('GET', 'ipr/' + res.resolution.A[0]);
-            if (countryRes.obj.geo) {
-                res.country = countryRes.obj.geo.country;
-            }
-        }
-        var o = res.url;
-        var ec = {};
-        var dbotScore = 0;
-        if (o.result && o.result.score && o.result.score >= threshold) {
-            addMalicious(ec, outputPaths.url, {Data: url, Malicious: {Vendor: 'XFE', Description: 'Score above ' + threshold, Score: o.result.score}});
-            dbotScore = 3;
-        } else if (o.result && o.result.score && o.result.score >= threshold / 2) {
-            dbotScore = 2;
-        } else if (o.result && o.result.score) {
-            dbotScore = 1;
-        }
-        ec.DBotScore = {Indicator: url, Type: 'url', Vendor: 'XFE', Score: dbotScore};
-        var md = '## X-Force URL Reputation for: ' + url + '\n';
-        if (o.result) {
-            md += 'Score: **' + o.result.score + '**\n';
-            md += 'Categories: **' + Object.keys(o.result.cats).join(', ') + '**\n';
-            md += 'XFE Link: [' + url + '](https://exchange.xforce.ibmcloud.com/url/' + encodeURIComponent(url) + ')\n';
-        } else {
-            md += 'No result found';
-        }
-        if (res.resolution) {
-            md += '### Resolution\n';
-            if (res.country) {
-                md += 'Country: **' + res.country + '**\n';
-            }
-            md += objToMd(res.resolution) + '\n';
-        }
-        if (longFormat === 'true') {
-            if (o.result && o.result.associated) {
-                md += '### Associated\n';
-                md += arrToMd(o.result.associated.map(function(curr) {
-                    return {URL: curr.url, Score: curr.score, Categories: Object.keys(curr.result.cats).join(', ')};
-                })) + '\n';
-            }
-            // Retrieve malware on the URL
-            if (res.malware.malware) {
-                md += '### Malware\n';
-                md += 'Count: **' + res.malware.count + '**\n';
-                md += arrToMd(res.malware.malware);
-            }
-        }
-        return {Type: entryTypes.note, Contents: JSON.stringify(res), ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
-    };
-
-    function cveToMd(o) {
-        var cve = 'Unknown';
-        if (o.stdcode) {
-            for (var i=0; i<o.stdcode.length; i++) {
-                if (o.stdcode[i].toUpperCase().indexOf('CVE') >= 0) {
-                    cve = o.stdcode[i].toUpperCase();
-                    break;
-                }
-            }
-        }
-        var md = '### Standard code: ' + cve + '\n';
-        md += 'Title: **' + nvl(o.title) + '**\n';
-        md += 'Description: **' + nvl(o.description) + '**\n';
-        md += 'Risk: **' + nvl(o.risk_level) + '**\n';
-        md += 'Type: **' + nvl(o.type) + '**\n';
-        md += 'Variant: **' + nvl(o.variant) + '**\n';
-        md += 'Temporal score: **' + nvl(o.temporal_score) + '**\n';
-        md += 'Remedy: **' + nvl(o.remedy) + '**\n';
-        md += 'Reported: **' + nvl(o.reported) + '**\n';
-        md += 'Standard codes: **' + (o.stdcode ? o.stdcode.join(', ') : 'N/A') + '**\n';
-        md += 'Platforms: **' + (o.platforms_affected ? o.platforms_affected.join(', ') : 'N/A') + '**\n';
-        md += 'Exploitability: **' + nvl(o.exploitability) + '**\n';
-        md += 'Consequences: **' + nvl(o.consequences) + '**\n';
-        md += 'Confidence: **' + nvl(o.report_confidence) + '**\n';
-        md += objToList(o.cvss, 'CVSS');
-        if (o.references) {
-            md += '### References' + '\n';
-            md += arrToMd(o.references) + '\n';
-        }
-        return md;
-    }
-
-
-    function cveToContext(o) {
-        var cve = 'Unknown';
-        if (o.stdcode) {
-            for (var i=0; i<o.stdcode.length; i++) {
-                if (o.stdcode[i].toUpperCase().indexOf('CVE') >= 0) {
-                    cve = o.stdcode[i].toUpperCase();
-                    break;
-                }
-            }
-        }
-        return {ID: cve, CVSS: o.risk_level, Published: o.reported, Modified: o.reported};
-    }
-
-
-    function doCVE(cve) {
-        var res = doReq('GET', 'vulnerabilities/search/' + cve);
-        if (res.statusCode === 404) {
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
-                HumanReadable: 'XFE does not have details about ' + cve};
-        }
-        var o = res.obj;
-        var md = '## X-Force CVE Search for: ' + cve + '\n';
-        var context = {};
-        var ec = [];
-        if (o && Array.isArray(o)) {
-            for (var i=0; i<o.length; i++) {
-                md += cveToMd(o[i]) + '\n';
-                ec.push(cveToContext(o[i]));
-            }
-            if (ec.length > 0) {
-                context[outputPaths.cve] = ec;
-            }
-        } else {
-            md += 'No result found.';
-        }
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context};
-    }
-
-
-    function doCVELatest(limit) {
-        if (!limit) {
-            limit = '30';
-        }
-        var res = doReq('GET', 'vulnerabilities', {limit: limit});
-        // This should never happen
-        if (res.statusCode === 404) {
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
-                HumanReadable: 'XFE does not have a list of latest vulnerabilities'};
-        }
-        var o = res.obj;
-        var md = '## X-Force Latest CVEs\n';
-        var context = {};
-        var ec = [];
-        if (o && Array.isArray(o)) {
-            for (var i=0; i<o.length; i++) {
-                md += cveToMd(o[i]) + '\n';
-                ec.push(cveToContext(o[i]));
-            }
-            if (ec.length > 0) {
-                context[outputPaths.cve] = ec;
-            }
-        } else {
-            md += 'No result found.';
-        }
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context};
-    }
-
-
-    switch (command) {
-        case 'test-module':
-            doReq('GET', 'user/profile'); // Get user will validate keys
-            return true;
-        case 'file':
-            return doFile(args.file, args.long);
-        case 'ip':
-            return doIP(args.ip, args.long, args.threshold);
-        case 'url':
-            return doURL(args.url, args.long, args.threshold);
-        case 'domain':
-            return doURL(args.domain, args.long, args.threshold);
-        case 'cve-search':
-            return doCVE(args.cveId);
-        case 'cve-latest':
-            return doCVELatest(args.limit);
-        default:
-            throw 'Unknown command - ' + command;
-    }
-  type: javascript
   commands:
-  - name: url
-    arguments:
-    - name: url
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: URL to be checked
-    - name: long
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      name: url
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
       description: Should we return full response with detected malware on the URLs
-      defaultValue: "false"
-    - name: threshold
-      description: If the score is above the given threshold, will be considered malicious.
+      name: long
+      predefined:
+      - 'true'
+      - 'false'
+    - description: If the score is above the given threshold, will be considered malicious.
         If threshold is not specified, the default URL threshold, as configured in
         the instance settings, will be used.
+      name: threshold
+    description: Check the given URL reputation
+    name: url
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found
@@ -428,20 +86,20 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    description: Check the given URL reputation
-  - name: file
-    arguments:
-    - name: file
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: The file hash md5/sha1/sha256 to check
-    - name: long
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      name: file
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
       description: Should we return full response
-      defaultValue: "false"
+      name: long
+      predefined:
+      - 'true'
+      - 'false'
+    description: Check file reputation
+    name: file
     outputs:
     - contextPath: File.MD5
       description: Bad hash MD5
@@ -463,24 +121,24 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    description: Check file reputation
-  - name: ip
-    arguments:
-    - name: ip
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: IP to check
-    - name: long
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      name: ip
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
       description: Should we return full response
-      defaultValue: "false"
-    - name: threshold
-      description: If the score is above the given threshold, will be considered malicious.
+      name: long
+      predefined:
+      - 'true'
+      - 'false'
+    - description: If the score is above the given threshold, will be considered malicious.
         If threshold is not specified, the default IP threshold, as configured in
         the instance settings, will be used.
+      name: threshold
+    description: Check IP reputation
+    name: ip
     outputs:
     - contextPath: IP.Address
       description: Bad IP found
@@ -498,24 +156,24 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    description: Check IP reputation
-  - name: domain
-    arguments:
-    - name: domain
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: The domain to check
-    - name: long
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      name: domain
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
       description: Should we return full response
-      defaultValue: "false"
-    - name: threshold
-      description: If the score is above the given threshold, will be considered malicious.
+      name: long
+      predefined:
+      - 'true'
+      - 'false'
+    - description: If the score is above the given threshold, will be considered malicious.
         If threshold is not specified, the default URL threshold, as configured in
         the instance settings, will be used.
+      name: threshold
+    description: Check domain reputation
+    name: domain
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found
@@ -533,30 +191,13 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    description: Check domain reputation
-  - name: cve-search
-    arguments:
-    - name: cveId
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: The cve to search for
-    outputs:
-    - contextPath: CVE.ID
-      description: The ID of the CVE
-    - contextPath: CVE.CVSS
-      description: The CVSS score of the CVE
-    - contextPath: CVE.Published
-      description: The date this was published
-    - contextPath: CVE.Modified
-      description: When CVE was last modified
-    - contextPath: CVE.Description
-      description: The CVE description
+      name: cveId
+      required: true
     description: Search for details about the given CVE
-  - name: cve-latest
-    arguments:
-    - name: limit
-      default: true
-      description: The number of results to return
+    name: cve-search
     outputs:
     - contextPath: CVE.ID
       description: The ID of the CVE
@@ -568,8 +209,190 @@ script:
       description: When CVE was last modified
     - contextPath: CVE.Description
       description: The CVE description
+  - arguments:
+    - default: true
+      description: The number of results to return
+      name: limit
     description: Return the latest vulnerabilities found
+    name: cve-latest
+    outputs:
+    - contextPath: CVE.ID
+      description: The ID of the CVE
+    - contextPath: CVE.CVSS
+      description: The CVSS score of the CVE
+    - contextPath: CVE.Published
+      description: The date this was published
+    - contextPath: CVE.Modified
+      description: When CVE was last modified
+    - contextPath: CVE.Description
+      description: The CVE description
   runonce: false
-fromversion: 2.5.0
+  script: "var SERVER = 'https://api.xforce.ibmcloud.com/';\n\n\nfunction doReq(method,\
+    \ path, query, body) {\n    var result = http(\n        SERVER + path + encodeToURLQuery(query),\n\
+    \        {\n            Headers: {'Content-Type': ['application/json'], 'Accept':\
+    \ ['application/json'], 'Accept-Language': [params.Language]},\n            Method:\
+    \ method,\n            Body: body ? JSON.stringify(body) : '',\n            Username:\
+    \ params.authentication.identifier,\n            Password: params.authentication.password\n\
+    \        },\n        params.insecure,\n        params.useproxy\n    );\n\n   \
+    \ if (result.StatusCode == 401) {\n        throw '401 Unauthorized - Wrong or\
+    \ invalid API key.';\n    }\n    if (result.StatusCode < 200 || result.StatusCode\
+    \ > 299 && result.StatusCode != 404) {\n        throw 'Failed to perform request\
+    \ ' + path + ', request status code: ' + result.StatusCode + ', body: ' + result.Body;\n\
+    \    }\n    if (result.Body === '') {\n        throw 'No content recieved.';\n\
+    \    }\n    var obj;\n    try {\n        obj = JSON.parse(result.Body);\n    }\
+    \ catch (ex) {\n        throw 'Error parsing reply - ' + result.Body + ' - ' +\
+    \ ex;\n    }\n    if (obj.error && result.StatusCode != 404) {\n        throw\
+    \ 'XFE error - ' + obj.error;\n    }\n    return {body: result.Body, obj: obj,\
+    \ statusCode: result.StatusCode};\n}\n\n\nfunction doFile(hash, longFormat) {\n\
+    \    var res = doReq('GET', 'malware/' + hash);\n    if (res.statusCode === 404)\
+    \ {\n        return {Type: entryTypes.note, Contents: res.body, ContentsFormat:\
+    \ formats.json,\n            HumanReadable: 'XFE does not have details about '\
+    \ + hash};\n    }\n    var o = res.obj.malware;\n    var ec = {};\n    var dbotScore\
+    \ = 0;\n    if (o && o.family) {\n        dbotScore = 3;\n    } else if (o &&\
+    \ o.risk === 'high') {\n        dbotScore = 3;\n    } else if (o && o.risk ===\
+    \ 'medium') {\n        dbotScore = 2;\n    } else if (o) {\n        dbotScore\
+    \ = 1;\n    }\n    ec.DBotScore = {Indicator: hash, Type: 'hash', Vendor: 'XFE',\
+    \ Score: dbotScore};\n    if (dbotScore === 3) {\n        var malFile = {Malicious:\
+    \ {Vendor: 'XFE', Description: 'Risk: ' + o.risk + ' Family: ' + o.family, Score:\
+    \ o.risk}};\n        malFile[o.type.toUpperCase()] = hash;\n        addMalicious(ec,\
+    \ outputPaths.file, malFile);\n    }\n    var md = '## X-Force Hash Reputation\
+    \ for: ' + hash + '\\n';\n    md += 'Type: **' + o.type + '**\\n';\n    md +=\
+    \ 'Risk: **' + o.risk + '**\\n';\n    md += 'Created: **' + o.created + '**\\\
+    n';\n    md += 'Family: **' + (o.family ? o.family.join(', ') : 'N/A') + '**\\\
+    n';\n    md += 'Family members: **' + (o.familyMembers ? Object.keys(o.familyMembers).map(function(curr)\
+    \ {return curr + ' (' + o.familyMembers[curr].count + ')';}).join(', ') : 'N/A')\
+    \ + '**\\n';\n    md += 'XFE Link: [' + hash + '](https://exchange.xforce.ibmcloud.com/malware/'\
+    \ + hash + ')\\n';\n    if (longFormat === 'true' && o.origins) {\n        if\
+    \ (o.origins.CnCServers && o.origins.CnCServers.rows) {\n            md += '###\
+    \ CNC Servers\\n';\n            md += arrToMd(o.origins.CnCServers.rows) + '\\\
+    n';\n        }\n        if (o.origins.downloadServers && o.origins.downloadServers.rows)\
+    \ {\n            md += '### Download Servers\\n';\n            md += arrToMd(o.origins.downloadServers.rows)\
+    \ + '\\n';\n        }\n        if (o.origins.emails && o.origins.emails.rows)\
+    \ {\n            md += '### Emails\\n';\n            md += arrToMd(o.origins.emails.rows)\
+    \ + '\\n';\n        }\n        if (o.origins.subjects && o.origins.subjects.rows)\
+    \ {\n            md += '### Subjects\\n';\n            md += arrToMd(o.origins.subjects.rows)\
+    \ + '\\n';\n        }\n        if (o.origins.external) {\n            md += '###\
+    \ External\\n';\n            md += objToMd(o.origins.external) + '\\n';\n    \
+    \    }\n    }\n    return {Type: entryTypes.note, Contents: res.body, ContentsFormat:\
+    \ formats.json, HumanReadable: md, EntryContext: ec};\n}\n\n\nvar doIP = function(ip,\
+    \ longFormat, threshold) {\n    if (!threshold) {\n        threshold = params.ipThreshold\
+    \ || 7;\n    }\n    threshold = parseInt(threshold);\n    // Need to make sure\
+    \ to be backwards compatible with the JSON\n    var res = {};\n    var ipRes =\
+    \ doReq('GET', 'ipr/' + ip);\n    if (ipRes.statusCode === 404) {\n        return\
+    \ {Type: entryTypes.note, Contents: ipRes.body, ContentsFormat: formats.json,\n\
+    \            HumanReadable: 'XFE does not have details about ' + ip};\n    }\n\
+    \    var malwareRes = doReq('GET', 'ipr/malware/' + ip);\n    res.reputation =\
+    \ ipRes.obj;\n    res.malware = malwareRes.obj;\n    var o = res.reputation;\n\
+    \    var ec = {};\n    var dbotScore = 0;\n    if (o.score && o.score >= threshold)\
+    \ {\n        dbotScore = 3;\n        addMalicious(ec, outputPaths.ip, {Address:\
+    \ ip, Malicious: {Vendor: 'XFE', Description: 'Score above ' + threshold, Score:\
+    \ o.score}});\n    } else if (o.score && o.score >= threshold / 2) {\n       \
+    \ dbotScore = 2;\n    } else if (o.score) {\n        dbotScore = 1;\n    }\n \
+    \   ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'XFE', Score: dbotScore};\n\
+    \    var md = '## X-Force IP Reputation for: ' + ip + '\\n';\n    md += 'Score:\
+    \ **' + o.score + '**\\n';\n    md += 'Categories: **' + Object.keys(o.cats).map(function(curr)\
+    \ {return curr + ' (' + o.cats[curr] + ')';}).join(', ') + '**\\n';\n    md +=\
+    \ 'Country: **' + (o.geo && o.geo.country ? o.geo.country : 'N/A') + '**\\n';\n\
+    \    md += 'Reason: **' + o.reason + '**\\n';\n    md += 'Reason description:\
+    \ **' + o.reasonDescription + '**\\n';\n    md += 'XFE Link: [' + ip + '](https://exchange.xforce.ibmcloud.com/ip/'\
+    \ + ip + ')\\n';\n    if (o.subnets) {\n        md += '### Subnets\\n';\n    \
+    \    md += arrToMd(o.subnets) + '\\n';\n    }\n    if (longFormat === 'true')\
+    \ {\n        if (o.history) {\n            md += '### History\\n';\n         \
+    \   md += arrToMd(o.history) + '\\n';\n        }\n        if (res.malware.malware)\
+    \ {\n            md += '### Malware\\n';\n            md += arrToMd(res.malware.malware)\
+    \ + '\\n';\n        }\n    }\n    return {Type: entryTypes.note, Contents: JSON.stringify(res),\
+    \ ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};\n};\n\n\
+    var doURL = function(url, longFormat, threshold) {\n    if (!threshold) {\n  \
+    \      threshold = params.urlThreshold || 7;\n    }\n    threshold = parseInt(threshold);\n\
+    \    // Need to make sure to be backwards compatible with the JSON\n    var res\
+    \ = {};\n    var resolutionRes = doReq('GET', 'resolve/' + url);\n    if (resolutionRes.statusCode\
+    \ === 404) {\n        return {Type: entryTypes.note, Contents: resolutionRes.body,\
+    \ ContentsFormat: formats.json,\n            HumanReadable: 'XFE does not have\
+    \ details about ' + url};\n    }\n    var urlRes = doReq('GET', 'url/' + url);\n\
+    \    if (urlRes.statusCode === 404) {\n        return {Type: entryTypes.note,\
+    \ Contents: urlRes.body, ContentsFormat: formats.json,\n            HumanReadable:\
+    \ 'XFE does not have details about ' + url};\n    }\n    var malwareRes = doReq('GET',\
+    \ 'url/malware/' + url);\n    res.resolution = resolutionRes.obj;\n    res.url\
+    \ = urlRes.obj;\n    res.malware = malwareRes.obj;\n    if (res.resolution &&\
+    \ res.resolution.A) {\n        var countryRes = doReq('GET', 'ipr/' + res.resolution.A[0]);\n\
+    \        if (countryRes.obj.geo) {\n            res.country = countryRes.obj.geo.country;\n\
+    \        }\n    }\n    var o = res.url;\n    var ec = {};\n    var dbotScore =\
+    \ 0;\n    if (o.result && o.result.score && o.result.score >= threshold) {\n \
+    \       addMalicious(ec, outputPaths.url, {Data: url, Malicious: {Vendor: 'XFE',\
+    \ Description: 'Score above ' + threshold, Score: o.result.score}});\n       \
+    \ dbotScore = 3;\n    } else if (o.result && o.result.score && o.result.score\
+    \ >= threshold / 2) {\n        dbotScore = 2;\n    } else if (o.result && o.result.score)\
+    \ {\n        dbotScore = 1;\n    }\n    ec.DBotScore = {Indicator: url, Type:\
+    \ 'url', Vendor: 'XFE', Score: dbotScore};\n    var md = '## X-Force URL Reputation\
+    \ for: ' + url + '\\n';\n    if (o.result) {\n        md += 'Score: **' + o.result.score\
+    \ + '**\\n';\n        md += 'Categories: **' + Object.keys(o.result.cats).join(',\
+    \ ') + '**\\n';\n        md += 'XFE Link: [' + url + '](https://exchange.xforce.ibmcloud.com/url/'\
+    \ + encodeURIComponent(url) + ')\\n';\n    } else {\n        md += 'No result\
+    \ found';\n    }\n    if (res.resolution) {\n        md += '### Resolution\\n';\n\
+    \        if (res.country) {\n            md += 'Country: **' + res.country + '**\\\
+    n';\n        }\n        md += objToMd(res.resolution) + '\\n';\n    }\n    if\
+    \ (longFormat === 'true') {\n        if (o.result && o.result.associated) {\n\
+    \            md += '### Associated\\n';\n            md += arrToMd(o.result.associated.map(function(curr)\
+    \ {\n                return {URL: curr.url, Score: curr.score, Categories: Object.keys(curr.result.cats).join(',\
+    \ ')};\n            })) + '\\n';\n        }\n        // Retrieve malware on the\
+    \ URL\n        if (res.malware.malware) {\n            md += '### Malware\\n';\n\
+    \            md += 'Count: **' + res.malware.count + '**\\n';\n            md\
+    \ += arrToMd(res.malware.malware);\n        }\n    }\n    return {Type: entryTypes.note,\
+    \ Contents: JSON.stringify(res), ContentsFormat: formats.json, HumanReadable:\
+    \ md, EntryContext: ec};\n};\n\nfunction cveToMd(o) {\n    var cve = 'Unknown';\n\
+    \    if (o.stdcode) {\n        for (var i=0; i<o.stdcode.length; i++) {\n    \
+    \        if (o.stdcode[i].toUpperCase().indexOf('CVE') >= 0) {\n             \
+    \   cve = o.stdcode[i].toUpperCase();\n                break;\n            }\n\
+    \        }\n    }\n    var md = '### Standard code: ' + cve + '\\n';\n    md +=\
+    \ 'Title: **' + nvl(o.title) + '**\\n';\n    md += 'Description: **' + nvl(o.description)\
+    \ + '**\\n';\n    md += 'Risk: **' + nvl(o.risk_level) + '**\\n';\n    md += 'Type:\
+    \ **' + nvl(o.type) + '**\\n';\n    md += 'Variant: **' + nvl(o.variant) + '**\\\
+    n';\n    md += 'Temporal score: **' + nvl(o.temporal_score) + '**\\n';\n    md\
+    \ += 'Remedy: **' + nvl(o.remedy) + '**\\n';\n    md += 'Reported: **' + nvl(o.reported)\
+    \ + '**\\n';\n    md += 'Standard codes: **' + (o.stdcode ? o.stdcode.join(',\
+    \ ') : 'N/A') + '**\\n';\n    md += 'Platforms: **' + (o.platforms_affected ?\
+    \ o.platforms_affected.join(', ') : 'N/A') + '**\\n';\n    md += 'Exploitability:\
+    \ **' + nvl(o.exploitability) + '**\\n';\n    md += 'Consequences: **' + nvl(o.consequences)\
+    \ + '**\\n';\n    md += 'Confidence: **' + nvl(o.report_confidence) + '**\\n';\n\
+    \    md += objToList(o.cvss, 'CVSS');\n    if (o.references) {\n        md +=\
+    \ '### References' + '\\n';\n        md += arrToMd(o.references) + '\\n';\n  \
+    \  }\n    return md;\n}\n\n\nfunction cveToContext(o) {\n    var cve = 'Unknown';\n\
+    \    if (o.stdcode) {\n        for (var i=0; i<o.stdcode.length; i++) {\n    \
+    \        if (o.stdcode[i].toUpperCase().indexOf('CVE') >= 0) {\n             \
+    \   cve = o.stdcode[i].toUpperCase();\n                break;\n            }\n\
+    \        }\n    }\n    return {ID: cve, CVSS: o.risk_level, Published: o.reported,\
+    \ Modified: o.reported};\n}\n\n\nfunction doCVE(cve) {\n    var res = doReq('GET',\
+    \ 'vulnerabilities/search/' + cve);\n    if (res.statusCode === 404) {\n     \
+    \   return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,\n\
+    \            HumanReadable: 'XFE does not have details about ' + cve};\n    }\n\
+    \    var o = res.obj;\n    var md = '## X-Force CVE Search for: ' + cve + '\\\
+    n';\n    var context = {};\n    var ec = [];\n    if (o && Array.isArray(o)) {\n\
+    \        for (var i=0; i<o.length; i++) {\n            md += cveToMd(o[i]) + '\\\
+    n';\n            ec.push(cveToContext(o[i]));\n        }\n        if (ec.length\
+    \ > 0) {\n            context[outputPaths.cve] = ec;\n        }\n    } else {\n\
+    \        md += 'No result found.';\n    }\n    return {Type: entryTypes.note,\
+    \ Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext:\
+    \ context};\n}\n\n\nfunction doCVELatest(limit) {\n    if (!limit) {\n       \
+    \ limit = '30';\n    }\n    var res = doReq('GET', 'vulnerabilities', {limit:\
+    \ limit});\n    // This should never happen\n    if (res.statusCode === 404) {\n\
+    \        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,\n\
+    \            HumanReadable: 'XFE does not have a list of latest vulnerabilities'};\n\
+    \    }\n    var o = res.obj;\n    var md = '## X-Force Latest CVEs\\n';\n    var\
+    \ context = {};\n    var ec = [];\n    if (o && Array.isArray(o)) {\n        for\
+    \ (var i=0; i<o.length; i++) {\n            md += cveToMd(o[i]) + '\\n';\n   \
+    \         ec.push(cveToContext(o[i]));\n        }\n        if (ec.length > 0)\
+    \ {\n            context[outputPaths.cve] = ec;\n        }\n    } else {\n   \
+    \     md += 'No result found.';\n    }\n    return {Type: entryTypes.note, Contents:\
+    \ res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context};\n\
+    }\n\n\nswitch (command) {\n    case 'test-module':\n        doReq('GET', 'user/profile');\
+    \ // Get user will validate keys\n        return true;\n    case 'file':\n   \
+    \     return doFile(args.file, args.long);\n    case 'ip':\n        return doIP(args.ip,\
+    \ args.long, args.threshold);\n    case 'url':\n        return doURL(args.url,\
+    \ args.long, args.threshold);\n    case 'domain':\n        return doURL(args.domain,\
+    \ args.long, args.threshold);\n    case 'cve-search':\n        return doCVE(args.cveId);\n\
+    \    case 'cve-latest':\n        return doCVELatest(args.limit);\n    default:\n\
+    \        throw 'Unknown command - ' + command;\n}"
+  type: javascript
 tests:
-  - XFE Test
+- XFE Test
+toversion: 4.1.9

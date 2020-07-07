@@ -1,172 +1,128 @@
 id: GCS - Test
-version: -1
+inputs: []
 name: GCS - Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 741f27e5-8f8e-4f03-86f3-de7e4df7b672
-    type: start
-    task:
-      id: 741f27e5-8f8e-4f03-86f3-de7e4df7b672
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "6"
-      - "7"
-      - "8"
-      - "9"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 50
-        }
-      }
+      - '6'
+      - '7'
+      - '8'
+      - '9'
     note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 943cfb3b-d2d2-4029-83fa-a3889050d8ec
-    type: title
+    separatecontext: false
     task:
-      id: 943cfb3b-d2d2-4029-83fa-a3889050d8ec
+      brand: ''
+      id: 741f27e5-8f8e-4f03-86f3-de7e4df7b672
+      iscommand: false
+      name: ''
       version: -1
+    taskid: 741f27e5-8f8e-4f03-86f3-de7e4df7b672
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 50\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 943cfb3b-d2d2-4029-83fa-a3889050d8ec
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 3bf9bf44-3fa9-45a4-8b1f-4737726d4b5a
-    type: playbook
-    task:
-      id: 3bf9bf44-3fa9-45a4-8b1f-4737726d4b5a
       version: -1
+    taskid: 943cfb3b-d2d2-4029-83fa-a3889050d8ec
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 370\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    separatecontext: true
+    task:
+      brand: ''
+      id: 3bf9bf44-3fa9-45a4-8b1f-4737726d4b5a
+      iscommand: false
       name: GCS Bucket Management - Test
       playbookName: GCS Bucket Management - Test
       type: playbook
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 3bf9bf44-3fa9-45a4-8b1f-4737726d4b5a
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '7':
+    id: '7'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "5"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
+      - '5'
     note: false
-    timertriggers: []
-    ignoreworker: false
-  "7":
-    id: "7"
-    taskid: 0cf3321c-10cf-4193-8c6e-756b90c9acd2
-    type: playbook
+    separatecontext: true
     task:
+      brand: ''
       id: 0cf3321c-10cf-4193-8c6e-756b90c9acd2
-      version: -1
+      iscommand: false
       name: GCS Object Operations - Test
       playbookName: GCS Object Operations - Test
       type: playbook
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 0cf3321c-10cf-4193-8c6e-756b90c9acd2
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 195\n  }\n}"
+  '8':
+    id: '8'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "5"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 195
-        }
-      }
+      - '5'
     note: false
-    timertriggers: []
-    ignoreworker: false
-  "8":
-    id: "8"
-    taskid: a709939b-5ed3-4287-80b9-7015772660d5
-    type: playbook
+    separatecontext: true
     task:
+      brand: ''
       id: a709939b-5ed3-4287-80b9-7015772660d5
-      version: -1
+      iscommand: false
       name: GCS Bucket Policy (ACL) - Test
       playbookName: GCS Bucket Policy (ACL) - Test
       type: playbook
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: a709939b-5ed3-4287-80b9-7015772660d5
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 195\n  }\n}"
+  '9':
+    id: '9'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "5"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 195
-        }
-      }
+      - '5'
     note: false
-    timertriggers: []
-    ignoreworker: false
-  "9":
-    id: "9"
-    taskid: 235c5701-31e4-4693-84b2-38633611f8f2
-    type: playbook
+    separatecontext: true
     task:
+      brand: ''
       id: 235c5701-31e4-4693-84b2-38633611f8f2
-      version: -1
+      iscommand: false
       name: GCS Object Policy (ACL) - Test
       playbookName: GCS Object Policy (ACL) - Test
       type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 195
-        }
-      }
-    note: false
+      version: -1
+    taskid: 235c5701-31e4-4693-84b2-38633611f8f2
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 385,
-        "width": 1670,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 1340,\n    \"y\": 195\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 385,\n      \"width\": 1670,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

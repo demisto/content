@@ -1,76 +1,56 @@
 id: TestDedupIncidentsByName
-version: -1
+inputs: []
 name: TestDedupIncidentsByName
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 08aa683f-6c83-4ec4-8298-32dcef0495f2
-    type: start
-    task:
-      id: 08aa683f-6c83-4ec4-8298-32dcef0495f2
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
+      - '1'
     note: false
-    timertriggers: []
-  "1":
-    id: "1"
-    taskid: 9b2da2f5-4db8-43e1-8020-0def00b7f376
-    type: playbook
+    separatecontext: false
     task:
-      id: 9b2da2f5-4db8-43e1-8020-0def00b7f376
-      version: -1
-      name: DeDup incidents
-      playbookName: DeDup incidents
-      type: playbook
+      brand: ''
+      id: 08aa683f-6c83-4ec4-8298-32dcef0495f2
       iscommand: false
-      brand: ""
+      name: ''
+      version: -1
+    taskid: 08aa683f-6c83-4ec4-8298-32dcef0495f2
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    note: false
     scriptarguments:
       hoursBack:
-        simple: "24"
+        simple: '24'
       similarContextKeys: {}
       similarCustomFields: {}
       similarIncidentKeys:
         simple: name
       similarLabels: {}
     separatecontext: true
-    loop:
+    task:
+      brand: ''
+      id: 9b2da2f5-4db8-43e1-8020-0def00b7f376
       iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
+      name: DeDup incidents
+      playbookName: DeDup incidents
+      type: playbook
+      version: -1
+    taskid: 9b2da2f5-4db8-43e1-8020-0def00b7f376
     timertriggers: []
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 240,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 240,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

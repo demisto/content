@@ -1,50 +1,39 @@
+args:
+- default: true
+  description: The id of the individual sensor (if not provided will query all available
+    sensors)
+  name: sensorId
+comment: List the available ProtectWise sensors or retrieve information for a specific
+  sensor using its id
 commonfields:
   id: PWSensors
   version: -1
-name: PWSensors
-script: |
-  res = []
-  dArgs = demisto.args()
-  dArgs["using-brand"] = "ProtectWise"
-
-  resSearch = demisto.executeCommand("sensors", dArgs)
-  try:
-      for entry in resSearch:
-          if isError(entry):
-              res = resSearch
-              break
-          else:
-              myData = demisto.get(entry, 'Contents')
-              if not isinstance(myData, list):
-                  myData = [myData]
-              for row in myData:
-                  for k in row:
-                      row[k] = formatCell(row[k])
-              if myData:
-                  demisto.setContext('pwsensors', [s['id'] for s in myData])
-                  res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": myData})
-              else:
-                  res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                              "Contents": "Could not extract result list from response: " + json.dumps(entry["Contents"], indent=4)})
-  except Exception as ex:
-      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                  "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resSearch)})
-  demisto.results(res)
-type: python
-subtype: python2
-tags:
-- protectwise
-comment: List the available ProtectWise sensors or retrieve information for a specific
-  sensor using its id
-system: true
-args:
-- name: sensorId
-  default: true
-  description: The id of the individual sensor (if not provided will query all available
-    sensors)
-scripttarget: 0
 dependson:
   must:
   - ProtectWise|||sensors
-timeout: 0s
 deprecated: true
+name: PWSensors
+script: "res = []\ndArgs = demisto.args()\ndArgs[\"using-brand\"] = \"ProtectWise\"\
+  \n\nresSearch = demisto.executeCommand(\"sensors\", dArgs)\ntry:\n    for entry\
+  \ in resSearch:\n        if isError(entry):\n            res = resSearch\n     \
+  \       break\n        else:\n            myData = demisto.get(entry, 'Contents')\n\
+  \            if not isinstance(myData, list):\n                myData = [myData]\n\
+  \            for row in myData:\n                for k in row:\n               \
+  \     row[k] = formatCell(row[k])\n            if myData:\n                demisto.setContext('pwsensors',\
+  \ [s['id'] for s in myData])\n                res.append({\"Type\": entryTypes[\"\
+  note\"], \"ContentsFormat\": formats[\"table\"], \"Contents\": myData})\n      \
+  \      else:\n                res.append({\"Type\": entryTypes[\"error\"], \"ContentsFormat\"\
+  : formats[\"text\"],\n                            \"Contents\": \"Could not extract\
+  \ result list from response: \" + json.dumps(entry[\"Contents\"], indent=4)})\n\
+  except Exception as ex:\n    res.append({\"Type\": entryTypes[\"error\"], \"ContentsFormat\"\
+  : formats[\"text\"],\n                \"Contents\": \"Error occurred while parsing\
+  \ output from command. Exception info:\\n\" + str(ex) + \"\\n\\nInvalid output:\\\
+  n\" + str(resSearch)})\ndemisto.results(res)\n"
+scripttarget: 0
+subtype: python2
+system: true
+tags:
+- protectwise
+timeout: 0s
+toversion: 4.1.9
+type: python

@@ -221,8 +221,8 @@ script:
       description: The number of concurrent executions reserved for this function.
       type: string
   - arguments:
-    - default: false
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      default: false
       description: The AWS Region, if not specified the default region will be used
       isArray: false
       name: region
@@ -368,8 +368,8 @@ script:
       name: functionVersion
       required: false
       secret: false
-    - default: false
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      default: false
       description: The AWS Region, if not specified the default region will be used
       isArray: false
       name: region
@@ -495,8 +495,8 @@ script:
       name: qualifier
       required: false
       secret: false
-    - default: false
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      default: false
       description: The AWS Region, if not specified the default region will be used
       isArray: false
       name: region
@@ -578,10 +578,10 @@ script:
       description: The AWS Region.
       type: string
   - arguments:
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: The AWS Region, if not specified the default region will be used
       isArray: false
-      auto: PREDEFINED
       name: region
       predefined:
       - us-east-1
@@ -658,8 +658,9 @@ script:
   dockerimage: demisto/boto3py3:1.0.0.1030
   isfetch: false
   runonce: false
-  subtype: python3
   script: ''
+  subtype: python3
   type: python
 tests:
 - AWS-Lambda-Test (Read-Only)
+toversion: 4.1.9

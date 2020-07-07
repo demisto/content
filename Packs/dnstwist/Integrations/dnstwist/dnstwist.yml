@@ -2,8 +2,9 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: dnstwist
   version: -1
-description: Use the DNSTwist integration to detect typosquatting, phishing, and corporate espionage.
 configuration: []
+description: Use the DNSTwist integration to detect typosquatting, phishing, and corporate
+  espionage.
 display: dnstwist
 name: dnstwist
 script:
@@ -17,7 +18,8 @@ script:
       secret: false
     - default: true
       defaultValue: '30'
-      description: Maximum number results to return in the context. This helps manage browser performance. The Markdown entry will display all results.
+      description: Maximum number results to return in the context. This helps manage
+        browser performance. The Markdown entry will display all results.
       isArray: false
       name: limit
       required: false
@@ -25,7 +27,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'no'
-      description: Whether to perform a query for the Whois creation or last updated time (slow).
+      description: Whether to perform a query for the Whois creation or last updated
+        time (slow).
       isArray: false
       name: whois
       predefined:
@@ -60,5 +63,6 @@ script:
   isfetch: false
   runonce: false
   script: '-'
-  type: python
   subtype: python2
+  type: python
+toversion: 4.1.9

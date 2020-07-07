@@ -1,289 +1,230 @@
-id: Set - Test
-version: -1
-name: Set - Test
 description: A test for the Set command. Tests the Stringify parameter too. Don't
   know why nobody ever made a test for this before.
-starttaskid: "0"
+id: Set - Test
+inputs: []
+name: Set - Test
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 7c36eb3f-9942-48e8-807f-6d9ba95aaa49
-    type: start
-    task:
-      id: 7c36eb3f-9942-48e8-807f-6d9ba95aaa49
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: a895badc-f535-4b02-8bda-dc723d980c6a
-    type: regular
-    task:
-      id: a895badc-f535-4b02-8bda-dc723d980c6a
-      version: -1
-      name: Set number as number
-      description: Sets a value into the context with the given context key
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - '7'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 7c36eb3f-9942-48e8-807f-6d9ba95aaa49
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 7c36eb3f-9942-48e8-807f-6d9ba95aaa49
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    reputationcalc: 1
     scriptarguments:
       append: {}
       key:
         simple: NumberSavedAsNumber
       stringify: {}
       value:
-        simple: "14444444444444444444"
-    reputationcalc: 1
+        simple: '14444444444444444444'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 750,
-          "y": 350
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: ed6bb94f-52b0-4658-83aa-ff1418fc6413
-    type: regular
     task:
-      id: ed6bb94f-52b0-4658-83aa-ff1418fc6413
-      version: -1
-      name: Set number as string
+      brand: ''
       description: Sets a value into the context with the given context key
+      id: a895badc-f535-4b02-8bda-dc723d980c6a
+      iscommand: false
+      name: Set number as number
       scriptName: Set
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: a895badc-f535-4b02-8bda-dc723d980c6a
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": 350\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
+    reputationcalc: 1
     scriptarguments:
       append: {}
       key:
         simple: NumberSavedAsString
       stringify:
-        simple: "true"
+        simple: 'true'
       value:
-        simple: "14444444444444444444"
-    reputationcalc: 1
+        simple: '14444444444444444444'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 150,
-          "y": 350
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: 73c819ed-b4dd-4b21-8a79-7966dcc981fe
-    type: condition
     task:
-      id: 73c819ed-b4dd-4b21-8a79-7966dcc981fe
-      version: -1
-      name: Was the number saved as string?
-      type: condition
+      brand: ''
+      description: Sets a value into the context with the given context key
+      id: ed6bb94f-52b0-4658-83aa-ff1418fc6413
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "4"
-    separatecontext: false
+      name: Set number as string
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: ed6bb94f-52b0-4658-83aa-ff1418fc6413
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 150,\n    \"y\": 350\n  }\n}"
+  '3':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
                 root: NumberSavedAsString
-            iscontext: true
+          operator: isEqualString
           right:
             value:
-              simple: "14444444444444444444"
-    view: |-
-      {
-        "position": {
-          "x": 150,
-          "y": 520
-        }
-      }
-    note: false
-    timertriggers: []
+              simple: '14444444444444444444'
+      label: 'yes'
+    id: '3'
     ignoreworker: false
-  "4":
-    id: "4"
-    taskid: d3702fee-a4f5-4489-8de9-121cab4e9943
-    type: title
+    nexttasks:
+      '#default#':
+      - '5'
+      'yes':
+      - '4'
+    note: false
+    separatecontext: false
     task:
-      id: d3702fee-a4f5-4489-8de9-121cab4e9943
+      brand: ''
+      id: 73c819ed-b4dd-4b21-8a79-7966dcc981fe
+      iscommand: false
+      name: Was the number saved as string?
+      type: condition
       version: -1
+    taskid: 73c819ed-b4dd-4b21-8a79-7966dcc981fe
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 150,\n    \"y\": 520\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: d3702fee-a4f5-4489-8de9-121cab4e9943
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 440,
-          "y": 1040
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 9323b469-3922-41fc-8a1a-2faa26a165ad
-    type: regular
-    task:
-      id: 9323b469-3922-41fc-8a1a-2faa26a165ad
       version: -1
-      name: Fail the playbook
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: d3702fee-a4f5-4489-8de9-121cab4e9943
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 1040\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
+    note: false
+    reputationcalc: 1
     scriptarguments:
       message:
         simple: The number was not saved as string, or the number was saved as string
           instead of a number. Does your PR change the Stringify parameter of the
           Set command? Or was Demisto suddenly able to save the number 14444444444444444444
           as the actual number it is?
-    reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 440,
-          "y": 750
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 614f707c-fb36-485a-8b84-30452496f1f6
-    type: condition
     task:
-      id: 614f707c-fb36-485a-8b84-30452496f1f6
-      version: -1
-      name: Was the number saved as number?
-      type: condition
+      brand: ''
+      description: Prints an error entry with a given message
+      id: 9323b469-3922-41fc-8a1a-2faa26a165ad
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "Yes":
-      - "4"
-    separatecontext: false
+      name: Fail the playbook
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 9323b469-3922-41fc-8a1a-2faa26a165ad
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 750\n  }\n}"
+  '6':
     conditions:
-    - label: "Yes"
-      condition:
-      - - operator: isEqualNumber
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
                 root: NumberSavedAsNumber
-            iscontext: true
+          operator: isEqualNumber
           right:
             value:
-              simple: "14444444444444444444"
-    view: |-
-      {
-        "position": {
-          "x": 750,
-          "y": 530
-        }
-      }
-    note: false
-    timertriggers: []
+              simple: '14444444444444444444'
+      label: 'Yes'
+    id: '6'
     ignoreworker: false
-  "7":
-    id: "7"
-    taskid: dd9ceaf2-f2fe-4c04-8d45-85690d2d19a9
-    type: regular
+    nexttasks:
+      '#default#':
+      - '5'
+      'Yes':
+      - '4'
+    note: false
+    separatecontext: false
     task:
-      id: dd9ceaf2-f2fe-4c04-8d45-85690d2d19a9
-      version: -1
-      name: Clear the context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      id: 614f707c-fb36-485a-8b84-30452496f1f6
       iscommand: false
-      brand: ""
+      name: Was the number saved as number?
+      type: condition
+      version: -1
+    taskid: 614f707c-fb36-485a-8b84-30452496f1f6
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": 530\n  }\n}"
+  '7':
+    id: '7'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
-      - "2"
+      - '1'
+      - '2'
+    note: false
+    reputationcalc: 1
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
-    reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 180
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: dd9ceaf2-f2fe-4c04-8d45-85690d2d19a9
+      iscommand: false
+      name: Clear the context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: dd9ceaf2-f2fe-4c04-8d45-85690d2d19a9
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {
-      "3_4_yes": 0.12,
-      "6_4_Yes": 0.12
-    },
-    "paper": {
-      "dimensions": {
-        "height": 1055,
-        "width": 980,
-        "x": 150,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 180\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"3_4_yes\": 0.12,\n    \"6_4_Yes\": 0.12\n\
+  \  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1055,\n      \"\
+  width\": 980,\n      \"x\": 150,\n      \"y\": 50\n    }\n  }\n}"

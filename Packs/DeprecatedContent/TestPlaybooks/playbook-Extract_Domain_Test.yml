@@ -1,48 +1,33 @@
+description: ''
 id: ExtractDomainTest
-version: -1
+inputs: []
 name: ExtractDomainTest
-starttaskid: "0"
-description: ""
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    task:
+      brand: ''
+      id: 709f1b79-ee47-45f0-882f-60e7146a9a2d
+      iscommand: false
+      name: ''
+      version: -1
     taskid: 709f1b79-ee47-45f0-882f-60e7146a9a2d
     type: start
-    task:
-      id: 709f1b79-ee47-45f0-882f-60e7146a9a2d
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
-  "1":
-    id: "1"
-    taskid: 73eede55-e81f-4fcb-8119-706d1ed6d7da
-    type: regular
-    task:
-      id: 73eede55-e81f-4fcb-8119-706d1ed6d7da
-      version: -1
-      name: Extract Domain from www.google.com
-      scriptName: ExtractDomain
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       calcReputation:
-        simple: "false"
+        simple: 'false'
       extractFromEmails: {}
       markAsIndicator: {}
       text:
@@ -50,28 +35,22 @@ tasks:
       tldList: {}
       urlRegex: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 285
-        }
-      }
-  "2":
-    id: "2"
-    taskid: 614aa9af-9f80-4815-8b59-b7c8e403689e
-    type: regular
     task:
-      id: 614aa9af-9f80-4815-8b59-b7c8e403689e
-      version: -1
-      name: verify it's google.com
-      scriptName: VerifyContext
-      type: regular
+      brand: ''
+      id: 73eede55-e81f-4fcb-8119-706d1ed6d7da
       iscommand: false
-      brand: ""
+      name: Extract Domain from www.google.com
+      scriptName: ExtractDomain
+      type: regular
+      version: -1
+    taskid: 73eede55-e81f-4fcb-8119-706d1ed6d7da
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 285\n  }\n}"
+  '2':
+    id: '2'
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       expectedValue:
         simple: google.com
@@ -79,31 +58,25 @@ tasks:
       path:
         simple: Domain.Name
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 538
-        }
-      }
-  "3":
-    id: "3"
-    taskid: c43e408e-5110-4e1a-8b56-3557a81f721d
-    type: regular
     task:
-      id: c43e408e-5110-4e1a-8b56-3557a81f721d
-      version: -1
-      name: Extract Domain from Email
-      scriptName: ExtractDomain
-      type: regular
+      brand: ''
+      id: 614aa9af-9f80-4815-8b59-b7c8e403689e
       iscommand: false
-      brand: ""
+      name: verify it's google.com
+      scriptName: VerifyContext
+      type: regular
+      version: -1
+    taskid: 614aa9af-9f80-4815-8b59-b7c8e403689e
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 538\n  }\n}"
+  '3':
+    id: '3'
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       calcReputation:
-        simple: "false"
+        simple: 'false'
       extend-context:
         simple: emailDomain=Name
       extractFromEmails: {}
@@ -113,25 +86,19 @@ tasks:
       tldList: {}
       urlRegex: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 741
-        }
-      }
-  "4":
-    id: "4"
-    taskid: c944f8d9-4b87-4af8-808d-a5a78e1cd956
-    type: regular
     task:
-      id: c944f8d9-4b87-4af8-808d-a5a78e1cd956
-      version: -1
-      name: verify it's domain from email
-      scriptName: VerifyContext
-      type: regular
+      brand: ''
+      id: c43e408e-5110-4e1a-8b56-3557a81f721d
       iscommand: false
-      brand: ""
+      name: Extract Domain from Email
+      scriptName: ExtractDomain
+      type: regular
+      version: -1
+    taskid: c43e408e-5110-4e1a-8b56-3557a81f721d
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 741\n  }\n}"
+  '4':
+    id: '4'
     scriptarguments:
       expectedValue:
         simple: demisto.com
@@ -139,24 +106,19 @@ tasks:
       path:
         simple: emailDomain.[0]
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 967
-        }
-      }
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1012,
-        "width": 380,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    task:
+      brand: ''
+      id: c944f8d9-4b87-4af8-808d-a5a78e1cd956
+      iscommand: false
+      name: verify it's domain from email
+      scriptName: VerifyContext
+      type: regular
+      version: -1
+    taskid: c944f8d9-4b87-4af8-808d-a5a78e1cd956
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 967\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1012,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\":\
+  \ 50\n    }\n  }\n}"

@@ -1,130 +1,110 @@
-id: Email Address Enrichment - Generic v2 - Test
-version: -1
-fromversion: 4.1.0
-name: Email Address Enrichment - Generic v2 - Test
 description: A test for email address enrichment. Currently, due to issues, the test
   does not check all domain squatting results or whether the email addresses were
   detected as internal or external.
-starttaskid: "0"
+fromversion: 4.1.0
+id: Email Address Enrichment - Generic v2 - Test
+inputs:
+- description: A comma-separated list of internal domains
+  key: InternalDomains
+  required: false
+  value:
+    simple: demisto.com, demistodev.com
+name: Email Address Enrichment - Generic v2 - Test
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 22a2e035-f857-417e-81cb-308b8a9dfec8
-    type: start
-    task:
-      id: 22a2e035-f857-417e-81cb-308b8a9dfec8
-      version: -1
-      name: ""
-      description: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: 4181b3ee-0d7b-446f-81d0-0597eaecb22d
-    type: playbook
-    task:
-      id: 4181b3ee-0d7b-446f-81d0-0597eaecb22d
-      version: -1
-      name: Email Address Enrichment - Generic v2
-      playbookName: Email Address Enrichment - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - '4'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 22a2e035-f857-417e-81cb-308b8a9dfec8
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 22a2e035-f857-417e-81cb-308b8a9dfec8
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
     scriptarguments:
       Domain:
         complex:
-          root: Domain
           accessor: Name
+          root: Domain
           transformers:
           - operator: uniq
       Email:
         complex:
-          root: Account
           accessor: Email.Address
+          root: Account
           transformers:
           - operator: uniq
     separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 560
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: fdf1e7b5-68e7-4199-825b-ee7878b64f8f
-    type: regular
     task:
-      id: fdf1e7b5-68e7-4199-825b-ee7878b64f8f
-      version: -1
-      name: Set domains to context
-      description: Sets a value into the context with the given context key
-      scriptName: Set
-      type: regular
+      brand: ''
+      id: 4181b3ee-0d7b-446f-81d0-0597eaecb22d
       iscommand: false
-      brand: ""
+      name: Email Address Enrichment - Generic v2
+      playbookName: Email Address Enrichment - Generic v2
+      type: playbook
+      version: -1
+    taskid: 4181b3ee-0d7b-446f-81d0-0597eaecb22d
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 560\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
+    note: false
+    reputationcalc: 1
     scriptarguments:
       append: {}
       key:
         simple: Domain.Name
       value:
         simple: '["demisto.com", "demist0.com", "domainthatdoesntexist.co.uk", "someotherdomainandnoemailforit.bro"]'
-    reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 230,
-          "y": 360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: 179ca0a7-2447-4dfd-8083-c73f1669ec5f
-    type: regular
     task:
-      id: 179ca0a7-2447-4dfd-8083-c73f1669ec5f
-      version: -1
-      name: Set email addresses to context
+      brand: ''
       description: Sets a value into the context with the given context key
+      id: fdf1e7b5-68e7-4199-825b-ee7878b64f8f
+      iscommand: false
+      name: Set domains to context
       scriptName: Set
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: fdf1e7b5-68e7-4199-825b-ee7878b64f8f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 230,\n    \"y\": 360\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
+    note: false
+    reputationcalc: 1
     scriptarguments:
       append: {}
       key:
@@ -132,167 +112,128 @@ tasks:
       value:
         simple: '["geverwithnoname@domainthatdoesntexist.co.uk", "soso@demisto.com",
           "koko@demisto.com", "user1@domain.com"]'
-    reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 670,
-          "y": 360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 43deb7e7-c488-46ec-8408-d1a303a4b563
-    type: regular
     task:
-      id: 43deb7e7-c488-46ec-8408-d1a303a4b563
-      version: -1
-      name: Delete context
-      description: Deletes context for a fresh start of this test.
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      description: Sets a value into the context with the given context key
+      id: 179ca0a7-2447-4dfd-8083-c73f1669ec5f
       iscommand: false
-      brand: ""
+      name: Set email addresses to context
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 179ca0a7-2447-4dfd-8083-c73f1669ec5f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 670,\n    \"y\": 360\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "2"
-      - "3"
+      - '2'
+      - '3'
+    note: false
+    reputationcalc: 1
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
-    reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 180
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: d9227bdc-084f-4652-8a86-10659a4c8fe4
-    type: condition
     task:
-      id: d9227bdc-084f-4652-8a86-10659a4c8fe4
-      version: -1
-      name: Was there a case of domain squatting?
-      type: condition
+      brand: ''
+      description: Deletes context for a fresh start of this test.
+      id: 43deb7e7-c488-46ec-8408-d1a303a4b563
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "7"
-      "yes":
-      - "6"
-    separatecontext: false
+      name: Delete context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 43deb7e7-c488-46ec-8408-d1a303a4b563
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 180\n  }\n}"
+  '5':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualNumber
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: DBotScore
                 accessor: Score
-            iscontext: true
+                root: DBotScore
+          operator: isEqualNumber
           right:
             value:
-              simple: "2"
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 740
-        }
-      }
-    note: false
-    timertriggers: []
+              simple: '2'
+      label: 'yes'
+    id: '5'
     ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 02372e49-2953-4bed-844a-ed4c5011234f
-    type: title
-    task:
-      id: 02372e49-2953-4bed-844a-ed4c5011234f
-      version: -1
-      name: Done
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
+    nexttasks:
+      '#default#':
+      - '7'
+      'yes':
+      - '6'
+    note: false
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1120
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "7":
-    id: "7"
-    taskid: 3bc8b6a6-35d5-46af-8180-ab5c74431165
-    type: regular
     task:
-      id: 3bc8b6a6-35d5-46af-8180-ab5c74431165
-      version: -1
-      name: Make test fail
-      description: Fail the test if domain squatting was not detected.
-      scriptName: PrintErrorEntry
-      type: regular
+      brand: ''
+      id: d9227bdc-084f-4652-8a86-10659a4c8fe4
       iscommand: false
-      brand: ""
+      name: Was there a case of domain squatting?
+      type: condition
+      version: -1
+    taskid: d9227bdc-084f-4652-8a86-10659a4c8fe4
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 740\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 02372e49-2953-4bed-844a-ed4c5011234f
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 02372e49-2953-4bed-844a-ed4c5011234f
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1120\n  }\n}"
+  '7':
+    id: '7'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
+    note: false
+    reputationcalc: 1
     scriptarguments:
       message:
         simple: Domain squatting should have been detected, but wasn't.
-    reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 870,
-          "y": 925
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      description: Fail the test if domain squatting was not detected.
+      id: 3bc8b6a6-35d5-46af-8180-ab5c74431165
+      iscommand: false
+      name: Make test fail
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 3bc8b6a6-35d5-46af-8180-ab5c74431165
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {
-      "5_6_yes": 0.47,
-      "5_7_#default#": 0.42
-    },
-    "paper": {
-      "dimensions": {
-        "height": 1135,
-        "width": 1020,
-        "x": 230,
-        "y": 50
-      }
-    }
-  }
-inputs:
-- key: InternalDomains
-  value:
-    simple: demisto.com, demistodev.com
-  required: false
-  description: A comma-separated list of internal domains
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 870,\n    \"y\": 925\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"5_6_yes\": 0.47,\n    \"5_7_#default#\"\
+  : 0.42\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1135,\n \
+  \     \"width\": 1020,\n      \"x\": 230,\n      \"y\": 50\n    }\n  }\n}"

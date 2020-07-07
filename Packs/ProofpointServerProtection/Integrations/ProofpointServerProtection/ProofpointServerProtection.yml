@@ -1,54 +1,54 @@
+beta: true
+category: Email Gateway
 commonfields:
   id: Proofpoint Server Protection
   version: -1
-name: Proofpoint Server Protection
-display: Proofpoint Protection Server (Beta)
-category: Email Gateway
-description: Proofpoint email security appliance.
 configuration:
-- display: Server URL (e.g., https://192.168.0.1:10000)
+- defaultvalue: ''
+  display: Server URL (e.g., https://192.168.0.1:10000)
   name: server
-  defaultvalue: ""
+  required: true
   type: 0
-  required: true
-- display: Username
+- defaultvalue: ''
+  display: Username
   name: credentials
-  defaultvalue: ""
-  type: 9
   required: true
+  type: 9
 - display: Proofpoint Protection Server Version (e.g., 8.14.2)
   name: version
-  type: 0
   required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: unsecure
-  type: 8
   required: false
+  type: 8
 - display: Use system proxy settings
   name: proxy
-  type: 8
   required: false
+  type: 8
+description: Proofpoint email security appliance.
+display: Proofpoint Protection Server (Beta)
+name: Proofpoint Server Protection
 script:
-  script: ''
-  type: python
   commands:
-  - name: proofpoint-download-email
-    arguments:
-    - name: message_id
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: Email message ID to download.
+      name: message_id
+      required: true
     description: Download quarantine email message by ID.
-  - name: proofpoint-quarantine-messages
-    arguments:
-    - name: folder
-      description: Folder name to quarantine.
-    - name: sender
-      description: Messages from sender to quarantine.
-    - name: subject
-      description: Messages subject to quarantine.
-    - name: recipient
-      description: Messages to recipient to quarantine.
+    name: proofpoint-download-email
+  - arguments:
+    - description: Folder name to quarantine.
+      name: folder
+    - description: Messages from sender to quarantine.
+      name: sender
+    - description: Messages subject to quarantine.
+      name: subject
+    - description: Messages to recipient to quarantine.
+      name: recipient
+    description: Retrieves quarantined email messages.
+    name: proofpoint-quarantine-messages
     outputs:
     - contextPath: Proofpoint.Quarantine.Message.ID
       description: Message ID
@@ -68,37 +68,37 @@ script:
     - contextPath: Proofpoint.Quarantine.Message.Folder
       description: Message folder
       type: string
-    description: Retrieves quarantined email messages.
-  - name: proofpoint-smart-search
-    arguments:
-    - name: sender
-      description: Email sender.
-    - name: recipient
-      description: Email recipient.
-    - name: subject
-      description: Email subject.
-    - name: process
-      auto: PREDEFINED
-      predefined:
-      - "1"
-      - "2"
-      - "3"
-      - "4"
-      - "5"
-      - "100"
-      - "200"
-      - "500"
-      - "1000"
+  - arguments:
+    - description: Email sender.
+      name: sender
+    - description: Email recipient.
+      name: recipient
+    - description: Email subject.
+      name: subject
+    - auto: PREDEFINED
+      defaultValue: '100'
       description: Max results
-      defaultValue: "100"
-    - name: sender_hostname
-      description: Sender hostname/IP address
-    - name: attachment
-      description: Attachment name
-    - name: qid
-      description: QID
-    - name: time
-      auto: PREDEFINED
+      name: process
+      predefined:
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      - '100'
+      - '200'
+      - '500'
+      - '1000'
+    - description: Sender hostname/IP address
+      name: sender_hostname
+    - description: Attachment name
+      name: attachment
+    - description: QID
+      name: qid
+    - auto: PREDEFINED
+      defaultValue: Last24Hours
+      description: Time period in which the email was recieved.
+      name: time
       predefined:
       - Last15Minutes
       - Last60Minutes
@@ -108,178 +108,179 @@ script:
       - Last15Days
       - Last30Days
       - Last90Days
-      description: Time period in which the email was recieved.
-      defaultValue: Last24Hours
-    - name: message_id
-      description: Email message ID.
-    - name: virus_name
-      description: Virus name.
-    - name: sid
-      description: SID
-    - name: guid
-      description: GUID
+    - description: Email message ID.
+      name: message_id
+    - description: Virus name.
+      name: virus_name
+    - description: SID
+      name: sid
+    - description: GUID
+      name: guid
+    description: Searches for emails.
+    name: proofpoint-smart-search
     outputs:
     - contextPath: Proofpoint.SmartSearch.SMIMERecipients
-      type: string
       description: Search results SMIME recipients
+      type: string
     - contextPath: Proofpoint.SmartSearch.FID
-      type: string
       description: Search results FID
+      type: string
     - contextPath: Proofpoint.SmartSearch.MessageID
-      type: string
       description: Search results email message ID
+      type: string
     - contextPath: Proofpoint.SmartSearch.Suborg
-      type: string
       description: Search results sub organization
+      type: string
     - contextPath: Proofpoint.SmartSearch.Agent
-      type: string
       description: Search results email agent
+      type: string
     - contextPath: Proofpoint.SmartSearch.AttachmentNames
-      type: string
       description: Search results email attachment names
+      type: string
     - contextPath: Proofpoint.SmartSearch.MoudleID
-      type: string
       description: Search results module ID
+      type: string
     - contextPath: Proofpoint.SmartSearch.MessageSize
-      type: string
       description: Search results email message size
+      type: string
     - contextPath: Proofpoint.SmartSearch.SpamScore
-      type: string
       description: Search results email spam score
+      type: string
     - contextPath: Proofpoint.SmartSearch.GUID
-      type: string
       description: Search results GUID
+      type: string
     - contextPath: Proofpoint.SmartSearch.QuarantineRule
-      type: string
       description: Search results email message quarantine rule
+      type: string
     - contextPath: Proofpoint.SmartSearch.VirusNames
-      type: string
       description: Search results virus names
+      type: string
     - contextPath: Proofpoint.SmartSearch.Subject
-      type: string
       description: Search results email subject
+      type: string
     - contextPath: Proofpoint.SmartSearch.QID
-      type: string
       description: Search results QID
+      type: string
     - contextPath: Proofpoint.SmartSearch.FinalAction
-      type: string
       description: Search results email final action
+      type: string
     - contextPath: Proofpoint.SmartSearch.DispositionAction
-      type: string
       description: Search results email disposition action
+      type: string
     - contextPath: Proofpoint.SmartSearch.SID
-      type: string
       description: Search results SID
+      type: string
     - contextPath: Proofpoint.SmartSearch.SendmailToStat
-      type: string
       description: Search results sent email to stats
+      type: string
     - contextPath: Proofpoint.SmartSearch.Date
-      type: date
       description: Search results date
+      type: date
     - contextPath: Proofpoint.SmartSearch.PERecipients
-      type: string
       description: Search results email PE recipients
+      type: string
     - contextPath: Proofpoint.SmartSearch.FQIN
-      type: string
       description: Search results email FQIN
+      type: string
     - contextPath: Proofpoint.SmartSearch.FinalRule
-      type: string
       description: Search results email final rule
+      type: string
     - contextPath: Proofpoint.SmartSearch.SendmailStat
-      type: string
       description: Search results email stats
+      type: string
     - contextPath: Proofpoint.SmartSearch.MessageSplit
-      type: string
       description: Search results email split message
+      type: string
     - contextPath: Proofpoint.SmartSearch.Duration
-      type: string
       description: Search results duration time
+      type: string
     - contextPath: Proofpoint.SmartSearch.SendmailAction
-      type: string
       description: Search results sent mail action
+      type: string
     - contextPath: Proofpoint.SmartSearch.Sender
-      type: string
       description: Search results email sender
+      type: string
     - contextPath: Proofpoint.SmartSearch.SendmailIPAddress
-      type: string
       description: Search results send mail IP address
+      type: string
     - contextPath: Proofpoint.SmartSearch.SendmailTo
-      type: string
       description: Search results send mail to
+      type: string
     - contextPath: Proofpoint.SmartSearch.Recipients
-      type: string
       description: Search results recipients
+      type: string
     - contextPath: Proofpoint.SmartSearch.SendmailRawLog
-      type: string
       description: Search results send mail raw log
+      type: string
     - contextPath: Proofpoint.SmartSearch.TLS
-      type: string
       description: Search results TLS
+      type: string
     - contextPath: Proofpoint.SmartSearch.QuarantineFolder
-      type: string
       description: Search results quarantine folder
+      type: string
     - contextPath: Proofpoint.SmartSearch.RawLog
-      type: string
       description: Search results raw log
+      type: string
     - contextPath: Proofpoint.SmartSearch.DispositionSmtpProfile
-      type: string
       description: Search results disposition SMTP profile
+      type: string
     - contextPath: Proofpoint.SmartSearch.PolicyRoutes
-      type: string
       description: Search results policy routes
+      type: string
     - contextPath: Proofpoint.SmartSearch.MessageEncrypted
-      type: string
       description: Search results encrypted message
+      type: string
     - contextPath: Proofpoint.SmartSearch.SenderHost
-      type: string
       description: Search results sender hosr
-    - contextPath: Proofpoint.SmartSearch.SMIMRecipientsSigned
       type: string
+    - contextPath: Proofpoint.SmartSearch.SMIMRecipientsSigned
       description: Search results SMIME recipient signed
-    description: Searches for emails.
-  - name: proofpoint-quarantine-folders
-    arguments: []
+      type: string
+  - arguments: []
+    description: Returns a list of quarantined folders.
+    name: proofpoint-quarantine-folders
     outputs:
     - contextPath: Proofpoint.Quarantine.Folder.Name
       description: Folder name
       type: string
-    description: Returns a list of quarantined folders.
-  - name: proofpoint-release-email
-    arguments:
-    - name: message_id
+  - arguments:
+    - description: Email message ID to release.
+      name: message_id
       required: true
-      description: Email message ID to release.
-    - name: folder
+    - description: Email folder to release.
+      name: folder
       required: true
-      description: Email folder to release.
     description: Release email with virus scan
-  - name: proofpoint-add-to-blocked-senders-list
-    arguments:
-    - name: email
+    name: proofpoint-release-email
+  - arguments:
+    - description: Email to add to blocked senders list
+      name: email
       required: true
-      description: Email to add to blocked senders list
     description: Adds an email address to blocked senders list.
-  - name: proofpoint-add-to-safe-senders-list
-    arguments:
-    - name: email
+    name: proofpoint-add-to-blocked-senders-list
+  - arguments:
+    - description: Email to add to safe senders list
+      name: email
       required: true
-      description: Email to add to safe senders list
     description: Adds an email address to safe senders list.
-  - name: proofpoint-remove-from-blocked-senders-list
-    arguments:
-    - name: email
+    name: proofpoint-add-to-safe-senders-list
+  - arguments:
+    - description: Email to remove from blocked senders list
+      name: email
       required: true
-      description: Email to remove from blocked senders list
     description: Removes an email address from blocked senders list.
-  - name: proofpoint-remove-from-safe-senders-list
-    arguments:
-    - name: email
+    name: proofpoint-remove-from-blocked-senders-list
+  - arguments:
+    - description: Email to remove from safe senders list
+      name: email
       required: true
-      description: Email to remove from safe senders list
     description: Removes an email address from safe senders list.
+    name: proofpoint-remove-from-safe-senders-list
   dockerimage: demisto/bs4:1.0.0.8854
   runonce: false
+  script: ''
   subtype: python2
-beta: true
+  type: python
 tests:
-  - no test
+- no test
+toversion: 4.1.9

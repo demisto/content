@@ -4,9 +4,10 @@ args:
     \ that each filter should be of the form: [\"field_name\",\"operator\",\"value\"\
     ] and operator is one of: 'eq'=equal, 'gt'=greater-than, 'lt'=less-than, 'contains',\
     \ 'startwith'. Special characters shoud be escaped.\nExample: `[[\"CreatedDateTime\"\
-    :\"gt\":\"4/10/2019 3:10:12 PM\"][\"Priority\",\"eq\",\"1\"]]`. \nNOTICE: If multiple \
-    \ filters are received for the same field name, an 'OR' operation between the filters\
-    \ is performed. If the field names are different, an 'AND' operation is performed."
+    :\"gt\":\"4/10/2019 3:10:12 PM\"][\"Priority\",\"eq\",\"1\"]]`. \nNOTICE: If multiple\
+    \  filters are received for the same field name, an 'OR' operation between the\
+    \ filters is performed. If the field names are different, an 'AND' operation is\
+    \ performed."
   isArray: false
   name: query
   required: true
@@ -14,16 +15,17 @@ args:
 comment: This script is an example script of how to query incidents from Cherwell.
   The script wraps the cherwell-query-business-object command of the cherwell integration.
   When writing your own script to query  business objects, follow the instructions
-  found in the configuration section of the script, but do not change the execution section.
+  found in the configuration section of the script, but do not change the execution
+  section.
 commonfields:
   id: CherwellQueryIncidents
   version: -1
-enabled: false
-name: CherwellQueryIncidents
-tags: [Cherwell]
 dependson:
   must:
   - Cherwell|||cherwell-query-business-object
+dockerimage: demisto/python3:3.7.2.214
+enabled: false
+name: CherwellQueryIncidents
 outputs:
 - contextPath: Cherwell.QueryResults.RecordId
   description: Recoed ID
@@ -53,10 +55,12 @@ outputs:
   description: Total tasks for this incident
   type: Number
 script: '-'
-system: false
-timeout: '0'
-type: python
-dockerimage: demisto/python3:3.7.2.214
 subtype: python3
+system: false
+tags:
+- Cherwell
 tests:
-  - Cherwell Example Scripts - test
+- Cherwell Example Scripts - test
+timeout: '0'
+toversion: 4.1.9
+type: python

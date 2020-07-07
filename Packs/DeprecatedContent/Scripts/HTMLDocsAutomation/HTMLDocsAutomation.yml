@@ -1,8 +1,3 @@
-commonfields:
-  id: HTMLDocsAutomation
-  version: -1
-enabled: true
-name: HTMLDocsAutomation
 args:
 - default: false
   description: War-room entry ID of sample file
@@ -72,17 +67,22 @@ args:
   - none
   required: false
   secret: false
-comment: |-
-  Deprecated. The recommended way to generate documentation is via the demisto-sdk. 
-  See: https://xsoar.pan.dev/docs/integrations/integration-docs
-system: false
-timeout: '0'
-script: '-'
-tags: []
-dockerimage: demisto/python3:3.7.4.1150
-type: python
-subtype: python3
-runonce: false
+comment: "Deprecated. The recommended way to generate documentation is via the demisto-sdk.\
+  \ \nSee: https://xsoar.pan.dev/docs/integrations/integration-docs"
+commonfields:
+  id: HTMLDocsAutomation
+  version: -1
 deprecated: true
+dockerimage: demisto/python3:3.7.4.1150
+enabled: true
+name: HTMLDocsAutomation
+runonce: false
+script: '-'
+subtype: python3
+system: false
+tags: []
 tests:
-  - No test
+- No test
+timeout: '0'
+toversion: 4.1.9
+type: python

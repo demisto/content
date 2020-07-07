@@ -1,43 +1,36 @@
+args:
+- default: true
+  description: 'ServiceNow syntax: http://wiki.servicenow.com/index.php?title=Encoded_Query_Strings'
+  name: query
+- description: Property fields to include in results
+  name: fields
+comment: List tickets from ServiceNow
 commonfields:
   id: SNListTickets
   version: -1
-name: SNListTickets
-script: |-
-  res = []
-  dArgs = demisto.args()
-  resCmd = demisto.executeCommand("servicenow-incidents-query", dArgs)
-  try:
-      for entry in resCmd:
-          if isError(entry):
-              res = resCmd
-              break
-          else:
-              myData = demisto.get(entry, 'Contents.result')
-              if myData:
-                  myData = [{k: formatCell(row[k]) for k in row} for row in myData]
-                  res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": myData})
-              else:
-                  res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                              "Contents": "Could not extract result list from response: " + json.dumps(entry["Contents"])})
-  except Exception as ex:
-      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                  "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmd)})
-  demisto.results(res)
-type: python
-subtype: python2
-tags:
-- servicenow
-comment: "List tickets from ServiceNow"
-system: true
-deprecated: true
-args:
-- name: query
-  default: true
-  description: 'ServiceNow syntax: http://wiki.servicenow.com/index.php?title=Encoded_Query_Strings'
-- name: fields
-  description: Property fields to include in results
-scripttarget: 0
 dependson:
   must:
   - servicenow-incidents-query
+deprecated: true
+name: SNListTickets
+script: "res = []\ndArgs = demisto.args()\nresCmd = demisto.executeCommand(\"servicenow-incidents-query\"\
+  , dArgs)\ntry:\n    for entry in resCmd:\n        if isError(entry):\n         \
+  \   res = resCmd\n            break\n        else:\n            myData = demisto.get(entry,\
+  \ 'Contents.result')\n            if myData:\n                myData = [{k: formatCell(row[k])\
+  \ for k in row} for row in myData]\n                res.append({\"Type\": entryTypes[\"\
+  note\"], \"ContentsFormat\": formats[\"table\"], \"Contents\": myData})\n      \
+  \      else:\n                res.append({\"Type\": entryTypes[\"error\"], \"ContentsFormat\"\
+  : formats[\"text\"],\n                            \"Contents\": \"Could not extract\
+  \ result list from response: \" + json.dumps(entry[\"Contents\"])})\nexcept Exception\
+  \ as ex:\n    res.append({\"Type\": entryTypes[\"error\"], \"ContentsFormat\": formats[\"\
+  text\"],\n                \"Contents\": \"Error occurred while parsing output from\
+  \ command. Exception info:\\n\" + str(ex) + \"\\n\\nInvalid output:\\n\" + str(resCmd)})\n\
+  demisto.results(res)"
+scripttarget: 0
+subtype: python2
+system: true
+tags:
+- servicenow
 timeout: 0s
+toversion: 4.1.9
+type: python

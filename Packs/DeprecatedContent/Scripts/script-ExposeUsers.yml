@@ -1,26 +1,16 @@
+args:
+- default: true
+  description: The optional list of roles we want to get uesrs for. Can accept arrays
+    or comma separated list.
+  isArray: true
+  name: roles
+comment: Returns Demisto users
 commonfields:
   id: ExposeUsers
   version: -1
+dependson: {}
+deprecated: true
 name: ExposeUsers
-script: |
-  var roles = argToList(args.roles);
-  var res = executeCommand('getUsers', {roles: roles.join(',')});
-  if (isValidRes(res)) {
-      return {Type: entryTypes.note, Contents: res[0].Contents, ContentsFormat: formats.json, HumanReadable:
-          tableToMarkdown('Users', res[0].Contents, ['username', 'email', 'name', 'phone', 'roles']),
-          EntryContext: {DemistoUsers: res[0].Contents.map(function(u) {return {username: u.username, email: u.email, phone: u.phone, name: u.name, roles: u.roles};})}};
-  }
-  return res;
-type: javascript
-comment: Returns Demisto users
-tags:
-- Utility
-system: true
-args:
-- name: roles
-  default: true
-  description: The optional list of roles we want to get uesrs for. Can accept arrays or comma separated list.
-  isArray: true
 outputs:
 - contextPath: DemistoUsers.username
   description: Username of the user
@@ -32,7 +22,17 @@ outputs:
   description: The name of the user
 - contextPath: DemistoUsers.roles
   description: The roles for the user
+script: "var roles = argToList(args.roles);\nvar res = executeCommand('getUsers',\
+  \ {roles: roles.join(',')});\nif (isValidRes(res)) {\n    return {Type: entryTypes.note,\
+  \ Contents: res[0].Contents, ContentsFormat: formats.json, HumanReadable:\n    \
+  \    tableToMarkdown('Users', res[0].Contents, ['username', 'email', 'name', 'phone',\
+  \ 'roles']),\n        EntryContext: {DemistoUsers: res[0].Contents.map(function(u)\
+  \ {return {username: u.username, email: u.email, phone: u.phone, name: u.name, roles:\
+  \ u.roles};})}};\n}\nreturn res;\n"
 scripttarget: 0
-dependson: {}
+system: true
+tags:
+- Utility
 timeout: 0s
-deprecated: true
+toversion: 4.1.9
+type: javascript

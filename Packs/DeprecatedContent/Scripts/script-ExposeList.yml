@@ -1,41 +1,35 @@
+args:
+- default: true
+  description: The list we want to expose to the context
+  name: listName
+- default: false
+  description: The key we want to expose the list to. Default is lists.listName.
+  name: contextKey
+- default: false
+  description: The optional Demisto Query we would like to apply on the list
+  name: query
+comment: Retruns Demisto list
 commonfields:
   id: ExposeList
   version: -1
+dependson: {}
+deprecated: true
 name: ExposeList
-script: |
-  var list = getJSONListAsObject(args.listName);
-  if (list) {
-      var key = args.contextKey ? args.contextKey : 'lists.' + args.listName;
-      key = key.replace(/[ \\()?]/g, '_');
-      var res = list;
-      if (args.query) {
-          res = dq(list, args.query);
-      }
-      var ec = {};
-      ec[key] = res;
-      return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json,
-          HumanReadable: 'Exposed list [' + args.listName + '] to [' + key + ']', EntryContext: ec};
-  }
-  return {Type: entryTypes.error, Contents: 'Error retrieving list ' + args.listName, ContentsFormat: formats.text};
-type: javascript
-comment: Retruns Demisto list
-tags:
-- Utility
-system: true
-args:
-- name: listName
-  default: true
-  description: The list we want to expose to the context
-- name: contextKey
-  default: false
-  description: The key we want to expose the list to. Default is lists.listName.
-- name: query
-  default: false
-  description: The optional Demisto Query we would like to apply on the list
 outputs:
 - contextPath: lists
   description: The containing object for the lists which will contain the list names
+script: "var list = getJSONListAsObject(args.listName);\nif (list) {\n    var key\
+  \ = args.contextKey ? args.contextKey : 'lists.' + args.listName;\n    key = key.replace(/[\
+  \ \\\\()?]/g, '_');\n    var res = list;\n    if (args.query) {\n        res = dq(list,\
+  \ args.query);\n    }\n    var ec = {};\n    ec[key] = res;\n    return {Type: entryTypes.note,\
+  \ Contents: res, ContentsFormat: formats.json,\n        HumanReadable: 'Exposed\
+  \ list [' + args.listName + '] to [' + key + ']', EntryContext: ec};\n}\nreturn\
+  \ {Type: entryTypes.error, Contents: 'Error retrieving list ' + args.listName, ContentsFormat:\
+  \ formats.text};\n"
 scripttarget: 0
-dependson: {}
-deprecated: true
+system: true
+tags:
+- Utility
 timeout: 0s
+toversion: 4.1.9
+type: javascript

@@ -105,6 +105,8 @@ configuration:
   name: use_requests_handler
   required: false
   type: 8
+defaultClassifier: SplunkPy
+defaultMapperIn: SplunkPy-mapper
 description: Run queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy
@@ -313,9 +315,9 @@ script:
       type: unknown
   - arguments:
     - default: false
-      description: |-
-        Event payload key-value.
-        String example: "event": "Access log test message."
+      description: 'Event payload key-value.
+
+        String example: "event": "Access log test message."'
       isArray: false
       name: event
       required: true
@@ -380,8 +382,8 @@ script:
     - contextPath: Splunk.JobStatus.Status
       description: Status of the job.
       type: String
-  dockerimage45: demisto/splunksdk:1.0
   dockerimage: demisto/splunksdk:1.0.0.8854
+  dockerimage45: demisto/splunksdk:1.0
   feed: false
   isfetch: true
   longRunning: false
@@ -392,5 +394,4 @@ script:
   type: python
 tests:
 - SplunkPy-Test-V2
-defaultClassifier: SplunkPy
-defaultMapperIn: SplunkPy-mapper
+toversion: 4.1.9

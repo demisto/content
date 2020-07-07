@@ -1,58 +1,35 @@
+comment: 'Pre processing script for Emails from Mcafee DAM, about sensor disconnected.
+
+  Will ignore second notification, but will process first notification into incidents.
+
+  '
 commonfields:
   id: DamSensorDown
   version: -1
-name: DamSensorDown
-script: |-
-  import sys
-
-  res = demisto.incidents()[0]
-  subject = ''
-  body = ''
-  for t in demisto.incidents()[0]['labels']:
-      if t['type'] == 'Email/subject':
-          subject = t['value']
-      if t['type'] == 'Email/text':
-          body = t['value']
-
-  if "Sensor" not in subject:
-      res = False
-  if "was disconnected at" not in subject:
-      res = False
-  if "this is a second notification" in subject:
-      res = False
-  labels = []
-  s = body.find("with sensor: ")
-  if s > 0:
-      endNamePos = min(body.index(" ",s+13),body.index("<",s+13))
-      sensorName = body[s+13:endNamePos]
-      labels.append({"sensorName":sensorName})
-
-      hostLoc = body[endNamePos:].find('host: ')
-      body_rest = body[endNamePos:]
-      if hostLoc>0:
-          endNamePos = min(body_rest.index(" ",hostLoc+6),body_rest.index("<",hostLoc+6))
-          host = body_rest[hostLoc+6:endNamePos]
-          labels.append({"host":host})
-
-          body_rest = body_rest[endNamePos:]
-          ipLoc = body_rest.find('ip: ')
-          if ipLoc>0:
-              endNamePos = min(body_rest.index(" ",ipLoc+4),body_rest.index(",",ipLoc+4))
-              ip = body_rest[ipLoc+4:endNamePos]
-              labels.append({"ip":ip})
-  demisto.executeCommand("setIncident", {
-      'addLabels': json.dumps(labels)
-  });
-  demisto.results(res);
-type: python
-subtype: python2
-tags:
-- preProcessing
-comment: |
-  Pre processing script for Emails from Mcafee DAM, about sensor disconnected.
-  Will ignore second notification, but will process first notification into incidents.
-system: true
-scripttarget: 0
 dependson:
   must:
   - dam-get-latest-by-rule
+name: DamSensorDown
+script: "import sys\n\nres = demisto.incidents()[0]\nsubject = ''\nbody = ''\nfor\
+  \ t in demisto.incidents()[0]['labels']:\n    if t['type'] == 'Email/subject':\n\
+  \        subject = t['value']\n    if t['type'] == 'Email/text':\n        body =\
+  \ t['value']\n\nif \"Sensor\" not in subject:\n    res = False\nif \"was disconnected\
+  \ at\" not in subject:\n    res = False\nif \"this is a second notification\" in\
+  \ subject:\n    res = False\nlabels = []\ns = body.find(\"with sensor: \")\nif s\
+  \ > 0:\n    endNamePos = min(body.index(\" \",s+13),body.index(\"<\",s+13))\n  \
+  \  sensorName = body[s+13:endNamePos]\n    labels.append({\"sensorName\":sensorName})\n\
+  \n    hostLoc = body[endNamePos:].find('host: ')\n    body_rest = body[endNamePos:]\n\
+  \    if hostLoc>0:\n        endNamePos = min(body_rest.index(\" \",hostLoc+6),body_rest.index(\"\
+  <\",hostLoc+6))\n        host = body_rest[hostLoc+6:endNamePos]\n        labels.append({\"\
+  host\":host})\n\n        body_rest = body_rest[endNamePos:]\n        ipLoc = body_rest.find('ip:\
+  \ ')\n        if ipLoc>0:\n            endNamePos = min(body_rest.index(\" \",ipLoc+4),body_rest.index(\"\
+  ,\",ipLoc+4))\n            ip = body_rest[ipLoc+4:endNamePos]\n            labels.append({\"\
+  ip\":ip})\ndemisto.executeCommand(\"setIncident\", {\n    'addLabels': json.dumps(labels)\n\
+  });\ndemisto.results(res);"
+scripttarget: 0
+subtype: python2
+system: true
+tags:
+- preProcessing
+toversion: 4.1.9
+type: python

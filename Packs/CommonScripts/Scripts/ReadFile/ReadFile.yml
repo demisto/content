@@ -32,13 +32,14 @@ outputs:
 - contextPath: FileData
   description: Data read from war room file
   type: Unknown
+runas: DBotWeakRole
+runonce: false
 script: ''
+subtype: python2
 system: false
 tags:
 - Utility
 - ingestion
 timeout: '0'
+toversion: 4.1.9
 type: python
-subtype: python2
-runas: DBotWeakRole
-runonce: false

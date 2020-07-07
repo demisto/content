@@ -1,41 +1,40 @@
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: WhatsMyBrowser
   version: -1
-name: WhatsMyBrowser
-display: WhatIsMyBrowser
-category: Data Enrichment & Threat Intelligence
+configuration:
+- defaultvalue: https://api.whatismybrowser.com/api/v2/user_agent_parse
+  display: URL for WhatIsMyBrowser
+  name: url
+  required: true
+  type: 0
+- defaultvalue: ''
+  display: API Key
+  name: api_key
+  required: true
+  type: 4
+- defaultvalue: ''
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
 description: Parse user agents and determine if they are malicious as well as enrich
   information about the agent
-configuration:
-- display: URL for WhatIsMyBrowser
-  name: url
-  defaultvalue: https://api.whatismybrowser.com/api/v2/user_agent_parse # disable-secrets-detection
-  type: 0
-  required: true
-- display: API Key
-  name: api_key
-  defaultvalue: ""
-  type: 4
-  required: true
-- display: Use system proxy settings
-  name: proxy
-  defaultvalue: ""
-  type: 8
-  required: false
-- display: Trust any certificate (not secure)
-  name: insecure
-  defaultvalue: ""
-  type: 8
-  required: false
+display: WhatIsMyBrowser
+name: WhatsMyBrowser
 script:
-  script: ''
-  type: python
   commands:
-  - name: ua-parse
-    arguments:
-    - name: UserAgent
+  - arguments:
+    - description: User Agent String
+      name: UserAgent
       required: true
-      description: User Agent String
+    description: Parses a User Agent string
+    name: ua-parse
     outputs:
     - contextPath: UA.Parse.Software
       description: Software extracted from UA string
@@ -61,8 +60,10 @@ script:
     - contextPath: UA.Parse.HardwareSubType
       description: Hardware Sub Type as extracted from UA string
       type: string
-    description: Parses a User Agent string
   runonce: false
+  script: ''
   subtype: python3
+  type: python
 tests:
 - WhatsMyBrowser-Test
+toversion: 4.1.9

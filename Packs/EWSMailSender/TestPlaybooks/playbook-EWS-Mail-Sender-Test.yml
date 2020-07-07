@@ -1,48 +1,35 @@
 id: EWS Mail Sender Test
-version: -1
+inputs: []
 name: EWS Mail Sender Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 2b2a114b-c31b-44ce-8bff-6006f277b5c5
-    type: start
-    task:
-      id: 2b2a114b-c31b-44ce-8bff-6006f277b5c5
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-    skipunavailable: false
-  "1":
-    id: "1"
-    taskid: 4b63e939-ec84-4b3a-88c7-203f759781b7
-    type: regular
-    task:
-      id: 4b63e939-ec84-4b3a-88c7-203f759781b7
-      version: -1
-      name: Test send mail
-      script: EWS Mail Sender|||send-mail
-      type: regular
-      iscommand: true
-      brand: EWS Mail Sender
     nexttasks:
       '#none#':
-      - "3"
+      - '2'
+    note: false
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 2b2a114b-c31b-44ce-8bff-6006f277b5c5
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 2b2a114b-c31b-44ce-8bff-6006f277b5c5
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
     scriptarguments:
       attachIDs:
         simple: ${File.EntryID}
@@ -53,40 +40,34 @@ tasks:
       htmlBody: {}
       replyTo: {}
       subject:
-        simple: test_rešňa
+        simple: "test_re\u0161\u0148a"
       to:
         simple: buildtests@demisto.int
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-  "2":
-    id: "2"
-    taskid: 44946c92-e960-47e0-8f28-675114a3b09b
-    type: regular
     task:
-      id: 44946c92-e960-47e0-8f28-675114a3b09b
-      version: -1
-      name: Get file
-      scriptName: http
+      brand: EWS Mail Sender
+      id: 4b63e939-ec84-4b3a-88c7-203f759781b7
+      iscommand: true
+      name: Test send mail
+      script: EWS Mail Sender|||send-mail
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 4b63e939-ec84-4b3a-88c7-203f759781b7
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
+    note: false
     scriptarguments:
       body: {}
       filename:
-        simple: test_file_пожалуйста
+        simple: "test_file_\u043F\u043E\u0436\u0430\u043B\u0443\u0439\u0441\u0442\u0430"
       headers: {}
       insecure: {}
       method:
@@ -94,65 +75,53 @@ tasks:
       password: {}
       proxy: {}
       saveAsFile:
-        simple: "yes"
+        simple: 'yes'
       unsecure: {}
       url:
         simple: https://raw.githubusercontent.com/demisto/content/master/TestData/ParseEmailFiles_test_email.eml
       username: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-  "3":
-    id: "3"
-    taskid: ff3324de-1bbf-4383-8752-256b41299b7d
-    type: title
     task:
-      id: ff3324de-1bbf-4383-8752-256b41299b7d
+      brand: ''
+      id: 44946c92-e960-47e0-8f28-675114a3b09b
+      iscommand: false
+      name: Get file
+      scriptName: http
+      type: regular
       version: -1
+    taskid: 44946c92-e960-47e0-8f28-675114a3b09b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: ff3324de-1bbf-4383-8752-256b41299b7d
+      iscommand: false
       name: Test success after failure
       type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 530
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  "4":
-    id: "4"
-    taskid: 78b0169e-4bc0-48fb-83a1-188e381c1f22
-    type: regular
-    task:
-      id: 78b0169e-4bc0-48fb-83a1-188e381c1f22
       version: -1
-      name: Send Bad Email (Should fail)
-      description: Sends an email using EWS.
-      script: EWS Mail Sender|||send-mail
-      type: regular
-      iscommand: true
-      brand: EWS Mail Sender
+    taskid: ff3324de-1bbf-4383-8752-256b41299b7d
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 530\n  }\n}"
+  '4':
+    continueonerror: true
+    id: '4'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
+    note: false
     scriptarguments:
       attachCIDs: {}
       attachIDs:
@@ -167,31 +136,25 @@ tasks:
         simple: Bad Email That Fails
       to:
         simple: buildtests@demisto.int
-    continueonerror: true
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 670
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-  "5":
-    id: "5"
-    taskid: a1a6dcf6-c315-4bbb-8b2e-8acf2b5ae609
-    type: regular
     task:
-      id: a1a6dcf6-c315-4bbb-8b2e-8acf2b5ae609
-      version: -1
-      name: Send Good Email
+      brand: EWS Mail Sender
+      description: Sends an email using EWS.
+      id: 78b0169e-4bc0-48fb-83a1-188e381c1f22
+      iscommand: true
+      name: Send Bad Email (Should fail)
       script: EWS Mail Sender|||send-mail
       type: regular
-      iscommand: true
-      brand: EWS Mail Sender
+      version: -1
+    taskid: 78b0169e-4bc0-48fb-83a1-188e381c1f22
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 670\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
+    note: false
     scriptarguments:
       attachCIDs: {}
       attachIDs:
@@ -207,28 +170,21 @@ tasks:
       to:
         simple: buildtests@demisto.int
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 860
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 905,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    task:
+      brand: EWS Mail Sender
+      id: a1a6dcf6-c315-4bbb-8b2e-8acf2b5ae609
+      iscommand: true
+      name: Send Good Email
+      script: EWS Mail Sender|||send-mail
+      type: regular
+      version: -1
+    taskid: a1a6dcf6-c315-4bbb-8b2e-8acf2b5ae609
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 860\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 905,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

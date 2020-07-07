@@ -35,13 +35,13 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- display: Use REST Endpoints
-  name: use_rest
-  defaultvalue: "false"
-  type: 8
-  required: false
-  additionalinfo: Use REST endpoints for the commands related to 'entries' instead
+- additionalinfo: Use REST endpoints for the commands related to 'entries' instead
     of the default legacy SOAP endpoints.
+  defaultvalue: 'false'
+  display: Use REST Endpoints
+  name: use_rest
+  required: false
+  type: 8
 - display: Incident type
   name: incidentType
   required: false
@@ -466,3 +466,4 @@ script:
   type: python
 tests:
 - ArcSight ESM v2 Test
+toversion: 4.1.9

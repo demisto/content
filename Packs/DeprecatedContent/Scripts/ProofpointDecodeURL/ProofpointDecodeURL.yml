@@ -1,22 +1,24 @@
+args:
+- default: true
+  description: URL to decode
+  name: url
+  required: true
+comment: Deprecated. Use UnEscapeURLs instead. Decode ProofPoint URLs to get the actual
+  URLs.
 commonfields:
   id: ProofpointDecodeURL
   version: -1
-name: ProofpointDecodeURL
-script: ''
-type: python
-subtype: python2
-tags: []
-comment: Deprecated. Use UnEscapeURLs instead. Decode ProofPoint URLs to get the actual URLs.
+deprecated: true
 enabled: true
-args:
-- name: url
-  required: true
-  default: true
-  description: URL to decode
+name: ProofpointDecodeURL
 outputs:
 - contextPath: URL.Data
   description: Decoded URLs
+script: ''
 scripttarget: 0
+subtype: python2
+tags: []
 tests:
-  - ProofpointDecodeURL-Test
-deprecated: true
+- ProofpointDecodeURL-Test
+toversion: 4.1.9
+type: python

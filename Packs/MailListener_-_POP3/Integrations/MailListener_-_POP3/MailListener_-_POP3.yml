@@ -1,3 +1,4 @@
+beta: true
 category: Messaging
 commonfields:
   id: MailListener - POP3 Beta
@@ -49,8 +50,8 @@ script:
   isfetch: true
   runonce: false
   script: '-'
-  type: python
   subtype: python2
-beta: true
+  type: python
 tests:
 - MailListener-POP3 - Test
+toversion: 4.1.9

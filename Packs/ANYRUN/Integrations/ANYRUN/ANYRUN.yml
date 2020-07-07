@@ -434,10 +434,11 @@ script:
       description: ID of the task created to analyze the submission.
       type: String
   dockerimage: demisto/python3:3.7.3.221
-  subtype: python3
   isfetch: false
   runonce: false
   script: '-'
+  subtype: python3
   type: python
 tests:
 - ANYRUN-Test
+toversion: 4.1.9

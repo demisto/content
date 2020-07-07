@@ -1,84 +1,82 @@
+category: Endpoint
 commonfields:
   id: RedCanary
   version: -1
-name: RedCanary
-display: Red Canary
-category: Endpoint
-description: Red Canary collects endpoint data using Carbon Black Response and CrowdStrike
-  Falcon.  The collected data is standardized into a common schema which allows teams
-  to detect, analyze and respond to security incidents.
 configuration:
-- display: Domain (for example, https://demisto.my.redcanary.co)
+- defaultvalue: ''
+  display: Domain (for example, https://demisto.my.redcanary.co)
   name: domain
-  defaultvalue: ""
+  required: true
   type: 0
-  required: true
-- display: API Key
+- defaultvalue: ''
+  display: API Key
   name: api_key
-  defaultvalue: ""
-  type: 4
   required: true
+  type: 4
 - display: Fetch incidents
   name: isFetch
-  type: 8
   required: false
+  type: 8
 - display: Incident type
   name: incidentType
-  type: 13
   required: false
+  type: 13
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   required: false
   type: 0
-- display: Use system proxy settings
+- defaultvalue: ''
+  display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
-  type: 8
   required: false
-- display: Trust any certificate (not secure)
+  type: 8
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
+description: Red Canary collects endpoint data using Carbon Black Response and CrowdStrike
+  Falcon.  The collected data is standardized into a common schema which allows teams
+  to detect, analyze and respond to security incidents.
+display: Red Canary
+name: RedCanary
 script:
-  script: ''
-  type: python
-  subtype: python2
   commands:
-  - name: redcanary-acknowledge-detection
-    arguments:
-    - name: id
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: Detection ID. Can be obtained from the context.
+      name: id
+      required: true
     description: Mark a detection as acknowledged to inform that it's being handled.
-  - name: redcanary-update-remediation-state
-    arguments:
-    - name: id
-      required: true
-      default: true
+    name: redcanary-acknowledge-detection
+  - arguments:
+    - default: true
       description: Detection ID. Can be obtained from the context.
-    - name: remediation-state
+      name: id
       required: true
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The way in which the detection was remediated.
+      name: remediation-state
       predefined:
       - remediated
       - not_remediated_false_positive
       - not_remediated_sanctioned_activity
       - not_remediated_unwarranted
-      description: The way in which the detection was remediated.
-    - name: comment
+      required: true
+    - defaultValue: remediated by Demisto.
       description: Describe the reason why the detection was remediated in this manner.
         This is ignored for 'remediated' state
-      defaultValue: remediated by Demisto.
+      name: comment
     description: Update the remediation state of a detection.
-  - name: redcanary-list-detections
-    arguments:
-    - name: page
-      description: What page of results to fetch. Defaults to first page.
-    - name: per-page
-      description: How many results to return per page.
+    name: redcanary-update-remediation-state
+  - arguments:
+    - description: What page of results to fetch. Defaults to first page.
+      name: page
+    - description: How many results to return per page.
+      name: per-page
+    description: Get a list of confirmed detections.
+    name: redcanary-list-detections
     outputs:
     - contextPath: RedCanary.Detection.ID
       description: Detection ID.
@@ -147,60 +145,15 @@ script:
     - contextPath: Account.Hostname
       description: Endpoint host name
       type: string
-    description: Get a list of confirmed detections.
-  - name: redcanary-list-endpoints
-    arguments:
-    - name: page
+  - arguments:
+    - defaultValue: '1'
       description: Page number in the query response. Default is 1.
-      defaultValue: "1"
-    - name: per-page
+      name: page
+    - defaultValue: '50'
       description: Number of returned results per page. Default is 50
-      defaultValue: "50"
-    outputs:
-    - contextPath: Endpoint.Hostname
-      description: Fully-qualified endpoint hostname
-      type: string
-    - contextPath: Endpoint.ID
-      description: Endpoint ID
-      type: string
-    - contextPath: Endpoint.IPAddress
-      description: IP Address of the endpoint
-    - contextPath: Endpoint.MACAddress
-      description: MAC Address of the endpoint
-    - contextPath: Endpoint.OS
-      description: The operating system platform used by the endpoint
-      type: string
-    - contextPath: Endpoint.OSVersion
-      description: The complete operating system version identifier used by the endpoint
-      type: string
-    - contextPath: Endpoint.Memory
-      description: Physical memory of the endpoint in bytes
-      type: number
-    - contextPath: Endpoint.IsIsolated
-      description: Whether or not the endpoint is currently network isolated
-      type: boolean
-    - contextPath: Endpoint.IsDecommissioned
-      description: Whether or not the endpoint is decommissioned
-      type: boolean
+      name: per-page
     description: Get a list of endpoints.
-  - name: redcanary-execute-playbook
-    arguments:
-    - name: playbook-id
-      description: Playbook ID for execution.
-    - name: detection-id
-      required: true
-      description: Detection to execute the playbook on. Can be retrieve from the
-        context
-    - name: playbook-name
-      description: Playbook name for execution. if playbook ID is specify, this is
-        ignored.
-    description: Execute a predefined playbook on a detection.
-  - name: redcanary-get-endpoint
-    arguments:
-    - name: id
-      required: true
-      default: true
-      description: Endpoint ID
+    name: redcanary-list-endpoints
     outputs:
     - contextPath: Endpoint.Hostname
       description: Fully-qualified endpoint hostname
@@ -227,13 +180,58 @@ script:
     - contextPath: Endpoint.IsDecommissioned
       description: Whether or not the endpoint is decommissioned
       type: boolean
-    description: Get an endpoint by unique identifier.
-  - name: redcanary-get-endpoint-detections
-    arguments:
-    - name: id
+  - arguments:
+    - description: Playbook ID for execution.
+      name: playbook-id
+    - description: Detection to execute the playbook on. Can be retrieve from the
+        context
+      name: detection-id
       required: true
-      default: true
+    - description: Playbook name for execution. if playbook ID is specify, this is
+        ignored.
+      name: playbook-name
+    description: Execute a predefined playbook on a detection.
+    name: redcanary-execute-playbook
+  - arguments:
+    - default: true
       description: Endpoint ID
+      name: id
+      required: true
+    description: Get an endpoint by unique identifier.
+    name: redcanary-get-endpoint
+    outputs:
+    - contextPath: Endpoint.Hostname
+      description: Fully-qualified endpoint hostname
+      type: string
+    - contextPath: Endpoint.ID
+      description: Endpoint ID
+      type: string
+    - contextPath: Endpoint.IPAddress
+      description: IP Address of the endpoint
+    - contextPath: Endpoint.MACAddress
+      description: MAC Address of the endpoint
+    - contextPath: Endpoint.OS
+      description: The operating system platform used by the endpoint
+      type: string
+    - contextPath: Endpoint.OSVersion
+      description: The complete operating system version identifier used by the endpoint
+      type: string
+    - contextPath: Endpoint.Memory
+      description: Physical memory of the endpoint in bytes
+      type: number
+    - contextPath: Endpoint.IsIsolated
+      description: Whether or not the endpoint is currently network isolated
+      type: boolean
+    - contextPath: Endpoint.IsDecommissioned
+      description: Whether or not the endpoint is decommissioned
+      type: boolean
+  - arguments:
+    - default: true
+      description: Endpoint ID
+      name: id
+      required: true
+    description: Get a list of detections associated with the endpoint.
+    name: redcanary-get-endpoint-detections
     outputs:
     - contextPath: RedCanary.Detection.ID
       description: Detection ID.
@@ -293,13 +291,13 @@ script:
     - contextPath: Account.Hostname
       description: Endpoint host name
       type: string
-    description: Get a list of detections associated with the endpoint.
-  - name: redcanary-get-detection
-    arguments:
-    - name: id
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: Detection ID
+      name: id
+      required: true
+    description: Get a detection by unique identifier.
+    name: redcanary-get-detection
     outputs:
     - contextPath: RedCanary.Detection.ID
       description: Detection ID.
@@ -410,8 +408,11 @@ script:
     - contextPath: Process.CommandLine
       description: Process command line
       type: string
-    description: Get a detection by unique identifier.
   isfetch: true
   runonce: false
+  script: ''
+  subtype: python2
+  type: python
 tests:
-  - RedCanaryTest
+- RedCanaryTest
+toversion: 4.1.9

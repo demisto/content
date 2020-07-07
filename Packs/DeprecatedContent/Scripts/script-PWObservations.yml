@@ -1,93 +1,80 @@
+args:
+- default: true
+  description: 'Timestamp of the start time of the event end, Example: 1401451200000,
+    or ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+  name: start
+- description: 'Timestamp of the end of the event, Example: 1401451500000, or ISO
+    8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+  name: end
+- description: the sensor id or a comma-separated list of sensor ids
+  name: sensorId
+  required: true
+- description: Search for observations in every kill chain stage (true false)
+  name: hasKillChain
+- description: Filter by killchain stage (Methodology Recon Delivery Exploit Beacon
+    CnC Fortification Data_Theft)
+  name: killChainStage
+- description: Try to return at least this many results per page
+  name: minLimit
+- description: Do not return more than this many results
+  name: maxLimit
+- description: Filter by observation type (ids http iprep urlrep protocol file )
+  name: type
+- description: Filter observations by IP address in the src/dst fields
+  name: ip
+- description: Filter by Low, Medium, or High threats (NONE LOW MEDIUM HIGH)
+  name: threatLevel
+- description: Filter by threat category (ExploitsAndAttacks DenialOfService Malware
+    Scanning Botnets Phishing Suspicious MaliciousHost APT Misc Unknown)
+  name: threatCategory
+- description: 'Filter by threat signature (find observations of the same type of
+    threat) - Example: 69020504'
+  name: signatureId
+- description: Include observation records (true or false)
+  name: expandDetails
+- description: Return results sorted by descending timestamp (default = true)
+  name: reverseOrder
+- description: An identifier to fetch the next page in the result set
+  name: nextPage
+comment: Query for ProtectWise observations. Supports a comma-separated list of sensor
+  IDs - will query each sensor with the given parameters.
 commonfields:
   id: PWObservations
   version: -1
-name: PWObservations
-script: |
-  from datetime import datetime, timedelta
-  res = []
-  dArgs = demisto.args()
-  dArgs["using-brand"] = "ProtectWise"
-  if not demisto.get(dArgs, 'end'):
-      dArgs['end'] = FormatIso8601(datetime.now())
-  # Default to past 24 hrs if start datetime is not provided
-  if not demisto.get(dArgs, 'start'):
-      dArgs['start'] = FormatIso8601(datetime.now() - timedelta(hours=24))
-
-  sensorList = argToList(demisto.get(dArgs, 'sensorId'))
-  for sensorId in sensorList:
-      dArgs['sensorId'] = sensorId
-      resSearch = demisto.executeCommand("observation-search", dArgs)
-      try:
-          for entry in resSearch:
-              if isError(entry):
-                  res = resSearch
-                  break
-              else:
-                  if demisto.get(entry, 'Contents.count') == 0:
-                      res.append({"Type": entryTypes["note"], "ContentsFormat": formats["text"], "Contents": "No results found."})
-                  else:
-                      myData = demisto.get(entry, 'Contents.observations')
-                      if myData:
-                          for row in myData:
-                              for k in row:
-                                  row[k] = formatCell(row[k])
-                          appendContext('pwobservations', [ob['id'] for ob in myData])
-                          res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": myData})
-                      else:
-                          res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                                      "Contents": "Could not extract result list from response: " + json.dumps(entry["Contents"], indent = 4)})
-      except Exception as ex:
-          res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                      "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resSearch)})
-  demisto.results(res)
-type: python
-subtype: python2
-tags:
-- protectwise
-comment: Query for ProtectWise observations. Supports a comma-separated list of sensor
-  IDs - will query each sensor with the given parameters.
-system: true
-args:
-- name: start
-  default: true
-  description: 'Timestamp of the start time of the event end, Example: 1401451200000,
-    or ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
-- name: end
-  description: 'Timestamp of the end of the event, Example: 1401451500000, or ISO
-    8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
-- name: sensorId
-  required: true
-  description: the sensor id or a comma-separated list of sensor ids
-- name: hasKillChain
-  description: Search for observations in every kill chain stage (true false)
-- name: killChainStage
-  description: Filter by killchain stage (Methodology Recon Delivery Exploit Beacon
-    CnC Fortification Data_Theft)
-- name: minLimit
-  description: Try to return at least this many results per page
-- name: maxLimit
-  description: Do not return more than this many results
-- name: type
-  description: Filter by observation type (ids http iprep urlrep protocol file )
-- name: ip
-  description: Filter observations by IP address in the src/dst fields
-- name: threatLevel
-  description: Filter by Low, Medium, or High threats (NONE LOW MEDIUM HIGH)
-- name: threatCategory
-  description: Filter by threat category (ExploitsAndAttacks DenialOfService Malware
-    Scanning Botnets Phishing Suspicious MaliciousHost APT Misc Unknown)
-- name: signatureId
-  description: 'Filter by threat signature (find observations of the same type of
-    threat) - Example: 69020504'
-- name: expandDetails
-  description: Include observation records (true or false)
-- name: reverseOrder
-  description: Return results sorted by descending timestamp (default = true)
-- name: nextPage
-  description: An identifier to fetch the next page in the result set
-scripttarget: 0
 dependson:
   must:
   - ProtectWise|||observation-search
-timeout: 0s
 deprecated: true
+name: PWObservations
+script: "from datetime import datetime, timedelta\nres = []\ndArgs = demisto.args()\n\
+  dArgs[\"using-brand\"] = \"ProtectWise\"\nif not demisto.get(dArgs, 'end'):\n  \
+  \  dArgs['end'] = FormatIso8601(datetime.now())\n# Default to past 24 hrs if start\
+  \ datetime is not provided\nif not demisto.get(dArgs, 'start'):\n    dArgs['start']\
+  \ = FormatIso8601(datetime.now() - timedelta(hours=24))\n\nsensorList = argToList(demisto.get(dArgs,\
+  \ 'sensorId'))\nfor sensorId in sensorList:\n    dArgs['sensorId'] = sensorId\n\
+  \    resSearch = demisto.executeCommand(\"observation-search\", dArgs)\n    try:\n\
+  \        for entry in resSearch:\n            if isError(entry):\n             \
+  \   res = resSearch\n                break\n            else:\n                if\
+  \ demisto.get(entry, 'Contents.count') == 0:\n                    res.append({\"\
+  Type\": entryTypes[\"note\"], \"ContentsFormat\": formats[\"text\"], \"Contents\"\
+  : \"No results found.\"})\n                else:\n                    myData = demisto.get(entry,\
+  \ 'Contents.observations')\n                    if myData:\n                   \
+  \     for row in myData:\n                            for k in row:\n          \
+  \                      row[k] = formatCell(row[k])\n                        appendContext('pwobservations',\
+  \ [ob['id'] for ob in myData])\n                        res.append({\"Type\": entryTypes[\"\
+  note\"], \"ContentsFormat\": formats[\"table\"], \"Contents\": myData})\n      \
+  \              else:\n                        res.append({\"Type\": entryTypes[\"\
+  error\"], \"ContentsFormat\": formats[\"text\"],\n                             \
+  \       \"Contents\": \"Could not extract result list from response: \" + json.dumps(entry[\"\
+  Contents\"], indent = 4)})\n    except Exception as ex:\n        res.append({\"\
+  Type\": entryTypes[\"error\"], \"ContentsFormat\": formats[\"text\"],\n        \
+  \            \"Contents\": \"Error occurred while parsing output from command. Exception\
+  \ info:\\n\" + str(ex) + \"\\n\\nInvalid output:\\n\" + str(resSearch)})\ndemisto.results(res)\n"
+scripttarget: 0
+subtype: python2
+system: true
+tags:
+- protectwise
+timeout: 0s
+toversion: 4.1.9
+type: python

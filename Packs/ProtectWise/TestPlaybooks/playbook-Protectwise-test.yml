@@ -2,40 +2,34 @@ id: Protectwise-Test
 inputs: []
 name: Protectwise-Test
 outputs: []
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 2566158a-f879-4cc8-8ebf-d5656da3e262
       iscommand: false
-      name: ""
+      name: ''
       version: -1
     taskid: 2566158a-f879-4cc8-8ebf-d5656da3e262
     timertriggers: []
     type: start
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-  "1":
-    id: "1"
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     note: false
     quietmode: 0
     scriptarguments:
@@ -54,19 +48,13 @@ tasks:
     taskid: 50a60609-5421-4f17-834f-27a44ce83095
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-  "2":
-    id: "2"
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '2':
+    id: '2'
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     note: false
     quietmode: 0
     scriptarguments:
@@ -86,19 +74,13 @@ tasks:
     taskid: d056f910-2b72-42c0-804d-cdf8809ba963
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-  "3":
-    id: "3"
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '3':
+    id: '3'
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     note: false
     quietmode: 0
     scriptarguments:
@@ -120,19 +102,13 @@ tasks:
     taskid: d272fb90-1c08-40c4-8d95-12afbba66821
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-  "4":
-    id: "4"
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+  '4':
+    id: '4'
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     note: false
     quietmode: 0
     scriptarguments:
@@ -144,7 +120,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Download PCAPs related to the requested events. Supports rate throttling.
       id: b98cdc2b-7d21-44b5-8f5e-b62612c0b57a
       iscommand: false
@@ -155,19 +131,13 @@ tasks:
     taskid: b98cdc2b-7d21-44b5-8f5e-b62612c0b57a
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-  "5":
-    id: "5"
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+  '5':
+    id: '5'
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     note: false
     quietmode: 0
     scriptarguments:
@@ -181,7 +151,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Download PCAPs related to the specified observations. Supports
         rate throttling.
       id: dc7d1141-3bfb-4373-882a-f535a946cc1a
@@ -193,24 +163,18 @@ tasks:
     taskid: dc7d1141-3bfb-4373-882a-f535a946cc1a
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-  "6":
-    id: "6"
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+  '6':
+    id: '6'
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     note: false
     quietmode: 0
     scriptarguments:
       end:
-        simple: 2020-03-25T12:00:00
+        simple: 2020-03-25 12:00:00
       eventType: {}
       ip: {}
       killChainStage: {}
@@ -220,13 +184,13 @@ tasks:
       observationStage: {}
       reverseOrder: {}
       start:
-        simple: 2015-03-25T12:00:00
+        simple: 2015-03-25 12:00:00
       threatCategory: {}
       threatLevel: {}
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Searches for events. Events are resources that describe a threat
         and contains a collection of observations. Deprecated - use the protectwise-search-events
         command.
@@ -239,22 +203,16 @@ tasks:
     taskid: 6a02e167-1478-4e23-8251-d2888c05d7a4
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-  "7":
-    id: "7"
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '7':
+    id: '7'
     ignoreworker: false
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 4b2fdc7f-ab5b-447a-8071-a781efeea76d
       iscommand: false
       name: Done
@@ -263,24 +221,18 @@ tasks:
     taskid: 4b2fdc7f-ab5b-447a-8071-a781efeea76d
     timertriggers: []
     type: title
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-  "8":
-    id: "8"
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1420\n  }\n}"
+  '8':
+    id: '8'
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     note: false
     quietmode: 0
     scriptarguments:
       end:
-        simple: 2020-03-25T12:00:00
+        simple: 2020-03-25 12:00:00
       hasKillChain: {}
       ip: {}
       killChainStage: {}
@@ -292,14 +244,14 @@ tasks:
         simple: ${Protectwise.Event.[0].sensorId}
       signatureId: {}
       start:
-        simple: 2015-03-25T12:00:00
+        simple: 2015-03-25 12:00:00
       threatCategory: {}
       threatLevel: {}
       type: {}
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Searches for observations in ProtectWise. Deprecated - use the
         protectwise-search-observations command.
       id: 052b4d67-8d16-4fda-868e-4605ec58486b
@@ -311,23 +263,9 @@ tasks:
     taskid: 052b4d67-8d16-4fda-868e-4605ec58486b
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+toversion: 4.1.9
 version: -1
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1435,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1435,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

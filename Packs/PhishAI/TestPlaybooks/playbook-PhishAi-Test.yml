@@ -1,141 +1,114 @@
-id: PhishAi-Test
-version: -1
-name: PhishAi-Test
 description: test PB for Phish.AI
-starttaskid: "0"
+id: PhishAi-Test
+inputs: []
+name: PhishAi-Test
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 9ead157f-8beb-468b-8b9f-a1c0a76e016b
-    type: start
-    task:
-      id: 9ead157f-8beb-468b-8b9f-a1c0a76e016b
-      version: -1
-      name: ""
-      description: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
+      - '1'
     note: false
-    timertriggers: []
-  "1":
-    id: "1"
-    taskid: 5e00adec-6a0d-4262-8184-a754cfa083bd
-    type: regular
+    separatecontext: false
     task:
-      id: 5e00adec-6a0d-4262-8184-a754cfa083bd
+      brand: ''
+      description: ''
+      id: 9ead157f-8beb-468b-8b9f-a1c0a76e016b
+      iscommand: false
+      name: ''
       version: -1
-      name: scan a url
-      description: Check if url is phishing and get details about the brand that is
-        being phished
-      script: '|||phish-ai-scan-url'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: 9ead157f-8beb-468b-8b9f-a1c0a76e016b
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
     scriptarguments:
       url:
         simple: www.demisto.com
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 230
-        }
-      }
-    note: false
-    timertriggers: []
-  "2":
-    id: "2"
-    taskid: e3e4fcd9-55fc-45e4-8d92-3650deebf6c2
-    type: condition
     task:
-      id: e3e4fcd9-55fc-45e4-8d92-3650deebf6c2
+      brand: ''
+      description: Check if url is phishing and get details about the brand that is
+        being phished
+      id: 5e00adec-6a0d-4262-8184-a754cfa083bd
+      iscommand: true
+      name: scan a url
+      script: '|||phish-ai-scan-url'
+      type: regular
       version: -1
-      name: is there data in the context?
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "3"
-    separatecontext: false
+    taskid: 5e00adec-6a0d-4262-8184-a754cfa083bd
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+  '2':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: URL
                 accessor: Data
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 420
-        }
-      }
+                root: URL
+          operator: isExists
+      label: 'yes'
+    id: '2'
+    nexttasks:
+      'yes':
+      - '3'
     note: false
-    timertriggers: []
-  "3":
-    id: "3"
-    taskid: 508e1efd-942c-4815-8da1-4816171cf1df
-    type: regular
+    separatecontext: false
     task:
-      id: 508e1efd-942c-4815-8da1-4816171cf1df
+      brand: ''
+      description: 'Verifies path in context:
+
+        - Verifies path existence
+
+        - If matching object is an array: verify fields exists in each of the objects
+        in the array
+
+        - If matching object is not an array: verify fields exists in matching object
+
+        - if ''expectedValue'' is given: ensure that the given value is equal to the
+        context path'
+      id: e3e4fcd9-55fc-45e4-8d92-3650deebf6c2
+      iscommand: false
+      name: is there data in the context?
+      type: condition
       version: -1
-      name: dispute a url
-      script: '|||phish-ai-dispute-url'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: e3e4fcd9-55fc-45e4-8d92-3650deebf6c2
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 420\n  }\n}"
+  '3':
+    id: '3'
+    note: false
     scriptarguments:
       scan_id:
         complex:
-          root: DBotScore
           accessor: ScanID
+          root: DBotScore
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 620
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      id: 508e1efd-942c-4815-8da1-4816171cf1df
+      iscommand: true
+      name: dispute a url
+      script: '|||phish-ai-dispute-url'
+      type: regular
+      version: -1
+    taskid: 508e1efd-942c-4815-8da1-4816171cf1df
     timertriggers: []
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 665,
-        "width": 380,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 620\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 665,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n\
+  \    }\n  }\n}"

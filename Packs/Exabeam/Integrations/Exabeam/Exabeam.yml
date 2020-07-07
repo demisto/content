@@ -3,7 +3,7 @@ commonfields:
   id: Exabeam
   version: -1
 configuration:
-- display: Server URL (e.g https://100.24.16.156:8484) # disable-secrets-detection
+- display: Server URL (e.g https://100.24.16.156:8484)
   name: url
   required: true
   type: 0
@@ -443,3 +443,4 @@ script:
   type: python
 tests:
 - Exabeam - Test
+toversion: 4.1.9

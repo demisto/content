@@ -1,24 +1,20 @@
+comment: Script to test RegPathReputationBasicList and see the proper Contents output
+  is returned
 commonfields:
   id: TestRegPathReputation
   version: -1
+enabled: true
 name: TestRegPathReputation
-script: |-
-  # Test script to check RegPathReputationBasicLists
-  import json
-  res = demisto.executeCommand("RegPathReputationBasicLists", {'input': r"HKLM\SYSTEM\CurrentControlSet\Control\SafeBoot"})
-  contents = res[0].get('Contents')
-  if not contents:
-      raise Exception('Content response not found: {}'.format(res[0]))
-  score = int(contents)
-  if score != 2:
-      raise Exception('Score not equal 2: {} for response: {}'.format(score, res[0]))
-  demisto.results("finished verifying result: " + json.dumps(res, indent=2))
-type: python
+runas: DBotWeakRole
+runonce: false
+script: "# Test script to check RegPathReputationBasicLists\nimport json\nres = demisto.executeCommand(\"\
+  RegPathReputationBasicLists\", {'input': r\"HKLM\\SYSTEM\\CurrentControlSet\\Control\\\
+  SafeBoot\"})\ncontents = res[0].get('Contents')\nif not contents:\n    raise Exception('Content\
+  \ response not found: {}'.format(res[0]))\nscore = int(contents)\nif score != 2:\n\
+  \    raise Exception('Score not equal 2: {} for response: {}'.format(score, res[0]))\n\
+  demisto.results(\"finished verifying result: \" + json.dumps(res, indent=2))"
+scripttarget: 0
 subtype: python2
 tags: []
-comment: Script to test RegPathReputationBasicList and see the proper Contents output
-  is returned
-enabled: true
-scripttarget: 0
-runonce: false
-runas: DBotWeakRole
+toversion: 4.1.9
+type: python

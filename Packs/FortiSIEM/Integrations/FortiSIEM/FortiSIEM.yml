@@ -1,62 +1,60 @@
+category: Analytics & SIEM
 commonfields:
   id: FortiSIEM
   version: -1
-name: FortiSIEM
-display: FortiSIEM
-category: Analytics & SIEM
-description: Search and update events of FortiSIEM and manage resource lists.
 configuration:
 - display: Fetch incidents
   name: isFetch
-  type: 8
   required: false
+  type: 8
 - display: Incident type
   name: incidentType
+  required: false
   type: 13
-  required: false
-- display: Server URL (e.g. https://192.168.0.1)
+- defaultvalue: ''
+  display: Server URL (e.g. https://192.168.0.1)
   name: host
-  defaultvalue: ""
+  required: true
   type: 0
-  required: true
-- display: Credentials
+- defaultvalue: ''
+  display: Credentials
   name: credentials
-  defaultvalue: ""
-  type: 9
   required: true
-- display: Trust any certificate (not secure)
+  type: 9
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
   name: unsecure
-  defaultvalue: ""
-  type: 8
   required: false
-- display: Use system proxy settings
+  type: 8
+- defaultvalue: ''
+  display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
+description: Search and update events of FortiSIEM and manage resource lists.
+display: FortiSIEM
+name: FortiSIEM
 script:
-  script: '-'
-  type: python
-  subtype: python2
   commands:
-  - name: fortisiem-get-events-by-incident
-    arguments:
-    - name: incID
+  - arguments:
+    - description: ID of the incident by which to filter.
+      name: incID
       required: true
-      description: ID of the incident by which to filter.
-    - name: maxResults
+    - defaultValue: '10'
       description: Maximum number of results to return.
-      defaultValue: "10"
-    - name: extendedData
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      name: maxResults
+    - auto: PREDEFINED
+      defaultValue: 'true'
       description: Whether to extend the data.
-      defaultValue: "true"
-    - name: maxWaitTime
+      name: extendedData
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: '60'
       description: Maximum time for the event report to finish (in seconds).
-      defaultValue: "60"
+      name: maxWaitTime
+    description: Get events by incidents
+    name: fortisiem-get-events-by-incident
     outputs:
     - contextPath: FortiSIEM.Events.EventType
       description: Event type.
@@ -143,9 +141,9 @@ script:
       description: Destination IP address for the web.
       type: string
     - contextPath: FortiSIEM.Events.SourceIP
-      description: "IP address of the traffic's origin. The source varies by the direction:
-        l In HTTP requests, this is the web browser or other client. l In HTTP responses,
-        this is the physical server."
+      description: 'IP address of the traffic''s origin. The source varies by the
+        direction: l In HTTP requests, this is the web browser or other client. l
+        In HTTP responses, this is the physical server.'
       type: string
     - contextPath: FortiSIEM.Events.ExtendedData
       description: All additional data returned by FortiSIEM.
@@ -165,70 +163,70 @@ script:
     - contextPath: FortiSIEM.Events.NATIP
       description: NAT source IP.
       type: string
-    description: Get events by incidents
-  - name: fortisiem-clear-incident
-    arguments:
-    - name: incident_id
+  - arguments:
+    - description: ID of the incident to close.
+      name: incident_id
       required: true
-      description: ID of the incident to close.
-    - name: close_reason
-      description: Reason for closing.
+    - description: Reason for closing.
+      name: close_reason
     description: Clear (close) a FortiSIEM incident.
-  - name: fortisiem-get-events-by-filter
-    arguments:
-    - name: maxResults
+    name: fortisiem-clear-incident
+  - arguments:
+    - defaultValue: '10'
       description: Maximum number of results to return.
-      defaultValue: "10"
-    - name: extendedData
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      name: maxResults
+    - auto: PREDEFINED
+      defaultValue: 'true'
       description: Whether to extend the data.
-      defaultValue: "true"
-    - name: maxWaitTime
+      name: extendedData
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: '60'
       description: Maximum time for the event report to finish (in seconds).
-      defaultValue: "60"
-    - name: reptDevIpAddr
-      description: Reporting IP address.
-    - name: destIpAddr
-      description: Destination IP address.
-    - name: srcIpAddr
-      description: Source IP address.
-    - name: destMACAddr
-      description: Destination MAC address.
-    - name: srcMACAddr
-      description: Source MAC address.
-    - name: destDomain
-      description: Destination domain.
-    - name: srcDomain
-      description: Source domain.
-    - name: destName
-      description: Destination name.
-    - name: srcName
-      description: Source name.
-    - name: destAction
-      description: Destination action.
-    - name: destUser
-      description: Destination user.
-    - name: reportWindow
+      name: maxWaitTime
+    - description: Reporting IP address.
+      name: reptDevIpAddr
+    - description: Destination IP address.
+      name: destIpAddr
+    - description: Source IP address.
+      name: srcIpAddr
+    - description: Destination MAC address.
+      name: destMACAddr
+    - description: Source MAC address.
+      name: srcMACAddr
+    - description: Destination domain.
+      name: destDomain
+    - description: Source domain.
+      name: srcDomain
+    - description: Destination name.
+      name: destName
+    - description: Source name.
+      name: srcName
+    - description: Destination action.
+      name: destAction
+    - description: Destination user.
+      name: destUser
+    - defaultValue: '1'
       description: Relative report time value.
-      defaultValue: "1"
-    - name: reportWindowUnit
-      auto: PREDEFINED
+      name: reportWindow
+    - auto: PREDEFINED
+      defaultValue: Minute
+      description: Relative report time unit.
+      name: reportWindowUnit
       predefined:
       - Minute
       - Day
       - Hour
       - Daily
-      description: Relative report time unit.
-      defaultValue: Minute
-    - name: eventType
-      description: event type.
-    - name: srcGeoCountry
-      description: Source geo country.
-    - name: User
-      description: User.
+    - description: event type.
+      name: eventType
+    - description: Source geo country.
+      name: srcGeoCountry
+    - description: User.
+      name: User
+    description: Returns an event list according to the specified filters.
+    name: fortisiem-get-events-by-filter
     outputs:
     - contextPath: FortiSIEM.Events.EventType
       description: FortiSIEM event type.
@@ -236,46 +234,46 @@ script:
     - contextPath: FortiSIEM.Events.SourceCountry
       description: Event source country.
       type: Unknown
-    description: Returns an event list according to the specified filters.
-  - name: fortisiem-get-cmdb-devices
-    arguments:
-    - name: device_ip
-      description: CSV list of device IPs.
-    - name: limit
+  - arguments:
+    - description: CSV list of device IPs.
+      name: device_ip
+    - defaultValue: '50'
       description: Maximum number of results to return.
-      defaultValue: "50"
+      name: limit
+    description: Returns the description of each device.
+    name: fortisiem-get-cmdb-devices
     outputs:
     - contextPath: FortiSIEM.CmdbDevice
       description: CMDB devices.
       type: Unknown
-    description: Returns the description of each device.
-  - name: fortisiem-get-events-by-query
-    arguments:
-    - name: query
+  - arguments:
+    - description: The query to get events.
+      name: query
       required: true
-      description: The query to get events.
-    - name: report-window
+    - defaultValue: '60'
       description: Interval time of the search.
-      defaultValue: "60"
-    - name: interval-type
-      auto: PREDEFINED
+      name: report-window
+    - auto: PREDEFINED
+      defaultValue: Minute
+      description: Interval unit.
+      name: interval-type
       predefined:
       - Minute
       - Hourly
       - Daily
-      description: Interval unit.
-      defaultValue: Minute
-    - name: limit
-      description: Maximum number of results to return.
-    - name: extended-data
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+    - description: Maximum number of results to return.
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: 'true'
       description: Whether to extend the data.
-      defaultValue: "true"
-    - name: max-wait-time
-      description: Command timeout.
+      name: extended-data
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Command timeout.
+      name: max-wait-time
+    description: Returns event list filtered by query
+    name: fortisiem-get-events-by-query
     outputs:
     - contextPath: FortiSIEM.Events.EventType
       description: FortiSIEM event type.
@@ -283,22 +281,20 @@ script:
     - contextPath: FortiSIEM.Events.SourceCountry
       description: Event source country.
       type: Unknown
-    description: Returns event list filtered by query
-  - name: fortisiem-get-lists
-    arguments: []
+  - arguments: []
     description: Get all FortiSIEM resource lists hierarchy.
-  - name: fortisiem-add-item-to-resource-list
-    arguments:
-    - name: group_id
-      required: true
-      description: ID of the resource group. Run the "fortisiem-get-lists" command
+    name: fortisiem-get-lists
+  - arguments:
+    - description: ID of the resource group. Run the "fortisiem-get-lists" command
         to get the ID. command.
-    - name: object-info
+      name: group_id
       required: true
-      description: 'CSV list of key-value pairs of attributes, for example: name=SomeName,lowIp=192.168.1.1,highIp=192.168.1.2'
-    - name: resource_type
+    - description: 'CSV list of key-value pairs of attributes, for example: name=SomeName,lowIp=192.168.1.1,highIp=192.168.1.2'
+      name: object-info
       required: true
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: Resource Type
+      name: resource_type
       predefined:
       - Reports
       - Rules
@@ -316,48 +312,20 @@ script:
       - Anonymity Network
       - User Agents
       - Remediations
-      description: Resource Type
+      required: true
+    description: add element to a resource list.
+    name: fortisiem-add-item-to-resource-list
     outputs:
     - contextPath: FortiSIEM.Resource
       description: 'Resource object in fortiSIEM lists. '
       type: Unknown
-    description: add element to a resource list.
-  - name: fortisiem-remove-item-from-resource-list
-    arguments:
-    - name: ids
+  - arguments:
+    - description: CSV list of resource IDs.
+      name: ids
       required: true
-      description: CSV list of resource IDs.
-    - name: resource_type
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - Reports
-      - Rules
-      - Networks
-      - Watch Lists
-      - Protocols
-      - Malware IP
-      - Event Type
-      - Malware Domains
-      - Malware Urls
-      - Malware Hash
-      - Malware Processes
-      - Country Groups
-      - Default Password
-      - Anonymity Network
-      - User Agents
-      - Remediations
+    - auto: PREDEFINED
       description: Resource Type
-    description: Removes elements from a resource list.
-  - name: fortisiem-get-resource-list
-    arguments:
-    - name: group_id
-      required: true
-      description: ID of the resource group. Run the "fortisiem-get-lists" command
-        to get the ID.
-    - name: resource_type
-      required: true
-      auto: PREDEFINED
+      name: resource_type
       predefined:
       - Reports
       - Rules
@@ -375,9 +343,42 @@ script:
       - Anonymity Network
       - User Agents
       - Remediations
+      required: true
+    description: Removes elements from a resource list.
+    name: fortisiem-remove-item-from-resource-list
+  - arguments:
+    - description: ID of the resource group. Run the "fortisiem-get-lists" command
+        to get the ID.
+      name: group_id
+      required: true
+    - auto: PREDEFINED
       description: Resource type.
+      name: resource_type
+      predefined:
+      - Reports
+      - Rules
+      - Networks
+      - Watch Lists
+      - Protocols
+      - Malware IP
+      - Event Type
+      - Malware Domains
+      - Malware Urls
+      - Malware Hash
+      - Malware Processes
+      - Country Groups
+      - Default Password
+      - Anonymity Network
+      - User Agents
+      - Remediations
+      required: true
     description: Lists all elements in a resource list.
+    name: fortisiem-get-resource-list
   isfetch: true
   runonce: false
+  script: '-'
+  subtype: python2
+  type: python
 tests:
-  - No Test
+- No Test
+toversion: 4.1.9

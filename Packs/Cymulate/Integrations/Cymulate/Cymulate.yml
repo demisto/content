@@ -37,6 +37,8 @@ configuration:
   name: fetch_time
   required: false
   type: 0
+defaultClassifier: Cymulate
+defaultMapperIn: Cymulate-mapper
 description: Multi-Vector Cyber Attack, Breach and Attack Simulation
 display: Cymulate
 name: Cymulate
@@ -107,5 +109,4 @@ script:
   type: python
 tests:
 - No tests
-defaultClassifier: Cymulate
-defaultMapperIn: Cymulate-mapper
+toversion: 4.1.9

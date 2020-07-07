@@ -1,56 +1,38 @@
+args:
+- default: true
+  description: MD5 Hash to look up
+  name: md5
+- description: Hash to look up
+  name: hash
+comment: Deprecated. Use the "wildfire-report" command instead.
 commonfields:
   id: WildfireReport
   version: -1
-name: WildfireReport
+dependson:
+  must:
+  - wildfire-report
 deprecated: true
-script: |-
-  var results = [];
-  var raws = [];
-  if (args.md5) {
-      md5s = argToList(args.md5);
-      for(var i=0; i<md5s.length;i++)
-          raws.push(executeCommand('wildfire-report', {md5: md5s[i]}));
-  } else if (args.hash) {
-      hashes = argToList(args.hash);
-      for(var i=0; i<hashes.length;i++)
-          raws.push(executeCommand('wildfire-report', {hash: hashes[i]}));
-  } else {
-      return 'no';
-  }
-  for(var i=0; i<raws.length;i++) {
-      raw = raws[i];
-      if (!raw[0] || !raw[0].Contents || !raw[0].Contents.wildfire || !raw[0].Contents.wildfire.file_info) {
-          results.push(raw);
-      } else {
-          var item = raw[0].Contents.wildfire.file_info;
-          results.push({Contents: {
-              Type: item.filetype,
-              Malware: item.malware,
-              MD5: item.md5,
-              SHA256: item.sha256,
-              Size: item.size},
-              ContentsFormat: formats.table,
-              Type: entryTypes.note});
-      }
-  }
-  return results;
-type: javascript
+name: WildfireReport
+script: "var results = [];\nvar raws = [];\nif (args.md5) {\n    md5s = argToList(args.md5);\n\
+  \    for(var i=0; i<md5s.length;i++)\n        raws.push(executeCommand('wildfire-report',\
+  \ {md5: md5s[i]}));\n} else if (args.hash) {\n    hashes = argToList(args.hash);\n\
+  \    for(var i=0; i<hashes.length;i++)\n        raws.push(executeCommand('wildfire-report',\
+  \ {hash: hashes[i]}));\n} else {\n    return 'no';\n}\nfor(var i=0; i<raws.length;i++)\
+  \ {\n    raw = raws[i];\n    if (!raw[0] || !raw[0].Contents || !raw[0].Contents.wildfire\
+  \ || !raw[0].Contents.wildfire.file_info) {\n        results.push(raw);\n    } else\
+  \ {\n        var item = raw[0].Contents.wildfire.file_info;\n        results.push({Contents:\
+  \ {\n            Type: item.filetype,\n            Malware: item.malware,\n    \
+  \        MD5: item.md5,\n            SHA256: item.sha256,\n            Size: item.size},\n\
+  \            ContentsFormat: formats.table,\n            Type: entryTypes.note});\n\
+  \    }\n}\nreturn results;"
+scripttarget: 0
+system: true
 tags:
 - enhancement
 - wildfire
 - sandbox
-comment: Deprecated. Use the "wildfire-report" command instead.
-system: true
-args:
-- name: md5
-  default: true
-  description: MD5 Hash to look up
-- name: hash
-  description: Hash to look up
-scripttarget: 0
-dependson:
-  must:
-  - wildfire-report
-timeout: 0s
 tests:
 - No tests
+timeout: 0s
+toversion: 4.1.9
+type: javascript

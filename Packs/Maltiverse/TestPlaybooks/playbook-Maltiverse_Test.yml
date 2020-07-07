@@ -1,383 +1,68 @@
 id: Maltiverse Test
-version: -1
+inputs: []
 name: Maltiverse Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 99efad6f-9909-44bf-872a-9c464c05d1bd
-    type: start
+  '0':
+    id: '0'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
+      brand: ''
       id: 99efad6f-9909-44bf-872a-9c464c05d1bd
-      version: -1
-      name: ""
       iscommand: false
-      brand: ""
+      name: ''
+      version: -1
+    taskid: 99efad6f-9909-44bf-872a-9c464c05d1bd
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 50
-        }
-      }
+      - '2'
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
-    taskid: 3ab7fff5-5dfc-4c9d-8a9b-f974a47990ce
-    type: regular
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
     task:
+      brand: ''
+      description: Delete field from context
       id: 3ab7fff5-5dfc-4c9d-8a9b-f974a47990ce
-      version: -1
+      iscommand: false
       name: DeleteContext
-      description: Delete field from context
       scriptName: DeleteContext
       type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 195
-        }
-      }
-    note: false
+      version: -1
+    taskid: 3ab7fff5-5dfc-4c9d-8a9b-f974a47990ce
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "2":
-    id: "2"
-    taskid: 29bd076d-a19a-457a-8cfc-6fc3ded40613
     type: regular
-    task:
-      id: 29bd076d-a19a-457a-8cfc-6fc3ded40613
-      version: -1
-      name: ip
-      description: Checks the reputation of an IP address
-      script: Maltiverse|||ip
-      type: regular
-      iscommand: true
-      brand: Maltiverse
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 195\n  }\n}"
+  '10':
+    id: '10'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "3"
-      - "16"
-    scriptarguments:
-      fullResponse: {}
-      ip:
-        simple: 1.1.1.1
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold: {}
-      wait: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 360
-        }
-      }
+      - '11'
+      - '17'
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
-  "3":
-    id: "3"
-    taskid: 08c52b70-23b4-498e-87b2-0b7eb9ffd5cb
-    type: condition
-    task:
-      id: 08c52b70-23b4-498e-87b2-0b7eb9ffd5cb
-      version: -1
-      name: VerifyAddress
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
-      scriptName: AreValuesEqual
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "4"
-    scriptarguments:
-      left:
-        simple: ${IP.Address}
-      right:
-        simple: 1.1.1.1
-    results:
-    - AreValuesEqual
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "4":
-    id: "4"
-    taskid: 96c85f0d-c444-45e1-8703-0b2d1ea6a0ce
-    type: regular
-    task:
-      id: 96c85f0d-c444-45e1-8703-0b2d1ea6a0ce
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "5":
-    id: "5"
-    taskid: 88c6f0de-6062-4868-819d-e00e4ba9d21a
-    type: regular
-    task:
-      id: 88c6f0de-6062-4868-819d-e00e4ba9d21a
-      version: -1
-      name: url
-      description: Checks the reputation of an URL
-      script: Maltiverse|||url
-      type: regular
-      iscommand: true
-      brand: Maltiverse
-    nexttasks:
-      '#none#':
-      - "6"
-      - "8"
-      - "7"
-    scriptarguments:
-      fullResponse: {}
-      long: {}
-      threshold: {}
-      url:
-        simple: http://assocolours.com/mu/i/LoginVerification.php  # disable-secrets-detection
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "6":
-    id: "6"
-    taskid: 39014fc2-1ce4-4a3c-8cc5-9d8b18bc48b4
-    type: condition
-    task:
-      id: 39014fc2-1ce4-4a3c-8cc5-9d8b18bc48b4
-      version: -1
-      name: VerifyVendor
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
-      scriptName: AreValuesEqual
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "9"
-    scriptarguments:
-      left:
-        simple: ${URL.Malicious.Vendor}
-      right:
-        simple: Maltiverse
-    results:
-    - AreValuesEqual
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "7":
-    id: "7"
-    taskid: 9b4f93fc-b739-4215-8425-1c364239aa3b
-    type: condition
-    task:
-      id: 9b4f93fc-b739-4215-8425-1c364239aa3b
-      version: -1
-      name: VerifyDomainName
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
-      scriptName: AreValuesEqual
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "9"
-    scriptarguments:
-      left:
-        simple: ${Maltiverse.URL.Hostname}
-      right:
-        simple: assocolours.com
-    results:
-    - AreValuesEqual
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "8":
-    id: "8"
-    taskid: cdd71682-d25b-48bf-8f1e-3d8b31d386a6
-    type: condition
-    task:
-      id: cdd71682-d25b-48bf-8f1e-3d8b31d386a6
-      version: -1
-      name: VerifyTLD
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
-      scriptName: AreValuesEqual
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "9"
-    scriptarguments:
-      left:
-        simple: ${Maltiverse.URL.Tld}
-      right:
-        simple: com
-    results:
-    - AreValuesEqual
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "9":
-    id: "9"
-    taskid: 0086b1bb-2ba9-40f2-8dd9-9772d744e425
-    type: regular
-    task:
-      id: 0086b1bb-2ba9-40f2-8dd9-9772d744e425
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "10":
-    id: "10"
-    taskid: 66817663-c965-4a87-8892-4d400dacc966
-    type: regular
-    task:
-      id: 66817663-c965-4a87-8892-4d400dacc966
-      version: -1
-      name: domain
-      description: Checks the reputation of a Domain
-      script: Maltiverse|||domain
-      type: regular
-      iscommand: true
-      brand: Maltiverse
-    nexttasks:
-      '#none#':
-      - "11"
-      - "17"
     scriptarguments:
       domain:
         simple: google.com
@@ -388,108 +73,90 @@ tasks:
       threshold: {}
       wait: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "11":
-    id: "11"
-    taskid: bbc2f09b-08a0-4d6f-87e8-0dff234d7437
-    type: condition
     task:
-      id: bbc2f09b-08a0-4d6f-87e8-0dff234d7437
+      brand: Maltiverse
+      description: Checks the reputation of a Domain
+      id: 66817663-c965-4a87-8892-4d400dacc966
+      iscommand: true
+      name: domain
+      script: Maltiverse|||domain
+      type: regular
       version: -1
-      name: VerifyDomainName
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
-      scriptName: AreValuesEqual
-      type: condition
-      iscommand: false
-      brand: ""
+    taskid: 66817663-c965-4a87-8892-4d400dacc966
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1420\n  }\n}"
+  '11':
+    id: '11'
+    ignoreworker: false
     nexttasks:
-      "yes":
-      - "12"
+      'yes':
+      - '12'
+    note: false
+    quietmode: 0
+    results:
+    - AreValuesEqual
     scriptarguments:
       left:
         simple: ${Maltiverse.Domain.Address}
       right:
         simple: google.com
-    results:
-    - AreValuesEqual
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "12":
-    id: "12"
-    taskid: 128754fe-cc6b-47de-8f6a-b0b7c5f55ede
-    type: regular
     task:
-      id: 128754fe-cc6b-47de-8f6a-b0b7c5f55ede
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      id: bbc2f09b-08a0-4d6f-87e8-0dff234d7437
       iscommand: false
-      brand: ""
+      name: VerifyDomainName
+      scriptName: AreValuesEqual
+      type: condition
+      version: -1
+    taskid: bbc2f09b-08a0-4d6f-87e8-0dff234d7437
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1595\n  }\n}"
+  '12':
+    id: '12'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "13"
+      - '13'
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "13":
-    id: "13"
-    taskid: c86ec365-f16b-4030-8025-70bddbec37ca
-    type: regular
     task:
-      id: c86ec365-f16b-4030-8025-70bddbec37ca
-      version: -1
-      name: file
-      description: Check the reputation of a file
-      script: Maltiverse|||file
+      brand: ''
+      description: Delete field from context
+      id: 128754fe-cc6b-47de-8f6a-b0b7c5f55ede
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: Maltiverse
+      version: -1
+    taskid: 128754fe-cc6b-47de-8f6a-b0b7c5f55ede
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1770\n  }\n}"
+  '13':
+    id: '13'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "14"
-      - "18"
+      - '14'
+      - '18'
+    note: false
+    quietmode: 0
     scriptarguments:
       file:
         simple: c383e5592a8ae962464f57af2e306e0fb5d954cb14091e8ae0df4c3e6e3e2966
@@ -500,203 +167,412 @@ tasks:
       threshold: {}
       wait: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "14":
-    id: "14"
-    taskid: 5fe4b017-2ee2-441d-86ea-f5ddd5d2084d
-    type: condition
     task:
-      id: 5fe4b017-2ee2-441d-86ea-f5ddd5d2084d
+      brand: Maltiverse
+      description: Check the reputation of a file
+      id: c86ec365-f16b-4030-8025-70bddbec37ca
+      iscommand: true
+      name: file
+      script: Maltiverse|||file
+      type: regular
       version: -1
-      name: VerifyFileName
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
-      scriptName: AreValuesEqual
-      type: condition
-      iscommand: false
-      brand: ""
+    taskid: c86ec365-f16b-4030-8025-70bddbec37ca
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1945\n  }\n}"
+  '14':
+    id: '14'
+    ignoreworker: false
     nexttasks:
-      "yes":
-      - "15"
+      'yes':
+      - '15'
+    note: false
+    quietmode: 0
+    results:
+    - AreValuesEqual
     scriptarguments:
       left:
         simple: ${Maltiverse.File.Name}
       right:
         simple: 1585464001_pafish.exe
-    results:
-    - AreValuesEqual
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 2120
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "15":
-    id: "15"
-    taskid: e970de36-f64d-4b55-8def-e49c2d10093b
-    type: title
     task:
-      id: e970de36-f64d-4b55-8def-e49c2d10093b
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 2295
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "16":
-    id: "16"
-    taskid: e977a514-751d-4e03-894c-fae51c39c5fb
-    type: condition
-    task:
-      id: e977a514-751d-4e03-894c-fae51c39c5fb
-      version: -1
-      name: VerifyVendor
+      brand: ''
       description: Check whether the values provided in arguments are equal. If either
         of the arguments are missing, no is returned.
+      id: 5fe4b017-2ee2-441d-86ea-f5ddd5d2084d
+      iscommand: false
+      name: VerifyFileName
       scriptName: AreValuesEqual
       type: condition
+      version: -1
+    taskid: 5fe4b017-2ee2-441d-86ea-f5ddd5d2084d
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 2120\n  }\n}"
+  '15':
+    id: '15'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: e970de36-f64d-4b55-8def-e49c2d10093b
       iscommand: false
-      brand: ""
+      name: Done
+      type: title
+      version: -1
+    taskid: e970de36-f64d-4b55-8def-e49c2d10093b
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 2295\n  }\n}"
+  '16':
+    id: '16'
+    ignoreworker: false
     nexttasks:
-      "yes":
-      - "4"
+      'yes':
+      - '4'
+    note: false
+    quietmode: 0
+    results:
+    - AreValuesEqual
     scriptarguments:
       left:
         simple: ${DBotScore.Vendor}
       right:
         simple: Maltiverse
-    results:
-    - AreValuesEqual
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "17":
-    id: "17"
-    taskid: 8b3e3d24-3133-48fd-87aa-993dcd9ebcda
-    type: condition
     task:
-      id: 8b3e3d24-3133-48fd-87aa-993dcd9ebcda
-      version: -1
-      name: VerifyDomainTld
+      brand: ''
       description: Check whether the values provided in arguments are equal. If either
         of the arguments are missing, no is returned.
+      id: e977a514-751d-4e03-894c-fae51c39c5fb
+      iscommand: false
+      name: VerifyVendor
       scriptName: AreValuesEqual
       type: condition
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: e977a514-751d-4e03-894c-fae51c39c5fb
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 545\n  }\n}"
+  '17':
+    id: '17'
+    ignoreworker: false
     nexttasks:
-      "yes":
-      - "12"
+      'yes':
+      - '12'
+    note: false
+    quietmode: 0
+    results:
+    - AreValuesEqual
     scriptarguments:
       left:
         simple: ${Maltiverse.Domain.TLD}
       right:
         simple: com
-    results:
-    - AreValuesEqual
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "18":
-    id: "18"
-    taskid: b333ac23-4730-4b71-87a2-629d3daf8ed0
-    type: condition
     task:
-      id: b333ac23-4730-4b71-87a2-629d3daf8ed0
-      version: -1
-      name: VerifyFileHash
+      brand: ''
       description: Check whether the values provided in arguments are equal. If either
         of the arguments are missing, no is returned.
+      id: 8b3e3d24-3133-48fd-87aa-993dcd9ebcda
+      iscommand: false
+      name: VerifyDomainTld
       scriptName: AreValuesEqual
       type: condition
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 8b3e3d24-3133-48fd-87aa-993dcd9ebcda
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 1595\n  }\n}"
+  '18':
+    id: '18'
+    ignoreworker: false
     nexttasks:
-      "yes":
-      - "15"
+      'yes':
+      - '15'
+    note: false
+    quietmode: 0
+    results:
+    - AreValuesEqual
     scriptarguments:
       left:
         simple: ${Maltiverse.File.ProcessList.Sha256}
       right:
         simple: c383e5592a8ae962464f57af2e306e0fb5d954cb14091e8ae0df4c3e6e3e2966
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      id: b333ac23-4730-4b71-87a2-629d3daf8ed0
+      iscommand: false
+      name: VerifyFileHash
+      scriptName: AreValuesEqual
+      type: condition
+      version: -1
+    taskid: b333ac23-4730-4b71-87a2-629d3daf8ed0
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 2120\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '3'
+      - '16'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      fullResponse: {}
+      ip:
+        simple: 1.1.1.1
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Maltiverse
+      description: Checks the reputation of an IP address
+      id: 29bd076d-a19a-457a-8cfc-6fc3ded40613
+      iscommand: true
+      name: ip
+      script: Maltiverse|||ip
+      type: regular
+      version: -1
+    taskid: 29bd076d-a19a-457a-8cfc-6fc3ded40613
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 360\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '4'
+    note: false
+    quietmode: 0
     results:
     - AreValuesEqual
+    scriptarguments:
+      left:
+        simple: ${IP.Address}
+      right:
+        simple: 1.1.1.1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 2120
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
+    task:
+      brand: ''
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      id: 08c52b70-23b4-498e-87b2-0b7eb9ffd5cb
+      iscommand: false
+      name: VerifyAddress
+      scriptName: AreValuesEqual
+      type: condition
+      version: -1
+    taskid: 08c52b70-23b4-498e-87b2-0b7eb9ffd5cb
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 545\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
     quietmode: 0
-view: |-
-  {
-    "linkLabelsPosition": {
-      "6_9_yes": 0.19
-    },
-    "paper": {
-      "dimensions": {
-        "height": 2310,
-        "width": 1240,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: 96c85f0d-c444-45e1-8703-0b2d1ea6a0ce
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 96c85f0d-c444-45e1-8703-0b2d1ea6a0ce
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 720\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '6'
+      - '8'
+      - '7'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      fullResponse: {}
+      long: {}
+      threshold: {}
+      url:
+        simple: http://assocolours.com/mu/i/LoginVerification.php
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Maltiverse
+      description: Checks the reputation of an URL
+      id: 88c6f0de-6062-4868-819d-e00e4ba9d21a
+      iscommand: true
+      name: url
+      script: Maltiverse|||url
+      type: regular
+      version: -1
+    taskid: 88c6f0de-6062-4868-819d-e00e4ba9d21a
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 895\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '9'
+    note: false
+    quietmode: 0
+    results:
+    - AreValuesEqual
+    scriptarguments:
+      left:
+        simple: ${URL.Malicious.Vendor}
+      right:
+        simple: Maltiverse
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      id: 39014fc2-1ce4-4a3c-8cc5-9d8b18bc48b4
+      iscommand: false
+      name: VerifyVendor
+      scriptName: AreValuesEqual
+      type: condition
+      version: -1
+    taskid: 39014fc2-1ce4-4a3c-8cc5-9d8b18bc48b4
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+  '7':
+    id: '7'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '9'
+    note: false
+    quietmode: 0
+    results:
+    - AreValuesEqual
+    scriptarguments:
+      left:
+        simple: ${Maltiverse.URL.Hostname}
+      right:
+        simple: assocolours.com
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      id: 9b4f93fc-b739-4215-8425-1c364239aa3b
+      iscommand: false
+      name: VerifyDomainName
+      scriptName: AreValuesEqual
+      type: condition
+      version: -1
+    taskid: 9b4f93fc-b739-4215-8425-1c364239aa3b
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1070\n  }\n}"
+  '8':
+    id: '8'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '9'
+    note: false
+    quietmode: 0
+    results:
+    - AreValuesEqual
+    scriptarguments:
+      left:
+        simple: ${Maltiverse.URL.Tld}
+      right:
+        simple: com
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      id: cdd71682-d25b-48bf-8f1e-3d8b31d386a6
+      iscommand: false
+      name: VerifyTLD
+      scriptName: AreValuesEqual
+      type: condition
+      version: -1
+    taskid: cdd71682-d25b-48bf-8f1e-3d8b31d386a6
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 1070\n  }\n}"
+  '9':
+    id: '9'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '10'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: 0086b1bb-2ba9-40f2-8dd9-9772d744e425
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 0086b1bb-2ba9-40f2-8dd9-9772d744e425
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1245\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"6_9_yes\": 0.19\n  },\n  \"paper\": {\n\
+  \    \"dimensions\": {\n      \"height\": 2310,\n      \"width\": 1240,\n      \"\
+  x\": 50,\n      \"y\": 50\n    }\n  }\n}"

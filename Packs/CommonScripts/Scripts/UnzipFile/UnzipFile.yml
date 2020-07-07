@@ -29,22 +29,23 @@ comment: Unzip a file using fileName or entryID to specify a file. Unzipped file
 commonfields:
   id: UnzipFile
   version: -1
+dockerimage: demisto/7zip
 enabled: true
 name: UnzipFile
 outputs:
 - contextPath: ExtractedFiles
   description: A list of file names that were extracted from the ZIP file.
   type: Unknown
+runonce: false
 script: '-'
+subtype: python2
 system: false
 tags:
 - Utility
 - file
-timeout: '0'
-type: python
-dockerimage: demisto/7zip
-runonce: false
 tests:
 - ZipFile-Test
 - UnzipFile-Test
-subtype: python2
+timeout: '0'
+toversion: 4.1.9
+type: python

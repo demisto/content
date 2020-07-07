@@ -1,109 +1,109 @@
 id: Symantec Deepsight Test
-version: -1
+inputs: []
 name: Symantec Deepsight Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: d753fba0-99ac-42dc-8fcc-1e922be96d4b
-    type: start
-    task:
-      id: d753fba0-99ac-42dc-8fcc-1e922be96d4b
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "10"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -50
-        }
-      }
+      - '10'
     note: false
-    timertriggers: []
-  "1":
-    id: "1"
-    taskid: fb56cff2-cfce-4410-81c9-d64ae26c4676
-    type: regular
+    separatecontext: false
     task:
-      id: fb56cff2-cfce-4410-81c9-d64ae26c4676
+      brand: ''
+      id: d753fba0-99ac-42dc-8fcc-1e922be96d4b
+      iscommand: false
+      name: ''
       version: -1
-      name: Get file data
-      script: Symantec Deepsight Intelligence|||file
-      type: regular
-      iscommand: true
-      brand: Symantec Deepsight Intelligence
+    taskid: d753fba0-99ac-42dc-8fcc-1e922be96d4b
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
     scriptarguments:
       file:
         simple: 84c82835a5d21bbcf75a61706d8ab549
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 230
-        }
-      }
-    note: false
-    timertriggers: []
-  "2":
-    id: "2"
-    taskid: 20ac5322-6498-4ced-885f-5574c726434f
-    type: condition
     task:
-      id: 20ac5322-6498-4ced-885f-5574c726434f
+      brand: Symantec Deepsight Intelligence
+      id: fb56cff2-cfce-4410-81c9-d64ae26c4676
+      iscommand: true
+      name: Get file data
+      script: Symantec Deepsight Intelligence|||file
+      type: regular
       version: -1
-      name: Verify file data has been found
-      type: condition
-      iscommand: false
-      brand: ""
+    taskid: fb56cff2-cfce-4410-81c9-d64ae26c4676
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+  '10':
+    id: '10'
     nexttasks:
-      "yes":
-      - "3"
+      '#none#':
+      - '1'
+    note: false
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
     separatecontext: false
+    task:
+      brand: ''
+      id: 79f694df-9e6c-4cf8-8659-9ec6285319ce
+      iscommand: false
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 79f694df-9e6c-4cf8-8659-9ec6285319ce
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 70\n  }\n}"
+  '2':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: File.MD5
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: 84c82835a5d21bbcf75a61706d8ab549
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 410
-        }
-      }
+      label: 'yes'
+    id: '2'
+    nexttasks:
+      'yes':
+      - '3'
     note: false
-    timertriggers: []
-  "3":
-    id: "3"
-    taskid: 66974f76-e2e3-4224-85ec-07b3c583769f
-    type: regular
+    separatecontext: false
     task:
-      id: 66974f76-e2e3-4224-85ec-07b3c583769f
+      brand: ''
+      id: 20ac5322-6498-4ced-885f-5574c726434f
+      iscommand: false
+      name: Verify file data has been found
+      type: condition
       version: -1
-      name: Get url data
-      script: Symantec Deepsight Intelligence|||url
-      type: regular
-      iscommand: true
-      brand: Symantec Deepsight Intelligence
+    taskid: 20ac5322-6498-4ced-885f-5574c726434f
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 410\n  }\n}"
+  '3':
+    id: '3'
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
+    note: false
     scriptarguments:
       long: {}
       retries: {}
@@ -114,65 +114,53 @@ tasks:
         simple: http://bangkoktailor.biz/p37BtCcsWXG8NSn6I/BIZ/PrivateBanking
       wait: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 590
-        }
-      }
-    note: false
-    timertriggers: []
-  "4":
-    id: "4"
-    taskid: 02d5d9fb-4a4b-4167-8495-6a7c004a7bb0
-    type: condition
     task:
-      id: 02d5d9fb-4a4b-4167-8495-6a7c004a7bb0
+      brand: Symantec Deepsight Intelligence
+      id: 66974f76-e2e3-4224-85ec-07b3c583769f
+      iscommand: true
+      name: Get url data
+      script: Symantec Deepsight Intelligence|||url
+      type: regular
       version: -1
-      name: Verify url data was found
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "5"
-    separatecontext: false
+    taskid: 66974f76-e2e3-4224-85ec-07b3c583769f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 590\n  }\n}"
+  '4':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: Deepsight.URL.Data
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: http://bangkoktailor.biz/p37BtCcsWXG8NSn6I/BIZ/PrivateBanking
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 770
-        }
-      }
+      label: 'yes'
+    id: '4'
+    nexttasks:
+      'yes':
+      - '5'
     note: false
-    timertriggers: []
-  "5":
-    id: "5"
-    taskid: 4cea8d6b-0390-4d5a-8992-48dd08ecc843
-    type: regular
+    separatecontext: false
     task:
-      id: 4cea8d6b-0390-4d5a-8992-48dd08ecc843
+      brand: ''
+      id: 02d5d9fb-4a4b-4167-8495-6a7c004a7bb0
+      iscommand: false
+      name: Verify url data was found
+      type: condition
       version: -1
-      name: Get IP data
-      script: Symantec Deepsight Intelligence|||ip
-      type: regular
-      iscommand: true
-      brand: Symantec Deepsight Intelligence
+    taskid: 02d5d9fb-4a4b-4167-8495-6a7c004a7bb0
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 770\n  }\n}"
+  '5':
+    id: '5'
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
+    note: false
     scriptarguments:
       fullResponse: {}
       ip:
@@ -183,65 +171,53 @@ tasks:
       threshold: {}
       wait: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 950
-        }
-      }
-    note: false
-    timertriggers: []
-  "6":
-    id: "6"
-    taskid: 824fc6f7-e8b7-4e4a-8158-88cb4160c815
-    type: condition
     task:
-      id: 824fc6f7-e8b7-4e4a-8158-88cb4160c815
+      brand: Symantec Deepsight Intelligence
+      id: 4cea8d6b-0390-4d5a-8992-48dd08ecc843
+      iscommand: true
+      name: Get IP data
+      script: Symantec Deepsight Intelligence|||ip
+      type: regular
       version: -1
-      name: Verify IP was found
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "7"
-    separatecontext: false
+    taskid: 4cea8d6b-0390-4d5a-8992-48dd08ecc843
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 950\n  }\n}"
+  '6':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualNumber
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: IP.ASN
-            iscontext: true
+          operator: isEqualNumber
           right:
             value:
-              simple: "60781"
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1130
-        }
-      }
+              simple: '60781'
+      label: 'yes'
+    id: '6'
+    nexttasks:
+      'yes':
+      - '7'
     note: false
-    timertriggers: []
-  "7":
-    id: "7"
-    taskid: d2805118-7ecd-45e8-8f42-25a4f4e1f0de
-    type: regular
+    separatecontext: false
     task:
-      id: d2805118-7ecd-45e8-8f42-25a4f4e1f0de
+      brand: ''
+      id: 824fc6f7-e8b7-4e4a-8158-88cb4160c815
+      iscommand: false
+      name: Verify IP was found
+      type: condition
       version: -1
-      name: Get domain data
-      script: Symantec Deepsight Intelligence|||domain
-      type: regular
-      iscommand: true
-      brand: Symantec Deepsight Intelligence
+    taskid: 824fc6f7-e8b7-4e4a-8158-88cb4160c815
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1130\n  }\n}"
+  '7':
+    id: '7'
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
+    note: false
     scriptarguments:
       domain:
         simple: pagaldaily.com
@@ -252,114 +228,64 @@ tasks:
       threshold: {}
       wait: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1310
-        }
-      }
-    note: false
-    timertriggers: []
-  "8":
-    id: "8"
-    taskid: 84836876-f271-460b-8620-ff0c41e64480
-    type: condition
     task:
-      id: 84836876-f271-460b-8620-ff0c41e64480
+      brand: Symantec Deepsight Intelligence
+      id: d2805118-7ecd-45e8-8f42-25a4f4e1f0de
+      iscommand: true
+      name: Get domain data
+      script: Symantec Deepsight Intelligence|||domain
+      type: regular
       version: -1
-      name: Verify domain was found
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "9"
-    separatecontext: false
+    taskid: d2805118-7ecd-45e8-8f42-25a4f4e1f0de
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1310\n  }\n}"
+  '8':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: Deepsight.Domain.WHOIS.Registrant.Name
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: Whoisprotectservice.Net
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1490
-        }
-      }
+      label: 'yes'
+    id: '8'
+    nexttasks:
+      'yes':
+      - '9'
     note: false
-    timertriggers: []
-  "9":
-    id: "9"
-    taskid: 3007f53c-1c7f-4dcf-8166-4923f1563848
-    type: title
+    separatecontext: false
     task:
-      id: 3007f53c-1c7f-4dcf-8166-4923f1563848
+      brand: ''
+      id: 84836876-f271-460b-8620-ff0c41e64480
+      iscommand: false
+      name: Verify domain was found
+      type: condition
       version: -1
+    taskid: 84836876-f271-460b-8620-ff0c41e64480
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1490\n  }\n}"
+  '9':
+    id: '9'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 3007f53c-1c7f-4dcf-8166-4923f1563848
+      iscommand: false
       name: Succsess
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1670
-        }
-      }
-    note: false
-    timertriggers: []
-  "10":
-    id: "10"
-    taskid: 79f694df-9e6c-4cf8-8659-9ec6285319ce
-    type: regular
-    task:
-      id: 79f694df-9e6c-4cf8-8659-9ec6285319ce
       version: -1
-      name: Delete Context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 70
-        }
-      }
-    note: false
+    taskid: 3007f53c-1c7f-4dcf-8166-4923f1563848
     timertriggers: []
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1785,
-        "width": 380,
-        "x": 450,
-        "y": -50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1670\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1785,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\":\
+  \ -50\n    }\n  }\n}"

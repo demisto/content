@@ -117,16 +117,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filters the results, showing only on-call users for the specified escalation
-        policy IDs.
+      description: Filters the results, showing only on-call users for the specified
+        escalation policy IDs.
       isArray: true
       name: escalation_policy_ids
       required: false
       secret: false
     - default: false
-      description: Filters the results, showing only on-call users for the specified schedule
-        IDs. If the value is null, permanent on-call user are included due to direct user
-        escalation policy targets.
+      description: Filters the results, showing only on-call users for the specified
+        schedule IDs. If the value is null, permanent on-call user are included due
+        to direct user escalation policy targets.
       isArray: true
       name: schedule_ids
       required: false
@@ -302,9 +302,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A cluster or grouping of sources. For example, sources “prod-datapipe-02”
-        and “prod-datapipe-03” might both be part of “prod-datapipe”. Example: "prod-datapipe"
-        "www"'
+      description: "A cluster or grouping of sources. For example, sources \u201C\
+        prod-datapipe-02\u201D and \u201Cprod-datapipe-03\u201D might both be part\
+        \ of \u201Cprod-datapipe\u201D. Example: \"prod-datapipe\" \"www\""
       isArray: false
       name: group
       required: false
@@ -548,7 +548,8 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python2
+  type: python
 tests:
 - PagerDuty Test
+toversion: 4.1.9

@@ -1,363 +1,25 @@
+description: Detonate one or more files using the VirusTotal integration. This playbook
+  returns relevant reports to the War Room and file reputations to the context data.
+fromversion: 4.0.0
 id: Detonate File - VirusTotal
-version: -1
-name: Detonate File - VirusTotal
-description: |-
-  Detonate one or more files using the VirusTotal integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
-starttaskid: "0"
-tasks:
-  "0":
-    id: "0"
-    taskid: 489b704c-bef9-40e7-8aa8-f74cca308a94
-    type: start
-    task:
-      id: 489b704c-bef9-40e7-8aa8-f74cca308a94
-      version: -1
-      name: ""
-      description: '-'
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: ed9dfa38-c4f9-418d-8985-24aef81e5b82
-    type: playbook
-    task:
-      id: ed9dfa38-c4f9-418d-8985-24aef81e5b82
-      version: -1
-      name: GenericPolling
-      description: |-
-        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
-        The remote action should have the following structure:
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
-      playbookName: GenericPolling
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      AdditionalPollingCommandArgNames: {}
-      AdditionalPollingCommandArgValues: {}
-      Ids:
-        simple: ${vtScanID}
-      Interval: {}
-      PollingCommandArgName:
-        simple: resource
-      PollingCommandName:
-        simple: vt-private-get-file-report
-      Timeout: {}
-      dt:
-        simple: VirusTotal(val.Status!=='Ready').ID
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 387.5,
-          "y": 1085
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: e589b774-3cee-4dff-8e14-788ef3590dfa
-    type: title
-    task:
-      id: e589b774-3cee-4dff-8e14-788ef3590dfa
-      version: -1
-      name: Done
-      description: finished
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 70,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "7":
-    id: "7"
-    taskid: 13ecb287-26bc-43e0-8208-c7fe73ced470
-    type: condition
-    task:
-      id: 13ecb287-26bc-43e0-8208-c7fe73ced470
-      version: -1
-      name: Is VirusTotal enabled?
-      description: |
-        Verify that there is a valid instance of Virus Total enabled.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "12"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: VirusTotal - Private API
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 185
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "10":
-    id: "10"
-    taskid: d8e19b0c-3dfa-41f8-86fa-2d12ff711340
-    type: condition
-    task:
-      id: d8e19b0c-3dfa-41f8-86fa-2d12ff711340
-      version: -1
-      name: Is file type supported?
-      description: Check if file type is supported.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "14"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: File
-                filters:
-                - - operator: match
-                    left:
-                      value:
-                        simple: File.Type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: .*(?:EXE|SYS|DLL|COM|SCR|CPL|OCX|CGI|DOC|DOTM|DOCX|DOTX|XLS|PPAM|XSLX|PPS|XLSB|PPSX|XLSM|PPSM|PPT|PPTX|PPTM|RTF|SHS|XLTM|SLDM|XLTX|SLDX|XLAM|THMX|DOCM|XAR|JTD|JTDC|PDF|SWF|GZ|7Z|TGZ|MSI|ZIP|LZH|CAB|LZMA|APK|JAR|CLASS|JPEG|PNG|GIF|CMD|ACE|BAT|ARJ|VBS|CHM|XML|LNK|URL|MOF|HTM|OCX|HTML|POTM|EML|POTX|MSG|PS1|VB|REG|VBA|WSC|VBE|WSF|VBS|WSH)\b
-                    ignorecase: true
-                  - operator: match
-                    left:
-                      value:
-                        simple: File.Extension
-                      iscontext: true
-                    right:
-                      value:
-                        simple: .*(?:EXE|SYS|DLL|COM|SCR|CPL|OCX|CGI|DOC|DOTM|DOCX|DOTX|XLS|PPAM|XSLX|PPS|XLSB|PPSX|XLSM|PPSM|PPT|PPTX|PPTM|RTF|SHS|XLTM|SLDM|XLTX|SLDX|XLAM|THMX|DOCM|XAR|JTD|JTDC|PDF|SWF|GZ|7Z|TGZ|MSI|ZIP|LZH|CAB|LZMA|APK|JAR|CLASS|JPEG|PNG|GIF|CMD|ACE|BAT|ARJ|VBS|CHM|XML|LNK|URL|MOF|HTM|OCX|HTML|POTM|EML|POTX|MSG|PS1|VB|REG|VBA|WSC|VBE|WSF|VBS|WSH)\b
-                    ignorecase: true
-                  - operator: match
-                    left:
-                      value:
-                        simple: File.Info
-                      iscontext: true
-                    right:
-                      value:
-                        simple: .*(?:EXE|SYS|DLL|COM|SCR|CPL|OCX|CGI|DOC|DOTM|DOCX|DOTX|XLS|PPAM|XSLX|PPS|XLSB|PPSX|XLSM|PPSM|PPT|PPTX|PPTM|RTF|SHS|XLTM|SLDM|XLTX|SLDX|XLAM|THMX|DOCM|XAR|JTD|JTDC|PDF|SWF|GZ|7Z|TGZ|MSI|ZIP|LZH|CAB|LZMA|APK|JAR|CLASS|JPEG|PNG|GIF|CMD|ACE|BAT|ARJ|VBS|CHM|XML|LNK|URL|MOF|HTM|OCX|HTML|POTM|EML|POTX|MSG|PS1|VB|REG|VBA|WSC|VBE|WSF|VBS|WSH)\b
-                    ignorecase: true
-                accessor: EntryID
-            iscontext: true
-          ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "11":
-    id: "11"
-    taskid: 3814f559-a639-4e80-8d6e-c74b9e96e495
-    type: regular
-    task:
-      id: 3814f559-a639-4e80-8d6e-c74b9e96e495
-      version: -1
-      name: Set File to context
-      description: Set the file object into context.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      append: {}
-      key:
-        simple: File
-      value:
-        complex:
-          root: inputs.File
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "12":
-    id: "12"
-    taskid: 9b8022fc-dfd0-4806-8ead-65f53804065f
-    type: condition
-    task:
-      id: 9b8022fc-dfd0-4806-8ead-65f53804065f
-      version: -1
-      name: Is there a file to detonate?
-      description: Checks that there is a file in the playbook inputs.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "11"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: inputs.File
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 170,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "14":
-    id: "14"
-    taskid: f2d814ea-409b-4e02-89e2-74a8c175b622
-    type: regular
-    task:
-      id: f2d814ea-409b-4e02-89e2-74a8c175b622
-      version: -1
-      name: VirusTotal upload file
-      description: Submits a file for scanning.
-      script: '|||file-scan'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      entryID:
-        complex:
-          root: ${File
-          accessor: EntryID}
-      uploadURL: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 387.5,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1960,
-        "width": 717.5,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
 inputs:
-- key: File
+- description: The file to detonate. The file is taken from the context.
+  key: File
+  required: false
   value:
     complex:
       root: File
+- description: Polling frequency - how often the polling command should run (minutes)
+  key: Interval
   required: false
-  description: The file to detonate. The file is taken from the context.
-- key: Interval
   value:
-    simple: "1"
+    simple: '1'
+- description: How much time to wait before a timeout occurs (minutes)
+  key: Timeout
   required: false
-  description: Polling frequency - how often the polling command should run (minutes)
-- key: Timeout
   value:
-    simple: "15"
-  required: false
-  description: How much time to wait before a timeout occurs (minutes)
+    simple: '15'
+name: Detonate File - VirusTotal
 outputs:
 - contextPath: File.MD5
   description: File's MD5
@@ -440,6 +102,295 @@ outputs:
 - contextPath: VirusTotal.Status
   description: The status of the queried file. Could be "Queued" or "Ready".
   type: String
-fromversion: 4.0.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: '-'
+      id: 489b704c-bef9-40e7-8aa8-f74cca308a94
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 489b704c-bef9-40e7-8aa8-f74cca308a94
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '10':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: EntryID
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: File.Type
+                    operator: match
+                    right:
+                      value:
+                        simple: .*(?:EXE|SYS|DLL|COM|SCR|CPL|OCX|CGI|DOC|DOTM|DOCX|DOTX|XLS|PPAM|XSLX|PPS|XLSB|PPSX|XLSM|PPSM|PPT|PPTX|PPTM|RTF|SHS|XLTM|SLDM|XLTX|SLDX|XLAM|THMX|DOCM|XAR|JTD|JTDC|PDF|SWF|GZ|7Z|TGZ|MSI|ZIP|LZH|CAB|LZMA|APK|JAR|CLASS|JPEG|PNG|GIF|CMD|ACE|BAT|ARJ|VBS|CHM|XML|LNK|URL|MOF|HTM|OCX|HTML|POTM|EML|POTX|MSG|PS1|VB|REG|VBA|WSC|VBE|WSF|VBS|WSH)\b
+                  - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: File.Extension
+                    operator: match
+                    right:
+                      value:
+                        simple: .*(?:EXE|SYS|DLL|COM|SCR|CPL|OCX|CGI|DOC|DOTM|DOCX|DOTX|XLS|PPAM|XSLX|PPS|XLSB|PPSX|XLSM|PPSM|PPT|PPTX|PPTM|RTF|SHS|XLTM|SLDM|XLTX|SLDX|XLAM|THMX|DOCM|XAR|JTD|JTDC|PDF|SWF|GZ|7Z|TGZ|MSI|ZIP|LZH|CAB|LZMA|APK|JAR|CLASS|JPEG|PNG|GIF|CMD|ACE|BAT|ARJ|VBS|CHM|XML|LNK|URL|MOF|HTM|OCX|HTML|POTM|EML|POTX|MSG|PS1|VB|REG|VBA|WSC|VBE|WSF|VBS|WSH)\b
+                  - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: File.Info
+                    operator: match
+                    right:
+                      value:
+                        simple: .*(?:EXE|SYS|DLL|COM|SCR|CPL|OCX|CGI|DOC|DOTM|DOCX|DOTX|XLS|PPAM|XSLX|PPS|XLSB|PPSX|XLSM|PPSM|PPT|PPTX|PPTM|RTF|SHS|XLTM|SLDM|XLTX|SLDX|XLAM|THMX|DOCM|XAR|JTD|JTDC|PDF|SWF|GZ|7Z|TGZ|MSI|ZIP|LZH|CAB|LZMA|APK|JAR|CLASS|JPEG|PNG|GIF|CMD|ACE|BAT|ARJ|VBS|CHM|XML|LNK|URL|MOF|HTM|OCX|HTML|POTM|EML|POTX|MSG|PS1|VB|REG|VBA|WSC|VBE|WSF|VBS|WSH)\b
+                root: File
+          operator: isExists
+      label: 'yes'
+    id: '10'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '5'
+      'yes':
+      - '14'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Check if file type is supported.
+      id: d8e19b0c-3dfa-41f8-86fa-2d12ff711340
+      iscommand: false
+      name: Is file type supported?
+      type: condition
+      version: -1
+    taskid: d8e19b0c-3dfa-41f8-86fa-2d12ff711340
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 720\n  }\n}"
+  '11':
+    id: '11'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '10'
+    note: false
+    scriptarguments:
+      append: {}
+      key:
+        simple: File
+      value:
+        complex:
+          root: inputs.File
+    separatecontext: false
+    task:
+      brand: ''
+      description: Set the file object into context.
+      id: 3814f559-a639-4e80-8d6e-c74b9e96e495
+      iscommand: false
+      name: Set File to context
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 3814f559-a639-4e80-8d6e-c74b9e96e495
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 545\n  }\n}"
+  '12':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.File
+          operator: isExists
+      label: 'yes'
+    id: '12'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '5'
+      'yes':
+      - '11'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Checks that there is a file in the playbook inputs.
+      id: 9b8022fc-dfd0-4806-8ead-65f53804065f
+      iscommand: false
+      name: Is there a file to detonate?
+      type: condition
+      version: -1
+    taskid: 9b8022fc-dfd0-4806-8ead-65f53804065f
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 170,\n    \"y\": 370\n  }\n}"
+  '14':
+    id: '14'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    scriptarguments:
+      entryID:
+        complex:
+          accessor: EntryID}
+          root: ${File
+      uploadURL: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Submits a file for scanning.
+      id: f2d814ea-409b-4e02-89e2-74a8c175b622
+      iscommand: true
+      name: VirusTotal upload file
+      script: '|||file-scan'
+      type: regular
+      version: -1
+    taskid: f2d814ea-409b-4e02-89e2-74a8c175b622
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 387.5,\n    \"y\": 895\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${vtScanID}
+      Interval: {}
+      PollingCommandArgName:
+        simple: resource
+      PollingCommandName:
+        simple: vt-private-get-file-report
+      Timeout: {}
+      dt:
+        simple: VirusTotal(val.Status!=='Ready').ID
+    separatecontext: false
+    task:
+      brand: ''
+      description: 'Use this playbook as a sub-playbook to block execution of the
+        master playbook until a remote action is complete.
+
+        This playbook implements polling by continuously running the command in Step
+        \#2 until the operation completes.
+
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+
+        2. Poll to check if the operation completed.
+
+        3. (optional) Get the results of the operation.'
+      id: ed9dfa38-c4f9-418d-8985-24aef81e5b82
+      iscommand: false
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      version: -1
+    taskid: ed9dfa38-c4f9-418d-8985-24aef81e5b82
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 387.5,\n    \"y\": 1085\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: finished
+      id: e589b774-3cee-4dff-8e14-788ef3590dfa
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: e589b774-3cee-4dff-8e14-788ef3590dfa
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 70,\n    \"y\": 1945\n  }\n}"
+  '7':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: VirusTotal - Private API
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: 'yes'
+    id: '7'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '5'
+      'yes':
+      - '12'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: 'Verify that there is a valid instance of Virus Total enabled.
+
+        '
+      id: 13ecb287-26bc-43e0-8208-c7fe73ced470
+      iscommand: false
+      name: Is VirusTotal enabled?
+      type: condition
+      version: -1
+    taskid: 13ecb287-26bc-43e0-8208-c7fe73ced470
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 185\n  }\n}"
 tests:
-  - vt-detonate test
+- vt-detonate test
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1960,\n      \"width\": 717.5,\n      \"x\": 50,\n      \"y\"\
+  : 50\n    }\n  }\n}"

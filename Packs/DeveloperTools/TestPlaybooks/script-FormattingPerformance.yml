@@ -3,6 +3,7 @@ comment: Generates 1000 random emails and batches them into a large string. Retu
 commonfields:
   id: FormattingPerformance
   version: -1
+dockerimage: demisto/faker3:1.0.0.247
 enabled: true
 name: FormattingPerformance
 outputs:
@@ -10,58 +11,34 @@ outputs:
   description: The time in seconds it took to execute formatting scripts on a string
     with 1000 indicators in it.
   type: Number
-script: |-
-  '''IMPORTS'''
-  import time
-  import random
-  from faker import Faker
-  from faker.providers import internet
-
-  try:
-      '''SETUP'''
-      fake = Faker()
-      fake.add_provider(internet)
-
-      indicators_count = 1000
-      per_batch = 1000
-      executions = int(indicators_count / per_batch)
-
-      indicator_types = [fake.email, fake.ipv4, fake.url, fake.ipv6]
-
-      indicators = []
-      for i in range(indicators_count):
-          idx = random.randint(0, len(indicator_types) - 1)
-          indicator = indicator_types[idx]().replace('.', '[.]') if idx != 0 else indicator_types[idx]()
-          if idx == 2:
-              indicator = indicator.replace('http', 'hxxp')
-          indicators.append(indicator)
-
-      indicators_texts = []
-      for i in range(1, executions + 1):
-          text = '\n'.join(indicators[(i - 1) * per_batch: i * per_batch])
-          indicators_texts.append(text)
-
-      '''EXECUTION'''
-      start_time = time.perf_counter()
-      for indicators_text in indicators_texts:
-          res = demisto.executeCommand('extractIndicators', {'text': indicators_text})
-      end_time = time.perf_counter()
-      delta = end_time - start_time
-      performance_msg = 'Formatting scripts execution time for a total of {} '.format(indicators_count)
-      performance_msg += 'indicators in batches of {} for a total of {}'.format(per_batch, executions)
-      performance_msg += ' executions: {}'.format(delta)
-      entry_context = {'Formatting.Time': delta}
-      return_outputs(readable_output=performance_msg, outputs=entry_context, raw_response=res)
-  except Exception as e:
-      return_error(str(e))
+runas: DBotWeakRole
+runonce: false
+script: "'''IMPORTS'''\nimport time\nimport random\nfrom faker import Faker\nfrom\
+  \ faker.providers import internet\n\ntry:\n    '''SETUP'''\n    fake = Faker()\n\
+  \    fake.add_provider(internet)\n\n    indicators_count = 1000\n    per_batch =\
+  \ 1000\n    executions = int(indicators_count / per_batch)\n\n    indicator_types\
+  \ = [fake.email, fake.ipv4, fake.url, fake.ipv6]\n\n    indicators = []\n    for\
+  \ i in range(indicators_count):\n        idx = random.randint(0, len(indicator_types)\
+  \ - 1)\n        indicator = indicator_types[idx]().replace('.', '[.]') if idx !=\
+  \ 0 else indicator_types[idx]()\n        if idx == 2:\n            indicator = indicator.replace('http',\
+  \ 'hxxp')\n        indicators.append(indicator)\n\n    indicators_texts = []\n \
+  \   for i in range(1, executions + 1):\n        text = '\\n'.join(indicators[(i\
+  \ - 1) * per_batch: i * per_batch])\n        indicators_texts.append(text)\n\n \
+  \   '''EXECUTION'''\n    start_time = time.perf_counter()\n    for indicators_text\
+  \ in indicators_texts:\n        res = demisto.executeCommand('extractIndicators',\
+  \ {'text': indicators_text})\n    end_time = time.perf_counter()\n    delta = end_time\
+  \ - start_time\n    performance_msg = 'Formatting scripts execution time for a total\
+  \ of {} '.format(indicators_count)\n    performance_msg += 'indicators in batches\
+  \ of {} for a total of {}'.format(per_batch, executions)\n    performance_msg +=\
+  \ ' executions: {}'.format(delta)\n    entry_context = {'Formatting.Time': delta}\n\
+  \    return_outputs(readable_output=performance_msg, outputs=entry_context, raw_response=res)\n\
+  except Exception as e:\n    return_error(str(e))"
+subtype: python3
 system: false
 tags:
 - indicator-format
 - analytics
 - autoextract
-timeout: 3µs
+timeout: "3\xB5s"
+toversion: 4.1.9
 type: python
-subtype: python3
-dockerimage: demisto/faker3:1.0.0.247
-runas: DBotWeakRole
-runonce: false

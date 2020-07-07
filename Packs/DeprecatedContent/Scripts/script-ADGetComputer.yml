@@ -1,187 +1,41 @@
+args:
+- description: Active Directory Distinguished Name for the desired computer
+  name: dn
+- default: true
+  description: Name of the desired computer
+  name: name
+- description: Include these AD attributes of the resulting objects in addition to
+    the default ones
+  name: attributes
+- description: Search computer by this custom field type
+  name: customFieldType
+- description: Search computer by this custom field data (relevant only if `customFieldType`
+    is provided)
+  name: customFieldData
+- description: The columns headers to show by order
+  name: headers
+- auto: PREDEFINED
+  description: ' Enter ''true'' to allow nested groups search as well'
+  name: nestedSearch
+  predefined:
+  - 'true'
+  - 'false'
+comment: 'Deprecated. Use the ad-get-computer command in the Active Directory Query
+  v2 instead.
+
+  Use Active Directory to retrieve detailed information about a computer account.
+  The computer can be specified by name, email, or as an Active Directory Distinguished
+  Name (DN).
+
+  If no filters are provided, the result will show all computers.'
 commonfields:
   id: ADGetComputer
   version: -1
-name: ADGetComputer
-script: |-
-  def createEndpointEntities(t,attrs):
-      endpoints = []
-      for l in t:
-          endpoint = {}
-          endpoint['Type'] = 'AD'
-          endpoint['ID'] = demisto.get(l,'dn')
-          endpoint['Hostname'] = demisto.get(l,'name')
-          endpoint['Groups'] = demisto.get(l,'memberOf').split("<br>")
-          for attr in set(argToList(attrs)) - set(['dn','name','memberOf']):
-              endpoint[attr.title()] = demisto.get(l,attr)
-          endpoints.append(endpoint)
-
-      return endpoints
-
-  def prettifyDateTimeADFields(resAD):
-      try:
-          for m in resAD:
-              if isError(m):
-                  continue
-              m['ContentsFormat'] = formats['table']
-              for f in [ 'lastlogon' , 'lastlogoff' , 'pwdLastSet' , 'badPasswordTime' , 'lastLogonTimestamp' ]:
-                  if f not in m['Contents'][0]:
-                      continue
-                  if  m['Contents'][0][f] == "0":
-                      m['Contents'][0][f] = "N/A"
-                  else:
-                      try:
-                          m['Contents'][0][f] = FormatADTimestamp( m['Contents'][0][f] )
-                      except:
-                          pass # Could not prettify timestamp - return as is
-              for f in [ 'whenChanged' , 'whenCreated' ]:
-                  try:
-                      m['Contents'][0][f] = PrettifyCompactedTimestamp( m['Contents'][0][f] )
-                  except:
-                      pass # Could not prettify timestamp - return as is
-          return resAD
-      except Exception as ex:
-          return { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Error occurred while parsing output from ad command. Exception info: ' + str(ex) + '\nInvalid output:\n' + str( resAD ) }
-
-  def listAll(attrs, using):
-      args = {}
-      args['filter'] = "(objectClass=Computer)"
-      args['attributes'] = attrs
-      if using:
-          args['using'] = using
-      resAD = demisto.executeCommand( 'ad-search', args )
-      if isError(resAD[0]) or isinstance(demisto.get(resAD[0],'Contents'), str) or isinstance(demisto.get(resAD[0],'Contents'), unicode):
-          return resAD
-      else:
-          resAD = prettifyDateTimeADFields(resAD)
-          return resAD
-
-  def queryBuilder(queryType,queryValue,attrs,nested,using):
-      args = {}
-      if using:
-          args['using'] = using
-      if not queryType == "distinguishedName":
-          filterstr = r"(&(objectClass=Computer)({0}={1}))".format(queryType,queryValue)
-          args['filter'] = filterstr
-          resp = demisto.executeCommand('ad-search', args)
-          if isError(resp) or isinstance(demisto.get(resp[0],'Contents'), str) or isinstance(demisto.get(resp[0],'Contents'), unicode):
-              return resp
-          else:
-              userDN = ""
-              try:
-                  userDN = resp[0]['Contents'][0]['dn']
-              except Exception as ex:
-                  return { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], '' : 'Error occurred while parsing output from ad command. Exception info: ' + str(ex) }
-              queryType = "distinguishedName"
-              queryValue = userDN
-
-      filterstr = r"(&(objectClass=Computer)(distinguishedName=" + queryValue + "))"
-      args['filter'] = filterstr
-      args['attributes'] = attrs
-      resAD = demisto.executeCommand( 'ad-search', args )
-      if nested:
-          group_attrs = 'name'
-          filterstr = r"(&(member{0}=".format(':1.2.840.113556.1.4.1941:') + queryValue + ")(objectcategory=group))"
-          group_resp = demisto.executeCommand( 'ad-search', { 'filter' : filterstr, 'attributes' : group_attrs } )
-          if isError(group_resp[0]):
-              return group_resp
-          else:
-              data = demisto.get(group_resp[0],'Contents')
-              data = data if isinstance(data, list) else [data]
-              memberOf = ",".join([demisto.get(k,'dn') for k in data])
-      resAD = prettifyDateTimeADFields(resAD)
-      try:
-          resAD[0]['Contents']['memberOf'] = memberOf
-      except:
-          pass # Could not get nested groups - return as is
-
-      return resAD
-
-  attrs = 'name,memberOf'
-  queryValue, queryType = "",""
-  headers = argToList(demisto.get(demisto.args(), 'headers'))
-
-  nestedSearch = True if demisto.get(demisto.args(), 'nestedSearch') == 'true' else False
-
-  if demisto.get(demisto.args(), 'attributes'):
-      attrs += "," + demisto.args()['attributes']
-
-  if demisto.get(demisto.args(), 'dn'):
-      queryValue = demisto.args()['dn']
-      queryType = "distinguishedName"
-  elif demisto.get(demisto.args(), 'name'):
-      queryValue = demisto.args()['name']
-      queryType = "name"
-  elif demisto.get(demisto.args(), 'customFieldType'):
-      if not demisto.get(demisto.args(), 'customFieldData'):
-          demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], '' : 'To do custom search both "customFieldType" and "customFieldData" should be provided' })
-      else:
-          queryValue = demisto.args()['customFieldData']
-          queryType = demisto.args()['customFieldType']
-
-  if queryValue and queryType:
-      resp = queryBuilder(queryType,queryValue,attrs,nestedSearch,demisto.get(demisto.args(),'using'))
-  else:
-      resp = listAll(attrs, demisto.get(demisto.args(),'using'))
-  if isError(resp):
-      demisto.results(resp)
-  else:
-      context = {}
-      data = demisto.get(resp[0],'Contents')
-      if isinstance(data, str) or isinstance(data, unicode) :
-          md = data
-      else:
-          data = data if isinstance(data, list) else [data]
-
-          md = tableToMarkdown("Active Directory Computer", data, headers)
-
-          context['Endpoint'] = createEndpointEntities(data,attrs)
-          for m in data:
-              if demisto.get(m,'name'):
-                  context['DBotScore'] = {'Indicator': m['name'], 'Type': 'hostname', 'Vendor': 'AD', 'Score': 0, 'isTypedIndicator': True}
-      demisto.results({'Type' : entryTypes['note'],
-                      'Contents': data,
-                      'ContentsFormat' : formats['json'],
-                      'HumanReadable': md,
-                      'ReadableContentsFormat' : formats['markdown'],
-                      'EntryContext' : context})
-type: python
-subtype: python2
-tags:
-- active directory
-- enhancement
-- hostname
-comment: |-
-  Deprecated. Use the ad-get-computer command in the Active Directory Query v2 instead.
-  Use Active Directory to retrieve detailed information about a computer account. The computer can be specified by name, email, or as an Active Directory Distinguished Name (DN).
-  If no filters are provided, the result will show all computers.
-system: true
-args:
-- name: dn
-  description: Active Directory Distinguished Name for the desired computer
-- name: name
-  description: Name of the desired computer
-  default: true
-- name: attributes
-  description: Include these AD attributes of the resulting objects in addition to
-    the default ones
-- name: customFieldType
-  description: Search computer by this custom field type
-- name: customFieldData
-  description: Search computer by this custom field data (relevant only if `customFieldType`
-    is provided)
-- name: headers
-  description: The columns headers to show by order
-- name: nestedSearch
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  description: ' Enter ''true'' to allow nested groups search as well'
-scripttarget: 0
 dependson:
   must:
   - ad-search
-timeout: 0s
+deprecated: true
+name: ADGetComputer
 outputs:
 - contextPath: Endpoint
   description: Active Directory Endpoint
@@ -193,6 +47,90 @@ outputs:
   description: The Endpoint hostname
 - contextPath: Endpoint.Groups
   description: The groups the endpoint is part of
-deprecated: true
+script: "def createEndpointEntities(t,attrs):\n    endpoints = []\n    for l in t:\n\
+  \        endpoint = {}\n        endpoint['Type'] = 'AD'\n        endpoint['ID']\
+  \ = demisto.get(l,'dn')\n        endpoint['Hostname'] = demisto.get(l,'name')\n\
+  \        endpoint['Groups'] = demisto.get(l,'memberOf').split(\"<br>\")\n      \
+  \  for attr in set(argToList(attrs)) - set(['dn','name','memberOf']):\n        \
+  \    endpoint[attr.title()] = demisto.get(l,attr)\n        endpoints.append(endpoint)\n\
+  \n    return endpoints\n\ndef prettifyDateTimeADFields(resAD):\n    try:\n     \
+  \   for m in resAD:\n            if isError(m):\n                continue\n    \
+  \        m['ContentsFormat'] = formats['table']\n            for f in [ 'lastlogon'\
+  \ , 'lastlogoff' , 'pwdLastSet' , 'badPasswordTime' , 'lastLogonTimestamp' ]:\n\
+  \                if f not in m['Contents'][0]:\n                    continue\n \
+  \               if  m['Contents'][0][f] == \"0\":\n                    m['Contents'][0][f]\
+  \ = \"N/A\"\n                else:\n                    try:\n                 \
+  \       m['Contents'][0][f] = FormatADTimestamp( m['Contents'][0][f] )\n       \
+  \             except:\n                        pass # Could not prettify timestamp\
+  \ - return as is\n            for f in [ 'whenChanged' , 'whenCreated' ]:\n    \
+  \            try:\n                    m['Contents'][0][f] = PrettifyCompactedTimestamp(\
+  \ m['Contents'][0][f] )\n                except:\n                    pass # Could\
+  \ not prettify timestamp - return as is\n        return resAD\n    except Exception\
+  \ as ex:\n        return { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'],\
+  \ 'Contents' : 'Error occurred while parsing output from ad command. Exception info:\
+  \ ' + str(ex) + '\\nInvalid output:\\n' + str( resAD ) }\n\ndef listAll(attrs, using):\n\
+  \    args = {}\n    args['filter'] = \"(objectClass=Computer)\"\n    args['attributes']\
+  \ = attrs\n    if using:\n        args['using'] = using\n    resAD = demisto.executeCommand(\
+  \ 'ad-search', args )\n    if isError(resAD[0]) or isinstance(demisto.get(resAD[0],'Contents'),\
+  \ str) or isinstance(demisto.get(resAD[0],'Contents'), unicode):\n        return\
+  \ resAD\n    else:\n        resAD = prettifyDateTimeADFields(resAD)\n        return\
+  \ resAD\n\ndef queryBuilder(queryType,queryValue,attrs,nested,using):\n    args\
+  \ = {}\n    if using:\n        args['using'] = using\n    if not queryType == \"\
+  distinguishedName\":\n        filterstr = r\"(&(objectClass=Computer)({0}={1}))\"\
+  .format(queryType,queryValue)\n        args['filter'] = filterstr\n        resp\
+  \ = demisto.executeCommand('ad-search', args)\n        if isError(resp) or isinstance(demisto.get(resp[0],'Contents'),\
+  \ str) or isinstance(demisto.get(resp[0],'Contents'), unicode):\n            return\
+  \ resp\n        else:\n            userDN = \"\"\n            try:\n           \
+  \     userDN = resp[0]['Contents'][0]['dn']\n            except Exception as ex:\n\
+  \                return { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'],\
+  \ '' : 'Error occurred while parsing output from ad command. Exception info: ' +\
+  \ str(ex) }\n            queryType = \"distinguishedName\"\n            queryValue\
+  \ = userDN\n\n    filterstr = r\"(&(objectClass=Computer)(distinguishedName=\" +\
+  \ queryValue + \"))\"\n    args['filter'] = filterstr\n    args['attributes'] =\
+  \ attrs\n    resAD = demisto.executeCommand( 'ad-search', args )\n    if nested:\n\
+  \        group_attrs = 'name'\n        filterstr = r\"(&(member{0}=\".format(':1.2.840.113556.1.4.1941:')\
+  \ + queryValue + \")(objectcategory=group))\"\n        group_resp = demisto.executeCommand(\
+  \ 'ad-search', { 'filter' : filterstr, 'attributes' : group_attrs } )\n        if\
+  \ isError(group_resp[0]):\n            return group_resp\n        else:\n      \
+  \      data = demisto.get(group_resp[0],'Contents')\n            data = data if\
+  \ isinstance(data, list) else [data]\n            memberOf = \",\".join([demisto.get(k,'dn')\
+  \ for k in data])\n    resAD = prettifyDateTimeADFields(resAD)\n    try:\n     \
+  \   resAD[0]['Contents']['memberOf'] = memberOf\n    except:\n        pass # Could\
+  \ not get nested groups - return as is\n\n    return resAD\n\nattrs = 'name,memberOf'\n\
+  queryValue, queryType = \"\",\"\"\nheaders = argToList(demisto.get(demisto.args(),\
+  \ 'headers'))\n\nnestedSearch = True if demisto.get(demisto.args(), 'nestedSearch')\
+  \ == 'true' else False\n\nif demisto.get(demisto.args(), 'attributes'):\n    attrs\
+  \ += \",\" + demisto.args()['attributes']\n\nif demisto.get(demisto.args(), 'dn'):\n\
+  \    queryValue = demisto.args()['dn']\n    queryType = \"distinguishedName\"\n\
+  elif demisto.get(demisto.args(), 'name'):\n    queryValue = demisto.args()['name']\n\
+  \    queryType = \"name\"\nelif demisto.get(demisto.args(), 'customFieldType'):\n\
+  \    if not demisto.get(demisto.args(), 'customFieldData'):\n        demisto.results({\
+  \ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], '' : 'To do\
+  \ custom search both \"customFieldType\" and \"customFieldData\" should be provided'\
+  \ })\n    else:\n        queryValue = demisto.args()['customFieldData']\n      \
+  \  queryType = demisto.args()['customFieldType']\n\nif queryValue and queryType:\n\
+  \    resp = queryBuilder(queryType,queryValue,attrs,nestedSearch,demisto.get(demisto.args(),'using'))\n\
+  else:\n    resp = listAll(attrs, demisto.get(demisto.args(),'using'))\nif isError(resp):\n\
+  \    demisto.results(resp)\nelse:\n    context = {}\n    data = demisto.get(resp[0],'Contents')\n\
+  \    if isinstance(data, str) or isinstance(data, unicode) :\n        md = data\n\
+  \    else:\n        data = data if isinstance(data, list) else [data]\n\n      \
+  \  md = tableToMarkdown(\"Active Directory Computer\", data, headers)\n\n      \
+  \  context['Endpoint'] = createEndpointEntities(data,attrs)\n        for m in data:\n\
+  \            if demisto.get(m,'name'):\n                context['DBotScore'] = {'Indicator':\
+  \ m['name'], 'Type': 'hostname', 'Vendor': 'AD', 'Score': 0, 'isTypedIndicator':\
+  \ True}\n    demisto.results({'Type' : entryTypes['note'],\n                   \
+  \ 'Contents': data,\n                    'ContentsFormat' : formats['json'],\n \
+  \                   'HumanReadable': md,\n                    'ReadableContentsFormat'\
+  \ : formats['markdown'],\n                    'EntryContext' : context})"
+scripttarget: 0
+subtype: python2
+system: true
+tags:
+- active directory
+- enhancement
+- hostname
 tests:
-  - No test
+- No test
+timeout: 0s
+toversion: 4.1.9
+type: python

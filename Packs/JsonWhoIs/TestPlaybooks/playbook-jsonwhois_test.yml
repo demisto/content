@@ -1,204 +1,160 @@
 id: JsonWhoIs-Test
-version: -1
+inputs: []
 name: JsonWhoIs-Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: dd1c0f3a-115b-491e-81a0-70e86c921879
-    type: start
-    task:
-      id: dd1c0f3a-115b-491e-81a0-70e86c921879
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: 1a2914ae-2e44-4604-8421-69714b5784e5
-    type: regular
-    task:
-      id: 1a2914ae-2e44-4604-8421-69714b5784e5
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: dd1c0f3a-115b-491e-81a0-70e86c921879
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: dd1c0f3a-115b-491e-81a0-70e86c921879
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 230
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 3b0fd588-ccc8-48dc-8b9f-148905b18120
-    type: regular
     task:
-      id: 3b0fd588-ccc8-48dc-8b9f-148905b18120
-      version: -1
-      name: whois
-      description: Provides data enrichment for Domains, URLs, and IP addresses.
-      script: '|||whois'
+      brand: ''
+      description: Delete field from context
+      id: 1a2914ae-2e44-4604-8421-69714b5784e5
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: 1a2914ae-2e44-4604-8421-69714b5784e5
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
     scriptarguments:
       query:
         simple: demisto.com
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 410
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: 7675aed5-d549-4737-83a8-909ec23dc826
-    type: condition
     task:
-      id: 7675aed5-d549-4737-83a8-909ec23dc826
+      brand: ''
+      description: Provides data enrichment for Domains, URLs, and IP addresses.
+      id: 3b0fd588-ccc8-48dc-8b9f-148905b18120
+      iscommand: true
+      name: whois
+      script: '|||whois'
+      type: regular
       version: -1
-      name: Validate parameters
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "6"
-    separatecontext: false
+    taskid: 3b0fd588-ccc8-48dc-8b9f-148905b18120
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 410\n  }\n}"
+  '3':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: Domain.WHOIS.DomainStatus
+          operator: isExists
+        - left:
             iscontext: true
-        - operator: isExists
-          left:
             value:
               simple: Domain.WHOIS.ExpirationDate
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: Domain.WHOIS.CreationDate
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 620
-        }
-      }
-    note: false
-    timertriggers: []
+          operator: isExists
+      label: 'yes'
+    id: '3'
     ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 2cc5b75d-0d7d-44fc-8e22-6bfeb637e179
-    type: regular
+    nexttasks:
+      '#default#':
+      - '5'
+      'yes':
+      - '6'
+    note: false
+    separatecontext: false
     task:
-      id: 2cc5b75d-0d7d-44fc-8e22-6bfeb637e179
-      version: -1
-      name: PrintErrorEntry
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
+      brand: ''
+      id: 7675aed5-d549-4737-83a8-909ec23dc826
       iscommand: false
-      brand: ""
+      name: Validate parameters
+      type: condition
+      version: -1
+    taskid: 7675aed5-d549-4737-83a8-909ec23dc826
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 620\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
+    note: false
     scriptarguments:
       message: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 120,
-          "y": 890
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 6af1c93a-6a5d-44d9-86b3-a4a5c0de0f41
-    type: regular
     task:
-      id: 6af1c93a-6a5d-44d9-86b3-a4a5c0de0f41
-      version: -1
-      name: Done
-      description: Pretty-print the contents of the playbook context
-      scriptName: PrintContext
-      type: regular
+      brand: ''
+      description: Prints an error entry with a given message
+      id: 2cc5b75d-0d7d-44fc-8e22-6bfeb637e179
       iscommand: false
-      brand: ""
+      name: PrintErrorEntry
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 2cc5b75d-0d7d-44fc-8e22-6bfeb637e179
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 120,\n    \"y\": 890\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
+    note: false
     scriptarguments:
       outputformat: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 680,
-          "y": 890
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      description: Pretty-print the contents of the playbook context
+      id: 6af1c93a-6a5d-44d9-86b3-a4a5c0de0f41
+      iscommand: false
+      name: Done
+      scriptName: PrintContext
+      type: regular
+      version: -1
+    taskid: 6af1c93a-6a5d-44d9-86b3-a4a5c0de0f41
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 935,
-        "width": 940,
-        "x": 120,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 680,\n    \"y\": 890\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 935,\n      \"width\": 940,\n      \"x\": 120,\n      \"y\": 50\n\
+  \    }\n  }\n}"

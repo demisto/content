@@ -1,79 +1,271 @@
 id: FormattedDateToEpochTest
-version: -1
+inputs: []
 name: FormattedDateToEpochTest
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: b9afd8b5-96f7-49b4-81a9-409d7ce15406
-    type: start
-    task:
-      id: b9afd8b5-96f7-49b4-81a9-409d7ce15406
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "13"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 602.5,
-          "y": 50
-        }
-      }
+      - '13'
     note: false
-    timertriggers: []
-  "1":
-    id: "1"
-    taskid: 77e962c5-7e72-4a3d-8419-edb07f578cbf
-    type: regular
+    separatecontext: false
     task:
-      id: 77e962c5-7e72-4a3d-8419-edb07f578cbf
-      version: -1
-      name: Check 1991-05-20T20:37:43.000Z
-      description: Sets a value into the context with the given context key
-      scriptName: Set
-      type: regular
+      brand: ''
+      id: b9afd8b5-96f7-49b4-81a9-409d7ce15406
       iscommand: false
-      brand: ""
+      name: ''
+      version: -1
+    taskid: b9afd8b5-96f7-49b4-81a9-409d7ce15406
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 602.5,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
     scriptarguments:
       append: {}
       key:
         simple: TimeToCheck_1
       value:
-        simple: 1991-05-20T20:37:43.000Z
+        simple: 1991-05-20 20:37:43+00:00
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 602.5,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-  "3":
-    id: "3"
-    taskid: 8189ee47-c322-4ab0-88ce-5307a0dcb360
-    type: regular
     task:
-      id: 8189ee47-c322-4ab0-88ce-5307a0dcb360
-      version: -1
-      name: Convert to Epoch 1
+      brand: ''
       description: Sets a value into the context with the given context key
+      id: 77e962c5-7e72-4a3d-8419-edb07f578cbf
+      iscommand: false
+      name: Check 1991-05-20T20:37:43.000Z
       scriptName: Set
       type: regular
+      version: -1
+    taskid: 77e962c5-7e72-4a3d-8419-edb07f578cbf
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 602.5,\n    \"y\": 370\n  }\n}"
+  '10':
+    id: '10'
+    note: false
+    scriptarguments:
+      message:
+        simple: Conversion to epoch failed
+    separatecontext: false
+    task:
+      brand: ''
+      description: Prints an error entry with a given message
+      id: e60e6ea4-a14a-474b-8b3a-62d31b0d7b9d
       iscommand: false
-      brand: ""
+      name: Error
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: e60e6ea4-a14a-474b-8b3a-62d31b0d7b9d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -380,\n    \"y\": 1130\n  }\n}"
+  '11':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Epoch_2}
+          operator: isEqualNumber
+          right:
+            value:
+              simple: '674697600'
+      label: 'yes'
+    id: '11'
+    nexttasks:
+      '#default#':
+      - '10'
+      'yes':
+      - '16'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: cc7336f0-7aa0-407f-8418-ca6bc8f8f2e4
+      iscommand: false
+      name: Validate result 2
+      type: condition
+      version: -1
+    taskid: cc7336f0-7aa0-407f-8418-ca6bc8f8f2e4
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '12':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Epoch_1}
+          operator: isEqualNumber
+          right:
+            value:
+              simple: '674771863'
+      label: 'yes'
+    id: '12'
+    nexttasks:
+      '#default#':
+      - '10'
+      'yes':
+      - '15'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: f249a134-6e1b-41cb-8030-2fe096bdcf56
+      iscommand: false
+      name: Validate result 1
+      type: condition
+      version: -1
+    taskid: f249a134-6e1b-41cb-8030-2fe096bdcf56
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 602.5,\n    \"y\": 720\n  }\n}"
+  '13':
+    id: '13'
     nexttasks:
       '#none#':
-      - "12"
+      - '5'
+      - '1'
+      - '4'
+    note: false
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: be2ea045-f961-44c9-8196-e1a25bbe2b99
+      iscommand: false
+      name: Start Clean
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: be2ea045-f961-44c9-8196-e1a25bbe2b99
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 602.5,\n    \"y\": 195\n  }\n}"
+  '14':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: Epoch_3
+                transformers:
+                - operator: TimeStampToDate
+          operator: isEqualString
+          right:
+            value:
+              simple: 1900-01-01 20:51:20+00:00
+      label: 'yes'
+    id: '14'
+    nexttasks:
+      '#default#':
+      - '10'
+      'yes':
+      - '9'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: bfccaae9-9902-4d80-8f70-83e62166ff05
+      iscommand: false
+      name: Convert back to ISO date 3
+      type: condition
+      version: -1
+    taskid: bfccaae9-9902-4d80-8f70-83e62166ff05
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 1165,\n    \"y\": 895\n  }\n}"
+  '15':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: Epoch_1
+                transformers:
+                - operator: TimeStampToDate
+          operator: isEqualString
+          right:
+            value:
+              simple: 1991-05-20 20:37:43+00:00
+      label: 'yes'
+    id: '15'
+    nexttasks:
+      '#default#':
+      - '10'
+      'yes':
+      - '9'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: d8580132-d0f3-4e50-88f6-0f6aa1141b45
+      iscommand: false
+      name: Convert back to ISO date 1
+      type: condition
+      version: -1
+    taskid: d8580132-d0f3-4e50-88f6-0f6aa1141b45
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 602.5,\n    \"y\": 895\n  }\n}"
+  '16':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: Epoch_2
+                transformers:
+                - operator: TimeStampToDate
+          operator: isEqualString
+          right:
+            value:
+              simple: 1991-05-20 00:00:00+00:00
+      label: 'yes'
+    id: '16'
+    nexttasks:
+      '#default#':
+      - '10'
+      'yes':
+      - '9'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: c8b82ef9-06b1-4c95-8d30-e610bc6e1b63
+      iscommand: false
+      name: Convert back to ISO date 2
+      type: condition
+      version: -1
+    taskid: c8b82ef9-06b1-4c95-8d30-e610bc6e1b63
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+  '3':
+    id: '3'
+    nexttasks:
+      '#none#':
+      - '12'
+    note: false
     scriptarguments:
       append: {}
       key:
@@ -82,69 +274,57 @@ tasks:
         complex:
           root: TimeToCheck_1
           transformers:
-          - operator: FormattedDateToEpoch
-            args:
+          - args:
               formatter:
                 value:
                   simple: '%Y-%m-%dT%H:%M:%S.%fZ'
+            operator: FormattedDateToEpoch
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 602.5,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-  "4":
-    id: "4"
-    taskid: 7de6bc45-3ffa-4dce-8055-1b6a638dbc1c
-    type: regular
     task:
-      id: 7de6bc45-3ffa-4dce-8055-1b6a638dbc1c
-      version: -1
-      name: Check 20:51:20
+      brand: ''
       description: Sets a value into the context with the given context key
+      id: 8189ee47-c322-4ab0-88ce-5307a0dcb360
+      iscommand: false
+      name: Convert to Epoch 1
       scriptName: Set
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 8189ee47-c322-4ab0-88ce-5307a0dcb360
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 602.5,\n    \"y\": 545\n  }\n}"
+  '4':
+    id: '4'
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
+    note: false
     scriptarguments:
       append: {}
       key:
         simple: TimeToCheck_3
       value:
-        simple: "20:51:20"
+        simple: '20:51:20'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1165,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-  "5":
-    id: "5"
-    taskid: 4de18348-8498-428e-8470-0e4c08d3cba7
-    type: regular
     task:
-      id: 4de18348-8498-428e-8470-0e4c08d3cba7
-      version: -1
-      name: Check 20-05-1991
+      brand: ''
       description: Sets a value into the context with the given context key
+      id: 7de6bc45-3ffa-4dce-8055-1b6a638dbc1c
+      iscommand: false
+      name: Check 20:51:20
       scriptName: Set
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 7de6bc45-3ffa-4dce-8055-1b6a638dbc1c
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1165,\n    \"y\": 370\n  }\n}"
+  '5':
+    id: '5'
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
+    note: false
     scriptarguments:
       append: {}
       key:
@@ -152,31 +332,25 @@ tasks:
       value:
         simple: 20-05-1991
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-  "6":
-    id: "6"
-    taskid: ad9fe73f-5802-44fb-8dc4-a65d9f8e6331
-    type: regular
     task:
-      id: ad9fe73f-5802-44fb-8dc4-a65d9f8e6331
-      version: -1
-      name: Convert to Epoch 2
+      brand: ''
       description: Sets a value into the context with the given context key
+      id: 4de18348-8498-428e-8470-0e4c08d3cba7
+      iscommand: false
+      name: Check 20-05-1991
       scriptName: Set
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 4de18348-8498-428e-8470-0e4c08d3cba7
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '6':
+    id: '6'
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
+    note: false
     scriptarguments:
       append: {}
       key:
@@ -185,37 +359,31 @@ tasks:
         complex:
           root: TimeToCheck_2
           transformers:
-          - operator: FormattedDateToEpoch
-            args:
+          - args:
               formatter:
                 value:
                   simple: '%d-%m-%Y'
+            operator: FormattedDateToEpoch
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-  "7":
-    id: "7"
-    taskid: 8a67f5a2-4997-4c64-84b2-affa3806da00
-    type: regular
     task:
-      id: 8a67f5a2-4997-4c64-84b2-affa3806da00
-      version: -1
-      name: Convert to Epoch 3
+      brand: ''
       description: Sets a value into the context with the given context key
+      id: ad9fe73f-5802-44fb-8dc4-a65d9f8e6331
+      iscommand: false
+      name: Convert to Epoch 2
       scriptName: Set
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: ad9fe73f-5802-44fb-8dc4-a65d9f8e6331
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '7':
+    id: '7'
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
+    note: false
     scriptarguments:
       append: {}
       key:
@@ -224,345 +392,73 @@ tasks:
         complex:
           root: TimeToCheck_3
           transformers:
-          - operator: FormattedDateToEpoch
-            args:
+          - args:
               formatter:
                 value:
                   simple: '%H:%M:%S'
+            operator: FormattedDateToEpoch
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1165,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-  "8":
-    id: "8"
-    taskid: 328738a9-c2dc-4fc2-8cd7-f4e49a5a399e
-    type: condition
     task:
-      id: 328738a9-c2dc-4fc2-8cd7-f4e49a5a399e
-      version: -1
-      name: Validate result 3
-      type: condition
+      brand: ''
+      description: Sets a value into the context with the given context key
+      id: 8a67f5a2-4997-4c64-84b2-affa3806da00
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "10"
-      "yes":
-      - "14"
-    separatecontext: false
+      name: Convert to Epoch 3
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 8a67f5a2-4997-4c64-84b2-affa3806da00
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1165,\n    \"y\": 545\n  }\n}"
+  '8':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualNumber
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: ${Epoch_3}
-            iscontext: true
+          operator: isEqualNumber
           right:
             value:
-              simple: "-2208913720"
-    view: |-
-      {
-        "position": {
-          "x": 1165,
-          "y": 720
-        }
-      }
+              simple: '-2208913720'
+      label: 'yes'
+    id: '8'
+    nexttasks:
+      '#default#':
+      - '10'
+      'yes':
+      - '14'
     note: false
-    timertriggers: []
-  "9":
-    id: "9"
-    taskid: d141d4f3-2567-460c-85df-75a099f14e98
-    type: title
+    separatecontext: false
     task:
-      id: d141d4f3-2567-460c-85df-75a099f14e98
+      brand: ''
+      id: 328738a9-c2dc-4fc2-8cd7-f4e49a5a399e
+      iscommand: false
+      name: Validate result 3
+      type: condition
       version: -1
+    taskid: 328738a9-c2dc-4fc2-8cd7-f4e49a5a399e
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 1165,\n    \"y\": 720\n  }\n}"
+  '9':
+    id: '9'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: d141d4f3-2567-460c-85df-75a099f14e98
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 602.5,
-          "y": 1225
-        }
-      }
-    note: false
-    timertriggers: []
-  "10":
-    id: "10"
-    taskid: e60e6ea4-a14a-474b-8b3a-62d31b0d7b9d
-    type: regular
-    task:
-      id: e60e6ea4-a14a-474b-8b3a-62d31b0d7b9d
       version: -1
-      name: Error
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: Conversion to epoch failed
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -380,
-          "y": 1130
-        }
-      }
-    note: false
+    taskid: d141d4f3-2567-460c-85df-75a099f14e98
     timertriggers: []
-  "11":
-    id: "11"
-    taskid: cc7336f0-7aa0-407f-8418-ca6bc8f8f2e4
-    type: condition
-    task:
-      id: cc7336f0-7aa0-407f-8418-ca6bc8f8f2e4
-      version: -1
-      name: Validate result 2
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "10"
-      "yes":
-      - "16"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualNumber
-          left:
-            value:
-              simple: ${Epoch_2}
-            iscontext: true
-          right:
-            value:
-              simple: "674697600"
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-  "12":
-    id: "12"
-    taskid: f249a134-6e1b-41cb-8030-2fe096bdcf56
-    type: condition
-    task:
-      id: f249a134-6e1b-41cb-8030-2fe096bdcf56
-      version: -1
-      name: Validate result 1
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "10"
-      "yes":
-      - "15"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualNumber
-          left:
-            value:
-              simple: ${Epoch_1}
-            iscontext: true
-          right:
-            value:
-              simple: "674771863"
-    view: |-
-      {
-        "position": {
-          "x": 602.5,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-  "13":
-    id: "13"
-    taskid: be2ea045-f961-44c9-8196-e1a25bbe2b99
-    type: regular
-    task:
-      id: be2ea045-f961-44c9-8196-e1a25bbe2b99
-      version: -1
-      name: Start Clean
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-      - "1"
-      - "4"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 602.5,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-  "14":
-    id: "14"
-    taskid: bfccaae9-9902-4d80-8f70-83e62166ff05
-    type: condition
-    task:
-      id: bfccaae9-9902-4d80-8f70-83e62166ff05
-      version: -1
-      name: Convert back to ISO date 3
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "10"
-      "yes":
-      - "9"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: Epoch_3
-                transformers:
-                - operator: TimeStampToDate
-            iscontext: true
-          right:
-            value:
-              simple: 1900-01-01T20:51:20.000Z
-    view: |-
-      {
-        "position": {
-          "x": 1165,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-  "15":
-    id: "15"
-    taskid: d8580132-d0f3-4e50-88f6-0f6aa1141b45
-    type: condition
-    task:
-      id: d8580132-d0f3-4e50-88f6-0f6aa1141b45
-      version: -1
-      name: Convert back to ISO date 1
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "10"
-      "yes":
-      - "9"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: Epoch_1
-                transformers:
-                - operator: TimeStampToDate
-            iscontext: true
-          right:
-            value:
-              simple: 1991-05-20T20:37:43.000Z
-    view: |-
-      {
-        "position": {
-          "x": 602.5,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-  "16":
-    id: "16"
-    taskid: c8b82ef9-06b1-4c95-8d30-e610bc6e1b63
-    type: condition
-    task:
-      id: c8b82ef9-06b1-4c95-8d30-e610bc6e1b63
-      version: -1
-      name: Convert back to ISO date 2
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "10"
-      "yes":
-      - "9"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: Epoch_2
-                transformers:
-                - operator: TimeStampToDate
-            iscontext: true
-          right:
-            value:
-              simple: 1991-05-20T00:00:00.000Z
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1240,
-        "width": 1925,
-        "x": -380,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 602.5,\n    \"y\": 1225\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1240,\n      \"width\": 1925,\n      \"x\": -380,\n      \"y\"\
+  : 50\n    }\n  }\n}"

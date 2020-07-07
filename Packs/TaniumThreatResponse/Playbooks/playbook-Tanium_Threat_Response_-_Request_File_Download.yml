@@ -1,56 +1,84 @@
-elasticcommonfields: {}
-id: Tanium Threat Response - Request File Download
-version: -1
-fromversion: ""
-name: Tanium Threat Response - Request File Download
 description: Request file download from Tanium.
-starttaskid: "0"
+elasticcommonfields: {}
+fromversion: ''
+id: Tanium Threat Response - Request File Download
+inputs:
+- description: Connection name.
+  key: connection-name
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: 'Type of destination: ip_address or computer_name.'
+  key: destination-type
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: Path of file.
+  key: path
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: If true, the file will be downloaded, otherwise, only a file download
+    object will be created.
+  key: download-file
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: 'true'
+- description: If true, the connection will be deleted in the end of the playbook,
+    otherwise, it will remain open.
+  key: delete-connection
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: 'true'
+- description: True if remote connection.
+  key: remote
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: Connection timeout, in milliseconds.
+  key: connection-timeout
+  playbookInputQuery: null
+  required: false
+  value: {}
+name: Tanium Threat Response - Request File Download
+outputs:
+- contextPath: File.ID
+  description: File download entry ID.
+  type: string
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: d8c82418-fe27-4e68-880d-a871016a49af
-    type: start
+  '0':
+    id: '0'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '13'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
+      brand: ''
+      description: ''
       elasticcommonfields: {}
       id: d8c82418-fe27-4e68-880d-a871016a49af
-      version: -1
-      description: ""
-      name: ""
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "13"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "1":
-    id: "1"
-    taskid: f4ec667e-ea1b-4dc2-852b-71f8430e65c4
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: f4ec667e-ea1b-4dc2-852b-71f8430e65c4
+      name: ''
       version: -1
-      name: tanium-tr-request-file-download
-      description: Request a new file download
-      script: Tanium Threat Response|||tanium-tr-request-file-download
-      type: regular
-      iscommand: true
-      brand: Tanium Threat Response
+    taskid: d8c82418-fe27-4e68-880d-a871016a49af
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
+    quietmode: 0
     scriptarguments:
       connection-id:
         simple: ${inputs.connection-id}
@@ -59,291 +87,65 @@ tasks:
       path:
         simple: ${inputs.path}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "2":
-    id: "2"
-    taskid: b7d8cc10-03f7-4409-89ee-9a238281bbdc
-    type: playbook
     task:
-      elasticcommonfields: {}
-      id: b7d8cc10-03f7-4409-89ee-9a238281bbdc
-      version: -1
-      name: GenericPolling
-      description: |-
-        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
-      playbookName: GenericPolling
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      AdditionalPollingCommandArgNames:
-        simple: connection-name,path
-      AdditionalPollingCommandArgValues:
-        simple: ${inputs.connection-name},${inputs.path}
-      Ids:
-        simple: ${Tanium.FileDownload.Downloaded}
-      Interval:
-        simple: "1"
-      PollingCommandArgName:
-        simple: request-date
-      PollingCommandName:
-        simple: tanium-tr-get-download-file-request-status
-      Timeout:
-        simple: "10"
-      dt:
-        simple: Tanium.FileDownload(val.Status != 'Completed').ID
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "3":
-    id: "3"
-    taskid: 544e1dad-1998-4feb-84e9-d6d564ffb89e
-    type: title
-    task:
-      elasticcommonfields: {}
-      id: 544e1dad-1998-4feb-84e9-d6d564ffb89e
-      version: -1
-      name: Done
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "5":
-    id: "5"
-    taskid: e16c8bc0-4d21-47bd-8687-7ed108effcbb
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: e16c8bc0-4d21-47bd-8687-7ed108effcbb
-      version: -1
-      name: tanium-tr-delete-connection
-      description: Delete a connection by connection name.
-      script: Tanium Threat Response|||tanium-tr-delete-connection
-      type: regular
-      iscommand: true
       brand: Tanium Threat Response
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      connection-name:
-        simple: ${inputs.connection-name}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "8":
-    id: "8"
-    taskid: 85c86dac-494b-45e0-8f8b-57c96feaac15
-    type: condition
-    task:
+      description: Request a new file download
       elasticcommonfields: {}
-      id: 85c86dac-494b-45e0-8f8b-57c96feaac15
+      id: f4ec667e-ea1b-4dc2-852b-71f8430e65c4
+      iscommand: true
+      name: tanium-tr-request-file-download
+      script: Tanium Threat Response|||tanium-tr-request-file-download
+      type: regular
       version: -1
-      name: Delete connection?
-      description: ""
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "3"
-      "yes":
-      - "5"
-    separatecontext: false
+    taskid: f4ec667e-ea1b-4dc2-852b-71f8430e65c4
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 370\n  }\n}"
+  '10':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.delete-connection
+    - condition:
+      - - left:
             iscontext: true
-          right:
-            value:
-              simple: "true"
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "9":
-    id: "9"
-    taskid: 068c142a-e9c8-4b53-8bb5-db190ddcf269
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: 068c142a-e9c8-4b53-8bb5-db190ddcf269
-      version: -1
-      name: Get downloaded file
-      description: Get the actual content of a downloaded file by file ID.
-      script: Tanium Threat Response|||tanium-tr-get-downloaded-file
-      type: regular
-      iscommand: true
-      brand: Tanium Threat Response
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      file-id:
-        complex:
-          root: Tanium
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Tanium.FileDownload.Path
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.path
-                iscontext: true
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Tanium.FileDownload.ConnectionName
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.connection-name
-                iscontext: true
-          accessor: FileDownload.ID
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "10":
-    id: "10"
-    taskid: 64bba2d4-252f-4a4a-8ed2-287d40c94def
-    type: condition
-    task:
-      elasticcommonfields: {}
-      id: 64bba2d4-252f-4a4a-8ed2-287d40c94def
-      version: -1
-      name: Should the file be downloaded?
-      description: ""
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "8"
-      "yes":
-      - "9"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
             value:
               simple: inputs.download-file
-            iscontext: true
+          operator: isEqualString
           right:
             value:
-              simple: "true"
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
+              simple: 'true'
+      label: 'yes'
+    id: '10'
     ignoreworker: false
-    skipunavailable: false
+    nexttasks:
+      '#default#':
+      - '8'
+      'yes':
+      - '9'
+    note: false
     quietmode: 0
-  "12":
-    id: "12"
-    taskid: a54d98f3-e4c0-4031-82d0-12408af79302
-    type: regular
+    separatecontext: false
+    skipunavailable: false
     task:
+      brand: ''
+      description: ''
       elasticcommonfields: {}
-      id: a54d98f3-e4c0-4031-82d0-12408af79302
+      id: 64bba2d4-252f-4a4a-8ed2-287d40c94def
+      iscommand: false
+      name: Should the file be downloaded?
+      type: condition
       version: -1
-      name: tanium-tr-get-download-file-request-status
-      description: Get the status of the download file request.
-      script: Tanium Threat Response|||tanium-tr-get-download-file-request-status
-      type: regular
-      iscommand: true
-      brand: Tanium Threat Response
+    taskid: 64bba2d4-252f-4a4a-8ed2-287d40c94def
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 895\n  }\n}"
+  '12':
+    id: '12'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
+    note: false
+    quietmode: 0
     scriptarguments:
       host:
         simple: ${Tanium.FileDownload.Host}
@@ -352,35 +154,34 @@ tasks:
       request-date:
         simple: ${Tanium.FileDownload.Downloaded}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "13":
-    id: "13"
-    taskid: 6b52dd00-5f7e-468b-8b8a-ba9161b7378e
-    type: playbook
     task:
+      brand: Tanium Threat Response
+      description: Get the status of the download file request.
       elasticcommonfields: {}
-      id: 6b52dd00-5f7e-468b-8b8a-ba9161b7378e
+      id: a54d98f3-e4c0-4031-82d0-12408af79302
+      iscommand: true
+      name: tanium-tr-get-download-file-request-status
+      script: Tanium Threat Response|||tanium-tr-get-download-file-request-status
+      type: regular
       version: -1
-      description: ""
-      name: Tanium Threat Response - Create Connection
-      playbookName: Tanium Threat Response - Create Connection
-      type: playbook
+    taskid: a54d98f3-e4c0-4031-82d0-12408af79302
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 720\n  }\n}"
+  '13':
+    id: '13'
+    ignoreworker: false
+    loop:
+      exitCondition: ''
       iscommand: false
-      brand: ""
+      max: 100
+      wait: 1
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
+    note: false
+    quietmode: 0
     scriptarguments:
       connection-name:
         simple: ${inputs.connection-name}
@@ -391,78 +192,215 @@ tasks:
       remote:
         simple: ${inputs.remote}
     separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 190
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      elasticcommonfields: {}
+      id: 6b52dd00-5f7e-468b-8b8a-ba9161b7378e
+      iscommand: false
+      name: Tanium Threat Response - Create Connection
+      playbookName: Tanium Threat Response - Create Connection
+      type: playbook
+      version: -1
+    taskid: 6b52dd00-5f7e-468b-8b8a-ba9161b7378e
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 190\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '12'
+    note: false
     quietmode: 0
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1610,
-        "width": 492.5,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs:
-- key: connection-name
-  value: {}
-  required: true
-  description: Connection name.
-  playbookInputQuery: null
-- key: destination-type
-  value: {}
-  required: true
-  description: 'Type of destination: ip_address or computer_name.'
-  playbookInputQuery: null
-- key: path
-  value: {}
-  required: true
-  description: Path of file.
-  playbookInputQuery: null
-- key: download-file
-  value:
-    simple: "true"
-  required: false
-  description: If true, the file will be downloaded, otherwise, only a file download
-    object will be created.
-  playbookInputQuery: null
-- key: delete-connection
-  value:
-    simple: "true"
-  required: false
-  description: If true, the connection will be deleted in the end of the playbook,
-    otherwise, it will remain open.
-  playbookInputQuery: null
-- key: remote
-  value: {}
-  required: true
-  description: True if remote connection.
-  playbookInputQuery: null
-- key: connection-timeout
-  value: {}
-  required: false
-  description: Connection timeout, in milliseconds.
-  playbookInputQuery: null
-outputs:
-- contextPath: File.ID
-  description: File download entry ID.
-  type: string
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: connection-name,path
+      AdditionalPollingCommandArgValues:
+        simple: ${inputs.connection-name},${inputs.path}
+      Ids:
+        simple: ${Tanium.FileDownload.Downloaded}
+      Interval:
+        simple: '1'
+      PollingCommandArgName:
+        simple: request-date
+      PollingCommandName:
+        simple: tanium-tr-get-download-file-request-status
+      Timeout:
+        simple: '10'
+      dt:
+        simple: Tanium.FileDownload(val.Status != 'Completed').ID
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'Use this playbook as a sub-playbook to block execution of the
+        master playbook until a remote action is complete.
+
+        This playbook implements polling by continuously running the command in Step
+        \#2 until the operation completes.
+
+        The remote action should have the following structure:
+
+
+        1. Initiate the operation.
+
+        2. Poll to check if the operation completed.
+
+        3. (optional) Get the results of the operation.'
+      elasticcommonfields: {}
+      id: b7d8cc10-03f7-4409-89ee-9a238281bbdc
+      iscommand: false
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      version: -1
+    taskid: b7d8cc10-03f7-4409-89ee-9a238281bbdc
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 545\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      elasticcommonfields: {}
+      id: 544e1dad-1998-4feb-84e9-d6d564ffb89e
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 544e1dad-1998-4feb-84e9-d6d564ffb89e
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1595\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      connection-name:
+        simple: ${inputs.connection-name}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Tanium Threat Response
+      description: Delete a connection by connection name.
+      elasticcommonfields: {}
+      id: e16c8bc0-4d21-47bd-8687-7ed108effcbb
+      iscommand: true
+      name: tanium-tr-delete-connection
+      script: Tanium Threat Response|||tanium-tr-delete-connection
+      type: regular
+      version: -1
+    taskid: e16c8bc0-4d21-47bd-8687-7ed108effcbb
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1420\n  }\n}"
+  '8':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.delete-connection
+          operator: isEqualString
+          right:
+            value:
+              simple: 'true'
+      label: 'yes'
+    id: '8'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '3'
+      'yes':
+      - '5'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      elasticcommonfields: {}
+      id: 85c86dac-494b-45e0-8f8b-57c96feaac15
+      iscommand: false
+      name: Delete connection?
+      type: condition
+      version: -1
+    taskid: 85c86dac-494b-45e0-8f8b-57c96feaac15
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1245\n  }\n}"
+  '9':
+    id: '9'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      file-id:
+        complex:
+          accessor: FileDownload.ID
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: Tanium.FileDownload.Path
+              operator: isEqualString
+              right:
+                iscontext: true
+                value:
+                  simple: inputs.path
+          - - left:
+                iscontext: true
+                value:
+                  simple: Tanium.FileDownload.ConnectionName
+              operator: isEqualString
+              right:
+                iscontext: true
+                value:
+                  simple: inputs.connection-name
+          root: Tanium
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Tanium Threat Response
+      description: Get the actual content of a downloaded file by file ID.
+      elasticcommonfields: {}
+      id: 068c142a-e9c8-4b53-8bb5-db190ddcf269
+      iscommand: true
+      name: Get downloaded file
+      script: Tanium Threat Response|||tanium-tr-get-downloaded-file
+      type: regular
+      version: -1
+    taskid: 068c142a-e9c8-4b53-8bb5-db190ddcf269
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
 tests:
-  - No test
+- No test
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1610,\n      \"width\": 492.5,\n      \"x\": 50,\n      \"y\"\
+  : 50\n    }\n  }\n}"

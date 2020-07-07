@@ -16,17 +16,18 @@ comment: 'Imports a file that contains am ML model. '
 commonfields:
   id: ImportMLModel
   version: -1
+dockerimage: demisto/python3:3.8.2.6981
 enabled: true
 name: ImportMLModel
+runas: DBotWeakRole
+runonce: false
 script: '-'
 subtype: python3
 system: false
 tags:
 - ml
-timeout: '0'
-type: python
-dockerimage: demisto/python3:3.8.2.6981
-runas: DBotWeakRole
-runonce: false
 tests:
-  - No tests
+- No tests
+timeout: '0'
+toversion: 4.1.9
+type: python

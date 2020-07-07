@@ -14,22 +14,24 @@ args:
 comment: This script is an example script of how to unlink a task from an incident
   in Cherwell. The script wraps the cherwell-unlink-business-object command of the
   cherwell integration. When writing your own script to unlink business objects, follow
-  the instructions found in the configuration section of the script, but do not change the execution
-  section.
+  the instructions found in the configuration section of the script, but do not change
+  the execution section.
 commonfields:
   id: CherwellIncidentUnlinkTask
   version: -1
-enabled: false
-name: CherwellIncidentUnlinkTask
-script: '-'
-system: false
-timeout: '0'
-type: python
-dockerimage: demisto/python3:3.7.2.214
-subtype: python3
-tags: [Cherwell]
 dependson:
   must:
   - Cherwell|||cherwell-unlink-business-objects
+dockerimage: demisto/python3:3.7.2.214
+enabled: false
+name: CherwellIncidentUnlinkTask
+script: '-'
+subtype: python3
+system: false
+tags:
+- Cherwell
 tests:
-  - Cherwell Example Scripts - test
+- Cherwell Example Scripts - test
+timeout: '0'
+toversion: 4.1.9
+type: python

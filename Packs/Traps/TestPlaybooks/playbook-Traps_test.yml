@@ -1,465 +1,356 @@
-id: Traps test
-version: -1
 contentitemfields:
   propagationLabels: []
-name: Traps test
 description: Test for Traps integration
-starttaskid: "0"
+id: Traps test
+inputs: []
+name: Traps test
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: cd141148-ace4-4eb1-866d-e6a904a177d3
-    type: start
+  '0':
+    id: '0'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '22'
+    note: false
+    separatecontext: false
+    skipunavailable: false
     task:
-      description: ""
+      brand: ''
+      description: ''
       id: cd141148-ace4-4eb1-866d-e6a904a177d3
-      version: -1
-      name: ""
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "22"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  "2":
-    id: "2"
-    taskid: e3ebee45-4797-4a54-84df-c243015d50ef
-    type: title
-    task:
-      description: ""
-      id: e3ebee45-4797-4a54-84df-c243015d50ef
+      name: ''
       version: -1
-      name: 'Missing: get all endpoints'
-      type: title
-      iscommand: false
-      brand: ""
+    taskid: cd141148-ace4-4eb1-866d-e6a904a177d3
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 50\n  }\n}"
+  '10':
+    id: '10'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "30"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 385
-        }
-      }
+      - '9'
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  "9":
-    id: "9"
-    taskid: dc8f10c1-851e-44dd-8fa6-ca488b3b90d6
-    type: regular
-    task:
-      id: dc8f10c1-851e-44dd-8fa6-ca488b3b90d6
-      version: -1
-      name: traps-event-update
-      description: Change status and add a comment to an existing event.
-      script: Traps|||traps-event-update
-      type: regular
-      iscommand: true
-      brand: Traps
-    nexttasks:
-      '#none#':
-      - "28"
-    scriptarguments:
-      comment: {}
-      event_id:
-        simple: 53edb3fa9a3b4b83bcf168390a2ec08d
-      status:
-        simple: investigating
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-  "10":
-    id: "10"
-    taskid: 575b27e1-0d5d-4fe0-803c-2432edb4c929
-    type: title
     task:
-      description: ""
+      brand: ''
+      description: ''
       id: 575b27e1-0d5d-4fe0-803c-2432edb4c929
-      version: -1
+      iscommand: false
       name: 'Missing: Get events'
       type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 385
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  "11":
-    id: "11"
-    taskid: 0474c8e7-3c72-454b-87e2-a474412e3cc9
-    type: regular
-    task:
-      id: 0474c8e7-3c72-454b-87e2-a474412e3cc9
       version: -1
-      name: traps-event-bulk-update-status
-      description: Change the status of multiple events.
-      script: Traps|||traps-event-bulk-update-status
-      type: regular
-      iscommand: true
-      brand: Traps
+    taskid: 575b27e1-0d5d-4fe0-803c-2432edb4c929
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 1340,\n    \"y\": 385\n  }\n}"
+  '11':
+    id: '11'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "29"
+      - '29'
+    note: false
     scriptarguments:
       event_ids:
         simple: df4e60a62515482f98c8ef37e74363df,cfe4d15aca924bfcb7d2fc629b696bdd
       status:
         simple: investigating
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 900
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-  "14":
-    id: "14"
-    taskid: 20498bc5-61df-47b1-8f11-4b9dd2eb44e5
-    type: regular
     task:
-      id: 20498bc5-61df-47b1-8f11-4b9dd2eb44e5
-      version: -1
-      name: traps-hashes-blacklist-status
-      description: Get blacklist status of guven hashes.
-      script: Traps|||traps-hashes-blacklist-status
-      type: regular
-      iscommand: true
       brand: Traps
+      description: Change the status of multiple events.
+      id: 0474c8e7-3c72-454b-87e2-a474412e3cc9
+      iscommand: true
+      name: traps-event-bulk-update-status
+      script: Traps|||traps-event-bulk-update-status
+      type: regular
+      version: -1
+    taskid: 0474c8e7-3c72-454b-87e2-a474412e3cc9
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1340,\n    \"y\": 900\n  }\n}"
+  '14':
+    id: '14'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
+    note: false
     scriptarguments:
       hash_ids:
         simple: 1111111111111111111111111111111111111111111111111111111111111111,0000000000000000000000000000000000000000000000000000000000000000
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-  "15":
-    id: "15"
-    taskid: c3a1ddb3-5ee7-44d6-8da8-f959643b44d6
-    type: regular
     task:
-      id: c3a1ddb3-5ee7-44d6-8da8-f959643b44d6
+      brand: Traps
+      description: Get blacklist status of guven hashes.
+      id: 20498bc5-61df-47b1-8f11-4b9dd2eb44e5
+      iscommand: true
+      name: traps-hashes-blacklist-status
+      script: Traps|||traps-hashes-blacklist-status
+      type: regular
       version: -1
-      name: traps-hash-blacklist
+    taskid: 20498bc5-61df-47b1-8f11-4b9dd2eb44e5
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 370\n  }\n}"
+  '15':
+    id: '15'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '17'
+    note: false
+    scriptarguments:
+      hash_id:
+        simple: '1111111111111111111111111111111111111111111111111111111111111111'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Traps
       description: Blacklist specified hash.
+      id: c3a1ddb3-5ee7-44d6-8da8-f959643b44d6
+      iscommand: true
+      name: traps-hash-blacklist
       script: Traps|||traps-hash-blacklist
       type: regular
-      iscommand: true
-      brand: Traps
+      version: -1
+    taskid: c3a1ddb3-5ee7-44d6-8da8-f959643b44d6
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 720\n  }\n}"
+  '16':
+    id: '16'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "17"
+      - '19'
+    note: false
     scriptarguments:
       hash_id:
-        simple: "1111111111111111111111111111111111111111111111111111111111111111"
+        simple: '1111111111111111111111111111111111111111111111111111111111111111'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-  "16":
-    id: "16"
-    taskid: 5a206db7-092a-4e38-8d5e-65fc65a450ed
-    type: regular
     task:
-      id: 5a206db7-092a-4e38-8d5e-65fc65a450ed
-      version: -1
-      name: traps-hash-blacklist-remove
+      brand: Traps
       description: Remove a given hash from blacklist
+      id: 5a206db7-092a-4e38-8d5e-65fc65a450ed
+      iscommand: true
+      name: traps-hash-blacklist-remove
       script: Traps|||traps-hash-blacklist-remove
       type: regular
-      iscommand: true
-      brand: Traps
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      hash_id:
-        simple: "1111111111111111111111111111111111111111111111111111111111111111"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  "17":
-    id: "17"
-    taskid: cb1e029e-91c4-4c52-884e-8c45656f6b48
-    type: condition
-    task:
-      description: ""
-      id: cb1e029e-91c4-4c52-884e-8c45656f6b48
       version: -1
+    taskid: 5a206db7-092a-4e38-8d5e-65fc65a450ed
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 1070\n  }\n}"
+  '17':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Traps.File(val.SHA256 == '1111111111111111111111111111111111111111111111111111111111111111').BlacklistStatus}
+          operator: containsGeneral
+          right:
+            value:
+              simple: blacklisted
+      label: 'yes'
+    id: '17'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '16'
+    note: false
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: cb1e029e-91c4-4c52-884e-8c45656f6b48
+      iscommand: false
       name: Is blacklisted?
       type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "16"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${Traps.File(val.SHA256 == '1111111111111111111111111111111111111111111111111111111111111111').BlacklistStatus}
-            iscontext: true
-          right:
-            value:
-              simple: blacklisted
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  "18":
-    id: "18"
-    taskid: 84df4f18-36b8-4c9c-84f9-1404045d7c3e
-    type: condition
-    task:
-      description: ""
-      id: 84df4f18-36b8-4c9c-84f9-1404045d7c3e
       version: -1
-      name: Verify context
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "15"
-    separatecontext: false
+    taskid: cb1e029e-91c4-4c52-884e-8c45656f6b48
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 895\n  }\n}"
+  '18':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: Traps.File.SHA256
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isEqualString
-          left:
             value:
               simple: Traps.File.BlacklistStatus
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: none
-        - operator: isEqualString
-          left:
+        - left:
+            iscontext: true
             value:
               simple: Traps.File.BlacklistStatus
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: blacklisted
-      - - operator: hasLength
-          left:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: Traps
                 accessor: File
-            iscontext: true
+                root: Traps
+          operator: hasLength
           right:
             value:
-              simple: "2"
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
+              simple: '2'
+      label: 'yes'
+    id: '18'
     ignoreworker: false
-    skipunavailable: false
-  "19":
-    id: "19"
-    taskid: b4e6db43-ccc9-4825-88a6-c34e80372d3d
-    type: condition
-    task:
-      description: ""
-      id: b4e6db43-ccc9-4825-88a6-c34e80372d3d
-      version: -1
-      name: Is not blacklisted?
-      type: condition
-      iscommand: false
-      brand: ""
     nexttasks:
-      "yes":
-      - "25"
+      'yes':
+      - '15'
+    note: false
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 84df4f18-36b8-4c9c-84f9-1404045d7c3e
+      iscommand: false
+      name: Verify context
+      type: condition
+      version: -1
+    taskid: 84df4f18-36b8-4c9c-84f9-1404045d7c3e
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 545\n  }\n}"
+  '19':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: ${Traps.File(val.SHA256 == '1111111111111111111111111111111111111111111111111111111111111111').BlacklistStatus}
-            iscontext: true
+          operator: containsGeneral
           right:
             value:
               simple: none
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
+      label: 'yes'
+    id: '19'
     ignoreworker: false
+    nexttasks:
+      'yes':
+      - '25'
+    note: false
+    separatecontext: false
     skipunavailable: false
-  "22":
-    id: "22"
-    taskid: 82eabbf7-5a06-484b-8f9a-10f18a96f693
-    type: regular
     task:
-      id: 82eabbf7-5a06-484b-8f9a-10f18a96f693
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      description: ''
+      id: b4e6db43-ccc9-4825-88a6-c34e80372d3d
       iscommand: false
-      brand: ""
+      name: Is not blacklisted?
+      type: condition
+      version: -1
+    taskid: b4e6db43-ccc9-4825-88a6-c34e80372d3d
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 1245\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "2"
-      - "10"
-      - "14"
+      - '30'
+    note: false
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: e3ebee45-4797-4a54-84df-c243015d50ef
+      iscommand: false
+      name: 'Missing: get all endpoints'
+      type: title
+      version: -1
+    taskid: e3ebee45-4797-4a54-84df-c243015d50ef
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 385\n  }\n}"
+  '22':
+    id: '22'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+      - '10'
+      - '14'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-  "25":
-    id: "25"
-    taskid: 04c5f9f8-a53d-46df-87ea-886bc46f5d0d
-    type: title
     task:
-      description: ""
-      id: 04c5f9f8-a53d-46df-87ea-886bc46f5d0d
+      brand: ''
+      description: Delete field from context
+      id: 82eabbf7-5a06-484b-8f9a-10f18a96f693
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
       version: -1
+    taskid: 82eabbf7-5a06-484b-8f9a-10f18a96f693
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 195\n  }\n}"
+  '25':
+    id: '25'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 04c5f9f8-a53d-46df-87ea-886bc46f5d0d
+      iscommand: false
       name: DONE!
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1425
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  "26":
-    id: "26"
-    taskid: 0def5ef4-3b16-452b-8eb9-16ac3894e6ff
-    type: playbook
-    task:
-      description: ""
-      id: 0def5ef4-3b16-452b-8eb9-16ac3894e6ff
       version: -1
-      name: Traps Retrieve And Download Files
-      playbookName: Traps Retrieve And Download Files
-      type: playbook
+    taskid: 04c5f9f8-a53d-46df-87ea-886bc46f5d0d
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 1425\n  }\n}"
+  '26':
+    id: '26'
+    ignoreworker: false
+    loop:
+      exitCondition: ''
       iscommand: false
-      brand: ""
+      max: 0
+      wait: 1
     nexttasks:
       '#none#':
-      - "25"
+      - '25'
+    note: false
     scriptarguments:
       endpoint_id:
         simple: d3339851f18f470182bf2bf98ad5db4b
@@ -468,75 +359,58 @@ tasks:
       file_name:
         simple: C:\Program Files (x86)\Notepad++\notepad++.exe
     separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 20,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-  "27":
-    id: "27"
-    taskid: 2fbd4929-4ac4-4aac-853d-db5d8e2d6d12
-    type: playbook
     task:
-      id: 2fbd4929-4ac4-4aac-853d-db5d8e2d6d12
-      version: -1
-      name: Traps Scan Endpoint
-      description: Use this playbook to initiate an endpoint scan and retrieve the
-        scan results.
-      playbookName: Traps Scan Endpoint
-      type: playbook
+      brand: ''
+      description: ''
+      id: 0def5ef4-3b16-452b-8eb9-16ac3894e6ff
       iscommand: false
-      brand: ""
+      name: Traps Retrieve And Download Files
+      playbookName: Traps Retrieve And Download Files
+      type: playbook
+      version: -1
+    taskid: 0def5ef4-3b16-452b-8eb9-16ac3894e6ff
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 20,\n    \"y\": 720\n  }\n}"
+  '27':
+    id: '27'
+    ignoreworker: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 0
+      wait: 1
     nexttasks:
       '#none#':
-      - "25"
+      - '25'
+    note: false
     scriptarguments:
       endpoint_id:
         simple: d3339851f18f470182bf2bf98ad5db4b
     separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 500,
-          "y": 1165
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-  "28":
-    id: "28"
-    taskid: fd8d033e-bc01-400d-884d-0f539314c274
-    type: regular
     task:
-      id: fd8d033e-bc01-400d-884d-0f539314c274
+      brand: ''
+      description: Use this playbook to initiate an endpoint scan and retrieve the
+        scan results.
+      id: 2fbd4929-4ac4-4aac-853d-db5d8e2d6d12
+      iscommand: false
+      name: Traps Scan Endpoint
+      playbookName: Traps Scan Endpoint
+      type: playbook
       version: -1
-      name: traps-event-update (revert)
-      description: Change status and add a comment to an existing event.
-      script: Traps|||traps-event-update
-      type: regular
-      iscommand: true
-      brand: Traps
+    taskid: 2fbd4929-4ac4-4aac-853d-db5d8e2d6d12
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 500,\n    \"y\": 1165\n  }\n}"
+  '28':
+    id: '28'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
+    note: false
     scriptarguments:
       comment: {}
       event_id:
@@ -544,136 +418,140 @@ tasks:
       status:
         simple: new
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-  "29":
-    id: "29"
-    taskid: 04d7e58f-c517-4689-8f4b-fd2b8a33446e
-    type: regular
     task:
-      id: 04d7e58f-c517-4689-8f4b-fd2b8a33446e
-      version: -1
-      name: traps-event-bulk-update-status (revert)
-      description: Change the status of multiple events.
-      script: Traps|||traps-event-bulk-update-status
-      type: regular
-      iscommand: true
       brand: Traps
+      description: Change status and add a comment to an existing event.
+      id: fd8d033e-bc01-400d-884d-0f539314c274
+      iscommand: true
+      name: traps-event-update (revert)
+      script: Traps|||traps-event-update
+      type: regular
+      version: -1
+    taskid: fd8d033e-bc01-400d-884d-0f539314c274
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1340,\n    \"y\": 720\n  }\n}"
+  '29':
+    id: '29'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "25"
+      - '25'
+    note: false
     scriptarguments:
       event_ids:
         simple: df4e60a62515482f98c8ef37e74363df,cfe4d15aca924bfcb7d2fc629b696bdd
       status:
         simple: new
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 1075
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-  "30":
-    id: "30"
-    taskid: bbe837b7-5c91-44e1-8850-e63dd5927e9c
-    type: regular
     task:
-      id: bbe837b7-5c91-44e1-8850-e63dd5927e9c
-      version: -1
-      name: traps-get-endpoint-by-id
-      description: Returns details for the specified endpoint.
-      script: '|||traps-get-endpoint-by-id'
-      type: regular
+      brand: Traps
+      description: Change the status of multiple events.
+      id: 04d7e58f-c517-4689-8f4b-fd2b8a33446e
       iscommand: true
-      brand: ""
+      name: traps-event-bulk-update-status (revert)
+      script: Traps|||traps-event-bulk-update-status
+      type: regular
+      version: -1
+    taskid: 04d7e58f-c517-4689-8f4b-fd2b8a33446e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1340,\n    \"y\": 1075\n  }\n}"
+  '30':
+    continueonerror: true
+    id: '30'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "31"
-      - "26"
+      - '31'
+      - '26'
+    note: false
     scriptarguments:
       endpoint_id:
         simple: d3339851f18f470182bf2bf98ad5db4b
-    continueonerror: true
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 320,
-          "y": 530
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-  "31":
-    id: "31"
-    taskid: fe1156ed-fb93-4ed6-869b-31a8ed503f3d
-    type: condition
     task:
-      description: ""
-      id: fe1156ed-fb93-4ed6-869b-31a8ed503f3d
+      brand: ''
+      description: Returns details for the specified endpoint.
+      id: bbe837b7-5c91-44e1-8850-e63dd5927e9c
+      iscommand: true
+      name: traps-get-endpoint-by-id
+      script: '|||traps-get-endpoint-by-id'
+      type: regular
       version: -1
-      name: Check if Scan status is not pending or in_progress
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "25"
-      "yes":
-      - "27"
-    separatecontext: false
+    taskid: bbe837b7-5c91-44e1-8850-e63dd5927e9c
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 320,\n    \"y\": 530\n  }\n}"
+  '31':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: notInList
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: Traps
                 accessor: Endpoint.ScanStatus
-            iscontext: true
+                root: Traps
+          operator: notInList
           right:
             value:
               simple: pending, in_progress
-    view: |-
-      {
-        "position": {
-          "x": 440,
-          "y": 860
-        }
-      }
-    note: false
-    timertriggers: []
+      label: 'yes'
+    id: '31'
     ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '25'
+      'yes':
+      - '27'
+    note: false
+    separatecontext: false
     skipunavailable: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1440,
-        "width": 1700,
-        "x": 20,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    task:
+      brand: ''
+      description: ''
+      id: fe1156ed-fb93-4ed6-869b-31a8ed503f3d
+      iscommand: false
+      name: Check if Scan status is not pending or in_progress
+      type: condition
+      version: -1
+    taskid: fe1156ed-fb93-4ed6-869b-31a8ed503f3d
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 860\n  }\n}"
+  '9':
+    id: '9'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '28'
+    note: false
+    scriptarguments:
+      comment: {}
+      event_id:
+        simple: 53edb3fa9a3b4b83bcf168390a2ec08d
+      status:
+        simple: investigating
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Traps
+      description: Change status and add a comment to an existing event.
+      id: dc8f10c1-851e-44dd-8fa6-ca488b3b90d6
+      iscommand: true
+      name: traps-event-update
+      script: Traps|||traps-event-update
+      type: regular
+      version: -1
+    taskid: dc8f10c1-851e-44dd-8fa6-ca488b3b90d6
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1340,\n    \"y\": 545\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1440,\n      \"width\": 1700,\n      \"x\": 20,\n      \"y\":\
+  \ 50\n    }\n  }\n}"

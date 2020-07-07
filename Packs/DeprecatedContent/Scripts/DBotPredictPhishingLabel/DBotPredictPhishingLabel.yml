@@ -29,11 +29,15 @@ args:
   name: emailBody
   required: false
   secret: false
-comment: This script is deprecated. See https://xsoar.pan.dev/docs/reference/playbooks/d-bot-create-phishing-classifier-v2 for more information.
+comment: This script is deprecated. See https://xsoar.pan.dev/docs/reference/playbooks/d-bot-create-phishing-classifier-v2
+  for more information.
 commonfields:
   id: DBotPredictPhishingLabel
   version: -1
+deprecated: true
+dockerimage: demisto/dl:1.1
 enabled: true
+fromversion: 4.1.0
 name: DBotPredictPhishingLabel
 outputs:
 - contextPath: DBotPredictPhishingLabel.Label
@@ -48,17 +52,15 @@ outputs:
 - contextPath: DBotPredictPhishingLabel.InputTextTokens
   description: The input text
   type: String
+runonce: false
 script: '-'
+subtype: python3
 system: false
 tags:
 - ml
 - phishing
-timeout: '0'
-type: python
-subtype: python3
-deprecated: true
-dockerimage: demisto/dl:1.1
-runonce: false
 tests:
 - CreatePhishingClassifierMLTest
-fromversion: 4.1.0
+timeout: '0'
+toversion: 4.1.9
+type: python

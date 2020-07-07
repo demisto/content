@@ -10,7 +10,10 @@
     "query": "engine.cpu",
     "isPredefined": true,
     "params": {
-        "groupBy": ["engine"]
+        "groupBy": [
+            "engine"
+        ]
     },
-    "size": 61
+    "size": 61,
+    "toVersion": "4.1.9"
 }

@@ -22,19 +22,20 @@ comment: Zip a file and upload to war room
 commonfields:
   id: ZipFile
   version: -1
+dockerimage: demisto/python_zipfile:1.0.0.7600
 enabled: true
 name: ZipFile
 outputs:
 - contextPath: ZipFile.ZippedFile
   description: The zipped file
   type: string
+runonce: false
 script: '-'
+subtype: python3
 system: false
 tags:
 - Utility
 - file
 timeout: '0'
+toversion: 4.1.9
 type: python
-subtype: python3
-dockerimage: demisto/python_zipfile:1.0.0.7600
-runonce: false

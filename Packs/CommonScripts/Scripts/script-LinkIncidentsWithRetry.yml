@@ -1,28 +1,26 @@
+args:
+- description: A CSV list of related incident IDs.
+  name: linkedIncidentIDs
+  required: true
+- defaultValue: '5'
+  description: Number of retries to perform after a failure.
+  name: retryLimit
+comment: Use this script to avoid DB version errors when simultaneously running multiple
+  linked incidents.
 commonfields:
   id: LinkIncidentsWithRetry
   version: -1
+enabled: true
 name: LinkIncidentsWithRetry
-script: |
-  linkedIncidentIDs = demisto.args()["linkedIncidentIDs"]
-  counter = int(demisto.args()["retryLimit"])
-  res = demisto.executeCommand("linkIncidents", {"linkedIncidentIDs":linkedIncidentIDs})
-  while isError(res[0]) and counter>0 and ("DB Version" in res[0]["Contents"]):
-      time.sleep(2)
-      demisto.error(str(counter)+" retry linkIncidents:"+str(linkedIncidentIDs))
-      res = demisto.executeCommand("linkIncidents", {"linkedIncidentIDs":linkedIncidentIDs})
-      counter = counter - 1
-  demisto.results(res)
-type: python
+script: "linkedIncidentIDs = demisto.args()[\"linkedIncidentIDs\"]\ncounter = int(demisto.args()[\"\
+  retryLimit\"])\nres = demisto.executeCommand(\"linkIncidents\", {\"linkedIncidentIDs\"\
+  :linkedIncidentIDs})\nwhile isError(res[0]) and counter>0 and (\"DB Version\" in\
+  \ res[0][\"Contents\"]):\n    time.sleep(2)\n    demisto.error(str(counter)+\" retry\
+  \ linkIncidents:\"+str(linkedIncidentIDs))\n    res = demisto.executeCommand(\"\
+  linkIncidents\", {\"linkedIncidentIDs\":linkedIncidentIDs})\n    counter = counter\
+  \ - 1\ndemisto.results(res)\n"
+scripttarget: 0
 subtype: python2
 tags: []
-enabled: true
-args:
-- name: linkedIncidentIDs
-  required: true
-  description: A CSV list of related incident IDs.
-- name: retryLimit
-  description: Number of retries to perform after a failure.
-  defaultValue: "5"
-scripttarget: 0
-comment: |-
-  Use this script to avoid DB version errors when simultaneously running multiple linked incidents.
+toversion: 4.1.9
+type: python

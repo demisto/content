@@ -1,104 +1,33 @@
-commonfields:
-  id: ADGetGroupMembers
-  version: -1
-name: ADGetGroupMembers
-script: |+
-  def createEndpointEntities(t,attrs):
-      endpoints = []
-      for l in t:
-          endpoint = {}
-          endpoint['Type'] = 'AD'
-          endpoint['ID'] = demisto.get(l,'dn')
-          endpoint['Hostname'] = demisto.get(l,'name')
-          endpoint['Groups'] = None
-          if demisto.get(l,'memberOf'):
-              endpoint['Groups'] = demisto.get(l,'memberOf').split('<br>')
-          for attr in set(argToList(attrs)) - set(['dn','name','memberOf']):
-              endpoint[attr.title()] = demisto.get(l,attr)
-          endpoints.append(endpoint)
-
-      return endpoints
-
-  def createAccountEntities(t,attrs):
-      accounts = []
-      for l in t:
-          account = {}
-          account['Type'] = 'AD'
-          account['ID'] = demisto.get(l,'dn')
-          account['Email'] = demisto.get(l,'mail')
-          account['Username'] = demisto.get(l,'name')
-          account['DisplayName'] = demisto.get(l,'displayName')
-          account['Groups'] = None
-          if demisto.get(l,'memberOf'):
-              account['Groups'] = demisto.get(l,'memberOf').split('<br>')
-          for attr in set(argToList(attrs)) - set(['dn','mail','name','displayName','memberOf']):
-              account[attr.title()] = demisto.get(l,attr)
-          accounts.append(account)
-
-      return accounts
-
-  # Optional arguments and default values
-  attrs = 'name'
-  if demisto.get(demisto.args(), 'attributes'):
-      attrs += "," + demisto.args()['attributes']
-
-  memberType = demisto.get(demisto.args(), 'memberType')
-
-  filterstr = r"(&(objectCategory=" + memberType + ")(memberof=" + demisto.args()['groupdn'] + "))"
-  context = {}
-  resp = demisto.executeCommand( 'ad-search', { 'filter' : filterstr, 'attributes' : attrs } )
-  if isError(resp):
-      demisto.results(resp)
-  else:
-      data = demisto.get(resp[0],'Contents')
-      md = ""
-      if isinstance(data, str) or isinstance(data, unicode) :
-          md = data
-      else:
-          data = data if isinstance(data, list) else [data]
-          md = tableToMarkdown("Active Directory Group Members", data)
-
-          if memberType == 'computer':
-              context['Endpoint'] = createEndpointEntities(data,attrs)
-          elif memberType == 'user':
-              context['Account'] = createAccountEntities(data,attrs)
-
-      demisto.results({'Type' : entryTypes['note'],
-                      'Contents': data,
-                      'ContentsFormat' : formats['json'],
-                      'HumanReadable': md,
-                      'ReadableContentsFormat' : formats['markdown'],
-                      'EntryContext' : context})
-
-type: python
-subtype: python2
-tags:
-- active directory
-comment: "Use Active Directory to retrieve the list of users or computers that are members
-  of the specified group. Group must be given by its AD Distinguished Name. The \"attributes\"
-  argument receives a comma-separated list of additional attributes you wish to be
-  displayed in the results.\nExample usage: !ADGetGroupMembers memberType=user groupdn=\"CN=Administrators,CN=Builtin,DC=acme,DC=int\" attributes=name,email "
-system: true
 args:
-- name: groupdn
-  required: true
-  default: true
+- default: true
   description: Active Directory Distinguished Name for the desired group
-- name: attributes
-  description: Include these AD attributes of the resulting objects in addition to
-    the default ones
-- name: memberType
+  name: groupdn
   required: true
-  auto: PREDEFINED
+- description: Include these AD attributes of the resulting objects in addition to
+    the default ones
+  name: attributes
+- auto: PREDEFINED
+  description: 'Which members type to query '
+  name: memberType
   predefined:
   - user
   - computer
-  description: 'Which members type to query '
-scripttarget: 0
+  required: true
+comment: 'Use Active Directory to retrieve the list of users or computers that are
+  members of the specified group. Group must be given by its AD Distinguished Name.
+  The "attributes" argument receives a comma-separated list of additional attributes
+  you wish to be displayed in the results.
+
+  Example usage: !ADGetGroupMembers memberType=user groupdn="CN=Administrators,CN=Builtin,DC=acme,DC=int"
+  attributes=name,email '
+commonfields:
+  id: ADGetGroupMembers
+  version: -1
 dependson:
   must:
   - ad-search
-timeout: 0s
+deprecated: true
+name: ADGetGroupMembers
 outputs:
 - contextPath: Endpoint
   description: Active Directory Endpoint
@@ -124,6 +53,43 @@ outputs:
   description: The groups the Account is part of
 - contextPath: Account.DisplayName
   description: The Account display name
-deprecated: true
+script: "def createEndpointEntities(t,attrs):\n    endpoints = []\n    for l in t:\n\
+  \        endpoint = {}\n        endpoint['Type'] = 'AD'\n        endpoint['ID']\
+  \ = demisto.get(l,'dn')\n        endpoint['Hostname'] = demisto.get(l,'name')\n\
+  \        endpoint['Groups'] = None\n        if demisto.get(l,'memberOf'):\n    \
+  \        endpoint['Groups'] = demisto.get(l,'memberOf').split('<br>')\n        for\
+  \ attr in set(argToList(attrs)) - set(['dn','name','memberOf']):\n            endpoint[attr.title()]\
+  \ = demisto.get(l,attr)\n        endpoints.append(endpoint)\n\n    return endpoints\n\
+  \ndef createAccountEntities(t,attrs):\n    accounts = []\n    for l in t:\n    \
+  \    account = {}\n        account['Type'] = 'AD'\n        account['ID'] = demisto.get(l,'dn')\n\
+  \        account['Email'] = demisto.get(l,'mail')\n        account['Username'] =\
+  \ demisto.get(l,'name')\n        account['DisplayName'] = demisto.get(l,'displayName')\n\
+  \        account['Groups'] = None\n        if demisto.get(l,'memberOf'):\n     \
+  \       account['Groups'] = demisto.get(l,'memberOf').split('<br>')\n        for\
+  \ attr in set(argToList(attrs)) - set(['dn','mail','name','displayName','memberOf']):\n\
+  \            account[attr.title()] = demisto.get(l,attr)\n        accounts.append(account)\n\
+  \n    return accounts\n\n# Optional arguments and default values\nattrs = 'name'\n\
+  if demisto.get(demisto.args(), 'attributes'):\n    attrs += \",\" + demisto.args()['attributes']\n\
+  \nmemberType = demisto.get(demisto.args(), 'memberType')\n\nfilterstr = r\"(&(objectCategory=\"\
+  \ + memberType + \")(memberof=\" + demisto.args()['groupdn'] + \"))\"\ncontext =\
+  \ {}\nresp = demisto.executeCommand( 'ad-search', { 'filter' : filterstr, 'attributes'\
+  \ : attrs } )\nif isError(resp):\n    demisto.results(resp)\nelse:\n    data = demisto.get(resp[0],'Contents')\n\
+  \    md = \"\"\n    if isinstance(data, str) or isinstance(data, unicode) :\n  \
+  \      md = data\n    else:\n        data = data if isinstance(data, list) else\
+  \ [data]\n        md = tableToMarkdown(\"Active Directory Group Members\", data)\n\
+  \n        if memberType == 'computer':\n            context['Endpoint'] = createEndpointEntities(data,attrs)\n\
+  \        elif memberType == 'user':\n            context['Account'] = createAccountEntities(data,attrs)\n\
+  \n    demisto.results({'Type' : entryTypes['note'],\n                    'Contents':\
+  \ data,\n                    'ContentsFormat' : formats['json'],\n             \
+  \       'HumanReadable': md,\n                    'ReadableContentsFormat' : formats['markdown'],\n\
+  \                    'EntryContext' : context})\n\n"
+scripttarget: 0
+subtype: python2
+system: true
+tags:
+- active directory
 tests:
-  - No test
+- No test
+timeout: 0s
+toversion: 4.1.9
+type: python

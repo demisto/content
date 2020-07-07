@@ -1,182 +1,142 @@
-id: Carbon Black Rapid IOC Hunting
-fromversion: 2.5.0
-system: true
-version: -1
-name: Carbon Black Rapid IOC Hunting
 description: Hunt for malicious indicators using Carbon Black
-starttaskid: "0"
+fromversion: 2.5.0
+id: Carbon Black Rapid IOC Hunting
+inputs: []
+name: Carbon Black Rapid IOC Hunting
+outputs: []
+starttaskid: '0'
+system: true
 tasks:
-  "0":
-    id: "0"
-    taskid: 729a5739-da09-4d2f-8a3c-abc427e3efd2
-    type: start
-    task:
-      id: 729a5739-da09-4d2f-8a3c-abc427e3efd2
-      version: -1
-      name: ""
-      description: Playbook start point
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "1":
-    id: "1"
-    taskid: 1a3ea7e1-aaf3-4df0-89f6-70e2680bda7a
-    type: regular
-    task:
-      id: 1a3ea7e1-aaf3-4df0-89f6-70e2680bda7a
-      version: -1
-      name: CBFindHash
-      description: Search Carbon Black for connection to specified md5 hash(es).
-      scriptName: CBFindHash
-      type: regular
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - '2'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Playbook start point
+      id: 729a5739-da09-4d2f-8a3c-abc427e3efd2
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 729a5739-da09-4d2f-8a3c-abc427e3efd2
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    results:
+    - found_file_locations
     scriptarguments:
       md5:
         simple: ${File.MD5}
-    results:
-    - found_file_locations
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "2":
-    id: "2"
-    taskid: c687c04f-ba90-4572-800a-923193bacc32
-    type: condition
     task:
-      id: c687c04f-ba90-4572-800a-923193bacc32
-      version: -1
-      name: Is Carbon Black enabled?
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
-      scriptName: Exists
-      type: condition
+      brand: ''
+      description: Search Carbon Black for connection to specified md5 hash(es).
+      id: 1a3ea7e1-aaf3-4df0-89f6-70e2680bda7a
       iscommand: false
-      brand: ""
+      name: CBFindHash
+      scriptName: CBFindHash
+      type: regular
+      version: -1
+    taskid: 1a3ea7e1-aaf3-4df0-89f6-70e2680bda7a
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
     nexttasks:
       '#default#':
-      - "3"
-      "yes":
-      - "4"
+      - '3'
+      'yes':
+      - '4'
+    note: false
+    quietmode: 0
     scriptarguments:
       value:
         simple: ${modules(val.brand == 'carbonblack' && val.state == 'active')}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "3":
-    id: "3"
-    taskid: 189b725f-2b0a-42cc-8148-95395f810983
-    type: title
     task:
-      id: 189b725f-2b0a-42cc-8148-95395f810983
-      version: -1
-      name: Done
-      description: Done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "4":
-    id: "4"
-    taskid: a4a842fc-727c-4a64-883d-873968708ded
-    type: condition
-    task:
-      id: a4a842fc-727c-4a64-883d-873968708ded
-      version: -1
-      name: Do we have files to hunt?
+      brand: ''
       description: Check if a given value exists in the context. Will return 'no'
         for empty empty arrays. To be used mostly with DQ and selectors.
+      id: c687c04f-ba90-4572-800a-923193bacc32
+      iscommand: false
+      name: Is Carbon Black enabled?
       scriptName: Exists
       type: condition
+      version: -1
+    taskid: c687c04f-ba90-4572-800a-923193bacc32
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Done
+      id: 189b725f-2b0a-42cc-8148-95395f810983
       iscommand: false
-      brand: ""
+      name: Done
+      type: title
+      version: -1
+    taskid: 189b725f-2b0a-42cc-8148-95395f810983
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
     nexttasks:
       '#default#':
-      - "3"
-      "yes":
-      - "1"
+      - '3'
+      'yes':
+      - '1'
+    note: false
+    quietmode: 0
     scriptarguments:
       value:
         simple: ${File.MD5}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-view: |-
-  {
-    "linkLabelsPosition": {
-      "2_3_#default#": 0.27
-    },
-    "paper": {
-      "dimensions": {
-        "height": 735,
-        "width": 492.5,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    task:
+      brand: ''
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: a4a842fc-727c-4a64-883d-873968708ded
+      iscommand: false
+      name: Do we have files to hunt?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: a4a842fc-727c-4a64-883d-873968708ded
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 370\n  }\n}"
 tests:
- - no test
+- no test
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"2_3_#default#\": 0.27\n  },\n  \"paper\"\
+  : {\n    \"dimensions\": {\n      \"height\": 735,\n      \"width\": 492.5,\n  \
+  \    \"x\": 50,\n      \"y\": 50\n    }\n  }\n}"

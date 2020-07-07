@@ -1,75 +1,156 @@
+description: ''
+fromversion: 1.0.0
 id: Cisco ASA - Test Playbook
-version: -1
+inputs: []
 name: Cisco ASA - Test Playbook
+outputs: []
 starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: 260d7667-09c2-41c0-8cbd-bdf64d41006c
-    type: start
-    task:
-      id: 260d7667-09c2-41c0-8cbd-bdf64d41006c
-      version: -1
-      name: ''
-      iscommand: false
-      brand: ''
-      description: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - '1'
-    separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 50\n  }\n}"
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 260d7667-09c2-41c0-8cbd-bdf64d41006c
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 260d7667-09c2-41c0-8cbd-bdf64d41006c
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 50\n  }\n}"
   '1':
     id: '1'
-    taskid: 2ea3131c-6bb1-4539-84f8-89697089ef91
-    type: regular
-    task:
-      id: 2ea3131c-6bb1-4539-84f8-89697089ef91
-      version: -1
-      name: Delete Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - '8'
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
-        simple: yes
+        simple: true
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 195\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: 2ea3131c-6bb1-4539-84f8-89697089ef91
+      iscommand: false
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 2ea3131c-6bb1-4539-84f8-89697089ef91
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 195\n  }\n}"
+  '10':
+    id: '10'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '11'
+    note: false
     quietmode: 0
+    scriptarguments:
+      interface_name: {}
+      interface_type:
+        simple: Global
+      rule_id:
+        complex:
+          accessor: Rules.ID
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: CiscoASA.Rules.Source
+              operator: isEqualString
+              right:
+                value:
+                  simple: 1.1.1.1
+          - - left:
+                iscontext: true
+                value:
+                  simple: CiscoASA.Rules.Permit
+              operator: isEqualString
+              right:
+                value:
+                  simple: 'false'
+          - - left:
+                iscontext: true
+                value:
+                  simple: CiscoASA.Rules.Dest
+              operator: isEqualString
+              right:
+                value:
+                  simple: 2.2.2.2
+          root: CiscoASA
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Deletes a rule.
+      id: 4f6561ff-5474-41f5-81db-510cc6c82879
+      iscommand: true
+      name: Delete Rule
+      script: '|||cisco-asa-delete-rule'
+      type: regular
+      version: -1
+    taskid: 4f6561ff-5474-41f5-81db-510cc6c82879
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -30,\n    \"y\": 720\n  }\n}"
+  '11':
+    id: '11'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: true
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: 34b3954c-6156-435a-8f48-e7a527d986b5
+      iscommand: false
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 34b3954c-6156-435a-8f48-e7a527d986b5
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 895\n  }\n}"
   '2':
     id: '2'
-    taskid: cd66ddb3-c624-40b6-83bd-b1c319c01926
-    type: regular
-    task:
-      id: cd66ddb3-c624-40b6-83bd-b1c319c01926
-      version: -1
-      name: Create Rule
-      description: Create a rule.
-      script: '|||cisco-asa-create-rule'
-      type: regular
-      iscommand: true
-      brand: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - '3'
+    note: false
+    quietmode: 0
     scriptarguments:
       active: {}
       destination:
@@ -85,28 +166,28 @@ tasks:
       source:
         simple: 1.1.1.1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1070\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
+    task:
+      brand: ''
+      description: Create a rule.
+      id: cd66ddb3-c624-40b6-83bd-b1c319c01926
+      iscommand: true
+      name: Create Rule
+      script: '|||cisco-asa-create-rule'
+      type: regular
+      version: -1
+    taskid: cd66ddb3-c624-40b6-83bd-b1c319c01926
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1070\n  }\n}"
   '3':
     id: '3'
-    taskid: 4e4a8bb3-2ca4-4020-8a4c-0533b8587707
-    type: regular
-    task:
-      id: 4e4a8bb3-2ca4-4020-8a4c-0533b8587707
-      version: -1
-      name: Get Rule Data
-      description: Get a specific rule by its ID
-      script: '|||cisco-asa-get-rule-by-id'
-      type: regular
-      iscommand: true
-      brand: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - '4'
+    note: false
+    quietmode: 0
     scriptarguments:
       interface_name:
         simple: ${CiscoASA.Rules.Interface}
@@ -115,69 +196,69 @@ tasks:
       rule_id:
         simple: ${CiscoASA.Rules.ID}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1245\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  '4':
-    id: '4'
-    taskid: 6ff50b24-7176-4263-8a49-70caee06ad21
-    type: condition
     task:
-      id: 6ff50b24-7176-4263-8a49-70caee06ad21
-      version: -1
-      name: Verify Rule
-      type: condition
-      iscommand: false
       brand: ''
-      description: ''
-    nexttasks:
-      yes:
-      - '5'
-    separatecontext: false
+      description: Get a specific rule by its ID
+      id: 4e4a8bb3-2ca4-4020-8a4c-0533b8587707
+      iscommand: true
+      name: Get Rule Data
+      script: '|||cisco-asa-get-rule-by-id'
+      type: regular
+      version: -1
+    taskid: 4e4a8bb3-2ca4-4020-8a4c-0533b8587707
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1245\n  }\n}"
+  '4':
     conditions:
-    - label: yes
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: CiscoASA.Rules.Source
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: 1.1.1.1
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: CiscoASA.Rules.Dest
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: 2.2.2.2
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1420\n  }\n}"
-    note: false
-    timertriggers: []
+      label: true
+    id: '4'
     ignoreworker: false
-    skipunavailable: false
+    nexttasks:
+      true:
+      - '5'
+    note: false
     quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 6ff50b24-7176-4263-8a49-70caee06ad21
+      iscommand: false
+      name: Verify Rule
+      type: condition
+      version: -1
+    taskid: 6ff50b24-7176-4263-8a49-70caee06ad21
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1420\n  }\n}"
   '5':
     id: '5'
-    taskid: b07a7f37-92b1-46d7-8c94-c1ffffcb85e7
-    type: regular
-    task:
-      id: b07a7f37-92b1-46d7-8c94-c1ffffcb85e7
-      version: -1
-      name: Edit Rule
-      description: Edit an existing rule.
-      script: '|||cisco-asa-edit-rule'
-      type: regular
-      iscommand: true
-      brand: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - '6'
+    note: false
+    quietmode: 0
     scriptarguments:
       active: {}
       destination:
@@ -194,270 +275,190 @@ tasks:
         simple: ${CiscoASA.Rules.ID}
       source: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1595\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  '6':
-    id: '6'
-    taskid: 1f711257-034b-4600-88b0-bd1d9f7f0d97
-    type: condition
     task:
-      id: 1f711257-034b-4600-88b0-bd1d9f7f0d97
-      version: -1
-      name: Verify Rule Edited
-      type: condition
-      iscommand: false
       brand: ''
-      description: ''
-    nexttasks:
-      yes:
-      - '7'
-    separatecontext: false
+      description: Edit an existing rule.
+      id: b07a7f37-92b1-46d7-8c94-c1ffffcb85e7
+      iscommand: true
+      name: Edit Rule
+      script: '|||cisco-asa-edit-rule'
+      type: regular
+      version: -1
+    taskid: b07a7f37-92b1-46d7-8c94-c1ffffcb85e7
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1595\n  }\n}"
+  '6':
     conditions:
-    - label: yes
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: CiscoASA.Rules.Dest
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: 3.3.3.3
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: CiscoASA.Rules.Source
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: 1.1.1.1
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1770\n  }\n}"
-    note: false
-    timertriggers: []
+      label: true
+    id: '6'
     ignoreworker: false
-    skipunavailable: false
+    nexttasks:
+      true:
+      - '7'
+    note: false
     quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 1f711257-034b-4600-88b0-bd1d9f7f0d97
+      iscommand: false
+      name: Verify Rule Edited
+      type: condition
+      version: -1
+    taskid: 1f711257-034b-4600-88b0-bd1d9f7f0d97
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1770\n  }\n}"
   '7':
     id: '7'
-    taskid: 15ce76a1-cda8-4a1c-8119-d23911f5e48e
-    type: regular
-    task:
-      id: 15ce76a1-cda8-4a1c-8119-d23911f5e48e
-      version: -1
-      name: Delete Rule
-      description: Delete a rule.
-      script: '|||cisco-asa-delete-rule'
-      type: regular
-      iscommand: true
-      brand: ''
+    ignoreworker: false
+    note: false
+    quietmode: 0
     scriptarguments:
       interface_name:
         complex:
-          root: ${CiscoASA
           accessor: Rules.Interface}
+          root: ${CiscoASA
           transformers:
-          - operator: slice
-            args:
+          - args:
               from:
                 value:
                   simple: '1'
               to:
                 value:
                   simple: '2'
+            operator: slice
       interface_type:
         simple: Global
       rule_id:
         complex:
-          root: ${CiscoASA
           accessor: Rules.ID}
+          root: ${CiscoASA
           transformers:
-          - operator: slice
-            args:
+          - args:
               from:
                 value:
                   simple: '1'
               to:
                 value:
                   simple: '2'
+            operator: slice
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1945\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
+    task:
+      brand: ''
+      description: Delete a rule.
+      id: 15ce76a1-cda8-4a1c-8119-d23911f5e48e
+      iscommand: true
+      name: Delete Rule
+      script: '|||cisco-asa-delete-rule'
+      type: regular
+      version: -1
+    taskid: 15ce76a1-cda8-4a1c-8119-d23911f5e48e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1945\n  }\n}"
   '8':
     id: '8'
-    taskid: 54dcf0ac-3d56-4b1c-89ff-6a5ad02c05a0
-    type: regular
-    task:
-      id: 54dcf0ac-3d56-4b1c-89ff-6a5ad02c05a0
-      version: -1
-      name: List rules
-      description: Gets a list all rules for the supplied interface.
-      script: '|||cisco-asa-list-rules'
-      type: regular
-      iscommand: true
-      brand: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - '9'
+    note: false
+    quietmode: 0
     scriptarguments:
       interface_name: {}
       interface_type:
         simple: Global
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 370\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  '9':
-    id: '9'
-    taskid: f9c6090e-a771-463a-892a-2ecf6f4cb734
-    type: condition
     task:
-      id: f9c6090e-a771-463a-892a-2ecf6f4cb734
-      version: -1
-      name: Does rule exist
-      type: condition
-      iscommand: false
       brand: ''
-      description: ''
-    nexttasks:
-      '#default#':
-      - '11'
-      yes:
-      - '10'
-    separatecontext: false
+      description: Gets a list all rules for the supplied interface.
+      id: 54dcf0ac-3d56-4b1c-89ff-6a5ad02c05a0
+      iscommand: true
+      name: List rules
+      script: '|||cisco-asa-list-rules'
+      type: regular
+      version: -1
+    taskid: 54dcf0ac-3d56-4b1c-89ff-6a5ad02c05a0
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 370\n  }\n}"
+  '9':
     conditions:
-    - label: yes
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: CiscoASA.Rules.Source
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: 1.1.1.1
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: CiscoASA.Rules.Dest
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: 2.2.2.2
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: CiscoASA.Rules.Permit
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: 'false'
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 545\n  }\n}"
-    note: false
-    timertriggers: []
+      label: true
+    id: '9'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '10':
-    id: '10'
-    taskid: 4f6561ff-5474-41f5-81db-510cc6c82879
-    type: regular
-    task:
-      id: 4f6561ff-5474-41f5-81db-510cc6c82879
-      version: -1
-      name: Delete Rule
-      description: Deletes a rule.
-      script: '|||cisco-asa-delete-rule'
-      type: regular
-      iscommand: true
-      brand: ''
     nexttasks:
-      '#none#':
+      '#default#':
       - '11'
-    scriptarguments:
-      interface_name: {}
-      interface_type:
-        simple: Global
-      rule_id:
-        complex:
-          root: CiscoASA
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: CiscoASA.Rules.Source
-                iscontext: true
-              right:
-                value:
-                  simple: 1.1.1.1
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: CiscoASA.Rules.Permit
-                iscontext: true
-              right:
-                value:
-                  simple: 'false'
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: CiscoASA.Rules.Dest
-                iscontext: true
-              right:
-                value:
-                  simple: 2.2.2.2
-          accessor: Rules.ID
-    separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -30,\n    \"y\": 720\n  }\n}"
+      true:
+      - '10'
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
-  '11':
-    id: '11'
-    taskid: 34b3954c-6156-435a-8f48-e7a527d986b5
-    type: regular
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 34b3954c-6156-435a-8f48-e7a527d986b5
-      version: -1
-      name: Delete Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
       brand: ''
-    nexttasks:
-      '#none#':
-      - '2'
-    scriptarguments:
-      all:
-        simple: yes
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 895\n  }\n}"
-    note: false
+      description: ''
+      id: f9c6090e-a771-463a-892a-2ecf6f4cb734
+      iscommand: false
+      name: Does rule exist
+      type: condition
+      version: -1
+    taskid: f9c6090e-a771-463a-892a-2ecf6f4cb734
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 545\n  }\n}"
+toversion: 4.1.9
+version: -1
 view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
   \     \"height\": 1990,\n      \"width\": 572.5,\n      \"x\": -30,\n      \"y\"\
   : 50\n    }\n  }\n}"
-inputs: []
-outputs: []
-fromversion: 1.0.0
-description: ''

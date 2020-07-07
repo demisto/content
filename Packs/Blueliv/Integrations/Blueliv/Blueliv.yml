@@ -1,3 +1,4 @@
+beta: true
 category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Blueliv_Beta
@@ -14,9 +15,10 @@ configuration:
   type: 4
 - display: Use system proxy settings
   name: proxy
-  type: 8
   required: false
-description: Blueliv reduces risk through actionable, dynamic and targeted threat intelligence, trusted by your organization.
+  type: 8
+description: Blueliv reduces risk through actionable, dynamic and targeted threat
+  intelligence, trusted by your organization.
 display: Blueliv (Beta)
 name: Blueliv_Beta
 script:
@@ -47,8 +49,8 @@ script:
   isfetch: false
   runonce: false
   script: ''
-  type: python
   subtype: python2
-beta: true
+  type: python
 tests:
-  - no test
+- no test
+toversion: 4.1.9

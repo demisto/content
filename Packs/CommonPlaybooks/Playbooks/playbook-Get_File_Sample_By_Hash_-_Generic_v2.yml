@@ -1,169 +1,139 @@
-id: Get File Sample By Hash - Generic v2
-version: -1
-name: Get File Sample By Hash - Generic v2
-description: |-
-  This playbook returns a file sample correlating to a hash in the war-room using the following sub-playbooks:
+description: 'This playbook returns a file sample correlating to a hash in the war-room
+  using the following sub-playbooks:
+
   - Get File Sample By Hash - Carbon Black Enterprise Response
-  - Get File Sample By Hash - Cylance Protect v2
-starttaskid: "0"
-tasks:
-  "0":
-    id: "0"
-    taskid: e1c3bf5a-d7ba-4062-8877-ad2799d1db03
-    type: start
-    task:
-      id: e1c3bf5a-d7ba-4062-8877-ad2799d1db03
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "3"
-      - "5"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "3":
-    id: "3"
-    taskid: 09f337a9-fb19-48ce-8b0f-902e0dc9f047
-    type: playbook
-    task:
-      id: 09f337a9-fb19-48ce-8b0f-902e0dc9f047
-      version: -1
-      name: Get File Sample By Hash - Carbon Black Enterprise Response
-      description: Returns to the war-room a file sample correlating to MD5 hashes
-        in the input using Carbon Black Enterprise Response integration
-      playbookName: Get File Sample By Hash - Carbon Black Enterprise Response
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-  "4":
-    id: "4"
-    taskid: b5e5705d-8e32-41bb-8c3b-63c78bd2d14f
-    type: title
-    task:
-      id: b5e5705d-8e32-41bb-8c3b-63c78bd2d14f
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "5":
-    id: "5"
-    taskid: 3a3ab19d-7b69-4631-847b-27eb7f7f80ee
-    type: playbook
-    task:
-      id: 3a3ab19d-7b69-4631-847b-27eb7f7f80ee
-      version: -1
-      name: Get File Sample By Hash - Cylance Protect v2
-      description: This playbook returns a file sample to the war-room given the file's
-        SHA256 hash, using Cylance Protect v2 integration.
-      playbookName: Get File Sample By Hash - Cylance Protect v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-system: true
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 385,
-        "width": 810,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
+
+  - Get File Sample By Hash - Cylance Protect v2'
+fromversion: 4.0.0
+id: Get File Sample By Hash - Generic v2
 inputs:
-- key: MD5
+- description: Get file sample from MD5 input
+  key: MD5
+  playbookInputQuery: null
+  required: false
   value:
     complex:
-      root: File
       accessor: MD5
+      root: File
+- description: Get file sample from SHA256 input
+  key: SHA256
+  playbookInputQuery: null
   required: false
-  description: Get file sample from MD5 input
-  playbookInputQuery:
-- key: SHA256
   value:
     complex:
-      root: File
       accessor: SHA256
-  required: false
-  description: Get file sample from SHA256 input
-  playbookInputQuery:
+      root: File
+name: Get File Sample By Hash - Generic v2
 outputs:
 - contextPath: File
   description: File sample object
   type: unknown
-fromversion: 4.0.0
+starttaskid: '0'
+system: true
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '3'
+      - '5'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: e1c3bf5a-d7ba-4062-8877-ad2799d1db03
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: e1c3bf5a-d7ba-4062-8877-ad2799d1db03
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 50\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ''
+      description: Returns to the war-room a file sample correlating to MD5 hashes
+        in the input using Carbon Black Enterprise Response integration
+      id: 09f337a9-fb19-48ce-8b0f-902e0dc9f047
+      iscommand: false
+      name: Get File Sample By Hash - Carbon Black Enterprise Response
+      playbookName: Get File Sample By Hash - Carbon Black Enterprise Response
+      type: playbook
+      version: -1
+    taskid: 09f337a9-fb19-48ce-8b0f-902e0dc9f047
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: b5e5705d-8e32-41bb-8c3b-63c78bd2d14f
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: b5e5705d-8e32-41bb-8c3b-63c78bd2d14f
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 370\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ''
+      description: This playbook returns a file sample to the war-room given the file's
+        SHA256 hash, using Cylance Protect v2 integration.
+      id: 3a3ab19d-7b69-4631-847b-27eb7f7f80ee
+      iscommand: false
+      name: Get File Sample By Hash - Cylance Protect v2
+      playbookName: Get File Sample By Hash - Cylance Protect v2
+      type: playbook
+      version: -1
+    taskid: 3a3ab19d-7b69-4631-847b-27eb7f7f80ee
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 195\n  }\n}"
 tests:
 - No test
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 385,\n      \"width\": 810,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

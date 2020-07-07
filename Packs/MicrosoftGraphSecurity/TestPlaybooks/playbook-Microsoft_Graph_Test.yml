@@ -1,49 +1,34 @@
 id: Microsoft Graph Test
-version: -1
+inputs: []
 name: Microsoft Graph Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 36ae70b3-d522-46f7-8edd-edad6bed20d3
-    type: start
-    task:
-      id: 36ae70b3-d522-46f7-8edd-edad6bed20d3
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: fa16dd51-f1bd-422e-8efd-93e2c5cb3ce6
-    type: regular
-    task:
-      id: fa16dd51-f1bd-422e-8efd-93e2c5cb3ce6
-      version: -1
-      name: msg-search-alerts
-      description: List alerts (security issues) within a customer's tenant that Microsoft
-        or partner security solutions have identified.
-      script: '|||msg-search-alerts'
-      type: regular
-      iscommand: true
-      brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - '7'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 36ae70b3-d522-46f7-8edd-edad6bed20d3
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 36ae70b3-d522-46f7-8edd-edad6bed20d3
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
     scriptarguments:
       category: {}
       filter: {}
@@ -52,84 +37,71 @@ tasks:
       time_from: {}
       time_to: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 21200bbe-54c3-4d33-8e8e-dfd463b3fcd7
-    type: regular
     task:
-      id: 21200bbe-54c3-4d33-8e8e-dfd463b3fcd7
-      version: -1
-      name: msg-get-alert-details
-      description: Get details for a specific alert.
-      script: '|||msg-get-alert-details'
-      type: regular
+      brand: ''
+      description: "List alerts\_(security issues) within a customer's tenant that\
+        \ Microsoft or partner security solutions have identified."
+      id: fa16dd51-f1bd-422e-8efd-93e2c5cb3ce6
       iscommand: true
-      brand: ""
+      name: msg-search-alerts
+      script: '|||msg-search-alerts'
+      type: regular
+      version: -1
+    taskid: fa16dd51-f1bd-422e-8efd-93e2c5cb3ce6
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
     scriptarguments:
       alert_id:
         complex:
-          root: MsGraph
           accessor: Alert.ID
+          root: MsGraph
           transformers:
-          - operator: atIndex
-            args:
+          - args:
               index:
                 value:
-                  simple: "0"
+                  simple: '0'
+            operator: atIndex
       fields_to_include: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: 32f4ef88-29cd-4b99-867b-7a8302f499ab
-    type: regular
     task:
-      id: 32f4ef88-29cd-4b99-867b-7a8302f499ab
-      version: -1
-      name: msg-update-alert
-      description: Update an editable alert property within any integrated solution
-        to keep alert status and assignments in sync across solutions using its reference
-        ID.
-      script: '|||msg-update-alert'
-      type: regular
+      brand: ''
+      description: Get details for a specific alert.
+      id: 21200bbe-54c3-4d33-8e8e-dfd463b3fcd7
       iscommand: true
-      brand: ""
+      name: msg-get-alert-details
+      script: '|||msg-get-alert-details'
+      type: regular
+      version: -1
+    taskid: 21200bbe-54c3-4d33-8e8e-dfd463b3fcd7
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
+    note: false
     scriptarguments:
       alert_id:
         complex:
-          root: MsGraph
           accessor: Alert.ID
+          root: MsGraph
           transformers:
-          - operator: atIndex
-            args:
+          - args:
               index:
                 value:
-                  simple: "0"
+                  simple: '0'
+            operator: atIndex
       assigned_to: {}
       closed_date_time: {}
       comments: {}
@@ -137,179 +109,150 @@ tasks:
         simple: truePositive
       provider_information:
         complex:
-          root: MsGraph
           accessor: Alert.Provider
+          root: MsGraph
           transformers:
-          - operator: atIndex
-            args:
+          - args:
               index:
                 value:
-                  simple: "0"
+                  simple: '0'
+            operator: atIndex
       status: {}
       tags: {}
       vendor_information:
         complex:
-          root: MsGraph
           accessor: Alert.Vendor
+          root: MsGraph
           transformers:
-          - operator: atIndex
-            args:
+          - args:
               index:
                 value:
-                  simple: "0"
+                  simple: '0'
+            operator: atIndex
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 194f6263-ef14-4a71-8893-44f08fd98579
-    type: title
     task:
-      id: 194f6263-ef14-4a71-8893-44f08fd98579
+      brand: ''
+      description: Update an editable alert property within any integrated solution
+        to keep alert status and assignments in sync across solutions using its reference
+        ID.
+      id: 32f4ef88-29cd-4b99-867b-7a8302f499ab
+      iscommand: true
+      name: msg-update-alert
+      script: '|||msg-update-alert'
+      type: regular
       version: -1
+    taskid: 32f4ef88-29cd-4b99-867b-7a8302f499ab
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 194f6263-ef14-4a71-8893-44f08fd98579
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 24a65117-5c3a-4f45-8b38-977dc051a253
-    type: condition
-    task:
-      id: 24a65117-5c3a-4f45-8b38-977dc051a253
       version: -1
-      name: Verify msg-search-alerts output
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "2"
-    separatecontext: false
+    taskid: 194f6263-ef14-4a71-8893-44f08fd98579
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1420\n  }\n}"
+  '6':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: MsGraph
                 accessor: Alert.ID
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
+                root: MsGraph
+          operator: isExists
+      label: 'yes'
+    id: '6'
     ignoreworker: false
-  "7":
-    id: "7"
-    taskid: f2dad29f-bff3-4ad3-8d19-58bbabd54b0c
-    type: regular
+    nexttasks:
+      'yes':
+      - '2'
+    note: false
+    separatecontext: false
     task:
-      id: f2dad29f-bff3-4ad3-8d19-58bbabd54b0c
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      id: 24a65117-5c3a-4f45-8b38-977dc051a253
       iscommand: false
-      brand: ""
+      name: Verify msg-search-alerts output
+      type: condition
+      version: -1
+    taskid: 24a65117-5c3a-4f45-8b38-977dc051a253
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '7':
+    id: '7'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "8":
-    id: "8"
-    taskid: d1da2962-1337-4a67-83d7-3b3d5403421a
-    type: regular
     task:
-      id: d1da2962-1337-4a67-83d7-3b3d5403421a
+      brand: ''
+      description: Delete field from context
+      id: f2dad29f-bff3-4ad3-8d19-58bbabd54b0c
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
       version: -1
-      name: msg-get-users
+    taskid: f2dad29f-bff3-4ad3-8d19-58bbabd54b0c
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '8':
+    id: '8'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
       description: Retrieve a list of user objects.
+      id: d1da2962-1337-4a67-83d7-3b3d5403421a
+      iscommand: true
+      name: msg-get-users
       script: '|||msg-get-users'
       type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "9":
-    id: "9"
-    taskid: c39a2080-bd13-433b-807e-9c49e8916e53
-    type: regular
-    task:
-      id: c39a2080-bd13-433b-807e-9c49e8916e53
       version: -1
-      name: msg-get-user
-      description: Retrieve the properties and relationships of user object.
-      script: '|||msg-get-user'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: d1da2962-1337-4a67-83d7-3b3d5403421a
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+  '9':
+    id: '9'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
+    note: false
     scriptarguments:
       user_id:
         complex:
-          root: MsGraph
           accessor: User
+          root: MsGraph
           transformers:
-          - operator: WhereFieldEquals
-            args:
+          - args:
               equalTo:
                 value:
                   simple: avishai@demistodev.onmicrosoft.com
@@ -319,28 +262,23 @@ tasks:
               getField:
                 value:
                   simple: ID
+            operator: WhereFieldEquals
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      description: Retrieve the properties and relationships of user object.
+      id: c39a2080-bd13-433b-807e-9c49e8916e53
+      iscommand: true
+      name: msg-get-user
+      script: '|||msg-get-user'
+      type: regular
+      version: -1
+    taskid: c39a2080-bd13-433b-807e-9c49e8916e53
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1435,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1435,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

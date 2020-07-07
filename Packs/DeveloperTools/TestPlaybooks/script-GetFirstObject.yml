@@ -1,27 +1,24 @@
+args:
+- default: true
+  description: List or single object
+  name: value
+  required: true
+comment: 'In case of a list or tuple, get the first object.
+
+  otherwise, return the original object'
 commonfields:
   id: GetFirstObject
   version: -1
+enabled: true
 name: GetFirstObject
-script: |
-  value = demisto.args()['value']
-  if isinstance(value, list) or isinstance(value, tuple):
-      demisto.results(value[0])
-  else:
-      demisto.results(value)
-type: python
+runonce: false
+script: "value = demisto.args()['value']\nif isinstance(value, list) or isinstance(value,\
+  \ tuple):\n    demisto.results(value[0])\nelse:\n    demisto.results(value)\n"
+scripttarget: 0
 subtype: python2
 tags:
 - transformer
 - general
 - entirelist
-comment: |-
-  In case of a list or tuple, get the first object.
-  otherwise, return the original object
-enabled: true
-args:
-- name: value
-  required: true
-  default: true
-  description: List or single object
-scripttarget: 0
-runonce: false
+toversion: 4.1.9
+type: python

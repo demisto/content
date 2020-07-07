@@ -1,37 +1,29 @@
+args:
+- default: true
+  description: Entry ID of a valid xml file to convert to json format
+  name: entryID
+  required: true
+- description: context Key to push json result to
+  name: contextKey
+- auto: PREDEFINED
+  defaultValue: 'True'
+  description: Print json result to warrom
+  name: verbose
+  predefined:
+  - 'True'
+  - 'False'
+comment: Converts XML file entry to JSON format
 commonfields:
   id: ConvertXmlFileToJson
   version: -1
+enabled: true
 name: ConvertXmlFileToJson
-script: |-
-  var xml = getFileByEntryID(args.entryID);
-  var xmlJson = x2j(xml);
-  try {
-    xmlJson = JSON.parse(xmlJson);
-  } catch(err) {}
-
-  if (args.contextKey && args.contextKey.length > 0) {
-      setContext(args.contextKey,xmlJson);
-  }
-  if (args.verbose && args.verbose.length > 0 && args.verbose == 'True'){
-      return xmlJson;
-  }
-type: javascript
+script: "var xml = getFileByEntryID(args.entryID);\nvar xmlJson = x2j(xml);\ntry {\n\
+  \  xmlJson = JSON.parse(xmlJson);\n} catch(err) {}\n\nif (args.contextKey && args.contextKey.length\
+  \ > 0) {\n    setContext(args.contextKey,xmlJson);\n}\nif (args.verbose && args.verbose.length\
+  \ > 0 && args.verbose == 'True'){\n    return xmlJson;\n}"
+scripttarget: 0
 tags:
 - Utility
-comment: Converts XML file entry to JSON format
-enabled: true
-args:
-- name: entryID
-  required: true
-  default: true
-  description: Entry ID of a valid xml file to convert to json format
-- name: contextKey
-  description: context Key to push json result to
-- name: verbose
-  auto: PREDEFINED
-  predefined:
-  - "True"
-  - "False"
-  description: Print json result to warrom
-  defaultValue: "True"
-scripttarget: 0
+toversion: 4.1.9
+type: javascript

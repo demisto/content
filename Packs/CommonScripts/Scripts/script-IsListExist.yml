@@ -1,25 +1,22 @@
+args:
+- description: 'List name to check '
+  name: listName
+comment: Check if list exist in demisto lists.
 commonfields:
   id: IsListExist
   version: -1
+enabled: true
 name: IsListExist
-script: |-
-  list_name = demisto.args()['listName']
-  res = demisto.executeCommand("getList", {"listName": list_name})
-  res = res[0]
-  if res['Type'] == entryTypes['error'] and "Item not found" in res['Contents']:
-      demisto.results('no')
-  else:
-      demisto.results('yes')
-type: python
+runonce: false
+script: "list_name = demisto.args()['listName']\nres = demisto.executeCommand(\"getList\"\
+  , {\"listName\": list_name})\nres = res[0]\nif res['Type'] == entryTypes['error']\
+  \ and \"Item not found\" in res['Contents']:\n    demisto.results('no')\nelse:\n\
+  \    demisto.results('yes')"
+scripttarget: 0
 subtype: python2
 tags:
 - Condition
-comment: Check if list exist in demisto lists.
-enabled: true
-args:
-- name: listName
-  description: 'List name to check '
-scripttarget: 0
-runonce: false
 tests:
-  - No test
+- No test
+toversion: 4.1.9
+type: python

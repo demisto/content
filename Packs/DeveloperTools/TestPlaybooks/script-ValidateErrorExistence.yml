@@ -1,26 +1,15 @@
+comment: ''
 commonfields:
   id: ValidateErrorExistence
   version: -1
 name: ValidateErrorExistence
-script: |-
-  res = []
-
-  entries = demisto.executeCommand("getEntries", {})
-  error_was_found = False
-
-  for entry in entries:
-      if isError(entry):
-          error_was_found = True
-          break
-
-
-  if error_was_found:
-      res.append({"Type": entryTypes["note"], "ContentsFormat": formats["text"], "Contents": "An error was found"})
-  else:
-      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "No error was found"})
-
-  demisto.results(res)
-type: python
+script: "res = []\n\nentries = demisto.executeCommand(\"getEntries\", {})\nerror_was_found\
+  \ = False\n\nfor entry in entries:\n    if isError(entry):\n        error_was_found\
+  \ = True\n        break\n\n\nif error_was_found:\n    res.append({\"Type\": entryTypes[\"\
+  note\"], \"ContentsFormat\": formats[\"text\"], \"Contents\": \"An error was found\"\
+  })\nelse:\n    res.append({\"Type\": entryTypes[\"error\"], \"ContentsFormat\":\
+  \ formats[\"text\"], \"Contents\": \"No error was found\"})\n\ndemisto.results(res)"
 subtype: python2
 tags: []
-comment: ''
+toversion: 4.1.9
+type: python

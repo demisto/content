@@ -1,118 +1,102 @@
-id: get_file_sample_from_path_-_carbon_black_enterprise_response
-version: -1
-name: Get File Sample From Path - Carbon Black Enterprise Response
-fromversion: "3.5.0"
 description: Returns a file sample to the war-room from a path on an endpoint using
   Carbon Black Enterprise Response
-starttaskid: "0"
+fromversion: 3.5.0
+id: get_file_sample_from_path_-_carbon_black_enterprise_response
+inputs:
+- description: The host to get file from
+  key: Hostname
+  required: false
+  value:
+    simple: ${Endpoint.Hostname}
+- description: Path of the file on the endpoint
+  key: Path
+  required: false
+  value:
+    simple: ${File.Path}
+name: Get File Sample From Path - Carbon Black Enterprise Response
+outputs:
+- contextPath: File
+  description: The file to sample.
+  type: unknown
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 6b09e12d-a699-4b98-8f93-0ee2fb3904df
-    type: start
-    task:
-      id: 6b09e12d-a699-4b98-8f93-0ee2fb3904df
-      version: -1
-      description: ""
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 48
-        }
-      }
-  "1":
-    id: "1"
-    taskid: 40ec070b-2ab3-432a-86fa-eb02b381398a
-    type: condition
     task:
-      id: 40ec070b-2ab3-432a-86fa-eb02b381398a
-      version: -1
-      name: Is Carbon Black Enterprise Response enabled?
-      description: Check if  Carbon Black Enterprise Response active in the system.
-      scriptName: Exists
-      type: condition
+      brand: ''
+      description: ''
+      id: 6b09e12d-a699-4b98-8f93-0ee2fb3904df
       iscommand: false
-      brand: ""
+      name: ''
+      version: -1
+    taskid: 6b09e12d-a699-4b98-8f93-0ee2fb3904df
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 48\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#default#':
-      - "3"
-      "yes":
-      - "5"
+      - '3'
+      'yes':
+      - '5'
     scriptarguments:
       extend-context: {}
       value:
         complex:
-          root: modules
           filters:
-          - - operator: string.isEqual
-              left:
+          - - left:
+                iscontext: true
                 value:
                   simple: brand
-                iscontext: true
+              operator: string.isEqual
               right:
                 value:
                   simple: carbonblack
-          - - operator: string.isEqual
-              left:
+          - - left:
+                iscontext: true
                 value:
                   simple: state
-                iscontext: true
+              operator: string.isEqual
               right:
                 value:
                   simple: active
+          root: modules
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 196
-        }
-      }
-  "3":
-    id: "3"
-    taskid: 347006fd-60f5-4233-8c40-9b941735dd2a
-    type: title
     task:
-      id: 347006fd-60f5-4233-8c40-9b941735dd2a
+      brand: ''
+      description: Check if  Carbon Black Enterprise Response active in the system.
+      id: 40ec070b-2ab3-432a-86fa-eb02b381398a
+      iscommand: false
+      name: Is Carbon Black Enterprise Response enabled?
+      scriptName: Exists
+      type: condition
       version: -1
-      description: ""
+    taskid: 40ec070b-2ab3-432a-86fa-eb02b381398a
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 196\n  }\n}"
+  '3':
+    id: '3'
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 347006fd-60f5-4233-8c40-9b941735dd2a
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-  "4":
-    id: "4"
-    taskid: 6361a341-4a5c-4735-8ffe-ce13d9539b91
-    type: regular
-    task:
-      id: 6361a341-4a5c-4735-8ffe-ce13d9539b91
       version: -1
-      name: Get File
-      description: Use Carbon black Response Live session to retrieve a file from
-        an endpoint. Endpoint needs to have a CbResponse sensor deployed.
-      scriptName: CBLiveGetFile
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: 347006fd-60f5-4233-8c40-9b941735dd2a
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '4':
+    id: '4'
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       hostname:
         simple: ${inputs.Hostname}
@@ -120,82 +104,58 @@ tasks:
       path:
         simple: ${inputs.Path}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 514,
-          "y": 544
-        }
-      }
-  "5":
-    id: "5"
-    taskid: 69aeb053-04ea-4853-872a-adf410c08c5e
-    type: condition
     task:
-      id: 69aeb053-04ea-4853-872a-adf410c08c5e
-      version: -1
-      name: Is there a file path and hostname?
-      description: Checks if a file path exists in playbook inputs.
-      type: condition
+      brand: ''
+      description: Use Carbon black Response Live session to retrieve a file from
+        an endpoint. Endpoint needs to have a CbResponse sensor deployed.
+      id: 6361a341-4a5c-4735-8ffe-ce13d9539b91
       iscommand: false
-      brand: ""
+      name: Get File
+      scriptName: CBLiveGetFile
+      type: regular
+      version: -1
+    taskid: 6361a341-4a5c-4735-8ffe-ce13d9539b91
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 514,\n    \"y\": 544\n  }\n}"
+  '5':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Path
+          operator: general.isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Hostname
+          operator: general.isExists
+      label: 'yes'
+    id: '5'
     nexttasks:
       '#default#':
-      - "3"
-      "yes":
-      - "4"
+      - '3'
+      'yes':
+      - '4'
     scriptarguments:
       value:
         simple: ${inputs.Path}
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: general.isExists
-          left:
-            value:
-              simple: inputs.Path
-            iscontext: true
-      - - operator: general.isExists
-          left:
-            value:
-              simple: inputs.Hostname
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 301,
-          "y": 367
-        }
-      }
-view: |-
-  {
-    "linkLabelsPosition": {
-      "1_3_#default#": 0.5
-    },
-    "paper": {
-      "dimensions": {
-        "height": 737,
-        "width": 844,
-        "x": 50,
-        "y": 48
-      }
-    }
-  }
-inputs:
-- key: Hostname
-  value:
-    simple: ${Endpoint.Hostname}
-  required: false
-  description: The host to get file from
-- key: Path
-  value:
-    simple: ${File.Path}
-  required: false
-  description: Path of the file on the endpoint
-outputs:
-- contextPath: File
-  description: The file to sample.
-  type: unknown
+    task:
+      brand: ''
+      description: Checks if a file path exists in playbook inputs.
+      id: 69aeb053-04ea-4853-872a-adf410c08c5e
+      iscommand: false
+      name: Is there a file path and hostname?
+      type: condition
+      version: -1
+    taskid: 69aeb053-04ea-4853-872a-adf410c08c5e
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 301,\n    \"y\": 367\n  }\n}"
 tests:
-  - no test
+- no test
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"1_3_#default#\": 0.5\n  },\n  \"paper\"\
+  : {\n    \"dimensions\": {\n      \"height\": 737,\n      \"width\": 844,\n    \
+  \  \"x\": 50,\n      \"y\": 48\n    }\n  }\n}"

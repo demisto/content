@@ -1,87 +1,49 @@
+args:
+- description: Contents (body) of the email
+  name: body
+- description: Subject of the email
+  name: subject
+comment: "Classify an incident created from an email originating from Splunk.\nThe\
+  \ mail type should be in plain text, and inline: table should be selected.\nParsing\
+  \ is done in the following manner -\ntype is the header sourcetype, severity is\
+  \ the mail importance level, \nthe incident name is the mail subject and the systems\
+  \ are taken from host."
 commonfields:
   id: SplunkEmailParser
   version: -1
-name: SplunkEmailParser
-script: |-
-  var body = args.body ? args.body : incidents[0].details;
-  var subject = args.subject ? args.subject : incidents[0].name;
-  function parseBody() {
-      var lines = body.split(/\r*\n/);
-      var header="";
-      var content = "";
-      for (var i =0;  i < lines.length; i++) {
-        var line = lines[i];
-        if (line.toLowerCase().indexOf("view results") >=0&& lines.length > i+3) {
-          header = lines[i+1];
-          content = lines[i+3];
-          break;
-        }
-      }
-      return {header: header,content: content};
-  }
-  function headerIndex(header, column) {
-      lowerHeader = header.toLowerCase();
-      lowerColumn = column.toLowerCase();
-      columns = lowerHeader.split(/\s+/);
-      for (var i = 0; i < columns.length; i++){
-        if (columns[i]===lowerColumn) {
-          var start = lowerHeader.indexOf(lowerColumn);
-          var end = -1;
-          if (columns.length > i+1 && columns[i + 1]!=="") {
-             end = lowerHeader.indexOf(columns[i + 1], start);
-          }
-          return {start:start,end:end};
-        }
-      }
-      return {start:-1,end:-1};
-  }
-  function getContent(content,start,end) {
-      lastIndex = end ;
-      if (lastIndex===-1) {
-        lastIndex = content.length
-      }
-      if (start === -1) {
-          return "";
-      }
-      return content.substring(start,lastIndex).trim();
-  }
-  function getField(field) {
-      mail = parseBody();
-      dataBounderies = headerIndex(mail.header,field);
-      return getContent(mail.content,dataBounderies.start,dataBounderies.end);
-  }
-  var type = getField('sourcetype');
-  var details = getField('_raw');
-  var severity = getField('level');
-  var systems = getField('host');
-  var incName = subject;
-  var res = setPlaybookAccordingToType(type);
-  res = res.concat(setIncident({
-      type: type,
-      details: details,
-      severity: severity,
-      name: incName,
-      systems: systems
-  }));
-  return res;
-type: javascript
-tags:
-- splunk
-- ingestion
-comment: "Classify an incident created from an email originating from Splunk.\nThe
-  mail type should be in plain text, and inline: table should be selected.\nParsing
-  is done in the following manner -\ntype is the header sourcetype, severity is the
-  mail importance level, \nthe incident name is the mail subject and the systems are
-  taken from host."
-system: true
-deprecated: true
-args:
-- name: body
-  description: Contents (body) of the email
-- name: subject
-  description: Subject of the email
-scripttarget: 0
 dependson:
   must:
   - splunk|||search
+deprecated: true
+name: SplunkEmailParser
+script: "var body = args.body ? args.body : incidents[0].details;\nvar subject = args.subject\
+  \ ? args.subject : incidents[0].name;\nfunction parseBody() {\n    var lines = body.split(/\\\
+  r*\\n/);\n    var header=\"\";\n    var content = \"\";\n    for (var i =0;  i <\
+  \ lines.length; i++) {\n      var line = lines[i];\n      if (line.toLowerCase().indexOf(\"\
+  view results\") >=0&& lines.length > i+3) {\n        header = lines[i+1];\n    \
+  \    content = lines[i+3];\n        break;\n      }\n    }\n    return {header:\
+  \ header,content: content};\n}\nfunction headerIndex(header, column) {\n    lowerHeader\
+  \ = header.toLowerCase();\n    lowerColumn = column.toLowerCase();\n    columns\
+  \ = lowerHeader.split(/\\s+/);\n    for (var i = 0; i < columns.length; i++){\n\
+  \      if (columns[i]===lowerColumn) {\n        var start = lowerHeader.indexOf(lowerColumn);\n\
+  \        var end = -1;\n        if (columns.length > i+1 && columns[i + 1]!==\"\"\
+  ) {\n           end = lowerHeader.indexOf(columns[i + 1], start);\n        }\n \
+  \       return {start:start,end:end};\n      }\n    }\n    return {start:-1,end:-1};\n\
+  }\nfunction getContent(content,start,end) {\n    lastIndex = end ;\n    if (lastIndex===-1)\
+  \ {\n      lastIndex = content.length\n    }\n    if (start === -1) {\n        return\
+  \ \"\";\n    }\n    return content.substring(start,lastIndex).trim();\n}\nfunction\
+  \ getField(field) {\n    mail = parseBody();\n    dataBounderies = headerIndex(mail.header,field);\n\
+  \    return getContent(mail.content,dataBounderies.start,dataBounderies.end);\n\
+  }\nvar type = getField('sourcetype');\nvar details = getField('_raw');\nvar severity\
+  \ = getField('level');\nvar systems = getField('host');\nvar incName = subject;\n\
+  var res = setPlaybookAccordingToType(type);\nres = res.concat(setIncident({\n  \
+  \  type: type,\n    details: details,\n    severity: severity,\n    name: incName,\n\
+  \    systems: systems\n}));\nreturn res;"
+scripttarget: 0
+system: true
+tags:
+- splunk
+- ingestion
 timeout: 0s
+toversion: 4.1.9
+type: javascript

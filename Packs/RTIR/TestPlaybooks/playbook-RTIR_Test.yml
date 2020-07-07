@@ -1,46 +1,31 @@
 id: RTIR Test
-version: -1
+inputs: []
 name: RTIR Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 5f33a0cd-c49f-4e1e-87c4-9581dc74ed55
+      iscommand: false
+      name: ''
+      version: -1
     taskid: 5f33a0cd-c49f-4e1e-87c4-9581dc74ed55
     type: start
-    task:
-      id: 5f33a0cd-c49f-4e1e-87c4-9581dc74ed55
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "9"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
+      - '2'
     note: false
-  "1":
-    id: "1"
-    taskid: fafe85e7-5bff-403f-8226-6d169a73003a
-    type: regular
-    task:
-      id: fafe85e7-5bff-403f-8226-6d169a73003a
-      version: -1
-      name: rtir-create-ticket
-      description: Create new ticket on RTIR
-      script: RTIR|||rtir-create-ticket
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
     scriptarguments:
       admin-cc: {}
       attachment: {}
@@ -50,7 +35,7 @@ tasks:
       initial-priority: {}
       owner: {}
       priority:
-        simple: "50"
+        simple: '50'
       queue:
         simple: General
       requestor: {}
@@ -59,30 +44,24 @@ tasks:
         simple: TestTicket
       text: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-  "2":
-    id: "2"
-    taskid: a573cba9-afdd-4329-8848-138df4545077
-    type: regular
     task:
-      id: a573cba9-afdd-4329-8848-138df4545077
-      version: -1
-      name: rtir-edit-ticket
-      description: Modify a ticket on RTIR
-      script: RTIR|||rtir-edit-ticket
-      type: regular
+      brand: ''
+      description: Create new ticket on RTIR
+      id: fafe85e7-5bff-403f-8226-6d169a73003a
       iscommand: true
-      brand: RTIR
+      name: rtir-create-ticket
+      script: RTIR|||rtir-create-ticket
+      type: regular
+      version: -1
+    taskid: fafe85e7-5bff-403f-8226-6d169a73003a
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '2':
+    id: '2'
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
+    note: false
     scriptarguments:
       customfields: {}
       due: {}
@@ -94,68 +73,56 @@ tasks:
         simple: EditedNewTicket
       ticket-id:
         complex:
-          root: RTIR
           accessor: Ticket.ID
+          root: RTIR
           transformers:
-          - operator: atIndex
-            args:
+          - args:
               index:
                 value:
-                  simple: "0"
+                  simple: '0'
+            operator: atIndex
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -70,
-          "y": 380
-        }
-      }
-    note: false
-  "4":
-    id: "4"
-    taskid: 142397f9-a238-44f9-842d-876c22f56f3b
-    type: regular
     task:
-      id: 142397f9-a238-44f9-842d-876c22f56f3b
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
+      brand: RTIR
+      description: Modify a ticket on RTIR
+      id: a573cba9-afdd-4329-8848-138df4545077
+      iscommand: true
+      name: rtir-edit-ticket
+      script: RTIR|||rtir-edit-ticket
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: a573cba9-afdd-4329-8848-138df4545077
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -70,\n    \"y\": 380\n  }\n}"
+  '4':
+    id: '4'
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       key: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 565
-        }
-      }
-    note: false
-  "5":
-    id: "5"
-    taskid: d19ee0d2-2015-4c76-854b-be9fce0a266f
-    type: regular
     task:
-      id: d19ee0d2-2015-4c76-854b-be9fce0a266f
-      version: -1
-      name: rtir-search-ticket
-      description: Search for tickets on RTIR
-      script: RTIR|||rtir-search-ticket
+      brand: ''
+      description: Delete field from context
+      id: 142397f9-a238-44f9-842d-876c22f56f3b
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: 142397f9-a238-44f9-842d-876c22f56f3b
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 565\n  }\n}"
+  '5':
+    id: '5'
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
+    note: false
     scriptarguments:
       created-after: {}
       created-before: {}
@@ -173,130 +140,101 @@ tasks:
         simple: EditedNewTicket
       ticket-id: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-  "6":
-    id: "6"
-    taskid: 7542bf26-9628-4b18-8edd-5f8dae2cbe5a
-    type: regular
     task:
-      id: 7542bf26-9628-4b18-8edd-5f8dae2cbe5a
+      brand: ''
+      description: Search for tickets on RTIR
+      id: d19ee0d2-2015-4c76-854b-be9fce0a266f
+      iscommand: true
+      name: rtir-search-ticket
+      script: RTIR|||rtir-search-ticket
+      type: regular
       version: -1
-      name: rtir-get-ticket
+    taskid: d19ee0d2-2015-4c76-854b-be9fce0a266f
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '6':
+    id: '6'
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    scriptarguments:
+      ticket-id:
+        simple: ${RTIR.Ticket.ID}
+    separatecontext: false
+    task:
+      brand: RTIR
       description: Gets the data for a single ticket.
+      id: 7542bf26-9628-4b18-8edd-5f8dae2cbe5a
+      iscommand: true
+      name: rtir-get-ticket
       script: RTIR|||rtir-get-ticket
       type: regular
-      iscommand: true
-      brand: RTIR
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      ticket-id:
-        simple: ${RTIR.Ticket.ID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-  "7":
-    id: "7"
-    taskid: 1a81fe2d-dfab-4829-8ed3-5cf1f501ad8c
-    type: title
-    task:
-      id: 1a81fe2d-dfab-4829-8ed3-5cf1f501ad8c
       version: -1
+    taskid: 7542bf26-9628-4b18-8edd-5f8dae2cbe5a
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+  '7':
+    id: '7'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 1a81fe2d-dfab-4829-8ed3-5cf1f501ad8c
+      iscommand: false
       name: Success!
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-  "8":
-    id: "8"
-    taskid: 438b7356-8916-476b-8fba-c95a4a88eb7e
-    type: regular
-    task:
-      id: 438b7356-8916-476b-8fba-c95a4a88eb7e
       version: -1
-      name: rtir-resolve-ticket
-      description: Sets a ticket as resolved on RTIR
-      script: RTIR|||rtir-resolve-ticket
-      type: regular
-      iscommand: true
-      brand: RTIR
+    taskid: 1a81fe2d-dfab-4829-8ed3-5cf1f501ad8c
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+  '8':
+    id: '8'
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
+    note: false
     scriptarguments:
       ticket-id:
         simple: ${RTIR.Ticket.ID}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-  "9":
-    id: "9"
-    taskid: 5e1ff805-cf96-4dd9-8be2-992a345a5210
-    type: regular
     task:
-      id: 5e1ff805-cf96-4dd9-8be2-992a345a5210
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
+      brand: RTIR
+      description: Sets a ticket as resolved on RTIR
+      id: 438b7356-8916-476b-8fba-c95a4a88eb7e
+      iscommand: true
+      name: rtir-resolve-ticket
+      script: RTIR|||rtir-resolve-ticket
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 438b7356-8916-476b-8fba-c95a4a88eb7e
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+  '9':
+    id: '9'
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       key: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -440,
-          "y": 195
-        }
-      }
-    note: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1260,
-        "width": 870,
-        "x": -440,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    task:
+      brand: ''
+      description: Delete field from context
+      id: 5e1ff805-cf96-4dd9-8be2-992a345a5210
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 5e1ff805-cf96-4dd9-8be2-992a345a5210
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -440,\n    \"y\": 195\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1260,\n      \"width\": 870,\n      \"x\": -440,\n      \"y\"\
+  : 50\n    }\n  }\n}"

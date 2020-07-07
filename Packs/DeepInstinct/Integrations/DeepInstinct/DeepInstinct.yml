@@ -1,41 +1,42 @@
+category: Network Security
 commonfields:
   id: Deep Instinct
   version: -1
-name: Deep Instinct
-display: Deep Instinct
-category: Network Security
-description: Deep Instinct
 configuration:
-- display: Base server URL
+- defaultvalue: https://my-deep-instinct-path.deepinstinctweb.com
+  display: Base server URL
   name: base_url
-  defaultvalue: "https://my-deep-instinct-path.deepinstinctweb.com"
+  required: true
   type: 0
-  required: true
-- display: API Key
+- defaultvalue: ''
+  display: API Key
   name: apikey
-  defaultvalue: ""
-  type: 4
   required: true
+  type: 4
 - display: Fetch incidents
   name: isFetch
-  type: 8
   required: false
+  type: 8
 - display: Incident type
   name: incidentType
+  required: false
   type: 13
-  required: false
-- display: first event ID to fetch from
+- defaultvalue: '0'
+  display: first event ID to fetch from
   name: first_fetch_id
-  defaultvalue: "0"
-  type: 0
   required: false
+  type: 0
+description: Deep Instinct
+display: Deep Instinct
+name: Deep Instinct
 script:
   commands:
-  - name: deepinstinct-get-device
-    arguments:
-    - name: device_id
+  - arguments:
+    - description: The device ID
+      name: device_id
       required: true
-      description: The device ID
+    description: get specific device by ID
+    name: deepinstinct-get-device
     outputs:
     - contextPath: DeepInstinct.devices.ID
       description: Device ID
@@ -112,12 +113,13 @@ script:
     - contextPath: DeepInstinct.devices.tenant_id
       description: Device tenant ID
       type: number
-    description: get specific device by ID
-  - name: deepinstinct-get-events
-    arguments:
-    - name: first_event_id
+  - arguments:
+    - defaultValue: '0'
       description: First event id to get as max events in response can be 50
-      defaultValue: "0"
+      name: first_event_id
+    description: Get all events. Max events in response can be 50, use first_event_id
+      parameter to define first event id to get
+    name: deepinstinct-get-events
     outputs:
     - contextPath: DeepInstinct.Events.events.ID
       description: event ID
@@ -178,10 +180,9 @@ script:
     - contextPath: DeepInstinct.Events.events.reoccurrence_count
       description: event reoccurrence_count
       type: number
-    description: Get all events. Max events in response can be 50, use first_event_id
-      parameter to define first event id to get
-  - name: deepinstinct-get-all-groups
-    arguments: []
+  - arguments: []
+    description: get all groups
+    name: deepinstinct-get-all-groups
     outputs:
     - contextPath: DeepInstinct.Groups.ID
       description: group id
@@ -204,9 +205,9 @@ script:
     - contextPath: DeepInstinct.Groups.msp_id
       description: msp ID
       type: number
-    description: get all groups
-  - name: deepinstinct-get-all-policies
-    arguments: []
+  - arguments: []
+    description: get all policies
+    name: deepinstinct-get-all-policies
     outputs:
     - contextPath: DeepInstinct.Policies.ID
       description: policy ID
@@ -226,93 +227,93 @@ script:
     - contextPath: DeepInstinct.Policies.msp_name
       description: msp name
       type: string
-    description: get all policies
-  - name: deepinstinct-add-hash-to-blacklist
-    arguments:
-    - name: policy_id
+  - arguments:
+    - description: policy ID
+      name: policy_id
       required: true
-      description: policy ID
-    - name: file_hash
+    - description: file hash
+      name: file_hash
       required: true
-      description: file hash
-    - name: comment
+    - defaultValue: ''
       description: Optional, add comment to hash field
-      defaultValue: ''
+      name: comment
     description: add file hash to blacklist
-  - name: deepinstinct-add-hash-to-whitelist
-    arguments:
-    - name: policy_id
+    name: deepinstinct-add-hash-to-blacklist
+  - arguments:
+    - description: policy ID
+      name: policy_id
       required: true
-      description: policy ID
-    - name: file_hash
+    - description: file hash
+      name: file_hash
       required: true
-      description: file hash
-    - name: comment
+    - defaultValue: ''
       description: Optional, add comment to hash field
-      defaultValue: ''
+      name: comment
     description: add file hash to whitelist
-  - name: deepinstinct-remove-hash-from-blacklist
-    arguments:
-      - name: policy_id
-        required: true
-        description: policy ID
-      - name: file_hash
-        required: true
-        description: file hash
+    name: deepinstinct-add-hash-to-whitelist
+  - arguments:
+    - description: policy ID
+      name: policy_id
+      required: true
+    - description: file hash
+      name: file_hash
+      required: true
     description: remove file hash from blacklist
-  - name: deepinstinct-remove-hash-from-whitelist
-    arguments:
-      - name: policy_id
-        required: true
-        description: policy ID
-      - name: file_hash
-        required: true
-        description: file hash
+    name: deepinstinct-remove-hash-from-blacklist
+  - arguments:
+    - description: policy ID
+      name: policy_id
+      required: true
+    - description: file hash
+      name: file_hash
+      required: true
     description: remove file hash from whitelist
-  - name: deepinstinct-add-devices-to-group
-    arguments:
-    - name: group_id
+    name: deepinstinct-remove-hash-from-whitelist
+  - arguments:
+    - description: group ID
+      name: group_id
       required: true
-      description: group ID
-    - name: device_ids
-      required: true
-      description: comma separated devices ids
+    - description: comma separated devices ids
       isArray: true
+      name: device_ids
+      required: true
     description: add multiple devices to group
-  - name: deepinstinct-remove-devices-from-group
-    arguments:
-    - name: group_id
+    name: deepinstinct-add-devices-to-group
+  - arguments:
+    - description: group ID to remove from
+      name: group_id
       required: true
-      description: group ID to remove from
-    - name: device_ids
-      required: true
-      description: comma separeted list of device ids to remove
+    - description: comma separeted list of device ids to remove
       isArray: true
+      name: device_ids
+      required: true
     description: remove list of devices from group
-  - name: deepinstinct-delete-files-remotely
-    arguments:
-    - name: event_ids
-      required: true
-      description: comma separeted list of event ids
+    name: deepinstinct-remove-devices-from-group
+  - arguments:
+    - description: comma separeted list of event ids
       isArray: true
+      name: event_ids
+      required: true
     description: delete multiple files remotely
-  - name: deepinstinct-terminate-processes
-    arguments:
-    - name: event_ids
-      required: true
-      description: comma separeted list of event ids
+    name: deepinstinct-delete-files-remotely
+  - arguments:
+    - description: comma separeted list of event ids
       isArray: true
+      name: event_ids
+      required: true
     description: terminate list of processes
-  - name: deepinstinct-close-events
-    arguments:
-    - name: event_ids
-      required: true
-      description: comma separeted list of event ids
+    name: deepinstinct-terminate-processes
+  - arguments:
+    - description: comma separeted list of event ids
       isArray: true
+      name: event_ids
+      required: true
     description: close list of events
+    name: deepinstinct-close-events
   dockerimage: demisto/python3:3.7.4.2245
   isfetch: true
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
+toversion: 4.1.9

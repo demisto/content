@@ -1,177 +1,139 @@
-id: Incident Enrichment
-version: -1
-name: Incident Enrichment
-system: true
+description: Deprecated- We recommend using Default playbook instead. Enrich data
+  with reputation from the incident. Data is extracted to the standard locations like
+  File, URL, IP.
 fromversion: 2.5.0
-description: Deprecated- We recommend using Default playbook instead.
-  Enrich data with reputation from the incident. Data is extracted to the standard
-  locations like File, URL, IP.
-starttaskid: "0"
+id: Incident Enrichment
+inputs: []
+name: Incident Enrichment
+outputs: []
+starttaskid: '0'
+system: true
 tasks:
-  "0":
-    id: "0"
-    taskid: 37175990-2deb-4a44-8cdf-468f12cc97e3
-    type: start
-    task:
-      id: 37175990-2deb-4a44-8cdf-468f12cc97e3
-      version: -1
-      name: ""
-      description: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
-      - "2"
-      - "3"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 50
-        }
-      }
+      - '1'
+      - '2'
+      - '3'
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
-    taskid: 285982a4-a0f0-44b9-8730-79b07de3cb70
-    type: regular
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 285982a4-a0f0-44b9-8730-79b07de3cb70
+      brand: ''
+      description: ''
+      id: 37175990-2deb-4a44-8cdf-468f12cc97e3
+      iscommand: false
+      name: ''
       version: -1
-      description: ""
+    taskid: 37175990-2deb-4a44-8cdf-468f12cc97e3
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      text:
+        simple: ${incident}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 285982a4-a0f0-44b9-8730-79b07de3cb70
+      iscommand: false
       name: Collect hashes from the incident
       scriptName: ExtractHash
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 285982a4-a0f0-44b9-8730-79b07de3cb70
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 195\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
+    note: false
+    quietmode: 0
     scriptarguments:
       text:
         simple: ${incident}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "2":
-    id: "2"
-    taskid: de780391-3d5e-452d-8da0-53075cc3770d
-    type: regular
     task:
+      brand: ''
+      description: ''
       id: de780391-3d5e-452d-8da0-53075cc3770d
-      version: -1
-      description: ""
+      iscommand: false
       name: Collect IPs from the incident
       scriptName: ExtractIP
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: de780391-3d5e-452d-8da0-53075cc3770d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 195\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
+    note: false
+    quietmode: 0
     scriptarguments:
       text:
         simple: ${incident}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "3":
-    id: "3"
-    taskid: cccb4d19-7cc7-46ee-85bd-4283b03ba932
-    type: regular
     task:
+      brand: ''
+      description: ''
       id: cccb4d19-7cc7-46ee-85bd-4283b03ba932
-      version: -1
-      description: ""
+      iscommand: false
       name: Collect URLs from the incident
       scriptName: ExtractURL
       type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      text:
-        simple: ${incident}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "4":
-    id: "4"
-    taskid: cb6e468c-f551-41d4-82c5-25891ed171d7
-    type: playbook
-    task:
-      id: cb6e468c-f551-41d4-82c5-25891ed171d7
       version: -1
-      description: ""
-      name: ""
+    taskid: cccb4d19-7cc7-46ee-85bd-4283b03ba932
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: cb6e468c-f551-41d4-82c5-25891ed171d7
+      iscommand: false
+      name: ''
       playbookName: Enrichment Playbook
       type: playbook
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 370
-        }
-      }
-    note: false
+      version: -1
+    taskid: cb6e468c-f551-41d4-82c5-25891ed171d7
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 415,
-        "width": 1240,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 370\n  }\n}"
 tests:
-  - No tests - Deprecated
+- No tests - Deprecated
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 415,\n      \"width\": 1240,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

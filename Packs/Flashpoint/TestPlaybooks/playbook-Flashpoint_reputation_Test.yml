@@ -1,83 +1,415 @@
+description: ''
 id: Flashpoint_reputation-Test
-version: -1
+inputs: []
 name: Flashpoint_reputation-Test
-starttaskid: "0"
-description: ""
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 0793fe77-b1b5-49be-8c75-eb419ffb91ff
-    type: start
-    task:
-      id: 0793fe77-b1b5-49be-8c75-eb419ffb91ff
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: 7ba69077-0b11-4dbf-8d78-9a7b019fdbd2
-    type: regular
-    task:
-      id: 7ba69077-0b11-4dbf-8d78-9a7b019fdbd2
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 0793fe77-b1b5-49be-8c75-eb419ffb91ff
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 0793fe77-b1b5-49be-8c75-eb419ffb91ff
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 230
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 4093c341-f704-4cb8-8b4e-fab5abb9cd87
-    type: regular
     task:
-      id: 4093c341-f704-4cb8-8b4e-fab5abb9cd87
-      version: -1
-      name: ip
-      description: Lookup the "IP" type indicator details
-      script: Flashpoint|||ip
+      brand: ''
+      description: Delete field from context
+      id: 7ba69077-0b11-4dbf-8d78-9a7b019fdbd2
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: Flashpoint
+      version: -1
+    taskid: 7ba69077-0b11-4dbf-8d78-9a7b019fdbd2
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+  '10':
+    id: '10'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "3"
+      - '12'
+    note: false
+    scriptarguments:
+      filename:
+        simple: .locked
+    separatecontext: false
+    task:
+      brand: Flashpoint
+      description: Lookup the "Filename" type indicator details
+      id: bc05c292-e28e-4e4c-8276-155ac0e1a4ab
+      iscommand: true
+      name: filename
+      script: Flashpoint|||filename
+      type: regular
+      version: -1
+    taskid: bc05c292-e28e-4e4c-8276-155ac0e1a4ab
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1740\n  }\n}"
+  '11':
+    id: '11'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '10'
+    note: false
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: e1d54a02-cf15-4fef-8d64-5eae4d03d01f
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: e1d54a02-cf15-4fef-8d64-5eae4d03d01f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1585\n  }\n}"
+  '12':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Indicator}
+                root: ${DBotScore
+          operator: isEqualString
+          right:
+            value:
+              simple: .locked
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.Filename.Event.Fpid}
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.Filename.Event.Filename}
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.Filename.Event.Href}
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.Filename.Event.Timestamp}
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.Filename.Event.Type}
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.Filename.Event.Uuid}
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.Filename.Event.Category}
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.Filename.Event.Comment}
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.Filename.Event.EventDetails}
+          operator: isExists
+      label: 'yes'
+    id: '12'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '13'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 56dae1bc-f47f-4126-8ee7-c9704972a6b7
+      iscommand: false
+      name: Verify filename
+      type: condition
+      version: -1
+    taskid: 56dae1bc-f47f-4126-8ee7-c9704972a6b7
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1900\n  }\n}"
+  '13':
+    id: '13'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '15'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: e1f10627-2840-4a98-82f0-057006857a9a
+      iscommand: false
+      name: Process URL
+      type: title
+      version: -1
+    taskid: e1f10627-2840-4a98-82f0-057006857a9a
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2100\n  }\n}"
+  '14':
+    id: '14'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '16'
+    note: false
+    scriptarguments:
+      url:
+        simple: 92.63.197.153/krabaldento.exe
+    separatecontext: false
+    task:
+      brand: Flashpoint
+      description: Lookup the "URL" type indicator details
+      id: 3043311d-86a8-4900-8da2-80abe9e89bc9
+      iscommand: true
+      name: url
+      script: Flashpoint|||url
+      type: regular
+      version: -1
+    taskid: 3043311d-86a8-4900-8da2-80abe9e89bc9
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2380\n  }\n}"
+  '15':
+    id: '15'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '14'
+    note: false
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: adae56a5-7414-4ce1-8eae-1e8a7447febf
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: adae56a5-7414-4ce1-8eae-1e8a7447febf
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2225\n  }\n}"
+  '16':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Malicious.Vendor}
+                root: ${URL
+          operator: isEqualString
+          right:
+            value:
+              simple: Flashpoint
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.URL.Event.EventDetails}
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.URL.Event.Fpid}
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.URL.Event.Href}
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.URL.Event.Url}
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.URL.Event.Timestamp}
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.URL.Event.Type}
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.URL.Event.Uuid}
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.URL.Event.Category}
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.URL.Event.Comment}
+          operator: isExists
+      label: 'yes'
+    id: '16'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '17'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: ab238e45-5283-453c-804e-e2435e48c7e9
+      iscommand: false
+      name: Verify URL
+      type: condition
+      version: -1
+    taskid: ab238e45-5283-453c-804e-e2435e48c7e9
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2540\n  }\n}"
+  '17':
+    id: '17'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '18'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: a4cc2fed-c031-4528-8a2b-6c0abc33bff8
+      iscommand: false
+      name: Process File
+      type: title
+      version: -1
+    taskid: a4cc2fed-c031-4528-8a2b-6c0abc33bff8
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2720\n  }\n}"
+  '18':
+    id: '18'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '19'
+    note: false
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: 5aa1c22f-a653-42c8-8827-38e7ced75874
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 5aa1c22f-a653-42c8-8827-38e7ced75874
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2860\n  }\n}"
+  '19':
+    id: '19'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '20'
+    note: false
+    scriptarguments:
+      file:
+        simple: ab09761ad832efb9359fac985d1a2ab74f8a8d182d7b71188a121b850b80dfe5
+      long: {}
+      retries: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    task:
+      brand: Flashpoint
+      description: Lookup the "File" type indicator details
+      id: 7461fab6-636d-4bd6-890b-58305aa97934
+      iscommand: true
+      name: file
+      script: Flashpoint|||file
+      type: regular
+      version: -1
+    taskid: 7461fab6-636d-4bd6-890b-58305aa97934
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 3040\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
     scriptarguments:
       fullResponse: {}
       ip:
@@ -88,951 +420,233 @@ tasks:
       threshold: {}
       wait: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 410
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: 5ff17a16-4a2c-4c6a-8498-bddbc1919092
-    type: condition
     task:
-      id: 5ff17a16-4a2c-4c6a-8498-bddbc1919092
-      version: -1
-      name: verify result
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "5"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: ${Flashpoint
-                accessor: IP.Event.Address}
-            iscontext: true
-          right:
-            value:
-              simple: 210.122.7.129
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.IP.Event.Type}
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.IP.Event.Href}
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.IP.Event.Fpid}
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.IP.Event.Category}
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.IP.Event.Uuid}
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.IP.Event.Comment}
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.IP.Event.EventDetails}
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 600
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: a589f8d1-e639-4009-8192-b2577b902c54
-    type: title
-    task:
-      id: a589f8d1-e639-4009-8192-b2577b902c54
-      version: -1
-      name: Process Domain
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 830
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: bd1c3b33-0bac-4851-8b12-4c6633b05dce
-    type: regular
-    task:
-      id: bd1c3b33-0bac-4851-8b12-4c6633b05dce
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 970
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "7":
-    id: "7"
-    taskid: cbf87b86-1976-4ccd-8c20-8847111985ba
-    type: regular
-    task:
-      id: cbf87b86-1976-4ccd-8c20-8847111985ba
-      version: -1
-      name: domain
-      description: Lookup the "Domain" type indicator details
-      script: Flashpoint|||domain
-      type: regular
-      iscommand: true
       brand: Flashpoint
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      domain:
-        simple: subaat.com
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1120
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "8":
-    id: "8"
-    taskid: 26332a43-9489-458e-82c8-69fbf5886183
-    type: condition
-    task:
-      id: 26332a43-9489-458e-82c8-69fbf5886183
-      version: -1
-      name: Verify Domain
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "9"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: ${Domain
-                accessor: Name}
-            iscontext: true
-          right:
-            value:
-              simple: subaat.com
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.Domain.Event.Domain}
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.Domain.Event.Fpid}
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.Domain.Event.Href}
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.Domain.Event.Timestamp}
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.Domain.Event.Type}
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.Domain.Event.Uuid}
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.Domain.Event.Category}
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.Domain.Event.Comment}
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.Domain.Event.EventDetails}
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1280
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "9":
-    id: "9"
-    taskid: ddbf4963-f6ef-4705-8dfb-899e99792420
-    type: title
-    task:
-      id: ddbf4963-f6ef-4705-8dfb-899e99792420
-      version: -1
-      name: Process File Name
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1460
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "10":
-    id: "10"
-    taskid: bc05c292-e28e-4e4c-8276-155ac0e1a4ab
-    type: regular
-    task:
-      id: bc05c292-e28e-4e4c-8276-155ac0e1a4ab
-      version: -1
-      name: filename
-      description: Lookup the "Filename" type indicator details
-      script: Flashpoint|||filename
-      type: regular
+      description: Lookup the "IP" type indicator details
+      id: 4093c341-f704-4cb8-8b4e-fab5abb9cd87
       iscommand: true
-      brand: Flashpoint
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      filename:
-        simple: .locked
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1740
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "11":
-    id: "11"
-    taskid: e1d54a02-cf15-4fef-8d64-5eae4d03d01f
-    type: regular
-    task:
-      id: e1d54a02-cf15-4fef-8d64-5eae4d03d01f
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
+      name: ip
+      script: Flashpoint|||ip
       type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1585
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "12":
-    id: "12"
-    taskid: 56dae1bc-f47f-4126-8ee7-c9704972a6b7
-    type: condition
-    task:
-      id: 56dae1bc-f47f-4126-8ee7-c9704972a6b7
       version: -1
-      name: Verify filename
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "13"
-    separatecontext: false
+    taskid: 4093c341-f704-4cb8-8b4e-fab5abb9cd87
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 410\n  }\n}"
+  '20':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: ${DBotScore
-                accessor: Indicator}
-            iscontext: true
-          right:
-            value:
-              simple: .locked
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.Filename.Event.Fpid}
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.Filename.Event.Filename}
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.Filename.Event.Href}
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.Filename.Event.Timestamp}
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.Filename.Event.Type}
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.Filename.Event.Uuid}
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.Filename.Event.Category}
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.Filename.Event.Comment}
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.Filename.Event.EventDetails}
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1900
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "13":
-    id: "13"
-    taskid: e1f10627-2840-4a98-82f0-057006857a9a
-    type: title
-    task:
-      id: e1f10627-2840-4a98-82f0-057006857a9a
-      version: -1
-      name: Process URL
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2100
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "14":
-    id: "14"
-    taskid: 3043311d-86a8-4900-8da2-80abe9e89bc9
-    type: regular
-    task:
-      id: 3043311d-86a8-4900-8da2-80abe9e89bc9
-      version: -1
-      name: url
-      description: Lookup the "URL" type indicator details
-      script: Flashpoint|||url
-      type: regular
-      iscommand: true
-      brand: Flashpoint
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      url:
-        simple: 92.63.197.153/krabaldento.exe
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2380
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "15":
-    id: "15"
-    taskid: adae56a5-7414-4ce1-8eae-1e8a7447febf
-    type: regular
-    task:
-      id: adae56a5-7414-4ce1-8eae-1e8a7447febf
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2225
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "16":
-    id: "16"
-    taskid: ab238e45-5283-453c-804e-e2435e48c7e9
-    type: condition
-    task:
-      id: ab238e45-5283-453c-804e-e2435e48c7e9
-      version: -1
-      name: Verify URL
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "17"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: ${URL
                 accessor: Malicious.Vendor}
-            iscontext: true
-          right:
-            value:
-              simple: Flashpoint
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.URL.Event.EventDetails}
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.URL.Event.Fpid}
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.URL.Event.Href}
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.URL.Event.Url}
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.URL.Event.Timestamp}
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.URL.Event.Type}
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.URL.Event.Uuid}
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.URL.Event.Category}
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Flashpoint.URL.Event.Comment}
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2540
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "17":
-    id: "17"
-    taskid: a4cc2fed-c031-4528-8a2b-6c0abc33bff8
-    type: title
-    task:
-      id: a4cc2fed-c031-4528-8a2b-6c0abc33bff8
-      version: -1
-      name: Process File
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "18":
-    id: "18"
-    taskid: 5aa1c22f-a653-42c8-8827-38e7ced75874
-    type: regular
-    task:
-      id: 5aa1c22f-a653-42c8-8827-38e7ced75874
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2860
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "19":
-    id: "19"
-    taskid: 7461fab6-636d-4bd6-890b-58305aa97934
-    type: regular
-    task:
-      id: 7461fab6-636d-4bd6-890b-58305aa97934
-      version: -1
-      name: file
-      description: Lookup the "File" type indicator details
-      script: Flashpoint|||file
-      type: regular
-      iscommand: true
-      brand: Flashpoint
-    nexttasks:
-      '#none#':
-      - "20"
-    scriptarguments:
-      file:
-        simple: ab09761ad832efb9359fac985d1a2ab74f8a8d182d7b71188a121b850b80dfe5
-      long: {}
-      retries: {}
-      threshold: {}
-      wait: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 3040
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "20":
-    id: "20"
-    taskid: 148b9970-5b00-44c3-8254-c47f4eecaab5
-    type: condition
-    task:
-      id: 148b9970-5b00-44c3-8254-c47f4eecaab5
-      version: -1
-      name: Verify File
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "21"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
                 root: ${File
-                accessor: Malicious.Vendor}
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: Flashpoint
-      - - operator: isExists
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: ${Flashpoint.File.Event.Type}
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: ${Flashpoint.File.Event.Href}
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: ${Flashpoint.File.Event.Fpid}
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: ${Flashpoint.File.Event.Category}
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: ${Flashpoint.File.Event.Uuid}
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: ${Flashpoint.File.Event.Comment}
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: ${Flashpoint.File.Event.EventDetails}
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 3220
-        }
-      }
-    note: false
-    timertriggers: []
+          operator: isExists
+      label: 'yes'
+    id: '20'
     ignoreworker: false
-  "21":
-    id: "21"
-    taskid: ffb72bb0-ddc8-495c-89d3-f0c5255f718f
-    type: title
+    nexttasks:
+      'yes':
+      - '21'
+    note: false
+    separatecontext: false
     task:
-      id: ffb72bb0-ddc8-495c-89d3-f0c5255f718f
+      brand: ''
+      id: 148b9970-5b00-44c3-8254-c47f4eecaab5
+      iscommand: false
+      name: Verify File
+      type: condition
       version: -1
+    taskid: 148b9970-5b00-44c3-8254-c47f4eecaab5
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 3220\n  }\n}"
+  '21':
+    id: '21'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '22'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: ffb72bb0-ddc8-495c-89d3-f0c5255f718f
+      iscommand: false
       name: Process Email
       type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "22"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 3420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "22":
-    id: "22"
-    taskid: 19a84c87-3c7b-414d-84f2-462c35f23010
-    type: regular
-    task:
-      id: 19a84c87-3c7b-414d-84f2-462c35f23010
       version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: ffb72bb0-ddc8-495c-89d3-f0c5255f718f
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 3420\n  }\n}"
+  '22':
+    id: '22'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "23"
+      - '23'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 3560
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "23":
-    id: "23"
-    taskid: fd252aad-7a41-45d5-8561-821df7616d09
-    type: regular
     task:
-      id: fd252aad-7a41-45d5-8561-821df7616d09
-      version: -1
-      name: email
-      description: Lookup the "Email" type indicator details
-      script: Flashpoint|||email
+      brand: ''
+      description: Delete field from context
+      id: 19a84c87-3c7b-414d-84f2-462c35f23010
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: Flashpoint
+      version: -1
+    taskid: 19a84c87-3c7b-414d-84f2-462c35f23010
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 3560\n  }\n}"
+  '23':
+    id: '23'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "24"
+      - '24'
+    note: false
     scriptarguments:
       email:
         simple: qicifomuejijika@o2.pl
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 3740
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "24":
-    id: "24"
-    taskid: 35ce5d31-721d-47ff-84a8-0ab0b88a3d55
-    type: condition
     task:
-      id: 35ce5d31-721d-47ff-84a8-0ab0b88a3d55
+      brand: Flashpoint
+      description: Lookup the "Email" type indicator details
+      id: fd252aad-7a41-45d5-8561-821df7616d09
+      iscommand: true
+      name: email
+      script: Flashpoint|||email
+      type: regular
       version: -1
-      name: Verify Email
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "26"
-    separatecontext: false
+    taskid: fd252aad-7a41-45d5-8561-821df7616d09
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 3740\n  }\n}"
+  '24':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: ${Account
                 accessor: Email.Name}
-            iscontext: true
+                root: ${Account
+          operator: isEqualString
           right:
             value:
               simple: qicifomuejijika@o2.pl
-      - - operator: isExists
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: ${Flashpoint.Email.Event.Category}
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: ${Flashpoint.Email.Event.Comment}
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: ${Flashpoint.Email.Event.EventDetails}
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: ${Flashpoint.Email.Event.Fpid}
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: ${Flashpoint.Email.Event.Href}
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: ${Flashpoint.Email.Event.Timestamp}
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: ${Flashpoint.Email.Event.Type}
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: ${Flashpoint.Email.Event.Uuid}
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 3900
-        }
-      }
-    note: false
-    timertriggers: []
+          operator: isExists
+      label: 'yes'
+    id: '24'
     ignoreworker: false
-  "25":
-    id: "25"
-    taskid: 181c3bb0-f5ed-4dd3-8ec6-ef0e40b923f1
-    type: regular
+    nexttasks:
+      'yes':
+      - '26'
+    note: false
+    separatecontext: false
     task:
-      id: 181c3bb0-f5ed-4dd3-8ec6-ef0e40b923f1
+      brand: ''
+      id: 35ce5d31-721d-47ff-84a8-0ab0b88a3d55
+      iscommand: false
+      name: Verify Email
+      type: condition
       version: -1
-      name: closeInvestigation
-      description: Close the current incident
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
-      brand: Builtin
+    taskid: 35ce5d31-721d-47ff-84a8-0ab0b88a3d55
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 3900\n  }\n}"
+  '25':
+    id: '25'
+    ignoreworker: false
+    note: false
     scriptarguments:
       assetid: {}
       closeNotes: {}
@@ -1042,164 +656,368 @@ tasks:
         simple: ${incident.id}
       phishingsubtype: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 600,
-          "y": 4740
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "26":
-    id: "26"
-    taskid: e787f38a-830e-4e63-8431-34bcfc899b49
-    type: title
     task:
-      id: e787f38a-830e-4e63-8431-34bcfc899b49
+      brand: Builtin
+      description: Close the current incident
+      id: 181c3bb0-f5ed-4dd3-8ec6-ef0e40b923f1
+      iscommand: true
+      name: closeInvestigation
+      script: Builtin|||closeInvestigation
+      type: regular
       version: -1
+    taskid: 181c3bb0-f5ed-4dd3-8ec6-ef0e40b923f1
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 600,\n    \"y\": 4740\n  }\n}"
+  '26':
+    id: '26'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '27'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: e787f38a-830e-4e63-8431-34bcfc899b49
+      iscommand: false
       name: Process common lookup
       type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "27"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 4080
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "27":
-    id: "27"
-    taskid: d5417678-190f-4cd6-8308-2c6656cac8ba
-    type: regular
-    task:
-      id: d5417678-190f-4cd6-8308-2c6656cac8ba
       version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: e787f38a-830e-4e63-8431-34bcfc899b49
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 4080\n  }\n}"
+  '27':
+    id: '27'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "28"
+      - '28'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 540,
-          "y": 4220
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "28":
-    id: "28"
-    taskid: 64d23d6b-2224-4a73-8f49-181c12d336cf
-    type: regular
     task:
-      id: 64d23d6b-2224-4a73-8f49-181c12d336cf
-      version: -1
-      name: flashpoint-common-lookup
-      description: Lookup any type of indicator
-      script: Flashpoint|||flashpoint-common-lookup
+      brand: ''
+      description: Delete field from context
+      id: d5417678-190f-4cd6-8308-2c6656cac8ba
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: Flashpoint
+      version: -1
+    taskid: d5417678-190f-4cd6-8308-2c6656cac8ba
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 540,\n    \"y\": 4220\n  }\n}"
+  '28':
+    id: '28'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "29"
+      - '29'
+    note: false
     scriptarguments:
       indicator:
         simple: mondns.myftp.biz
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 540,
-          "y": 4400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "29":
-    id: "29"
-    taskid: 38188d8d-2e7d-445e-8637-df790e8e7494
-    type: condition
     task:
-      id: 38188d8d-2e7d-445e-8637-df790e8e7494
+      brand: Flashpoint
+      description: Lookup any type of indicator
+      id: 64d23d6b-2224-4a73-8f49-181c12d336cf
+      iscommand: true
+      name: flashpoint-common-lookup
+      script: Flashpoint|||flashpoint-common-lookup
+      type: regular
       version: -1
-      name: Verify Common lookup
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "25"
-    separatecontext: false
+    taskid: 64d23d6b-2224-4a73-8f49-181c12d336cf
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 540,\n    \"y\": 4400\n  }\n}"
+  '29':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: ${DBotScore
                 accessor: Type}
-            iscontext: true
+                root: ${DBotScore
+          operator: isEqualString
           right:
             value:
               simple: domain
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: ${DBotScore
                 accessor: Indicator}
-            iscontext: true
+                root: ${DBotScore
+          operator: isEqualString
           right:
             value:
               simple: mondns.myftp.biz
-    view: |-
-      {
-        "position": {
-          "x": 550,
-          "y": 4560
-        }
-      }
-    note: false
-    timertriggers: []
+      label: 'yes'
+    id: '29'
     ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 4785,
-        "width": 530,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    nexttasks:
+      'yes':
+      - '25'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 38188d8d-2e7d-445e-8637-df790e8e7494
+      iscommand: false
+      name: Verify Common lookup
+      type: condition
+      version: -1
+    taskid: 38188d8d-2e7d-445e-8637-df790e8e7494
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 550,\n    \"y\": 4560\n  }\n}"
+  '3':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: IP.Event.Address}
+                root: ${Flashpoint
+          operator: isEqualString
+          right:
+            value:
+              simple: 210.122.7.129
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.IP.Event.Type}
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.IP.Event.Href}
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.IP.Event.Fpid}
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.IP.Event.Category}
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.IP.Event.Uuid}
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.IP.Event.Comment}
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.IP.Event.EventDetails}
+          operator: isExists
+      label: 'yes'
+    id: '3'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '5'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 5ff17a16-4a2c-4c6a-8498-bddbc1919092
+      iscommand: false
+      name: verify result
+      type: condition
+      version: -1
+    taskid: 5ff17a16-4a2c-4c6a-8498-bddbc1919092
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 600\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: a589f8d1-e639-4009-8192-b2577b902c54
+      iscommand: false
+      name: Process Domain
+      type: title
+      version: -1
+    taskid: a589f8d1-e639-4009-8192-b2577b902c54
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 830\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: bd1c3b33-0bac-4851-8b12-4c6633b05dce
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: bd1c3b33-0bac-4851-8b12-4c6633b05dce
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 970\n  }\n}"
+  '7':
+    id: '7'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    scriptarguments:
+      domain:
+        simple: subaat.com
+    separatecontext: false
+    task:
+      brand: Flashpoint
+      description: Lookup the "Domain" type indicator details
+      id: cbf87b86-1976-4ccd-8c20-8847111985ba
+      iscommand: true
+      name: domain
+      script: Flashpoint|||domain
+      type: regular
+      version: -1
+    taskid: cbf87b86-1976-4ccd-8c20-8847111985ba
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1120\n  }\n}"
+  '8':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Name}
+                root: ${Domain
+          operator: isEqualString
+          right:
+            value:
+              simple: subaat.com
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.Domain.Event.Domain}
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.Domain.Event.Fpid}
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.Domain.Event.Href}
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.Domain.Event.Timestamp}
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.Domain.Event.Type}
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.Domain.Event.Uuid}
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.Domain.Event.Category}
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.Domain.Event.Comment}
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Flashpoint.Domain.Event.EventDetails}
+          operator: isExists
+      label: 'yes'
+    id: '8'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '9'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 26332a43-9489-458e-82c8-69fbf5886183
+      iscommand: false
+      name: Verify Domain
+      type: condition
+      version: -1
+    taskid: 26332a43-9489-458e-82c8-69fbf5886183
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1280\n  }\n}"
+  '9':
+    id: '9'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '11'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: ddbf4963-f6ef-4705-8dfb-899e99792420
+      iscommand: false
+      name: Process File Name
+      type: title
+      version: -1
+    taskid: ddbf4963-f6ef-4705-8dfb-899e99792420
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1460\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 4785,\n      \"width\": 530,\n      \"x\": 450,\n      \"y\":\
+  \ 50\n    }\n  }\n}"

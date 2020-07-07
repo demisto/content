@@ -54,6 +54,7 @@ configuration:
 description: Request Tracker for Incident Response is a ticketing system which provides
   pre-configured queues and workflows designed for incident response teams.
 display: RTIR
+fromversion: 4.1.0
 name: RTIR
 script:
   commands:
@@ -581,8 +582,8 @@ script:
   isfetch: true
   runonce: false
   script: '-'
-  type: python
   subtype: python2
+  type: python
 tests:
 - RTIR Test
-fromversion: 4.1.0
+toversion: 4.1.9

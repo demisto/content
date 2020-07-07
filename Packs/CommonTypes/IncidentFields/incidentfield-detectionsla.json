@@ -32,5 +32,6 @@
     "fieldCalcScript": "",
     "selectValues": [],
     "validationRegex": "",
-    "sla": 20
+    "sla": 20,
+    "toVersion": "4.1.9"
 }

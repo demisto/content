@@ -1,28 +1,30 @@
+args:
+- description: Pentera Full Action Report. Produced by the command 'pentera-get-task-run-full-action-report'
+  isArray: true
+  name: full_action_report
+  required: true
+- description: Name of the field to serialize details into
+  name: custom_fields_output
+- defaultValue: PenteraIncidents
+  description: Context key to be used for the output. If omitted is PenteraIncidents
+  name: context_key
+comment: Groups Pentera Full Actions Reports by Operation Type to generate an output
+  usable in creating incidents
 commonfields:
   id: PenteraOperationToIncident
   version: -1
-name: PenteraOperationToIncident
-script: ''
-type: python
-tags: []
+dockerimage: demisto/python3:3.8.2.6981
 enabled: true
-args:
-  - name: full_action_report
-    required: true
-    description: Pentera Full Action Report. Produced by the command 'pentera-get-task-run-full-action-report'
-    isArray: true
-  - name: custom_fields_output
-    description: Name of the field to serialize details into
-  - name: context_key
-    description: Context key to be used for the output. If omitted is PenteraIncidents
-    defaultValue: PenteraIncidents
+name: PenteraOperationToIncident
 outputs:
-  - contextPath: PenteraIncidents
-    description: Pentera list of incidents
-    type: unknown
+- contextPath: PenteraIncidents
+  description: Pentera list of incidents
+  type: unknown
+runas: DBotWeakRole
+runonce: false
+script: ''
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.8.2.6981
-runas: DBotWeakRole
-comment: Groups Pentera Full Actions Reports by Operation Type to generate an output usable in creating incidents
+tags: []
+toversion: 4.1.9
+type: python

@@ -1,241 +1,50 @@
-versionedfields: {}
+category: Endpoint
 commonfields:
   id: jamf
   version: -1
-name: jamf
-display: jamf
-category: Endpoint
-image: data:image/png;base64,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
-description: Jamf device management
 configuration:
-- display: Server URL (e.g. https://192.168.0.1)
+- defaultvalue: ''
+  display: Server URL (e.g. https://192.168.0.1)
   name: server
-  defaultvalue: ""
-  type: 0
   required: true
-- display: Username
+  type: 0
+- defaultvalue: ''
+  display: Username
   name: credentials
-  defaultvalue: ""
+  required: false
   type: 9
-  required: false
-- display: Trust any certificate (not secure)
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
-  type: 8
   required: false
-- display: Use system proxy settings
+  type: 8
+- defaultvalue: ''
+  display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
+description: Jamf device management
+display: jamf
+hidden: false
+image: data:image/png;base64,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
+name: jamf
 script:
-  script: |-
-    baseUrl = params.server.replace(/[\/]+$/, '') + '/JSSResource/';
-    commandDictionary = {
-        'jamf-get-computers': {
-            url: 'computers',
-            method: 'GET',
-            extended: true,
-            translator: [
-                {
-                    contextPath: 'Jamf.Computers(val.ID==obj.ID)',
-                    title: 'Jamf get computers result',
-                    innerPath: 'computers',
-                    data: [
-                        {to: 'ID', from: 'id'},
-                        {to: 'Name', from: 'name'},
-                    ]
-                }
-            ],
-        },
-        'jamf-get-computers-match': {
-            url: 'computers/match/%match%',
-            method: 'GET',
-            extended: true,
-            argsToURLEncode: ['match'],
-            translator: [
-                {
-                    contextPath: 'Jamf.Computers(val.ID==obj.ID)',
-                    title: 'Jamf get computer match result',
-                    innerPath: 'computers',
-                    data: [
-                        {to: 'ID', from: 'id'},
-                        {to: 'Name', from: 'name'},
-                        {to: 'AltMAC', from: 'alt_mac_address'},
-                        {to: 'MAC', from: 'mac_address'},
-                        {to: 'Serial', from: 'serial_number'},
-                        {to: 'UDID', from: 'udid'},
-                        {to: 'AssetTag', from: 'asset_tag'},
-                        {to: 'BarCode-1', from: 'bar_code_1'},
-                        {to: 'BarCode-2', from: 'bar_code_2'},
-                        {to: 'Building', from: 'building'},
-                        {to: 'BuildingName', from: 'building_name'},
-                        {to: 'Department', from: 'department'},
-                        {to: 'DepartmentName', from: 'department_name'},
-                        {to: 'Email', from: 'email'},
-                        {to: 'EmailAddress', from: 'email_address'},
-                        {to: 'Position', from: 'position'},
-                        {to: 'Username', from: 'username'},
-                        {to: 'Realname', from: 'realname'},
-                        {to: 'Room', from: 'room'},
-                    ]
-                }
-            ],
-        },
-        'test-module': {
-            url: 'computers',
-            method: 'GET',
-        },
-    };
-
-    function createContext(data, id) {
-        var createContextSingle = function(obj) {
-            var res = {};
-            var keys = Object.keys(obj);
-            keys.forEach(function(k) {
-                var values = k.split('-');
-                var current = res;
-                for (var j = 0; j<values.length - 1; j++) {
-                    if (!current[values[j]]) {
-                        current[values[j]] = {};
-                    }
-                    current = current[values[j]];
-                }
-                current[values[j]] = obj[k];
-            });
-            if (!res.ID && id) {
-                res.ID = id;
-            }
-            return res;
-        };
-        if (data instanceof Array) {
-            var res = [];
-            for (var j=0; j < data.length; j++) {
-                res.push(createContextSingle(data[j]));
-            }
-            return res;
-        }
-        return createContextSingle(data);
-    }
-
-    function mapObjFunction(mapFields, filter) {
-        var transformSingleObj= function(obj) {
-            var res = {};
-            mapFields.forEach(function(f) {
-                result = dq(obj, f.from);
-                if (result || result === false) {
-                    res[f.to] = result;
-                }
-            });
-            if (filter && !filter(res)) {
-                return undefined;
-            }
-            return res;
-        };
-        return function(obj) {
-            if (obj instanceof Array) {
-                var res = [];
-                for (var j=0; j < obj.length; j++) {
-                    var current = transformSingleObj(obj[j]);
-                    if (current) {
-                        res.push(current);
-                    }
-                }
-                return res;
-            }
-            return transformSingleObj(obj);
-        };
-    }
-
-
-    var sendRequest = function(url, method, args) {
-        var httpParams = {
-           Method: method,
-           Headers: {
-                'Content-Type': ['application/json'],
-                'Accept': ['application/json']
-           },
-           Username: params.credentials.identifier,
-           Password: params.credentials.password,
-           Body: method !== 'GET' ? JSON.stringify(args) : undefined
-        };
-        var res = http(
-                baseUrl + url + (method === 'GET' && method ? encodeToURLQuery(args) : ''),
-                httpParams,
-                params.insecure,
-                params.proxy
-            );
-
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Request ' + url + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
-        }
-        if (!res.Body) {
-            return 'Done';
-        }
-        try {
-            return JSON.parse(res.Body);
-        }
-        catch (ex) {
-            throw 'Failed to create JSON from response ' + res.Body + ', exception is ' + ex;
-        }
-    }
-
-    currentCommand = commandDictionary[command];
-    if (currentCommand.defaultArgs) {
-        keys = Object.keys(currentCommand.defaultArgs);
-        for (var k in keys) {
-            if (!args[keys[k]] && args[keys[k]] !== false) {
-                args[keys[k]] = currentCommand.defaultArgs[keys[k]];
-            }
-        }
-    }
-    if (currentCommand.argsToURLEncode) {
-        for (var k in currentCommand.argsToURLEncode) {
-            args[currentCommand.argsToURLEncode[k]] = encodeURIComponent(args[currentCommand.argsToURLEncode[k]]);
-        }
-    }
-    var result = sendRequest(replaceInTemplatesAndRemove(currentCommand.url, args), currentCommand.method, args);
-    if (command === 'test-module') {
-        return 'ok';
-    }
-    var entries = [];
-    if (currentCommand.extended) {
-        for (var j in currentCommand.translator) {
-            var current = currentCommand.translator[j];
-            var entry = {
-                Type: entryTypes.note,
-                Contents: result,
-                ContentsFormat: formats.json,
-            };
-            var currentContent = current.innerPath ? dq(result, current.innerPath) : result;
-            var translated = mapObjFunction(current.data) (current.countingDict ? toArray(currentContent) : currentContent);
-            entry.ReadableContentsFormat = formats.markdown;
-            entry.HumanReadable = tableToMarkdown(current.title,translated);
-            entry.EntryContext = {};
-            var context = createContext(translated);
-            entry.EntryContext[current.contextPath] = context;
-            entries.push(entry);
-        }
-    } else {
-        return result;
-    }
-    return entries;
-  type: javascript
   commands:
-  - name: jamf-get-computers
+  - arguments: []
     description: Get a list of managed computers
-    arguments: []
+    name: jamf-get-computers
     outputs:
     - contextPath: Jamf.Computers.ID
       description: Computer ID
     - contextPath: Jamf.Computers.Name
       description: Computer name
-  - name: jamf-get-computers-match
-    description: Get a list of managed computers that matches inputs query
-    arguments:
-    - name: match
+  - arguments:
+    - description: Match criteria. e.g. to retrieve all computers associated with
+        a user use $UserID
+      name: match
       required: true
-      description: Match criteria. e.g. to retrieve all computers associated with a user use $UserID
+    description: Get a list of managed computers that matches inputs query
+    name: jamf-get-computers-match
     outputs:
     - contextPath: Jamf.Computers.ID
       description: Computer ID
@@ -275,6 +84,87 @@ script:
       description: Computer real name
     - contextPath: Jamf.Computers.Room
       description: Computer room
-hidden: false
+  script: "baseUrl = params.server.replace(/[\\/]+$/, '') + '/JSSResource/';\ncommandDictionary\
+    \ = {\n    'jamf-get-computers': {\n        url: 'computers',\n        method:\
+    \ 'GET',\n        extended: true,\n        translator: [\n            {\n    \
+    \            contextPath: 'Jamf.Computers(val.ID==obj.ID)',\n                title:\
+    \ 'Jamf get computers result',\n                innerPath: 'computers',\n    \
+    \            data: [\n                    {to: 'ID', from: 'id'},\n          \
+    \          {to: 'Name', from: 'name'},\n                ]\n            }\n   \
+    \     ],\n    },\n    'jamf-get-computers-match': {\n        url: 'computers/match/%match%',\n\
+    \        method: 'GET',\n        extended: true,\n        argsToURLEncode: ['match'],\n\
+    \        translator: [\n            {\n                contextPath: 'Jamf.Computers(val.ID==obj.ID)',\n\
+    \                title: 'Jamf get computer match result',\n                innerPath:\
+    \ 'computers',\n                data: [\n                    {to: 'ID', from:\
+    \ 'id'},\n                    {to: 'Name', from: 'name'},\n                  \
+    \  {to: 'AltMAC', from: 'alt_mac_address'},\n                    {to: 'MAC', from:\
+    \ 'mac_address'},\n                    {to: 'Serial', from: 'serial_number'},\n\
+    \                    {to: 'UDID', from: 'udid'},\n                    {to: 'AssetTag',\
+    \ from: 'asset_tag'},\n                    {to: 'BarCode-1', from: 'bar_code_1'},\n\
+    \                    {to: 'BarCode-2', from: 'bar_code_2'},\n                \
+    \    {to: 'Building', from: 'building'},\n                    {to: 'BuildingName',\
+    \ from: 'building_name'},\n                    {to: 'Department', from: 'department'},\n\
+    \                    {to: 'DepartmentName', from: 'department_name'},\n      \
+    \              {to: 'Email', from: 'email'},\n                    {to: 'EmailAddress',\
+    \ from: 'email_address'},\n                    {to: 'Position', from: 'position'},\n\
+    \                    {to: 'Username', from: 'username'},\n                   \
+    \ {to: 'Realname', from: 'realname'},\n                    {to: 'Room', from:\
+    \ 'room'},\n                ]\n            }\n        ],\n    },\n    'test-module':\
+    \ {\n        url: 'computers',\n        method: 'GET',\n    },\n};\n\nfunction\
+    \ createContext(data, id) {\n    var createContextSingle = function(obj) {\n \
+    \       var res = {};\n        var keys = Object.keys(obj);\n        keys.forEach(function(k)\
+    \ {\n            var values = k.split('-');\n            var current = res;\n\
+    \            for (var j = 0; j<values.length - 1; j++) {\n                if (!current[values[j]])\
+    \ {\n                    current[values[j]] = {};\n                }\n       \
+    \         current = current[values[j]];\n            }\n            current[values[j]]\
+    \ = obj[k];\n        });\n        if (!res.ID && id) {\n            res.ID = id;\n\
+    \        }\n        return res;\n    };\n    if (data instanceof Array) {\n  \
+    \      var res = [];\n        for (var j=0; j < data.length; j++) {\n        \
+    \    res.push(createContextSingle(data[j]));\n        }\n        return res;\n\
+    \    }\n    return createContextSingle(data);\n}\n\nfunction mapObjFunction(mapFields,\
+    \ filter) {\n    var transformSingleObj= function(obj) {\n        var res = {};\n\
+    \        mapFields.forEach(function(f) {\n            result = dq(obj, f.from);\n\
+    \            if (result || result === false) {\n                res[f.to] = result;\n\
+    \            }\n        });\n        if (filter && !filter(res)) {\n         \
+    \   return undefined;\n        }\n        return res;\n    };\n    return function(obj)\
+    \ {\n        if (obj instanceof Array) {\n            var res = [];\n        \
+    \    for (var j=0; j < obj.length; j++) {\n                var current = transformSingleObj(obj[j]);\n\
+    \                if (current) {\n                    res.push(current);\n    \
+    \            }\n            }\n            return res;\n        }\n        return\
+    \ transformSingleObj(obj);\n    };\n}\n\n\nvar sendRequest = function(url, method,\
+    \ args) {\n    var httpParams = {\n       Method: method,\n       Headers: {\n\
+    \            'Content-Type': ['application/json'],\n            'Accept': ['application/json']\n\
+    \       },\n       Username: params.credentials.identifier,\n       Password:\
+    \ params.credentials.password,\n       Body: method !== 'GET' ? JSON.stringify(args)\
+    \ : undefined\n    };\n    var res = http(\n            baseUrl + url + (method\
+    \ === 'GET' && method ? encodeToURLQuery(args) : ''),\n            httpParams,\n\
+    \            params.insecure,\n            params.proxy\n        );\n\n    if\
+    \ (res.StatusCode < 200 || res.StatusCode >= 300) {\n        throw 'Request '\
+    \ + url + ' failed, request status code: ' + res.StatusCode + ' and Body: ' +\
+    \ res.Body + '.';\n    }\n    if (!res.Body) {\n        return 'Done';\n    }\n\
+    \    try {\n        return JSON.parse(res.Body);\n    }\n    catch (ex) {\n  \
+    \      throw 'Failed to create JSON from response ' + res.Body + ', exception\
+    \ is ' + ex;\n    }\n}\n\ncurrentCommand = commandDictionary[command];\nif (currentCommand.defaultArgs)\
+    \ {\n    keys = Object.keys(currentCommand.defaultArgs);\n    for (var k in keys)\
+    \ {\n        if (!args[keys[k]] && args[keys[k]] !== false) {\n            args[keys[k]]\
+    \ = currentCommand.defaultArgs[keys[k]];\n        }\n    }\n}\nif (currentCommand.argsToURLEncode)\
+    \ {\n    for (var k in currentCommand.argsToURLEncode) {\n        args[currentCommand.argsToURLEncode[k]]\
+    \ = encodeURIComponent(args[currentCommand.argsToURLEncode[k]]);\n    }\n}\nvar\
+    \ result = sendRequest(replaceInTemplatesAndRemove(currentCommand.url, args),\
+    \ currentCommand.method, args);\nif (command === 'test-module') {\n    return\
+    \ 'ok';\n}\nvar entries = [];\nif (currentCommand.extended) {\n    for (var j\
+    \ in currentCommand.translator) {\n        var current = currentCommand.translator[j];\n\
+    \        var entry = {\n            Type: entryTypes.note,\n            Contents:\
+    \ result,\n            ContentsFormat: formats.json,\n        };\n        var\
+    \ currentContent = current.innerPath ? dq(result, current.innerPath) : result;\n\
+    \        var translated = mapObjFunction(current.data) (current.countingDict ?\
+    \ toArray(currentContent) : currentContent);\n        entry.ReadableContentsFormat\
+    \ = formats.markdown;\n        entry.HumanReadable = tableToMarkdown(current.title,translated);\n\
+    \        entry.EntryContext = {};\n        var context = createContext(translated);\n\
+    \        entry.EntryContext[current.contextPath] = context;\n        entries.push(entry);\n\
+    \    }\n} else {\n    return result;\n}\nreturn entries;"
+  type: javascript
 tests:
-  - No test
+- No test
+toversion: 4.1.9
+versionedfields: {}

@@ -1,34 +1,28 @@
+args:
+- default: true
+  description: Username in Okta to get groups for
+  name: username
+  required: true
+comment: Get all user groups
 commonfields:
   id: 10cb3486-48f3-4d93-88af-b6be84ffd432
   version: -1
-name: OktaGetGroups
-script: |2
-
-  resp = demisto.executeCommand("okta-get-groups", demisto.args())
-
-  if isError(resp[0]):
-      demisto.results(resp)
-  else:
-      data = demisto.get(resp[0], "Contents")
-      if data:
-          data = data if isinstance(data, list) else [data]
-          data = [{k: formatCell(row[k]) for k in row} for row in data]
-          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
-      else:
-          demisto.results("No results.")
-type: python
-subtype: python2
-tags:
-- okta
-comment: Get all user groups
-enabled: true
-args:
-- name: username
-  required: true
-  default: true
-  description: Username in Okta to get groups for
-scripttarget: 0
-deprecated: true
 dependson:
   must:
   - okta-get-groups
+deprecated: true
+enabled: true
+name: OktaGetGroups
+script: "\nresp = demisto.executeCommand(\"okta-get-groups\", demisto.args())\n\n\
+  if isError(resp[0]):\n    demisto.results(resp)\nelse:\n    data = demisto.get(resp[0],\
+  \ \"Contents\")\n    if data:\n        data = data if isinstance(data, list) else\
+  \ [data]\n        data = [{k: formatCell(row[k]) for k in row} for row in data]\n\
+  \        demisto.results({\"ContentsFormat\": formats[\"table\"], \"Type\": entryTypes[\"\
+  note\"], \"Contents\": data} )\n    else:\n        demisto.results(\"No results.\"\
+  )\n"
+scripttarget: 0
+subtype: python2
+tags:
+- okta
+toversion: 4.1.9
+type: python

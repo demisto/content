@@ -1,52 +1,42 @@
+args:
+- description: Full filesystem path and filename under which to save the file
+  name: destpath
+  required: true
+- description: Source file name
+  name: files
+  required: true
+- auto: PREDEFINED
+  description: Overwrite file
+  name: force
+  predefined:
+  - 'true'
+  - 'false'
+comment: 'Drop a file to a target system by providing its path on the server. Use
+  CopyFileD2 instead in most cases.
+
+  This is a utility agent script to be used inside server scripts. See CopyFileD2
+  for an example.'
 commonfields:
   id: D2Drop
   version: -1
+enabled: true
 name: D2Drop
-script: |-
-  var tempDir = '';
-  if( env.TEMP ) {
-      tempDir = env.TEMP;
-  } else if ( env.TMPDIR ) {
-      tempDir = env.TMPDIR;
-  } else if ( env.TMP) {
-      tempDir = env.TMP;
-  } else {
-      tempDir = '/tmp';
-  }
-
-  var filesRes = files( tempDir, true, false, args.files );
-  if ( filesRes && filesRes.length > 0 ) {
-      if ( 1 != copy( filesRes[0].Path, args.destpath, args.force === 'true') )
-          throw "Error copying file " + filesRes[0].Path + " to " + filesRes[0].destpath + ".";
-      else
-          pack("File copied successfully.");
-  } else {
-      pack("Failed to find temp file.");
-  }
-type: javascript
+runas: DBotWeakRole
+runonce: false
+script: "var tempDir = '';\nif( env.TEMP ) {\n    tempDir = env.TEMP;\n} else if (\
+  \ env.TMPDIR ) {\n    tempDir = env.TMPDIR;\n} else if ( env.TMP) {\n    tempDir\
+  \ = env.TMP;\n} else {\n    tempDir = '/tmp';\n}\n\nvar filesRes = files( tempDir,\
+  \ true, false, args.files );\nif ( filesRes && filesRes.length > 0 ) {\n    if (\
+  \ 1 != copy( filesRes[0].Path, args.destpath, args.force === 'true') )\n       \
+  \ throw \"Error copying file \" + filesRes[0].Path + \" to \" + filesRes[0].destpath\
+  \ + \".\";\n    else\n        pack(\"File copied successfully.\");\n} else {\n \
+  \   pack(\"Failed to find temp file.\");\n}"
+scripttarget: 1
+system: true
 tags:
 - agent
 - util
-comment: |-
-  Drop a file to a target system by providing its path on the server. Use CopyFileD2 instead in most cases.
-  This is a utility agent script to be used inside server scripts. See CopyFileD2 for an example.
-enabled: true
-system: true
-args:
-- name: destpath
-  required: true
-  description: Full filesystem path and filename under which to save the file
-- name: files
-  required: true
-  description: Source file name
-- name: force
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  description: Overwrite file
-scripttarget: 1
-runonce: false
-runas: DBotWeakRole
 tests:
-  - No test - D2 tests are not supported yet in content tests
+- No test - D2 tests are not supported yet in content tests
+toversion: 4.1.9
+type: javascript

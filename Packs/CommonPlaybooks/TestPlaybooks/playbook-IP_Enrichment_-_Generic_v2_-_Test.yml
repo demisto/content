@@ -1,101 +1,84 @@
-id: IP Enrichment - Generic v2 - Test
-version: -1
 fromversion: 4.1.0
+id: IP Enrichment - Generic v2 - Test
+inputs:
+- description: Determines whether the IP Enrichment - Generic playbook should convert
+    IP addresses to hostnames using a DNS query. You can set this to either True or
+    False.
+  key: ResolveIP
+  required: false
+  value:
+    simple: 'True'
 name: IP Enrichment - Generic v2 - Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: e80130b8-9f8e-4704-87d8-2c6919d7b7c0
-    type: start
-    task:
-      id: e80130b8-9f8e-4704-87d8-2c6919d7b7c0
-      version: -1
-      name: ""
-      description: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 10
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: 48651a1d-b6fd-4816-80d9-a8e5a45899e9
-    type: regular
-    task:
-      id: 48651a1d-b6fd-4816-80d9-a8e5a45899e9
-      version: -1
-      name: Delete Context
-      description: Deletes the context of the incident to start the test with no unnecessary
-        data.
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: e80130b8-9f8e-4704-87d8-2c6919d7b7c0
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: e80130b8-9f8e-4704-87d8-2c6919d7b7c0
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 10\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    reputationcalc: 1
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
-    reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 150
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 7ffe5bea-a7af-4437-806d-34ec70eabbf9
-    type: playbook
     task:
-      id: 7ffe5bea-a7af-4437-806d-34ec70eabbf9
-      version: -1
-      name: IP Enrichment - Generic v2
-      description: |-
-        Enrich IP using one or more integrations.
-
-        IP enrichment includes:
-        * Resolve IP to Hostname (DNS)
-        * Threat information
-        * Separate internal and external addresses
-        * IP reputation
-        * For internal addresses, get host information
-      playbookName: IP Enrichment - Generic v2
-      type: playbook
+      brand: ''
+      description: Deletes the context of the incident to start the test with no unnecessary
+        data.
+      id: 48651a1d-b6fd-4816-80d9-a8e5a45899e9
       iscommand: false
-      brand: ""
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 48651a1d-b6fd-4816-80d9-a8e5a45899e9
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 150\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
     nexttasks:
       '#none#':
-      - "5"
-      - "6"
-      - "7"
+      - '5'
+      - '6'
+      - '7'
+    note: false
     scriptarguments:
       IP:
         complex:
-          root: IP
           accessor: Address
+          root: IP
           transformers:
           - operator: uniq
       InternalRange: {}
@@ -103,276 +86,233 @@ tasks:
         complex:
           root: inputs.ResolveIP
     separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 500
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: 29addbb6-e385-4720-8d4a-0b8ba7cdebd7
-    type: regular
     task:
-      id: 29addbb6-e385-4720-8d4a-0b8ba7cdebd7
-      version: -1
-      name: Set IPs in context
-      description: |-
-        Sets IPs in context for testing purposes.
-        3 IPs are set: 1 internal, and 2 external.
-      scriptName: SetIPsTest
-      type: regular
+      brand: ''
+      description: 'Enrich IP using one or more integrations.
+
+
+        IP enrichment includes:
+
+        * Resolve IP to Hostname (DNS)
+
+        * Threat information
+
+        * Separate internal and external addresses
+
+        * IP reputation
+
+        * For internal addresses, get host information'
+      id: 7ffe5bea-a7af-4437-806d-34ec70eabbf9
       iscommand: false
-      brand: ""
+      name: IP Enrichment - Generic v2
+      playbookName: IP Enrichment - Generic v2
+      type: playbook
+      version: -1
+    taskid: 7ffe5bea-a7af-4437-806d-34ec70eabbf9
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 500\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
     reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 330
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 221f8221-ddd6-4b7a-831d-f426a5928495
-    type: title
     task:
-      id: 221f8221-ddd6-4b7a-831d-f426a5928495
-      version: -1
-      name: Done
-      description: ""
-      type: title
+      brand: ''
+      description: 'Sets IPs in context for testing purposes.
+
+        3 IPs are set: 1 internal, and 2 external.'
+      id: 29addbb6-e385-4720-8d4a-0b8ba7cdebd7
       iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 1170
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 54fa1e23-dcbb-4b7f-8bb6-d928f2a9fd5b
-    type: condition
-    task:
-      id: 54fa1e23-dcbb-4b7f-8bb6-d928f2a9fd5b
+      name: Set IPs in context
+      scriptName: SetIPsTest
+      type: regular
       version: -1
-      name: Was external IP resolved?
+    taskid: 29addbb6-e385-4720-8d4a-0b8ba7cdebd7
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 330\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 221f8221-ddd6-4b7a-831d-f426a5928495
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 221f8221-ddd6-4b7a-831d-f426a5928495
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 1170\n  }\n}"
+  '5':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Hostname
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Endpoint.Hostname
+                    operator: endWith
+                    right:
+                      value:
+                        simple: yahoo.com
+                root: Endpoint
+          operator: isExists
+      label: 'yes'
+    id: '5'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '8'
+      'yes':
+      - '4'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
       description: Checks whether one of the external IPs was resolved to the yahoo.com
         domain.
-      type: condition
+      id: 54fa1e23-dcbb-4b7f-8bb6-d928f2a9fd5b
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "8"
-      "yes":
-      - "4"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: Endpoint
-                filters:
-                - - operator: endWith
-                    left:
-                      value:
-                        simple: Endpoint.Hostname
-                      iscontext: true
-                    right:
-                      value:
-                        simple: yahoo.com
-                accessor: Hostname
-            iscontext: true
-          ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 30,
-          "y": 670
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 0d739831-24ca-4043-8f30-7e46348550ad
-    type: condition
-    task:
-      id: 0d739831-24ca-4043-8f30-7e46348550ad
+      name: Was external IP resolved?
+      type: condition
       version: -1
-      name: Was internal IP resolved?
-      description: Checks whether the internal IP specified in this test, has been
-        resolved.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "8"
-      "yes":
-      - "4"
-    separatecontext: false
+    taskid: 54fa1e23-dcbb-4b7f-8bb6-d928f2a9fd5b
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 30,\n    \"y\": 670\n  }\n}"
+  '6':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
+    - condition:
+      - - ignorecase: true
           left:
+            iscontext: true
             value:
               complex:
-                root: Endpoint
+                accessor: Hostname
                 filters:
-                - - operator: notEndWith
+                - - ignorecase: true
                     left:
+                      iscontext: true
                       value:
                         simple: Endpoint.Hostname
-                      iscontext: true
+                    operator: notEndWith
                     right:
                       value:
                         simple: yahoo.com
-                    ignorecase: true
-                - - operator: notEndWith
+                - - ignorecase: true
                     left:
+                      iscontext: true
                       value:
                         simple: Endpoint.Hostname
-                      iscontext: true
+                    operator: notEndWith
                     right:
                       value:
                         simple: akamaitechnologies.com
-                    ignorecase: true
-                accessor: Hostname
-            iscontext: true
-          ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 940,
-          "y": 670
-        }
-      }
-    note: false
-    timertriggers: []
+                root: Endpoint
+          operator: isExists
+      label: 'yes'
+    id: '6'
     ignoreworker: false
-  "7":
-    id: "7"
-    taskid: 19720a66-9eba-4cee-8af8-4befd464aa37
-    type: condition
-    task:
-      id: 19720a66-9eba-4cee-8af8-4befd464aa37
-      version: -1
-      name: Was IP enriched using Threat Crowd?
-      description: Checks whether Yahoo's IP was enriched using Threat Crowd.
-      type: condition
-      iscommand: false
-      brand: ""
     nexttasks:
       '#default#':
-      - "8"
-      "yes":
-      - "4"
+      - '8'
+      'yes':
+      - '4'
+    note: false
     separatecontext: false
+    task:
+      brand: ''
+      description: Checks whether the internal IP specified in this test, has been
+        resolved.
+      id: 0d739831-24ca-4043-8f30-7e46348550ad
+      iscommand: false
+      name: Was internal IP resolved?
+      type: condition
+      version: -1
+    taskid: 0d739831-24ca-4043-8f30-7e46348550ad
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 940,\n    \"y\": 670\n  }\n}"
+  '7':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
+    - condition:
+      - - ignorecase: true
           left:
+            iscontext: true
             value:
               complex:
-                root: IP
                 accessor: ThreatCrowd.Resolutions.domain
-            iscontext: true
+                root: IP
+          operator: containsGeneral
           right:
             value:
               simple: ca.yahoo.com
-          ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 670
-        }
-      }
-    note: false
-    timertriggers: []
+      label: 'yes'
+    id: '7'
     ignoreworker: false
-  "8":
-    id: "8"
-    taskid: da14e18a-fb55-49ae-8f1d-8076c37dd8ed
-    type: regular
+    nexttasks:
+      '#default#':
+      - '8'
+      'yes':
+      - '4'
+    note: false
+    separatecontext: false
     task:
-      id: da14e18a-fb55-49ae-8f1d-8076c37dd8ed
-      version: -1
-      name: Make the test fail
-      scriptName: PrintErrorEntry
-      type: regular
+      brand: ''
+      description: Checks whether Yahoo's IP was enriched using Threat Crowd.
+      id: 19720a66-9eba-4cee-8af8-4befd464aa37
       iscommand: false
-      brand: ""
+      name: Was IP enriched using Threat Crowd?
+      type: condition
+      version: -1
+    taskid: 19720a66-9eba-4cee-8af8-4befd464aa37
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 670\n  }\n}"
+  '8':
+    id: '8'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
+    note: false
     scriptarguments:
       message:
         simple: IP Enrichment has failed. Please check the conditions and see which
           one was not met, or if another error has occurred during the enrichment
           process.
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1350,
-          "y": 970
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      id: da14e18a-fb55-49ae-8f1d-8076c37dd8ed
+      iscommand: false
+      name: Make the test fail
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: da14e18a-fb55-49ae-8f1d-8076c37dd8ed
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {
-      "5_8_#default#": 0.1,
-      "6_8_#default#": 0.26,
-      "7_8_#default#": 0.14
-    },
-    "paper": {
-      "dimensions": {
-        "height": 1225,
-        "width": 1700,
-        "x": 30,
-        "y": 10
-      }
-    }
-  }
-inputs:
-- key: ResolveIP
-  value:
-    simple: "True"
-  required: false
-  description: Determines whether the IP Enrichment - Generic playbook should convert
-    IP addresses to hostnames using a DNS query. You can set this to either True or
-    False.
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1350,\n    \"y\": 970\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"5_8_#default#\": 0.1,\n    \"6_8_#default#\"\
+  : 0.26,\n    \"7_8_#default#\": 0.14\n  },\n  \"paper\": {\n    \"dimensions\":\
+  \ {\n      \"height\": 1225,\n      \"width\": 1700,\n      \"x\": 30,\n      \"\
+  y\": 10\n    }\n  }\n}"

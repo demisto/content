@@ -1,100 +1,51 @@
+comment: Process a suspected email and check URLs, attachments and sender via reputation
+  services
 commonfields:
   id: TriagePhishing
   version: -1
-name: TriagePhishing
-script: |-
-  var results = []; // Collect all the results
-  var malicious = false;
-  var body = incidents[0].details;
-  var fromRE = /<b>From:.*href="mailto:(.*?)"/ig;
-  var from = fromRE.exec(body);
-  var toRE = /<b>To:.*href="mailto:(.*?)"/ig;
-  var to = toRE.exec(body);
-  var sentRE = /<b>Sent:<\/b> (.*?)<br>/ig;
-  var sent = sentRE.exec(body);
-  var subjectRE = /<b>Subject:<\/b> (.*?)<o:p>/ig;
-  var subject = subjectRE.exec(body);
-  var fromStr = '';
-  var toStr = '';
-  var subjectStr = '';
-  var sentStr = '';
-  if (from && from.length > 1) {
-    fromStr = from[1];
-  }
-  if (to && to.length > 1) {
-    toStr = to[1];
-  }
-  if (sent && sent.length > 1) {
-    sentStr = sent[1];
-  }
-  if (subject && subject.length > 1) {
-    subjectStr = subject[1];
-  }
-  results.push({Contents: {From: fromStr, To: toStr, Sent: sentStr, Subject: subjectStr}, ContentsFormat: formats.table, Type: entryTypes.note}); // Add the raw email details
-  // Check the URLs via reputation services
-  var urlPattern = /href=".*"/ig;
-  var urls = body.match(urlPattern);
-  var cleanUrls = [];
-  if (urls) {
-    for (var i=0; i<urls.length; i++) {
-      var u = urls[i].substring(6, urls[i].length - 1);
-      if (u.indexOf('mail') >= 0) continue;
-      cleanUrls.push(u);
-      var rep = executeCommand('url', {url: u});
-      if (rep && Array.isArray(rep)) {
-        for (var r = 0; r < rep.length; r++) {
-          if (positiveUrl(rep[r])) {
-            results.push(shortUrl(rep[r]));
-            malicious = true;
-          }
-        }
-      }
-    }
-  }
-  if (!malicious) {
-    results.push({Contents: 'Only clean URLs found: ' + cleanUrls.join(', '), Type: entryTypes.note, ContentsFormat: formats.text});
-  }
-  // Check the attachments via reputation services
-  var entries = executeCommand('getEntries', {});
-  for (var i=0; i<entries.length; i++) {
-    if (entries[i].File) {
-      var rep = executeCommand('file', {file: entries[i].FileMetadata.MD5});
-      if (rep && Array.isArray(rep)) {
-        for (var r = 0; r < rep.length; r++) {
-          if (positiveFile(rep[r])) {
-            results.push(shortFile(rep[r]));
-            malicious = true;
-          }
-        }
-      }
-    }
-  }
-  // Check the sender via PIPL search
-  if (fromStr) {
-    var rep = executeCommand('pipl-search', {email: fromStr})[0];
-    rep.ContentsFormat = formats.table;
-    results.push(rep);
-  }
-  if (malicious) {
-    results.push('Suspicious results found');
-    results.push('yes');
-  } else {
-    results.push('No suspicious results found');
-    results.push('no');
-  }
-  return results;
-type: javascript
-tags:
-- phishing
-comment: Process a suspected email and check URLs, attachments and sender via reputation
-  services
-system: true
-deprecated: true
-scripttarget: 0
 dependson:
   must: []
   should:
   - url
   - pipl-search
   - file
+deprecated: true
+name: TriagePhishing
+script: "var results = []; // Collect all the results\nvar malicious = false;\nvar\
+  \ body = incidents[0].details;\nvar fromRE = /<b>From:.*href=\"mailto:(.*?)\"/ig;\n\
+  var from = fromRE.exec(body);\nvar toRE = /<b>To:.*href=\"mailto:(.*?)\"/ig;\nvar\
+  \ to = toRE.exec(body);\nvar sentRE = /<b>Sent:<\\/b> (.*?)<br>/ig;\nvar sent =\
+  \ sentRE.exec(body);\nvar subjectRE = /<b>Subject:<\\/b> (.*?)<o:p>/ig;\nvar subject\
+  \ = subjectRE.exec(body);\nvar fromStr = '';\nvar toStr = '';\nvar subjectStr =\
+  \ '';\nvar sentStr = '';\nif (from && from.length > 1) {\n  fromStr = from[1];\n\
+  }\nif (to && to.length > 1) {\n  toStr = to[1];\n}\nif (sent && sent.length > 1)\
+  \ {\n  sentStr = sent[1];\n}\nif (subject && subject.length > 1) {\n  subjectStr\
+  \ = subject[1];\n}\nresults.push({Contents: {From: fromStr, To: toStr, Sent: sentStr,\
+  \ Subject: subjectStr}, ContentsFormat: formats.table, Type: entryTypes.note});\
+  \ // Add the raw email details\n// Check the URLs via reputation services\nvar urlPattern\
+  \ = /href=\".*\"/ig;\nvar urls = body.match(urlPattern);\nvar cleanUrls = [];\n\
+  if (urls) {\n  for (var i=0; i<urls.length; i++) {\n    var u = urls[i].substring(6,\
+  \ urls[i].length - 1);\n    if (u.indexOf('mail') >= 0) continue;\n    cleanUrls.push(u);\n\
+  \    var rep = executeCommand('url', {url: u});\n    if (rep && Array.isArray(rep))\
+  \ {\n      for (var r = 0; r < rep.length; r++) {\n        if (positiveUrl(rep[r]))\
+  \ {\n          results.push(shortUrl(rep[r]));\n          malicious = true;\n  \
+  \      }\n      }\n    }\n  }\n}\nif (!malicious) {\n  results.push({Contents: 'Only\
+  \ clean URLs found: ' + cleanUrls.join(', '), Type: entryTypes.note, ContentsFormat:\
+  \ formats.text});\n}\n// Check the attachments via reputation services\nvar entries\
+  \ = executeCommand('getEntries', {});\nfor (var i=0; i<entries.length; i++) {\n\
+  \  if (entries[i].File) {\n    var rep = executeCommand('file', {file: entries[i].FileMetadata.MD5});\n\
+  \    if (rep && Array.isArray(rep)) {\n      for (var r = 0; r < rep.length; r++)\
+  \ {\n        if (positiveFile(rep[r])) {\n          results.push(shortFile(rep[r]));\n\
+  \          malicious = true;\n        }\n      }\n    }\n  }\n}\n// Check the sender\
+  \ via PIPL search\nif (fromStr) {\n  var rep = executeCommand('pipl-search', {email:\
+  \ fromStr})[0];\n  rep.ContentsFormat = formats.table;\n  results.push(rep);\n}\n\
+  if (malicious) {\n  results.push('Suspicious results found');\n  results.push('yes');\n\
+  } else {\n  results.push('No suspicious results found');\n  results.push('no');\n\
+  }\nreturn results;"
+scripttarget: 0
+system: true
+tags:
+- phishing
 timeout: 0s
+toversion: 4.1.9
+type: javascript

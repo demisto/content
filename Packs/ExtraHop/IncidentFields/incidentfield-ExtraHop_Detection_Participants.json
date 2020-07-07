@@ -98,5 +98,6 @@
     ],
     "sla": 0,
     "threshold": 72,
-    "breachScript": ""
+    "breachScript": "",
+    "toVersion": "4.1.9"
 }

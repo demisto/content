@@ -1,44 +1,43 @@
+category: Database
 commonfields:
   id: Vertica
   version: -1
-name: Vertica
-display: Vertica
-category: Database
-description: Analytic database management software
 configuration:
-- display: Host (myhost.example.com)
+- defaultvalue: ''
+  display: Host (myhost.example.com)
   name: url
-  defaultvalue: ""
-  type: 0
   required: true
-- display: Database
+  type: 0
+- defaultvalue: ''
+  display: Database
   name: database (mydb)
-  defaultvalue: ""
-  type: 0
   required: true
-- display: Username
+  type: 0
+- defaultvalue: ''
+  display: Username
   name: credentials
-  defaultvalue: ""
-  type: 9
   required: true
-- display: Port
+  type: 9
+- defaultvalue: '5433'
+  display: Port
   name: port
-  defaultvalue: "5433"
-  type: 0
   required: false
+  type: 0
+description: Analytic database management software
+display: Vertica
+name: Vertica
 script:
-  script: ''
-  type: python
   commands:
-  - name: vertica-query
-    arguments:
-    - name: query
+  - arguments:
+    - description: A SQL query to perform on the Vertica database.
+      name: query
       required: true
-      description: A SQL query to perform on the Vertica database.
-    - name: limit
+    - defaultValue: '50'
       description: The maximum number of results to be returned from the query. (Use
         0 for all results)
-      defaultValue: "50"
+      name: limit
+    description: Executes a query on the Vertica database.
+    name: vertica-query
     outputs:
     - contextPath: Vertica.Query
       description: The original query.
@@ -46,9 +45,11 @@ script:
     - contextPath: Vertica.Row
       description: The content of rows.
       type: string
-    description: Executes a query on the Vertica database.
   dockerimage: demisto/vertica:1.0.0.150
   runonce: false
+  script: ''
   subtype: python3
+  type: python
 tests:
 - Vertica Test
+toversion: 4.1.9

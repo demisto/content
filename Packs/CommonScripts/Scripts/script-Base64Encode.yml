@@ -1,26 +1,22 @@
+args:
+- default: true
+  description: to encode in Base64 format
+  name: input
+  required: true
+comment: Will encode an input using Base64 format.
 commonfields:
   id: Base64Encode
   version: -1
+enabled: true
 name: Base64Encode
-script: |-
-  var result = Base64.encode(args.input);
-  return {Type: entryTypes.note,
-      Contents: result,
-      ContentsFormat: formats.note,
-      HumanReadable: result,
-      EntryContext: {"Base64.encoded": result}
-  };
-type: javascript
+outputs:
+- contextPath: Base64.encoded
+  description: input encoded as Base64 format
+script: "var result = Base64.encode(args.input);\nreturn {Type: entryTypes.note,\n\
+  \    Contents: result,\n    ContentsFormat: formats.note,\n    HumanReadable: result,\n\
+  \    EntryContext: {\"Base64.encoded\": result}\n};"
+scripttarget: 0
 tags:
 - Utility
-comment: Will encode an input using Base64 format.
-enabled: true
-args:
-- name: input
-  required: true
-  default: true
-  description: to encode in Base64 format
-outputs:
-    - contextPath: Base64.encoded
-      description: input encoded as Base64 format    
-scripttarget: 0
+toversion: 4.1.9
+type: javascript

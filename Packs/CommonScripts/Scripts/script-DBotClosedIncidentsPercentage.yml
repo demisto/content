@@ -1,31 +1,20 @@
+comment: Data output script for populating dashboard pie graph widget with the percentage
+  of incidents closed by DBot vs. incidents closed by analysts
 commonfields:
   id: DBotClosedIncidentsPercentage
   version: -1
+enabled: true
 name: DBotClosedIncidentsPercentage
-script: |-
-  var res = executeCommand("getIncidents", {
-      'query': 'status:closed and investigation.users:""',
-      'fromdate': args.from,
-      'todate': args.to,
-      'size': 0
-  });
-  var closedByDbot = res[0].Contents.total;
-
-  res = executeCommand("getIncidents", {
-      'status': 'closed',
-      'fromdate': args.from,
-      'todate': args.to,
-      'size': 0
-  });
-  var overallClosed = res[0].Contents.total;
-
-  var result = Math.round(closedByDbot * 100 / overallClosed);
-  return isNaN(result) ? 0 : result;
-type: javascript
+runonce: false
+script: "var res = executeCommand(\"getIncidents\", {\n    'query': 'status:closed\
+  \ and investigation.users:\"\"',\n    'fromdate': args.from,\n    'todate': args.to,\n\
+  \    'size': 0\n});\nvar closedByDbot = res[0].Contents.total;\n\nres = executeCommand(\"\
+  getIncidents\", {\n    'status': 'closed',\n    'fromdate': args.from,\n    'todate':\
+  \ args.to,\n    'size': 0\n});\nvar overallClosed = res[0].Contents.total;\n\nvar\
+  \ result = Math.round(closedByDbot * 100 / overallClosed);\nreturn isNaN(result)\
+  \ ? 0 : result;"
+scripttarget: 0
 tags:
 - widget
-comment: Data output script for populating dashboard pie graph widget with the percentage
-  of incidents closed by DBot vs. incidents closed by analysts
-enabled: true
-scripttarget: 0
-runonce: false
+toversion: 4.1.9
+type: javascript

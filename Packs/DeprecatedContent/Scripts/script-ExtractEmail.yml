@@ -1,56 +1,34 @@
+args:
+- default: true
+  description: The text to extract Emails from. If object will convert to JSON.
+  name: text
+  required: true
+comment: Deprecated - We recommend using extractIndicators command instead. Extract
+  Emails from the given text and place them both as output and in the context of a
+  playbook. If given an object, will convert to JSON.
 commonfields:
   id: ExtractEmail
   version: -1
-name: ExtractEmail
-script: |
-  var text = args.text;
-  if (typeof text !== 'string') {
-      text = JSON.stringify(args.text).replace(/\\n/g,' ');
-  }
-  var matches = {};
-  var emailStringRegex = emailRegex.toString().substring(1,(emailRegex.toString().length - 1));
-  var gmi = 'gmi';
-  var reg = new RegExp(emailStringRegex, gmi);
-
-  var whitelist = getCSVListAsArray('Indicators Whitelist');
-  var found;
-
-  while (found = reg.exec(text)) {
-   if (found && whitelist.indexOf(found[0]) < 0) {
-       matches[found[0]] = true;
-   }
-  }
-
-  var uniqueMatches = Object.keys(matches);
-  var emailContext = {};
-  emailContext[outputPaths.email] = [];
-  var md = '### Extract Email\n';
-  for (var i = 0; i < uniqueMatches.length; i++) {
-      emailContext[outputPaths.email].push({ Address: uniqueMatches[i] });
-      md += '- ' + uniqueMatches[i] + '\n';
-  }
-
-  return {
-      Type: entryTypes.note,
-      Contents: emailContext[outputPaths.email],
-      ContentsFormat: formats.json,
-      HumanReadable: md,
-      EntryContext: emailContext
-  };
-type: javascript
-tags:
-- Utility
-comment: Deprecated - We recommend using extractIndicators command instead.
-  Extract Emails from the given text and place them both as output and in the
-  context of a playbook. If given an object, will convert to JSON.
+deprecated: true
 enabled: true
-args:
-- name: text
-  required: true
-  default: true
-  description: The text to extract Emails from. If object will convert to JSON.
+name: ExtractEmail
 outputs:
 - contextPath: Account.Email.Address
   description: Extracted emails
+script: "var text = args.text;\nif (typeof text !== 'string') {\n    text = JSON.stringify(args.text).replace(/\\\
+  \\n/g,' ');\n}\nvar matches = {};\nvar emailStringRegex = emailRegex.toString().substring(1,(emailRegex.toString().length\
+  \ - 1));\nvar gmi = 'gmi';\nvar reg = new RegExp(emailStringRegex, gmi);\n\nvar\
+  \ whitelist = getCSVListAsArray('Indicators Whitelist');\nvar found;\n\nwhile (found\
+  \ = reg.exec(text)) {\n if (found && whitelist.indexOf(found[0]) < 0) {\n     matches[found[0]]\
+  \ = true;\n }\n}\n\nvar uniqueMatches = Object.keys(matches);\nvar emailContext\
+  \ = {};\nemailContext[outputPaths.email] = [];\nvar md = '### Extract Email\\n';\n\
+  for (var i = 0; i < uniqueMatches.length; i++) {\n    emailContext[outputPaths.email].push({\
+  \ Address: uniqueMatches[i] });\n    md += '- ' + uniqueMatches[i] + '\\n';\n}\n\
+  \nreturn {\n    Type: entryTypes.note,\n    Contents: emailContext[outputPaths.email],\n\
+  \    ContentsFormat: formats.json,\n    HumanReadable: md,\n    EntryContext: emailContext\n\
+  };\n"
 scripttarget: 0
-deprecated: true
+tags:
+- Utility
+toversion: 4.1.9
+type: javascript

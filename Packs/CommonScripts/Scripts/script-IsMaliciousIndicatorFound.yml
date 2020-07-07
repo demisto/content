@@ -1,168 +1,115 @@
-commonfields:
-  id: IsMaliciousIndicatorFound
-  version: -1
-name: IsMaliciousIndicatorFound
-script: |-
-  minScore = (args.includeSuspicious == 'yes') ? 2 : 3;
-
-  // Gather malicious indicators
-  files = dq(invContext, "DBotScore(val.Type.toLowerCase()=='file' && val.Score>=" + minScore + ")");
-  hashes = dq(invContext, "DBotScore(val.Type.toLowerCase()=='hash' && val.Score>=" + minScore + ")");
-  ips = dq(invContext, "DBotScore(val.Type.toLowerCase()=='ip' && val.Score>=" + minScore + ")");
-  urls = dq(invContext, "DBotScore(val.Type.toLowerCase()=='url' && val.Score>=" + minScore + ")");
-  domains = dq(invContext, "DBotScore(val.Type.toLowerCase()=='domain' && val.Score>=" + minScore + ")");
-  emails = dq(invContext, "DBotScore(val.Type.toLowerCase()=='email' && val.Score>=" + minScore + ")");
-
-  var filesIndicators = [];
-  for (var indicatorObject in files) {
-      if (files[indicatorObject] && files[indicatorObject].Indicator && filesIndicators.indexOf(files[indicatorObject].Indicator) === -1) {
-          filesIndicators.push(files[indicatorObject].Indicator);
-      }
-  }
-  var hashesIndicators = [];
-  for (var indicatorObject in hashes) {
-      if (hashes[indicatorObject] && hashes[indicatorObject].Indicator && hashesIndicators.indexOf(hashes[indicatorObject].Indicator) === -1) {
-          hashesIndicators.push(hashes[indicatorObject].Indicator);
-      }
-  }
-  var ipsIndicators = [];
-  for (var indicatorObject in ips) {
-      if (ips[indicatorObject] && ips[indicatorObject].Indicator && ipsIndicators.indexOf(ips[indicatorObject].Indicator) === -1) {
-          ipsIndicators.push(ips[indicatorObject].Indicator);
-      }
-  }
-  var urlsIndicators = [];
-  for (var indicatorObject in urls) {
-      if (urls[indicatorObject] && urls[indicatorObject].Indicator && urlsIndicators.indexOf(urls[indicatorObject].Indicator) === -1) {
-          urlsIndicators.push(urls[indicatorObject].Indicator);
-      }
-  }
-  var domainsIndicators = [];
-  for (var indicatorObject in urls) {
-      if (domains[indicatorObject] && domains[indicatorObject].Indicator && domainsIndicators.indexOf(domains[indicatorObject].Indicator) === -1) {
-          domainsIndicators.push(domains[indicatorObject].Indicator);
-      }
-  }
-  var emailsIndicators = [];
-  for (var indicatorObject in emails) {
-      if (emails[indicatorObject] && emails[indicatorObject].Indicator && emailsIndicators.indexOf(emails[indicatorObject].Indicator) === -1) {
-          emailsIndicators.push(emails[indicatorObject].Indicator);
-      }
-  }
-
-  // Unite into one array
-  maliciousIndicators = []
-  maliciousIndicators = maliciousIndicators.concat(filesIndicators);
-  maliciousIndicators = maliciousIndicators.concat(hashesIndicators);
-  maliciousIndicators = maliciousIndicators.concat(ipsIndicators);
-  maliciousIndicators = maliciousIndicators.concat(urlsIndicators);
-  maliciousIndicators = maliciousIndicators.concat(domainsIndicators);
-  maliciousIndicators = maliciousIndicators.concat(emailsIndicators);
-
-  // Remove Manually remidated indicators
-  if (args.includeManual == 'yes') {
-      manualFiles = dq(invContext, "DBotScore(val.Type.toLowerCase()=='file' && val.Vendor=='Manual' && val.Score<" + minScore + ")");
-      manualHashes = dq(invContext, "DBotScore(val.Type.toLowerCase()=='hash' && val.Vendor=='Manual' && val.Score<" + minScore + ")");
-      manualIps = dq(invContext, "DBotScore(val.Type.toLowerCase()=='ip' && val.Vendor=='Manual' && val.Score<" + minScore + ")");
-      manualUrls = dq(invContext, "DBotScore(val.Type.toLowerCase()=='url' && val.Vendor=='Manual' && val.Score<" + minScore + ")");
-      manualDomains = dq(invContext, "DBotScore(val.Type.toLowerCase()=='domain' && val.Vendor=='Manual' && val.Score<" + minScore + ")");
-      manualEmails = dq(invContext, "DBotScore(val.Type.toLowerCase()=='email' && val.Vendor=='Manual' && val.Score<" + minScore + ")");
-
-      for (var indicatorObject in manualFiles) {
-          if (manualFiles[indicatorObject] && maliciousIndicators.indexOf(manualFiles[indicatorObject].Indicator) !== -1) {
-              maliciousIndicators.splice(maliciousIndicators.indexOf(manualFiles[indicatorObject].Indicator), 1);
-          }
-      }
-
-      for (var indicatorObject in manualHashes) {
-          if (manualHashes[indicatorObject] && maliciousIndicators.indexOf(manualHashes[indicatorObject].Indicator) !== -1) {
-               maliciousIndicators.splice(maliciousIndicators.indexOf(manualHashes[indicatorObject].Indicator),1);
-          }
-      }
-      for (var indicatorObject in manualIps) {
-          if (manualIps[indicatorObject] && maliciousIndicators.indexOf(manualIps[indicatorObject].Indicator) !== -1) {
-               maliciousIndicators.splice(maliciousIndicators.indexOf(manualIps[indicatorObject].Indicator),1);
-          }
-      }
-      for (var indicatorObject in manualUrls) {
-          if (manualUrls[indicatorObject] && maliciousIndicators.indexOf(manualUrls[indicatorObject].Indicator) !== -1) {
-               maliciousIndicators.splice(maliciousIndicators.indexOf(manualUrls[indicatorObject].Indicator),1);
-          }
-      }
-      for (var indicatorObject in manualDomains) {
-          if (manualDomains[indicatorObject] && maliciousIndicators.indexOf(manualDomains[indicatorObject].Indicator) !== -1) {
-               maliciousIndicators.splice(maliciousIndicators.indexOf(manualDomains[indicatorObject].Indicator),1);
-          }
-      }
-      for (var indicatorObject in manualEmails) {
-          if (manualEmails[indicatorObject] && maliciousIndicators.indexOf(manualEmails[indicatorObject].Indicator) !== -1) {
-               maliciousIndicators.splice(maliciousIndicators.indexOf(manualEmails[indicatorObject].Indicator),1);
-          }
-      }
-  }
-
-  if (maliciousIndicators.length > 0)
-      return 'yes';
-
-  if (args.queryIndicators == 'yes') {
-      var query = "(reputation:Bad"
-      if (args.includeSuspicious == 'yes') {
-          query = query + " or reputation:Suspicious"
-      }
-      query = query + ")"
-
-      if ((args.maliciousQueryOverride) && (args.maliciousQueryOverride.length > 0)) {
-          query = args.maliciousQueryOverride
-      }
-
-      var indicatorsRes = executeCommand("findIndicators", {"query":query+" and investigationIDs:"+investigation.id,"size":1})
-      if (indicatorsRes && indicatorsRes[0] && indicatorsRes[0].Contents[0]) {
-          // we have results, so we found a maliciuos indicator for this investigation
-          return 'yes'
-      }
-  }
-
-  return 'no'
-type: javascript
-tags:
-- Utility
-- Condition
+args:
+- auto: PREDEFINED
+  default: true
+  defaultValue: 'no'
+  description: Whether to check suspicious indicators. Default is "no".
+  name: includeSuspicious
+  predefined:
+  - 'yes'
+  - 'no'
+- auto: PREDEFINED
+  defaultValue: 'yes'
+  description: Query all indicators in an investigation (relevant if running in a
+    sub-playbook).
+  name: queryIndicators
+  predefined:
+  - 'yes'
+  - 'no'
+- description: Whether to override the default query for malicious indicators in Demisto
+    (Indicators page).
+  name: maliciousQueryOverride
+- auto: PREDEFINED
+  defaultValue: 'yes'
+  description: Whether to check manually edited indicators. Default is "yes".
+  name: includeManual
+  predefined:
+  - 'yes'
+  - 'no'
 comment: Checks if the investigation found any malicious indicators (file, URL, IP
   address, domain, or email). Returns "yes" if at least one malicious indicator is
   found.
+commonfields:
+  id: IsMaliciousIndicatorFound
+  version: -1
 enabled: true
-args:
-- name: includeSuspicious
-  default: true
-  auto: PREDEFINED
-  predefined:
-  - "yes"
-  - "no"
-  description: Whether to check suspicious indicators. Default is "no".
-  defaultValue: "no"
-- name: queryIndicators
-  auto: PREDEFINED
-  predefined:
-  - "yes"
-  - "no"
-  description: Query all indicators in an investigation (relevant if running in a
-    sub-playbook).
-  defaultValue: "yes"
-- name: maliciousQueryOverride
-  description: Whether to override the default query for malicious indicators in Demisto
-    (Indicators page).
-- name: includeManual
-  auto: PREDEFINED
-  predefined:
-  - "yes"
-  - "no"
-  description: Whether to check manually edited indicators. Default is "yes".
-  defaultValue: "yes"
+name: IsMaliciousIndicatorFound
 outputs:
-- contextPath: "yes"
+- contextPath: 'yes'
   description: Whether any malicious indicators were found in the investigation.
-- contextPath: "no"
+- contextPath: 'no'
   description: Whether any malicious indicators were found in the investigation.
-scripttarget: 0
-runonce: false
 runas: DBotWeakRole
+runonce: false
+script: "minScore = (args.includeSuspicious == 'yes') ? 2 : 3;\n\n// Gather malicious\
+  \ indicators\nfiles = dq(invContext, \"DBotScore(val.Type.toLowerCase()=='file'\
+  \ && val.Score>=\" + minScore + \")\");\nhashes = dq(invContext, \"DBotScore(val.Type.toLowerCase()=='hash'\
+  \ && val.Score>=\" + minScore + \")\");\nips = dq(invContext, \"DBotScore(val.Type.toLowerCase()=='ip'\
+  \ && val.Score>=\" + minScore + \")\");\nurls = dq(invContext, \"DBotScore(val.Type.toLowerCase()=='url'\
+  \ && val.Score>=\" + minScore + \")\");\ndomains = dq(invContext, \"DBotScore(val.Type.toLowerCase()=='domain'\
+  \ && val.Score>=\" + minScore + \")\");\nemails = dq(invContext, \"DBotScore(val.Type.toLowerCase()=='email'\
+  \ && val.Score>=\" + minScore + \")\");\n\nvar filesIndicators = [];\nfor (var indicatorObject\
+  \ in files) {\n    if (files[indicatorObject] && files[indicatorObject].Indicator\
+  \ && filesIndicators.indexOf(files[indicatorObject].Indicator) === -1) {\n     \
+  \   filesIndicators.push(files[indicatorObject].Indicator);\n    }\n}\nvar hashesIndicators\
+  \ = [];\nfor (var indicatorObject in hashes) {\n    if (hashes[indicatorObject]\
+  \ && hashes[indicatorObject].Indicator && hashesIndicators.indexOf(hashes[indicatorObject].Indicator)\
+  \ === -1) {\n        hashesIndicators.push(hashes[indicatorObject].Indicator);\n\
+  \    }\n}\nvar ipsIndicators = [];\nfor (var indicatorObject in ips) {\n    if (ips[indicatorObject]\
+  \ && ips[indicatorObject].Indicator && ipsIndicators.indexOf(ips[indicatorObject].Indicator)\
+  \ === -1) {\n        ipsIndicators.push(ips[indicatorObject].Indicator);\n    }\n\
+  }\nvar urlsIndicators = [];\nfor (var indicatorObject in urls) {\n    if (urls[indicatorObject]\
+  \ && urls[indicatorObject].Indicator && urlsIndicators.indexOf(urls[indicatorObject].Indicator)\
+  \ === -1) {\n        urlsIndicators.push(urls[indicatorObject].Indicator);\n   \
+  \ }\n}\nvar domainsIndicators = [];\nfor (var indicatorObject in urls) {\n    if\
+  \ (domains[indicatorObject] && domains[indicatorObject].Indicator && domainsIndicators.indexOf(domains[indicatorObject].Indicator)\
+  \ === -1) {\n        domainsIndicators.push(domains[indicatorObject].Indicator);\n\
+  \    }\n}\nvar emailsIndicators = [];\nfor (var indicatorObject in emails) {\n \
+  \   if (emails[indicatorObject] && emails[indicatorObject].Indicator && emailsIndicators.indexOf(emails[indicatorObject].Indicator)\
+  \ === -1) {\n        emailsIndicators.push(emails[indicatorObject].Indicator);\n\
+  \    }\n}\n\n// Unite into one array\nmaliciousIndicators = []\nmaliciousIndicators\
+  \ = maliciousIndicators.concat(filesIndicators);\nmaliciousIndicators = maliciousIndicators.concat(hashesIndicators);\n\
+  maliciousIndicators = maliciousIndicators.concat(ipsIndicators);\nmaliciousIndicators\
+  \ = maliciousIndicators.concat(urlsIndicators);\nmaliciousIndicators = maliciousIndicators.concat(domainsIndicators);\n\
+  maliciousIndicators = maliciousIndicators.concat(emailsIndicators);\n\n// Remove\
+  \ Manually remidated indicators\nif (args.includeManual == 'yes') {\n    manualFiles\
+  \ = dq(invContext, \"DBotScore(val.Type.toLowerCase()=='file' && val.Vendor=='Manual'\
+  \ && val.Score<\" + minScore + \")\");\n    manualHashes = dq(invContext, \"DBotScore(val.Type.toLowerCase()=='hash'\
+  \ && val.Vendor=='Manual' && val.Score<\" + minScore + \")\");\n    manualIps =\
+  \ dq(invContext, \"DBotScore(val.Type.toLowerCase()=='ip' && val.Vendor=='Manual'\
+  \ && val.Score<\" + minScore + \")\");\n    manualUrls = dq(invContext, \"DBotScore(val.Type.toLowerCase()=='url'\
+  \ && val.Vendor=='Manual' && val.Score<\" + minScore + \")\");\n    manualDomains\
+  \ = dq(invContext, \"DBotScore(val.Type.toLowerCase()=='domain' && val.Vendor=='Manual'\
+  \ && val.Score<\" + minScore + \")\");\n    manualEmails = dq(invContext, \"DBotScore(val.Type.toLowerCase()=='email'\
+  \ && val.Vendor=='Manual' && val.Score<\" + minScore + \")\");\n\n    for (var indicatorObject\
+  \ in manualFiles) {\n        if (manualFiles[indicatorObject] && maliciousIndicators.indexOf(manualFiles[indicatorObject].Indicator)\
+  \ !== -1) {\n            maliciousIndicators.splice(maliciousIndicators.indexOf(manualFiles[indicatorObject].Indicator),\
+  \ 1);\n        }\n    }\n\n    for (var indicatorObject in manualHashes) {\n   \
+  \     if (manualHashes[indicatorObject] && maliciousIndicators.indexOf(manualHashes[indicatorObject].Indicator)\
+  \ !== -1) {\n             maliciousIndicators.splice(maliciousIndicators.indexOf(manualHashes[indicatorObject].Indicator),1);\n\
+  \        }\n    }\n    for (var indicatorObject in manualIps) {\n        if (manualIps[indicatorObject]\
+  \ && maliciousIndicators.indexOf(manualIps[indicatorObject].Indicator) !== -1) {\n\
+  \             maliciousIndicators.splice(maliciousIndicators.indexOf(manualIps[indicatorObject].Indicator),1);\n\
+  \        }\n    }\n    for (var indicatorObject in manualUrls) {\n        if (manualUrls[indicatorObject]\
+  \ && maliciousIndicators.indexOf(manualUrls[indicatorObject].Indicator) !== -1)\
+  \ {\n             maliciousIndicators.splice(maliciousIndicators.indexOf(manualUrls[indicatorObject].Indicator),1);\n\
+  \        }\n    }\n    for (var indicatorObject in manualDomains) {\n        if\
+  \ (manualDomains[indicatorObject] && maliciousIndicators.indexOf(manualDomains[indicatorObject].Indicator)\
+  \ !== -1) {\n             maliciousIndicators.splice(maliciousIndicators.indexOf(manualDomains[indicatorObject].Indicator),1);\n\
+  \        }\n    }\n    for (var indicatorObject in manualEmails) {\n        if (manualEmails[indicatorObject]\
+  \ && maliciousIndicators.indexOf(manualEmails[indicatorObject].Indicator) !== -1)\
+  \ {\n             maliciousIndicators.splice(maliciousIndicators.indexOf(manualEmails[indicatorObject].Indicator),1);\n\
+  \        }\n    }\n}\n\nif (maliciousIndicators.length > 0)\n    return 'yes';\n\
+  \nif (args.queryIndicators == 'yes') {\n    var query = \"(reputation:Bad\"\n  \
+  \  if (args.includeSuspicious == 'yes') {\n        query = query + \" or reputation:Suspicious\"\
+  \n    }\n    query = query + \")\"\n\n    if ((args.maliciousQueryOverride) && (args.maliciousQueryOverride.length\
+  \ > 0)) {\n        query = args.maliciousQueryOverride\n    }\n\n    var indicatorsRes\
+  \ = executeCommand(\"findIndicators\", {\"query\":query+\" and investigationIDs:\"\
+  +investigation.id,\"size\":1})\n    if (indicatorsRes && indicatorsRes[0] && indicatorsRes[0].Contents[0])\
+  \ {\n        // we have results, so we found a maliciuos indicator for this investigation\n\
+  \        return 'yes'\n    }\n}\n\nreturn 'no'"
+scripttarget: 0
+tags:
+- Utility
+- Condition
+toversion: 4.1.9
+type: javascript

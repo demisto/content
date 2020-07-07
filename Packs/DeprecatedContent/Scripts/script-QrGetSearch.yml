@@ -1,28 +1,3 @@
-commonfields:
-  id: QrGetSearch
-  version: -1
-name: QrGetSearch
-script: |2
-
-  resp = demisto.executeCommand("qr-get-search", demisto.args())
-
-  if isError(resp[0]):
-      demisto.results(resp)
-  else:
-      data = demisto.get(resp[0], "Contents")
-      if data:
-          data = data if isinstance(data, list) else [data]
-          data = [{k: formatCell(row[k]) for k in row} for row in data]
-          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
-      else:
-          demisto.results("No results.")
-type: python
-subtype: python2
-tags:
-- QRadar
-comment: Gets a specific search id
-system: true
-deprecated: true
 args:
 - default: true
   description: The search id
@@ -30,9 +5,27 @@ args:
   required: true
 - description: Fields to filter in
   name: fields
-scripttarget: 0
-timeout: 0s
+comment: Gets a specific search id
+commonfields:
+  id: QrGetSearch
+  version: -1
 dependson:
   must:
   - qr-get-search
-
+deprecated: true
+name: QrGetSearch
+script: "\nresp = demisto.executeCommand(\"qr-get-search\", demisto.args())\n\nif\
+  \ isError(resp[0]):\n    demisto.results(resp)\nelse:\n    data = demisto.get(resp[0],\
+  \ \"Contents\")\n    if data:\n        data = data if isinstance(data, list) else\
+  \ [data]\n        data = [{k: formatCell(row[k]) for k in row} for row in data]\n\
+  \        demisto.results({\"ContentsFormat\": formats[\"table\"], \"Type\": entryTypes[\"\
+  note\"], \"Contents\": data} )\n    else:\n        demisto.results(\"No results.\"\
+  )\n"
+scripttarget: 0
+subtype: python2
+system: true
+tags:
+- QRadar
+timeout: 0s
+toversion: 4.1.9
+type: python

@@ -1,75 +1,53 @@
+description: ''
+fromversion: 3.5.0
 id: test_similar_incidents
-version: -1
+inputs: []
 name: Test Similar Incidents
-description: ""
-fromversion: "3.5.0"
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: c131c77d-b227-4ed0-85e7-4a6171fd0b3a
-    type: start
-    task:
-      id: c131c77d-b227-4ed0-85e7-4a6171fd0b3a
-      version: -1
-      description: ""
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-  "1":
-    id: "1"
-    taskid: 577034dd-1556-4f9d-8e4b-f9fd1179c166
-    type: regular
     task:
-      id: 577034dd-1556-4f9d-8e4b-f9fd1179c166
+      brand: ''
+      description: ''
+      id: c131c77d-b227-4ed0-85e7-4a6171fd0b3a
+      iscommand: false
+      name: ''
       version: -1
-      description: ""
+    taskid: c131c77d-b227-4ed0-85e7-4a6171fd0b3a
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      hoursDiff:
+        simple: '0'
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 577034dd-1556-4f9d-8e4b-f9fd1179c166
+      iscommand: false
       name: Create dup incident
       scriptName: TestCreateDuplicates
       type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      hoursDiff:
-        simple: "0"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-  "2":
-    id: "2"
-    taskid: c4ada7c3-c006-4fca-8f03-5f37e4d450ea
-    type: regular
-    task:
-      id: c4ada7c3-c006-4fca-8f03-5f37e4d450ea
       version: -1
-      description: ""
-      name: find similar incidents
-      scriptName: FindSimilarIncidents
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: 577034dd-1556-4f9d-8e4b-f9fd1179c166
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '2':
+    id: '2'
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       hoursBack: {}
       ignoreClosedIncidents: {}
@@ -85,78 +63,62 @@ tasks:
       similarLabelsKeys:
         simple: Brand
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-  "3":
-    id: "3"
-    taskid: b672e4f4-61d0-49d3-837d-f86650c2f3c6
-    type: regular
     task:
-      id: b672e4f4-61d0-49d3-837d-f86650c2f3c6
-      version: -1
-      description: ""
-      name: verify context
-      scriptName: VerifyContext
-      type: regular
+      brand: ''
+      description: ''
+      id: c4ada7c3-c006-4fca-8f03-5f37e4d450ea
       iscommand: false
-      brand: ""
+      name: find similar incidents
+      scriptName: FindSimilarIncidents
+      type: regular
+      version: -1
+    taskid: c4ada7c3-c006-4fca-8f03-5f37e4d450ea
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '3':
+    id: '3'
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: isSimilarIncidentFound
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-  "4":
-    id: "4"
-    taskid: 6a0c2c1a-893e-4d7d-8327-bab54b166b6d
-    type: regular
     task:
-      id: 6a0c2c1a-893e-4d7d-8327-bab54b166b6d
+      brand: ''
+      description: ''
+      id: b672e4f4-61d0-49d3-837d-f86650c2f3c6
+      iscommand: false
+      name: verify context
+      scriptName: VerifyContext
+      type: regular
       version: -1
-      description: ""
+    taskid: b672e4f4-61d0-49d3-837d-f86650c2f3c6
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '4':
+    id: '4'
+    nexttasks:
+      '#none#':
+      - '1'
+    scriptarguments:
+      all:
+        simple: 'yes'
+      key: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 6a0c2c1a-893e-4d7d-8327-bab54b166b6d
+      iscommand: false
       name: Delete context
       scriptName: DeleteContext
       type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 765,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+      version: -1
+    taskid: 6a0c2c1a-893e-4d7d-8327-bab54b166b6d
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 765,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

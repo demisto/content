@@ -1,173 +1,135 @@
 id: Prisma_Access_Egress_IP_Feed-Test
-version: -1
+inputs: []
 name: Prisma_Access_Egress_IP_Feed-Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 4d23ce19-3cad-43e9-8aa1-e3781736fbeb
-    type: start
-    task:
-      id: 4d23ce19-3cad-43e9-8aa1-e3781736fbeb
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
+      - '1'
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
-    taskid: f886275c-6865-4e76-8bcd-65beb7ec5dd7
-    type: regular
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: f886275c-6865-4e76-8bcd-65beb7ec5dd7
+      brand: ''
+      id: 4d23ce19-3cad-43e9-8aa1-e3781736fbeb
+      iscommand: false
+      name: ''
       version: -1
+    taskid: 4d23ce19-3cad-43e9-8aa1-e3781736fbeb
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: 'yes'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: f886275c-6865-4e76-8bcd-65beb7ec5dd7
+      iscommand: true
       name: DeleteContext
       script: DeleteContext
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: f886275c-6865-4e76-8bcd-65beb7ec5dd7
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 200\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "2"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 200
-        }
-      }
+      - '3'
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
-  "2":
-    id: "2"
-    taskid: 99f1bdea-4cac-4fcf-8b6e-a2536b85b0c7
-    type: regular
+    scriptarguments:
+      limit:
+        simple: '5'
+    separatecontext: false
+    skipunavailable: false
     task:
+      brand: ''
       id: 99f1bdea-4cac-4fcf-8b6e-a2536b85b0c7
-      version: -1
+      iscommand: true
       name: prisma-access-get-indicators
       script: '|||prisma-access-get-indicators'
       type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      limit:
-        simple: "5"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "3":
-    id: "3"
-    taskid: 7a824f3a-cb51-43e4-8ccb-550c4f2db7b4
-    type: condition
-    task:
-      id: 7a824f3a-cb51-43e4-8ccb-550c4f2db7b4
       version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "4"
-    separatecontext: false
+    taskid: 99f1bdea-4cac-4fcf-8b6e-a2536b85b0c7
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 400\n  }\n}"
+  '3':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: PrismaAccess.Egress.IP.Address
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: PrismaAccess.Egress.IP.Zone
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 600
-        }
-      }
-    note: false
-    timertriggers: []
+          operator: isNotEmpty
+      label: 'yes'
+    id: '3'
     ignoreworker: false
-    skipunavailable: false
+    nexttasks:
+      'yes':
+      - '4'
+    note: false
     quietmode: 0
-  "4":
-    id: "4"
-    taskid: 6852624e-367d-4c01-8eda-f205c577c359
-    type: title
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 6852624e-367d-4c01-8eda-f205c577c359
+      brand: ''
+      id: 7a824f3a-cb51-43e4-8ccb-550c4f2db7b4
+      iscommand: false
+      name: Verify Outputs
+      type: condition
       version: -1
+    taskid: 7a824f3a-cb51-43e4-8ccb-550c4f2db7b4
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 600\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 6852624e-367d-4c01-8eda-f205c577c359
+      iscommand: false
       name: Test Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 800
-        }
-      }
-    note: false
+      version: -1
+    taskid: 6852624e-367d-4c01-8eda-f205c577c359
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 815,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 800\n  }\n}"
 tests:
 - No tests
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 815,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

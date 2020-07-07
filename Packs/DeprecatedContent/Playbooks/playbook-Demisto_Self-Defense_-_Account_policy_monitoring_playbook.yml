@@ -1,144 +1,111 @@
-id: Demisto_Self-Defense_-_Account_policy_monitoring_playbook
-version: -1
-name: Demisto Self-Defense - Account policy monitoring playbook
-description: Get list of Demisto users through the REST API, and alert if any non-SAML user accounts are found.
+description: Get list of Demisto users through the REST API, and alert if any non-SAML
+  user accounts are found.
 fromversion: 3.5.0
-starttaskid: "0"
+id: Demisto_Self-Defense_-_Account_policy_monitoring_playbook
+inputs: []
+name: Demisto Self-Defense - Account policy monitoring playbook
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    task:
+      brand: ''
+      description: start
+      id: 8d2065da-28f3-4042-81b6-ccd497f2d788
+      iscommand: false
+      name: ''
+      version: -1
     taskid: 8d2065da-28f3-4042-81b6-ccd497f2d788
     type: start
-    task:
-      id: 8d2065da-28f3-4042-81b6-ccd497f2d788
-      version: -1
-      name: ""
-      description: "start"
-      iscommand: false
-      brand: ""
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
-  "1":
-    id: "1"
-    taskid: 8c2060b1-feed-4a00-8e1d-01d3d8ce9137
-    type: regular
-    task:
-      id: 8c2060b1-feed-4a00-8e1d-01d3d8ce9137
-      version: -1
-      name: List Demisto users
-      description: List all Demisto users via Demisto REST API integration
-      script: Demisto REST API|||demisto-api-get
-      type: regular
-      iscommand: true
-      brand: Demisto REST API
-    nexttasks:
-      '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       extend-context:
         simple: DemistoUsers=response
       uri:
         simple: users
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 258
-        }
-      }
-  "2":
-    id: "2"
-    taskid: 4d440741-9f52-4625-8b31-ad0de970fe0b
-    type: condition
     task:
-      id: 4d440741-9f52-4625-8b31-ad0de970fe0b
+      brand: Demisto REST API
+      description: List all Demisto users via Demisto REST API integration
+      id: 8c2060b1-feed-4a00-8e1d-01d3d8ce9137
+      iscommand: true
+      name: List Demisto users
+      script: Demisto REST API|||demisto-api-get
+      type: regular
       version: -1
-      name: Any non-SSO users?
-      description: Check if there are any users that weren't created through a SAML
-        login i.e. users created locally in Demisto. In an all-SSO setup there shouldn't
-        be any.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "7"
-      "yes":
-      - "3"
-    separatecontext: false
+    taskid: 8c2060b1-feed-4a00-8e1d-01d3d8ce9137
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 258\n  }\n}"
+  '2':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: general.isNotEmpty
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: DemistoUsers
                 filters:
-                - - operator: string.isNotEqual
-                    left:
+                - - left:
+                      iscontext: true
                       value:
                         simple: DemistoUsers.userType
-                      iscontext: true
+                    operator: string.isNotEqual
                     right:
                       value:
                         simple: SAML
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 448,
-          "y": 443
-        }
-      }
-  "3":
-    id: "3"
-    taskid: bc2a838b-0d3e-43d1-8dcd-3e014b6ccf3f
-    type: title
+                root: DemistoUsers
+          operator: general.isNotEmpty
+      label: 'yes'
+    id: '2'
+    nexttasks:
+      '#default#':
+      - '7'
+      'yes':
+      - '3'
+    separatecontext: false
     task:
-      id: bc2a838b-0d3e-43d1-8dcd-3e014b6ccf3f
-      version: -1
-      name: Alert and Escalate
-      description: Alert and Escalate
-      type: title
+      brand: ''
+      description: Check if there are any users that weren't created through a SAML
+        login i.e. users created locally in Demisto. In an all-SSO setup there shouldn't
+        be any.
+      id: 4d440741-9f52-4625-8b31-ad0de970fe0b
       iscommand: false
-      brand: ""
+      name: Any non-SSO users?
+      type: condition
+      version: -1
+    taskid: 4d440741-9f52-4625-8b31-ad0de970fe0b
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 448,\n    \"y\": 443\n  }\n}"
+  '3':
+    id: '3'
     nexttasks:
       '#none#':
-      - "4"
-      - "5"
-      - "6"
+      - '4'
+      - '5'
+      - '6'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 660
-        }
-      }
-  "4":
-    id: "4"
-    taskid: 2f4d7417-f033-4c83-83b2-8a7484869a32
-    type: regular
     task:
-      id: 2f4d7417-f033-4c83-83b2-8a7484869a32
+      brand: ''
+      description: Alert and Escalate
+      id: bc2a838b-0d3e-43d1-8dcd-3e014b6ccf3f
+      iscommand: false
+      name: Alert and Escalate
+      type: title
       version: -1
-      name: Escalate to Critical
-      description: Set incident severity to Critical
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
+    taskid: bc2a838b-0d3e-43d1-8dcd-3e014b6ccf3f
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 660\n  }\n}"
+  '4':
+    id: '4'
     scriptarguments:
       addLabels: {}
       amarkdownsection: {}
@@ -241,26 +208,20 @@ tasks:
       type: {}
       username: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 84,
-          "y": 817
-        }
-      }
-  "5":
-    id: "5"
-    taskid: 15c95532-3d62-41b0-8d97-663d17443b1b
-    type: regular
     task:
-      id: 15c95532-3d62-41b0-8d97-663d17443b1b
-      version: -1
-      name: Send alert to Slack channel
-      description: Send an alert to the CSIRT slack channel
-      script: slack|||slack-send
-      type: regular
+      brand: Builtin
+      description: Set incident severity to Critical
+      id: 2f4d7417-f033-4c83-83b2-8a7484869a32
       iscommand: true
-      brand: slack
+      name: Escalate to Critical
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 2f4d7417-f033-4c83-83b2-8a7484869a32
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 84,\n    \"y\": 817\n  }\n}"
+  '5':
+    id: '5'
     scriptarguments:
       IgnoreAddURL: {}
       channel:
@@ -272,26 +233,20 @@ tasks:
       threadID: {}
       to: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 386,
-          "y": 1018
-        }
-      }
-  "6":
-    id: "6"
-    taskid: fed938d2-919c-467c-8f65-4757d50d6f00
-    type: regular
     task:
-      id: fed938d2-919c-467c-8f65-4757d50d6f00
-      version: -1
-      name: Send SMS alert
-      description: Send an SMS alert using Twilio.
-      script: Twilio|||TwilioSendSMS
-      type: regular
+      brand: slack
+      description: Send an alert to the CSIRT slack channel
+      id: 15c95532-3d62-41b0-8d97-663d17443b1b
       iscommand: true
-      brand: Twilio
+      name: Send alert to Slack channel
+      script: slack|||slack-send
+      type: regular
+      version: -1
+    taskid: 15c95532-3d62-41b0-8d97-663d17443b1b
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 386,\n    \"y\": 1018\n  }\n}"
+  '6':
+    id: '6'
     scriptarguments:
       body:
         simple: Non-SSO Demisto User detected!
@@ -299,52 +254,40 @@ tasks:
       to:
         simple: +1(XXX)666-1337
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 675,
-          "y": 841
-        }
-      }
-  "7":
-    id: "7"
-    taskid: 99688ee1-63c3-4e75-8148-952305bcd890
-    type: regular
     task:
-      id: 99688ee1-63c3-4e75-8148-952305bcd890
-      version: -1
-      name: Close
-      description: Auto-close this incident
-      scriptName: CloseInvestigation
+      brand: Twilio
+      description: Send an SMS alert using Twilio.
+      id: fed938d2-919c-467c-8f65-4757d50d6f00
+      iscommand: true
+      name: Send SMS alert
+      script: Twilio|||TwilioSendSMS
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: fed938d2-919c-467c-8f65-4757d50d6f00
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 675,\n    \"y\": 841\n  }\n}"
+  '7':
+    id: '7'
     scriptarguments:
       notes: {}
       reason: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 922,
-          "y": 590
-        }
-      }
-view: |-
-  {
-    "linkLabelsPosition": {
-      "2_3_yes": 0.62
-    },
-    "paper": {
-      "dimensions": {
-        "height": 1063,
-        "width": 1218,
-        "x": 84,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    task:
+      brand: ''
+      description: Auto-close this incident
+      id: 99688ee1-63c3-4e75-8148-952305bcd890
+      iscommand: false
+      name: Close
+      scriptName: CloseInvestigation
+      type: regular
+      version: -1
+    taskid: 99688ee1-63c3-4e75-8148-952305bcd890
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 922,\n    \"y\": 590\n  }\n}"
 tests:
-  - No test
+- No test
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"2_3_yes\": 0.62\n  },\n  \"paper\": {\n\
+  \    \"dimensions\": {\n      \"height\": 1063,\n      \"width\": 1218,\n      \"\
+  x\": 84,\n      \"y\": 50\n    }\n  }\n}"

@@ -1,42 +1,40 @@
+args:
+- default: true
+  defaultValue: ${incident.labels.id}
+  description: The offense ID to query.
+  name: offenseID
+  required: true
+- defaultValue: ${incident.labels.start_time}
+  description: query from startTime (in timestamp format).
+  name: startTime
+  required: true
+- description: Table headers
+  name: headers
+- description: Number of results in return
+  name: range
+- description: Interval to poll for results. Default is 10 seconds.
+  name: interval
+- description: Timeout in seconds. Default is 10 minutes.
+  name: timeout
+- description: Property fields to include in results
+  name: fields
+- auto: PREDEFINED
+  defaultValue: 'False'
+  description: Determines whether the CRE name is null by default.
+  name: is_cre_name_null
+  predefined:
+  - 'True'
+  - 'False'
+comment: Use the QradarGetOffenseCorrlations_v2 Playbook instead. Return the QRadar
+  offense correlations if exist in logs.
 commonfields:
   id: QRadarGetOffenseCorrelations
   version: -1
-name: QRadarGetOffenseCorrelations
-script: ''
-type: python
-subtype: python2
-tags:
-- QRadar
-comment: Use the QradarGetOffenseCorrlations_v2 Playbook instead. Return the QRadar offense correlations if exist in logs.
-system: true
+dependson:
+  must:
+  - qradar-searches
 deprecated: true
-args:
-- name: offenseID
-  required: true
-  default: true
-  description: The offense ID to query.
-  defaultValue: ${incident.labels.id}
-- name: startTime
-  required: true
-  description: query from startTime (in timestamp format).
-  defaultValue: ${incident.labels.start_time}
-- name: headers
-  description: Table headers
-- name: range
-  description: Number of results in return
-- name: interval
-  description: Interval to poll for results. Default is 10 seconds.
-- name: timeout
-  description: Timeout in seconds. Default is 10 minutes.
-- name: fields
-  description: Property fields to include in results
-- name: is_cre_name_null
-  auto: PREDEFINED
-  predefined:
-  - "True"
-  - "False"
-  description: Determines whether the CRE name is null by default.
-  defaultValue: "False"
+name: QRadarGetOffenseCorrelations
 outputs:
 - contextPath: QRadar.Correlation
   description: The QRadar offense correlations
@@ -60,9 +58,13 @@ outputs:
   description: 'The correlation category id '
 - contextPath: QRadar
   description: QRadar context output
+script: ''
 scripttarget: 0
-dependson:
-  must:
-  - qradar-searches
+subtype: python2
+system: true
+tags:
+- QRadar
 tests:
 - no tests
+toversion: 4.1.9
+type: python

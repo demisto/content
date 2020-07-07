@@ -2,6 +2,7 @@ comment: Get the Server URL.
 commonfields:
   id: GetServerURL
   version: -1
+dockerimage: demisto/python3:3.8.2.6981
 enabled: true
 name: GetServerURL
 outputs:
@@ -17,14 +18,14 @@ outputs:
 - contextPath: ServerURL.URL
   description: The server full URL.
   type: String
+runas: DBotWeakRole
+runonce: false
 script: '-'
 subtype: python3
 system: false
-timeout: '0'
-type: python
-dockerimage: demisto/python3:3.8.2.6981
-runas: DBotWeakRole
-runonce: false
 tags: []
 tests:
-  - no test
+- no test
+timeout: '0'
+toversion: 4.1.9
+type: python

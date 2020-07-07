@@ -1,191 +1,45 @@
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Pwned
   version: -1
-name: Pwned
-display: Have I Been Pwned? (Deprecated)
-category: Data Enrichment & Threat Intelligence
-image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAABg1BMVEU6m8U7m8U6nMY7m8U7m8U7nMY6m8U6m8U6msQ2mMM5msQwlcH/+/n///0ylsL//fr//PpJocg5mcQ4mcQ7msQ0l8I1l8MxlsIvlcE0l8MvlMH///v//vsxlcLr8fTU5u7///zM4us3mcM3mMNytdNeq80ulMHx9vYzl8I4mcPJ4OpJosjX5+7a6vAtlMFFn8dKosg9m8WPxNr9+vjF3elRpcrc6vD09vZ0ttOy1eRdq82q0eKy1OT5+Pfv8/X6+fiDvthLoslTpsu62ea82+culMB1t9Sayt+y1uVBncZ5udWTxdtosNCt0eL///9HoMdKocjN4uzW5+6Ow9tAncZZqcxhrM7C3emkzuDQ4+zx9PXt8/Tk7fFLoshPpMnm7vLt8vSey9/p8PMtlMDG3+r29vdXqMu62edcqs2Wyd6Xyd41mMMzlsLQ5O3Q5Oy21+VGn8fn7/L8+vj//PmJwdn//fu52OY5msPn7/NIochzttP9+/l1ttNTpsp8u9dlr8/U5u3+U0u0AAAACHRSTlPp6dXu6tXu6tr1+I4AAAFsSURBVHhe7dZFjyMxEAXgTiazKdvNGGamYWZmZmZeZIafPp1or9uT2uMqT5b8Lt/Bckk25/ZyqHibuWeATBPHYYnrvyQNEmY+omMITbRP9o2bGKLmu2OxXoYhlMT5jkULRXKd8lA6hyHAJqSrawNFfIOh/S4TgPhYvk6SWVruUQiQsfnUplYfMftnRnWqwV4wNhCuj+j+KQZAlOER/jehiIFJzJ0HhUsRqFoLwJ/dgYA5fTOb9gPRqknaS60W4kRADAQM3VooR6PRUnxldW3dLuUN66lJpmJBkGVZCm1tB2U7wg57igDbzUYikYPDo+OTU7tkz5yIblQuDF1tKyqK0tqiqi2tdim2UQdi3t7dpx9AI9UkAZK1ojocnz4vCELcwNwLJS94/iVBESPOS68YIAh5/ebtu5SFIZX30oePIkUQ7VMp9PmLAQjCvsa+fc8AhpAfP3/5AUV0EhAbj8Vf0yD/8rlye1yoeJofAa0ZbOr9kpaFAAAAAElFTkSuQmCC
-description: Deprecated. Use the Have I Been Pwned? V2 integration instead.
-  Checks whether emails or domains have  been compromised in recent breaches, using the Have I Been Pwned? service.
 configuration:
 - display: Use system proxy settings
   name: proxy
-  type: 8
   required: false
-- display: 'Email Severity: The DBot reputation for compromised emails (SUSPICIOUS
+  type: 8
+- defaultvalue: SUSPICIOUS
+  display: 'Email Severity: The DBot reputation for compromised emails (SUSPICIOUS
     or MALICIOUS)'
   name: defaultdbotscoreEmail
-  defaultvalue: SUSPICIOUS
-  type: 0
   required: false
-- display: 'Domain Severity: The DBot reputation for compromised domains (SUSPICIOUS
+  type: 0
+- defaultvalue: SUSPICIOUS
+  display: 'Domain Severity: The DBot reputation for compromised domains (SUSPICIOUS
     or MALICIOUS)'
   name: defaultdbotscoreDomain
-  defaultvalue: SUSPICIOUS
-  type: 0
   required: false
+  type: 0
+deprecated: true
+description: Deprecated. Use the Have I Been Pwned? V2 integration instead. Checks
+  whether emails or domains have  been compromised in recent breaches, using the Have
+  I Been Pwned? service.
+display: Have I Been Pwned? (Deprecated)
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAABg1BMVEU6m8U7m8U6nMY7m8U7m8U7nMY6m8U6m8U6msQ2mMM5msQwlcH/+/n///0ylsL//fr//PpJocg5mcQ4mcQ7msQ0l8I1l8MxlsIvlcE0l8MvlMH///v//vsxlcLr8fTU5u7///zM4us3mcM3mMNytdNeq80ulMHx9vYzl8I4mcPJ4OpJosjX5+7a6vAtlMFFn8dKosg9m8WPxNr9+vjF3elRpcrc6vD09vZ0ttOy1eRdq82q0eKy1OT5+Pfv8/X6+fiDvthLoslTpsu62ea82+culMB1t9Sayt+y1uVBncZ5udWTxdtosNCt0eL///9HoMdKocjN4uzW5+6Ow9tAncZZqcxhrM7C3emkzuDQ4+zx9PXt8/Tk7fFLoshPpMnm7vLt8vSey9/p8PMtlMDG3+r29vdXqMu62edcqs2Wyd6Xyd41mMMzlsLQ5O3Q5Oy21+VGn8fn7/L8+vj//PmJwdn//fu52OY5msPn7/NIochzttP9+/l1ttNTpsp8u9dlr8/U5u3+U0u0AAAACHRSTlPp6dXu6tXu6tr1+I4AAAFsSURBVHhe7dZFjyMxEAXgTiazKdvNGGamYWZmZmZeZIafPp1or9uT2uMqT5b8Lt/Bckk25/ZyqHibuWeATBPHYYnrvyQNEmY+omMITbRP9o2bGKLmu2OxXoYhlMT5jkULRXKd8lA6hyHAJqSrawNFfIOh/S4TgPhYvk6SWVruUQiQsfnUplYfMftnRnWqwV4wNhCuj+j+KQZAlOER/jehiIFJzJ0HhUsRqFoLwJ/dgYA5fTOb9gPRqknaS60W4kRADAQM3VooR6PRUnxldW3dLuUN66lJpmJBkGVZCm1tB2U7wg57igDbzUYikYPDo+OTU7tkz5yIblQuDF1tKyqK0tqiqi2tdim2UQdi3t7dpx9AI9UkAZK1ojocnz4vCELcwNwLJS94/iVBESPOS68YIAh5/ebtu5SFIZX30oePIkUQ7VMp9PmLAQjCvsa+fc8AhpAfP3/5AUV0EhAbj8Vf0yD/8rlye1yoeJofAa0ZbOr9kpaFAAAAAElFTkSuQmCC
+name: Pwned
 script:
-  script: |-
-    DEFAULT_DBOT_SCORE_EMAIL = params.defaultdbotscoreEmail == 'SUSPICIOUS' ? 2 : 3;
-    DEFAULT_DBOT_SCORE_DOMAIN = params.defaultdbotscoreDomain == 'SUSPICIOUS' ? 2 : 3;
-
-    function sendRequest(url) {
-        var res = http(
-            url,
-            {
-                Method: 'GET',
-                Headers: {
-                    'Accept': ['application/json'],
-                    'User-Agent' : ['DBOT-API'],
-                }
-            },
-            false,
-            params.proxy
-        );
-
-        if (res.StatusCode == 404) {
-            return null;
-        } else if (res.StatusCode < 200 || res.StatusCode>299) {
-            throw 'Error ' + res.StatusCode + '. ' + res.Status;
-        }
-
-        var obj;
-        try {
-            obj = JSON.parse(res.Body);
-        } catch (ex) {
-            throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
-        }
-        return obj;
-    }
-
-
-    function fixDesc(desc) {
-        var newDesc = desc.replace(/<a href="(.+?)"(.+?)\>(.+?)<\/a>/g,'[$3]($1)');
-        return newDesc;
-    }
-
-
-    function dataToMd(type,arg,obj) {
-        var md = "### Have I Been Pwned query for " + type.toLowerCase() + ": *" + arg + "*\n";
-        if (obj && obj.length>0) {
-            for (var i=0;i<obj.length;i++) {
-                var breach=obj[i];
-                md += "#### " + breach.Title + " ("+breach.Domain+"): " + breach.PwnCount + " records breached\n";
-                md += "Date: **" + breach.BreachDate + "**\n";
-                md += fixDesc(breach.Description) + "\n";
-                md += "Data breached: **" + breach.DataClasses + "**\n";
-            }
-        } else {
-            md += "No records found";
-        }
-        return md;
-    }
-
-
-    function addCompromised(context, path, obj) {
-      obj['properties_to_append'] = ['Compromised'];
-      context[path] = obj;
-    }
-
-
-    function emailToEc(email,obj) {
-        var compSites = [];
-        obj.forEach(function (item) {
-            compSites.push(item.Title);
-        });
-        compSites = compSites.sort();
-        var compEmail = {};
-        var score = 0;
-        if (compSites.length > 0) {
-            score = DEFAULT_DBOT_SCORE_EMAIL;
-            var emailContext = {
-                'Address': email,
-                'Compromised': {Vendor:'Pwned', Reporters: compSites.join(', ')}
-            };
-            if (DEFAULT_DBOT_SCORE_EMAIL === 3){
-                emailContext.Malicious = {
-                    Vendor: 'Pwned',
-                    Description: 'The email has been compromised',
-                };
-            }
-            addCompromised(compEmail, outputPaths.email, emailContext);
-        }
-        var dBotScore = {
-            Indicator: email,
-            Type: 'email',
-            Vendor: 'Pwned',
-            Score: score
-        };
-        compEmail.DBotScore = dBotScore;
-        return compEmail;
-    }
-
-
-    function domainToEc(domain,obj) {
-        var compSites = [];
-        obj.forEach(function (item) {
-            compSites.push(item.Title);
-        });
-        compSites = compSites.sort();
-        var compDomain = {};
-        var score = 0;
-        if (compSites.length > 0) {
-            score = DEFAULT_DBOT_SCORE_DOMAIN;
-            var domainContext = {
-                'Name': domain,
-                'Compromised': {Vendor:'Pwned', Reporters: compSites.join(', ')},
-            };
-            if (DEFAULT_DBOT_SCORE_DOMAIN === 3){
-                domainContext.Malicious = {
-                    Vendor: 'Pwned',
-                    Description: 'The domain has been compromised',
-                };
-            }
-
-            addCompromised(compDomain, outputPaths.domain, domainContext);
-        }
-        var dBotScore = {
-            Indicator: domain,
-            Type: 'domain',
-            Vendor: 'Pwned',
-            Score: score
-        };
-        compDomain.DBotScore = dBotScore;
-        return compDomain;
-    }
-
-
-    switch (command) {
-        case 'test-module':
-            var url = 'https://haveibeenpwned.com/api/v2/breaches?domain=demisto.com';
-            var res = sendRequest(url);
-            return 'ok';
-        case 'email':
-        case 'pwned-email':
-            var url = 'https://haveibeenpwned.com/api/v2/breachedaccount/' + args.email;
-            var res = sendRequest(url);
-            var md = dataToMd("Email",args.email,res);
-            var ec = emailToEc(args.email,res || []);
-            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
-        case 'domain':
-        case 'pwned-domain':
-            var url = 'https://haveibeenpwned.com/api/v2/breaches?domain=' + args.domain;
-            var res = sendRequest(url);
-            var md = dataToMd("Domain",args.domain,res);
-            var ec = domainToEc(args.domain,res || []);
-            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
-        default:
-            throw 'Unknown command - ' + command;
-    }
-  type: javascript
   commands:
-  - name: pwned-email
-    deprecated: true
-    arguments:
-    - name: email
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: Email to check.
+      name: email
+      required: true
+    deprecated: true
+    description: Checks if an email has been compromised, as part of previous breaches.
+    important:
+    - contextPath: Persons(val.Compromised)
+      description: Compromised Persons
+      related: ''
+    name: pwned-email
     outputs:
     - contextPath: Account.Email.Compromised.Vendor
       description: For comporomised emails, the vendor that made the decision.
@@ -215,18 +69,18 @@ script:
     - contextPath: Email.DBotScore.Score
       description: The actual score.
       type: number
-    important:
-    - contextPath: Persons(val.Compromised)
-      description: Compromised Persons
-      related: ""
-    description: Checks if an email has been compromised, as part of previous breaches.
-  - name: pwned-domain
-    deprecated: true
-    arguments:
-    - name: domain
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: Domain to check.
+      name: domain
+      required: true
+    deprecated: true
+    description: Checks if domain has been compromised.
+    important:
+    - contextPath: Domain(val.Compromised)
+      description: Compromised domains.
+      related: ''
+    name: pwned-domain
     outputs:
     - contextPath: Domain.Compromised.Vendor
       description: For compromised domains, the vendor that made the decision.
@@ -256,18 +110,18 @@ script:
     - contextPath: Domain.DBotScore.Score
       description: The actual score.
       type: number
-    important:
-    - contextPath: Domain(val.Compromised)
-      description: Compromised domains.
-      related: ""
-    description: Checks if domain has been compromised.
-  - name: email
-    deprecated: true
-    arguments:
-    - name: email
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: Email to check
+      name: email
+      required: true
+    deprecated: true
+    description: Checks if an email has been compromised, as part of previous breaches.
+    important:
+    - contextPath: Persons(val.Compromised)
+      description: Compromised persons.
+      related: ''
+    name: email
     outputs:
     - contextPath: Account.Email.Compromised.Vendor
       description: For comporomised emails, the vendor that made the decision.
@@ -296,18 +150,18 @@ script:
     - contextPath: Email.DBotScore.Score
       description: The actual score.
       type: number
-    important:
-    - contextPath: Persons(val.Compromised)
-      description: Compromised persons.
-      related: ""
-    description: Checks if an email has been compromised, as part of previous breaches.
-  - name: domain
-    deprecated: true
-    arguments:
-    - name: domain
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: domain to check
+      name: domain
+      required: true
+    deprecated: true
+    description: Checks if a domain has been compromised.
+    important:
+    - contextPath: Domain(val.Compromised)
+      description: Compromised domains.
+      related: ''
+    name: domain
     outputs:
     - contextPath: Domain.Compromised.Vendor
       description: For compromised domains, the vendor that made the decision.
@@ -336,12 +190,65 @@ script:
     - contextPath: Domain.DBotScore.Score
       description: The actual score.
       type: number
-    important:
-    - contextPath: Domain(val.Compromised)
-      description: Compromised domains.
-      related: ""
-    description: Checks if a domain has been compromised.
   runonce: false
-deprecated: true
+  script: "DEFAULT_DBOT_SCORE_EMAIL = params.defaultdbotscoreEmail == 'SUSPICIOUS'\
+    \ ? 2 : 3;\nDEFAULT_DBOT_SCORE_DOMAIN = params.defaultdbotscoreDomain == 'SUSPICIOUS'\
+    \ ? 2 : 3;\n\nfunction sendRequest(url) {\n    var res = http(\n        url,\n\
+    \        {\n            Method: 'GET',\n            Headers: {\n             \
+    \   'Accept': ['application/json'],\n                'User-Agent' : ['DBOT-API'],\n\
+    \            }\n        },\n        false,\n        params.proxy\n    );\n\n \
+    \   if (res.StatusCode == 404) {\n        return null;\n    } else if (res.StatusCode\
+    \ < 200 || res.StatusCode>299) {\n        throw 'Error ' + res.StatusCode + '.\
+    \ ' + res.Status;\n    }\n\n    var obj;\n    try {\n        obj = JSON.parse(res.Body);\n\
+    \    } catch (ex) {\n        throw 'Error parsing reply - ' + result.Body + '\
+    \ - ' + ex;\n    }\n    return obj;\n}\n\n\nfunction fixDesc(desc) {\n    var\
+    \ newDesc = desc.replace(/<a href=\"(.+?)\"(.+?)\\>(.+?)<\\/a>/g,'[$3]($1)');\n\
+    \    return newDesc;\n}\n\n\nfunction dataToMd(type,arg,obj) {\n    var md = \"\
+    ### Have I Been Pwned query for \" + type.toLowerCase() + \": *\" + arg + \"*\\\
+    n\";\n    if (obj && obj.length>0) {\n        for (var i=0;i<obj.length;i++) {\n\
+    \            var breach=obj[i];\n            md += \"#### \" + breach.Title +\
+    \ \" (\"+breach.Domain+\"): \" + breach.PwnCount + \" records breached\\n\";\n\
+    \            md += \"Date: **\" + breach.BreachDate + \"**\\n\";\n           \
+    \ md += fixDesc(breach.Description) + \"\\n\";\n            md += \"Data breached:\
+    \ **\" + breach.DataClasses + \"**\\n\";\n        }\n    } else {\n        md\
+    \ += \"No records found\";\n    }\n    return md;\n}\n\n\nfunction addCompromised(context,\
+    \ path, obj) {\n  obj['properties_to_append'] = ['Compromised'];\n  context[path]\
+    \ = obj;\n}\n\n\nfunction emailToEc(email,obj) {\n    var compSites = [];\n  \
+    \  obj.forEach(function (item) {\n        compSites.push(item.Title);\n    });\n\
+    \    compSites = compSites.sort();\n    var compEmail = {};\n    var score = 0;\n\
+    \    if (compSites.length > 0) {\n        score = DEFAULT_DBOT_SCORE_EMAIL;\n\
+    \        var emailContext = {\n            'Address': email,\n            'Compromised':\
+    \ {Vendor:'Pwned', Reporters: compSites.join(', ')}\n        };\n        if (DEFAULT_DBOT_SCORE_EMAIL\
+    \ === 3){\n            emailContext.Malicious = {\n                Vendor: 'Pwned',\n\
+    \                Description: 'The email has been compromised',\n            };\n\
+    \        }\n        addCompromised(compEmail, outputPaths.email, emailContext);\n\
+    \    }\n    var dBotScore = {\n        Indicator: email,\n        Type: 'email',\n\
+    \        Vendor: 'Pwned',\n        Score: score\n    };\n    compEmail.DBotScore\
+    \ = dBotScore;\n    return compEmail;\n}\n\n\nfunction domainToEc(domain,obj)\
+    \ {\n    var compSites = [];\n    obj.forEach(function (item) {\n        compSites.push(item.Title);\n\
+    \    });\n    compSites = compSites.sort();\n    var compDomain = {};\n    var\
+    \ score = 0;\n    if (compSites.length > 0) {\n        score = DEFAULT_DBOT_SCORE_DOMAIN;\n\
+    \        var domainContext = {\n            'Name': domain,\n            'Compromised':\
+    \ {Vendor:'Pwned', Reporters: compSites.join(', ')},\n        };\n        if (DEFAULT_DBOT_SCORE_DOMAIN\
+    \ === 3){\n            domainContext.Malicious = {\n                Vendor: 'Pwned',\n\
+    \                Description: 'The domain has been compromised',\n           \
+    \ };\n        }\n\n        addCompromised(compDomain, outputPaths.domain, domainContext);\n\
+    \    }\n    var dBotScore = {\n        Indicator: domain,\n        Type: 'domain',\n\
+    \        Vendor: 'Pwned',\n        Score: score\n    };\n    compDomain.DBotScore\
+    \ = dBotScore;\n    return compDomain;\n}\n\n\nswitch (command) {\n    case 'test-module':\n\
+    \        var url = 'https://haveibeenpwned.com/api/v2/breaches?domain=demisto.com';\n\
+    \        var res = sendRequest(url);\n        return 'ok';\n    case 'email':\n\
+    \    case 'pwned-email':\n        var url = 'https://haveibeenpwned.com/api/v2/breachedaccount/'\
+    \ + args.email;\n        var res = sendRequest(url);\n        var md = dataToMd(\"\
+    Email\",args.email,res);\n        var ec = emailToEc(args.email,res || []);\n\
+    \        return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json,\
+    \ HumanReadable: md, EntryContext: ec};\n    case 'domain':\n    case 'pwned-domain':\n\
+    \        var url = 'https://haveibeenpwned.com/api/v2/breaches?domain=' + args.domain;\n\
+    \        var res = sendRequest(url);\n        var md = dataToMd(\"Domain\",args.domain,res);\n\
+    \        var ec = domainToEc(args.domain,res || []);\n        return {Type: entryTypes.note,\
+    \ Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext:\
+    \ ec};\n    default:\n        throw 'Unknown command - ' + command;\n}"
+  type: javascript
 tests:
-  - No tests
+- No tests
+toversion: 4.1.9

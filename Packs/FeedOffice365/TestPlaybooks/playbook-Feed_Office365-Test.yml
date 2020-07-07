@@ -1,432 +1,358 @@
 id: Office365_Feed_Test
-version: -1
+inputs: []
 name: Office365_Feed_Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: b18ea60b-9ab0-456b-8cb7-6b5555830fdc
-    type: start
+  '0':
+    id: '0'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
+      brand: ''
       elasticcommonfields: {}
       id: b18ea60b-9ab0-456b-8cb7-6b5555830fdc
-      version: -1
-      name: ""
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "1":
-    id: "1"
-    taskid: 597ef1c7-e55a-4f5d-81f5-cb73f741a3e1
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: 597ef1c7-e55a-4f5d-81f5-cb73f741a3e1
+      name: ''
       version: -1
-      name: Get Indicators - Office 365 (IP)
-      description: Gets indicators from the feed.
-      script: '|||office365-get-indicators'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: b18ea60b-9ab0-456b-8cb7-6b5555830fdc
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
+    quietmode: 0
     scriptarguments:
       extend-context:
         simple: Indicator=.
       indicator_type:
         simple: ips
       limit:
-        simple: "10"
+        simple: '10'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "2":
-    id: "2"
-    taskid: 9b507766-f320-440e-8dea-e7d124f39bab
-    type: condition
     task:
+      brand: ''
+      description: Gets indicators from the feed.
+      elasticcommonfields: {}
+      id: 597ef1c7-e55a-4f5d-81f5-cb73f741a3e1
+      iscommand: true
+      name: Get Indicators - Office 365 (IP)
+      script: '|||office365-get-indicators'
+      type: regular
+      version: -1
+    taskid: 597ef1c7-e55a-4f5d-81f5-cb73f741a3e1
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '10':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: raw_response.[0].type
+                root: Indicator
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: raw_response.[0].value
+                root: Indicator
+          operator: isNotEmpty
+      label: 'yes'
+    id: '10'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '3'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Asserts output.
+      elasticcommonfields: {}
+      id: 936fc963-ff5c-4630-87db-ad175f2e6f57
+      iscommand: false
+      name: Assert Output
+      type: condition
+      version: -1
+    taskid: 936fc963-ff5c-4630-87db-ad175f2e6f57
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1595\n  }\n}"
+  '2':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: raw_response.[0].type
+                root: Indicator
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: raw_response.[0].value
+                root: Indicator
+          operator: isNotEmpty
+      label: 'yes'
+    id: '2'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '6'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Asserts output.
       elasticcommonfields: {}
       id: 9b507766-f320-440e-8dea-e7d124f39bab
-      version: -1
-      name: Assert Output
-      description: Asserts output.
-      type: condition
       iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "6"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Indicator
-                accessor: raw_response.[0].type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Indicator
-                accessor: raw_response.[0].value
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
+      name: Assert Output
+      type: condition
+      version: -1
+    taskid: 9b507766-f320-440e-8dea-e7d124f39bab
     timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '3':
+    id: '3'
     ignoreworker: false
-    skipunavailable: false
+    note: false
     quietmode: 0
-  "3":
-    id: "3"
-    taskid: 3940db94-fa21-47d4-8e70-6d117c2f6eab
-    type: title
+    separatecontext: false
+    skipunavailable: false
     task:
+      brand: ''
+      description: Done
       elasticcommonfields: {}
       id: 3940db94-fa21-47d4-8e70-6d117c2f6eab
-      version: -1
+      iscommand: false
       name: Done
-      description: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "4":
-    id: "4"
-    taskid: a3180575-e69e-444b-8371-4036effd73d9
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: a3180575-e69e-444b-8371-4036effd73d9
       version: -1
-      name: Delete Context
-      description: Delete field from context.
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: 3940db94-fa21-47d4-8e70-6d117c2f6eab
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1770\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "5":
-    id: "5"
-    taskid: 887b4f81-e531-45d0-883d-50a091fcb4a4
-    type: regular
     task:
+      brand: ''
+      description: Delete field from context.
       elasticcommonfields: {}
-      id: 887b4f81-e531-45d0-883d-50a091fcb4a4
-      version: -1
-      name: Get Indicators - Office 365 (URL)
-      description: Gets indicators from the feed.
-      script: '|||office365-get-indicators'
+      id: a3180575-e69e-444b-8371-4036effd73d9
+      iscommand: false
+      name: Delete Context
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: a3180575-e69e-444b-8371-4036effd73d9
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
+    note: false
+    quietmode: 0
     scriptarguments:
       extend-context:
         simple: Indicator=.
       indicator_type:
         simple: URLs
       limit:
-        simple: "10"
+        simple: '10'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "6":
-    id: "6"
-    taskid: f42aa2b6-9156-42c8-8088-1bef5c371176
-    type: regular
     task:
+      brand: ''
+      description: Gets indicators from the feed.
       elasticcommonfields: {}
-      id: f42aa2b6-9156-42c8-8088-1bef5c371176
-      version: -1
-      name: Delete Context
-      description: Delete field from context.
-      scriptName: DeleteContext
+      id: 887b4f81-e531-45d0-883d-50a091fcb4a4
+      iscommand: true
+      name: Get Indicators - Office 365 (URL)
+      script: '|||office365-get-indicators'
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 887b4f81-e531-45d0-883d-50a091fcb4a4
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "7":
-    id: "7"
-    taskid: 4f9ad84c-b7c4-46af-81d3-e238bc13434f
-    type: condition
     task:
+      brand: ''
+      description: Delete field from context.
+      elasticcommonfields: {}
+      id: f42aa2b6-9156-42c8-8088-1bef5c371176
+      iscommand: false
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: f42aa2b6-9156-42c8-8088-1bef5c371176
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '7':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: raw_response.[0].type
+                root: Indicator
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: raw_response.[0].value
+                root: Indicator
+          operator: isNotEmpty
+      label: 'yes'
+    id: '7'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '9'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Asserts output.
       elasticcommonfields: {}
       id: 4f9ad84c-b7c4-46af-81d3-e238bc13434f
-      version: -1
-      name: Assert Output
-      description: Asserts output.
-      type: condition
       iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "9"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Indicator
-                accessor: raw_response.[0].type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Indicator
-                accessor: raw_response.[0].value
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "8":
-    id: "8"
-    taskid: 9672e56b-f40f-4652-8665-da76dca463cd
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: 9672e56b-f40f-4652-8665-da76dca463cd
+      name: Assert Output
+      type: condition
       version: -1
-      name: Get Indicators - Office 365 (Both)
-      description: Gets indicators from the feed.
-      script: '|||office365-get-indicators'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: 4f9ad84c-b7c4-46af-81d3-e238bc13434f
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+  '8':
+    id: '8'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
+    note: false
+    quietmode: 0
     scriptarguments:
       extend-context:
         simple: Indicator=.
       indicator_type:
         simple: Both
       limit:
-        simple: "10"
+        simple: '10'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "9":
-    id: "9"
-    taskid: 8933ebff-48d5-4d8d-8aae-a09f9c669f72
-    type: regular
     task:
+      brand: ''
+      description: Gets indicators from the feed.
       elasticcommonfields: {}
-      id: 8933ebff-48d5-4d8d-8aae-a09f9c669f72
-      version: -1
-      name: Delete Context
-      description: Delete field from context.
-      scriptName: DeleteContext
+      id: 9672e56b-f40f-4652-8665-da76dca463cd
+      iscommand: true
+      name: Get Indicators - Office 365 (Both)
+      script: '|||office365-get-indicators'
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 9672e56b-f40f-4652-8665-da76dca463cd
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1420\n  }\n}"
+  '9':
+    id: '9'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "10":
-    id: "10"
-    taskid: 936fc963-ff5c-4630-87db-ad175f2e6f57
-    type: condition
     task:
+      brand: ''
+      description: Delete field from context.
       elasticcommonfields: {}
-      id: 936fc963-ff5c-4630-87db-ad175f2e6f57
-      version: -1
-      name: Assert Output
-      description: Asserts output.
-      type: condition
+      id: 8933ebff-48d5-4d8d-8aae-a09f9c669f72
       iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "3"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Indicator
-                accessor: raw_response.[0].type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Indicator
-                accessor: raw_response.[0].value
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1595
-        }
-      }
-    note: false
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 8933ebff-48d5-4d8d-8aae-a09f9c669f72
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1785,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1785,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

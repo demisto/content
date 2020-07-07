@@ -1,75 +1,55 @@
 id: tenable-sc-scan-test
-version: -1
+inputs: []
 name: Test tenable scan
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: d2b3668f-e4c0-4543-8363-b4cc3af71906
-    type: start
-    task:
-      id: d2b3668f-e4c0-4543-8363-b4cc3af71906
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
+      - '1'
     note: false
-    timertriggers: []
-  "1":
-    id: "1"
-    taskid: tenable-sc-scan
-    type: playbook
+    separatecontext: false
     task:
-      id: tenable-sc-scan
-      version: -1
-      name: Launch Scan - Tenable.sc
-      description: Launches an existing Tenable.sc scan by scan ID and waits for the
-        scan to finish by polling its status in pre-defined intervals.
-      playbookName: Launch Scan - Tenable.sc
-      type: playbook
+      brand: ''
+      id: d2b3668f-e4c0-4543-8363-b4cc3af71906
       iscommand: false
-      brand: ""
+      name: ''
+      version: -1
+    taskid: d2b3668f-e4c0-4543-8363-b4cc3af71906
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    note: false
     scriptarguments:
       ScanID:
-        simple: "1275"
+        simple: '1275'
       diagnosticPassword: {}
       diagnosticTarget: {}
     separatecontext: true
-    loop:
+    task:
+      brand: ''
+      description: Launches an existing Tenable.sc scan by scan ID and waits for the
+        scan to finish by polling its status in pre-defined intervals.
+      id: tenable-sc-scan
       iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 230
-        }
-      }
-    note: false
+      name: Launch Scan - Tenable.sc
+      playbookName: Launch Scan - Tenable.sc
+      type: playbook
+      version: -1
+    taskid: tenable-sc-scan
     timertriggers: []
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 275,
-        "width": 380,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 275,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n\
+  \    }\n  }\n}"

@@ -66,23 +66,23 @@ args:
   name: commands
   required: false
   secret: false
-comment: |-
-  Deprecated. The recommended way to generate documentation is via the demisto-sdk. 
-  See: https://xsoar.pan.dev/docs/integrations/integration-docs
+comment: "Deprecated. The recommended way to generate documentation is via the demisto-sdk.\
+  \ \nSee: https://xsoar.pan.dev/docs/integrations/integration-docs"
 commonfields:
   id: DocumentationAutomation
   version: -1
+deprecated: true
 enabled: true
+fromversion: 1.0.0
 name: DocumentationAutomation
-script: '-'
-system: false
-timeout: '0'
-type: python
-tags: []
 runas: DBotWeakRole
 runonce: false
+script: '-'
 subtype: python2
-fromversion: 1.0.0
-deprecated: true
+system: false
+tags: []
 tests:
 - No tests (auto formatted)
+timeout: '0'
+toversion: 4.1.9
+type: python

@@ -1,82 +1,63 @@
-id: Test_export_indicators_service
-version: -1
 contentitemfields:
   propagationLabels: []
+id: Test_export_indicators_service
+inputs: []
 name: Test_export_indicators_service
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 31ac12b2-8c93-4cac-8c78-2d8bc2a4c60c
-    type: start
-    task:
-      id: 31ac12b2-8c93-4cac-8c78-2d8bc2a4c60c
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
+      - '1'
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quiet: false
-  "1":
-    id: "1"
-    taskid: c745ef83-8485-4838-8916-adf896fc6829
-    type: regular
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: c745ef83-8485-4838-8916-adf896fc6829
+      brand: ''
+      id: 31ac12b2-8c93-4cac-8c78-2d8bc2a4c60c
+      iscommand: false
+      name: ''
       version: -1
-      name: Update Export Indicators Service List
-      description: Updates values stored in the export indicators list (only avaialable On-Demand).
-      script: '|||eis-update'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: 31ac12b2-8c93-4cac-8c78-2d8bc2a4c60c
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    note: false
+    quiet: false
     scriptarguments:
       edl_size:
-        simple: "2"
+        simple: '2'
       format:
         simple: text
       print_indicators:
-        simple: "true"
+        simple: 'true'
       query:
         simple: Tags:IP
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 220
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quiet: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 265,
-        "width": 380,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    task:
+      brand: ''
+      description: Updates values stored in the export indicators list (only avaialable
+        On-Demand).
+      id: c745ef83-8485-4838-8916-adf896fc6829
+      iscommand: true
+      name: Update Export Indicators Service List
+      script: '|||eis-update'
+      type: regular
+      version: -1
+    taskid: c745ef83-8485-4838-8916-adf896fc6829
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 220\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 265,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n\
+  \    }\n  }\n}"

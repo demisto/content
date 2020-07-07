@@ -1,949 +1,821 @@
 id: EclecticIQ Test
-version: -1
+inputs: []
 name: EclecticIQ Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: a67e20ab-ae2b-41e7-8f87-12ac5dad80e9
-    type: start
-    task:
-      id: a67e20ab-ae2b-41e7-8f87-12ac5dad80e9
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 50
-        }
-      }
+      - '1'
     note: false
-    timertriggers: []
-  "1":
-    id: "1"
-    taskid: 8861ffa5-f592-43b6-8123-ecf3dcb57101
-    type: regular
+    separatecontext: false
     task:
-      id: 8861ffa5-f592-43b6-8123-ecf3dcb57101
+      brand: ''
+      id: a67e20ab-ae2b-41e7-8f87-12ac5dad80e9
+      iscommand: false
+      name: ''
       version: -1
-      name: ip
-      description: Get reputation of IP address observable
-      script: EclecticIQ Platform|||ip
-      type: regular
-      iscommand: true
-      brand: EclecticIQ Platform
+    taskid: a67e20ab-ae2b-41e7-8f87-12ac5dad80e9
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
     scriptarguments:
       ip:
         simple: 8.8.8.8
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-  "2":
-    id: "2"
-    taskid: 958040ed-a141-4bb7-879c-07d691dbf35b
-    type: condition
     task:
-      id: 958040ed-a141-4bb7-879c-07d691dbf35b
+      brand: EclecticIQ Platform
+      description: Get reputation of IP address observable
+      id: 8861ffa5-f592-43b6-8123-ecf3dcb57101
+      iscommand: true
+      name: ip
+      script: EclecticIQ Platform|||ip
+      type: regular
       version: -1
-      name: Verify IP outputs
-      type: condition
-      iscommand: false
-      brand: ""
+    taskid: 8861ffa5-f592-43b6-8123-ecf3dcb57101
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 195\n  }\n}"
+  '10':
+    id: '10'
     nexttasks:
-      '#default#':
-      - "4"
-      "yes":
-      - "3"
+      '#none#':
+      - '11'
+    note: false
+    scriptarguments:
+      email:
+        simple: disco-team@stealthemail.com
     separatecontext: false
+    task:
+      brand: EclecticIQ Platform
+      id: d07f29f6-531e-4492-8f1d-e7ee1258ab07
+      iscommand: true
+      name: email
+      script: EclecticIQ Platform|||email
+      type: regular
+      version: -1
+    taskid: d07f29f6-531e-4492-8f1d-e7ee1258ab07
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 1245\n  }\n}"
+  '11':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: EclecticIQ.IP.Address
+    - condition:
+      - - left:
             iscontext: true
+            value:
+              simple: EclecticIQ.Email.Address
+          operator: isEqualString
           right:
             value:
-              simple: 8.8.8.8
-      - - operator: isExists
-          left:
-            value:
-              simple: EclecticIQ.IP.Created
+              simple: disco-team@stealthemail.com
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
-              simple: EclecticIQ.IP.LastUpdated
+              simple: EclecticIQ.Email.Created
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
-              simple: EclecticIQ.IP.ID
+              simple: EclecticIQ.Email.LastUpdated
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
-              simple: EclecticIQ.IP.Maliciousness
+              simple: EclecticIQ.Email.ID
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isEqualString
-          left:
             value:
-              simple: IP.Address
+              simple: EclecticIQ.Email.Maliciousness
+          operator: isExists
+      - - left:
             iscontext: true
+            value:
+              simple: Account.Email.Address
+          operator: isEqualString
           right:
             value:
-              simple: 8.8.8.8
-      - - operator: isEqualString
-          left:
+              simple: disco-team@stealthemail.com
+      - - left:
+            iscontext: true
             value:
               simple: DBotScore.Type
-            iscontext: true
+          operator: isEqualString
           right:
             value:
-              simple: ip
-      - - operator: isEqualString
-          left:
+              simple: email
+      - - left:
+            iscontext: true
             value:
               simple: DBotScore.Vendor
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: EclecticIQ
-      - - operator: isExists
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: DBotScore.Score
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isEqualString
-          left:
             value:
               simple: DBotScore.Indicator
+          operator: isEqualString
+          right:
+            value:
+              simple: disco-team@stealthemail.com
+      label: 'yes'
+    id: '11'
+    nexttasks:
+      '#default#':
+      - '12'
+      'yes':
+      - '13'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 5c307681-96f8-4a71-8e5d-127e569e16f5
+      iscommand: false
+      name: Verify Email outputs
+      type: condition
+      version: -1
+    taskid: 5c307681-96f8-4a71-8e5d-127e569e16f5
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 1420\n  }\n}"
+  '12':
+    id: '12'
+    note: false
+    scriptarguments:
+      message:
+        simple: Didn't get expected Email outputs
+    separatecontext: false
+    task:
+      brand: ''
+      id: 93556b4c-2291-4cd6-85c0-1543091dcb9c
+      iscommand: false
+      name: Email outputs error
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 93556b4c-2291-4cd6-85c0-1543091dcb9c
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1595\n  }\n}"
+  '13':
+    id: '13'
+    nexttasks:
+      '#none#':
+      - '14'
+    note: false
+    scriptarguments:
+      file:
+        simple: 00112233445566778899aabbccddeeff
+      long: {}
+    separatecontext: false
+    task:
+      brand: EclecticIQ Platform
+      id: a05c39f2-ec80-49f2-86ee-e853f0e32938
+      iscommand: true
+      name: file
+      script: EclecticIQ Platform|||file
+      type: regular
+      version: -1
+    taskid: a05c39f2-ec80-49f2-86ee-e853f0e32938
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 1595\n  }\n}"
+  '14':
+    conditions:
+    - condition:
+      - - left:
             iscontext: true
+            value:
+              simple: EclecticIQ.File.MD5
+          operator: isEqualString
+          right:
+            value:
+              simple: 00112233445566778899aabbccddeeff
+      - - left:
+            iscontext: true
+            value:
+              simple: EclecticIQ.File.Created
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: EclecticIQ.File.LastUpdated
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: EclecticIQ.File.ID
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: EclecticIQ.File.Maliciousness
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: File.MD5
+          operator: isEqualString
+          right:
+            value:
+              simple: 00112233445566778899aabbccddeeff
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Type
+          operator: isEqualString
+          right:
+            value:
+              simple: file
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Vendor
+          operator: isEqualString
+          right:
+            value:
+              simple: EclecticIQ
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Score
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Indicator
+          operator: isEqualString
+          right:
+            value:
+              simple: 00112233445566778899aabbccddeeff
+      label: 'yes'
+    id: '14'
+    nexttasks:
+      '#default#':
+      - '15'
+      'yes':
+      - '16'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: cd1a7ebc-6bd3-41a8-8a97-cb02784de90d
+      iscommand: false
+      name: Verify File outputs
+      type: condition
+      version: -1
+    taskid: cd1a7ebc-6bd3-41a8-8a97-cb02784de90d
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 1770\n  }\n}"
+  '15':
+    id: '15'
+    note: false
+    scriptarguments:
+      message:
+        simple: Didn't get expected File outputs
+    separatecontext: false
+    task:
+      brand: ''
+      id: dccfa2c5-fb2a-432f-809c-a29c2ec08c09
+      iscommand: false
+      name: File outputs error
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: dccfa2c5-fb2a-432f-809c-a29c2ec08c09
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 1945\n  }\n}"
+  '16':
+    id: '16'
+    nexttasks:
+      '#none#':
+      - '17'
+    note: false
+    scriptarguments:
+      observable_id:
+        simple: ${EclecticIQ.File.ID}
+    separatecontext: false
+    task:
+      brand: ''
+      id: ba9256d2-0a6c-4430-8784-4d2df78f5f43
+      iscommand: true
+      name: Get file observable related entities
+      script: '|||eclecticiq-get-observable-related-entity'
+      type: regular
+      version: -1
+    taskid: ba9256d2-0a6c-4430-8784-4d2df78f5f43
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": 1945\n  }\n}"
+  '17':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: EclecticIQ.Entity.Analysis
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: EclecticIQ.Entity.EstimatedObservedTime
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: EclecticIQ.Entity.EstimatedStartTime
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: EclecticIQ.Entity.HalfLife
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: EclecticIQ.Entity.ID
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: EclecticIQ.Entity.Title
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: EclecticIQ.Entity.Exposure.Community
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: EclecticIQ.Entity.Exposure.Detection
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: EclecticIQ.Entity.Exposure.Exposed
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: EclecticIQ.Entity.Exposure.Prevention
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: EclecticIQ.Entity.Exposure.Sighting
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: EclecticIQ.Entity.Source.Name
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: EclecticIQ.Entity.Source.Type
+          operator: isExists
+      label: 'yes'
+    id: '17'
+    nexttasks:
+      '#default#':
+      - '18'
+      'yes':
+      - '19'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: f29f9999-9c1c-4418-8911-447b5f7d5679
+      iscommand: false
+      name: Verify related entities outputs
+      type: condition
+      version: -1
+    taskid: f29f9999-9c1c-4418-8911-447b5f7d5679
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": 2120\n  }\n}"
+  '18':
+    id: '18'
+    note: false
+    scriptarguments:
+      message:
+        simple: Didn't get expected Related Entities outputs
+    separatecontext: false
+    task:
+      brand: ''
+      id: f808c471-66df-4db3-8209-23667d8cdb0b
+      iscommand: false
+      name: Related entities outputs error
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: f808c471-66df-4db3-8209-23667d8cdb0b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 2295\n  }\n}"
+  '19':
+    id: '19'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 0f0704f5-01f6-45cf-8526-8a910e79698c
+      iscommand: false
+      name: Success !
+      type: title
+      version: -1
+    taskid: 0f0704f5-01f6-45cf-8526-8a910e79698c
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 1340,\n    \"y\": 2310\n  }\n}"
+  '2':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: EclecticIQ.IP.Address
+          operator: isEqualString
           right:
             value:
               simple: 8.8.8.8
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 370
-        }
-      }
+      - - left:
+            iscontext: true
+            value:
+              simple: EclecticIQ.IP.Created
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: EclecticIQ.IP.LastUpdated
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: EclecticIQ.IP.ID
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: EclecticIQ.IP.Maliciousness
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: IP.Address
+          operator: isEqualString
+          right:
+            value:
+              simple: 8.8.8.8
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Type
+          operator: isEqualString
+          right:
+            value:
+              simple: ip
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Vendor
+          operator: isEqualString
+          right:
+            value:
+              simple: EclecticIQ
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Score
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Indicator
+          operator: isEqualString
+          right:
+            value:
+              simple: 8.8.8.8
+      label: 'yes'
+    id: '2'
+    nexttasks:
+      '#default#':
+      - '4'
+      'yes':
+      - '3'
     note: false
-    timertriggers: []
-  "3":
-    id: "3"
-    taskid: 65f761f4-cf19-4671-8a50-9173f609e02e
-    type: regular
+    separatecontext: false
     task:
-      id: 65f761f4-cf19-4671-8a50-9173f609e02e
+      brand: ''
+      id: 958040ed-a141-4bb7-879c-07d691dbf35b
+      iscommand: false
+      name: Verify IP outputs
+      type: condition
       version: -1
-      name: url
-      script: EclecticIQ Platform|||url
-      type: regular
-      iscommand: true
-      brand: EclecticIQ Platform
+    taskid: 958040ed-a141-4bb7-879c-07d691dbf35b
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 370\n  }\n}"
+  '3':
+    id: '3'
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
+    note: false
     scriptarguments:
       url:
         simple: http://chstarkeco.com
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-  "4":
-    id: "4"
-    taskid: a2bf361e-d58c-42ad-8e0a-c70df04d9bdf
-    type: regular
     task:
-      id: a2bf361e-d58c-42ad-8e0a-c70df04d9bdf
-      version: -1
-      name: IP outputs error
-      scriptName: PrintErrorEntry
+      brand: EclecticIQ Platform
+      id: 65f761f4-cf19-4671-8a50-9173f609e02e
+      iscommand: true
+      name: url
+      script: EclecticIQ Platform|||url
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 65f761f4-cf19-4671-8a50-9173f609e02e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 545\n  }\n}"
+  '4':
+    id: '4'
+    note: false
     scriptarguments:
       message:
         simple: Didn't get expected IP outputs
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-  "5":
-    id: "5"
-    taskid: 3c7835d6-262a-488a-8615-8f1d7e8db4e4
-    type: condition
     task:
-      id: 3c7835d6-262a-488a-8615-8f1d7e8db4e4
-      version: -1
-      name: Verify URL outputs
-      type: condition
+      brand: ''
+      id: a2bf361e-d58c-42ad-8e0a-c70df04d9bdf
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "6"
-      "yes":
-      - "7"
-    separatecontext: false
+      name: IP outputs error
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: a2bf361e-d58c-42ad-8e0a-c70df04d9bdf
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 545\n  }\n}"
+  '5':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: EclecticIQ.URL.Data
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: http://chstarkeco.com
-      - - operator: isExists
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: EclecticIQ.URL.Created
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: EclecticIQ.URL.LastUpdated
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: EclecticIQ.URL.ID
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: EclecticIQ.URL.Maliciousness
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isEqualString
-          left:
             value:
               simple: URL.Data
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: http://chstarkeco.com
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: DBotScore.Type
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: url
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: DBotScore.Vendor
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: EclecticIQ
-      - - operator: isExists
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: DBotScore.Score
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isEqualString
-          left:
             value:
               simple: DBotScore.Indicator
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: http://chstarkeco.com
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 720
-        }
-      }
+      label: 'yes'
+    id: '5'
+    nexttasks:
+      '#default#':
+      - '6'
+      'yes':
+      - '7'
     note: false
-    timertriggers: []
-  "6":
-    id: "6"
-    taskid: 23847cec-dec0-4778-8db8-b781ad2ee108
-    type: regular
+    separatecontext: false
     task:
-      id: 23847cec-dec0-4778-8db8-b781ad2ee108
-      version: -1
-      name: URL outputs error
-      scriptName: PrintErrorEntry
-      type: regular
+      brand: ''
+      id: 3c7835d6-262a-488a-8615-8f1d7e8db4e4
       iscommand: false
-      brand: ""
+      name: Verify URL outputs
+      type: condition
+      version: -1
+    taskid: 3c7835d6-262a-488a-8615-8f1d7e8db4e4
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 720\n  }\n}"
+  '6':
+    id: '6'
+    note: false
     scriptarguments:
       message:
         simple: Didn't get expected URL outputs
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-  "7":
-    id: "7"
-    taskid: 9ba5db8c-03ec-4c3b-88de-8de8836858b1
-    type: regular
     task:
-      id: 9ba5db8c-03ec-4c3b-88de-8de8836858b1
-      version: -1
-      name: domain
-      script: EclecticIQ Platform|||domain
+      brand: ''
+      id: 23847cec-dec0-4778-8db8-b781ad2ee108
+      iscommand: false
+      name: URL outputs error
+      scriptName: PrintErrorEntry
       type: regular
-      iscommand: true
-      brand: EclecticIQ Platform
+      version: -1
+    taskid: 23847cec-dec0-4778-8db8-b781ad2ee108
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+  '7':
+    id: '7'
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
+    note: false
     scriptarguments:
       domain:
         simple: gooc.om
       long: {}
       threshold: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-  "8":
-    id: "8"
-    taskid: c94487e1-e32f-4f6b-89aa-8b8f5302ffa4
-    type: condition
     task:
-      id: c94487e1-e32f-4f6b-89aa-8b8f5302ffa4
+      brand: EclecticIQ Platform
+      id: 9ba5db8c-03ec-4c3b-88de-8de8836858b1
+      iscommand: true
+      name: domain
+      script: EclecticIQ Platform|||domain
+      type: regular
       version: -1
-      name: Verify Domain outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "9"
-      "yes":
-      - "10"
-    separatecontext: false
+    taskid: 9ba5db8c-03ec-4c3b-88de-8de8836858b1
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 895\n  }\n}"
+  '8':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: EclecticIQ.Domain.Name
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: gooc.om
-      - - operator: isExists
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: EclecticIQ.Domain.Created
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: EclecticIQ.Domain.LastUpdated
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: EclecticIQ.Domain.ID
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: EclecticIQ.Domain.Maliciousness
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isEqualString
-          left:
             value:
               simple: Domain.Name
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: gooc.om
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: DBotScore.Type
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: domain
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: DBotScore.Vendor
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: EclecticIQ
-      - - operator: isExists
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: DBotScore.Score
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isEqualString
-          left:
             value:
               simple: DBotScore.Indicator
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: gooc.om
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1070
-        }
-      }
+      label: 'yes'
+    id: '8'
+    nexttasks:
+      '#default#':
+      - '9'
+      'yes':
+      - '10'
     note: false
-    timertriggers: []
-  "9":
-    id: "9"
-    taskid: 099cee79-c211-428f-85eb-8b60338439cb
-    type: regular
+    separatecontext: false
     task:
-      id: 099cee79-c211-428f-85eb-8b60338439cb
-      version: -1
-      name: Domain outputs error
-      scriptName: PrintErrorEntry
-      type: regular
+      brand: ''
+      id: c94487e1-e32f-4f6b-89aa-8b8f5302ffa4
       iscommand: false
-      brand: ""
+      name: Verify Domain outputs
+      type: condition
+      version: -1
+    taskid: c94487e1-e32f-4f6b-89aa-8b8f5302ffa4
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1070\n  }\n}"
+  '9':
+    id: '9'
+    note: false
     scriptarguments:
       message:
         simple: Didn't get expected Domain outputs
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-  "10":
-    id: "10"
-    taskid: d07f29f6-531e-4492-8f1d-e7ee1258ab07
-    type: regular
     task:
-      id: d07f29f6-531e-4492-8f1d-e7ee1258ab07
-      version: -1
-      name: email
-      script: EclecticIQ Platform|||email
-      type: regular
-      iscommand: true
-      brand: EclecticIQ Platform
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      email:
-        simple: disco-team@stealthemail.com
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-  "11":
-    id: "11"
-    taskid: 5c307681-96f8-4a71-8e5d-127e569e16f5
-    type: condition
-    task:
-      id: 5c307681-96f8-4a71-8e5d-127e569e16f5
-      version: -1
-      name: Verify Email outputs
-      type: condition
+      brand: ''
+      id: 099cee79-c211-428f-85eb-8b60338439cb
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "12"
-      "yes":
-      - "13"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: EclecticIQ.Email.Address
-            iscontext: true
-          right:
-            value:
-              simple: disco-team@stealthemail.com
-      - - operator: isExists
-          left:
-            value:
-              simple: EclecticIQ.Email.Created
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: EclecticIQ.Email.LastUpdated
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: EclecticIQ.Email.ID
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: EclecticIQ.Email.Maliciousness
-            iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Account.Email.Address
-            iscontext: true
-          right:
-            value:
-              simple: disco-team@stealthemail.com
-      - - operator: isEqualString
-          left:
-            value:
-              simple: DBotScore.Type
-            iscontext: true
-          right:
-            value:
-              simple: email
-      - - operator: isEqualString
-          left:
-            value:
-              simple: DBotScore.Vendor
-            iscontext: true
-          right:
-            value:
-              simple: EclecticIQ
-      - - operator: isExists
-          left:
-            value:
-              simple: DBotScore.Score
-            iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: DBotScore.Indicator
-            iscontext: true
-          right:
-            value:
-              simple: disco-team@stealthemail.com
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-  "12":
-    id: "12"
-    taskid: 93556b4c-2291-4cd6-85c0-1543091dcb9c
-    type: regular
-    task:
-      id: 93556b4c-2291-4cd6-85c0-1543091dcb9c
-      version: -1
-      name: Email outputs error
+      name: Domain outputs error
       scriptName: PrintErrorEntry
       type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: Didn't get expected Email outputs
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1595
-        }
-      }
-    note: false
+      version: -1
+    taskid: 099cee79-c211-428f-85eb-8b60338439cb
     timertriggers: []
-  "13":
-    id: "13"
-    taskid: a05c39f2-ec80-49f2-86ee-e853f0e32938
     type: regular
-    task:
-      id: a05c39f2-ec80-49f2-86ee-e853f0e32938
-      version: -1
-      name: file
-      script: EclecticIQ Platform|||file
-      type: regular
-      iscommand: true
-      brand: EclecticIQ Platform
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      file:
-        simple: 00112233445566778899aabbccddeeff
-      long: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-  "14":
-    id: "14"
-    taskid: cd1a7ebc-6bd3-41a8-8a97-cb02784de90d
-    type: condition
-    task:
-      id: cd1a7ebc-6bd3-41a8-8a97-cb02784de90d
-      version: -1
-      name: Verify File outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "15"
-      "yes":
-      - "16"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: EclecticIQ.File.MD5
-            iscontext: true
-          right:
-            value:
-              simple: 00112233445566778899aabbccddeeff
-      - - operator: isExists
-          left:
-            value:
-              simple: EclecticIQ.File.Created
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: EclecticIQ.File.LastUpdated
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: EclecticIQ.File.ID
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: EclecticIQ.File.Maliciousness
-            iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: File.MD5
-            iscontext: true
-          right:
-            value:
-              simple: 00112233445566778899aabbccddeeff
-      - - operator: isEqualString
-          left:
-            value:
-              simple: DBotScore.Type
-            iscontext: true
-          right:
-            value:
-              simple: file
-      - - operator: isEqualString
-          left:
-            value:
-              simple: DBotScore.Vendor
-            iscontext: true
-          right:
-            value:
-              simple: EclecticIQ
-      - - operator: isExists
-          left:
-            value:
-              simple: DBotScore.Score
-            iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: DBotScore.Indicator
-            iscontext: true
-          right:
-            value:
-              simple: 00112233445566778899aabbccddeeff
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-  "15":
-    id: "15"
-    taskid: dccfa2c5-fb2a-432f-809c-a29c2ec08c09
-    type: regular
-    task:
-      id: dccfa2c5-fb2a-432f-809c-a29c2ec08c09
-      version: -1
-      name: File outputs error
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: Didn't get expected File outputs
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-  "16":
-    id: "16"
-    taskid: ba9256d2-0a6c-4430-8784-4d2df78f5f43
-    type: regular
-    task:
-      id: ba9256d2-0a6c-4430-8784-4d2df78f5f43
-      version: -1
-      name: Get file observable related entities
-      script: '|||eclecticiq-get-observable-related-entity'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      observable_id:
-        simple: ${EclecticIQ.File.ID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1125,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-  "17":
-    id: "17"
-    taskid: f29f9999-9c1c-4418-8911-447b5f7d5679
-    type: condition
-    task:
-      id: f29f9999-9c1c-4418-8911-447b5f7d5679
-      version: -1
-      name: Verify related entities outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "18"
-      "yes":
-      - "19"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: EclecticIQ.Entity.Analysis
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: EclecticIQ.Entity.EstimatedObservedTime
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: EclecticIQ.Entity.EstimatedStartTime
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: EclecticIQ.Entity.HalfLife
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: EclecticIQ.Entity.ID
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: EclecticIQ.Entity.Title
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: EclecticIQ.Entity.Exposure.Community
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: EclecticIQ.Entity.Exposure.Detection
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: EclecticIQ.Entity.Exposure.Exposed
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: EclecticIQ.Entity.Exposure.Prevention
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: EclecticIQ.Entity.Exposure.Sighting
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: EclecticIQ.Entity.Source.Name
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: EclecticIQ.Entity.Source.Type
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1125,
-          "y": 2120
-        }
-      }
-    note: false
-    timertriggers: []
-  "18":
-    id: "18"
-    taskid: f808c471-66df-4db3-8209-23667d8cdb0b
-    type: regular
-    task:
-      id: f808c471-66df-4db3-8209-23667d8cdb0b
-      version: -1
-      name: Related entities outputs error
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: Didn't get expected Related Entities outputs
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 2295
-        }
-      }
-    note: false
-    timertriggers: []
-  "19":
-    id: "19"
-    taskid: 0f0704f5-01f6-45cf-8526-8a910e79698c
-    type: title
-    task:
-      id: 0f0704f5-01f6-45cf-8526-8a910e79698c
-      version: -1
-      name: Success !
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 2310
-        }
-      }
-    note: false
-    timertriggers: []
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 2340,
-        "width": 1670,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1245\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 2340,\n      \"width\": 1670,\n      \"x\": 50,\n      \"y\":\
+  \ 50\n    }\n  }\n}"

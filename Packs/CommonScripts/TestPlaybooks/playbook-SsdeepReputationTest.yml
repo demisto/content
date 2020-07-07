@@ -1,185 +1,141 @@
+description: ''
 id: ssdeepreputationtest
-version: -1
+inputs: []
 name: SsdeepReputationTest
-description: ""
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: dbec59ec-e05d-45e6-8825-b057869f3e26
+      iscommand: false
+      name: ''
+      version: -1
     taskid: dbec59ec-e05d-45e6-8825-b057869f3e26
     type: start
-    task:
-      id: dbec59ec-e05d-45e6-8825-b057869f3e26
-      version: -1
-      description: ""
-      name: ""
-      iscommand: false
-      brand: ""
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "3"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
+      - '5'
     note: false
-  "1":
-    id: "1"
-    taskid: 964eb74c-c5de-4b89-8ee6-00b69086aaee
-    type: regular
-    task:
-      id: 964eb74c-c5de-4b89-8ee6-00b69086aaee
-      version: -1
-      description: ""
-      name: Ssdeep test
-      scriptName: SsdeepReputationTest
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
     results:
     - File
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-  "2":
-    id: "2"
-    taskid: 1431aa83-164d-4968-8f15-36a3c37231a6
-    type: regular
     task:
-      id: 1431aa83-164d-4968-8f15-36a3c37231a6
-      version: -1
-      description: ""
-      name: Check score
-      scriptName: VerifyContext
-      type: regular
+      brand: ''
+      description: ''
+      id: 964eb74c-c5de-4b89-8ee6-00b69086aaee
       iscommand: false
-      brand: ""
+      name: Ssdeep test
+      scriptName: SsdeepReputationTest
+      type: regular
+      version: -1
+    taskid: 964eb74c-c5de-4b89-8ee6-00b69086aaee
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '2':
+    id: '2'
+    note: false
     scriptarguments:
       expectedValue:
-        simple: "3"
+        simple: '3'
       fields: {}
       path:
         simple: DBotScore.Score
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-  "3":
-    id: "3"
-    taskid: 9f0c0bb9-6f10-4b60-8141-68188243c4a9
-    type: regular
     task:
-      id: 9f0c0bb9-6f10-4b60-8141-68188243c4a9
+      brand: ''
+      description: ''
+      id: 1431aa83-164d-4968-8f15-36a3c37231a6
+      iscommand: false
+      name: Check score
+      scriptName: VerifyContext
+      type: regular
       version: -1
-      description: ""
+    taskid: 1431aa83-164d-4968-8f15-36a3c37231a6
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+  '3':
+    id: '3'
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    scriptarguments:
+      all:
+        simple: 'yes'
+      key: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 9f0c0bb9-6f10-4b60-8141-68188243c4a9
+      iscommand: false
       name: Clear context
       scriptName: DeleteContext
       type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-  "4":
-    id: "4"
-    taskid: 15c90ae8-5fda-42c4-8c16-5df92587a7c6
-    type: regular
-    task:
-      id: 15c90ae8-5fda-42c4-8c16-5df92587a7c6
       version: -1
-      description: ""
-      name: Check ssdeep reputation
-      scriptName: SSDeepReputation
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: 9f0c0bb9-6f10-4b60-8141-68188243c4a9
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '4':
+    id: '4'
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
     scriptarguments:
       input:
         simple: ${expectBadSsdeepValue}
       threshold: {}
       timeFrameDays: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-  "5":
-    id: "5"
-    taskid: e6d478e1-17a7-451f-89c9-1fb33c4c40b7
-    type: regular
     task:
-      id: e6d478e1-17a7-451f-89c9-1fb33c4c40b7
+      brand: ''
+      description: ''
+      id: 15c90ae8-5fda-42c4-8c16-5df92587a7c6
+      iscommand: false
+      name: Check ssdeep reputation
+      scriptName: SSDeepReputation
+      type: regular
       version: -1
-      description: ""
+    taskid: 15c90ae8-5fda-42c4-8c16-5df92587a7c6
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '5':
+    id: '5'
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    scriptarguments:
+      seconds:
+        simple: '3'
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: e6d478e1-17a7-451f-89c9-1fb33c4c40b7
+      iscommand: false
       name: Sleep
       scriptName: Sleep
       type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      seconds:
-        simple: "3"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 940,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+      version: -1
+    taskid: e6d478e1-17a7-451f-89c9-1fb33c4c40b7
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 940,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

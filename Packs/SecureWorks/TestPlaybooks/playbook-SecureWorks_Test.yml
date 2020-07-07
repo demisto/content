@@ -1,48 +1,33 @@
-id: secureworks_test
-version: -1
-name: Secureworks test
 description: Secureworks test playbook
-starttaskid: "0"
+id: secureworks_test
+inputs: []
+name: Secureworks test
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
+    nexttasks:
+      '#none#':
+      - '10'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: dd28c72d-f5ef-4ff9-8249-1b1bc812e15e
+      iscommand: false
+      name: ''
+      version: -1
     taskid: dd28c72d-f5ef-4ff9-8249-1b1bc812e15e
     type: start
-    task:
-      id: dd28c72d-f5ef-4ff9-8249-1b1bc812e15e
-      version: -1
-      name: ""
-      description: ""
-      iscommand: false
-      brand: ""
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "10"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
+      - '5'
     note: false
-  "1":
-    id: "1"
-    taskid: 264a8856-3c4f-4708-82b6-6c720bf20eb9
-    type: regular
-    task:
-      id: 264a8856-3c4f-4708-82b6-6c720bf20eb9
-      version: -1
-      name: secure-works-create-ticket
-      description: Create a new ticket
-      script: Dell Secureworks|||secure-works-create-ticket
-      type: regular
-      iscommand: true
-      brand: Dell Secureworks
-    nexttasks:
-      '#none#':
-      - "5"
     scriptarguments:
       assignedGroupId: {}
       assignedTicket2: {}
@@ -81,59 +66,147 @@ tasks:
       vendor: {}
       watchers: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-  "2":
-    id: "2"
-    taskid: 527601f0-98c8-4d46-83b5-239642d04ecd
-    type: regular
     task:
-      id: 527601f0-98c8-4d46-83b5-239642d04ecd
-      version: -1
-      name: secure-works-get-ticket
-      description: Get the details of a specific ticket, by ID
-      script: Dell Secureworks|||secure-works-get-ticket
-      type: regular
-      iscommand: true
       brand: Dell Secureworks
+      description: Create a new ticket
+      id: 264a8856-3c4f-4708-82b6-6c720bf20eb9
+      iscommand: true
+      name: secure-works-create-ticket
+      script: Dell Secureworks|||secure-works-create-ticket
+      type: regular
+      version: -1
+    taskid: 264a8856-3c4f-4708-82b6-6c720bf20eb9
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '10':
+    id: '10'
     nexttasks:
       '#none#':
-      - "3"
+      - '1'
+    note: false
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: f3aed76e-4ba5-4639-8dd9-a638b7fb7df5
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: f3aed76e-4ba5-4639-8dd9-a638b7fb7df5
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '11':
+    id: '11'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: cc3f1b13-fbbe-4f19-860b-e5ce998a2d2c
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: cc3f1b13-fbbe-4f19-860b-e5ce998a2d2c
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2295\n  }\n}"
+  '12':
+    id: '12'
+    nexttasks:
+      '#none#':
+      - '13'
+    note: false
+    scriptarguments:
+      getAttachments:
+        simple: 'true'
+      id:
+        simple: ${SecureWorks.Ticket.ticketId}
+      includeWorklogs: {}
+    separatecontext: false
+    task:
+      brand: Dell Secureworks
+      description: Get the details of a specific ticket, by ID
+      id: f43b21f0-5059-4115-8264-c79de699e822
+      iscommand: true
+      name: secure-works-get-ticket with attachments
+      script: Dell Secureworks|||secure-works-get-ticket
+      type: regular
+      version: -1
+    taskid: f43b21f0-5059-4115-8264-c79de699e822
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1770\n  }\n}"
+  '13':
+    id: '13'
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: File
+    separatecontext: false
+    task:
+      brand: ''
+      description: 'Verifies path in context:
+
+        - Verifies path existence
+
+        - If matching object is an array: verify fields exists in each of the objects
+        in the array
+
+        - If matching object is not an array: verify fields exists in matching object
+
+        - if ''expectedValue'' is given: ensure that the given value is equal to the
+        context path'
+      id: 6e6ad26a-ff09-4dcd-8e8d-ea9b1a5e49ae
+      iscommand: false
+      name: Verify File
+      scriptName: VerifyContext
+      type: regular
+      version: -1
+    taskid: 6e6ad26a-ff09-4dcd-8e8d-ea9b1a5e49ae
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1945\n  }\n}"
+  '2':
+    id: '2'
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
     scriptarguments:
       id:
         simple: ${SecureWorks.Ticket.ticketId}
       includeWorklogs: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-  "3":
-    id: "3"
-    taskid: ab28006b-f70c-40b1-8a98-322ba326b548
-    type: regular
     task:
-      id: ab28006b-f70c-40b1-8a98-322ba326b548
-      version: -1
-      name: secure-works-update-ticket
-      description: Update an existing ticket
-      script: Dell Secureworks|||secure-works-update-ticket
-      type: regular
-      iscommand: true
       brand: Dell Secureworks
+      description: Get the details of a specific ticket, by ID
+      id: 527601f0-98c8-4d46-83b5-239642d04ecd
+      iscommand: true
+      name: secure-works-get-ticket
+      script: Dell Secureworks|||secure-works-get-ticket
+      type: regular
+      version: -1
+    taskid: 527601f0-98c8-4d46-83b5-239642d04ecd
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+  '3':
+    id: '3'
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
+    note: false
     scriptarguments:
       customerMiscellaneous1:
         simple: test
@@ -148,35 +221,24 @@ tasks:
       vendor: {}
       watchers: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-    note: false
-  "4":
-    id: "4"
-    taskid: 70fde38a-a8fe-481c-8be9-d3473dc8e1f2
-    type: regular
     task:
-      id: 70fde38a-a8fe-481c-8be9-d3473dc8e1f2
-      version: -1
-      name: Verify ticket updated
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
+      brand: Dell Secureworks
+      description: Update an existing ticket
+      id: ab28006b-f70c-40b1-8a98-322ba326b548
+      iscommand: true
+      name: secure-works-update-ticket
+      script: Dell Secureworks|||secure-works-update-ticket
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: ab28006b-f70c-40b1-8a98-322ba326b548
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1420\n  }\n}"
+  '4':
+    id: '4'
     nexttasks:
       '#none#':
-      - "12"
+      - '12'
+    note: false
     scriptarguments:
       expectedValue:
         simple: test
@@ -185,22 +247,44 @@ tasks:
       path:
         simple: SecureWorks.Ticket
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1595
-        }
-      }
-    note: false
-  "5":
-    id: "5"
-    taskid: 7aa37d61-c369-4e91-8a42-f537d8f9509b
-    type: regular
     task:
-      id: 7aa37d61-c369-4e91-8a42-f537d8f9509b
+      brand: ''
+      description: 'Verifies path in context:
+
+        - Verifies path existence
+
+        - If matching object is an array: verify fields exists in each of the objects
+        in the array
+
+        - If matching object is not an array: verify fields exists in matching object
+
+        - if ''expectedValue'' is given: ensure that the given value is equal to the
+        context path'
+      id: 70fde38a-a8fe-481c-8be9-d3473dc8e1f2
+      iscommand: false
+      name: Verify ticket updated
+      scriptName: VerifyContext
+      type: regular
       version: -1
-      name: secure-works-get-tickets-updates
+    taskid: 70fde38a-a8fe-481c-8be9-d3473dc8e1f2
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1595\n  }\n}"
+  '5':
+    id: '5'
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    scriptarguments:
+      acknowledge:
+        simple: 'true'
+      groupingType: {}
+      limit: {}
+      ticketType: {}
+      worklogs: {}
+    separatecontext: false
+    task:
+      brand: Dell Secureworks
       description: Retrieves tickets from 24 hours prior to when the updates command
         is executed. If a limit is specified, it will retrieve up to that many tickets
         (max is 500 tickets). Tickets must be updated within the last 24 hours to
@@ -209,109 +293,68 @@ tasks:
         ticket, you must use the get-ticket command. This command will return the
         list of attachments available for that particular ticket. Use acknowledge
         to confirm the updates.
+      id: 7aa37d61-c369-4e91-8a42-f537d8f9509b
+      iscommand: true
+      name: secure-works-get-tickets-updates
       script: Dell Secureworks|||secure-works-get-tickets-updates
       type: regular
-      iscommand: true
-      brand: Dell Secureworks
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      acknowledge:
-        simple: "true"
-      groupingType: {}
-      limit: {}
-      ticketType: {}
-      worklogs: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-  "6":
-    id: "6"
-    taskid: 5c75753e-75fd-4ce5-86fe-ec0646b727c4
-    type: regular
-    task:
-      id: 5c75753e-75fd-4ce5-86fe-ec0646b727c4
       version: -1
-      name: secure-works-get-tickets-ids
-      description: Get a list of ticket IDs in the same order as the tickets returned
-        by the GET /tickets/updates command.
-      script: Dell Secureworks|||secure-works-get-tickets-ids
-      type: regular
-      iscommand: true
-      brand: Dell Secureworks
+    taskid: 7aa37d61-c369-4e91-8a42-f537d8f9509b
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '6':
+    id: '6'
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
+    note: false
     scriptarguments:
       groupingType: {}
       limit: {}
       ticketType:
         simple: SERVICE_REQUEST
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-  "7":
-    id: "7"
-    taskid: d6e39a34-3a8f-49b2-80e5-c44ed2ce4263
-    type: regular
     task:
-      id: d6e39a34-3a8f-49b2-80e5-c44ed2ce4263
-      version: -1
-      name: secure-works-get-ticket-count
-      description: Retrieve a count of tickets that have been updated and not yet
-        acknowledged
-      script: Dell Secureworks|||secure-works-get-ticket-count
-      type: regular
-      iscommand: true
       brand: Dell Secureworks
+      description: Get a list of ticket IDs in the same order as the tickets returned
+        by the GET /tickets/updates command.
+      id: 5c75753e-75fd-4ce5-86fe-ec0646b727c4
+      iscommand: true
+      name: secure-works-get-tickets-ids
+      script: Dell Secureworks|||secure-works-get-tickets-ids
+      type: regular
+      version: -1
+    taskid: 5c75753e-75fd-4ce5-86fe-ec0646b727c4
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '7':
+    id: '7'
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
+    note: false
     scriptarguments:
       ticketType: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-  "8":
-    id: "8"
-    taskid: f620940a-69cd-4ef6-830c-74bc2ab605d8
-    type: regular
     task:
-      id: f620940a-69cd-4ef6-830c-74bc2ab605d8
-      version: -1
-      name: Verify Ticket ID
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
+      brand: Dell Secureworks
+      description: Retrieve a count of tickets that have been updated and not yet
+        acknowledged
+      id: d6e39a34-3a8f-49b2-80e5-c44ed2ce4263
+      iscommand: true
+      name: secure-works-get-ticket-count
+      script: Dell Secureworks|||secure-works-get-ticket-count
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: d6e39a34-3a8f-49b2-80e5-c44ed2ce4263
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+  '8':
+    id: '8'
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
     scriptarguments:
       expectedValue:
         simple: ${SecureWorks.Ticket.ticketId}
@@ -319,30 +362,34 @@ tasks:
       path:
         simple: SecureWorks.ticketIds
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-  "9":
-    id: "9"
-    taskid: 258ee162-cd24-422f-82ba-778529f8834e
-    type: regular
     task:
-      id: 258ee162-cd24-422f-82ba-778529f8834e
-      version: -1
-      name: secure-works-close-ticket
-      description: Close a ticket
-      script: Dell Secureworks|||secure-works-close-ticket
+      brand: ''
+      description: 'Verifies path in context:
+
+        - Verifies path existence
+
+        - If matching object is an array: verify fields exists in each of the objects
+        in the array
+
+        - If matching object is not an array: verify fields exists in matching object
+
+        - if ''expectedValue'' is given: ensure that the given value is equal to the
+        context path'
+      id: f620940a-69cd-4ef6-830c-74bc2ab605d8
+      iscommand: false
+      name: Verify Ticket ID
+      scriptName: VerifyContext
       type: regular
-      iscommand: true
-      brand: Dell Secureworks
+      version: -1
+    taskid: f620940a-69cd-4ef6-830c-74bc2ab605d8
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+  '9':
+    id: '9'
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
+    note: false
     scriptarguments:
       closeCode:
         simple: Work Completed
@@ -350,144 +397,20 @@ tasks:
         simple: ${SecureWorks.Ticket.ticketId}
       worklogContent: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2120
-        }
-      }
-    note: false
-  "10":
-    id: "10"
-    taskid: f3aed76e-4ba5-4639-8dd9-a638b7fb7df5
-    type: regular
     task:
-      id: f3aed76e-4ba5-4639-8dd9-a638b7fb7df5
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-  "11":
-    id: "11"
-    taskid: cc3f1b13-fbbe-4f19-860b-e5ce998a2d2c
-    type: title
-    task:
-      id: cc3f1b13-fbbe-4f19-860b-e5ce998a2d2c
-      version: -1
-      name: Done
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2295
-        }
-      }
-    note: false
-  "12":
-    id: "12"
-    taskid: f43b21f0-5059-4115-8264-c79de699e822
-    type: regular
-    task:
-      id: f43b21f0-5059-4115-8264-c79de699e822
-      version: -1
-      name: secure-works-get-ticket with attachments
-      description: Get the details of a specific ticket, by ID
-      script: Dell Secureworks|||secure-works-get-ticket
-      type: regular
-      iscommand: true
       brand: Dell Secureworks
-    nexttasks:
-      '#none#':
-      - "13"
-    scriptarguments:
-      getAttachments:
-        simple: "true"
-      id:
-        simple: ${SecureWorks.Ticket.ticketId}
-      includeWorklogs: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1770
-        }
-      }
-    note: false
-  "13":
-    id: "13"
-    taskid: 6e6ad26a-ff09-4dcd-8e8d-ea9b1a5e49ae
-    type: regular
-    task:
-      id: 6e6ad26a-ff09-4dcd-8e8d-ea9b1a5e49ae
-      version: -1
-      name: Verify File
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
+      description: Close a ticket
+      id: 258ee162-cd24-422f-82ba-778529f8834e
+      iscommand: true
+      name: secure-works-close-ticket
+      script: Dell Secureworks|||secure-works-close-ticket
       type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        simple: File
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1945
-        }
-      }
-    note: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 2310,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+      version: -1
+    taskid: 258ee162-cd24-422f-82ba-778529f8834e
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2120\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 2310,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

@@ -1,232 +1,50 @@
+category: Messaging
 commonfields:
   id: Zoom
   version: -1
-name: Zoom
-display: Zoom
-category: Messaging
-image: data:image/png;base64,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
-description: Use the Zoom integration manage your Zoom users and meetings
 configuration:
-- display: "API key"
+- defaultvalue: ''
+  display: API key
   name: apiKey
-  defaultvalue: ""
-  type: 4
   required: true
-- display: "API secret"
+  type: 4
+- defaultvalue: ''
+  display: API secret
   name: apiSecret
-  defaultvalue: ""
-  type: 4
   required: true
-- display: Use system proxy settings
+  type: 4
+- defaultvalue: ''
+  display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
+description: Use the Zoom integration manage your Zoom users and meetings
+display: Zoom
+image: data:image/png;base64,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
+name: Zoom
 script:
-  script: |
-    import datetime
-    import jwt
-    import requests
-    import json
-    import shutil
-    from zipfile import ZipFile
-
-    if not demisto.getParam('proxy'):
-        del os.environ['HTTP_PROXY']
-        del os.environ['HTTPS_PROXY']
-        del os.environ['http_proxy']
-        del os.environ['https_proxy']
-
-
-    def get_jwt(apiKey, apiSecret):
-        """
-        Encode the JWT token given the api ket and secret
-        """
-        tt = datetime.datetime.now()
-        expire_time = int(tt.strftime('%s')) + 5000
-        payload  = {
-            'iss': apiKey,
-            'exp': expire_time
-        }
-        encoded = jwt.encode(payload, apiSecret, algorithm='HS256')
-        return encoded
-
-
-    URL = 'https://api.zoom.us/v2/'
-    ACCESS_TOKEN = get_jwt(demisto.getParam('apiKey'), demisto.getParam('apiSecret'))
-    PARAMS = {'access_token': ACCESS_TOKEN}
-    HEADERS = {'Content-Type': 'application/json', 'Accept': 'application/json'}
-
-
-    def return_error(data):
-        """
-        Return error as result and exit
-        """
-        demisto.results({
-            'Type': entryTypes['error'],
-            'ContentsFormat': formats['text'],
-            'Contents' : data
-        })
-        sys.exit(0)
-
-
-    if demisto.command() == 'test-module':
-        res = requests.get(URL + 'users', headers=HEADERS, params=PARAMS)
-        if res.status_code == requests.codes.ok:
-            demisto.results('ok')
-        else:
-            return_error('Error testing [%d] - %s' % (res.status_code, res.text))
-
-    elif demisto.command() == 'zoom-create-user':
-        ut = demisto.getArg('user_type')
-        user_type = 1  # Basic
-        if ut == 'Pro':
-            user_type = 2
-        elif ut == 'Corporate':
-            user_type = 3
-        res = requests.post(URL + 'users', headers=HEADERS, params=PARAMS, json={
-            'action': 'create',
-            'user_info': {
-                'email': demisto.getArg('email'),
-                'type': user_type,
-                'first_name': demisto.getArg('first_name'),
-                'last_name': demisto.getArg('last_name')
-            }
-        })
-        if res.status_code == requests.codes.created:
-            data = res.json()
-            demisto.results({
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['json'],
-                'Contents': data,
-                'HumanReadable': 'User created successfully with ID %s' % data.get('id'),
-                'EntryContext': {'Zoom.User': data}
-            })
-        else:
-            return_error('User creation failed: [%d] - %s' % (res.status_code, res.text))
-
-    elif demisto.command() == 'zoom-list-users':
-        params = {
-            'access_token': ACCESS_TOKEN,
-            'status': demisto.getArg('status'),
-            'page_size': demisto.getArg('page-size'),
-            'page_number': demisto.getArg('page-number')
-        }
-        res = requests.get(URL + 'users', headers=HEADERS, params=params)
-        if res.status_code == requests.codes.ok:
-            data = res.json()
-            md = tableToMarkdown('Users', data.get('users'), ['id', 'first_name', 'last_name', 'email', 'type'])
-            md += '\n' + tableToMarkdown('Metadata', [data], ['page_count', 'page_number', 'page_size', 'total_records'])
-            demisto.results({
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['json'],
-                'Contents': data,
-                'HumanReadable': md,
-                'EntryContext': {
-                    'Zoom.User': data.get('users'),
-                    'Zoom.Metadata': {
-                        'Count': data.get('page_count'),
-                        'Number': data.get('page_number'),
-                        'Size': data.get('page_size'),
-                        'Total': data.get('total_records')
-                    }
-                }
-            })
-        else:
-            return_error('User creation failed: [%d] - %s' % (res.status_code, res.text))
-
-    elif demisto.command() == 'zoom-delete-user':
-        params = {
-            'access_token': ACCESS_TOKEN,
-            'action': demisto.getArg('action')
-        }
-        res = requests.delete(URL + 'users/' + demisto.getArg('user'), headers=HEADERS, params=params)
-        if res.status_code == requests.codes.no_content:
-            demisto.results('User %s deleted successfully' % demisto.getArg('user'))
-        else:
-            return_error('User creation failed: [%d] - %s' % (res.status_code, res.text))
-
-    elif demisto.command() == 'zoom-create-meeting':
-        auto_recording = "none"
-        if (demisto.getArg('auto_record_meeting') == 'yes'):
-            auto_recording = "cloud"
-        params = {
-            'type': 1,
-            'topic': demisto.getArg('topic'),
-            'settings': {
-                'join_before_host': True,
-                'auto_recording': auto_recording
-            }
-        }
-        if (demisto.args()['type'] == 'Scheduled'):
-            params.update({
-                'type': 2,
-                'start_time': demisto.getArg('start-time'),
-                'timezone': demisto.getArg('timezone'),
-            })
-        res = requests.post(URL + "users/%s/meetings" % demisto.getArg('user'), headers=HEADERS, params=PARAMS, json=params)
-        if res.status_code == requests.codes.created:
-            data = res.json()
-            md = 'Meeting created successfully.\nStart it [here](%s) and join [here](%s).' % (data.get('start_url'), data.get('join_url'))
-            demisto.results({
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['json'],
-                'Contents': data,
-                'HumanReadable': md,
-                'EntryContext': {'Zoom.Meeting': data}
-            })
-        else:
-            return_error('Meeting creation failed: [%d] - %s' % (res.status_code, res.text))
-
-    elif demisto.command() == 'zoom-fetch-recording':
-        meeting = demisto.getArg('meeting_id')
-        res = requests.get(URL + 'meetings/%s/recordings' % meeting, headers=HEADERS, params=PARAMS)
-        if res.status_code == requests.codes.ok:
-            data = res.json()
-            recording_files = data['recording_files']
-            for file in recording_files:
-                download_url = file['download_url']
-                r = requests.get(download_url, stream=True)
-                if r.status_code < 200 or r.status_code > 299:
-                    return_error('Unable to download recording for meeting %s: [%d] - %s' % (meeting, r.status_code, r.text))
-
-                filename = 'recording_%s_%s.mp4' % (meeting, file['id'])
-                with open(filename, 'wb') as f:
-                    r.raw.decode_content = True
-                    shutil.copyfileobj(r.raw, f)
-
-                demisto.results(file_result_existing_file(filename))
-                rf = requests.delete(URL + 'meetings/%s/recordings/%s' % (meeting, file['id']), headers=HEADERS, params=PARAMS)
-                if rf.status_code == requests.codes.no_content:
-                    demisto.results('File ' + filename + ' was moved to trash.')
-                else:
-                    demisto.results('Failed to delete file ' + filename + '.')
-        else:
-            return_error('Download of recording failed: [%d] - %s' % (res.status_code, res.text))
-    else:
-        return_error('Unrecognized command: ' + demisto.command())
-  type: python
-  subtype: python2
   commands:
-  - name: zoom-create-user
-    arguments:
-    - name: first_name
+  - arguments:
+    - description: First name of the new user
+      name: first_name
       required: true
-      description: First name of the new user
-    - name: last_name
+    - description: Last name of the new user
+      name: last_name
       required: true
-      description: Last name of the new user
-    - name: email
+    - description: The email of the new user
+      name: email
       required: true
-      description: The email of the new user
-    - name: user_type
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      defaultValue: Basic
+      description: The type of the newly created user
+      name: user_type
       predefined:
       - Basic
       - Pro
       - Corporate
-      description: The type of the newly created user
-      defaultValue: Basic
+    description: Create a new user in zoom account
+    execution: true
+    name: zoom-create-user
     outputs:
     - contextPath: Zoom.User.id
       description: The ID of the created user
@@ -246,40 +64,40 @@ script:
     - contextPath: Zoom.User.type
       description: The type of the user
       type: number
-    description: Create a new user in zoom account
-    execution: true
-  - name: zoom-create-meeting
-    arguments:
-    - name: type
-      required: true
+  - arguments:
+    - auto: PREDEFINED
       default: true
-      auto: PREDEFINED
+      defaultValue: Instant
+      description: The type of the meeting
+      name: type
       predefined:
       - Instant
       - Scheduled
-      description: The type of the meeting
-      defaultValue: Instant
-    - name: user
       required: true
-      description: email address or id of user for meeting
-    - name: topic
+    - description: email address or id of user for meeting
+      name: user
       required: true
-      description: The topic of the meeting
-    - name: auto-record-meeting
-      auto: PREDEFINED
-      predefined:
-      - "yes"
-      - "no"
+    - description: The topic of the meeting
+      name: topic
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'no'
       description: 'Record zoom meeting? '
-      defaultValue: "no"
-    - name: start-time
-      description: Meeting start time. When using a format like “yyyy-MM-dd’T'HH:mm:ss'Z’”,
-        always use GMT time. When using a format like “yyyy-MM-dd’T'HH:mm:ss”, you
-        should use local time and you will need to specify the time zone. Only used
-        for scheduled meetings and recurring meetings with fixed time.
-    - name: timezone
-      description: 'Timezone to format start_time. For example, “America/Los_Angeles”.
-        For scheduled meetings only. '
+      name: auto-record-meeting
+      predefined:
+      - 'yes'
+      - 'no'
+    - description: "Meeting start time. When using a format like \u201Cyyyy-MM-dd\u2019\
+        T'HH:mm:ss'Z\u2019\u201D, always use GMT time. When using a format like \u201C\
+        yyyy-MM-dd\u2019T'HH:mm:ss\u201D, you should use local time and you will need\
+        \ to specify the time zone. Only used for scheduled meetings and recurring\
+        \ meetings with fixed time."
+      name: start-time
+    - description: "Timezone to format start_time. For example, \u201CAmerica/Los_Angeles\u201D\
+        . For scheduled meetings only. "
+      name: timezone
+    description: Create a new zoom meeting (scheduled or instant)
+    name: zoom-create-meeting
     outputs:
     - contextPath: Zoom.Meeting.join_url
       description: Join url for the meeting
@@ -290,12 +108,12 @@ script:
     - contextPath: Zoom.Meeting.start_url
       description: The URL to start the meeting
       type: string
-    description: Create a new zoom meeting (scheduled or instant)
-  - name: zoom-fetch-recording
-    arguments:
-    - name: meeting_id
+  - arguments:
+    - description: Meeting id to get the recording
+      name: meeting_id
       required: true
-      description: Meeting id to get the recording
+    description: Get meeting record and save as file in the warroom
+    name: zoom-fetch-recording
     outputs:
     - contextPath: File.SHA256
       description: Attachment's SHA256
@@ -317,24 +135,24 @@ script:
       description: Attachment's EntryID
     - contextPath: File.SSDeep
       description: Attachment's SSDeep hash
-    description: Get meeting record and save as file in the warroom
-  - name: zoom-list-users
-    arguments:
-    - name: status
+  - arguments:
+    - auto: PREDEFINED
       default: true
-      auto: PREDEFINED
+      defaultValue: active
+      description: Which status of users to list
+      name: status
       predefined:
       - active
       - inactive
       - pending
-      description: Which status of users to list
-      defaultValue: active
-    - name: page-size
+    - defaultValue: '30'
       description: Number of users to return. Max 300.
-      defaultValue: "30"
-    - name: page-number
+      name: page-size
+    - defaultValue: '1'
       description: Which page of results to return
-      defaultValue: "1"
+      name: page-number
+    description: List the existing users
+    name: zoom-list-users
     outputs:
     - contextPath: Zoom.Metadata.Count
       description: Total page count available
@@ -384,21 +202,108 @@ script:
     - contextPath: Zoom.User.group_ids
       description: Groups user belongs to
       type: string
-    description: List the existing users
-  - name: zoom-delete-user
-    arguments:
-    - name: user
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: The user ID or email to delete
-    - name: action
-      auto: PREDEFINED
+      name: user
+      required: true
+    - auto: PREDEFINED
+      defaultValue: disassociate
+      description: The action to take
+      name: action
       predefined:
       - disassociate
       - delete
-      description: The action to take
-      defaultValue: disassociate
     description: Delete a user from Zoom
     execution: true
+    name: zoom-delete-user
   dockerimage: demisto/pyjwt:1.0
   runonce: false
+  script: "import datetime\nimport jwt\nimport requests\nimport json\nimport shutil\n\
+    from zipfile import ZipFile\n\nif not demisto.getParam('proxy'):\n    del os.environ['HTTP_PROXY']\n\
+    \    del os.environ['HTTPS_PROXY']\n    del os.environ['http_proxy']\n    del\
+    \ os.environ['https_proxy']\n\n\ndef get_jwt(apiKey, apiSecret):\n    \"\"\"\n\
+    \    Encode the JWT token given the api ket and secret\n    \"\"\"\n    tt = datetime.datetime.now()\n\
+    \    expire_time = int(tt.strftime('%s')) + 5000\n    payload  = {\n        'iss':\
+    \ apiKey,\n        'exp': expire_time\n    }\n    encoded = jwt.encode(payload,\
+    \ apiSecret, algorithm='HS256')\n    return encoded\n\n\nURL = 'https://api.zoom.us/v2/'\n\
+    ACCESS_TOKEN = get_jwt(demisto.getParam('apiKey'), demisto.getParam('apiSecret'))\n\
+    PARAMS = {'access_token': ACCESS_TOKEN}\nHEADERS = {'Content-Type': 'application/json',\
+    \ 'Accept': 'application/json'}\n\n\ndef return_error(data):\n    \"\"\"\n   \
+    \ Return error as result and exit\n    \"\"\"\n    demisto.results({\n       \
+    \ 'Type': entryTypes['error'],\n        'ContentsFormat': formats['text'],\n \
+    \       'Contents' : data\n    })\n    sys.exit(0)\n\n\nif demisto.command() ==\
+    \ 'test-module':\n    res = requests.get(URL + 'users', headers=HEADERS, params=PARAMS)\n\
+    \    if res.status_code == requests.codes.ok:\n        demisto.results('ok')\n\
+    \    else:\n        return_error('Error testing [%d] - %s' % (res.status_code,\
+    \ res.text))\n\nelif demisto.command() == 'zoom-create-user':\n    ut = demisto.getArg('user_type')\n\
+    \    user_type = 1  # Basic\n    if ut == 'Pro':\n        user_type = 2\n    elif\
+    \ ut == 'Corporate':\n        user_type = 3\n    res = requests.post(URL + 'users',\
+    \ headers=HEADERS, params=PARAMS, json={\n        'action': 'create',\n      \
+    \  'user_info': {\n            'email': demisto.getArg('email'),\n           \
+    \ 'type': user_type,\n            'first_name': demisto.getArg('first_name'),\n\
+    \            'last_name': demisto.getArg('last_name')\n        }\n    })\n   \
+    \ if res.status_code == requests.codes.created:\n        data = res.json()\n \
+    \       demisto.results({\n            'Type': entryTypes['note'],\n         \
+    \   'ContentsFormat': formats['json'],\n            'Contents': data,\n      \
+    \      'HumanReadable': 'User created successfully with ID %s' % data.get('id'),\n\
+    \            'EntryContext': {'Zoom.User': data}\n        })\n    else:\n    \
+    \    return_error('User creation failed: [%d] - %s' % (res.status_code, res.text))\n\
+    \nelif demisto.command() == 'zoom-list-users':\n    params = {\n        'access_token':\
+    \ ACCESS_TOKEN,\n        'status': demisto.getArg('status'),\n        'page_size':\
+    \ demisto.getArg('page-size'),\n        'page_number': demisto.getArg('page-number')\n\
+    \    }\n    res = requests.get(URL + 'users', headers=HEADERS, params=params)\n\
+    \    if res.status_code == requests.codes.ok:\n        data = res.json()\n   \
+    \     md = tableToMarkdown('Users', data.get('users'), ['id', 'first_name', 'last_name',\
+    \ 'email', 'type'])\n        md += '\\n' + tableToMarkdown('Metadata', [data],\
+    \ ['page_count', 'page_number', 'page_size', 'total_records'])\n        demisto.results({\n\
+    \            'Type': entryTypes['note'],\n            'ContentsFormat': formats['json'],\n\
+    \            'Contents': data,\n            'HumanReadable': md,\n           \
+    \ 'EntryContext': {\n                'Zoom.User': data.get('users'),\n       \
+    \         'Zoom.Metadata': {\n                    'Count': data.get('page_count'),\n\
+    \                    'Number': data.get('page_number'),\n                    'Size':\
+    \ data.get('page_size'),\n                    'Total': data.get('total_records')\n\
+    \                }\n            }\n        })\n    else:\n        return_error('User\
+    \ creation failed: [%d] - %s' % (res.status_code, res.text))\n\nelif demisto.command()\
+    \ == 'zoom-delete-user':\n    params = {\n        'access_token': ACCESS_TOKEN,\n\
+    \        'action': demisto.getArg('action')\n    }\n    res = requests.delete(URL\
+    \ + 'users/' + demisto.getArg('user'), headers=HEADERS, params=params)\n    if\
+    \ res.status_code == requests.codes.no_content:\n        demisto.results('User\
+    \ %s deleted successfully' % demisto.getArg('user'))\n    else:\n        return_error('User\
+    \ creation failed: [%d] - %s' % (res.status_code, res.text))\n\nelif demisto.command()\
+    \ == 'zoom-create-meeting':\n    auto_recording = \"none\"\n    if (demisto.getArg('auto_record_meeting')\
+    \ == 'yes'):\n        auto_recording = \"cloud\"\n    params = {\n        'type':\
+    \ 1,\n        'topic': demisto.getArg('topic'),\n        'settings': {\n     \
+    \       'join_before_host': True,\n            'auto_recording': auto_recording\n\
+    \        }\n    }\n    if (demisto.args()['type'] == 'Scheduled'):\n        params.update({\n\
+    \            'type': 2,\n            'start_time': demisto.getArg('start-time'),\n\
+    \            'timezone': demisto.getArg('timezone'),\n        })\n    res = requests.post(URL\
+    \ + \"users/%s/meetings\" % demisto.getArg('user'), headers=HEADERS, params=PARAMS,\
+    \ json=params)\n    if res.status_code == requests.codes.created:\n        data\
+    \ = res.json()\n        md = 'Meeting created successfully.\\nStart it [here](%s)\
+    \ and join [here](%s).' % (data.get('start_url'), data.get('join_url'))\n    \
+    \    demisto.results({\n            'Type': entryTypes['note'],\n            'ContentsFormat':\
+    \ formats['json'],\n            'Contents': data,\n            'HumanReadable':\
+    \ md,\n            'EntryContext': {'Zoom.Meeting': data}\n        })\n    else:\n\
+    \        return_error('Meeting creation failed: [%d] - %s' % (res.status_code,\
+    \ res.text))\n\nelif demisto.command() == 'zoom-fetch-recording':\n    meeting\
+    \ = demisto.getArg('meeting_id')\n    res = requests.get(URL + 'meetings/%s/recordings'\
+    \ % meeting, headers=HEADERS, params=PARAMS)\n    if res.status_code == requests.codes.ok:\n\
+    \        data = res.json()\n        recording_files = data['recording_files']\n\
+    \        for file in recording_files:\n            download_url = file['download_url']\n\
+    \            r = requests.get(download_url, stream=True)\n            if r.status_code\
+    \ < 200 or r.status_code > 299:\n                return_error('Unable to download\
+    \ recording for meeting %s: [%d] - %s' % (meeting, r.status_code, r.text))\n\n\
+    \            filename = 'recording_%s_%s.mp4' % (meeting, file['id'])\n      \
+    \      with open(filename, 'wb') as f:\n                r.raw.decode_content =\
+    \ True\n                shutil.copyfileobj(r.raw, f)\n\n            demisto.results(file_result_existing_file(filename))\n\
+    \            rf = requests.delete(URL + 'meetings/%s/recordings/%s' % (meeting,\
+    \ file['id']), headers=HEADERS, params=PARAMS)\n            if rf.status_code\
+    \ == requests.codes.no_content:\n                demisto.results('File ' + filename\
+    \ + ' was moved to trash.')\n            else:\n                demisto.results('Failed\
+    \ to delete file ' + filename + '.')\n    else:\n        return_error('Download\
+    \ of recording failed: [%d] - %s' % (res.status_code, res.text))\nelse:\n    return_error('Unrecognized\
+    \ command: ' + demisto.command())\n"
+  subtype: python2
+  type: python
+toversion: 4.1.9

@@ -1,41 +1,39 @@
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: ThreatMiner
   version: -1
-name: ThreatMiner
-display: ThreatMiner
-category: Data Enrichment & Threat Intelligence
-description: Data Mining for Threat Intelligence
 configuration:
-- display: Maximum results per query, enter 'all' to get unlimited results
+- defaultvalue: '30'
+  display: Maximum results per query, enter 'all' to get unlimited results
   name: limit_results
-  defaultvalue: "30"
-  type: 0
   required: false
-- display: Trust any certificate (not secure)
+  type: 0
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
-  type: 8
   required: false
-- display: Use system proxy settings
+  type: 8
+- defaultvalue: ''
+  display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
-  type: 8
   required: false
-- display: ThreatMiner API URL
+  type: 8
+- defaultvalue: https://api.threatminer.org/v2/
+  display: ThreatMiner API URL
   name: threatminer_url
-  defaultvalue: https://api.threatminer.org/v2/
-  type: 0
   required: true
+  type: 0
+description: Data Mining for Threat Intelligence
+display: ThreatMiner
+name: ThreatMiner
 script:
-  script: ''
-  type: python
-  subtype: python2
   commands:
-  - name: domain
-    arguments:
-    - name: domain
+  - arguments:
+    - description: Domain name to get information for.
+      name: domain
       required: true
-      description: Domain name to get information for.
+    description: Retrieves data from ThreatMiner about a specified domain.
+    name: domain
     outputs:
     - contextPath: ThreatMiner.Domain.Whois.Server
       description: Whois server address.
@@ -96,12 +94,12 @@ script:
     - contextPath: Domain.Whois.Registrant.Email
       description: Email of the registrant
       type: string
-    description: Retrieves data from ThreatMiner about a specified domain.
-  - name: ip
-    arguments:
-    - name: ip
+  - arguments:
+    - description: IP address to get information for.
+      name: ip
       required: true
-      description: IP address to get information for.
+    description: Retrieves data from ThreatMiner about a specified IP address.
+    name: ip
     outputs:
     - contextPath: ThreatMiner.IP.Address
       description: IP address that was searched.
@@ -148,16 +146,16 @@ script:
       description: Related country.
     - contextPath: IP.ASN
       description: Related ASN.
-    description: Retrieves data from ThreatMiner about a specified IP address.
-  - name: file
-    arguments:
-    - name: file
+  - arguments:
+    - description: File hash (md5, sha1, sha256)
+      name: file
       required: true
-      description: File hash (md5, sha1, sha256)
-    - name: threshold
+    - defaultValue: '10'
       description: If ThreatScore is greater or equal than the threshold, then file
         will be considered malicious
-      defaultValue: "10"
+      name: threshold
+    description: Retrieves data from ThreatMiner about a specified file.
+    name: file
     outputs:
     - contextPath: ThreatMiner.File.MD5
       description: File MD5 hash.
@@ -240,7 +238,10 @@ script:
     - contextPath: File.Name
       description: File name.
       type: string
-    description: Retrieves data from ThreatMiner about a specified file.
   runonce: false
+  script: ''
+  subtype: python2
+  type: python
 tests:
 - ThreatMiner-Test
+toversion: 4.1.9

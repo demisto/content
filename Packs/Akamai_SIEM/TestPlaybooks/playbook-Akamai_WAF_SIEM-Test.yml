@@ -1,124 +1,99 @@
-id: Akamai_WAF_SIEM-Test
-version: -1
 contentitemfields:
   propagationLabels: []
+id: Akamai_WAF_SIEM-Test
+inputs: []
 name: Akamai-WAF-SIEM_Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 068d2e11-d07a-4ce8-831a-fb3f447cf178
-    type: start
-    task:
-      id: 068d2e11-d07a-4ce8-831a-fb3f447cf178
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-    skipunavailable: false
-    quiet: false
-  "1":
-    id: "1"
-    taskid: b73ef49f-afb5-458c-8de4-aa0cefb724fa
-    type: regular
-    task:
-      id: b73ef49f-afb5-458c-8de4-aa0cefb724fa
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - '1'
+    note: false
+    quiet: false
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 068d2e11-d07a-4ce8-831a-fb3f447cf178
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 068d2e11-d07a-4ce8-831a-fb3f447cf178
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    quiet: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quiet: false
-  "2":
-    id: "2"
-    taskid: 2fc912e5-21a8-45c6-881d-4b089b2476b3
-    type: regular
     task:
-      id: 2fc912e5-21a8-45c6-881d-4b089b2476b3
-      version: -1
-      name: Command get events
-      description: Get security events from Akamai WAF
-      script: '|||akamai-siem-get-events'
+      brand: ''
+      description: Delete field from context
+      id: b73ef49f-afb5-458c-8de4-aa0cefb724fa
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: b73ef49f-afb5-458c-8de4-aa0cefb724fa
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
+    note: false
+    quiet: false
     scriptarguments:
       config_ids:
-        simple: "50170"
+        simple: '50170'
       from_epoch:
-        simple: "1576602011"
+        simple: '1576602011'
       limit:
-        simple: "1"
+        simple: '1'
       offset: {}
       period: {}
       to_epoch: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quiet: false
-  "4":
-    id: "4"
-    taskid: cf1614be-f954-46b1-818f-9849edafaf02
-    type: regular
     task:
-      id: cf1614be-f954-46b1-818f-9849edafaf02
-      version: -1
-      name: Fetch incidents
-      description: Execute FetchIncident for a given instance
-      scriptName: FetchFromInstance
+      brand: ''
+      description: Get security events from Akamai WAF
+      id: 2fc912e5-21a8-45c6-881d-4b089b2476b3
+      iscommand: true
+      name: Command get events
+      script: '|||akamai-siem-get-events'
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 2fc912e5-21a8-45c6-881d-4b089b2476b3
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
+    note: false
+    quiet: false
     scriptarguments:
       add_to_context: {}
       brand_name:
@@ -127,29 +102,22 @@ tasks:
       expect_data: {}
       instance_name: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quiet: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 590,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    task:
+      brand: ''
+      description: Execute FetchIncident for a given instance
+      id: cf1614be-f954-46b1-818f-9849edafaf02
+      iscommand: false
+      name: Fetch incidents
+      scriptName: FetchFromInstance
+      type: regular
+      version: -1
+    taskid: cf1614be-f954-46b1-818f-9849edafaf02
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 590,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

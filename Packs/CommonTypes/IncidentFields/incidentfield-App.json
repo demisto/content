@@ -28,5 +28,6 @@
     "associatedToAll": true,
     "unmapped": false,
     "unsearchable": false,
-    "fromVersion": "4.1.0"
+    "fromVersion": "4.1.0",
+    "toVersion": "4.1.9"
 }

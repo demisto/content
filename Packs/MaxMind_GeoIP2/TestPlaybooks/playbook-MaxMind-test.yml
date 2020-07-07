@@ -1,81 +1,59 @@
 id: MaxMind Test
-version: -1
+inputs: []
 name: MaxMind Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 718ff683-df2d-475f-824c-31f0b82e75dc
-    type: start
-    task:
-      id: 718ff683-df2d-475f-824c-31f0b82e75dc
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
+      - '1'
     note: false
-    timertriggers: []
-  "1":
-    id: "1"
-    taskid: 11efa238-5201-447f-84ad-8b358ba55abe
-    type: regular
+    separatecontext: false
     task:
-      id: 11efa238-5201-447f-84ad-8b358ba55abe
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      id: 718ff683-df2d-475f-824c-31f0b82e75dc
       iscommand: false
-      brand: ""
+      name: ''
+      version: -1
+    taskid: 718ff683-df2d-475f-824c-31f0b82e75dc
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 180
-        }
-      }
-    note: false
-    timertriggers: []
-  "2":
-    id: "2"
-    taskid: 8784789e-0686-4d2d-8a42-c0970a8aad6c
-    type: regular
     task:
-      id: 8784789e-0686-4d2d-8a42-c0970a8aad6c
-      version: -1
-      name: ip
-      description: Check IP reputation (when information is available, returns a JSON
-        with details). Uses all configured Threat Intelligence feeds
-      script: MaxMind GeoIP2|||ip
+      brand: ''
+      description: Delete field from context
+      id: 11efa238-5201-447f-84ad-8b358ba55abe
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: MaxMind GeoIP2
+      version: -1
+    taskid: 11efa238-5201-447f-84ad-8b358ba55abe
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 180\n  }\n}"
+  '2':
+    id: '2'
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
     scriptarguments:
       fullResponse: {}
       ip:
@@ -86,89 +64,73 @@ tasks:
       threshold: {}
       wait: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 340
-        }
-      }
-    note: false
-    timertriggers: []
-  "3":
-    id: "3"
-    taskid: 2d5408e8-2440-4eba-89cf-10633237785a
-    type: condition
     task:
-      id: 2d5408e8-2440-4eba-89cf-10633237785a
+      brand: MaxMind GeoIP2
+      description: Check IP reputation (when information is available, returns a JSON
+        with details). Uses all configured Threat Intelligence feeds
+      id: 8784789e-0686-4d2d-8a42-c0970a8aad6c
+      iscommand: true
+      name: ip
+      script: MaxMind GeoIP2|||ip
+      type: regular
       version: -1
-      name: Check results
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "4"
-    separatecontext: false
+    taskid: 8784789e-0686-4d2d-8a42-c0970a8aad6c
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 340\n  }\n}"
+  '3':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: ${MaxMind.ISP}
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: Google
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 520
-        }
-      }
+      label: 'yes'
+    id: '3'
+    nexttasks:
+      'yes':
+      - '4'
     note: false
-    timertriggers: []
-  "4":
-    id: "4"
-    taskid: 62512374-fc0a-4e7f-8005-f73dcad0d1d3
-    type: regular
+    separatecontext: false
     task:
-      id: 62512374-fc0a-4e7f-8005-f73dcad0d1d3
+      brand: ''
+      id: 2d5408e8-2440-4eba-89cf-10633237785a
+      iscommand: false
+      name: Check results
+      type: condition
       version: -1
-      name: closeInvestigation
-      description: Close the current incident
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
-      brand: Builtin
+    taskid: 2d5408e8-2440-4eba-89cf-10633237785a
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 520\n  }\n}"
+  '4':
+    id: '4'
+    note: false
     scriptarguments:
       closeNotes: {}
       closeReason: {}
       id:
         simple: ${incident.id}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 730
-        }
-      }
-    note: false
+    task:
+      brand: Builtin
+      description: Close the current incident
+      id: 62512374-fc0a-4e7f-8005-f73dcad0d1d3
+      iscommand: true
+      name: closeInvestigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 62512374-fc0a-4e7f-8005-f73dcad0d1d3
     timertriggers: []
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 775,
-        "width": 380,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 730\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 775,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n\
+  \    }\n  }\n}"

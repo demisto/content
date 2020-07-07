@@ -1,362 +1,26 @@
-id: Intezer - Analyze by hash
-version: -1
-name: Intezer - Analyze by hash
-fromversion: 4.0.0
 description: Analyze the given file hash on Intezer Analyze and enrich the file reputation.
   Supports SHA256, SHA1, and MD5.
-starttaskid: "0"
-tasks:
-  "0":
-    id: "0"
-    taskid: 3eeea5b3-f473-4f6f-87ec-f577f4be5c94
-    type: start
-    task:
-      id: 3eeea5b3-f473-4f6f-87ec-f577f4be5c94
-      version: -1
-      name: ""
-      description: "start"
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 79296d69-cc45-44dd-89df-b937e2f7b8d7
-    type: condition
-    task:
-      id: 79296d69-cc45-44dd-89df-b937e2f7b8d7
-      version: -1
-      name: Is Intezer enabled
-      description: Checks if there is an instance of the Intezer integration enabled.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "6"
-      "yes":
-      - "14"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Intezer v2
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-                accessor: brand
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 36c0f591-4ad7-4a3d-8bc3-ec036e4f76cd
-    type: title
-    task:
-      id: 36c0f591-4ad7-4a3d-8bc3-ec036e4f76cd
-      version: -1
-      name: Done
-      description: Done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -105,
-          "y": 1275
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "13":
-    id: "13"
-    taskid: be51ba42-9f41-4998-8033-81757c16970d
-    type: regular
-    task:
-      id: be51ba42-9f41-4998-8033-81757c16970d
-      version: -1
-      name: Intezer - Analyze File by hash
-      description: Checks the file reputation of the uploaded file. Max file size is 20 MB.
-      script: Intezer v2|||intezer-analyze-by-hash
-      type: regular
-      iscommand: true
-      brand: Intezer v2
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      file_hash:
-        complex:
-          root: inputs.hash
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "14":
-    id: "14"
-    taskid: 3480c94c-359c-4885-879f-cadcb54c02cc
-    type: condition
-    task:
-      id: 3480c94c-359c-4885-879f-cadcb54c02cc
-      version: -1
-      name: Is there a hash to analyze?
-      description: Checks if there is a file hash to analyze.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "6"
-      "yes":
-      - "13"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.hash
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "16":
-    id: "16"
-    taskid: 65112085-068e-4775-8a76-3618d54190f3
-    type: playbook
-    task:
-      id: 65112085-068e-4775-8a76-3618d54190f3
-      version: -1
-      name: GenericPolling
-      description: |-
-        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continually running the command in Step #2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
-      playbookName: GenericPolling
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      AdditionalPollingCommandArgNames: {}
-      AdditionalPollingCommandArgValues: {}
-      Ids:
-        complex:
-          root: Intezer
-          accessor: Analysis.ID
-      Interval:
-        complex:
-          root: inputs.Interval
-      PollingCommandArgName:
-        simple: analysis_id
-      PollingCommandName:
-        simple: intezer-get-analysis-result
-      Timeout:
-        complex:
-          root: inputs.Timeout
-      dt:
-        simple: Intezer.Analysis(val.Status !== 'Done').ID
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "17":
-    id: "17"
-    taskid: 096e3c80-e044-4349-82be-937b9f9b7388
-    type: regular
-    task:
-      id: 096e3c80-e044-4349-82be-937b9f9b7388
-      version: -1
-      name: Intezer - get analysis result
-      description: Wait and get analysis results. Supports file analysis and endpoint analysis.
-      script: Intezer v2|||intezer-get-analysis-result
-      type: regular
-      iscommand: true
-      brand: Intezer v2
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      analysis_id:
-        complex:
-          root: Intezer
-          accessor: Analysis.ID
-      analysis_type: {}
-      indicator_name: {}
-      result_url:
-        complex:
-          root: Intezer
-          accessor: Analysis.ResultUrl
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "18":
-    id: "18"
-    taskid: e2064e11-e8c7-4881-8328-e95a83a81a1b
-    type: condition
-    task:
-      id: e2064e11-e8c7-4881-8328-e95a83a81a1b
-      version: -1
-      name: Was result returned?
-      description: "Checks was result returned"
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "16"
-      "yes":
-      - "6"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: DBotScore.Indicator
-            iscontext: true
-          right:
-            value:
-              simple: inputs.hash
-            iscontext: true
-        - operator: isEqualString
-          left:
-            value:
-              simple: DBotScore.Vendor
-            iscontext: true
-          right:
-            value:
-              simple: Intezer
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {
-      "14_6_#default#": 0.1,
-      "18_6_yes": 0.1,
-      "5_6_#default#": 0.29
-    },
-    "paper": {
-      "dimensions": {
-        "height": 1290,
-        "width": 760,
-        "x": -105,
-        "y": 50
-      }
-    }
-  }
+fromversion: 4.0.0
+id: Intezer - Analyze by hash
 inputs:
-- key: Interval
-  value:
-    simple: "1"
+- description: How often the polling command should run (in minutes).
+  key: Interval
   required: true
-  description: How often the polling command should run (in minutes).
-- key: Timeout
   value:
-    simple: "10"
+    simple: '1'
+- description: Amount of time to wait before a timeout occurs  (in minutes).
+  key: Timeout
   required: true
-  description: Amount of time to wait before a timeout occurs  (in minutes).
-- key: hash
+  value:
+    simple: '10'
+- description: ''
+  key: hash
+  required: false
   value:
     complex:
-      root: File
       accessor: SHA256
-  required: false
-  description: ""
+      root: File
+name: Intezer - Analyze by hash
 outputs:
 - contextPath: File.SHA256
   description: SHA256 hash of the file.
@@ -400,5 +64,290 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score.
   type: number
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: start
+      id: 3eeea5b3-f473-4f6f-87ec-f577f4be5c94
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 3eeea5b3-f473-4f6f-87ec-f577f4be5c94
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '13':
+    id: '13'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '18'
+    note: false
+    scriptarguments:
+      file_hash:
+        complex:
+          root: inputs.hash
+    separatecontext: false
+    task:
+      brand: Intezer v2
+      description: Checks the file reputation of the uploaded file. Max file size
+        is 20 MB.
+      id: be51ba42-9f41-4998-8033-81757c16970d
+      iscommand: true
+      name: Intezer - Analyze File by hash
+      script: Intezer v2|||intezer-analyze-by-hash
+      type: regular
+      version: -1
+    taskid: be51ba42-9f41-4998-8033-81757c16970d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 545\n  }\n}"
+  '14':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.hash
+          operator: isExists
+      label: 'yes'
+    id: '14'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '6'
+      'yes':
+      - '13'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Checks if there is a file hash to analyze.
+      id: 3480c94c-359c-4885-879f-cadcb54c02cc
+      iscommand: false
+      name: Is there a hash to analyze?
+      type: condition
+      version: -1
+    taskid: 3480c94c-359c-4885-879f-cadcb54c02cc
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 370\n  }\n}"
+  '16':
+    id: '16'
+    ignoreworker: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '17'
+    note: false
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          accessor: Analysis.ID
+          root: Intezer
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: analysis_id
+      PollingCommandName:
+        simple: intezer-get-analysis-result
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: Intezer.Analysis(val.Status !== 'Done').ID
+    separatecontext: true
+    task:
+      brand: ''
+      description: 'Use as a sub-playbook to block execution of the master playbook
+        until a remote action is complete.
+
+        This playbook implements polling by continually running the command in Step
+        #2 until the operation completes.
+
+        The remote action should have the following structure:
+
+
+        1. Initiate the operation.
+
+        2. Poll to check if the operation completed.
+
+        3. (optional) Get the results of the operation.'
+      id: 65112085-068e-4775-8a76-3618d54190f3
+      iscommand: false
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 65112085-068e-4775-8a76-3618d54190f3
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 895\n  }\n}"
+  '17':
+    continueonerror: true
+    id: '17'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    scriptarguments:
+      analysis_id:
+        complex:
+          accessor: Analysis.ID
+          root: Intezer
+      analysis_type: {}
+      indicator_name: {}
+      result_url:
+        complex:
+          accessor: Analysis.ResultUrl
+          root: Intezer
+    separatecontext: false
+    task:
+      brand: Intezer v2
+      description: Wait and get analysis results. Supports file analysis and endpoint
+        analysis.
+      id: 096e3c80-e044-4349-82be-937b9f9b7388
+      iscommand: true
+      name: Intezer - get analysis result
+      script: Intezer v2|||intezer-get-analysis-result
+      type: regular
+      version: -1
+    taskid: 096e3c80-e044-4349-82be-937b9f9b7388
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1070\n  }\n}"
+  '18':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Indicator
+          operator: isEqualString
+          right:
+            iscontext: true
+            value:
+              simple: inputs.hash
+        - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Vendor
+          operator: isEqualString
+          right:
+            value:
+              simple: Intezer
+      label: 'yes'
+    id: '18'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '16'
+      'yes':
+      - '6'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Checks was result returned
+      id: e2064e11-e8c7-4881-8328-e95a83a81a1b
+      iscommand: false
+      name: Was result returned?
+      type: condition
+      version: -1
+    taskid: e2064e11-e8c7-4881-8328-e95a83a81a1b
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 720\n  }\n}"
+  '5':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Intezer v2
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: 'yes'
+    id: '5'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '6'
+      'yes':
+      - '14'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Checks if there is an instance of the Intezer integration enabled.
+      id: 79296d69-cc45-44dd-89df-b937e2f7b8d7
+      iscommand: false
+      name: Is Intezer enabled
+      type: condition
+      version: -1
+    taskid: 79296d69-cc45-44dd-89df-b937e2f7b8d7
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Done
+      id: 36c0f591-4ad7-4a3d-8bc3-ec036e4f76cd
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 36c0f591-4ad7-4a3d-8bc3-ec036e4f76cd
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": -105,\n    \"y\": 1275\n  }\n}"
 tests:
-  - No Tests
+- No Tests
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"14_6_#default#\": 0.1,\n    \"18_6_yes\"\
+  : 0.1,\n    \"5_6_#default#\": 0.29\n  },\n  \"paper\": {\n    \"dimensions\": {\n\
+  \      \"height\": 1290,\n      \"width\": 760,\n      \"x\": -105,\n      \"y\"\
+  : 50\n    }\n  }\n}"

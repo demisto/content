@@ -1,467 +1,120 @@
-id: Google Chronicle Backstory Asset - Test
-version: -1
-name: Google Chronicle Backstory Asset - Test
 description: This playbook uses the Google Chronicle Backstory integration and tests
   the various scenarios of the "gcb-assets" command.
-starttaskid: "0"
+id: Google Chronicle Backstory Asset - Test
+inputs: []
+name: Google Chronicle Backstory Asset - Test
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 48af2d43-f908-4857-8fae-1f857677de14
-    type: start
+  '0':
+    id: '0'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    separatecontext: false
     task:
+      brand: ''
       id: 48af2d43-f908-4857-8fae-1f857677de14
-      version: -1
-      name: ""
       iscommand: false
-      brand: ""
+      name: ''
+      version: -1
+    taskid: 48af2d43-f908-4857-8fae-1f857677de14
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 50\n  }\n}"
+  '1':
+    continueonerror: true
+    id: '1'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "4"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 50
-        }
-      }
+      - '2'
     note: false
-    timertriggers: []
-    ignoreworker: false
-  "1":
-    id: "1"
-    taskid: f2fa2107-51d2-41c0-87df-f570e5ec454b
-    type: regular
+    scriptarguments:
+      artifact_value:
+        simple: www.google.com
+      end_time: {}
+      page_size: {}
+      preset_time_range: {}
+      start_time: {}
+    separatecontext: false
     task:
+      brand: Google Chronicle Backstory
+      description: This command will respond with a list of the assets which accessed
+        the input artifact (ip, domain, md5, sha1, sha256) during the specified time.
       id: f2fa2107-51d2-41c0-87df-f570e5ec454b
-      version: -1
+      iscommand: true
       name: Get Assets list
-      description: This command will respond with a list of the assets which accessed
-        the input artifact (ip, domain, md5, sha1, sha256) during the specified time.
       script: Google Chronicle Backstory|||gcb-assets
       type: regular
-      iscommand: true
-      brand: Google Chronicle Backstory
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      artifact_value:
-        simple: www.google.com
-      end_time: {}
-      page_size: {}
-      preset_time_range: {}
-      start_time: {}
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 286e6e68-7c92-4224-84b4-5d63884db417
-    type: condition
-    task:
-      id: 286e6e68-7c92-4224-84b4-5d63884db417
       version: -1
-      name: Verify
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "11"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: GoogleChronicleBackstory
-                accessor: Asset.AccessedDomain
-            iscontext: true
-          right:
-            value:
-              simple: www.google.com
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: GoogleChronicleBackstory
-                accessor: Asset.FirstAccessedTime
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: GoogleChronicleBackstory
-                accessor: Asset.LastAccessedTime
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: GoogleChronicleBackstory
-                accessor: Asset.HostName
-            iscontext: true
-        - operator: isExists
-          left:
-            value:
-              complex:
-                root: GoogleChronicleBackstory
-                accessor: Asset.IpAddress
-            iscontext: true
-        - operator: isExists
-          left:
-            value:
-              complex:
-                root: GoogleChronicleBackstory
-                accessor: Asset.MacAddress
-            iscontext: true
-        - operator: isExists
-          left:
-            value:
-              complex:
-                root: GoogleChronicleBackstory
-                accessor: Asset.ProductId
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 545
-        }
-      }
-    note: false
+    taskid: f2fa2107-51d2-41c0-87df-f570e5ec454b
     timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: 23e7a9ef-2033-4a28-8569-52ef3cf95b26
-    type: title
-    task:
-      id: 23e7a9ef-2033-4a28-8569-52ef3cf95b26
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 5afc6ca7-c5cd-4b4e-8fe8-56dee19c3686
     type: regular
-    task:
-      id: 5afc6ca7-c5cd-4b4e-8fe8-56dee19c3686
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-      - "5"
-      - "7"
-      - "9"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
+    view: "{\n  \"position\": {\n    \"x\": 1340,\n    \"y\": 370\n  }\n}"
+  '10':
+    id: '10'
     ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 3f62dd64-f446-4271-81f9-63a10eb1c409
-    type: regular
-    task:
-      id: 3f62dd64-f446-4271-81f9-63a10eb1c409
-      version: -1
-      name: Invalid page size argument
-      description: This command will respond with a list of the assets which accessed
-        the input artifact (ip, domain, md5, sha1, sha256) during the specified time.
-      script: Google Chronicle Backstory|||gcb-assets
-      type: regular
-      iscommand: true
-      brand: Google Chronicle Backstory
     nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      artifact_value:
-        simple: www.google.com
-      end_time: {}
-      page_size:
-        simple: "0"
-      start_time: {}
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 370
-        }
-      }
+      'yes':
+      - '11'
     note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 62ea068d-09a3-4ddf-88f8-4323ed0470e6
-    type: condition
-    task:
-      id: 62ea068d-09a3-4ddf-88f8-4323ed0470e6
-      version: -1
-      name: Is error?
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
-      scriptName: isError
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "11"
     scriptarguments:
       entryId:
         simple: ${lastCompletedTaskEntries}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "7":
-    id: "7"
-    taskid: 9dfb2427-7dd7-443e-8e2c-85b3fc9105c5
-    type: regular
     task:
-      id: 9dfb2427-7dd7-443e-8e2c-85b3fc9105c5
-      version: -1
-      name: Invalid start date argument
-      description: This command will respond with a list of the assets which accessed
-        the input artifact (ip, domain, md5, sha1, sha256) during the specified time.
-      script: Google Chronicle Backstory|||gcb-assets
-      type: regular
-      iscommand: true
-      brand: Google Chronicle Backstory
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      artifact_value:
-        simple: www.google.com
-      end_time: {}
-      page_size: {}
-      preset_time_range: {}
-      start_time:
-        simple: "2020"
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "8":
-    id: "8"
-    taskid: ba6f0389-3fc3-4920-8a36-24580c3b71c1
-    type: condition
-    task:
-      id: ba6f0389-3fc3-4920-8a36-24580c3b71c1
-      version: -1
-      name: Is error?
+      brand: ''
       description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
         to check the previous task entries. If array is provided, will return yes
         if one of the entries returned an error.
-      scriptName: isError
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "11"
-    scriptarguments:
-      entryId:
-        simple: ${lastCompletedTaskEntries}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "9":
-    id: "9"
-    taskid: f113c74b-88c2-42b3-8ee9-42184dc5357b
-    type: regular
-    task:
-      id: f113c74b-88c2-42b3-8ee9-42184dc5357b
-      version: -1
-      name: Invalid end date argument
-      description: This command will respond with a list of the assets which accessed
-        the input artifact (ip, domain, md5, sha1, sha256) during the specified time.
-      script: Google Chronicle Backstory|||gcb-assets
-      type: regular
-      iscommand: true
-      brand: Google Chronicle Backstory
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      artifact_value:
-        simple: www.google.com
-      end_time:
-        simple: "2020"
-      page_size: {}
-      preset_time_range: {}
-      start_time: {}
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "10":
-    id: "10"
-    taskid: c9a57a20-a070-4c4a-8308-e995f07148fd
-    type: condition
-    task:
       id: c9a57a20-a070-4c4a-8308-e995f07148fd
-      version: -1
+      iscommand: false
       name: Is error?
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
       scriptName: isError
       type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "11"
-    scriptarguments:
-      entryId:
-        simple: ${lastCompletedTaskEntries}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "11":
-    id: "11"
-    taskid: 8273ac18-c2b2-4c79-8293-1d691322d3d6
-    type: regular
-    task:
-      id: 8273ac18-c2b2-4c79-8293-1d691322d3d6
       version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: c9a57a20-a070-4c4a-8308-e995f07148fd
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 545\n  }\n}"
+  '11':
+    id: '11'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "12"
+      - '12'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "12":
-    id: "12"
-    taskid: 601519ca-10ca-4956-807e-e283d97ae61c
-    type: regular
     task:
-      id: 601519ca-10ca-4956-807e-e283d97ae61c
-      version: -1
-      name: closeInvestigation
-      description: Close the current incident
-      script: Builtin|||closeInvestigation
+      brand: ''
+      description: Delete field from context
+      id: 8273ac18-c2b2-4c79-8293-1d691322d3d6
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: Builtin
+      version: -1
+    taskid: 8273ac18-c2b2-4c79-8293-1d691322d3d6
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 720\n  }\n}"
+  '12':
+    id: '12'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
     scriptarguments:
       assetid: {}
       closeNotes: {}
@@ -470,27 +123,288 @@ tasks:
       id: {}
       phishingsubtype: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 895
-        }
-      }
-    note: false
+    task:
+      brand: Builtin
+      description: Close the current incident
+      id: 601519ca-10ca-4956-807e-e283d97ae61c
+      iscommand: true
+      name: closeInvestigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 601519ca-10ca-4956-807e-e283d97ae61c
     timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 895\n  }\n}"
+  '2':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Asset.AccessedDomain
+                root: GoogleChronicleBackstory
+          operator: containsGeneral
+          right:
+            value:
+              simple: www.google.com
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Asset.FirstAccessedTime
+                root: GoogleChronicleBackstory
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Asset.LastAccessedTime
+                root: GoogleChronicleBackstory
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Asset.HostName
+                root: GoogleChronicleBackstory
+          operator: isExists
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Asset.IpAddress
+                root: GoogleChronicleBackstory
+          operator: isExists
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Asset.MacAddress
+                root: GoogleChronicleBackstory
+          operator: isExists
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Asset.ProductId
+                root: GoogleChronicleBackstory
+          operator: isExists
+      label: 'yes'
+    id: '2'
     ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1085,
-        "width": 1670,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    nexttasks:
+      'yes':
+      - '11'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      id: 286e6e68-7c92-4224-84b4-5d63884db417
+      iscommand: false
+      name: Verify
+      type: condition
+      version: -1
+    taskid: 286e6e68-7c92-4224-84b4-5d63884db417
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 1340,\n    \"y\": 545\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 23e7a9ef-2033-4a28-8569-52ef3cf95b26
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 23e7a9ef-2033-4a28-8569-52ef3cf95b26
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 1070\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '1'
+      - '5'
+      - '7'
+      - '9'
+    note: false
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: 5afc6ca7-c5cd-4b4e-8fe8-56dee19c3686
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 5afc6ca7-c5cd-4b4e-8fe8-56dee19c3686
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 195\n  }\n}"
+  '5':
+    continueonerror: true
+    id: '5'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    scriptarguments:
+      artifact_value:
+        simple: www.google.com
+      end_time: {}
+      page_size:
+        simple: '0'
+      start_time: {}
+    separatecontext: false
+    task:
+      brand: Google Chronicle Backstory
+      description: This command will respond with a list of the assets which accessed
+        the input artifact (ip, domain, md5, sha1, sha256) during the specified time.
+      id: 3f62dd64-f446-4271-81f9-63a10eb1c409
+      iscommand: true
+      name: Invalid page size argument
+      script: Google Chronicle Backstory|||gcb-assets
+      type: regular
+      version: -1
+    taskid: 3f62dd64-f446-4271-81f9-63a10eb1c409
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 370\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '11'
+    note: false
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      id: 62ea068d-09a3-4ddf-88f8-4323ed0470e6
+      iscommand: false
+      name: Is error?
+      scriptName: isError
+      type: condition
+      version: -1
+    taskid: 62ea068d-09a3-4ddf-88f8-4323ed0470e6
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 545\n  }\n}"
+  '7':
+    continueonerror: true
+    id: '7'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    scriptarguments:
+      artifact_value:
+        simple: www.google.com
+      end_time: {}
+      page_size: {}
+      preset_time_range: {}
+      start_time:
+        simple: '2020'
+    separatecontext: false
+    task:
+      brand: Google Chronicle Backstory
+      description: This command will respond with a list of the assets which accessed
+        the input artifact (ip, domain, md5, sha1, sha256) during the specified time.
+      id: 9dfb2427-7dd7-443e-8e2c-85b3fc9105c5
+      iscommand: true
+      name: Invalid start date argument
+      script: Google Chronicle Backstory|||gcb-assets
+      type: regular
+      version: -1
+    taskid: 9dfb2427-7dd7-443e-8e2c-85b3fc9105c5
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '8':
+    id: '8'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '11'
+    note: false
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      id: ba6f0389-3fc3-4920-8a36-24580c3b71c1
+      iscommand: false
+      name: Is error?
+      scriptName: isError
+      type: condition
+      version: -1
+    taskid: ba6f0389-3fc3-4920-8a36-24580c3b71c1
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '9':
+    continueonerror: true
+    id: '9'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '10'
+    note: false
+    scriptarguments:
+      artifact_value:
+        simple: www.google.com
+      end_time:
+        simple: '2020'
+      page_size: {}
+      preset_time_range: {}
+      start_time: {}
+    separatecontext: false
+    task:
+      brand: Google Chronicle Backstory
+      description: This command will respond with a list of the assets which accessed
+        the input artifact (ip, domain, md5, sha1, sha256) during the specified time.
+      id: f113c74b-88c2-42b3-8ee9-42184dc5357b
+      iscommand: true
+      name: Invalid end date argument
+      script: Google Chronicle Backstory|||gcb-assets
+      type: regular
+      version: -1
+    taskid: f113c74b-88c2-42b3-8ee9-42184dc5357b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 370\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1085,\n      \"width\": 1670,\n      \"x\": 50,\n      \"y\":\
+  \ 50\n    }\n  }\n}"

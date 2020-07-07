@@ -1,82 +1,78 @@
 id: Elasticsearch_v2_test-v6
-version: -1
+inputs: []
 name: Elasticsearch_v2_test-v6
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 399e03cb-a241-4d96-80ab-239a281f5600
-    type: start
-    task:
-      id: 399e03cb-a241-4d96-80ab-239a281f5600
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: 5c38dc6c-23cb-42ed-8b23-8e1bc6cd0a7d
-    type: regular
-    task:
-      id: 5c38dc6c-23cb-42ed-8b23-8e1bc6cd0a7d
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 399e03cb-a241-4d96-80ab-239a281f5600
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 399e03cb-a241-4d96-80ab-239a281f5600
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 210
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 384f06a9-033d-47d3-808f-8eece1ecfae7
-    type: regular
     task:
-      id: 384f06a9-033d-47d3-808f-8eece1ecfae7
-      version: -1
-      name: general search
-      description: search index using Elasticsearch
-      script: Elasticsearch v2|||search
+      brand: ''
+      description: Delete field from context
+      id: 5c38dc6c-23cb-42ed-8b23-8e1bc6cd0a7d
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: Elasticsearch v2
+      version: -1
+    taskid: 5c38dc6c-23cb-42ed-8b23-8e1bc6cd0a7d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 210\n  }\n}"
+  '10':
+    id: '10'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: c0c1647a-da80-4f06-854f-3a52260e525f
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: c0c1647a-da80-4f06-854f-3a52260e525f
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 1870\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
     scriptarguments:
       append_search: {}
       explain: {}
@@ -92,68 +88,56 @@ tasks:
       sort-field: {}
       sort-order: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 390
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: 398adbdd-c72f-4e52-8e87-b7753750d5a4
-    type: condition
     task:
-      id: 398adbdd-c72f-4e52-8e87-b7753750d5a4
-      version: -1
-      name: Verify results
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "5"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: greaterThan
-          left:
-            value:
-              simple: Elasticsearch.Search.total.value
-            iscontext: true
-          right:
-            value:
-              simple: "0"
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 570
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: d5950324-fc9d-419e-8c90-02a74dd8a234
-    type: regular
-    task:
-      id: d5950324-fc9d-419e-8c90-02a74dd8a234
-      version: -1
-      name: search ascending
+      brand: Elasticsearch v2
       description: search index using Elasticsearch
+      id: 384f06a9-033d-47d3-808f-8eece1ecfae7
+      iscommand: true
+      name: general search
       script: Elasticsearch v2|||search
       type: regular
-      iscommand: true
-      brand: Elasticsearch v2
+      version: -1
+    taskid: 384f06a9-033d-47d3-808f-8eece1ecfae7
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 390\n  }\n}"
+  '3':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Elasticsearch.Search.total.value
+          operator: greaterThan
+          right:
+            value:
+              simple: '0'
+      label: 'yes'
+    id: '3'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '5'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 398adbdd-c72f-4e52-8e87-b7753750d5a4
+      iscommand: false
+      name: Verify results
+      type: condition
+      version: -1
+    taskid: 398adbdd-c72f-4e52-8e87-b7753750d5a4
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 570\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
+    note: false
     scriptarguments:
       append_search: {}
       explain: {}
@@ -166,108 +150,90 @@ tasks:
       query:
         simple: incident
       size:
-        simple: "1"
+        simple: '1'
       sort-field:
         simple: nums
       sort-order:
         simple: asc
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 965
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 83033906-d36f-46be-8391-7fdd0f502f2b
-    type: regular
     task:
-      id: 83033906-d36f-46be-8391-7fdd0f502f2b
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
+      brand: Elasticsearch v2
+      description: search index using Elasticsearch
+      id: d5950324-fc9d-419e-8c90-02a74dd8a234
+      iscommand: true
+      name: search ascending
+      script: Elasticsearch v2|||search
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: d5950324-fc9d-419e-8c90-02a74dd8a234
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 965\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 490434ff-8c66-4dd8-82e4-270ac86b8910
-    type: condition
     task:
-      id: 490434ff-8c66-4dd8-82e4-270ac86b8910
-      version: -1
-      name: verify asc
-      type: condition
+      brand: ''
+      description: Delete field from context
+      id: 83033906-d36f-46be-8391-7fdd0f502f2b
       iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "9"
-    separatecontext: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 83033906-d36f-46be-8391-7fdd0f502f2b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 770\n  }\n}"
+  '6':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: Elasticsearch.Search.Results._id
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: 3Q2V92wBjMLgxL3Gt0lR
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1150
-        }
-      }
-    note: false
-    timertriggers: []
+      label: 'yes'
+    id: '6'
     ignoreworker: false
-  "7":
-    id: "7"
-    taskid: dfd57427-edf4-40c6-870e-7ad47399098d
-    type: regular
+    nexttasks:
+      'yes':
+      - '9'
+    note: false
+    separatecontext: false
     task:
-      id: dfd57427-edf4-40c6-870e-7ad47399098d
+      brand: ''
+      id: 490434ff-8c66-4dd8-82e4-270ac86b8910
+      iscommand: false
+      name: verify asc
+      type: condition
       version: -1
-      name: search descending
-      description: search index using Elasticsearch
-      script: Elasticsearch v2|||search
-      type: regular
-      iscommand: true
-      brand: Elasticsearch v2
+    taskid: 490434ff-8c66-4dd8-82e4-270ac86b8910
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1150\n  }\n}"
+  '7':
+    id: '7'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
+    note: false
     scriptarguments:
       append_search: {}
       explain: {}
@@ -280,125 +246,85 @@ tasks:
       query:
         simple: incident
       size:
-        simple: "1"
+        simple: '1'
       sort-field:
         simple: nums
       sort-order:
         simple: desc
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 1500
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "8":
-    id: "8"
-    taskid: 23e745da-cad2-44ac-874e-039b4d3f03d3
-    type: condition
     task:
-      id: 23e745da-cad2-44ac-874e-039b4d3f03d3
+      brand: Elasticsearch v2
+      description: search index using Elasticsearch
+      id: dfd57427-edf4-40c6-870e-7ad47399098d
+      iscommand: true
+      name: search descending
+      script: Elasticsearch v2|||search
+      type: regular
       version: -1
-      name: verify desc
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "10"
-    separatecontext: false
+    taskid: dfd57427-edf4-40c6-870e-7ad47399098d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 1500\n  }\n}"
+  '8':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: Elasticsearch.Search.Results._id
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: 4A2X92wBjMLgxL3Gp0kg
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 1670
-        }
-      }
-    note: false
-    timertriggers: []
+      label: 'yes'
+    id: '8'
     ignoreworker: false
-  "9":
-    id: "9"
-    taskid: 3f37fc0d-6103-489d-86a3-b108ab8ba020
-    type: regular
+    nexttasks:
+      'yes':
+      - '10'
+    note: false
+    separatecontext: false
     task:
-      id: 3f37fc0d-6103-489d-86a3-b108ab8ba020
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      id: 23e745da-cad2-44ac-874e-039b4d3f03d3
       iscommand: false
-      brand: ""
+      name: verify desc
+      type: condition
+      version: -1
+    taskid: 23e745da-cad2-44ac-874e-039b4d3f03d3
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 1670\n  }\n}"
+  '9':
+    id: '9'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 1330
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "10":
-    id: "10"
-    taskid: c0c1647a-da80-4f06-854f-3a52260e525f
-    type: title
     task:
-      id: c0c1647a-da80-4f06-854f-3a52260e525f
-      version: -1
-      name: Done
-      type: title
+      brand: ''
+      description: Delete field from context
+      id: 3f37fc0d-6103-489d-86a3-b108ab8ba020
       iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 1870
-        }
-      }
-    note: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 3f37fc0d-6103-489d-86a3-b108ab8ba020
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1885,
-        "width": 390,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 1330\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1885,\n      \"width\": 390,\n      \"x\": 450,\n      \"y\":\
+  \ 50\n    }\n  }\n}"

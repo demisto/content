@@ -1,104 +1,78 @@
-id: Detonate URL - Generic Test
-version: -1
-name: Detonate URL - Generic Test
 fromversion: 4.0.0
-starttaskid: "0"
+id: Detonate URL - Generic Test
+inputs: []
+name: Detonate URL - Generic Test
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: ef5d0e6d-b753-49ca-81d2-e1ee5daec953
+      iscommand: false
+      name: ''
+      version: -1
     taskid: ef5d0e6d-b753-49ca-81d2-e1ee5daec953
     type: start
-    task:
-      id: ef5d0e6d-b753-49ca-81d2-e1ee5daec953
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
+      - '3'
     note: false
-  "1":
-    id: "1"
-    taskid: 636adc72-71dd-4a27-880f-ff441ec8c753
-    type: regular
-    task:
-      id: 636adc72-71dd-4a27-880f-ff441ec8c753
-      version: -1
-      name: DeleteContext
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       key: {}
       keysToKeep: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-  "2":
-    id: "2"
-    taskid: 229ba268-d425-4bb2-84c6-f6648cc34c17
-    type: playbook
     task:
-      id: 229ba268-d425-4bb2-84c6-f6648cc34c17
-      version: -1
-      name: Detonate URL - Generic
-      description: Detonate file through active integrations that support file detonation
-      playbookName: Detonate URL - Generic
-      type: playbook
+      brand: ''
+      id: 636adc72-71dd-4a27-880f-ff441ec8c753
       iscommand: false
-      brand: ""
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 636adc72-71dd-4a27-880f-ff441ec8c753
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '2':
+    id: '2'
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    note: false
     scriptarguments:
       URL:
         simple: ${URL}
     separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-  "3":
-    id: "3"
-    taskid: 0007ecc5-28a9-41c8-85c6-11566d11631c
-    type: regular
     task:
-      id: 0007ecc5-28a9-41c8-85c6-11566d11631c
-      version: -1
-      name: Set URL
-      scriptName: Set
-      type: regular
+      brand: ''
+      description: Detonate file through active integrations that support file detonation
+      id: 229ba268-d425-4bb2-84c6-f6648cc34c17
       iscommand: false
-      brand: ""
+      name: Detonate URL - Generic
+      playbookName: Detonate URL - Generic
+      type: playbook
+      version: -1
+    taskid: 229ba268-d425-4bb2-84c6-f6648cc34c17
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '3':
+    id: '3'
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
     scriptarguments:
       append: {}
       key:
@@ -106,25 +80,19 @@ tasks:
       value:
         simple: https://www.google.com
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 590,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    task:
+      brand: ''
+      id: 0007ecc5-28a9-41c8-85c6-11566d11631c
+      iscommand: false
+      name: Set URL
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 0007ecc5-28a9-41c8-85c6-11566d11631c
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 590,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

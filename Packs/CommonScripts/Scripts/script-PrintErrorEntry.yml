@@ -1,23 +1,20 @@
+args:
+- default: true
+  description: The error message to be printed.
+  name: message
+  required: true
+comment: Prints an error entry with a given message
 commonfields:
   id: PrintErrorEntry
   version: -1
-name: PrintErrorEntry
+enabled: true
 fromversion: 4.0.0
-script: |-
-  demisto.results({
-    "Type" : entryTypes["error"],
-    "ContentsFormat" : formats["text"],
-    "Contents" : demisto.getArg("message")
-  })
-type: python
+name: PrintErrorEntry
+runonce: false
+script: "demisto.results({\n  \"Type\" : entryTypes[\"error\"],\n  \"ContentsFormat\"\
+  \ : formats[\"text\"],\n  \"Contents\" : demisto.getArg(\"message\")\n})"
+scripttarget: 0
 subtype: python2
 tags: []
-comment: Prints an error entry with a given message
-enabled: true
-args:
-- name: message
-  description: The error message to be printed.
-  default: true
-  required: true
-scripttarget: 0
-runonce: false
+toversion: 4.1.9
+type: python

@@ -113,9 +113,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Sets the “Enterprise” reputation (trust level) of a specified file.
-      Permissions are required to invoke this method. See the 'How-to' in instance
-      instruction.
+    description: "Sets the \u201CEnterprise\u201D reputation (trust level) of a specified\
+      \ file. Permissions are required to invoke this method. See the 'How-to' in\
+      \ instance instruction."
     execution: false
     name: tie-set-file-reputation
   - arguments:
@@ -152,7 +152,8 @@ script:
   isfetch: false
   runonce: false
   script: '-'
-  type: python
   subtype: python2
+  type: python
 tests:
 - McAfee-TIE Test
+toversion: 4.1.9

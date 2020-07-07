@@ -1,287 +1,41 @@
-id: File Enrichment - Generic v2
-version: -1
-name: File Enrichment - Generic v2
-description: |-
-  Enrich a file using one or more integrations.
+description: 'Enrich a file using one or more integrations.
 
-  - Provide threat information
-starttaskid: "0"
-tasks:
-  "0":
-    id: "0"
-    taskid: 00109219-5fc8-4bbb-881e-e597ec3b7439
-    type: start
-    task:
-      id: 00109219-5fc8-4bbb-881e-e597ec3b7439
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "25"
-      - "29"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 735,
-          "y": -90
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "7":
-    id: "7"
-    taskid: 89ce26db-58e9-4a6d-88f2-d6810e458ee2
-    type: title
-    task:
-      id: 89ce26db-58e9-4a6d-88f2-d6810e458ee2
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 735,
-          "y": 620
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "25":
-    id: "25"
-    taskid: 339fc232-e5d0-468b-87ea-cf8d41ea0ca6
-    type: condition
-    task:
-      id: 339fc232-e5d0-468b-87ea-cf8d41ea0ca6
-      version: -1
-      name: Is there a SHA256 hash?
-      description: Check if there is a SHA256 hash in context.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "7"
-      "yes":
-      - "27"
-    scriptarguments:
-      value:
-        simple: ${File.SHA256}
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.SHA256
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "27":
-    id: "27"
-    taskid: 0783a3a6-5d8b-48f1-8dee-f3f0ef62defc
-    type: condition
-    task:
-      id: 0783a3a6-5d8b-48f1-8dee-f3f0ef62defc
-      version: -1
-      name: Is Cylance Protect v2 enabled?
-      description: Checks if there is an active instance of the Cylance Protect v2
-        integration enabled.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "7"
-      "yes":
-      - "28"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Cylance Protect v2
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-                accessor: brand
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 250
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "28":
-    id: "28"
-    taskid: ff014724-3ad2-4ce2-8578-5106c126e76b
-    type: regular
-    task:
-      id: ff014724-3ad2-4ce2-8578-5106c126e76b
-      version: -1
-      name: Get threat information from Cylance Protect v2
-      description: Gets threat information from the Cylance Protect v2 integration.
-      script: Cylance Protect v2|||cylance-protect-get-threat
-      type: regular
-      iscommand: true
-      brand: Cylance Protect v2
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      sha256:
-        complex:
-          root: inputs.SHA256
-          transformers:
-          - operator: uniq
-    reputationcalc: 1
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 450
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "29":
-    id: "29"
-    taskid: e5eae00a-9da2-4d93-8ed2-693e0c6c2c89
-    type: playbook
-    task:
-      id: e5eae00a-9da2-4d93-8ed2-693e0c6c2c89
-      version: -1
-      name: File Enrichment - Virus Total Private API
-      description: Get file information using the Virus Total Private API integration.
-      playbookName: File Enrichment - Virus Total Private API
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 990,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-system: true
-view: |-
-  {
-    "linkLabelsPosition": {
-      "25_27_yes": 0.59,
-      "25_7_#default#": 0.44,
-      "27_28_yes": 0.57,
-      "27_7_#default#": 0.63
-    },
-    "paper": {
-      "dimensions": {
-        "height": 775,
-        "width": 900,
-        "x": 470,
-        "y": -90
-      }
-    }
-  }
+
+  - Provide threat information'
+fromversion: 4.1.0
+id: File Enrichment - Generic v2
 inputs:
-- key: MD5
+- description: File MD5 hash to enrich.
+  key: MD5
+  playbookInputQuery: null
+  required: false
   value:
     complex:
-      root: File
       accessor: MD5
+      root: File
       transformers:
       - operator: uniq
+- description: The file SHA256 hash to enrich.
+  key: SHA256
+  playbookInputQuery: null
   required: false
-  description: File MD5 hash to enrich.
-  playbookInputQuery:
-- key: SHA256
   value:
     complex:
-      root: File
       accessor: SHA256
+      root: File
       transformers:
       - operator: uniq
+- description: The file SHA1 hash to enrich.
+  key: SHA1
+  playbookInputQuery: null
   required: false
-  description: The file SHA256 hash to enrich.
-  playbookInputQuery:
-- key: SHA1
   value:
     complex:
-      root: File
       accessor: SHA1
+      root: File
       transformers:
       - operator: uniq
-  required: false
-  description: The file SHA1 hash to enrich.
-  playbookInputQuery:
+name: File Enrichment - Generic v2
 outputs:
 - contextPath: DBotScore.Indicator
   description: The indicator that was tested.
@@ -322,6 +76,204 @@ outputs:
   description: Whether a scan was detected for this hash (True/False).
 - contextPath: File.VirusTotal.Scans.Result
   description: Scan result for this hash - signature, etc.
-fromversion: 4.1.0
+starttaskid: '0'
+system: true
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '25'
+      - '29'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 00109219-5fc8-4bbb-881e-e597ec3b7439
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 00109219-5fc8-4bbb-881e-e597ec3b7439
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 735,\n    \"y\": -90\n  }\n}"
+  '25':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.SHA256
+          operator: isExists
+      label: 'yes'
+    id: '25'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '7'
+      'yes':
+      - '27'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${File.SHA256}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check if there is a SHA256 hash in context.
+      id: 339fc232-e5d0-468b-87ea-cf8d41ea0ca6
+      iscommand: false
+      name: Is there a SHA256 hash?
+      type: condition
+      version: -1
+    taskid: 339fc232-e5d0-468b-87ea-cf8d41ea0ca6
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 50\n  }\n}"
+  '27':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Cylance Protect v2
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: 'yes'
+    id: '27'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '7'
+      'yes':
+      - '28'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks if there is an active instance of the Cylance Protect v2
+        integration enabled.
+      id: 0783a3a6-5d8b-48f1-8dee-f3f0ef62defc
+      iscommand: false
+      name: Is Cylance Protect v2 enabled?
+      type: condition
+      version: -1
+    taskid: 0783a3a6-5d8b-48f1-8dee-f3f0ef62defc
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 250\n  }\n}"
+  '28':
+    continueonerror: true
+    id: '28'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      sha256:
+        complex:
+          root: inputs.SHA256
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Cylance Protect v2
+      description: Gets threat information from the Cylance Protect v2 integration.
+      id: ff014724-3ad2-4ce2-8578-5106c126e76b
+      iscommand: true
+      name: Get threat information from Cylance Protect v2
+      script: Cylance Protect v2|||cylance-protect-get-threat
+      type: regular
+      version: -1
+    taskid: ff014724-3ad2-4ce2-8578-5106c126e76b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 450\n  }\n}"
+  '29':
+    id: '29'
+    ignoreworker: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ''
+      description: Get file information using the Virus Total Private API integration.
+      id: e5eae00a-9da2-4d93-8ed2-693e0c6c2c89
+      iscommand: false
+      name: File Enrichment - Virus Total Private API
+      playbookName: File Enrichment - Virus Total Private API
+      type: playbook
+      version: -1
+    taskid: e5eae00a-9da2-4d93-8ed2-693e0c6c2c89
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 990,\n    \"y\": 50\n  }\n}"
+  '7':
+    id: '7'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 89ce26db-58e9-4a6d-88f2-d6810e458ee2
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 89ce26db-58e9-4a6d-88f2-d6810e458ee2
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 735,\n    \"y\": 620\n  }\n}"
 tests:
 - File Enrichment - Generic v2 - Test
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"25_27_yes\": 0.59,\n    \"25_7_#default#\"\
+  : 0.44,\n    \"27_28_yes\": 0.57,\n    \"27_7_#default#\": 0.63\n  },\n  \"paper\"\
+  : {\n    \"dimensions\": {\n      \"height\": 775,\n      \"width\": 900,\n    \
+  \  \"x\": 470,\n      \"y\": -90\n    }\n  }\n}"

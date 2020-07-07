@@ -1,73 +1,80 @@
 id: Detonate File - SNDBOX - Test
-version: -1
+inputs: []
 name: Detonate File - SNDBOX - Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 78c271cb-d8af-41fd-8fda-a63ffdb3a88e
-    type: start
-    task:
-      id: 78c271cb-d8af-41fd-8fda-a63ffdb3a88e
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
+      - '1'
     note: false
-  "1":
-    id: "1"
-    taskid: 3e175f62-728f-4863-809e-08c04f75646d
-    type: regular
+    separatecontext: false
     task:
-      id: 3e175f62-728f-4863-809e-08c04f75646d
+      brand: ''
+      id: 78c271cb-d8af-41fd-8fda-a63ffdb3a88e
+      iscommand: false
+      name: ''
       version: -1
+    taskid: 78c271cb-d8af-41fd-8fda-a63ffdb3a88e
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
+    scriptarguments:
+      all:
+        simple: 'yes'
+      key: {}
+    separatecontext: false
+    task:
+      brand: ''
+      id: 3e175f62-728f-4863-809e-08c04f75646d
+      iscommand: false
       name: Start fresh
       scriptName: DeleteContext
       type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-  "9":
-    id: "9"
-    taskid: e4d803ff-4a96-40dd-8f12-d88707123dc5
-    type: regular
-    task:
-      id: e4d803ff-4a96-40dd-8f12-d88707123dc5
       version: -1
-      name: Create sample file
-      scriptName: http
-      type: regular
+    taskid: 3e175f62-728f-4863-809e-08c04f75646d
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '10':
+    id: '10'
+    loop:
+      exitCondition: ''
       iscommand: false
-      brand: ""
+      wait: 1
+    note: false
+    scriptarguments:
+      File:
+        complex:
+          root: File
+      Interval:
+        simple: '1'
+      Timeout:
+        simple: '15'
+    separatecontext: true
+    task:
+      brand: ''
+      id: 2c00b69d-0bb7-4d37-876d-5c654c740ab6
+      iscommand: false
+      name: SNDBOX - Detonate File
+      playbookName: Detonate File - SNDBOX
+      type: playbook
+      version: -1
+    taskid: 2c00b69d-0bb7-4d37-876d-5c654c740ab6
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '9':
+    id: '9'
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
+    note: false
     scriptarguments:
       body: {}
       filename:
@@ -79,64 +86,25 @@ tasks:
       password: {}
       proxy: {}
       saveAsFile:
-        simple: "yes"
+        simple: 'yes'
       unsecure: {}
       url:
         simple: https://raw.githubusercontent.com/demisto/content/master/TestData/pdfworking.pdf
       username: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-  "10":
-    id: "10"
-    taskid: 2c00b69d-0bb7-4d37-876d-5c654c740ab6
-    type: playbook
     task:
-      id: 2c00b69d-0bb7-4d37-876d-5c654c740ab6
+      brand: ''
+      id: e4d803ff-4a96-40dd-8f12-d88707123dc5
+      iscommand: false
+      name: Create sample file
+      scriptName: http
+      type: regular
       version: -1
-      name: SNDBOX - Detonate File
-      playbookName: Detonate File - SNDBOX
-      type: playbook
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      File:
-        complex:
-          root: File
-      Interval:
-        simple: "1"
-      Timeout:
-        simple: "15"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 590,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    taskid: e4d803ff-4a96-40dd-8f12-d88707123dc5
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 590,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

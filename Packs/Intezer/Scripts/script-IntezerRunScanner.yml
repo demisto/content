@@ -1,40 +1,30 @@
+args:
+- description: 'The Intezer API key '
+  name: api_key
+  required: true
+  secret: true
+- description: The endpoint analysis id
+  name: endpoint_analysis_id
+  required: true
+comment: Running the Intezer Endpoint Analysis Scanner
 commonfields:
   id: IntezerRunScanner
   version: -1
+enabled: true
 name: IntezerRunScanner
-script: |
-  //+Scanner/Scanner.exe
-
-
-  if (env.OS !== 'windows') {
-    throw ('script can only run on Windows');
-  }
-
-  var exename = 'Scanner.exe';
-  var output = execute(exename + ' -k ' + args['api_key'] + ' -i ' + args['endpoint_analysis_id'], 900); // 15 minutes timeout
-  if (output.Success) {
-    pack('Scan finished');
-  } else if (output.Error.indexOf('1') != -1){
-          throw 'Scan failed due to qouta limit reached or server error';
-  } else{
-      throw 'Error executing scanner';
-  }
-type: javascript
+runas: Administrator
+runonce: false
+script: "//+Scanner/Scanner.exe\n\n\nif (env.OS !== 'windows') {\n  throw ('script\
+  \ can only run on Windows');\n}\n\nvar exename = 'Scanner.exe';\nvar output = execute(exename\
+  \ + ' -k ' + args['api_key'] + ' -i ' + args['endpoint_analysis_id'], 900); // 15\
+  \ minutes timeout\nif (output.Success) {\n  pack('Scan finished');\n} else if (output.Error.indexOf('1')\
+  \ != -1){\n        throw 'Scan failed due to qouta limit reached or server error';\n\
+  } else{\n    throw 'Error executing scanner';\n}\n"
+scripttarget: 1
 tags:
 - agent
 - forensics
-comment: Running the Intezer Endpoint Analysis Scanner
-enabled: true
-args:
-- name: api_key
-  required: true
-  secret: true
-  description: 'The Intezer API key '
-- name: endpoint_analysis_id
-  required: true
-  description: The endpoint analysis id
-scripttarget: 1
-runonce: false
-runas: Administrator
 tests:
-  - no test
+- no test
+toversion: 4.1.9
+type: javascript

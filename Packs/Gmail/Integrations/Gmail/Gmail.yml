@@ -1677,10 +1677,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        A comma-separated list of new names to rename attachments corresponding to the order that they were attached to the email.
-                Examples - To rename first and third file attachNames=new_fileName1,,new_fileName3
-                To rename second and fifth files attachNames=,new_fileName2,,,new_fileName5
+      description: "A comma-separated list of new names to rename attachments corresponding\
+        \ to the order that they were attached to the email.\n        Examples - To\
+        \ rename first and third file attachNames=new_fileName1,,new_fileName3\n \
+        \       To rename second and fifth files attachNames=,new_fileName2,,,new_fileName5"
       isArray: true
       name: attachNames
       required: false
@@ -1693,28 +1693,29 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Textual name for an attached file. Multiple files are supported as a
-                comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test
-                2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+      description: "Textual name for an attached file. Multiple files are supported\
+        \ as a\n        comma-separated list. For example, transientFile=\"t1.txt,temp.txt,t3.txt\"\
+        \ transientFileContent=\"test\n        2,temporary file content,third file\
+        \ content\" transientFileCID=\"t1.txt@xxx.yyy,t2.txt@xxx.zzz\")"
       isArray: true
       name: transientFile
       required: false
       secret: false
     - default: false
-      description: |-
-        Content for the attached file. Multiple files are supported as a comma-separated
-                list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test
-                2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+      description: "Content for the attached file. Multiple files are supported as\
+        \ a comma-separated\n        list. For example, transientFile=\"t1.txt,temp.txt,t3.txt\"\
+        \ transientFileContent=\"test\n        2,temporary file content,third file\
+        \ content\" transientFileCID=\"t1.txt@xxx.yyy,t2.txt@xxx.zzz\")"
       isArray: true
       name: transientFileContent
       required: false
       secret: false
     - default: false
-      description: |-
-        CID image for an attached file to include within the email body. Multiple files are
-                supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt"
-                transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+      description: "CID image for an attached file to include within the email body.\
+        \ Multiple files are\n        supported as comma-separated list. (e.g. transientFile=\"\
+        t1.txt,temp.txt,t3.txt\"\n        transientFileContent=\"test 2,temporary\
+        \ file content,third file content\" transientFileCID=\"t1.txt@xxx.yyy,t2.txt@xxx.zzz\"\
+        )"
       isArray: true
       name: transientFileCID
       required: false
@@ -1727,11 +1728,11 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        'Replaces {varname} variables with values from this parameter. Expected
-               values are in the form of a JSON document. For example, {"varname" :{"value" "some
-               value", "key": "context key"}}. Each var name can either be provided with
-               the value or a context key to retrieve the value.'
+      description: "'Replaces {varname} variables with values from this parameter.\
+        \ Expected\n       values are in the form of a JSON document. For example,\
+        \ {\"varname\" :{\"value\" \"some\n       value\", \"key\": \"context key\"\
+        }}. Each var name can either be provided with\n       the value or a context\
+        \ key to retrieve the value.'"
       isArray: false
       name: templateParams
       required: false
@@ -1847,3 +1848,4 @@ script:
 tests:
 - Gmail Convert Html Test
 - GmailTest
+toversion: 4.1.9

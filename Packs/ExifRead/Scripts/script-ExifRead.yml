@@ -1,38 +1,15 @@
+args:
+- default: true
+  description: Entry ID of image file
+  name: EntryID
+  required: true
+comment: Read image files metadata and provide Exif tags
 commonfields:
   id: ExifRead
   version: -1
-name: ExifRead
-script: |
-  import exifread
-
-  res = demisto.getFilePath(demisto.args()['EntryID'])
-  f = open(res['path'], 'rb')
-
-  tags = exifread.process_file(f)
-  arr = []
-  for tag in tags.keys():
-      arr.append({'tag':str(tag), 'value':str(tags[tag])})
-
-  md = tableToMarkdown('Exif Tags', arr)
-
-  demisto.results({
-      'ContentsFormat': formats['json'],
-      'Type': entryTypes['note'],
-      'Contents': {'Exif': arr},
-      'HumanReadable': md,
-      'EntryContext': {'Exif':arr}
-  })
-type: python
-subtype: python2
-tags:
-- Utility
-comment: Read image files metadata and provide Exif tags
+dockerimage: demisto/exifread
 enabled: true
-args:
-- name: EntryID
-  required: true
-  default: true
-  description: Entry ID of image file
+name: ExifRead
 outputs:
 - contextPath: Exif.tag
   description: Exif tag name
@@ -40,6 +17,16 @@ outputs:
 - contextPath: Exif.value
   description: Exif tag value
   type: string
-scripttarget: 0
 runonce: false
-dockerimage: demisto/exifread
+script: "import exifread\n\nres = demisto.getFilePath(demisto.args()['EntryID'])\n\
+  f = open(res['path'], 'rb')\n\ntags = exifread.process_file(f)\narr = []\nfor tag\
+  \ in tags.keys():\n    arr.append({'tag':str(tag), 'value':str(tags[tag])})\n\n\
+  md = tableToMarkdown('Exif Tags', arr)\n\ndemisto.results({\n    'ContentsFormat':\
+  \ formats['json'],\n    'Type': entryTypes['note'],\n    'Contents': {'Exif': arr},\n\
+  \    'HumanReadable': md,\n    'EntryContext': {'Exif':arr}\n})\n"
+scripttarget: 0
+subtype: python2
+tags:
+- Utility
+toversion: 4.1.9
+type: python

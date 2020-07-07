@@ -1,298 +1,242 @@
 id: MongoDB KeyValueStore - Test
-version: -1
+inputs: []
 name: MongoDB KeyValueStore - Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: f4874bb5-25f7-4459-8389-9ee314836196
-    type: start
-    task:
-      id: f4874bb5-25f7-4459-8389-9ee314836196
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "1":
-    id: "1"
-    taskid: 4112ba14-6554-46e8-8f79-c6f7a826891d
-    type: regular
-    task:
-      id: 4112ba14-6554-46e8-8f79-c6f7a826891d
-      version: -1
-      name: Delete Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - '1'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: f4874bb5-25f7-4459-8389-9ee314836196
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: f4874bb5-25f7-4459-8389-9ee314836196
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 200
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "2":
-    id: "2"
-    taskid: a1f7c327-baf8-432f-82dc-dc4493be12c7
-    type: regular
     task:
-      id: a1f7c327-baf8-432f-82dc-dc4493be12c7
-      version: -1
-      name: MongoDB write key/value
-      description: Adds a key/value record for the incident.  If the key exists, any
-        existing value will be overwritten.
-      script: '|||mongodb-write-key-value'
+      brand: ''
+      description: Delete field from context
+      id: 4112ba14-6554-46e8-8f79-c6f7a826891d
+      iscommand: false
+      name: Delete Context
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: 4112ba14-6554-46e8-8f79-c6f7a826891d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 200\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
+    quietmode: 0
     scriptarguments:
       incident_id:
-        simple: "2468"
+        simple: '2468'
       key:
         simple: test
       value:
         simple: hello
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "3":
-    id: "3"
-    taskid: eb699f50-3035-424a-8645-af1af1e8350f
-    type: condition
     task:
-      id: eb699f50-3035-424a-8645-af1af1e8350f
+      brand: ''
+      description: Adds a key/value record for the incident.  If the key exists, any
+        existing value will be overwritten.
+      id: a1f7c327-baf8-432f-82dc-dc4493be12c7
+      iscommand: true
+      name: MongoDB write key/value
+      script: '|||mongodb-write-key-value'
+      type: regular
       version: -1
-      name: Verify context
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "4"
-    separatecontext: false
+    taskid: a1f7c327-baf8-432f-82dc-dc4493be12c7
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 370\n  }\n}"
+  '3':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: MongoDB.Entry.ID
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isEqualString
-          left:
             value:
               simple: MongoDB.Entry.Key
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: test
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 540
-        }
-      }
-    note: false
-    timertriggers: []
+      label: 'yes'
+    id: '3'
     ignoreworker: false
-    skipunavailable: false
+    nexttasks:
+      'yes':
+      - '4'
+    note: false
     quietmode: 0
-  "4":
-    id: "4"
-    taskid: 910137eb-3a30-4c0c-8df2-16b7bfe8aa47
-    type: regular
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 910137eb-3a30-4c0c-8df2-16b7bfe8aa47
+      brand: ''
+      id: eb699f50-3035-424a-8645-af1af1e8350f
+      iscommand: false
+      name: Verify context
+      type: condition
       version: -1
-      name: MongoDB get key value
-      description: Returns an Incident's Value stored for the specified Name/Key.
-      script: '|||mongodb-get-key-value'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: eb699f50-3035-424a-8645-af1af1e8350f
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 540\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
+    note: false
+    quietmode: 0
     scriptarguments:
       incident_id:
         simple: ${MongoDB.Entry.Incident}
       key:
         simple: ${MongoDB.Entry.Key}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 730
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "6":
-    id: "6"
-    taskid: d8931fa6-fe9a-420e-8134-3cb344bb4e4d
-    type: condition
     task:
-      id: d8931fa6-fe9a-420e-8134-3cb344bb4e4d
+      brand: ''
+      description: Returns an Incident's Value stored for the specified Name/Key.
+      id: 910137eb-3a30-4c0c-8df2-16b7bfe8aa47
+      iscommand: true
+      name: MongoDB get key value
+      script: '|||mongodb-get-key-value'
+      type: regular
       version: -1
-      name: Verify Context
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "7"
-    separatecontext: false
+    taskid: 910137eb-3a30-4c0c-8df2-16b7bfe8aa47
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 730\n  }\n}"
+  '6':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: MongoDB.Entry.Incident
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: MongoDB.Entry.Key
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 970
-        }
-      }
-    note: false
-    timertriggers: []
+          operator: isExists
+      label: 'yes'
+    id: '6'
     ignoreworker: false
-    skipunavailable: false
+    nexttasks:
+      'yes':
+      - '7'
+    note: false
     quietmode: 0
-  "7":
-    id: "7"
-    taskid: ff22f478-039d-4ba0-84e6-6a94360e3fd3
-    type: regular
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: ff22f478-039d-4ba0-84e6-6a94360e3fd3
+      brand: ''
+      id: d8931fa6-fe9a-420e-8134-3cb344bb4e4d
+      iscommand: false
+      name: Verify Context
+      type: condition
       version: -1
-      name: MongoDB list key-value
-      description: Lists the keys and their values assigned for specified incident.
-      script: '|||mongodb-list-key-values'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: d8931fa6-fe9a-420e-8134-3cb344bb4e4d
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 970\n  }\n}"
+  '7':
+    id: '7'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
+    note: false
+    quietmode: 0
     scriptarguments:
       incident_id:
         simple: ${MongoDB.Entry.Incident}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1190
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "8":
-    id: "8"
-    taskid: 3545a32f-c170-4c09-82aa-95a28d2ebfdc
-    type: regular
     task:
-      id: 3545a32f-c170-4c09-82aa-95a28d2ebfdc
-      version: -1
-      name: MongoDB delete key
-      description: Deletes the key/value record for an incident.
-      script: '|||mongodb-delete-key'
-      type: regular
+      brand: ''
+      description: Lists the keys and their values assigned for specified incident.
+      id: ff22f478-039d-4ba0-84e6-6a94360e3fd3
       iscommand: true
-      brand: ""
+      name: MongoDB list key-value
+      script: '|||mongodb-list-key-values'
+      type: regular
+      version: -1
+    taskid: ff22f478-039d-4ba0-84e6-6a94360e3fd3
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1190\n  }\n}"
+  '8':
+    id: '8'
+    ignoreworker: false
+    note: false
+    quietmode: 0
     scriptarguments:
       incident_id:
         simple: ${MongoDB.Incident.Incident}
       key:
         simple: ${MongoDB.Incident.Key}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1410
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1455,
-        "width": 380,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    task:
+      brand: ''
+      description: Deletes the key/value record for an incident.
+      id: 3545a32f-c170-4c09-82aa-95a28d2ebfdc
+      iscommand: true
+      name: MongoDB delete key
+      script: '|||mongodb-delete-key'
+      type: regular
+      version: -1
+    taskid: 3545a32f-c170-4c09-82aa-95a28d2ebfdc
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1410\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1455,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\":\
+  \ 50\n    }\n  }\n}"

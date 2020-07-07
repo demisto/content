@@ -1,68 +1,52 @@
-id: PAN-OS EDL Setup v3 Test
-version: -1
+description: ''
 fromversion: 4.0.0
+id: PAN-OS EDL Setup v3 Test
+inputs:
+- description: the name of the external file
+  key: list-name
+  required: false
+  value:
+    simple: dont-del-ip-edl-test-elior
 name: PAN-OS EDL Setup v3 Test
+outputs: []
+sourceplaybookid: PAN-OS EDL Setup Test
 starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: e0fd3092-abc1-401e-8b67-d12e10260b81
-    type: start
-    task:
-      id: e0fd3092-abc1-401e-8b67-d12e10260b81
-      version: -1
-      name: ''
-      iscommand: false
-      brand: ''
-      description: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - '15'
-    separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": -395\n  }\n}"
     note: false
-    timertriggers: []
-    ignoreworker: false
-  '3':
-    id: '3'
-    taskid: c0c11e5f-61c7-45d7-8524-8aee93ffd6ab
-    type: title
+    separatecontext: false
     task:
-      id: c0c11e5f-61c7-45d7-8524-8aee93ffd6ab
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
       brand: ''
       description: ''
-    separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 65\n  }\n}"
-    note: false
+      id: e0fd3092-abc1-401e-8b67-d12e10260b81
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: e0fd3092-abc1-401e-8b67-d12e10260b81
     timertriggers: []
-    ignoreworker: false
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": -395\n  }\n}"
   '14':
     id: '14'
-    taskid: 35acf283-96be-4f82-835a-d139a35f3736
-    type: playbook
-    task:
-      id: 35acf283-96be-4f82-835a-d139a35f3736
-      version: -1
-      name: PAN-OS EDL Setup v3
-      description: "Configures an external dynamic list in PAN-OS.\nIn the event that\
-        \ the file exists on the web server, it will sync it to demisto. Then it will\
-        \ create an EDL object and a matching rule."
-      playbookName: PAN-OS EDL Setup v3
-      type: playbook
+    ignoreworker: false
+    loop:
+      exitCondition: ''
       iscommand: false
-      brand: ''
+      wait: 1
     nexttasks:
       '#none#':
       - '3'
+    note: false
     scriptarguments:
       action-type:
         simple: drop
       auto-commit:
-        simple: Yes
+        simple: true
       device-group: {}
       inbound-or-outbound-rule:
         simple: outbound
@@ -83,51 +67,69 @@ tasks:
       web-server-url:
         simple: http://18.219.190.57/files/
     separatecontext: true
-    loop:
+    task:
+      brand: ''
+      description: 'Configures an external dynamic list in PAN-OS.
+
+        In the event that the file exists on the web server, it will sync it to demisto.
+        Then it will create an EDL object and a matching rule.'
+      id: 35acf283-96be-4f82-835a-d139a35f3736
       iscommand: false
-      exitCondition: ''
-      wait: 1
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": -90\n  }\n}"
-    note: false
+      name: PAN-OS EDL Setup v3
+      playbookName: PAN-OS EDL Setup v3
+      type: playbook
+      version: -1
+    taskid: 35acf283-96be-4f82-835a-d139a35f3736
     timertriggers: []
-    ignoreworker: false
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": -90\n  }\n}"
   '15':
     id: '15'
-    taskid: 07bab852-564b-4abf-8229-4ccf4f50feb1
-    type: regular
-    task:
-      id: 07bab852-564b-4abf-8229-4ccf4f50feb1
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - '14'
+    note: false
     scriptarguments:
       all:
-        simple: yes
+        simple: true
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": -260\n  }\n}"
-    note: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: 07bab852-564b-4abf-8229-4ccf4f50feb1
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 07bab852-564b-4abf-8229-4ccf4f50feb1
     timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": -260\n  }\n}"
+  '3':
+    id: '3'
     ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: c0c11e5f-61c7-45d7-8524-8aee93ffd6ab
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: c0c11e5f-61c7-45d7-8524-8aee93ffd6ab
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 65\n  }\n}"
+toversion: 4.1.9
+version: -1
 view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
   \     \"height\": 525,\n      \"width\": 380,\n      \"x\": 480,\n      \"y\": -395\n\
   \    }\n  }\n}"
-inputs:
-- key: list-name
-  value:
-    simple: dont-del-ip-edl-test-elior
-  required: false
-  description: the name of the external file
-outputs: []
-sourceplaybookid: PAN-OS EDL Setup Test
-description: ''

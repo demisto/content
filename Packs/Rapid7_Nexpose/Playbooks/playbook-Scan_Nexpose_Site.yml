@@ -1,273 +1,23 @@
+description: Starts a Nexpose scan by site id and waits for the scan to finish by
+  polling its status in pre-defined intervals.
+fromversion: 4.0.0
 id: scan_site_nexpose
-version: -1
-name: Scan Site - Nexpose
-description: Starts a Nexpose scan by site id and waits for the scan to finish by polling its status in pre-defined intervals.
-starttaskid: "0"
-tasks:
-  "0":
-    id: "0"
-    taskid: c613b21c-e424-4a21-8151-1c4dc32caa7a
-    type: start
-    task:
-      id: c613b21c-e424-4a21-8151-1c4dc32caa7a
-      version: -1
-      name: ""
-      description: start
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 50
-        }
-      }
-    note: false
-  "1":
-    id: "1"
-    taskid: 8d8b7598-5fe9-4919-89fb-7aa5e9d66eea
-    type: regular
-    task:
-      id: 8d8b7598-5fe9-4919-89fb-7aa5e9d66eea
-      version: -1
-      name: Start scan
-      description: Starts a scan for specified asset IP addresses and host names.
-      script: Rapid7 Nexpose|||nexpose-start-site-scan
-      type: regular
-      iscommand: true
-      brand: Rapid7 Nexpose
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      hosts:
-        complex:
-          root: inputs.Hosts
-      name:
-        complex:
-          root: inputs.Name
-      site:
-        complex:
-          root: inputs.Site
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 370
-        }
-      }
-    note: false
-  "5":
-    id: "5"
-    taskid: 1c704f4c-7f5e-4225-869f-2fa09265d983
-    type: title
-    task:
-      id: 1c704f4c-7f5e-4225-869f-2fa09265d983
-      version: -1
-      name: Done
-      description: Final task
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 1070
-        }
-      }
-    note: false
-  "7":
-    id: "7"
-    taskid: e6b253fc-8cfe-4daa-8439-4e427591a9bd
-    type: regular
-    task:
-      id: e6b253fc-8cfe-4daa-8439-4e427591a9bd
-      version: -1
-      name: nexpose-get-scan
-      description: Returns the specified scan.
-      script: Rapid7 Nexpose|||nexpose-get-scan
-      type: regular
-      iscommand: true
-      brand: Rapid7 Nexpose
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      id:
-        simple: ${Nexpose.Scan.Id}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-  "8":
-    id: "8"
-    taskid: 89b2d088-8a57-4f46-8496-dfcc2528b038
-    type: playbook
-    task:
-      id: 89b2d088-8a57-4f46-8496-dfcc2528b038
-      version: -1
-      name: GenericPolling
-      description: Generic Polling Playbook
-      playbookName: GenericPolling
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      Ids:
-        simple: ${Nexpose.Scan.Id}
-      Interval:
-        simple: "1"
-      PollingCommandArgName:
-        simple: id
-      PollingCommandName:
-        simple: nexpose-get-scan
-      Timeout:
-        simple: "60"
-      dt:
-        simple: Nexpose.Scan(val.Status != 'finished' && val.Status != 'error' &&
-          val.Status != 'aborted' && val.Status != 'stopped').Id
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-  "9":
-    id: "9"
-    taskid: b97117e5-6d22-49b4-85f5-4f16ed591271
-    type: condition
-    task:
-      id: b97117e5-6d22-49b4-85f5-4f16ed591271
-      version: -1
-      name: Is Nexpose enabled?
-      description: Checks wether Nexpose is enabled
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "1"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Rapid7 Nexpose
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 195
-        }
-      }
-    note: false
-  "10":
-    id: "10"
-    taskid: 18502d56-7120-451e-85be-cee7233edfe1
-    type: condition
-    task:
-      id: 18502d56-7120-451e-85be-cee7233edfe1
-      version: -1
-      name: Did scan find assets?
-      description: Checks wether assets were found
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "8"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: Nexpose.Scan.Id
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 545
-        }
-      }
-    note: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1085,
-        "width": 605,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
 inputs:
-- key: Site
+- description: Site id to scan
+  key: Site
+  required: true
   value:
     simple: ${Nexpose.Site.Id}
-  required: true
-  description: Site id to scan
-- key: Hosts
+- description: Host names of the assets to scan
+  key: Hosts
+  required: false
   value:
     simple: ${Nexpose.Asset.HostName}
+- description: The scan name
+  key: Name
   required: false
-  description: Host names of the assets to scan
-- key: Name
   value: {}
-  required: false
-  description: The scan name
+name: Scan Site - Nexpose
 outputs:
 - contextPath: Nexpose.Scan.ScanType
   description: The scan type (automated, manual, scheduled).
@@ -292,6 +42,207 @@ outputs:
   description: The number of severe vulnerabilities.
 - contextPath: Nexpose.Scan.Vulnerabilities.Total
   description: The total number of vulnerabilities.
-fromversion: 4.0.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: start
+      id: c613b21c-e424-4a21-8151-1c4dc32caa7a
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: c613b21c-e424-4a21-8151-1c4dc32caa7a
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    nexttasks:
+      '#none#':
+      - '10'
+    note: false
+    scriptarguments:
+      hosts:
+        complex:
+          root: inputs.Hosts
+      name:
+        complex:
+          root: inputs.Name
+      site:
+        complex:
+          root: inputs.Site
+    separatecontext: false
+    task:
+      brand: Rapid7 Nexpose
+      description: Starts a scan for specified asset IP addresses and host names.
+      id: 8d8b7598-5fe9-4919-89fb-7aa5e9d66eea
+      iscommand: true
+      name: Start scan
+      script: Rapid7 Nexpose|||nexpose-start-site-scan
+      type: regular
+      version: -1
+    taskid: 8d8b7598-5fe9-4919-89fb-7aa5e9d66eea
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 370\n  }\n}"
+  '10':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Nexpose.Scan.Id
+          operator: isExists
+      label: 'yes'
+    id: '10'
+    nexttasks:
+      '#default#':
+      - '5'
+      'yes':
+      - '8'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Checks wether assets were found
+      id: 18502d56-7120-451e-85be-cee7233edfe1
+      iscommand: false
+      name: Did scan find assets?
+      type: condition
+      version: -1
+    taskid: 18502d56-7120-451e-85be-cee7233edfe1
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 545\n  }\n}"
+  '5':
+    id: '5'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Final task
+      id: 1c704f4c-7f5e-4225-869f-2fa09265d983
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 1c704f4c-7f5e-4225-869f-2fa09265d983
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 1070\n  }\n}"
+  '7':
+    id: '7'
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    scriptarguments:
+      id:
+        simple: ${Nexpose.Scan.Id}
+    separatecontext: false
+    task:
+      brand: Rapid7 Nexpose
+      description: Returns the specified scan.
+      id: e6b253fc-8cfe-4daa-8439-4e427591a9bd
+      iscommand: true
+      name: nexpose-get-scan
+      script: Rapid7 Nexpose|||nexpose-get-scan
+      type: regular
+      version: -1
+    taskid: e6b253fc-8cfe-4daa-8439-4e427591a9bd
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+  '8':
+    id: '8'
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    scriptarguments:
+      Ids:
+        simple: ${Nexpose.Scan.Id}
+      Interval:
+        simple: '1'
+      PollingCommandArgName:
+        simple: id
+      PollingCommandName:
+        simple: nexpose-get-scan
+      Timeout:
+        simple: '60'
+      dt:
+        simple: Nexpose.Scan(val.Status != 'finished' && val.Status != 'error' &&
+          val.Status != 'aborted' && val.Status != 'stopped').Id
+    separatecontext: true
+    task:
+      brand: ''
+      description: Generic Polling Playbook
+      id: 89b2d088-8a57-4f46-8496-dfcc2528b038
+      iscommand: false
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 89b2d088-8a57-4f46-8496-dfcc2528b038
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '9':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Rapid7 Nexpose
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: 'yes'
+    id: '9'
+    nexttasks:
+      '#default#':
+      - '5'
+      'yes':
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Checks wether Nexpose is enabled
+      id: b97117e5-6d22-49b4-85f5-4f16ed591271
+      iscommand: false
+      name: Is Nexpose enabled?
+      type: condition
+      version: -1
+    taskid: b97117e5-6d22-49b4-85f5-4f16ed591271
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 195\n  }\n}"
 tests:
 - No test
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1085,\n      \"width\": 605,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

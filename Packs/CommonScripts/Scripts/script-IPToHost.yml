@@ -1,60 +1,13 @@
+args:
+- default: true
+  description: The IP to check
+  name: ip
+  required: true
+comment: Try to get the hostname correlated with the input IP.
 commonfields:
   id: IPToHost
   version: -1
 name: IPToHost
-script: |
-  import socket
-
-  ip = demisto.args().get('ip')
-
-  try:
-      host_info = socket.gethostbyaddr(ip)
-  except Exception as e:
-      demisto.results({
-          "Type" : entryTypes["error"],
-          "ContentsFormat" : formats["text"],
-          "Contents" : "Couln't get the ip host info. Error information: \"{0}\"".format(str(e))
-      })
-      sys.exit(0)
-
-  if not host_info:
-      demisto.results({
-          "Type" : entryTypes["error"],
-          "ContentsFormat" : formats["text"],
-          "Contents" : "Received an error while trying to get the host information"
-      })
-      sys.exit(0)
-
-  hostname = host_info[0]
-
-  output = {
-      "Hostname" : str(hostname),
-      "IP" : ip
-  }
-
-  context = {}
-  context["Endpoint(val.Hostname && val.Hostname === obj.Hostname)"] = output
-
-  md = tableToMarkdown("IP to Host", [output])
-
-  demisto.results({
-      'Type' : entryTypes['note'],
-      'Contents': context,
-      'ContentsFormat' : formats['json'],
-      'HumanReadable': md,
-      'ReadableContentsFormat' : formats['markdown'],
-      'EntryContext' : context
-  })
-type: python
-subtype: python2
-tags: []
-comment: Try to get the hostname correlated with the input IP.
-system: true
-args:
-- name: ip
-  required: true
-  default: true
-  description: The IP to check
 outputs:
 - contextPath: Endpoint
   description: The endpoint object.
@@ -64,5 +17,24 @@ outputs:
 - contextPath: Endpoint.IP
   description: The endpoint IP.
   type: string
-scripttarget: 0
 runonce: false
+script: "import socket\n\nip = demisto.args().get('ip')\n\ntry:\n    host_info = socket.gethostbyaddr(ip)\n\
+  except Exception as e:\n    demisto.results({\n        \"Type\" : entryTypes[\"\
+  error\"],\n        \"ContentsFormat\" : formats[\"text\"],\n        \"Contents\"\
+  \ : \"Couln't get the ip host info. Error information: \\\"{0}\\\"\".format(str(e))\n\
+  \    })\n    sys.exit(0)\n\nif not host_info:\n    demisto.results({\n        \"\
+  Type\" : entryTypes[\"error\"],\n        \"ContentsFormat\" : formats[\"text\"],\n\
+  \        \"Contents\" : \"Received an error while trying to get the host information\"\
+  \n    })\n    sys.exit(0)\n\nhostname = host_info[0]\n\noutput = {\n    \"Hostname\"\
+  \ : str(hostname),\n    \"IP\" : ip\n}\n\ncontext = {}\ncontext[\"Endpoint(val.Hostname\
+  \ && val.Hostname === obj.Hostname)\"] = output\n\nmd = tableToMarkdown(\"IP to\
+  \ Host\", [output])\n\ndemisto.results({\n    'Type' : entryTypes['note'],\n   \
+  \ 'Contents': context,\n    'ContentsFormat' : formats['json'],\n    'HumanReadable':\
+  \ md,\n    'ReadableContentsFormat' : formats['markdown'],\n    'EntryContext' :\
+  \ context\n})\n"
+scripttarget: 0
+subtype: python2
+system: true
+tags: []
+toversion: 4.1.9
+type: python

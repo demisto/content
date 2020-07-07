@@ -22,7 +22,9 @@ comment: Load a PDF file's content and metadata into context.
 commonfields:
   id: ReadPDFFileV2
   version: -1
+dockerimage: demisto/readpdf:1.0.0.299
 enabled: true
+fromversion: 4.1.0
 name: ReadPDFFileV2
 outputs:
 - contextPath: URL.Data
@@ -119,18 +121,17 @@ outputs:
 - contextPath: Account.Email
   description: The email address of the account.
   type: String
+runas: DBotWeakRole
+runonce: false
 script: '-'
 subtype: python3
 system: false
 tags:
 - Utility
 - ingestion
-timeout: '0'
-type: python
-dockerimage: demisto/readpdf:1.0.0.299
-runas: DBotWeakRole
-runonce: false
 tests:
 - Extract Indicators From File - Generic v2 - Test
 - ReadPDFFileV2-Test
-fromversion: 4.1.0
+timeout: '0'
+toversion: 4.1.9
+type: python

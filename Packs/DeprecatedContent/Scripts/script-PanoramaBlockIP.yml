@@ -1,77 +1,27 @@
-commonfields:
-  id: PanoramaBlockIP
-  version: -1
-name: PanoramaBlockIP
-script: |-
-  var direction = args.direction || 'both';
-  var blockingDestination = direction === 'to' || direction === 'both';
-  var blockingSource = direction === 'from' || direction === 'both';
-  var blockedDestination = false;
-  var blockedSource = true;
-  var resp = null;
-
-  if (!args.rulename) {
-      args.rulename = 'ip' + args.ip + ' blocked in direction ' + args.direction;
-  }
-
-  if (blockingDestination) {
-      resp = executeCommand('PanoramaConfig', {action: 'drop', destination: args.ip, ruleName: args.ruleName + '-to'});
-      if (isError(resp[0])){
-          return resp;
-      }
-      blockedDestination = 'success' == dq(resp[0],'Contents');
-  }
-
-  if (blockingSource) {
-      resp = executeCommand('PanoramaConfig', {action: 'drop', destination: args.ip, ruleName: args.ruleName + '-from'});
-      if (isError(resp[0])){
-          return resp
-      }
-      blockedSource = 'success' == dq(resp[0],'Contents');
-  }
-
-  if ((blockedSource && blockingSource) || (blockingDestination && blockedDestination)) {
-      resp = executeCommand('PanoramaCommit', {});
-      var entry = resp[0];
-      var context = {PanoramaRule: []};
-
-      context.PanoramaRule.push({
-              Name: args.ruleName,
-              Direction: direction,
-              IP: args.ip
-          });
-
-      //needed for editing of context
-      var entryB = null;
-      entryB = JSON.parse(JSON.stringify(entry))
-      entryB.EntryContext = context;
-      return entryB;
-  }
-  return {
-      Contents: 'no rules commited',
-      ContentsFormat: formats.text,
-      Type: entryTypes.error
-  };
-type: javascript
-tags:
-- firewall
-- panorama
-comment: Blocks IP with Panorama
-enabled: true
 args:
-- name: ip
-  required: true
-  default: true
+- default: true
   description: IP to block
-- name: rulename
-  description: Rule name
-- name: direction
-  auto: PREDEFINED
+  name: ip
+  required: true
+- description: Rule name
+  name: rulename
+- auto: PREDEFINED
+  description: Direction to block
+  name: direction
   predefined:
   - to
   - from
   - both
-  description: Direction to block
+comment: Blocks IP with Panorama
+commonfields:
+  id: PanoramaBlockIP
+  version: -1
+dependson:
+  must:
+  - panorama
+deprecated: true
+enabled: true
+name: PanoramaBlockIP
 outputs:
 - contextPath: PanoramaRule
   description: List of Panorama rules
@@ -84,12 +34,32 @@ outputs:
 - contextPath: PanoramaRule.IP
   description: The IP the Panorama rule blocks
   type: string
-scripttarget: 0
-deprecated: true
 runonce: false
-dependson:
-  must:
-  - panorama
+script: "var direction = args.direction || 'both';\nvar blockingDestination = direction\
+  \ === 'to' || direction === 'both';\nvar blockingSource = direction === 'from' ||\
+  \ direction === 'both';\nvar blockedDestination = false;\nvar blockedSource = true;\n\
+  var resp = null;\n\nif (!args.rulename) {\n    args.rulename = 'ip' + args.ip +\
+  \ ' blocked in direction ' + args.direction;\n}\n\nif (blockingDestination) {\n\
+  \    resp = executeCommand('PanoramaConfig', {action: 'drop', destination: args.ip,\
+  \ ruleName: args.ruleName + '-to'});\n    if (isError(resp[0])){\n        return\
+  \ resp;\n    }\n    blockedDestination = 'success' == dq(resp[0],'Contents');\n\
+  }\n\nif (blockingSource) {\n    resp = executeCommand('PanoramaConfig', {action:\
+  \ 'drop', destination: args.ip, ruleName: args.ruleName + '-from'});\n    if (isError(resp[0])){\n\
+  \        return resp\n    }\n    blockedSource = 'success' == dq(resp[0],'Contents');\n\
+  }\n\nif ((blockedSource && blockingSource) || (blockingDestination && blockedDestination))\
+  \ {\n    resp = executeCommand('PanoramaCommit', {});\n    var entry = resp[0];\n\
+  \    var context = {PanoramaRule: []};\n\n    context.PanoramaRule.push({\n    \
+  \        Name: args.ruleName,\n            Direction: direction,\n            IP:\
+  \ args.ip\n        });\n\n    //needed for editing of context\n    var entryB =\
+  \ null;\n    entryB = JSON.parse(JSON.stringify(entry))\n    entryB.EntryContext\
+  \ = context;\n    return entryB;\n}\nreturn {\n    Contents: 'no rules commited',\n\
+  \    ContentsFormat: formats.text,\n    Type: entryTypes.error\n};"
+scripttarget: 0
+tags:
+- firewall
+- panorama
 tests:
 - palo_alto_firewall_test_pb
 - blockip_test_playbook
+toversion: 4.1.9
+type: javascript

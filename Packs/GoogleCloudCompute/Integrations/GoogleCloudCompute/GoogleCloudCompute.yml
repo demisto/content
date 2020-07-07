@@ -141,8 +141,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specifies whether a public DNS ‘PTR’ record should be created to
-        map the external IP address of the instance to a DNS domain name.
+      description: "Specifies whether a public DNS \u2018PTR\u2019 record should be\
+        \ created to map the external IP address of the instance to a DNS domain name."
       isArray: false
       name: setPublicPtr
       predefined:
@@ -1076,8 +1076,8 @@ script:
         of the instance.
       type: string
     - contextPath: GoogleCloudCompute.Instances.networkInterfaces.accessConfigs.setPublicPtr
-      description: Specifies whether a public DNS ‘PTR’ record should be created to
-        map the external IP address of the instance to a DNS domain name.
+      description: "Specifies whether a public DNS \u2018PTR\u2019 record should be\
+        \ created to map the external IP address of the instance to a DNS domain name."
       type: boolean
     - contextPath: GoogleCloudCompute.Instances.networkInterfaces.accessConfigs.publicPtrDomainName
       description: The DNS domain name for the public PTR record. This field can only
@@ -1524,8 +1524,8 @@ script:
         of the instance.
       type: string
     - contextPath: GoogleCloudCompute.Instances.networkInterfaces.accessConfigs.setPublicPtr
-      description: Specifies whether a public DNS ‘PTR’ record should be created to
-        map the external IP address of the instance to a DNS domain name.
+      description: "Specifies whether a public DNS \u2018PTR\u2019 record should be\
+        \ created to map the external IP address of the instance to a DNS domain name."
       type: boolean
     - contextPath: GoogleCloudCompute.Instances.networkInterfaces.accessConfigs.publicPtrDomainName
       description: The DNS domain name for the public PTR record. This field can only
@@ -2414,8 +2414,8 @@ script:
         of the instance.
       type: string
     - contextPath: GoogleCloudCompute.Instances.networkInterfaces.accessConfigs.setPublicPtr
-      description: Specifies whether a public DNS ‘PTR’ record should be created to
-        map the external IP address of the instance to a DNS domain name.
+      description: "Specifies whether a public DNS \u2018PTR\u2019 record should be\
+        \ created to map the external IP address of the instance to a DNS domain name."
       type: boolean
     - contextPath: GoogleCloudCompute.Instances.networkInterfaces.accessConfigs.publicPtrDomainName
       description: The DNS domain name for the public PTR record. This field can only
@@ -12823,19 +12823,21 @@ script:
       description: Progress indicator that ranges from 0 to 100.
       type: number
     - contextPath: GoogleCloudCompute.ProjectMetadata.targetId
-      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      description: The unique target ID, which identifies a specific incarnation of
+        the target resource.
       type: String
     - contextPath: GoogleCloudCompute.ProjectMetadata.startTime
       description: The time that this operation was started by the server.
       type: String
     - contextPath: GoogleCloudCompute.ProjectMetadata.status
-      description: The status of the operation, which can be one of the following PENDING, RUNNING, or DONE
+      description: The status of the operation, which can be one of the following
+        PENDING, RUNNING, or DONE
       type: String
     - contextPath: GoogleCloudCompute.ProjectMetadata.kind
       description: Type of the resource. Always compute#operation.
       type: String
-  dockerimage45: demisto/google-api:1.0.0.235
   dockerimage: demisto/google-api:1.0.0.7874
+  dockerimage45: demisto/google-api:1.0.0.235
   feed: false
   isfetch: false
   longRunning: false
@@ -12846,3 +12848,4 @@ script:
   type: python
 tests:
 - No tests
+toversion: 4.1.9

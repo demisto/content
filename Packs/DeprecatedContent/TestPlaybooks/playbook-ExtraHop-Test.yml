@@ -1,50 +1,58 @@
+description: ''
 id: ExtraHop-Test
-version: -1
+inputs: []
 name: ExtraHop-Test
-starttaskid: "0"
-description: ""
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 2a774637-8d52-4c88-8417-340fc29c2748
-    type: start
-    task:
-      description: ""
-      id: 2a774637-8d52-4c88-8417-340fc29c2748
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 30
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-  "2":
-    id: "2"
-    taskid: cd474bbb-cea3-4957-818a-f47980ab915a
-    type: regular
-    task:
-      description: ""
-      id: cd474bbb-cea3-4957-818a-f47980ab915a
-      version: -1
-      name: extrahop-devices
-      script: ExtraHop|||extrahop-devices
-      type: regular
-      iscommand: true
-      brand: ExtraHop
     nexttasks:
       '#none#':
-      - "6"
+      - '4'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 2a774637-8d52-4c88-8417-340fc29c2748
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 2a774637-8d52-4c88-8417-340fc29c2748
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 30\n  }\n}"
+  '10':
+    id: '10'
+    ignoreworker: false
+    note: false
+    scriptarguments:
+      add: {}
+      remove:
+        simple: '106'
+    separatecontext: false
+    task:
+      brand: ExtraHop
+      description: Modify whitelist from ExtraHop
+      id: e3e45302-979d-464f-89e3-a88e1848f3df
+      iscommand: true
+      name: extrahop-whitelist-modify
+      script: ExtraHop|||extrahop-whitelist-modify
+      type: regular
+      version: -1
+    taskid: e3e45302-979d-464f-89e3-a88e1848f3df
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1490\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
     scriptarguments:
       active_from: {}
       active_until: {}
@@ -52,245 +60,175 @@ tasks:
       search_type:
         simple: any
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 560
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: f871dc65-4fde-4f1e-8029-f78ae7c9076d
-    type: regular
     task:
-      id: f871dc65-4fde-4f1e-8029-f78ae7c9076d
+      brand: ExtraHop
+      description: ''
+      id: cd474bbb-cea3-4957-818a-f47980ab915a
+      iscommand: true
+      name: extrahop-devices
+      script: ExtraHop|||extrahop-devices
+      type: regular
       version: -1
-      name: extrahop-get-alert-rules
+    taskid: cd474bbb-cea3-4957-818a-f47980ab915a
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 560\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    separatecontext: false
+    task:
+      brand: ExtraHop
       description: Get alerts from ExtraHop
+      id: f871dc65-4fde-4f1e-8029-f78ae7c9076d
+      iscommand: true
+      name: extrahop-get-alert-rules
       script: ExtraHop|||extrahop-get-alert-rules
       type: regular
-      iscommand: true
-      brand: ExtraHop
-    nexttasks:
-      '#none#':
-      - "5"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 180
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: c5350b5b-cbd2-45c5-81da-1c9de324242d
-    type: condition
-    task:
-      description: ""
-      id: c5350b5b-cbd2-45c5-81da-1c9de324242d
       version: -1
-      name: Check rule exists
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "2"
-    separatecontext: false
+    taskid: f871dc65-4fde-4f1e-8029-f78ae7c9076d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 180\n  }\n}"
+  '5':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: ExtraHop.Alert.[0].Id
-            iscontext: true
+          operator: containsGeneral
           right:
             value:
-              simple: "13"
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 360
-        }
-      }
-    note: false
-    timertriggers: []
+              simple: '13'
+      label: 'yes'
+    id: '5'
     ignoreworker: false
-  "6":
-    id: "6"
-    taskid: d6c7ffb9-5e7f-4d55-8fbd-c9bcb1a6d5fc
-    type: condition
-    task:
-      description: ""
-      id: d6c7ffb9-5e7f-4d55-8fbd-c9bcb1a6d5fc
-      version: -1
-      name: Check device
-      type: condition
-      iscommand: false
-      brand: ""
     nexttasks:
-      "yes":
-      - "7"
+      'yes':
+      - '2'
+    note: false
     separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: c5350b5b-cbd2-45c5-81da-1c9de324242d
+      iscommand: false
+      name: Check rule exists
+      type: condition
+      version: -1
+    taskid: c5350b5b-cbd2-45c5-81da-1c9de324242d
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 360\n  }\n}"
+  '6':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: ExtraHop.[1].Device.[0].Id
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 740
-        }
-      }
-    note: false
-    timertriggers: []
+          operator: isExists
+      label: 'yes'
+    id: '6'
     ignoreworker: false
-  "7":
-    id: "7"
-    taskid: 1cb68a93-131c-4a6e-8c33-62a8121e3cc3
-    type: regular
+    nexttasks:
+      'yes':
+      - '7'
+    note: false
+    separatecontext: false
     task:
-      id: 1cb68a93-131c-4a6e-8c33-62a8121e3cc3
+      brand: ''
+      description: ''
+      id: d6c7ffb9-5e7f-4d55-8fbd-c9bcb1a6d5fc
+      iscommand: false
+      name: Check device
+      type: condition
       version: -1
-      name: extrahop-whitelist-retrieve
+    taskid: d6c7ffb9-5e7f-4d55-8fbd-c9bcb1a6d5fc
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 740\n  }\n}"
+  '7':
+    id: '7'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    separatecontext: false
+    task:
+      brand: ExtraHop
       description: Retrieve whitelist from ExtraHop
+      id: 1cb68a93-131c-4a6e-8c33-62a8121e3cc3
+      iscommand: true
+      name: extrahop-whitelist-retrieve
       script: ExtraHop|||extrahop-whitelist-retrieve
       type: regular
-      iscommand: true
-      brand: ExtraHop
-    nexttasks:
-      '#none#':
-      - "8"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 940
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "8":
-    id: "8"
-    taskid: 917cd0cb-926b-4ecd-8604-6eda883196e0
-    type: condition
-    task:
-      description: ""
-      id: 917cd0cb-926b-4ecd-8604-6eda883196e0
       version: -1
-      name: Verify device on whitelist
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "9"
-    separatecontext: false
+    taskid: 1cb68a93-131c-4a6e-8c33-62a8121e3cc3
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 940\n  }\n}"
+  '8':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: ExtraHop.[2].Device.[0].OnWatchlist
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1120
-        }
-      }
-    note: false
-    timertriggers: []
+          operator: isExists
+      label: 'yes'
+    id: '8'
     ignoreworker: false
-  "9":
-    id: "9"
-    taskid: bcd391dd-96e2-4b83-82b2-60ad30a990dd
-    type: regular
+    nexttasks:
+      'yes':
+      - '9'
+    note: false
+    separatecontext: false
     task:
-      id: bcd391dd-96e2-4b83-82b2-60ad30a990dd
+      brand: ''
+      description: ''
+      id: 917cd0cb-926b-4ecd-8604-6eda883196e0
+      iscommand: false
+      name: Verify device on whitelist
+      type: condition
       version: -1
-      name: extrahop-whitelist-modify
-      description: Modify whitelist from ExtraHop
-      script: ExtraHop|||extrahop-whitelist-modify
-      type: regular
-      iscommand: true
-      brand: ExtraHop
+    taskid: 917cd0cb-926b-4ecd-8604-6eda883196e0
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1120\n  }\n}"
+  '9':
+    id: '9'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
+    note: false
     scriptarguments:
       add:
-        simple: "106"
+        simple: '106'
       remove: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1300
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "10":
-    id: "10"
-    taskid: e3e45302-979d-464f-89e3-a88e1848f3df
-    type: regular
     task:
-      id: e3e45302-979d-464f-89e3-a88e1848f3df
-      version: -1
-      name: extrahop-whitelist-modify
+      brand: ExtraHop
       description: Modify whitelist from ExtraHop
+      id: bcd391dd-96e2-4b83-82b2-60ad30a990dd
+      iscommand: true
+      name: extrahop-whitelist-modify
       script: ExtraHop|||extrahop-whitelist-modify
       type: regular
-      iscommand: true
-      brand: ExtraHop
-    scriptarguments:
-      add: {}
-      remove:
-        simple: "106"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1490
-        }
-      }
-    note: false
+      version: -1
+    taskid: bcd391dd-96e2-4b83-82b2-60ad30a990dd
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1555,
-        "width": 380,
-        "x": 450,
-        "y": 30
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1300\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1555,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\":\
+  \ 30\n    }\n  }\n}"

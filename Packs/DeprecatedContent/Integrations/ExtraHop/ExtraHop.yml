@@ -2,30 +2,30 @@ category: Network Security
 commonfields:
   id: ExtraHop
   version: -1
-deprecated: true
 configuration:
-- display: API Key for instance
+- defaultvalue: ''
+  display: API Key for instance
   name: apikey
-  defaultvalue: ""
+  required: true
   type: 4
-  required: true
-- display: URL for the instance
+- defaultvalue: ''
+  display: URL for the instance
   name: url
-  defaultvalue: ""
-  type: 0
   required: true
-- display: Trust any certificate (not secure)
+  type: 0
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "false"
-  type: 8
   required: false
-- display: Use system proxy settings
+  type: 8
+- defaultvalue: 'false'
+  display: Use system proxy settings
   name: proxy
-  defaultvalue: "false"
-  type: 8
   required: false
-description: Deprecated - We recommend using ExtraHop Reveal(x) instead.
-  ExtraHop performs real-time stream analysis of the packets that carry data across a network.
+  type: 8
+deprecated: true
+description: Deprecated - We recommend using ExtraHop Reveal(x) instead. ExtraHop
+  performs real-time stream analysis of the packets that carry data across a network.
 display: ExtraHop (Deprecated)
 name: ExtraHop
 script:
@@ -78,8 +78,8 @@ script:
       description: The type of alert.
       type: String
     - contextPath: Extrahop.Alert.FieldOp
-      description: The type of comparison between the "field_name" and "field_name2" fields
-        when applying a ratio.
+      description: The type of comparison between the "field_name" and "field_name2"
+        fields when applying a ratio.
       type: String
     - contextPath: Extrahop.Alert.Id
       description: The unique identifier for the alert.
@@ -808,7 +808,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The type of alert.'
+      description: The type of alert.
       isArray: false
       name: type
       predefined:
@@ -887,7 +887,8 @@ script:
   isfetch: false
   runonce: false
   script: ''
-  type: python
   subtype: python3
+  type: python
 tests:
 - ExtraHop-Test
+toversion: 4.1.9

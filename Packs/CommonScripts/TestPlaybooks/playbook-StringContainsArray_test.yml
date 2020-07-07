@@ -1,47 +1,32 @@
 id: StringContainsArray_test
-version: -1
+inputs: []
 name: StringContainsArray_test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 31aa4ea8-3ac3-424e-808e-f422de36e2cd
-    type: start
-    task:
-      id: 31aa4ea8-3ac3-424e-808e-f422de36e2cd
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "10"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 592.5,
-          "y": 50
-        }
-      }
+      - '10'
     note: false
-    timertriggers: []
-  "1":
-    id: "1"
-    taskid: b76db509-f2c9-45fd-8195-c8cbd64afc3f
-    type: regular
+    separatecontext: false
     task:
-      id: b76db509-f2c9-45fd-8195-c8cbd64afc3f
-      version: -1
-      name: Set String Array
-      description: Sets a value into the context with the given context key
-      scriptName: Set
-      type: regular
+      brand: ''
+      id: 31aa4ea8-3ac3-424e-808e-f422de36e2cd
       iscommand: false
-      brand: ""
+      name: ''
+      version: -1
+    taskid: 31aa4ea8-3ac3-424e-808e-f422de36e2cd
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 592.5,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
     scriptarguments:
       append: {}
       key:
@@ -49,32 +34,93 @@ tasks:
       value:
         simple: '["this","is","a","test"]'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 592.5,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-  "2":
-    id: "2"
-    taskid: 8bc6f5d4-12d4-4026-8acc-5018f16ecaa9
-    type: regular
     task:
-      id: 8bc6f5d4-12d4-4026-8acc-5018f16ecaa9
-      version: -1
-      name: Set Single String
+      brand: ''
       description: Sets a value into the context with the given context key
+      id: b76db509-f2c9-45fd-8195-c8cbd64afc3f
+      iscommand: false
+      name: Set String Array
       scriptName: Set
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: b76db509-f2c9-45fd-8195-c8cbd64afc3f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 592.5,\n    \"y\": 370\n  }\n}"
+  '10':
+    id: '10'
     nexttasks:
       '#none#':
-      - "6"
-      - "4"
+      - '1'
+    note: false
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: a4615ef0-a35a-4b0b-842a-0ab46e635b7d
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: a4615ef0-a35a-4b0b-842a-0ab46e635b7d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 592.5,\n    \"y\": 195\n  }\n}"
+  '11':
+    id: '11'
+    note: false
+    scriptarguments:
+      message:
+        simple: Failed to satisfy condition
+    separatecontext: false
+    task:
+      brand: ''
+      description: Prints an error entry with a given message
+      id: 70fc2389-a158-480d-8be7-ef65c5f7a997
+      iscommand: false
+      name: Print Error Entry
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 70fc2389-a158-480d-8be7-ef65c5f7a997
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 542.5,\n    \"y\": 1245\n  }\n}"
+  '12':
+    id: '12'
+    note: false
+    scriptarguments:
+      message:
+        simple: Failed to satisfy condition
+    separatecontext: false
+    task:
+      brand: ''
+      description: Prints an error entry with a given message
+      id: a4ab8b01-1812-4c7d-875f-0617c6d3bfcb
+      iscommand: false
+      name: Print Error Entry
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: a4ab8b01-1812-4c7d-875f-0617c6d3bfcb
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1042.5,\n    \"y\": 1245\n  }\n}"
+  '2':
+    id: '2'
+    nexttasks:
+      '#none#':
+      - '6'
+      - '4'
+    note: false
     scriptarguments:
       append: {}
       key:
@@ -82,318 +128,192 @@ tasks:
       value:
         simple: string
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 592.5,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-  "4":
-    id: "4"
-    taskid: fc0f28bf-76a7-47cd-8382-759019c7a1d6
-    type: condition
     task:
-      id: fc0f28bf-76a7-47cd-8382-759019c7a1d6
-      version: -1
-      name: Check Array
-      type: condition
+      brand: ''
+      description: Sets a value into the context with the given context key
+      id: 8bc6f5d4-12d4-4026-8acc-5018f16ecaa9
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "12"
-      "yes":
-      - "5"
-    separatecontext: false
+      name: Set Single String
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 8bc6f5d4-12d4-4026-8acc-5018f16ecaa9
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 592.5,\n    \"y\": 545\n  }\n}"
+  '4':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: StringContainsArray
-          left:
+    - condition:
+      - - left:
             value:
               simple: test
+          operator: StringContainsArray
           right:
+            iscontext: true
             value:
               simple: StringArray
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 940,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-  "5":
-    id: "5"
-    taskid: 00a5b0d7-aecc-4885-8782-6e0cbac59d31
-    type: condition
-    task:
-      id: 00a5b0d7-aecc-4885-8782-6e0cbac59d31
-      version: -1
-      name: Check Single
-      type: condition
-      iscommand: false
-      brand: ""
+      label: 'yes'
+    id: '4'
     nexttasks:
       '#default#':
-      - "12"
-      "yes":
-      - "8"
+      - '12'
+      'yes':
+      - '5'
+    note: false
     separatecontext: false
+    task:
+      brand: ''
+      id: fc0f28bf-76a7-47cd-8382-759019c7a1d6
+      iscommand: false
+      name: Check Array
+      type: condition
+      version: -1
+    taskid: fc0f28bf-76a7-47cd-8382-759019c7a1d6
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 940,\n    \"y\": 895\n  }\n}"
+  '5':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: StringContainsArray
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: SingleString
-            iscontext: true
+          operator: StringContainsArray
           right:
             value:
               simple: string
-    view: |-
-      {
-        "position": {
-          "x": 817.5,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-  "6":
-    id: "6"
-    taskid: b96f44de-2151-4c6c-8b6a-eaa2ebc35314
-    type: condition
-    task:
-      id: b96f44de-2151-4c6c-8b6a-eaa2ebc35314
-      version: -1
-      name: Check Array Not Contains
-      type: condition
-      iscommand: false
-      brand: ""
+      label: 'yes'
+    id: '5'
     nexttasks:
       '#default#':
-      - "7"
-      "yes":
-      - "11"
+      - '12'
+      'yes':
+      - '8'
+    note: false
     separatecontext: false
+    task:
+      brand: ''
+      id: 00a5b0d7-aecc-4885-8782-6e0cbac59d31
+      iscommand: false
+      name: Check Single
+      type: condition
+      version: -1
+    taskid: 00a5b0d7-aecc-4885-8782-6e0cbac59d31
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 817.5,\n    \"y\": 1070\n  }\n}"
+  '6':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: StringContainsArray
-          left:
+    - condition:
+      - - left:
             value:
               simple: nop
+          operator: StringContainsArray
           right:
+            iscontext: true
             value:
               simple: StringArray
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 152.5,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-  "7":
-    id: "7"
-    taskid: ec7db49b-2651-4e9a-85cc-70d2206b16cf
-    type: condition
-    task:
-      id: ec7db49b-2651-4e9a-85cc-70d2206b16cf
-      version: -1
-      name: Check Single Not Contains
-      type: condition
-      iscommand: false
-      brand: ""
+      label: 'yes'
+    id: '6'
     nexttasks:
       '#default#':
-      - "9"
-      "yes":
-      - "11"
+      - '7'
+      'yes':
+      - '11'
+    note: false
     separatecontext: false
+    task:
+      brand: ''
+      id: b96f44de-2151-4c6c-8b6a-eaa2ebc35314
+      iscommand: false
+      name: Check Array Not Contains
+      type: condition
+      version: -1
+    taskid: b96f44de-2151-4c6c-8b6a-eaa2ebc35314
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 152.5,\n    \"y\": 720\n  }\n}"
+  '7':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: StringContainsArray
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: SingleString
-            iscontext: true
+          operator: StringContainsArray
           right:
             value:
               simple: strings
-    view: |-
-      {
-        "position": {
-          "x": 142.5,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-  "8":
-    id: "8"
-    taskid: 2724d85c-d4bc-4982-8168-cba2e9946f8e
-    type: title
-    task:
-      id: 2724d85c-d4bc-4982-8168-cba2e9946f8e
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 142.5,
-          "y": 1260
-        }
-      }
-    note: false
-    timertriggers: []
-  "9":
-    id: "9"
-    taskid: ee83d65a-e01d-472d-8b39-d4c1a06a7930
-    type: condition
-    task:
-      id: ee83d65a-e01d-472d-8b39-d4c1a06a7930
-      version: -1
-      name: Check Empty
-      type: condition
-      iscommand: false
-      brand: ""
+      label: 'yes'
+    id: '7'
     nexttasks:
       '#default#':
-      - "8"
-      "yes":
-      - "11"
+      - '9'
+      'yes':
+      - '11'
+    note: false
     separatecontext: false
+    task:
+      brand: ''
+      id: ec7db49b-2651-4e9a-85cc-70d2206b16cf
+      iscommand: false
+      name: Check Single Not Contains
+      type: condition
+      version: -1
+    taskid: ec7db49b-2651-4e9a-85cc-70d2206b16cf
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 142.5,\n    \"y\": 895\n  }\n}"
+  '8':
+    id: '8'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 2724d85c-d4bc-4982-8168-cba2e9946f8e
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 2724d85c-d4bc-4982-8168-cba2e9946f8e
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 142.5,\n    \"y\": 1260\n  }\n}"
+  '9':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: StringContainsArray
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: EmptyString
-            iscontext: true
+          operator: StringContainsArray
           right:
+            iscontext: true
             value:
               simple: EmptyString
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-  "10":
-    id: "10"
-    taskid: a4615ef0-a35a-4b0b-842a-0ab46e635b7d
-    type: regular
-    task:
-      id: a4615ef0-a35a-4b0b-842a-0ab46e635b7d
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
+      label: 'yes'
+    id: '9'
     nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 592.5,
-          "y": 195
-        }
-      }
+      '#default#':
+      - '8'
+      'yes':
+      - '11'
     note: false
-    timertriggers: []
-  "11":
-    id: "11"
-    taskid: 70fc2389-a158-480d-8be7-ef65c5f7a997
-    type: regular
+    separatecontext: false
     task:
-      id: 70fc2389-a158-480d-8be7-ef65c5f7a997
-      version: -1
-      name: Print Error Entry
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
+      brand: ''
+      id: ee83d65a-e01d-472d-8b39-d4c1a06a7930
       iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: Failed to satisfy condition
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 542.5,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-  "12":
-    id: "12"
-    taskid: a4ab8b01-1812-4c7d-875f-0617c6d3bfcb
-    type: regular
-    task:
-      id: a4ab8b01-1812-4c7d-875f-0617c6d3bfcb
+      name: Check Empty
+      type: condition
       version: -1
-      name: Print Error Entry
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: Failed to satisfy condition
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1042.5,
-          "y": 1245
-        }
-      }
-    note: false
+    taskid: ee83d65a-e01d-472d-8b39-d4c1a06a7930
     timertriggers: []
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1290,
-        "width": 1372.5,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1290,\n      \"width\": 1372.5,\n      \"x\": 50,\n      \"y\"\
+  : 50\n    }\n  }\n}"

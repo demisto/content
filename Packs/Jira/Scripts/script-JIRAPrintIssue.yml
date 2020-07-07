@@ -1,88 +1,49 @@
+args:
+- default: true
+  description: JIRA issue ID (e.g. SOC-24)
+  name: issueId
+  required: true
+comment: Pretty print JIRA issue into the incident war room
 commonfields:
   id: JIRAPrintIssue
   version: -1
-name: JIRAPrintIssue
-script: |-
-  var response = executeCommand('jira-get-issue', { issueId: args.issueId });
-
-  if (!response || response.length === 0 || !response[0].Contents || isError(response[0])) {
-      return 'JIRA issue not found (' + args.issueId + ')';
-  }
-
-  var issue = response[0].Contents;
-  var fields = issue.fields;
-
-  var id = issue.id;
-  var key = issue.key;
-  var url = issue.self;
-  var summary = fields.summary;
-  var description = fields.description;
-  var attachments = fields.attachment;
-  var comments = fields.comment && fields.comment.comments;
-  var project = fields.project.name;
-  var ticketStatus = fields.status.name;
-  var ticketStatusDesc = fields.status.description;
-  var created = fields.created;
-  var updated = fields.updated;
-  var closedTime = fields.resolutiondate;
-
-  var creator = {
-      name: fields.creator.displayName,
-      email: fields.creator.emailAddress,
-      avatarUrl: fields.creator.avatarUrls['24x24'],
-      url: fields.creator.self
-  };
-
-  var reporter = {
-      name: fields.reporter.displayName,
-      email: fields.reporter.emailAddress,
-      avatarUrl: fields.reporter.avatarUrls['24x24'],
-      url: fields.reporter.self
-  };
-
-  var md = '## JIRA Issue ' + key + ' - ' + summary + ' (' + ticketStatus + ')\n';
-  md += 'Opened by ' + creator.name + ' (' + creator.email + ') ![avatar](' + creator.avatarUrl+ '=size=24x24)\n\n';
-  md += '#### Status: \n' + ticketStatus + ' (' + ticketStatusDesc + ')\n';
-
-  md += '#### Timeline\n';
-  md += '- Created at ' + created + '\n';
-  if (updated) {
-      md += '- Updated at ' + updated + '\n';
-  }
-  if (closedTime) {
-      md += '- Closed at ' + closedTime + '\n';
-  }
-
-  if (attachments) {
-      md += '#### Attachments (' + attachments.length + '):\n';
-      attachments.map(function(att, i) {
-          md += '\n**Attachment ' + (i + 1) + '** From: ' + att.author.displayName + ' (' + att.author.emailAddress + ') - ' + att.created + ':\n';
-          md += '[' + att.filename + '](' + att.content + ') (' + att.mimeType + ') Size: ' + att.size;
-          md += '\n\n --- \n\n';
-      });
-  }
-
-  if (comments) {
-      md += '#### Comments (' + comments.length + '):\n';
-      comments.map(function(comment, i) {
-          md += '\n**Comment ' + (i + 1) + '** From: ' + comment.author.displayName + ' (' + comment.author.emailAddress + ') - ' + comment.created + ':\n';
-          md += comment.body;
-          md += '\n\n --- \n\n';
-      });
-  }
-
-  return { Type: entryTypes.note, Contents: issue, ContentsFormat: formats.json, HumanReadable: md };
-type: javascript
-tags:
-- jira
-comment: Pretty print JIRA issue into the incident war room
-enabled: true
-args:
-- name: issueId
-  required: true
-  default: true
-  description: JIRA issue ID (e.g. SOC-24)
-scripttarget: 0
 dependson:
   must:
   - jira-get-issue
+enabled: true
+name: JIRAPrintIssue
+script: "var response = executeCommand('jira-get-issue', { issueId: args.issueId });\n\
+  \nif (!response || response.length === 0 || !response[0].Contents || isError(response[0]))\
+  \ {\n    return 'JIRA issue not found (' + args.issueId + ')';\n}\n\nvar issue =\
+  \ response[0].Contents;\nvar fields = issue.fields;\n\nvar id = issue.id;\nvar key\
+  \ = issue.key;\nvar url = issue.self;\nvar summary = fields.summary;\nvar description\
+  \ = fields.description;\nvar attachments = fields.attachment;\nvar comments = fields.comment\
+  \ && fields.comment.comments;\nvar project = fields.project.name;\nvar ticketStatus\
+  \ = fields.status.name;\nvar ticketStatusDesc = fields.status.description;\nvar\
+  \ created = fields.created;\nvar updated = fields.updated;\nvar closedTime = fields.resolutiondate;\n\
+  \nvar creator = {\n    name: fields.creator.displayName,\n    email: fields.creator.emailAddress,\n\
+  \    avatarUrl: fields.creator.avatarUrls['24x24'],\n    url: fields.creator.self\n\
+  };\n\nvar reporter = {\n    name: fields.reporter.displayName,\n    email: fields.reporter.emailAddress,\n\
+  \    avatarUrl: fields.reporter.avatarUrls['24x24'],\n    url: fields.reporter.self\n\
+  };\n\nvar md = '## JIRA Issue ' + key + ' - ' + summary + ' (' + ticketStatus +\
+  \ ')\\n';\nmd += 'Opened by ' + creator.name + ' (' + creator.email + ') ![avatar]('\
+  \ + creator.avatarUrl+ '=size=24x24)\\n\\n';\nmd += '#### Status: \\n' + ticketStatus\
+  \ + ' (' + ticketStatusDesc + ')\\n';\n\nmd += '#### Timeline\\n';\nmd += '- Created\
+  \ at ' + created + '\\n';\nif (updated) {\n    md += '- Updated at ' + updated +\
+  \ '\\n';\n}\nif (closedTime) {\n    md += '- Closed at ' + closedTime + '\\n';\n\
+  }\n\nif (attachments) {\n    md += '#### Attachments (' + attachments.length + '):\\\
+  n';\n    attachments.map(function(att, i) {\n        md += '\\n**Attachment ' +\
+  \ (i + 1) + '** From: ' + att.author.displayName + ' (' + att.author.emailAddress\
+  \ + ') - ' + att.created + ':\\n';\n        md += '[' + att.filename + '](' + att.content\
+  \ + ') (' + att.mimeType + ') Size: ' + att.size;\n        md += '\\n\\n --- \\\
+  n\\n';\n    });\n}\n\nif (comments) {\n    md += '#### Comments (' + comments.length\
+  \ + '):\\n';\n    comments.map(function(comment, i) {\n        md += '\\n**Comment\
+  \ ' + (i + 1) + '** From: ' + comment.author.displayName + ' (' + comment.author.emailAddress\
+  \ + ') - ' + comment.created + ':\\n';\n        md += comment.body;\n        md\
+  \ += '\\n\\n --- \\n\\n';\n    });\n}\n\nreturn { Type: entryTypes.note, Contents:\
+  \ issue, ContentsFormat: formats.json, HumanReadable: md };"
+scripttarget: 0
+tags:
+- jira
+toversion: 4.1.9
+type: javascript

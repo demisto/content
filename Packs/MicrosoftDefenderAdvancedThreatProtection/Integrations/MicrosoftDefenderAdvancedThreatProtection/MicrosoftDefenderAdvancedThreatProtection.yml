@@ -1186,9 +1186,10 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: |-
-      Return the machine's actions. If you set an action id it will return the info on the specific action.
-      Filtering can be done only on one argument.
+    description: 'Return the machine''s actions. If you set an action id it will return
+      the info on the specific action.
+
+      Filtering can be done only on one argument.'
     execution: false
     name: microsoft-atp-list-machine-actions-details
     outputs:
@@ -1313,8 +1314,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Restrict the execution of all applications on the machine except a predefined
-      set.
+    description: Restrict the execution of all applications on the machine except
+      a predefined set.
     execution: false
     name: microsoft-atp-restrict-app-execution
     outputs:
@@ -2004,9 +2005,8 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: |-
-        The user ID.  Note that the ID is not the full UPN, but only the user name.
-         (e.g., to retrieve alerts for user1@test.com use user1)
+      description: "The user ID.  Note that the ID is not the full UPN, but only the\
+        \ user name.\n (e.g., to retrieve alerts for\_user1@test.com\_use user1)"
       isArray: false
       name: username
       required: true
@@ -2097,9 +2097,8 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: |-
-        The user ID.  Note that the id is not the full UPN, but only the user name.
-        (e.g., to retrieve machines for user1@test.com use user1)
+      description: "The user ID.  Note that the id is not the full UPN, but only the\
+        \ user name.\n(e.g., to retrieve machines for\_user1@test.com\_use user1)"
       isArray: false
       name: username
       required: true
@@ -2261,3 +2260,4 @@ script:
   script: '-'
   subtype: python3
   type: python
+toversion: 4.1.9

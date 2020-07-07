@@ -1,20 +1,18 @@
+args:
+- description: The Yara rule to use for the file scan.
+  name: yaraRule
+  required: true
+- description: A comma-separated list of file entry IDs to scan.
+  isArray: true
+  name: entryIDs
+  required: true
+comment: Performs a Yara scan on the specified files.
 commonfields:
   id: YaraScan
   version: -1
-name: YaraScan
-script: ''
-type: python
-tags: []
-comment: Performs a Yara scan on the specified files.
+dockerimage: demisto/yarapy:1.0.0.5648
 enabled: true
-args:
-- name: yaraRule
-  required: true
-  description: The Yara rule to use for the file scan.
-- name: entryIDs
-  required: true
-  description: A comma-separated list of file entry IDs to scan.
-  isArray: true
+name: YaraScan
 outputs:
 - contextPath: Yara.Filename
   description: The filename of the file that was scanned.
@@ -49,8 +47,11 @@ outputs:
   type: string
 - contextPath: Matches.Tags
   description: A list of tags that are defined in the rule.
+runas: DBotWeakRole
+runonce: false
+script: ''
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/yarapy:1.0.0.5648
-runas: DBotWeakRole
+tags: []
+toversion: 4.1.9
+type: python

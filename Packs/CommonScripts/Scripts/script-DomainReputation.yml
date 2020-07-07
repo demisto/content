@@ -1,25 +1,21 @@
+args:
+- default: true
+  description: Domain to look up
+  name: domain
+  required: true
+comment: A context script for Domain entities
 commonfields:
   id: DomainReputation
   version: -1
+enabled: true
 name: DomainReputation
-script: |-
-  results = demisto.executeCommand('domain', {'domain': demisto.get(demisto.args(),'domain')})
-
-  for item in results:
-      if isError(item):
-          item['Contents'] = item['Brand'] + ' returned an error.\n' + item['Contents']
-
-  demisto.results(results)
-type: python
+runonce: false
+script: "results = demisto.executeCommand('domain', {'domain': demisto.get(demisto.args(),'domain')})\n\
+  \nfor item in results:\n    if isError(item):\n        item['Contents'] = item['Brand']\
+  \ + ' returned an error.\\n' + item['Contents']\n\ndemisto.results(results)"
+scripttarget: 0
 subtype: python2
 tags:
 - enhancement
-comment: A context script for Domain entities
-enabled: true
-args:
-- name: domain
-  required: true
-  default: true
-  description: Domain to look up
-scripttarget: 0
-runonce: false
+toversion: 4.1.9
+type: python

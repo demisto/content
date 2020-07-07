@@ -130,8 +130,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List alerts (security issues) within a customer's tenant that Microsoft
-      or partner security solutions have identified.
+    description: "List alerts\_(security issues) within a customer's tenant that Microsoft\
+      \ or partner security solutions have identified."
     execution: false
     name: msg-search-alerts
     outputs:
@@ -352,3 +352,4 @@ script:
   type: python
 tests:
 - Microsoft Graph Test
+toversion: 4.1.9

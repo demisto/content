@@ -1,48 +1,34 @@
 id: Digital Shadows - Test
-version: -1
+inputs: []
 name: Digital Shadows - Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 78974bf9-718f-47f4-892f-a435bdff322a
-    type: start
-    task:
-      id: 78974bf9-718f-47f4-892f-a435bdff322a
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: 0ff4a7a2-cdc8-44f5-8a80-babbb1b026cb
-    type: regular
-    task:
-      id: 0ff4a7a2-cdc8-44f5-8a80-babbb1b026cb
-      version: -1
-      name: Find Incidents
-      description: Find incidents with filtering options
-      script: Digital Shadows|||ds-find-incidents-filtered
-      type: regular
-      iscommand: true
-      brand: Digital Shadows
     nexttasks:
       '#none#':
-      - "3"
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 78974bf9-718f-47f4-892f-a435bdff322a
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 78974bf9-718f-47f4-892f-a435bdff322a
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
     scriptarguments:
       filter_alerted: {}
       filter_dateRange:
@@ -70,54 +56,42 @@ tasks:
       subscribed: {}
       subscribedOnly: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: bbafc34a-3ede-43d9-81f2-b1270c86b7e4
-    type: title
     task:
-      id: bbafc34a-3ede-43d9-81f2-b1270c86b7e4
+      brand: Digital Shadows
+      description: Find incidents with filtering options
+      id: 0ff4a7a2-cdc8-44f5-8a80-babbb1b026cb
+      iscommand: true
+      name: Find Incidents
+      script: Digital Shadows|||ds-find-incidents-filtered
+      type: regular
       version: -1
+    taskid: 0ff4a7a2-cdc8-44f5-8a80-babbb1b026cb
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: bbafc34a-3ede-43d9-81f2-b1270c86b7e4
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: e249b3ed-f977-41ed-8ce2-456375e58176
-    type: regular
-    task:
-      id: e249b3ed-f977-41ed-8ce2-456375e58176
       version: -1
-      name: Find Ports
-      description: Find ports
-      script: Digital Shadows|||ds-find-ports
-      type: regular
-      iscommand: true
-      brand: Digital Shadows
+    taskid: bbafc34a-3ede-43d9-81f2-b1270c86b7e4
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
+    note: false
     scriptarguments:
       filter_alerted: {}
       filter_detectedClosed: {}
@@ -139,32 +113,26 @@ tasks:
       sort_direction: {}
       sort_property: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 7cec550f-3a0a-4bfa-871d-7b0d8c486ad6
-    type: regular
     task:
-      id: 7cec550f-3a0a-4bfa-871d-7b0d8c486ad6
-      version: -1
-      name: Find Vulnerabilities
-      description: Find vulnerabilities
-      script: Digital Shadows|||ds-find-vulnerabilities
-      type: regular
-      iscommand: true
       brand: Digital Shadows
+      description: Find ports
+      id: e249b3ed-f977-41ed-8ce2-456375e58176
+      iscommand: true
+      name: Find Ports
+      script: Digital Shadows|||ds-find-ports
+      type: regular
+      version: -1
+    taskid: e249b3ed-f977-41ed-8ce2-456375e58176
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
     scriptarguments:
       filter_alerted: {}
       filter_cveIdentifiers: {}
@@ -184,27 +152,21 @@ tasks:
       sort_direction: {}
       sort_property: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
+    task:
+      brand: Digital Shadows
+      description: Find vulnerabilities
+      id: 7cec550f-3a0a-4bfa-871d-7b0d8c486ad6
+      iscommand: true
+      name: Find Vulnerabilities
+      script: Digital Shadows|||ds-find-vulnerabilities
+      type: regular
+      version: -1
+    taskid: 7cec550f-3a0a-4bfa-871d-7b0d8c486ad6
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 735,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 735,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

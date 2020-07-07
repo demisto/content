@@ -318,17 +318,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        The start of the date range for searching.
-        The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).
+      description: 'The start of the date range for searching.
+
+        The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).'
       isArray: false
       name: start_date
       required: false
       secret: false
     - default: false
-      description: |-
-        The end of the date range for searching.
-        The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).
+      description: 'The end of the date range for searching.
+
+        The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).'
       isArray: false
       name: end_date
       required: false
@@ -454,33 +454,33 @@ script:
       type: String
   - arguments:
     - default: true
-      description: |-
-        The query for the search.
-        (https://exchange.xforce.ibmcloud.com/api/doc/?#Vulnerabilities_get_vulnerabilities_fulltext)
+      description: 'The query for the search.
+
+        (https://exchange.xforce.ibmcloud.com/api/doc/?#Vulnerabilities_get_vulnerabilities_fulltext)'
       isArray: false
       name: q
       required: true
       secret: false
     - default: false
-      description: |-
-        The start of the date range for searching.
-        The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).
+      description: 'The start of the date range for searching.
+
+        The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).'
       isArray: false
       name: start_date
       required: false
       secret: false
     - default: false
-      description: |-
-        The end of the date range for searching.
-        The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).
+      description: 'The end of the date range for searching.
+
+        The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).'
       isArray: false
       name: end_date
       required: false
       secret: false
     - default: false
-      description: |-
-        Bookmark used to page through results.
-        (https://exchange.xforce.ibmcloud.com/api/doc/?#Vulnerabilities_get_vulnerabilities_fulltext)
+      description: 'Bookmark used to page through results.
+
+        (https://exchange.xforce.ibmcloud.com/api/doc/?#Vulnerabilities_get_vulnerabilities_fulltext)'
       isArray: false
       name: bookmark
       required: false
@@ -544,3 +544,4 @@ script:
   script: '-'
   subtype: python3
   type: python
+toversion: 4.1.9

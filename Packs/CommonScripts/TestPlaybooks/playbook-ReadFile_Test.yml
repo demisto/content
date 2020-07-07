@@ -1,48 +1,34 @@
 id: ReadFile test
-version: -1
+inputs: []
 name: ReadFile test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 5902b582-857d-4803-8964-29ba93a7c232
-    type: start
-    task:
-      id: 5902b582-857d-4803-8964-29ba93a7c232
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: 8169ac87-0db7-43c2-8f34-026a084a43aa
-    type: regular
-    task:
-      id: 8169ac87-0db7-43c2-8f34-026a084a43aa
-      version: -1
-      name: Upload txt file with Hebrew letters
-      description: Sends http request. Returns the response as json.
-      scriptName: http
-      type: regular
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - '8'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 5902b582-857d-4803-8964-29ba93a7c232
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 5902b582-857d-4803-8964-29ba93a7c232
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
     scriptarguments:
       body: {}
       filename: {}
@@ -53,100 +39,130 @@ tasks:
       password: {}
       proxy: {}
       saveAsFile:
-        simple: "yes"
+        simple: 'yes'
       unsecure: {}
       url:
         simple: https://raw.githubusercontent.com/demisto/content/master/TestData/hebrew_file.txt
       username: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 99345e1c-0dbc-4551-8233-51ef2812623d
-    type: regular
     task:
-      id: 99345e1c-0dbc-4551-8233-51ef2812623d
-      version: -1
-      name: Try to read a file
-      description: Load the contents of a file into context.
-      scriptName: ReadFile
-      type: regular
+      brand: ''
+      description: Sends http request. Returns the response as json.
+      id: 8169ac87-0db7-43c2-8f34-026a084a43aa
       iscommand: false
-      brand: ""
+      name: Upload txt file with Hebrew letters
+      scriptName: http
+      type: regular
+      version: -1
+    taskid: 8169ac87-0db7-43c2-8f34-026a084a43aa
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 370\n  }\n}"
+  '10':
+    continueonerror: true
+    id: '10'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    scriptarguments:
+      encoding: {}
+      entryID:
+        simple: ${File.EntryID}
+      maxFileSize: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Load the contents of a file into context.
+      id: 3e6faebe-3a90-49b7-8a8f-add97b38f90f
+      iscommand: false
+      name: Try to read file
+      scriptName: ReadFile_copy
+      type: regular
+      version: -1
+    taskid: 3e6faebe-3a90-49b7-8a8f-add97b38f90f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+  '11':
+    id: '11'
+    ignoreworker: false
+    note: false
+    scriptarguments:
+      message:
+        simple: Wrong Codec successfully parsed Hebrew although it shouldn't
+    separatecontext: false
+    task:
+      brand: ''
+      description: Prints an error entry with a given message
+      id: f2cf4242-7d03-4019-8807-2a4067f06392
+      iscommand: false
+      name: Failed to not parse Hebrew
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: f2cf4242-7d03-4019-8807-2a4067f06392
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 895\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
+    note: false
     scriptarguments:
       entryID:
         simple: ${File.EntryID}
       maxFileSize: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: dbd0cfe2-ab12-4c89-8511-5ef17fa3871f
-    type: regular
     task:
-      id: dbd0cfe2-ab12-4c89-8511-5ef17fa3871f
-      version: -1
-      name: Delete Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      description: Load the contents of a file into context.
+      id: 99345e1c-0dbc-4551-8233-51ef2812623d
       iscommand: false
-      brand: ""
+      name: Try to read a file
+      scriptName: ReadFile
+      type: regular
+      version: -1
+    taskid: 99345e1c-0dbc-4551-8233-51ef2812623d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1770\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 4ebc7f25-a95d-4c15-8e89-2c5ae1558d8b
-    type: regular
     task:
-      id: 4ebc7f25-a95d-4c15-8e89-2c5ae1558d8b
-      version: -1
-      name: Upload file with escape chars
-      description: Sends http request. Returns the response as json.
-      scriptName: http
-      type: regular
+      brand: ''
+      description: Delete field from context
+      id: dbd0cfe2-ab12-4c89-8511-5ef17fa3871f
       iscommand: false
-      brand: ""
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: dbd0cfe2-ab12-4c89-8511-5ef17fa3871f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
+    note: false
     scriptarguments:
       body: {}
       filename: {}
@@ -157,38 +173,32 @@ tasks:
       password: {}
       proxy: {}
       saveAsFile:
-        simple: "yes"
+        simple: 'yes'
       unsecure: {}
       url:
         simple: https://raw.githubusercontent.com/demisto/content/master/TestData/file_with_escape_chars.txt
       username: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 0f5ce556-084d-4174-8cb2-821169c3ec54
-    type: regular
     task:
-      id: 0f5ce556-084d-4174-8cb2-821169c3ec54
-      version: -1
-      name: Upload regular txt file
+      brand: ''
       description: Sends http request. Returns the response as json.
+      id: 4ebc7f25-a95d-4c15-8e89-2c5ae1558d8b
+      iscommand: false
+      name: Upload file with escape chars
       scriptName: http
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 4ebc7f25-a95d-4c15-8e89-2c5ae1558d8b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
     scriptarguments:
       body: {}
       filename: {}
@@ -199,72 +209,61 @@ tasks:
       password: {}
       proxy: {}
       saveAsFile:
-        simple: "yes"
+        simple: 'yes'
       unsecure: {}
       url:
         simple: https://raw.githubusercontent.com/demisto/content/master/TestData/regular_english_file.txt
       username: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 49e91ef1-93a6-401e-8836-f223974e37f6
-    type: regular
     task:
-      id: 49e91ef1-93a6-401e-8836-f223974e37f6
-      version: -1
-      name: Delete Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      description: Sends http request. Returns the response as json.
+      id: 0f5ce556-084d-4174-8cb2-821169c3ec54
       iscommand: false
-      brand: ""
+      name: Upload regular txt file
+      scriptName: http
+      type: regular
+      version: -1
+    taskid: 0f5ce556-084d-4174-8cb2-821169c3ec54
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1595\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "7":
-    id: "7"
-    taskid: eb64441f-139f-4fd5-8392-d47d10d4c1fe
-    type: regular
     task:
-      id: eb64441f-139f-4fd5-8392-d47d10d4c1fe
-      version: -1
-      name: Try to read Hebrew file with bad encoding
-      description: Load the contents of a file into context.
-      scriptName: ReadFile_copy
-      type: regular
+      brand: ''
+      description: Delete field from context
+      id: 49e91ef1-93a6-401e-8836-f223974e37f6
       iscommand: false
-      brand: ""
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 49e91ef1-93a6-401e-8836-f223974e37f6
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1420\n  }\n}"
+  '7':
+    continueonerror: true
+    id: '7'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
+    note: false
     scriptarguments:
       decode_type:
         simple: big5
@@ -273,158 +272,79 @@ tasks:
       entryID:
         simple: ${File.EntryID}
       maxFileSize: {}
-    continueonerror: true
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "8":
-    id: "8"
-    taskid: 485b9cd0-c215-4160-8464-3a2d4380696f
-    type: regular
     task:
-      id: 485b9cd0-c215-4160-8464-3a2d4380696f
-      version: -1
-      name: Delete Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      description: Load the contents of a file into context.
+      id: eb64441f-139f-4fd5-8392-d47d10d4c1fe
       iscommand: false
-      brand: ""
+      name: Try to read Hebrew file with bad encoding
+      scriptName: ReadFile_copy
+      type: regular
+      version: -1
+    taskid: eb64441f-139f-4fd5-8392-d47d10d4c1fe
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 545\n  }\n}"
+  '8':
+    id: '8'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "9":
-    id: "9"
-    taskid: dc9eb5ea-31fb-4221-8f11-179be4165e25
-    type: condition
     task:
-      id: dc9eb5ea-31fb-4221-8f11-179be4165e25
-      version: -1
-      name: Validate no Context added
-      type: condition
+      brand: ''
+      description: Delete field from context
+      id: 485b9cd0-c215-4160-8464-3a2d4380696f
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "11"
-      "yes":
-      - "3"
-    separatecontext: false
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 485b9cd0-c215-4160-8464-3a2d4380696f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 195\n  }\n}"
+  '9':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: ${FileData}
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
+          operator: isNotExists
+      label: 'yes'
+    id: '9'
     ignoreworker: false
-  "10":
-    id: "10"
-    taskid: 3e6faebe-3a90-49b7-8a8f-add97b38f90f
-    type: regular
-    task:
-      id: 3e6faebe-3a90-49b7-8a8f-add97b38f90f
-      version: -1
-      name: Try to read file
-      description: Load the contents of a file into context.
-      scriptName: ReadFile_copy
-      type: regular
-      iscommand: false
-      brand: ""
     nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      encoding: {}
-      entryID:
-        simple: ${File.EntryID}
-      maxFileSize: {}
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
+      '#default#':
+      - '11'
+      'yes':
+      - '3'
     note: false
-    timertriggers: []
-    ignoreworker: false
-  "11":
-    id: "11"
-    taskid: f2cf4242-7d03-4019-8807-2a4067f06392
-    type: regular
+    separatecontext: false
     task:
-      id: f2cf4242-7d03-4019-8807-2a4067f06392
-      version: -1
-      name: Failed to not parse Hebrew
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
+      brand: ''
+      id: dc9eb5ea-31fb-4221-8f11-179be4165e25
       iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: Wrong Codec successfully parsed Hebrew although it shouldn't
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 895
-        }
-      }
-    note: false
+      name: Validate no Context added
+      type: condition
+      version: -1
+    taskid: dc9eb5ea-31fb-4221-8f11-179be4165e25
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1815,
-        "width": 810,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 720\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1815,\n      \"width\": 810,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

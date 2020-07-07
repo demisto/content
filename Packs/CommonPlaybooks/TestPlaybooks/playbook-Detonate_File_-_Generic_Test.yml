@@ -1,47 +1,32 @@
+fromversion: 4.0.0
 id: Detonate File - Generic Test
-version: -1
+inputs: []
 name: Detonate File - Generic Test
-fromversion: "4.0.0"
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: cb5511f1-7b77-492a-8d4a-e83de02a7463
+      iscommand: false
+      name: ''
+      version: -1
     taskid: cb5511f1-7b77-492a-8d4a-e83de02a7463
     type: start
-    task:
-      id: cb5511f1-7b77-492a-8d4a-e83de02a7463
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "2"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
+      - '6'
     note: false
-  "1":
-    id: "1"
-    taskid: 94b6d204-186c-47bb-84e3-2d121b1393e1
-    type: regular
-    task:
-      id: 94b6d204-186c-47bb-84e3-2d121b1393e1
-      version: -1
-      name: Download PDF file
-      description: Sends http request. Returns the response as json.
-      scriptName: http
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
     scriptarguments:
       body: {}
       filename:
@@ -53,103 +38,80 @@ tasks:
       password: {}
       proxy: {}
       saveAsFile:
-        simple: "yes"
+        simple: 'yes'
       url:
         simple: http://www.pdf995.com/samples/pdf.pdf
       username: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 437
-        }
-      }
-    note: false
-  "2":
-    id: "2"
-    taskid: c6d121da-00ab-47a8-897f-8f96a78c2311
-    type: regular
     task:
-      id: c6d121da-00ab-47a8-897f-8f96a78c2311
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      description: Sends http request. Returns the response as json.
+      id: 94b6d204-186c-47bb-84e3-2d121b1393e1
       iscommand: false
-      brand: ""
+      name: Download PDF file
+      scriptName: http
+      type: regular
+      version: -1
+    taskid: 94b6d204-186c-47bb-84e3-2d121b1393e1
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 437\n  }\n}"
+  '2':
+    id: '2'
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       key: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 232
-        }
-      }
-    note: false
-  "4":
-    id: "4"
-    taskid: 6a2348a6-48be-4edf-88b8-b5ad994a9579
-    type: title
     task:
-      id: 6a2348a6-48be-4edf-88b8-b5ad994a9579
+      brand: ''
+      description: Delete field from context
+      id: c6d121da-00ab-47a8-897f-8f96a78c2311
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
       version: -1
+    taskid: c6d121da-00ab-47a8-897f-8f96a78c2311
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 232\n  }\n}"
+  '4':
+    id: '4'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 6a2348a6-48be-4edf-88b8-b5ad994a9579
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 815
-        }
-      }
-    note: false
-  "6":
-    id: "6"
-    taskid: b327256a-404a-4370-8cdd-8ea94fb9df3a
-    type: playbook
-    task:
-      id: b327256a-404a-4370-8cdd-8ea94fb9df3a
       version: -1
+    taskid: 6a2348a6-48be-4edf-88b8-b5ad994a9579
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 815\n  }\n}"
+  '6':
+    id: '6'
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    separatecontext: true
+    task:
+      brand: ''
+      id: b327256a-404a-4370-8cdd-8ea94fb9df3a
+      iscommand: false
       name: Detonate File - Generic
       playbookName: Detonate File - Generic
       type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 615
-        }
-      }
-    note: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 830,
-        "width": 380,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+      version: -1
+    taskid: b327256a-404a-4370-8cdd-8ea94fb9df3a
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 615\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 830,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n\
+  \    }\n  }\n}"

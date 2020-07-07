@@ -1,43 +1,41 @@
 id: Send Email To Recipients
-version: -1
+inputs:
+- description: ''
+  key: to
+  required: false
+  value: {}
+- description: ''
+  key: cc
+  required: false
+  value: {}
+- description: ''
+  key: attIDs
+  required: false
+  value: {}
 name: Send Email To Recipients
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: d0949410-ccba-40b0-8441-d1b40cbd12c3
-    type: start
-    task:
-      id: d0949410-ccba-40b0-8441-d1b40cbd12c3
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
+      - '1'
     note: false
-    timertriggers: []
-  "1":
-    id: "1"
-    taskid: c02acb76-a021-4b8a-8b6b-3fd506922181
-    type: regular
+    separatecontext: false
     task:
-      id: c02acb76-a021-4b8a-8b6b-3fd506922181
+      brand: ''
+      id: d0949410-ccba-40b0-8441-d1b40cbd12c3
+      iscommand: false
+      name: ''
       version: -1
-      name: Send Mail
-      script: EWS Mail Sender|||send-mail
-      type: regular
-      iscommand: true
-      brand: EWS Mail Sender
+    taskid: d0949410-ccba-40b0-8441-d1b40cbd12c3
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    note: false
     scriptarguments:
       attachIDs:
         simple: ${inputs.attIDs}
@@ -53,40 +51,22 @@ tasks:
       to:
         simple: ${inputs.to}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
+    task:
+      brand: EWS Mail Sender
+      id: c02acb76-a021-4b8a-8b6b-3fd506922181
+      iscommand: true
+      name: Send Mail
+      script: EWS Mail Sender|||send-mail
+      type: regular
+      version: -1
+    taskid: c02acb76-a021-4b8a-8b6b-3fd506922181
     timertriggers: []
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 240,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs:
-- key: to
-  value: {}
-  required: false
-  description: ""
-- key: cc
-  value: {}
-  required: false
-  description: ""
-- key: attIDs
-  value: {}
-  required: false
-  description: ""
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
 tests:
 - No test
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 240,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

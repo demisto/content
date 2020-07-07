@@ -1,72 +1,39 @@
+category: Endpoint
 commonfields:
   id: McAfee Active Response
   version: -1
-name: McAfee Active Response
-display: McAfee Active Response
-category: Endpoint
-description: Connect to MAR using its DXL client
 configuration:
-- display: Broker CA certificates content (see `brokercerts.crt` in instructions)
+- defaultvalue: ''
+  display: Broker CA certificates content (see `brokercerts.crt` in instructions)
   name: broker_ca_bundle
-  defaultvalue: ""
-  type: 12
   required: true
-- display: Client certificates content (see `client.crt` in instructions)
+  type: 12
+- defaultvalue: ''
+  display: Client certificates content (see `client.crt` in instructions)
   name: cert_file
-  defaultvalue: ""
+  required: true
   type: 12
-  required: true
-- display: Client private key content (see `client.key` in instructions)
+- defaultvalue: ''
+  display: Client private key content (see `client.key` in instructions)
   name: private_key
-  defaultvalue: ""
-  type: 14
   required: true
-- display: Brokers urls (comma separated list in the form of - [ssl://]<hostname>[:port])
+  type: 14
+- defaultvalue: ''
+  display: Brokers urls (comma separated list in the form of - [ssl://]<hostname>[:port])
     - get hostname & port from `brokerlist.properties` file in instructions. Note
     that the broker should be reachable from demisto server
   name: broker_urls
-  defaultvalue: ""
-  type: 0
   required: true
+  type: 0
+description: Connect to MAR using its DXL client
+display: McAfee Active Response
+name: McAfee Active Response
 script:
-  script: ''
-  type: python
-  subtype: python2
   commands:
-  - name: mar-search
-    arguments:
-    - name: collector
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - CommandLineHistory
-      - CurrentFlow
-      - DNSCache
-      - EnvironmentVariables
-      - Files
-      - HostEntries
-      - HostInfo
-      - InstalledCertificates
-      - InstalledDrivers
-      - InstalledUpdates
-      - InteractiveSessions
-      - LocalGroups
-      - LoggedInUsers
-      - NetworkFlow
-      - NetworkInterfaces
-      - NetworkSessions
-      - NetworkShares
-      - Processes
-      - ScheduledTasks
-      - Services
-      - Software
-      - Startup
-      - UsbConnectedStorageDevices
-      - UserProfiles
-      - WinRegistry
+  - arguments:
+    - auto: PREDEFINED
       description: The collector to query
-    - name: prejection-collector
-      auto: PREDEFINED
+      name: collector
       predefined:
       - CommandLineHistory
       - CurrentFlow
@@ -93,17 +60,47 @@ script:
       - UsbConnectedStorageDevices
       - UserProfiles
       - WinRegistry
+      required: true
+    - auto: PREDEFINED
       description: Projection collector that we want to return. By default prejection
         collector will be equal to the collector
-    - name: outputs
-      description: Comma separated fields (outputs). Run `mar-collectors-list` to
+      name: prejection-collector
+      predefined:
+      - CommandLineHistory
+      - CurrentFlow
+      - DNSCache
+      - EnvironmentVariables
+      - Files
+      - HostEntries
+      - HostInfo
+      - InstalledCertificates
+      - InstalledDrivers
+      - InstalledUpdates
+      - InteractiveSessions
+      - LocalGroups
+      - LoggedInUsers
+      - NetworkFlow
+      - NetworkInterfaces
+      - NetworkSessions
+      - NetworkShares
+      - Processes
+      - ScheduledTasks
+      - Services
+      - Software
+      - Startup
+      - UsbConnectedStorageDevices
+      - UserProfiles
+      - WinRegistry
+    - description: Comma separated fields (outputs). Run `mar-collectors-list` to
         view all collectors & fields command for all collectors outputs, shows all
         outputs if not supplied
-    - name: filter-by
-      description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list`
+      name: outputs
+    - description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list`
         to view all collectors & fields command for all collectors outputs
-    - name: filter-operator
-      auto: PREDEFINED
+      name: filter-by
+    - auto: PREDEFINED
+      description: Filtering operator
+      name: filter-operator
       predefined:
       - GreaterEqualThan
       - GreaterThan
@@ -115,56 +112,26 @@ script:
       - EndsWith
       - Before
       - After
-      description: Filtering operator
-    - name: filter-value
-      description: Filtering value of the `filter-by` field
+    - description: Filtering value of the `filter-by` field
+      name: filter-value
+    description: Search endpoint data
+    name: mar-search
     outputs:
     - contextPath: MAR
-      description: 'MAR Results in given collector(e.g. ''MAR.HostInfo`, For information
-        about possible output paths, run the command: ‘mar-collectors-list’'
+      description: "MAR Results in given collector(e.g. 'MAR.HostInfo`, For information\
+        \ about possible output paths, run the command: \u2018mar-collectors-list\u2019"
     - contextPath: MAR
-      description: 'MAR Results in given collector(e.g. ''MAR.HostInfo`, For information
-        about possible output paths, run the command: ‘mar-collectors-list’'
-    description: Search endpoint data
-  - name: mar-collectors-list
-    arguments: []
+      description: "MAR Results in given collector(e.g. 'MAR.HostInfo`, For information\
+        \ about possible output paths, run the command: \u2018mar-collectors-list\u2019"
+  - arguments: []
     description: Returns a list of all collectors and their outputs
-  - name: mar-search-multiple
-    arguments:
-    - name: collectors
-      required: true
+    name: mar-collectors-list
+  - arguments:
+    - auto: PREDEFINED
       default: true
-      auto: PREDEFINED
-      predefined:
-      - CommandLineHistory
-      - CurrentFlow
-      - DNSCache
-      - EnvironmentVariables
-      - Files
-      - HostEntries
-      - HostInfo
-      - InstalledCertificates
-      - InstalledDrivers
-      - InstalledUpdates
-      - InteractiveSessions
-      - LocalGroups
-      - LoggedInUsers
-      - NetworkFlow
-      - NetworkInterfaces
-      - NetworkSessions
-      - NetworkShares
-      - Processes
-      - ScheduledTasks
-      - Services
-      - Software
-      - Startup
-      - UsbConnectedStorageDevices
-      - UserProfiles
-      - WinRegistry
       description: The collectors to query
       isArray: true
-    - name: filter_collector
-      auto: PREDEFINED
+      name: collectors
       predefined:
       - CommandLineHistory
       - CurrentFlow
@@ -191,12 +158,42 @@ script:
       - UsbConnectedStorageDevices
       - UserProfiles
       - WinRegistry
+      required: true
+    - auto: PREDEFINED
       description: The collector to filter by (e.g. HostInfo)
-    - name: filter-by
-      description: Field name (output) of `filter_collector` to filter by (e.g. ip_address)
+      name: filter_collector
+      predefined:
+      - CommandLineHistory
+      - CurrentFlow
+      - DNSCache
+      - EnvironmentVariables
+      - Files
+      - HostEntries
+      - HostInfo
+      - InstalledCertificates
+      - InstalledDrivers
+      - InstalledUpdates
+      - InteractiveSessions
+      - LocalGroups
+      - LoggedInUsers
+      - NetworkFlow
+      - NetworkInterfaces
+      - NetworkSessions
+      - NetworkShares
+      - Processes
+      - ScheduledTasks
+      - Services
+      - Software
+      - Startup
+      - UsbConnectedStorageDevices
+      - UserProfiles
+      - WinRegistry
+    - description: Field name (output) of `filter_collector` to filter by (e.g. ip_address)
         . Run `mar-collectors-list` to view all collectors & fields
-    - name: filter-operator
-      auto: PREDEFINED
+      name: filter-by
+    - auto: PREDEFINED
+      description: Filtering operatior
+      name: filter-operator
       predefined:
       - GreaterEqualThan
       - GreaterThan
@@ -208,21 +205,21 @@ script:
       - EndsWith
       - Before
       - After
-      description: Filtering operatior
-    - name: filter-value
-      description: Filtering value of the `filter-by` field
+    - description: Filtering value of the `filter-by` field
+      name: filter-value
+    description: Search endpoint data crossed by multiple collectors
+    name: mar-search-multiple
     outputs:
     - contextPath: Mar.SearchMultiple
-      description: 'The result of the search query, For information about possible
-        output paths, run the command: ‘mar-collectors-list’'
-    description: Search endpoint data crossed by multiple collectors
-  - name: mar-search-services
-    arguments:
-    - name: filter-by
-      description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list`
+      description: "The result of the search query, For information about possible\
+        \ output paths, run the command: \u2018mar-collectors-list\u2019"
+  - arguments:
+    - description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list`
         to view all collectors & fields command for all collectors outputs
-    - name: filter-operator
-      auto: PREDEFINED
+      name: filter-by
+    - auto: PREDEFINED
+      description: Filtering operator
+      name: filter-operator
       predefined:
       - GreaterEqualThan
       - GreaterThan
@@ -234,9 +231,10 @@ script:
       - EndsWith
       - Before
       - After
-      description: Filtering operator
-    - name: filter-value
-      description: Filtering value of the `filter-by` field
+    - description: Filtering value of the `filter-by` field
+      name: filter-value
+    description: Gets services information from McAfee Active Response
+    name: mar-search-services
     outputs:
     - contextPath: MAR.Services.Name
       description: Service name
@@ -248,14 +246,13 @@ script:
       description: Service startup type
     - contextPath: MAR.Services.User
       description: Service user
-    description: Gets services information from McAfee Active Response
-  - name: mar-search-processes
-    arguments:
-    - name: filter-by
-      description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list`
+  - arguments:
+    - description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list`
         to view all collectors & fields command for all collectors outputs
-    - name: filter-operator
-      auto: PREDEFINED
+      name: filter-by
+    - auto: PREDEFINED
+      description: Filtering operator
+      name: filter-operator
       predefined:
       - GreaterEqualThan
       - GreaterThan
@@ -267,9 +264,10 @@ script:
       - EndsWith
       - Before
       - After
-      description: Filtering operator
-    - name: filter-value
-      description: Filtering value of the `filter-by` field
+    - description: Filtering value of the `filter-by` field
+      name: filter-value
+    description: Gets processes information from McAfee Active Response
+    name: mar-search-processes
     outputs:
     - contextPath: MAR.Processes.Name
       description: Process name
@@ -297,14 +295,13 @@ script:
       description: Process user
     - contextPath: MAR.Processes.User_id
       description: Process user id
-    description: Gets processes information from McAfee Active Response
-  - name: mar-search-win-registry
-    arguments:
-    - name: filter-by
-      description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list`
+  - arguments:
+    - description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list`
         to view all collectors & fields command for all collectors outputs
-    - name: filter-operator
-      auto: PREDEFINED
+      name: filter-by
+    - auto: PREDEFINED
+      description: Filtering operator
+      name: filter-operator
       predefined:
       - GreaterEqualThan
       - GreaterThan
@@ -316,9 +313,10 @@ script:
       - EndsWith
       - Before
       - After
-      description: Filtering operator
-    - name: filter-value
-      description: Filtering value of the `filter-by` field
+    - description: Filtering value of the `filter-by` field
+      name: filter-value
+    description: Gets WinRegistry information from McAfee Active Response
+    name: mar-search-win-registry
     outputs:
     - contextPath: MAR.WinRegistry.Keypath
       description: WinRegistry key path
@@ -328,14 +326,13 @@ script:
       description: WinRegistry value data
     - contextPath: MAR.WinRegistry.Valuetype
       description: WinRegistry value type
-    description: Gets WinRegistry information from McAfee Active Response
-  - name: mar-search-files
-    arguments:
-    - name: filter-by
-      description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list`
+  - arguments:
+    - description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list`
         to view all collectors & fields command for all collectors outputs
-    - name: filter-operator
-      auto: PREDEFINED
+      name: filter-by
+    - auto: PREDEFINED
+      description: Filtering operator
+      name: filter-operator
       predefined:
       - GreaterEqualThan
       - GreaterThan
@@ -347,9 +344,10 @@ script:
       - EndsWith
       - Before
       - After
-      description: Filtering operator
-    - name: filter-value
-      description: Filtering value of the `filter-by` field
+    - description: Filtering value of the `filter-by` field
+      name: filter-value
+    description: Gets files information from McAfee Active Response
+    name: mar-search-files
     outputs:
     - contextPath: MAR.Files.Name
       description: File name
@@ -369,14 +367,13 @@ script:
       description: File created at
     - contextPath: MAR.Files.Deleted_at
       description: File deleted at
-    description: Gets files information from McAfee Active Response
-  - name: mar-search-usb-connected-storage-devices
-    arguments:
-    - name: filter-by
-      description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list`
+  - arguments:
+    - description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list`
         to view all collectors & fields command for all collectors outputs
-    - name: filter-operator
-      auto: PREDEFINED
+      name: filter-by
+    - auto: PREDEFINED
+      description: Filtering operator
+      name: filter-operator
       predefined:
       - GreaterEqualThan
       - GreaterThan
@@ -388,9 +385,10 @@ script:
       - EndsWith
       - Before
       - After
-      description: Filtering operator
-    - name: filter-value
-      description: Filtering value of the `filter-by` field
+    - description: Filtering value of the `filter-by` field
+      name: filter-value
+    description: Gets Usb connected devices information from McAfee Active Response
+    name: mar-search-usb-connected-storage-devices
     outputs:
     - contextPath: MAR.UsbConnectedStorageDevices.Vendor_id
       description: Usb connected storage devices vendor id
@@ -408,14 +406,13 @@ script:
       description: Usb connected storage devices user name
     - contextPath: MAR.UsbConnectedStorageDevices.Last_time_used_by_user
       description: Usb connected storage devices last time used by user
-    description: Gets Usb connected devices information from McAfee Active Response
-  - name: mar-search-user-profiles
-    arguments:
-    - name: filter-by
-      description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list`
+  - arguments:
+    - description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list`
         to view all collectors & fields command for all collectors outputs
-    - name: filter-operator
-      auto: PREDEFINED
+      name: filter-by
+    - auto: PREDEFINED
+      description: Filtering operator
+      name: filter-operator
       predefined:
       - GreaterEqualThan
       - GreaterThan
@@ -427,9 +424,10 @@ script:
       - EndsWith
       - Before
       - After
-      description: Filtering operator
-    - name: filter-value
-      description: Filtering value of the `filter-by` field
+    - description: Filtering value of the `filter-by` field
+      name: filter-value
+    description: Gets user profiles information from McAfee Active Response
+    name: mar-search-user-profiles
     outputs:
     - contextPath: MAR.UserProfiles.Accountdisabled
       description: User profile account disabled
@@ -449,14 +447,13 @@ script:
       description: User profile sid
     - contextPath: MAR.UserProfiles.Passwordexpires
       description: User profile password expired
-    description: Gets user profiles information from McAfee Active Response
-  - name: mar-search-scheduled-tasks
-    arguments:
-    - name: filter-by
-      description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list`
+  - arguments:
+    - description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list`
         to view all collectors & fields command for all collectors outputs
-    - name: filter-operator
-      auto: PREDEFINED
+      name: filter-by
+    - auto: PREDEFINED
+      description: Filtering operator
+      name: filter-operator
       predefined:
       - GreaterEqualThan
       - GreaterThan
@@ -468,9 +465,10 @@ script:
       - EndsWith
       - Before
       - After
-      description: Filtering operator
-    - name: filter-value
-      description: Filtering value of the `filter-by` field
+    - description: Filtering value of the `filter-by` field
+      name: filter-value
+    description: Gets scheduled tasks information from McAfee Active Response
+    name: mar-search-scheduled-tasks
     outputs:
     - contextPath: MAR.ScheduledTasks.Folder
       description: Scheduled tasks folder
@@ -484,14 +482,13 @@ script:
       description: Scheduled tasks user name
     - contextPath: MAR.ScheduledTasks.Schedule_on
       description: Scheduled tasks schedule on
-    description: Gets scheduled tasks information from McAfee Active Response
-  - name: mar-search-host-info
-    arguments:
-    - name: filter-by
-      description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list`
+  - arguments:
+    - description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list`
         to view all collectors & fields command for all collectors outputs
-    - name: filter-operator
-      auto: PREDEFINED
+      name: filter-by
+    - auto: PREDEFINED
+      description: Filtering operator
+      name: filter-operator
       predefined:
       - GreaterEqualThan
       - GreaterThan
@@ -503,9 +500,10 @@ script:
       - EndsWith
       - Before
       - After
-      description: Filtering operator
-    - name: filter-value
-      description: Filtering value of the `filter-by` field
+    - description: Filtering value of the `filter-by` field
+      name: filter-value
+    description: Gets host information from McAfee Active Response
+    name: mar-search-host-info
     outputs:
     - contextPath: MAR.HostInfo.Hostname
       description: Host name
@@ -513,6 +511,9 @@ script:
       description: Host Ip address
     - contextPath: MAR.HostInfo.Os
       description: Host operation system
-    description: Gets host information from McAfee Active Response
   dockerimage: demisto/dxl
   runonce: false
+  script: ''
+  subtype: python2
+  type: python
+toversion: 4.1.9

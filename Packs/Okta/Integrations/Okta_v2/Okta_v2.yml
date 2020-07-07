@@ -65,8 +65,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Suspends a single user. This operation can only be performed on users with
-      an ACTIVE status. After the porcess is completed, the user's status is SUSPENDED.
+    description: Suspends a single user. This operation can only be performed on users
+      with an ACTIVE status. After the porcess is completed, the user's status is
+      SUSPENDED.
     execution: false
     name: okta-suspend-user
   - arguments:
@@ -77,8 +78,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns a single user to ACTIVE status. This operation can only be performed
-      on users that have a SUSPENDED status.
+    description: Returns a single user to ACTIVE status. This operation can only be
+      performed on users that have a SUSPENDED status.
     execution: false
     name: okta-unsuspend-user
   - arguments:
@@ -253,7 +254,8 @@ script:
       description: Timestamp when the group's memberships were last updated.
       type: Date
     - contextPath: Account.Group.Type
-      description: Group type, which determines how a group's profile and memberships are managed.
+      description: Group type, which determines how a group's profile and memberships
+        are managed.
       type: String
     - contextPath: Account.Group.Description
       description: Description of the group.
@@ -287,14 +289,15 @@ script:
       type: String
   - arguments:
     - default: true
-      description: Term by which to search. Can be a first name, last name,
-        or email address.
+      description: Term by which to search. Can be a first name, last name, or email
+        address.
       isArray: false
       name: term
       required: true
       secret: false
     - default: false
-      description: The maximum number of results to return. The default and maximum is 200.
+      description: The maximum number of results to return. The default and maximum
+        is 200.
       isArray: false
       name: limit
       required: false
@@ -302,7 +305,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to return details of users that match the found term. Can be "true" or "false". The default is "false".
+      description: Whether to return details of users that match the found term. Can
+        be "true" or "false". The default is "false".
       isArray: false
       name: verbose
       predefined:
@@ -361,7 +365,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to return extended user information. Can be "true" or "false". The default is "false".
+      description: Whether to return extended user information. Can be "true" or "false".
+        The default is "false".
       isArray: false
       name: verbose
       predefined:
@@ -440,7 +445,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of honorific prefix(es) of the user, or title in most Western languages.
+      description: A comma-separated list of honorific prefix(es) of the user, or
+        title in most Western languages.
       isArray: false
       name: honorificPrefix
       required: false
@@ -530,8 +536,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: User's default location, for purposes of localizing items such as
-        currency, date-time format, numerical representations, etc.
+      description: User's default location, for purposes of localizing items such
+        as currency, date-time format, numerical representations, etc.
       isArray: false
       name: locale
       required: false
@@ -543,8 +549,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The user type, which is used to identify the organization-to-user relationship such as
-        "Employee" or "Contractor".
+      description: The user type, which is used to identify the organization-to-user
+        relationship such as "Employee" or "Contractor".
       isArray: false
       name: userType
       required: false
@@ -611,7 +617,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The provider type. Can be "OKTA", "ACTIVE_DIRECTORY", "LDAP", "FEDERATION", or "SOCIAL".
+      description: The provider type. Can be "OKTA", "ACTIVE_DIRECTORY", "LDAP", "FEDERATION",
+        or "SOCIAL".
       isArray: false
       name: providerType
       predefined:
@@ -629,15 +636,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: IDs of groups that the user will be immediately added to at time of
-        creation (does Not include default group).
+      description: IDs of groups that the user will be immediately added to at time
+        of creation (does Not include default group).
       isArray: false
       name: groupIds
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to activate the lifecycle operation when creating the user. Can be "true" or "false".
+      description: Whether to activate the lifecycle operation when creating the user.
+        Can be "true" or "false".
       isArray: false
       name: activate
       predefined:
@@ -646,10 +654,10 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Creates a new user with an option of setting a password, recovery question,
-      and answer. The new user will immediately be able to log in after activation with
-      the assigned password. This flow is common when developing a custom user registration
-      experience.
+    description: Creates a new user with an option of setting a password, recovery
+      question, and answer. The new user will immediately be able to log in after
+      activation with the assigned password. This flow is common when developing a
+      custom user registration experience.
     execution: true
     name: okta-create-user
     outputs:
@@ -709,7 +717,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Secondary email address of the user (typically used for account recovery.
+      description: Secondary email address of the user (typically used for account
+        recovery.
       isArray: false
       name: secondEmail
       required: false
@@ -824,8 +833,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The user type, which is used to identify the organization-to-user relationship such as
-        "Employee" or "Contractor".
+      description: The user type, which is used to identify the organization-to-user
+        relationship such as "Employee" or "Contractor".
       isArray: false
       name: userType
       required: false
@@ -892,7 +901,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The provider type. Can be "OKTA", "ACTIVE_DIRECTORY", "LDAP", "FEDERATION", or "SOCIAL".
+      description: The provider type. Can be "OKTA", "ACTIVE_DIRECTORY", "LDAP", "FEDERATION",
+        or "SOCIAL".
       isArray: false
       name: providerType
       predefined:
@@ -909,8 +919,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Updates a user with a given login. All fields are optional. Fields which
-      are not set, will not be overwritten.
+    description: Updates a user with a given login. All fields are optional. Fields
+      which are not set, will not be overwritten.
     execution: true
     name: okta-update-user
   - arguments:
@@ -929,7 +939,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to print extended user details. Can be "true" or "false". The default is "false".
+      description: Whether to print extended user details. Can be "true" or "false".
+        The default is "false".
       isArray: false
       name: verbose
       predefined:
@@ -1001,7 +1012,7 @@ script:
       secret: false
     - default: false
       defaultValue: '200'
-      description: 'The maximum number of results to return. The default is 200.'
+      description: The maximum number of results to return. The default is 200.
       isArray: false
       name: limit
       required: false
@@ -1028,7 +1039,8 @@ script:
       description: Timestamp for when the group's membership was last updated.
       type: Date
     - contextPath: Okta.Group.Type
-      description: The group type, which determines how a group's profile and membership are managed. Can be "OKTA_GROUP", "APP_GROUP", or "BUILT_IN". 
+      description: The group type, which determines how a group's profile and membership
+        are managed. Can be "OKTA_GROUP", "APP_GROUP", or "BUILT_IN".
       type: String
     - contextPath: Okta.Group.Name
       description: Name of the group.
@@ -1054,7 +1066,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: ASCENDING
-      description: The order of the returned events. Can be "ASCENDING" or "DESCENDING". The default is "ASCENDING".
+      description: The order of the returned events. Can be "ASCENDING" or "DESCENDING".
+        The default is "ASCENDING".
       isArray: false
       name: sortOrder
       predefined:
@@ -1092,10 +1105,10 @@ script:
         Windows 10.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.browser
-      description: 'Identifies the browser type, if relevant. For example, Chrome.'
+      description: Identifies the browser type, if relevant. For example, Chrome.
       type: String
     - contextPath: Okta.Logs.Events.client.device
-      description: 'Type of device that client operated from. For example, Computer.'
+      description: Type of device that client operated from. For example, Computer.
       type: String
     - contextPath: Okta.Logs.Events.client.id
       description: For OAuth requests, the ID of the OAuth client making the request.
@@ -1123,7 +1136,7 @@ script:
       description: Type of event that was published.
       type: String
     - contextPath: Okta.Logs.Events.outcome.result
-      description: 'Result of the action. Can be "SUCCESS", "FAILURE", "SKIPPED", "UNKNOWN".'
+      description: Result of the action. Can be "SUCCESS", "FAILURE", "SKIPPED", "UNKNOWN".
       type: String
     - contextPath: Okta.Logs.Events.outcome.reason
       description: Reason for the result. For example, INVALID_CREDENTIALS.
@@ -1132,7 +1145,7 @@ script:
       description: Timestamp when the event was published.
       type: String
     - contextPath: Okta.Logs.Events.severity
-      description: 'The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR".'
+      description: The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR".
       type: String
     - contextPath: Okta.Logs.Events.securityContext.asNumber
       description: Autonomous system number associated with the autonomous system
@@ -1197,8 +1210,8 @@ script:
       secret: false
     - default: false
       description: "The query parameter can be used to perform keyword matching against\
-        \ a LogEvents object’s attribute values. To satisfy the constraint,\
-        \ all supplied keywords must be matched exactly. Note that matching is case-insensitive.\
+        \ a LogEvents object\u2019s attribute values. To satisfy the constraint, all\
+        \ supplied keywords must be matched exactly. Note that matching is case-insensitive.\
         \  The following are some examples of common keyword filtering: \nEvents that\
         \ mention a specific city: query=San Francisco; \nEvents that mention a specific\
         \ url: query=interestingURI.com; \nEvents that mention a specific person:\
@@ -1224,7 +1237,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: ASCENDING
-      description: The order of the returned events. Can be "ASCENDING" or "DESCENDING". The default is "ASCENDING".
+      description: The order of the returned events. Can be "ASCENDING" or "DESCENDING".
+        The default is "ASCENDING".
       isArray: false
       name: sortOrder
       predefined:
@@ -1266,7 +1280,7 @@ script:
       description: Identifies the type of web browser, if relevant. For example, Chrome.
       type: String
     - contextPath: Okta.Logs.Events.client.device
-      description: 'Type of device from which the client operated. For example, Computer.'
+      description: Type of device from which the client operated. For example, Computer.
       type: String
     - contextPath: Okta.Logs.Events.client.id
       description: For OAuth requests, the ID of the OAuth client making the request.
@@ -1294,7 +1308,8 @@ script:
       description: Type of event that was published.
       type: String
     - contextPath: Okta.Logs.Events.outcome.result
-      description: 'Result of the action. Can be "SUCCESS", "FAILURE", "SKIPPED", or "UNKNOWN".'
+      description: Result of the action. Can be "SUCCESS", "FAILURE", "SKIPPED", or
+        "UNKNOWN".
       type: String
     - contextPath: Okta.Logs.Events.outcome.reason
       description: Reason for the result. For example, INVALID_CREDENTIALS.
@@ -1303,7 +1318,7 @@ script:
       description: Timestamp when the event was published.
       type: String
     - contextPath: Okta.Logs.Events.severity
-      description: 'The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR".'
+      description: The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR".
       type: String
     - contextPath: Okta.Logs.Events.securityContext.asNumber
       description: Autonomous system number associated with the autonomous system
@@ -1371,7 +1386,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: ASCENDING
-      description: The order of the returned events. Can be "ASCENDING" or "DESCENDING". The default is "ASCENDING".
+      description: The order of the returned events. Can be "ASCENDING" or "DESCENDING".
+        The default is "ASCENDING".
       isArray: false
       name: sortOrder
       predefined:
@@ -1413,7 +1429,7 @@ script:
       description: Identifies the type of web browser, if relevant. For example, Chrome.
       type: String
     - contextPath: Okta.Logs.Events.client.device
-      description: 'Type of device from which the client operated. For example, Computer.'
+      description: Type of device from which the client operated. For example, Computer.
       type: String
     - contextPath: Okta.Logs.Events.client.id
       description: For OAuth requests, the ID of the OAuth client making the request.
@@ -1441,7 +1457,8 @@ script:
       description: Type of event that was published.
       type: String
     - contextPath: Okta.Logs.Events.outcome.result
-      description: 'Result of the action. Can be "SUCCESS", "FAILURE", "SKIPPED", or "UNKNOWN".'
+      description: Result of the action. Can be "SUCCESS", "FAILURE", "SKIPPED", or
+        "UNKNOWN".
       type: String
     - contextPath: Okta.Logs.Events.outcome.reason
       description: Reason for the result. For example INVALID_CREDENTIALS.
@@ -1450,7 +1467,7 @@ script:
       description: Timestamp when the event was published.
       type: String
     - contextPath: Okta.Logs.Events.severity
-      description: 'The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR".'
+      description: The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR".
       type: String
     - contextPath: Okta.Logs.Events.securityContext.asNumber
       description: Autonomous system number associated with the autonomous system
@@ -1518,7 +1535,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: ASCENDING
-      description: The order of the returned events. Can be "ASCENDING" or "DESCENDING". The default is "ASCENDING".
+      description: The order of the returned events. Can be "ASCENDING" or "DESCENDING".
+        The default is "ASCENDING".
       isArray: false
       name: sortOrder
       predefined:
@@ -1553,14 +1571,14 @@ script:
         OS fields can be derived from this field.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.os
-      description: The OS on which the client runs. For example, Microsoft
-        Windows 10.
+      description: The OS on which the client runs. For example, Microsoft Windows
+        10.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.browser
       description: Identifies the type of web browser, if relevant. For example, Chrome.
       type: String
     - contextPath: Okta.Logs.Events.client.device
-      description: 'Type of device from which the client operated. For example, Computer.'
+      description: Type of device from which the client operated. For example, Computer.
       type: String
     - contextPath: Okta.Logs.Events.client.id
       description: For OAuth requests, the ID of the OAuth client making the request.
@@ -1588,7 +1606,8 @@ script:
       description: Type of event that was published.
       type: String
     - contextPath: Okta.Logs.Events.outcome.result
-      description: 'Result of the action. For example, "SUCCESS", "FAILURE", "SKIPPED", or "UNKNOWN".'
+      description: Result of the action. For example, "SUCCESS", "FAILURE", "SKIPPED",
+        or "UNKNOWN".
       type: String
     - contextPath: Okta.Logs.Events.outcome.reason
       description: Reason for the result. For example INVALID_CREDENTIALS.
@@ -1597,7 +1616,7 @@ script:
       description: Timestamp when the event was published.
       type: String
     - contextPath: Okta.Logs.Events.severity
-      description: 'The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR".'
+      description: The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR".
       type: String
     - contextPath: Okta.Logs.Events.securityContext.asNumber
       description: Autonomous system number associated with the autonomous system
@@ -1665,7 +1684,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: ASCENDING
-      description: The order of the returned events. Can be "ASCENDING" or "DESCENDING". The default is "ASCENDING".
+      description: The order of the returned events. Can be "ASCENDING" or "DESCENDING".
+        The default is "ASCENDING".
       isArray: false
       name: sortOrder
       predefined:
@@ -1707,7 +1727,7 @@ script:
       description: Identifies the type of web browser, if relevant. For example, Chrome.
       type: String
     - contextPath: Okta.Logs.Events.client.device
-      description: 'Type of device from which the client operated. For example, Computer.'
+      description: Type of device from which the client operated. For example, Computer.
       type: String
     - contextPath: Okta.Logs.Events.client.id
       description: For OAuth requests, the ID of the OAuth client making the request.
@@ -1735,7 +1755,8 @@ script:
       description: Type of event that was published.
       type: String
     - contextPath: Okta.Logs.Events.outcome.result
-      description: 'Result of the action. Can be "SUCCESS", "FAILURE", "SKIPPED", or "UNKNOWN".'
+      description: Result of the action. Can be "SUCCESS", "FAILURE", "SKIPPED", or
+        "UNKNOWN".
       type: String
     - contextPath: Okta.Logs.Events.outcome.reason
       description: Reason for the result. For example INVALID_CREDENTIALS.
@@ -1744,7 +1765,7 @@ script:
       description: Timestamp when the event was published.
       type: String
     - contextPath: Okta.Logs.Events.severity
-      description: 'The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR".'
+      description: The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR".
       type: String
     - contextPath: Okta.Logs.Events.securityContext.asNumber
       description: Autonomous system number associated with the autonomous system
@@ -1819,137 +1840,142 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: |-
-      Removes all active identity provider sessions. This forces the user to authenticate upon the next operation. Optionally revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
+    description: 'Removes all active identity provider sessions. This forces the user
+      to authenticate upon the next operation. Optionally revokes OpenID Connect and
+      OAuth refresh and access tokens issued to the user.
+
       For more information and examples:
-      https://developer.okta.com/docs/reference/api/users/#user-sessions
+
+      https://developer.okta.com/docs/reference/api/users/#user-sessions'
     execution: false
     name: okta-clear-user-sessions
-  - name: okta-list-zones
-    arguments: []
-    outputs:
-    - contextPath: Okta.Zone.created
-      description: 'Zone creation timestamp, in the format 2020-04-06T22:23:12.000Z.'
-      type: Date
-    - contextPath: Okta.Zone.gateways.type
-      description: 'Gateways IP entry type, e.g., CIDR.'
-      type: String
-    - contextPath: Okta.Zone.gateways.value
-      description: 'Gateways IP entry value, e.g., 34.103.1.108/32.'
-      type: String
-    - contextPath: Okta.Zone.id
-      description: 'Zone ID, e.g., nzoqsmcx1qWYJ6wYF0h7.'
-      type: String
-    - contextPath: Okta.Zone.lastUpdated
-      description: 'Zone last update timestamp, e.g., 2020-04-06T22:23:12.000Z.'
-      type: Date
-    - contextPath: Okta.Zone.name
-      description: 'Zone name.'
-      type: String
-    - contextPath: Okta.Zone.proxies.type
-      description: 'Proxies IP entry type e.g. CIDR'
-      type: String
-    - contextPath: Okta.Zone.proxies.value
-      description: 'Proxies IP entry value, e.g., 34.103.1.108/32.'
-      type: Unknown
-    - contextPath: Okta.Zone.status
-      description: 'Zone status, e.g., ACTIVE.'
-      type: String
-    - contextPath: Okta.Zone.system
-      description: 'True if this is a system zone, false if user-created.'
-      type: Number
-    - contextPath: Okta.Zone.type
-      description: 'Zone type, e.g., IP.'
-      type: String
+  - arguments: []
     description: Get an Okta Zone object
-  - name: okta-update-zone
-    arguments:
-    - name: zoneID
-      required: true
-      description: Zone ID to update, e.g., nzoqsmcx1qWYJ6wYF0h7.
-    - name: zoneName
-      description: Updates the zone name.
-    - name: gatewayIPs
-      description: 'Updates Gateway IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2).'
-      isArray: true
-    - name: proxyIPs
-      description: 'Update Proxy IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2).'
-      isArray: true
+    name: okta-list-zones
     outputs:
     - contextPath: Okta.Zone.created
-      description: 'Zone creation timestamp, e.g., 2020-04-06T22:23:12.000Z.'
+      description: Zone creation timestamp, in the format 2020-04-06T22:23:12.000Z.
       type: Date
     - contextPath: Okta.Zone.gateways.type
-      description: 'Gateways IP entry type, e.g., CIDR.'
+      description: Gateways IP entry type, e.g., CIDR.
       type: String
     - contextPath: Okta.Zone.gateways.value
-      description: 'Gateways IP entry value, e.g., 34.103.1.108/32.'
+      description: Gateways IP entry value, e.g., 34.103.1.108/32.
       type: String
     - contextPath: Okta.Zone.id
-      description: 'Okta Zone ID, e.g., nzoqsmcx1qWYJ6wYF0h7.'
+      description: Zone ID, e.g., nzoqsmcx1qWYJ6wYF0h7.
       type: String
     - contextPath: Okta.Zone.lastUpdated
-      description: 'Zone last update timestamp, in the format 2020-04-06T22:23:12.000Z.'
+      description: Zone last update timestamp, e.g., 2020-04-06T22:23:12.000Z.
       type: Date
     - contextPath: Okta.Zone.name
-      description: 'Zone name.'
+      description: Zone name.
       type: String
     - contextPath: Okta.Zone.proxies.type
-      description: 'Proxies IP entry type, e.g., CIDR.'
+      description: Proxies IP entry type e.g. CIDR
       type: String
     - contextPath: Okta.Zone.proxies.value
-      description: 'Proxies IP entry value, e.g., 34.103.1.108/32.'
+      description: Proxies IP entry value, e.g., 34.103.1.108/32.
       type: Unknown
     - contextPath: Okta.Zone.status
-      description: 'Zone status, e.g., ACTIVE.'
+      description: Zone status, e.g., ACTIVE.
       type: String
     - contextPath: Okta.Zone.system
-      description: 'True if this is a system zone, false if user-created.'
+      description: True if this is a system zone, false if user-created.
       type: Number
     - contextPath: Okta.Zone.type
-      description: 'Zone type, e.g., IP.'
+      description: Zone type, e.g., IP.
       type: String
+  - arguments:
+    - description: Zone ID to update, e.g., nzoqsmcx1qWYJ6wYF0h7.
+      name: zoneID
+      required: true
+    - description: Updates the zone name.
+      name: zoneName
+    - description: 'Updates Gateway IP addresses: CIDR range (1.1.0.0/16) or single
+        IP address (2.2.2.2).'
+      isArray: true
+      name: gatewayIPs
+    - description: 'Update Proxy IP addresses: CIDR range (1.1.0.0/16) or single IP
+        address (2.2.2.2).'
+      isArray: true
+      name: proxyIPs
     description: Update an Okta Zone
-  - name: okta-get-zone
-    arguments:
-    - name: zoneID
-      required: true
-      description: Zone ID to get, e.g., nzoqsmcx1qWYJ6wYF0h.7
+    name: okta-update-zone
     outputs:
     - contextPath: Okta.Zone.created
-      description: 'Zone creation timestamp, in the format 2020-04-06T22:23:12.000Z.'
+      description: Zone creation timestamp, e.g., 2020-04-06T22:23:12.000Z.
       type: Date
     - contextPath: Okta.Zone.gateways.type
-      description: 'Gateways IP entry type, e.g., CIDR.'
+      description: Gateways IP entry type, e.g., CIDR.
       type: String
     - contextPath: Okta.Zone.gateways.value
-      description: 'Gateways IP entry value, e.g., 34.103.1.108/32.'
+      description: Gateways IP entry value, e.g., 34.103.1.108/32.
       type: String
     - contextPath: Okta.Zone.id
-      description: 'Okta Zone ID, e.g., nzoqsmcx1qWYJ6wYF0h7.'
+      description: Okta Zone ID, e.g., nzoqsmcx1qWYJ6wYF0h7.
       type: String
     - contextPath: Okta.Zone.lastUpdated
-      description: 'Zone last update timestamp, in the format 2020-04-06T22:23:12.000Z.'
+      description: Zone last update timestamp, in the format 2020-04-06T22:23:12.000Z.
       type: Date
     - contextPath: Okta.Zone.name
-      description: 'Zone name.'
+      description: Zone name.
       type: String
     - contextPath: Okta.Zone.proxies.type
-      description: 'Proxies IP entry type, e.g., CIDR.'
+      description: Proxies IP entry type, e.g., CIDR.
       type: String
     - contextPath: Okta.Zone.proxies.value
-      description: 'Proxies IP entry value, e.g., 34.103.1.108/32.'
+      description: Proxies IP entry value, e.g., 34.103.1.108/32.
       type: Unknown
     - contextPath: Okta.Zone.status
-      description: 'Zone status, e.g,. ACTIVE.'
+      description: Zone status, e.g., ACTIVE.
       type: String
     - contextPath: Okta.Zone.system
-      description: 'True if this is a system zone, false if user-created.'
+      description: True if this is a system zone, false if user-created.
       type: Number
     - contextPath: Okta.Zone.type
-      description: 'Zone type, e.g., IP.'
+      description: Zone type, e.g., IP.
       type: String
+  - arguments:
+    - description: Zone ID to get, e.g., nzoqsmcx1qWYJ6wYF0h.7
+      name: zoneID
+      required: true
     description: Get a Zone by its ID
+    name: okta-get-zone
+    outputs:
+    - contextPath: Okta.Zone.created
+      description: Zone creation timestamp, in the format 2020-04-06T22:23:12.000Z.
+      type: Date
+    - contextPath: Okta.Zone.gateways.type
+      description: Gateways IP entry type, e.g., CIDR.
+      type: String
+    - contextPath: Okta.Zone.gateways.value
+      description: Gateways IP entry value, e.g., 34.103.1.108/32.
+      type: String
+    - contextPath: Okta.Zone.id
+      description: Okta Zone ID, e.g., nzoqsmcx1qWYJ6wYF0h7.
+      type: String
+    - contextPath: Okta.Zone.lastUpdated
+      description: Zone last update timestamp, in the format 2020-04-06T22:23:12.000Z.
+      type: Date
+    - contextPath: Okta.Zone.name
+      description: Zone name.
+      type: String
+    - contextPath: Okta.Zone.proxies.type
+      description: Proxies IP entry type, e.g., CIDR.
+      type: String
+    - contextPath: Okta.Zone.proxies.value
+      description: Proxies IP entry value, e.g., 34.103.1.108/32.
+      type: Unknown
+    - contextPath: Okta.Zone.status
+      description: Zone status, e.g,. ACTIVE.
+      type: String
+    - contextPath: Okta.Zone.system
+      description: True if this is a system zone, false if user-created.
+      type: Number
+    - contextPath: Okta.Zone.type
+      description: Zone type, e.g., IP.
+      type: String
   dockerimage: demisto/python3:3.8.3.8715
   feed: false
   isfetch: false
@@ -1961,3 +1987,4 @@ script:
   type: python
 tests:
 - OktaV2-Test
+toversion: 4.1.9

@@ -1,27 +1,3 @@
-commonfields:
-  id: MimecastQuery
-  version: -1
-name: MimecastQuery
-script: |2
-
-  resp = demisto.executeCommand("mimecast-query", demisto.args())
-
-  if isError(resp[0]):
-      demisto.results(resp)
-  else:
-      data = demisto.get(resp[0], "Contents")
-      if data:
-          data = data if isinstance(data, list) else [data]
-          data = [{k: formatCell(row[k]) for k in row} for row in data]
-          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
-      else:
-          demisto.results("No results.")
-type: python
-subtype: python2
-tags:
-- Mimecast
-comment: query mimecast emails
-system: true
 args:
 - default: true
   description: The query string xml for the search using Mimecast Unified Search Experience
@@ -94,8 +70,26 @@ args:
   predefined:
   - 'true'
   - 'false'
-scripttarget: 0
-timeout: 0s
+comment: query mimecast emails
+commonfields:
+  id: MimecastQuery
+  version: -1
 dependson:
   must:
   - mimecast-query
+name: MimecastQuery
+script: "\nresp = demisto.executeCommand(\"mimecast-query\", demisto.args())\n\nif\
+  \ isError(resp[0]):\n    demisto.results(resp)\nelse:\n    data = demisto.get(resp[0],\
+  \ \"Contents\")\n    if data:\n        data = data if isinstance(data, list) else\
+  \ [data]\n        data = [{k: formatCell(row[k]) for k in row} for row in data]\n\
+  \        demisto.results({\"ContentsFormat\": formats[\"table\"], \"Type\": entryTypes[\"\
+  note\"], \"Contents\": data} )\n    else:\n        demisto.results(\"No results.\"\
+  )\n"
+scripttarget: 0
+subtype: python2
+system: true
+tags:
+- Mimecast
+timeout: 0s
+toversion: 4.1.9
+type: python

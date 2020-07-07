@@ -152,10 +152,12 @@ script:
       required: true
       secret: false
     - default: false
-      description: |-
-        The filter specific for field names.
+      description: 'The filter specific for field names.
+
         * Case sensitive.
-        * If one of the names contains a space, add all names in parenthesis (such as "Id,Published Revision").
+
+        * If one of the names contains a space, add all names in parenthesis (such
+        as "Id,Published Revision").'
       isArray: true
       name: field_names
       required: false
@@ -273,9 +275,10 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: |-
-      Retrieves the title/default field for a set of records within a chosen component.
-      Filters may be applied to retrieve only the records meeting the selected criteria.
+    description: 'Retrieves the title/default field for a set of records within a
+      chosen component.
+
+      Filters may be applied to retrieve only the records meeting the selected criteria.'
     execution: false
     name: kl-get-records
     outputs:
@@ -510,9 +513,11 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: |-
-      Creates a new record within the specified component of the Keylight application.
-      * The Required option for a field is only enforced through the user interface, not through Demisto.
+    description: 'Creates a new record within the specified component of the Keylight
+      application.
+
+      * The Required option for a field is only enforced through the user interface,
+      not through Demisto.'
     execution: false
     name: kl-create-record
     outputs:
@@ -550,9 +555,10 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: |-
-      Update fields in a specified record.
-      * The Required option for a field is only enforced through the user interface, not through Demisto.
+    description: 'Update fields in a specified record.
+
+      * The Required option for a field is only enforced through the user interface,
+      not through Demisto.'
     execution: false
     name: kl-update-record
     outputs:
@@ -617,5 +623,6 @@ script:
   isfetch: true
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
+toversion: 4.1.9

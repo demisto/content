@@ -1,1242 +1,982 @@
 id: CirclIntegrationTest
-version: -1
+inputs: []
 name: CIRCL Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 48f8643b-278d-4ea8-839c-a3d72f435fee
-    type: start
-    task:
-      id: 48f8643b-278d-4ea8-839c-a3d72f435fee
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "1"
-      - "7"
-      - "8"
-      - "9"
-      - "26"
-      - "29"
-      - "33"
-      - "35"
-      - "37"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -610,
-          "y": 40
-        }
-      }
+      - '1'
+      - '7'
+      - '8'
+      - '9'
+      - '26'
+      - '29'
+      - '33'
+      - '35'
+      - '37'
     note: false
-    timertriggers: []
-  "1":
-    id: "1"
-    taskid: 0581b18e-c374-488d-80dc-7f9af382516c
-    type: regular
+    separatecontext: false
     task:
-      id: 0581b18e-c374-488d-80dc-7f9af382516c
+      brand: ''
+      id: 48f8643b-278d-4ea8-839c-a3d72f435fee
+      iscommand: false
+      name: ''
       version: -1
-      name: circl-dns-get
-      description: Get DNS records for your query value from CIRCL's Passive DNS.
-      script: CIRCL|||circl-dns-get
-      type: regular
-      iscommand: true
-      brand: CIRCL
+    taskid: 48f8643b-278d-4ea8-839c-a3d72f435fee
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": -610,\n    \"y\": 40\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
     scriptarguments:
       queryValue:
         simple: 69.172.200.235
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-  "2":
-    id: "2"
-    taskid: 9ddc6d67-c80c-4213-87da-6d2c3f25b505
-    type: condition
     task:
-      id: 9ddc6d67-c80c-4213-87da-6d2c3f25b505
-      version: -1
-      name: Query.Value Exists
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "4"
-      "yes":
-      - "3"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: CIRCLdns.Query.Value
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-  "3":
-    id: "3"
-    taskid: e3b790cf-3b2a-4fb6-8d08-15a6daafa0fe
-    type: condition
-    task:
-      id: e3b790cf-3b2a-4fb6-8d08-15a6daafa0fe
-      version: -1
-      name: Query.Record
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "6"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: CIRCLdns.Query.Record.Data
-            iscontext: true
-      - - operator: stringHasLength
-          left:
-            value:
-              simple: CIRCLdns.Query.Record.LastTime
-            iscontext: true
-          right:
-            value:
-              simple: "19"
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 795
-        }
-      }
-    note: false
-    timertriggers: []
-  "4":
-    id: "4"
-    taskid: 8950b7a8-bdb2-4475-8c18-86f5ac592d3d
-    type: regular
-    task:
-      id: 8950b7a8-bdb2-4475-8c18-86f5ac592d3d
-      version: -1
-      name: Error
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: Query.Value should exist.
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 500,
-          "y": 540
-        }
-      }
-    note: false
-    timertriggers: []
-  "5":
-    id: "5"
-    taskid: e62c044f-445e-4f40-85d9-fcd9f809c691
-    type: regular
-    task:
-      id: e62c044f-445e-4f40-85d9-fcd9f809c691
-      version: -1
-      name: Error
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: Query.Record is invalid.
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 510,
-          "y": 980
-        }
-      }
-    note: false
-    timertriggers: []
-  "6":
-    id: "6"
-    taskid: 7e75c83d-619e-4efa-8a1d-386be29c6133
-    type: title
-    task:
-      id: 7e75c83d-619e-4efa-8a1d-386be29c6133
-      version: -1
-      name: Success
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1170
-        }
-      }
-    note: false
-    timertriggers: []
-  "7":
-    id: "7"
-    taskid: 0d2deba3-45de-4ab7-8647-e58193551334
-    type: regular
-    task:
-      id: 0d2deba3-45de-4ab7-8647-e58193551334
-      version: -1
-      name: ssl-get-certificate
-      script: CIRCL|||circl-ssl-get-certificate
-      type: regular
-      iscommand: true
       brand: CIRCL
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      certificate:
-        simple: 37221925980c05deefac014f9a72b4765e716341
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -380,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-  "8":
-    id: "8"
-    taskid: 37fb689c-f913-4dce-8ecc-7a9d5a271d7b
-    type: regular
-    task:
-      id: 37fb689c-f913-4dce-8ecc-7a9d5a271d7b
-      version: -1
-      name: ssl-list-certificates
-      script: CIRCL|||circl-ssl-list-certificates
-      type: regular
+      description: Get DNS records for your query value from CIRCL's Passive DNS.
+      id: 0581b18e-c374-488d-80dc-7f9af382516c
       iscommand: true
-      brand: CIRCL
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      queryValue:
-        simple: 172.228.24.0/28
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -1060,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-  "9":
-    id: "9"
-    taskid: d8367a40-0abe-4ae7-87c1-37546585a700
-    type: regular
-    task:
-      id: d8367a40-0abe-4ae7-87c1-37546585a700
-      version: -1
-      name: ssl-query-certificate
-      script: CIRCL|||circl-ssl-query-certificate
+      name: circl-dns-get
+      script: CIRCL|||circl-dns-get
       type: regular
-      iscommand: true
-      brand: CIRCL
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      certificate:
-        simple: c46fed822dadac3f31f9bb4d1a78a1d9eae4567b
-      limitResults:
-        simple: "10"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -1680,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-  "10":
-    id: "10"
-    taskid: e5a781bd-3900-42a1-8cc0-bd4b2540f9b1
-    type: condition
-    task:
-      id: e5a781bd-3900-42a1-8cc0-bd4b2540f9b1
       version: -1
-      name: Fields Exist
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "12"
-      "yes":
-      - "11"
-    separatecontext: false
+    taskid: 0581b18e-c374-488d-80dc-7f9af382516c
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 195\n  }\n}"
+  '10':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: CIRCLssl.Certificate.SHA1
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: CIRCLssl.Certificate.Usage
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: CIRCLssl.Certificate.Distribution
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: CIRCLssl.Certificate.Issuer
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: CIRCLssl.Certificate.Time
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: CIRCLssl.Certificate.Subject
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: CIRCLssl.Certificate.Key
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: CIRCLssl.Certificate.Pem
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": -380,
-          "y": 360
-        }
-      }
-    note: false
-    timertriggers: []
-  "11":
-    id: "11"
-    taskid: ebaba667-193c-401b-8048-54002926bebb
-    type: condition
-    task:
-      id: ebaba667-193c-401b-8048-54002926bebb
-      version: -1
-      name: SHA1 value equals the queried.
-      type: condition
-      iscommand: false
-      brand: ""
+          operator: isExists
+      label: 'yes'
+    id: '10'
     nexttasks:
       '#default#':
-      - "14"
-      "yes":
-      - "13"
+      - '12'
+      'yes':
+      - '11'
+    note: false
     separatecontext: false
+    task:
+      brand: ''
+      id: e5a781bd-3900-42a1-8cc0-bd4b2540f9b1
+      iscommand: false
+      name: Fields Exist
+      type: condition
+      version: -1
+    taskid: e5a781bd-3900-42a1-8cc0-bd4b2540f9b1
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": -380,\n    \"y\": 360\n  }\n}"
+  '11':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: CIRCLssl.Certificate.SHA1
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: 37221925980c05deefac014f9a72b4765e716341
-    view: |-
-      {
-        "position": {
-          "x": -380,
-          "y": 680
-        }
-      }
+      label: 'yes'
+    id: '11'
+    nexttasks:
+      '#default#':
+      - '14'
+      'yes':
+      - '13'
     note: false
-    timertriggers: []
-  "12":
-    id: "12"
-    taskid: d8385969-0ee4-479d-87fc-6a02c5236c04
-    type: regular
+    separatecontext: false
     task:
-      id: d8385969-0ee4-479d-87fc-6a02c5236c04
-      version: -1
-      name: Error
-      scriptName: PrintErrorEntry
-      type: regular
+      brand: ''
+      id: ebaba667-193c-401b-8048-54002926bebb
       iscommand: false
-      brand: ""
+      name: SHA1 value equals the queried.
+      type: condition
+      version: -1
+    taskid: ebaba667-193c-401b-8048-54002926bebb
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": -380,\n    \"y\": 680\n  }\n}"
+  '12':
+    id: '12'
+    note: false
     scriptarguments:
       message:
         simple: ssl-get-certificate Fields missing
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -150,
-          "y": 530
-        }
-      }
-    note: false
-    timertriggers: []
-  "13":
-    id: "13"
-    taskid: e02cd5da-b9d3-4b05-8379-df5ac0ddb210
-    type: title
     task:
-      id: e02cd5da-b9d3-4b05-8379-df5ac0ddb210
-      version: -1
-      name: Success
-      type: title
+      brand: ''
+      id: d8385969-0ee4-479d-87fc-6a02c5236c04
       iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -380,
-          "y": 1160
-        }
-      }
-    note: false
-    timertriggers: []
-  "14":
-    id: "14"
-    taskid: 23e85bb6-ba80-4543-88b9-581f61c39eff
-    type: regular
-    task:
-      id: 23e85bb6-ba80-4543-88b9-581f61c39eff
-      version: -1
       name: Error
       scriptName: PrintErrorEntry
       type: regular
+      version: -1
+    taskid: d8385969-0ee4-479d-87fc-6a02c5236c04
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -150,\n    \"y\": 530\n  }\n}"
+  '13':
+    id: '13'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: e02cd5da-b9d3-4b05-8379-df5ac0ddb210
       iscommand: false
-      brand: ""
+      name: Success
+      type: title
+      version: -1
+    taskid: e02cd5da-b9d3-4b05-8379-df5ac0ddb210
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": -380,\n    \"y\": 1160\n  }\n}"
+  '14':
+    id: '14'
+    note: false
     scriptarguments:
       message:
         simple: SHA1 does NOT equal to the queried SHA1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -150,
-          "y": 850
-        }
-      }
-    note: false
-    timertriggers: []
-  "15":
-    id: "15"
-    taskid: f7d5be47-decf-4718-8e68-54394155f08b
-    type: condition
     task:
-      id: f7d5be47-decf-4718-8e68-54394155f08b
-      version: -1
-      name: Fields Exist
-      type: condition
+      brand: ''
+      id: 23e85bb6-ba80-4543-88b9-581f61c39eff
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "16"
-      "yes":
-      - "17"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: CIRCLssl.IPAddress.Value
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: CIRCLssl.IPAddress.Certificate.SHA1
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: CIRCLssl.IPAddress.Certificate.Subjects
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": -1060,
-          "y": 360
-        }
-      }
-    note: false
-    timertriggers: []
-  "16":
-    id: "16"
-    taskid: 81b0ce31-6ed6-432a-83a8-d354f80b5c9d
-    type: regular
-    task:
-      id: 81b0ce31-6ed6-432a-83a8-d354f80b5c9d
-      version: -1
       name: Error
       scriptName: PrintErrorEntry
       type: regular
+      version: -1
+    taskid: 23e85bb6-ba80-4543-88b9-581f61c39eff
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -150,\n    \"y\": 850\n  }\n}"
+  '15':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: CIRCLssl.IPAddress.Value
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: CIRCLssl.IPAddress.Certificate.SHA1
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: CIRCLssl.IPAddress.Certificate.Subjects
+          operator: isExists
+      label: 'yes'
+    id: '15'
+    nexttasks:
+      '#default#':
+      - '16'
+      'yes':
+      - '17'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: f7d5be47-decf-4718-8e68-54394155f08b
       iscommand: false
-      brand: ""
+      name: Fields Exist
+      type: condition
+      version: -1
+    taskid: f7d5be47-decf-4718-8e68-54394155f08b
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": -1060,\n    \"y\": 360\n  }\n}"
+  '16':
+    id: '16'
+    note: false
     scriptarguments:
       message:
         simple: ssl-list-certificates missing fields.
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -830,
-          "y": 530
-        }
-      }
-    note: false
-    timertriggers: []
-  "17":
-    id: "17"
-    taskid: cf074db0-7b28-449e-8ac4-7573092e8a03
-    type: title
     task:
-      id: cf074db0-7b28-449e-8ac4-7573092e8a03
-      version: -1
-      name: Success
-      type: title
+      brand: ''
+      id: 81b0ce31-6ed6-432a-83a8-d354f80b5c9d
       iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -1060,
-          "y": 1160
-        }
-      }
-    note: false
-    timertriggers: []
-  "18":
-    id: "18"
-    taskid: 6f38c9d7-a2bd-4c4f-8a27-b9ee61415eba
-    type: condition
-    task:
-      id: 6f38c9d7-a2bd-4c4f-8a27-b9ee61415eba
-      version: -1
-      name: Fields Exists
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "19"
-      "yes":
-      - "20"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: CIRCLssl.Certificate.SHA1
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: CIRCLssl.Certificate.Hits
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: CIRCLssl.Certificate.IPAddress
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": -1680,
-          "y": 360
-        }
-      }
-    note: false
-    timertriggers: []
-  "19":
-    id: "19"
-    taskid: d158d369-2b07-41a0-8b9a-1bedd4df4be7
-    type: regular
-    task:
-      id: d158d369-2b07-41a0-8b9a-1bedd4df4be7
-      version: -1
       name: Error
       scriptName: PrintErrorEntry
       type: regular
+      version: -1
+    taskid: 81b0ce31-6ed6-432a-83a8-d354f80b5c9d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -830,\n    \"y\": 530\n  }\n}"
+  '17':
+    id: '17'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: cf074db0-7b28-449e-8ac4-7573092e8a03
       iscommand: false
-      brand: ""
+      name: Success
+      type: title
+      version: -1
+    taskid: cf074db0-7b28-449e-8ac4-7573092e8a03
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": -1060,\n    \"y\": 1160\n  }\n}"
+  '18':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: CIRCLssl.Certificate.SHA1
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: CIRCLssl.Certificate.Hits
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: CIRCLssl.Certificate.IPAddress
+          operator: isExists
+      label: 'yes'
+    id: '18'
+    nexttasks:
+      '#default#':
+      - '19'
+      'yes':
+      - '20'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 6f38c9d7-a2bd-4c4f-8a27-b9ee61415eba
+      iscommand: false
+      name: Fields Exists
+      type: condition
+      version: -1
+    taskid: 6f38c9d7-a2bd-4c4f-8a27-b9ee61415eba
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": -1680,\n    \"y\": 360\n  }\n}"
+  '19':
+    id: '19'
+    note: false
     scriptarguments:
       message:
         simple: ssl-query-certificate missing fields.
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -1430,
-          "y": 530
-        }
-      }
-    note: false
-    timertriggers: []
-  "20":
-    id: "20"
-    taskid: 1f613682-5fb8-45d8-8d6d-95b5c8fcbba0
-    type: condition
     task:
-      id: 1f613682-5fb8-45d8-8d6d-95b5c8fcbba0
-      version: -1
-      name: SHA1 value equals the queried.
-      type: condition
+      brand: ''
+      id: d158d369-2b07-41a0-8b9a-1bedd4df4be7
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "21"
-      "yes":
-      - "22"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: CIRCLssl.Certificate.SHA1
-            iscontext: true
-          right:
-            value:
-              simple: c46fed822dadac3f31f9bb4d1a78a1d9eae4567b
-    view: |-
-      {
-        "position": {
-          "x": -1680,
-          "y": 650
-        }
-      }
-    note: false
-    timertriggers: []
-  "21":
-    id: "21"
-    taskid: f84be938-98e5-4ec2-88a6-0b6598c15c46
-    type: regular
-    task:
-      id: f84be938-98e5-4ec2-88a6-0b6598c15c46
-      version: -1
       name: Error
       scriptName: PrintErrorEntry
       type: regular
+      version: -1
+    taskid: d158d369-2b07-41a0-8b9a-1bedd4df4be7
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -1430,\n    \"y\": 530\n  }\n}"
+  '2':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: CIRCLdns.Query.Value
+          operator: isExists
+      label: 'yes'
+    id: '2'
+    nexttasks:
+      '#default#':
+      - '4'
+      'yes':
+      - '3'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 9ddc6d67-c80c-4213-87da-6d2c3f25b505
       iscommand: false
-      brand: ""
+      name: Query.Value Exists
+      type: condition
+      version: -1
+    taskid: 9ddc6d67-c80c-4213-87da-6d2c3f25b505
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 370\n  }\n}"
+  '20':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: CIRCLssl.Certificate.SHA1
+          operator: isEqualString
+          right:
+            value:
+              simple: c46fed822dadac3f31f9bb4d1a78a1d9eae4567b
+      label: 'yes'
+    id: '20'
+    nexttasks:
+      '#default#':
+      - '21'
+      'yes':
+      - '22'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 1f613682-5fb8-45d8-8d6d-95b5c8fcbba0
+      iscommand: false
+      name: SHA1 value equals the queried.
+      type: condition
+      version: -1
+    taskid: 1f613682-5fb8-45d8-8d6d-95b5c8fcbba0
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": -1680,\n    \"y\": 650\n  }\n}"
+  '21':
+    id: '21'
+    note: false
     scriptarguments:
       message:
         simple: ssl-query-certificate - Certificate.SHA1 is different than queried.
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -1430,
-          "y": 820
-        }
-      }
-    note: false
-    timertriggers: []
-  "22":
-    id: "22"
-    taskid: 1e414a14-6dd7-4554-8ef2-66eb4aaf65dc
-    type: condition
     task:
-      id: 1e414a14-6dd7-4554-8ef2-66eb4aaf65dc
-      version: -1
-      name: Certificate IPs are limited to 10 (parameter)
-      type: condition
+      brand: ''
+      id: f84be938-98e5-4ec2-88a6-0b6598c15c46
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "23"
-      "yes":
-      - "24"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: hasLength
-          left:
-            value:
-              simple: CIRCLssl.Certificate.IPAddress
-            iscontext: true
-          right:
-            value:
-              simple: "10"
-    view: |-
-      {
-        "position": {
-          "x": -1680,
-          "y": 945
-        }
-      }
-    note: false
-    timertriggers: []
-  "23":
-    id: "23"
-    taskid: 039d9546-b1cb-45b0-8758-0477a36ca1f2
-    type: regular
-    task:
-      id: 039d9546-b1cb-45b0-8758-0477a36ca1f2
-      version: -1
       name: Error
       scriptName: PrintErrorEntry
       type: regular
+      version: -1
+    taskid: f84be938-98e5-4ec2-88a6-0b6598c15c46
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -1430,\n    \"y\": 820\n  }\n}"
+  '22':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: CIRCLssl.Certificate.IPAddress
+          operator: hasLength
+          right:
+            value:
+              simple: '10'
+      label: 'yes'
+    id: '22'
+    nexttasks:
+      '#default#':
+      - '23'
+      'yes':
+      - '24'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 1e414a14-6dd7-4554-8ef2-66eb4aaf65dc
       iscommand: false
-      brand: ""
+      name: Certificate IPs are limited to 10 (parameter)
+      type: condition
+      version: -1
+    taskid: 1e414a14-6dd7-4554-8ef2-66eb4aaf65dc
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": -1680,\n    \"y\": 945\n  }\n}"
+  '23':
+    id: '23'
+    note: false
     scriptarguments:
       message:
         simple: ssl-query-certificate - IPs length expected to be 10 after limit.
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -1470,
-          "y": 1130
-        }
-      }
-    note: false
-    timertriggers: []
-  "24":
-    id: "24"
-    taskid: fa22063d-6e75-4ec7-842f-a7adccb25d6b
-    type: title
     task:
-      id: fa22063d-6e75-4ec7-842f-a7adccb25d6b
+      brand: ''
+      id: 039d9546-b1cb-45b0-8758-0477a36ca1f2
+      iscommand: false
+      name: Error
+      scriptName: PrintErrorEntry
+      type: regular
       version: -1
+    taskid: 039d9546-b1cb-45b0-8758-0477a36ca1f2
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -1470,\n    \"y\": 1130\n  }\n}"
+  '24':
+    id: '24'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: fa22063d-6e75-4ec7-842f-a7adccb25d6b
+      iscommand: false
       name: Success
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -1680,
-          "y": 1310
-        }
-      }
-    note: false
-    timertriggers: []
-  "25":
-    id: "25"
-    taskid: d60dd6cf-86bb-4d6f-89a5-e56eb64b84a6
-    type: condition
-    task:
-      id: d60dd6cf-86bb-4d6f-89a5-e56eb64b84a6
       version: -1
-      name: isError
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
-      scriptName: isError
-      type: condition
-      iscommand: false
-      brand: ""
+    taskid: fa22063d-6e75-4ec7-842f-a7adccb25d6b
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": -1680,\n    \"y\": 1310\n  }\n}"
+  '25':
+    id: '25'
     nexttasks:
       '#default#':
-      - "28"
-      "yes":
-      - "27"
+      - '28'
+      'yes':
+      - '27'
+    note: false
     scriptarguments:
       entryId:
         simple: ${lastCompletedTaskEntries}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -2320,
-          "y": 360
-        }
-      }
-    note: false
-    timertriggers: []
-  "26":
-    id: "26"
-    taskid: 5a938089-6bf8-4ab0-8e06-b39055e8898b
-    type: regular
     task:
-      id: 5a938089-6bf8-4ab0-8e06-b39055e8898b
+      brand: ''
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      id: d60dd6cf-86bb-4d6f-89a5-e56eb64b84a6
+      iscommand: false
+      name: isError
+      scriptName: isError
+      type: condition
       version: -1
-      name: ssl-query-certificate - Bad sha1
-      script: '|||circl-ssl-query-certificate'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: d60dd6cf-86bb-4d6f-89a5-e56eb64b84a6
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": -2320,\n    \"y\": 360\n  }\n}"
+  '26':
+    continueonerror: true
+    id: '26'
     nexttasks:
       '#none#':
-      - "25"
+      - '25'
+    note: false
     scriptarguments:
       certificate:
         simple: asdf
       limitResults: {}
-    continueonerror: true
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -2320,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-  "27":
-    id: "27"
-    taskid: 7cebc6ab-4dac-4430-8916-a467e1b09d94
-    type: title
     task:
-      id: 7cebc6ab-4dac-4430-8916-a467e1b09d94
+      brand: ''
+      id: 5a938089-6bf8-4ab0-8e06-b39055e8898b
+      iscommand: true
+      name: ssl-query-certificate - Bad sha1
+      script: '|||circl-ssl-query-certificate'
+      type: regular
       version: -1
+    taskid: 5a938089-6bf8-4ab0-8e06-b39055e8898b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -2320,\n    \"y\": 195\n  }\n}"
+  '27':
+    id: '27'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 7cebc6ab-4dac-4430-8916-a467e1b09d94
+      iscommand: false
       name: Success
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -2320,
-          "y": 1310
-        }
-      }
-    note: false
-    timertriggers: []
-  "28":
-    id: "28"
-    taskid: 6137ef71-3cc8-4c24-8866-68bd73d191c2
-    type: regular
-    task:
-      id: 6137ef71-3cc8-4c24-8866-68bd73d191c2
       version: -1
-      name: Error
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: 7cebc6ab-4dac-4430-8916-a467e1b09d94
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": -2320,\n    \"y\": 1310\n  }\n}"
+  '28':
+    id: '28'
+    note: false
     scriptarguments:
       message:
         simple: circl-ssl-query-certificate - Should have error for bad SHA-1 input.
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -2110,
-          "y": 540
-        }
-      }
-    note: false
-    timertriggers: []
-  "29":
-    id: "29"
-    taskid: 05125ede-7fc6-486e-8a73-2f48035aa859
-    type: regular
     task:
-      id: 05125ede-7fc6-486e-8a73-2f48035aa859
-      version: -1
-      name: ssl-get-certificate - Bad sha1
-      script: '|||circl-ssl-get-certificate'
+      brand: ''
+      id: 6137ef71-3cc8-4c24-8866-68bd73d191c2
+      iscommand: false
+      name: Error
+      scriptName: PrintErrorEntry
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: 6137ef71-3cc8-4c24-8866-68bd73d191c2
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -2110,\n    \"y\": 540\n  }\n}"
+  '29':
+    continueonerror: true
+    id: '29'
     nexttasks:
       '#none#':
-      - "30"
+      - '30'
+    note: false
     scriptarguments:
       certificate:
         simple: asdf
-    continueonerror: true
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -2960,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-  "30":
-    id: "30"
-    taskid: 187ea241-e039-4c81-89da-e70b0474425a
-    type: condition
     task:
-      id: 187ea241-e039-4c81-89da-e70b0474425a
+      brand: ''
+      id: 05125ede-7fc6-486e-8a73-2f48035aa859
+      iscommand: true
+      name: ssl-get-certificate - Bad sha1
+      script: '|||circl-ssl-get-certificate'
+      type: regular
       version: -1
-      name: isError
-      scriptName: isError
-      type: condition
-      iscommand: false
-      brand: ""
+    taskid: 05125ede-7fc6-486e-8a73-2f48035aa859
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -2960,\n    \"y\": 195\n  }\n}"
+  '3':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: CIRCLdns.Query.Record.Data
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: CIRCLdns.Query.Record.LastTime
+          operator: stringHasLength
+          right:
+            value:
+              simple: '19'
+      label: 'yes'
+    id: '3'
     nexttasks:
       '#default#':
-      - "31"
-      "yes":
-      - "32"
+      - '5'
+      'yes':
+      - '6'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: e3b790cf-3b2a-4fb6-8d08-15a6daafa0fe
+      iscommand: false
+      name: Query.Record
+      type: condition
+      version: -1
+    taskid: e3b790cf-3b2a-4fb6-8d08-15a6daafa0fe
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 795\n  }\n}"
+  '30':
+    id: '30'
+    nexttasks:
+      '#default#':
+      - '31'
+      'yes':
+      - '32'
+    note: false
     scriptarguments:
       entryId:
         simple: ${lastCompletedTaskEntries}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -2960,
-          "y": 360
-        }
-      }
-    note: false
-    timertriggers: []
-  "31":
-    id: "31"
-    taskid: 3a1c0630-6147-4f59-86d2-fb1a6a56dc2e
-    type: regular
     task:
-      id: 3a1c0630-6147-4f59-86d2-fb1a6a56dc2e
-      version: -1
-      name: Error
-      scriptName: PrintErrorEntry
-      type: regular
+      brand: ''
+      id: 187ea241-e039-4c81-89da-e70b0474425a
       iscommand: false
-      brand: ""
+      name: isError
+      scriptName: isError
+      type: condition
+      version: -1
+    taskid: 187ea241-e039-4c81-89da-e70b0474425a
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": -2960,\n    \"y\": 360\n  }\n}"
+  '31':
+    id: '31'
+    note: false
     scriptarguments:
       message:
         simple: circl-ssl-get-certificate - Should have error for bad SHA-1 input.
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -2710,
-          "y": 540
-        }
-      }
-    note: false
-    timertriggers: []
-  "32":
-    id: "32"
-    taskid: 44d3a578-a41d-4b3d-8e25-5a69b4b42ddb
-    type: title
     task:
-      id: 44d3a578-a41d-4b3d-8e25-5a69b4b42ddb
+      brand: ''
+      id: 3a1c0630-6147-4f59-86d2-fb1a6a56dc2e
+      iscommand: false
+      name: Error
+      scriptName: PrintErrorEntry
+      type: regular
       version: -1
+    taskid: 3a1c0630-6147-4f59-86d2-fb1a6a56dc2e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -2710,\n    \"y\": 540\n  }\n}"
+  '32':
+    id: '32'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 44d3a578-a41d-4b3d-8e25-5a69b4b42ddb
+      iscommand: false
       name: Success
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -2960,
-          "y": 1310
-        }
-      }
-    note: false
-    timertriggers: []
-  "33":
-    id: "33"
-    taskid: dc9cfea6-6d4e-419d-8791-c2417fd7ea75
-    type: regular
-    task:
-      id: dc9cfea6-6d4e-419d-8791-c2417fd7ea75
       version: -1
-      name: ssl-get-certificate - When no extention info available
-      description: For some certificates, the result does not contain extended info
-        and the script should fall back to the simple details.
-      script: '|||circl-ssl-get-certificate'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: 44d3a578-a41d-4b3d-8e25-5a69b4b42ddb
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": -2960,\n    \"y\": 1310\n  }\n}"
+  '33':
+    id: '33'
     nexttasks:
       '#none#':
-      - "34"
+      - '34'
+    note: false
     scriptarguments:
       certificate:
         simple: d6ad07c6675630f57b927f66be8ce1f768f87948
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -3460,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-  "34":
-    id: "34"
-    taskid: 3927be74-255b-40c3-8e16-85fc5fd2437c
-    type: title
     task:
-      id: 3927be74-255b-40c3-8e16-85fc5fd2437c
+      brand: ''
+      description: For some certificates, the result does not contain extended info
+        and the script should fall back to the simple details.
+      id: dc9cfea6-6d4e-419d-8791-c2417fd7ea75
+      iscommand: true
+      name: ssl-get-certificate - When no extention info available
+      script: '|||circl-ssl-get-certificate'
+      type: regular
       version: -1
+    taskid: dc9cfea6-6d4e-419d-8791-c2417fd7ea75
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -3460,\n    \"y\": 195\n  }\n}"
+  '34':
+    id: '34'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 3927be74-255b-40c3-8e16-85fc5fd2437c
+      iscommand: false
       name: Success
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -3460,
-          "y": 1300
-        }
-      }
-    note: false
-    timertriggers: []
-  "35":
-    id: "35"
-    taskid: 1a1f741b-e55e-4623-85dd-a27eaf702312
-    type: regular
-    task:
-      id: 1a1f741b-e55e-4623-85dd-a27eaf702312
       version: -1
-      name: ssl-list-certificates - No results
-      script: '|||circl-ssl-list-certificates'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: 3927be74-255b-40c3-8e16-85fc5fd2437c
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": -3460,\n    \"y\": 1300\n  }\n}"
+  '35':
+    id: '35'
     nexttasks:
       '#none#':
-      - "36"
+      - '36'
+    note: false
     scriptarguments:
       queryValue:
         simple: 1.1.1.1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -3950,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-  "36":
-    id: "36"
-    taskid: 0334134f-4a13-4f2f-859e-8f3e3ca15d9d
-    type: regular
     task:
-      id: 0334134f-4a13-4f2f-859e-8f3e3ca15d9d
-      version: -1
-      name: Verify HumanReadable
-      scriptName: VerifyHumanReadableContains
+      brand: ''
+      id: 1a1f741b-e55e-4623-85dd-a27eaf702312
+      iscommand: true
+      name: ssl-list-certificates - No results
+      script: '|||circl-ssl-list-certificates'
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 1a1f741b-e55e-4623-85dd-a27eaf702312
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -3950,\n    \"y\": 195\n  }\n}"
+  '36':
+    id: '36'
     nexttasks:
       '#none#':
-      - "41"
+      - '41'
+    note: false
     scriptarguments:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
       substring:
         simple: No entries.
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -3950,
-          "y": 410
-        }
-      }
-    note: false
-    timertriggers: []
-  "37":
-    id: "37"
-    taskid: b7d0a6a9-3126-4af8-8b72-4b73b0e438c4
-    type: regular
     task:
-      id: b7d0a6a9-3126-4af8-8b72-4b73b0e438c4
-      version: -1
-      name: ssl-list-certificates - Invalid IP CIDR
-      script: CIRCL|||circl-ssl-list-certificates
+      brand: ''
+      id: 0334134f-4a13-4f2f-859e-8f3e3ca15d9d
+      iscommand: false
+      name: Verify HumanReadable
+      scriptName: VerifyHumanReadableContains
       type: regular
-      iscommand: true
-      brand: CIRCL
+      version: -1
+    taskid: 0334134f-4a13-4f2f-859e-8f3e3ca15d9d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -3950,\n    \"y\": 410\n  }\n}"
+  '37':
+    continueonerror: true
+    id: '37'
     nexttasks:
       '#none#':
-      - "38"
+      - '38'
+    note: false
     scriptarguments:
       queryValue:
         simple: 1.1.1.1/a
-    continueonerror: true
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -4580,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-  "38":
-    id: "38"
-    taskid: d17b84d7-f191-446e-867d-f0d8beca31c1
-    type: condition
     task:
-      id: d17b84d7-f191-446e-867d-f0d8beca31c1
+      brand: CIRCL
+      id: b7d0a6a9-3126-4af8-8b72-4b73b0e438c4
+      iscommand: true
+      name: ssl-list-certificates - Invalid IP CIDR
+      script: CIRCL|||circl-ssl-list-certificates
+      type: regular
       version: -1
-      name: IsError
-      scriptName: isError
-      type: condition
-      iscommand: false
-      brand: ""
+    taskid: b7d0a6a9-3126-4af8-8b72-4b73b0e438c4
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -4580,\n    \"y\": 195\n  }\n}"
+  '38':
+    id: '38'
     nexttasks:
       '#default#':
-      - "39"
-      "yes":
-      - "40"
+      - '39'
+      'yes':
+      - '40'
+    note: false
     scriptarguments:
       entryId:
         simple: ${lastCompletedTaskEntries}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -4580,
-          "y": 410
-        }
-      }
-    note: false
-    timertriggers: []
-  "39":
-    id: "39"
-    taskid: 33277921-3416-4256-85b4-d54067fa8661
-    type: regular
     task:
-      id: 33277921-3416-4256-85b4-d54067fa8661
-      version: -1
-      name: Error
-      scriptName: PrintErrorEntry
-      type: regular
+      brand: ''
+      id: d17b84d7-f191-446e-867d-f0d8beca31c1
       iscommand: false
-      brand: ""
+      name: IsError
+      scriptName: isError
+      type: condition
+      version: -1
+    taskid: d17b84d7-f191-446e-867d-f0d8beca31c1
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": -4580,\n    \"y\": 410\n  }\n}"
+  '39':
+    id: '39'
+    note: false
     scriptarguments:
       message:
         simple: circl-ssl-list-certificates - Should raise error for invalid IP CIDR
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -4320,
-          "y": 610
-        }
-      }
-    note: false
-    timertriggers: []
-  "40":
-    id: "40"
-    taskid: 539b5341-c9e5-4617-89d5-c2f04fbaf51e
-    type: title
     task:
+      brand: ''
+      id: 33277921-3416-4256-85b4-d54067fa8661
+      iscommand: false
+      name: Error
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 33277921-3416-4256-85b4-d54067fa8661
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -4320,\n    \"y\": 610\n  }\n}"
+  '4':
+    id: '4'
+    note: false
+    scriptarguments:
+      message:
+        simple: Query.Value should exist.
+    separatecontext: false
+    task:
+      brand: ''
+      id: 8950b7a8-bdb2-4475-8c18-86f5ac592d3d
+      iscommand: false
+      name: Error
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 8950b7a8-bdb2-4475-8c18-86f5ac592d3d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 500,\n    \"y\": 540\n  }\n}"
+  '40':
+    id: '40'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
       id: 539b5341-c9e5-4617-89d5-c2f04fbaf51e
-      version: -1
+      iscommand: false
       name: Success
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -4580,
-          "y": 1180
-        }
-      }
-    note: false
+      version: -1
+    taskid: 539b5341-c9e5-4617-89d5-c2f04fbaf51e
     timertriggers: []
-  "41":
-    id: "41"
-    taskid: 2b6d4ad1-e00b-44fb-8e48-f2013365e431
     type: title
+    view: "{\n  \"position\": {\n    \"x\": -4580,\n    \"y\": 1180\n  }\n}"
+  '41':
+    id: '41'
+    note: false
+    separatecontext: false
     task:
+      brand: ''
       id: 2b6d4ad1-e00b-44fb-8e48-f2013365e431
-      version: -1
+      iscommand: false
       name: Success
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -3950,
-          "y": 1160
-        }
-      }
-    note: false
+      version: -1
+    taskid: 2b6d4ad1-e00b-44fb-8e48-f2013365e431
     timertriggers: []
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1335,
-        "width": 5470,
-        "x": -4580,
-        "y": 40
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": -3950,\n    \"y\": 1160\n  }\n}"
+  '5':
+    id: '5'
+    note: false
+    scriptarguments:
+      message:
+        simple: Query.Record is invalid.
+    separatecontext: false
+    task:
+      brand: ''
+      id: e62c044f-445e-4f40-85d9-fcd9f809c691
+      iscommand: false
+      name: Error
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: e62c044f-445e-4f40-85d9-fcd9f809c691
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 510,\n    \"y\": 980\n  }\n}"
+  '6':
+    id: '6'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 7e75c83d-619e-4efa-8a1d-386be29c6133
+      iscommand: false
+      name: Success
+      type: title
+      version: -1
+    taskid: 7e75c83d-619e-4efa-8a1d-386be29c6133
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1170\n  }\n}"
+  '7':
+    id: '7'
+    nexttasks:
+      '#none#':
+      - '10'
+    note: false
+    scriptarguments:
+      certificate:
+        simple: 37221925980c05deefac014f9a72b4765e716341
+    separatecontext: false
+    task:
+      brand: CIRCL
+      id: 0d2deba3-45de-4ab7-8647-e58193551334
+      iscommand: true
+      name: ssl-get-certificate
+      script: CIRCL|||circl-ssl-get-certificate
+      type: regular
+      version: -1
+    taskid: 0d2deba3-45de-4ab7-8647-e58193551334
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -380,\n    \"y\": 195\n  }\n}"
+  '8':
+    id: '8'
+    nexttasks:
+      '#none#':
+      - '15'
+    note: false
+    scriptarguments:
+      queryValue:
+        simple: 172.228.24.0/28
+    separatecontext: false
+    task:
+      brand: CIRCL
+      id: 37fb689c-f913-4dce-8ecc-7a9d5a271d7b
+      iscommand: true
+      name: ssl-list-certificates
+      script: CIRCL|||circl-ssl-list-certificates
+      type: regular
+      version: -1
+    taskid: 37fb689c-f913-4dce-8ecc-7a9d5a271d7b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -1060,\n    \"y\": 195\n  }\n}"
+  '9':
+    id: '9'
+    nexttasks:
+      '#none#':
+      - '18'
+    note: false
+    scriptarguments:
+      certificate:
+        simple: c46fed822dadac3f31f9bb4d1a78a1d9eae4567b
+      limitResults:
+        simple: '10'
+    separatecontext: false
+    task:
+      brand: CIRCL
+      id: d8367a40-0abe-4ae7-87c1-37546585a700
+      iscommand: true
+      name: ssl-query-certificate
+      script: CIRCL|||circl-ssl-query-certificate
+      type: regular
+      version: -1
+    taskid: d8367a40-0abe-4ae7-87c1-37546585a700
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -1680,\n    \"y\": 195\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1335,\n      \"width\": 5470,\n      \"x\": -4580,\n      \"y\"\
+  : 40\n    }\n  }\n}"

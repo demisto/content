@@ -1,48 +1,46 @@
+category: Utilities
 commonfields:
   id: Atlassian Confluence Server
   version: -1
-name: Atlassian Confluence Server
-display: Atlassian Confluence Server
-category: Utilities
-description: Atlassian Confluence Server API
 configuration:
-- display: Server URL (e.g. http://1.2.3.4:8090)
+- defaultvalue: ''
+  display: Server URL (e.g. http://1.2.3.4:8090)
   name: url
-  defaultvalue: ""
+  required: true
   type: 0
-  required: true
-- display: Username
+- defaultvalue: ''
+  display: Username
   name: credentials
-  defaultvalue: ""
-  type: 9
   required: true
-- display: Use system proxy settings
+  type: 9
+- defaultvalue: 'false'
+  display: Use system proxy settings
   name: proxy
-  defaultvalue: "false"
-  type: 8
   required: false
-- display: Trust any certificate (not secure)
+  type: 8
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
   name: unsecure
-  defaultvalue: "false"
-  type: 8
   required: false
+  type: 8
+description: Atlassian Confluence Server API
+display: Atlassian Confluence Server
+name: Atlassian Confluence Server
 script:
-  script: ''
-  type: python
-  subtype: python2
   commands:
-  - name: confluence-create-space
-    arguments:
-    - name: name
+  - arguments:
+    - description: 'Space name, for example: "Test Space".'
+      name: name
       required: true
-      description: 'Space name, for example: "Test Space".'
-    - name: description
+    - description: A description for the space.
+      name: description
       required: true
-      description: A description for the space.
-    - name: key
-      required: true
-      description: Space key, which will be used as input when creating or updating
+    - description: Space key, which will be used as input when creating or updating
         child components from a space.
+      name: key
+      required: true
+    description: Creates a new Confluence space.
+    name: confluence-create-space
     outputs:
     - contextPath: Confluence.Space.ID
       description: Space ID.
@@ -53,25 +51,25 @@ script:
     - contextPath: Confluence.Space.Name
       description: Space name.
       type: String
-    description: Creates a new Confluence space.
-  - name: confluence-create-content
-    arguments:
-    - name: title
+  - arguments:
+    - description: Confluence page title.
+      name: title
       required: true
-      description: Confluence page title.
-    - name: type
-      required: true
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      defaultValue: page
+      description: Confluence content type. Can be "page" or "blogpost".
+      name: type
       predefined:
       - page
       - blogpost
-      description: Confluence content type. Can be "page" or "blogpost".
-      defaultValue: page
-    - name: space
       required: true
-      description: Space key to add content to a specific space.
-    - name: body
-      description: Confluence page body to add.
+    - description: Space key to add content to a specific space.
+      name: space
+      required: true
+    - description: Confluence page body to add.
+      name: body
+    description: Creates Confluence content for a given space.
+    name: confluence-create-content
     outputs:
     - contextPath: Confluence.Content.ID
       description: Page content ID.
@@ -85,24 +83,26 @@ script:
     - contextPath: Confluence.Content.Body
       description: Content body.
       type: String
-    description: Creates Confluence content for a given space.
-  - name: confluence-list-spaces
-    arguments:
-    - name: limit
-      defaultValue: 25
+  - arguments:
+    - defaultValue: 25
       description: Maximum number of spaces to return.
-    - name: type
-      auto: PREDEFINED
+      name: limit
+    - auto: PREDEFINED
+      description: Filter the returned list of spaces by type. Can be "global" or
+        "personal".
+      name: type
       predefined:
       - global
       - personal
-      description: Filter the returned list of spaces by type. Can be "global" or "personal".
-    - name: status
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: Filter the returned list of spaces by status. Can be "current"
+        or "archived".
+      name: status
       predefined:
       - current
       - archived
-      description: Filter the returned list of spaces by status. Can be "current" or "archived".
+    description: Returns a list of all Confluence spaces.
+    name: confluence-list-spaces
     outputs:
     - contextPath: Confluence.Space.ID
       description: Space ID.
@@ -113,15 +113,15 @@ script:
     - contextPath: Confluence.Space.Name
       description: Space name.
       type: String
-    description: Returns a list of all Confluence spaces.
-  - name: confluence-get-content
-    arguments:
-    - name: key
+  - arguments:
+    - description: Space key.
+      name: key
       required: true
-      description: Space key.
-    - name: title
+    - description: Content title.
+      name: title
       required: true
-      description: Content title.
+    description: Returns Confluence content by space key and title.
+    name: confluence-get-content
     outputs:
     - contextPath: Confluence.Content.ID
       description: Content ID.
@@ -138,12 +138,13 @@ script:
     - contextPath: Confluence.Content.Body
       description: Content body.
       type: String
-    description: Returns Confluence content by space key and title.
-  - name: confluence-delete-content
-    arguments:
-    - name: id
+  - arguments:
+    - description: Content ID
+      name: id
       required: true
-      description: Content ID
+    description: Deletes Confluence content.
+    execution: true
+    name: confluence-delete-content
     outputs:
     - contextPath: Confluence.Content.Result
       description: Content delete result.
@@ -151,32 +152,35 @@ script:
     - contextPath: Confluence.Content.ID
       description: Content ID deleted.
       type: String
-    description: Deletes Confluence content.
-    execution: true
-  - name: confluence-update-content
-    arguments:
-    - name: pageid
+  - arguments:
+    - description: Page ID used to find and update the page.
+      name: pageid
       required: true
-      description: Page ID used to find and update the page.
-    - name: currentversion
+    - description: The version number, extracted from a content search. The integration
+        will increment by 1.
+      name: currentversion
       required: true
-      description: The version number, extracted from a content search. The integration will increment by 1.
-    - name: title
+    - description: Title of the page to update.
+      name: title
       required: true
-      description: Title of the page to update.
-    - name: type
-      required: true
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      defaultValue: page
+      description: Content type. Can be "page" or "blogpost".
+      name: type
       predefined:
       - page
       - blogpost
-      description: Content type. Can be "page" or "blogpost".
-      defaultValue: page
-    - name: space
       required: true
-      description: Space key to update.
-    - name: body
-      description: Content body to replace (overwrite) existing content of a Confluence page.
+    - description: Space key to update.
+      name: space
+      required: true
+    - description: Content body to replace (overwrite) existing content of a Confluence
+        page.
+      name: body
+    description: Update (overwrite) the existing content of a Confluence page with
+      new content.
+    execution: true
+    name: confluence-update-content
     outputs:
     - contextPath: Confluence.Content.ID
       description: Content ID.
@@ -190,26 +194,26 @@ script:
     - contextPath: Confluence.Content.Body
       description: Content body.
       type: String
-    description: Update (overwrite) the existing content of a Confluence page with new content.
-    execution: true
-  - name: confluence-search-content
-    arguments:
-    - name: cql
+  - arguments:
+    - description: 'A CQL query string to use to locate content, for example: "space
+        = DEV order by created".'
+      name: cql
       required: true
-      description: 'A CQL query string to use to locate content, for example: "space = DEV
-        order by created".'
-    - name: cqlcontext
-      description: The context in which to execute a CQL search. The context is the JSON serialized
-        form of SearchContext.
-    - name: expand
+    - description: The context in which to execute a CQL search. The context is the
+        JSON serialized form of SearchContext.
+      name: cqlcontext
+    - defaultValue: version
       description: A CSV list of properties to expand on the content.
-      defaultValue: version
-    - name: start
-      description: The start point of the collection to return.
-    - name: limit
-      description: Maximum number of items to return. This can be restricted
-        by fixed system limits. Default is 25.
-      defaultValue: "25"
+      name: expand
+    - description: The start point of the collection to return.
+      name: start
+    - defaultValue: '25'
+      description: Maximum number of items to return. This can be restricted by fixed
+        system limits. Default is 25.
+      name: limit
+    description: Fetches a list of content using the Confluence Query Language (CQL).
+      For more information about CQL syntax, see https://developer.atlassian.com/server/confluence/advanced-searching-using-cql/
+    name: confluence-search-content
     outputs:
     - contextPath: Confluence.Content.ID
       description: Content ID.
@@ -223,8 +227,10 @@ script:
     - contextPath: Confluence.Content.Version
       description: Content version.
       type: String
-    description: 'Fetches a list of content using the Confluence Query Language (CQL).
-      For more information about CQL syntax, see https://developer.atlassian.com/server/confluence/advanced-searching-using-cql/'
   runonce: false
+  script: ''
+  subtype: python2
+  type: python
 tests:
-  - No test - the test requires personal credentials to the confluence account
+- No test - the test requires personal credentials to the confluence account
+toversion: 4.1.9

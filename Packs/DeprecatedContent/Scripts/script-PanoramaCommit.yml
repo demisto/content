@@ -1,25 +1,22 @@
+args: []
+comment: Commit configuration to panorama
 commonfields:
   id: PanoramaCommit
   version: -1
-name: PanoramaCommit
-script: |-
-  var reqArgs = {
-          type: 'commit',
-          cmd: '<commit></commit>'
-      };
-  return executeCommand('panorama', reqArgs)[0].Contents.response['-status'];
-type: javascript
-tags:
-- panorama
-- firewall
-comment: Commit configuration to panorama
-system: true
-deprecated: true
-scripttarget: 0
-args: []
 dependson:
   must:
   - panorama
-timeout: 0s
+deprecated: true
+name: PanoramaCommit
+script: "var reqArgs = {\n        type: 'commit',\n        cmd: '<commit></commit>'\n\
+  \    };\nreturn executeCommand('panorama', reqArgs)[0].Contents.response['-status'];"
+scripttarget: 0
+system: true
+tags:
+- panorama
+- firewall
 tests:
 - palo_alto_firewall_test_pb
+timeout: 0s
+toversion: 4.1.9
+type: javascript

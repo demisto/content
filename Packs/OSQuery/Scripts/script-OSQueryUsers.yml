@@ -1,24 +1,25 @@
+args:
+- default: true
+  description: The System to remote execute on, can be a list of systems
+  name: system
+  required: true
+comment: Returns Users Table from a remote system using OSQuery
 commonfields:
   id: OSQueryUsers
   version: -1
-name: OSQueryUsers
-script: |-
-  QUERY = "select * from users;"
-
-  demisto.results(demisto.executeCommand("OSQueryBasicQuery", {'query':QUERY, 'system':demisto.args()['system']}))
-type: python
-subtype: python2
-tags:
-- OSQuery
-comment: Returns Users Table from a remote system using OSQuery
-system: true
-args:
-- name: system
-  required: true
-  default: true
-  description: The System to remote execute on, can be a list of systems
-scripttarget: 0
 dependson:
   must:
   - OSQueryBasicQuery
+name: OSQueryUsers
+script: 'QUERY = "select * from users;"
+
+
+  demisto.results(demisto.executeCommand("OSQueryBasicQuery", {''query'':QUERY, ''system'':demisto.args()[''system'']}))'
+scripttarget: 0
+subtype: python2
+system: true
+tags:
+- OSQuery
 timeout: 0s
+toversion: 4.1.9
+type: python

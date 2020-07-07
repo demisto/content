@@ -1,260 +1,80 @@
 id: ExtraHop_v2-Test
-version: -1
+inputs: []
 name: ExtraHop_v2-Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 7f000fa5-26f6-4fc5-8a2e-1a42ae7464ca
-    type: start
+  '0':
+    id: '0'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '11'
+    note: false
+    separatecontext: false
     task:
+      brand: ''
       id: 7f000fa5-26f6-4fc5-8a2e-1a42ae7464ca
-      version: -1
-      name: ""
       iscommand: false
-      brand: ""
+      name: ''
+      version: -1
+    taskid: 7f000fa5-26f6-4fc5-8a2e-1a42ae7464ca
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 30\n  }\n}"
+  '10':
+    id: '10'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "11"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 30
-        }
-      }
+      - '14'
     note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: c5914d68-d75f-4cf1-8447-d06cfc3f1d6c
-    type: condition
-    task:
-      id: c5914d68-d75f-4cf1-8447-d06cfc3f1d6c
-      version: -1
-      name: Found alert rules?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "12"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: greaterThan
-          left:
-            value:
-              complex:
-                root: ExtraHop
-                accessor: Alert
-                transformers:
-                - operator: count
-            iscontext: true
-          right:
-            value:
-              simple: "0"
-      - - operator: isExists
-          left:
-            value:
-              simple: ExtraHop.Alert.[0].Id
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 64e466a2-2800-4a1f-8e46-292ad44dd60b
-    type: condition
-    task:
-      id: 64e466a2-2800-4a1f-8e46-292ad44dd60b
-      version: -1
-      name: Found advanced analysis device?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "19"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: ExtraHop
-                accessor: '[1].Device'
-                transformers:
-                - operator: WhereFieldEquals
-                  args:
-                    equalTo:
-                      value:
-                        simple: advanced
-                    field:
-                      value:
-                        simple: Analysis
-                    getField: {}
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 740
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "8":
-    id: "8"
-    taskid: af552a3a-b4c3-4130-81a3-c31c46ff4dfc
-    type: condition
-    task:
-      id: af552a3a-b4c3-4130-81a3-c31c46ff4dfc
-      version: -1
-      name: Verify the device is on the watchlist
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "9"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isTrue
-          left:
-            value:
-              simple: ExtraHop.[2].Device.[0].OnWatchlist
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1230
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "9":
-    id: "9"
-    taskid: 30ffa3d3-e040-4317-8a21-494b81d8131e
-    type: regular
-    task:
-      id: 30ffa3d3-e040-4317-8a21-494b81d8131e
-      version: -1
-      name: Add a device to the watchlist
-      description: Add a device to the watchlist in ExtraHop.
-      script: ExtraHop v2|||extrahop-edit-watchlist
-      type: regular
-      iscommand: true
-      brand: ExtraHop v2
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      add:
-        simple: ${ExtraHop.[1].Device.[0].Id}
-      remove: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "10":
-    id: "10"
-    taskid: 0ed6f37c-f1e3-4b95-8742-49f0b95af49e
-    type: regular
-    task:
-      id: 0ed6f37c-f1e3-4b95-8742-49f0b95af49e
-      version: -1
-      name: Remove a device from the watchlist
-      description: Remove a device from the watchlist in ExtraHop.
-      script: ExtraHop v2|||extrahop-edit-watchlist
-      type: regular
-      iscommand: true
-      brand: ExtraHop v2
-    nexttasks:
-      '#none#':
-      - "14"
     scriptarguments:
       add: {}
       remove:
         simple: ${ExtraHop.[1].Device.[0].Id}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1600
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "11":
-    id: "11"
-    taskid: 4ab78872-d011-4e67-8fe0-ac7054ae0c36
-    type: regular
     task:
-      id: 4ab78872-d011-4e67-8fe0-ac7054ae0c36
+      brand: ExtraHop v2
+      description: Remove a device from the watchlist in ExtraHop.
+      id: 0ed6f37c-f1e3-4b95-8742-49f0b95af49e
+      iscommand: true
+      name: Remove a device from the watchlist
+      script: ExtraHop v2|||extrahop-edit-watchlist
+      type: regular
       version: -1
-      name: Get ExtraHop alert rules
+    taskid: 0ed6f37c-f1e3-4b95-8742-49f0b95af49e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1600\n  }\n}"
+  '11':
+    id: '11'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    separatecontext: false
+    task:
+      brand: ExtraHop v2
       description: Get all alert rules from ExtraHop.
+      id: 4ab78872-d011-4e67-8fe0-ac7054ae0c36
+      iscommand: true
+      name: Get ExtraHop alert rules
       script: ExtraHop v2|||extrahop-get-alert-rules
       type: regular
-      iscommand: true
-      brand: ExtraHop v2
-    nexttasks:
-      '#none#':
-      - "5"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 180
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "12":
-    id: "12"
-    taskid: f2af6df9-e437-4663-897e-2d6a90172172
-    type: regular
-    task:
-      id: f2af6df9-e437-4663-897e-2d6a90172172
       version: -1
-      name: Search ExtraHop for devices
-      description: Search for devices in ExtraHop.
-      script: ExtraHop v2|||extrahop-device-search
-      type: regular
-      iscommand: true
-      brand: ExtraHop v2
+    taskid: 4ab78872-d011-4e67-8fe0-ac7054ae0c36
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 180\n  }\n}"
+  '12':
+    id: '12'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
+    note: false
     scriptarguments:
       active_from: {}
       active_until: {}
@@ -262,9 +82,9 @@ tasks:
       discover_time: {}
       ip: {}
       l3_only:
-        simple: "true"
+        simple: 'true'
       limit:
-        simple: "500"
+        simple: '500'
       mac: {}
       match_type: {}
       name: {}
@@ -275,59 +95,47 @@ tasks:
       vendor: {}
       vlan: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 560
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "13":
-    id: "13"
-    taskid: 3fdedbab-98ff-4782-8fb1-63eaa0fb2a41
-    type: regular
     task:
-      id: 3fdedbab-98ff-4782-8fb1-63eaa0fb2a41
+      brand: ExtraHop v2
+      description: Search for devices in ExtraHop.
+      id: f2af6df9-e437-4663-897e-2d6a90172172
+      iscommand: true
+      name: Search ExtraHop for devices
+      script: ExtraHop v2|||extrahop-device-search
+      type: regular
       version: -1
-      name: Get all devices on the ExtraHop watchlist
+    taskid: f2af6df9-e437-4663-897e-2d6a90172172
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 560\n  }\n}"
+  '13':
+    id: '13'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    separatecontext: false
+    task:
+      brand: ExtraHop v2
       description: Get all devices on the watchlist in ExtraHop.
+      id: 3fdedbab-98ff-4782-8fb1-63eaa0fb2a41
+      iscommand: true
+      name: Get all devices on the ExtraHop watchlist
       script: ExtraHop v2|||extrahop-get-watchlist
       type: regular
-      iscommand: true
-      brand: ExtraHop v2
-    nexttasks:
-      '#none#':
-      - "8"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1060
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "14":
-    id: "14"
-    taskid: c89e7963-96bc-4970-8299-81aaf8f66e3f
-    type: regular
-    task:
-      id: c89e7963-96bc-4970-8299-81aaf8f66e3f
       version: -1
-      name: Get the peer devices of the test device
-      description: Get all peers for a device from ExtraHop.
-      script: ExtraHop v2|||extrahop-get-peers
-      type: regular
-      iscommand: true
-      brand: ExtraHop v2
+    taskid: 3fdedbab-98ff-4782-8fb1-63eaa0fb2a41
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1060\n  }\n}"
+  '14':
+    id: '14'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
+    note: false
     scriptarguments:
       ip_or_id:
         simple: ${EHTestDeviceId}
@@ -336,63 +144,51 @@ tasks:
       query_from: {}
       query_until: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1780
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "15":
-    id: "15"
-    taskid: 6880ce11-be62-4af3-8f1b-9f89ebea9bc8
-    type: regular
     task:
-      id: 6880ce11-be62-4af3-8f1b-9f89ebea9bc8
-      version: -1
-      name: Get the network protocols of the test device
-      script: ExtraHop v2|||extrahop-get-protocols
-      type: regular
-      iscommand: true
       brand: ExtraHop v2
+      description: Get all peers for a device from ExtraHop.
+      id: c89e7963-96bc-4970-8299-81aaf8f66e3f
+      iscommand: true
+      name: Get the peer devices of the test device
+      script: ExtraHop v2|||extrahop-get-peers
+      type: regular
+      version: -1
+    taskid: c89e7963-96bc-4970-8299-81aaf8f66e3f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1780\n  }\n}"
+  '15':
+    id: '15'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "16"
+      - '16'
+    note: false
     scriptarguments:
       ip_or_id:
         simple: ${EHTestDeviceId}
       query_from: {}
       query_until: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1970
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "16":
-    id: "16"
-    taskid: 3c114d9f-7a77-4510-885c-cc9e992e421b
-    type: regular
     task:
-      id: 3c114d9f-7a77-4510-885c-cc9e992e421b
-      version: -1
-      name: Get a link to an activity map of the test device
-      description: Get a link to a Live Activity Map in ExtraHop.
-      script: ExtraHop v2|||extrahop-get-activity-map
-      type: regular
-      iscommand: true
       brand: ExtraHop v2
+      id: 6880ce11-be62-4af3-8f1b-9f89ebea9bc8
+      iscommand: true
+      name: Get the network protocols of the test device
+      script: ExtraHop v2|||extrahop-get-protocols
+      type: regular
+      version: -1
+    taskid: 6880ce11-be62-4af3-8f1b-9f89ebea9bc8
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1970\n  }\n}"
+  '16':
+    id: '16'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
+    note: false
     scriptarguments:
       from_time: {}
       ip_or_id:
@@ -402,32 +198,26 @@ tasks:
       time_interval: {}
       until_time: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2160
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "17":
-    id: "17"
-    taskid: ef005a03-a034-43d3-8151-9428203d99ee
-    type: regular
     task:
-      id: ef005a03-a034-43d3-8151-9428203d99ee
-      version: -1
-      name: Add a tag on the test device
-      description: Add a tag from a device in ExtraHop.
-      script: ExtraHop v2|||extrahop-tag-devices
-      type: regular
-      iscommand: true
       brand: ExtraHop v2
+      description: Get a link to a Live Activity Map in ExtraHop.
+      id: 3c114d9f-7a77-4510-885c-cc9e992e421b
+      iscommand: true
+      name: Get a link to an activity map of the test device
+      script: ExtraHop v2|||extrahop-get-activity-map
+      type: regular
+      version: -1
+    taskid: 3c114d9f-7a77-4510-885c-cc9e992e421b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2160\n  }\n}"
+  '17':
+    id: '17'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
+    note: false
     scriptarguments:
       add:
         simple: ${EHTestDeviceId}
@@ -435,29 +225,23 @@ tasks:
       tag:
         simple: test-playbook
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "18":
-    id: "18"
-    taskid: 7f70cf49-7724-47c4-8efe-4cbe2976d298
-    type: regular
     task:
-      id: 7f70cf49-7724-47c4-8efe-4cbe2976d298
-      version: -1
-      name: Remove a tag from the test device
-      description: Remove a tag from a device in ExtraHop.
+      brand: ExtraHop v2
+      description: Add a tag from a device in ExtraHop.
+      id: ef005a03-a034-43d3-8151-9428203d99ee
+      iscommand: true
+      name: Add a tag on the test device
       script: ExtraHop v2|||extrahop-tag-devices
       type: regular
-      iscommand: true
-      brand: ExtraHop v2
+      version: -1
+    taskid: ef005a03-a034-43d3-8151-9428203d99ee
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2360\n  }\n}"
+  '18':
+    id: '18'
+    ignoreworker: false
+    note: false
     scriptarguments:
       add: {}
       remove:
@@ -465,43 +249,36 @@ tasks:
       tag:
         simple: test-playbook
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2560
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "19":
-    id: "19"
-    taskid: 610c4350-db3d-4543-8f47-eed73657b134
-    type: regular
     task:
-      id: 610c4350-db3d-4543-8f47-eed73657b134
-      version: -1
-      name: Set test device ID to context
-      description: Sets a value into the context with the given context key
-      scriptName: Set
+      brand: ExtraHop v2
+      description: Remove a tag from a device in ExtraHop.
+      id: 7f70cf49-7724-47c4-8efe-4cbe2976d298
+      iscommand: true
+      name: Remove a tag from the test device
+      script: ExtraHop v2|||extrahop-tag-devices
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 7f70cf49-7724-47c4-8efe-4cbe2976d298
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2560\n  }\n}"
+  '19':
+    id: '19'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "13"
+      - '13'
+    note: false
     scriptarguments:
       append: {}
       key:
         simple: EHTestDeviceId
       value:
         complex:
-          root: ExtraHop
           accessor: '[1].Device'
+          root: ExtraHop
           transformers:
-          - operator: WhereFieldEquals
-            args:
+          - args:
               equalTo:
                 value:
                   simple: advanced
@@ -511,39 +288,161 @@ tasks:
               getField:
                 value:
                   simple: Id
-          - operator: slice
-            args:
+            operator: WhereFieldEquals
+          - args:
               from:
                 value:
-                  simple: "0"
+                  simple: '0'
               to:
                 value:
-                  simple: "1"
+                  simple: '1'
+            operator: slice
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 900
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      description: Sets a value into the context with the given context key
+      id: 610c4350-db3d-4543-8f47-eed73657b134
+      iscommand: false
+      name: Set test device ID to context
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 610c4350-db3d-4543-8f47-eed73657b134
     timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 900\n  }\n}"
+  '5':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Alert
+                root: ExtraHop
+                transformers:
+                - operator: count
+          operator: greaterThan
+          right:
+            value:
+              simple: '0'
+      - - left:
+            iscontext: true
+            value:
+              simple: ExtraHop.Alert.[0].Id
+          operator: isExists
+      label: 'yes'
+    id: '5'
     ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {
-      "5_12_yes": 0.5,
-      "8_9_yes": 0.36
-    },
-    "paper": {
-      "dimensions": {
-        "height": 2625,
-        "width": 380,
-        "x": 450,
-        "y": 30
-      }
-    }
-  }
-inputs: []
-outputs: []
+    nexttasks:
+      'yes':
+      - '12'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: c5914d68-d75f-4cf1-8447-d06cfc3f1d6c
+      iscommand: false
+      name: Found alert rules?
+      type: condition
+      version: -1
+    taskid: c5914d68-d75f-4cf1-8447-d06cfc3f1d6c
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 360\n  }\n}"
+  '6':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: '[1].Device'
+                root: ExtraHop
+                transformers:
+                - args:
+                    equalTo:
+                      value:
+                        simple: advanced
+                    field:
+                      value:
+                        simple: Analysis
+                    getField: {}
+                  operator: WhereFieldEquals
+          operator: isExists
+      label: 'yes'
+    id: '6'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '19'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 64e466a2-2800-4a1f-8e46-292ad44dd60b
+      iscommand: false
+      name: Found advanced analysis device?
+      type: condition
+      version: -1
+    taskid: 64e466a2-2800-4a1f-8e46-292ad44dd60b
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 740\n  }\n}"
+  '8':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ExtraHop.[2].Device.[0].OnWatchlist
+          operator: isTrue
+      label: 'yes'
+    id: '8'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '9'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: af552a3a-b4c3-4130-81a3-c31c46ff4dfc
+      iscommand: false
+      name: Verify the device is on the watchlist
+      type: condition
+      version: -1
+    taskid: af552a3a-b4c3-4130-81a3-c31c46ff4dfc
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1230\n  }\n}"
+  '9':
+    id: '9'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '10'
+    note: false
+    scriptarguments:
+      add:
+        simple: ${ExtraHop.[1].Device.[0].Id}
+      remove: {}
+    separatecontext: false
+    task:
+      brand: ExtraHop v2
+      description: Add a device to the watchlist in ExtraHop.
+      id: 30ffa3d3-e040-4317-8a21-494b81d8131e
+      iscommand: true
+      name: Add a device to the watchlist
+      script: ExtraHop v2|||extrahop-edit-watchlist
+      type: regular
+      version: -1
+    taskid: 30ffa3d3-e040-4317-8a21-494b81d8131e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1420\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"5_12_yes\": 0.5,\n    \"8_9_yes\": 0.36\n\
+  \  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 2625,\n      \"\
+  width\": 380,\n      \"x\": 450,\n      \"y\": 30\n    }\n  }\n}"

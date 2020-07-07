@@ -136,7 +136,7 @@ script:
       secret: false
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: 'Whether to return artifacts of samples.'
+      description: Whether to return artifacts of samples.
       isArray: false
       name: artifact
       predefined:
@@ -1045,8 +1045,8 @@ script:
     - contextPath: Domain.Name
       description: The domain name.
       type: String
-  dockerimage45: demisto/python3:3.7.2.214
   dockerimage: demisto/python3:3.8.3.8715
+  dockerimage45: demisto/python3:3.7.2.214
   isfetch: false
   longRunning: false
   longRunningPort: false
@@ -1056,3 +1056,4 @@ script:
   type: python
 tests:
 - AutoFocus V2 test
+toversion: 4.1.9

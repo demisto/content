@@ -1,110 +1,67 @@
-commonfields:
-  id: QRadarClassifier
-  version: -1
-name: QRadarClassifier
-deprecated: true
-script: |
-  var QRADAR_CATEGORIES = {
-      'Recon' : 'Reconnaissance',
-      'DOS' : 'DoS',
-      'Authentication' : 'Authentication',
-      'Access' : 'Access',
-      'Exploit' : 'Exploit',
-      'Malware' : 'Malware',
-      'Suspicious Activity' : 'Network',
-      'System' : 'Unclassified',
-      'Policy' : 'Unclassified',
-      'Unknown' : 'Unclassified',
-      'Time Series' : 'Unclassified',
-      'CRE' : 'Unclassified',
-      'Potential Exploit' : 'Exploit',
-      'Flow' : 'Network',
-      'User Defined' : 'Unclassified',
-      'SIM Audit' : 'Unclassified',
-      'VIS Host Discovery' : 'Network',
-      'Application' : 'Unclassified',
-      'Audit' : 'Unclassified',
-      'Risk' : 'Vulnerability',
-      'Risk Manager Audit' : 'Unclassified',
-      'Control System' : 'Unclassified',
-      'Asset Profiler' : 'Network'
-  };
-
-  if (args.customCategories){
-      var customObj = JSON.parse(args.customCategories);
-      for (var attrname in customObj) { QRADAR_CATEGORIES[attrname] = customObj[attrname];}
-  }
-
-  var CONTEXT_OUTPUT = 'Classifier/Description';
-  if("contextOutput" in args){
-      CONTEXT_OUTPUT = args.contextOutput;
-  }
-
-  var QUERY = "SELECT CATEGORYNAME(highlevelcategory) FROM events WHERE INOFFENSE({0}) START {1}";
-
-  var incident = incidents[0];
-
-  var offense_id = "";
-  var start_time = "";
-  var offense_type = "";
-  var incident_type = "";
-  var labels = dq(incident,"labels");
-
-  labels.forEach(function(label){
-      if (label.type == 'id'){
-          offense_id = label.value;
-      }
-      if (label.type == 'start_time'){
-          start_time = label.value;
-      }
-  });
-
-  resp =  executeCommand('QRadarFullSearch', {query_expression :QUERY.format(offense_id,start_time)});
-  if (isError(resp[0])){
-      return resp;
-  }
-  else {
-      data = dq(resp[0],'Contents.events');
-      offense_type = (data instanceof Array && data.length > 0) ? dq(data[0],'categoryname_highlevelcategory') : '';
-  }
-  if (offense_type){
-      incident_type = QRADAR_CATEGORIES[offense_type] ? offense_type in QRADAR_CATEGORIES : '';
-      setContext(CONTEXT_OUTPUT,offense_type);
-  }
-
-  if (incident_type){
-      resp =  executeCommand('IncidentSet', {'type': incident_type, 'updatePlaybookForType' : 'yes'});
-      if (isError(resp[0])){
-          return resp;
-      }
-  }
-  else {
-      return { ContentsFormat: formats.text, Type: entryTypes.error, Contents: "Couldn't extract incident type for QRadar offense ID '{0}'".format(offense_id) };
-  }
-type: javascript
-tags:
-- QRadar
-- Classifier
-comment: "This script Classifies QRadar incidents.\nThe 'QRADAR_CATEGORIES' dictionary
-  translate QRadar 'High level Categories' to its 'Demisto Types' counterpart.\n\nFor
-  custom categories, use the 'customCategories' argument.\nThe offense high level
-  category will be put to context "
-system: true
 args:
-- name: customCategories
-  default: true
+- default: true
   description: 'Option to add custom Categories to the classifier, JSON with QRadar
     high level category and their Demisto type counterparts. i.e {"QRadarCategory1"
     : "DemistoType1", "QRadarCategory2" : "DemistoType2"} '
-- name: contextOutput
-  description: The High level category output. Default set to 'Classifier/Description'
-scripttarget: 0
+  name: customCategories
+- description: The High level category output. Default set to 'Classifier/Description'
+  name: contextOutput
+comment: 'This script Classifies QRadar incidents.
+
+  The ''QRADAR_CATEGORIES'' dictionary translate QRadar ''High level Categories''
+  to its ''Demisto Types'' counterpart.
+
+
+  For custom categories, use the ''customCategories'' argument.
+
+  The offense high level category will be put to context '
+commonfields:
+  id: QRadarClassifier
+  version: -1
 dependson:
   must:
   - qradar-searches
-outputs:
-- contextPath: Classifier/Description
-  description: The QRadar offense 'High level category'
+deprecated: true
 important:
 - contextPath: Classifier/Description
   description: Classifier Description
+name: QRadarClassifier
+outputs:
+- contextPath: Classifier/Description
+  description: The QRadar offense 'High level category'
+script: "var QRADAR_CATEGORIES = {\n    'Recon' : 'Reconnaissance',\n    'DOS' : 'DoS',\n\
+  \    'Authentication' : 'Authentication',\n    'Access' : 'Access',\n    'Exploit'\
+  \ : 'Exploit',\n    'Malware' : 'Malware',\n    'Suspicious Activity' : 'Network',\n\
+  \    'System' : 'Unclassified',\n    'Policy' : 'Unclassified',\n    'Unknown' :\
+  \ 'Unclassified',\n    'Time Series' : 'Unclassified',\n    'CRE' : 'Unclassified',\n\
+  \    'Potential Exploit' : 'Exploit',\n    'Flow' : 'Network',\n    'User Defined'\
+  \ : 'Unclassified',\n    'SIM Audit' : 'Unclassified',\n    'VIS Host Discovery'\
+  \ : 'Network',\n    'Application' : 'Unclassified',\n    'Audit' : 'Unclassified',\n\
+  \    'Risk' : 'Vulnerability',\n    'Risk Manager Audit' : 'Unclassified',\n   \
+  \ 'Control System' : 'Unclassified',\n    'Asset Profiler' : 'Network'\n};\n\nif\
+  \ (args.customCategories){\n    var customObj = JSON.parse(args.customCategories);\n\
+  \    for (var attrname in customObj) { QRADAR_CATEGORIES[attrname] = customObj[attrname];}\n\
+  }\n\nvar CONTEXT_OUTPUT = 'Classifier/Description';\nif(\"contextOutput\" in args){\n\
+  \    CONTEXT_OUTPUT = args.contextOutput;\n}\n\nvar QUERY = \"SELECT CATEGORYNAME(highlevelcategory)\
+  \ FROM events WHERE INOFFENSE({0}) START {1}\";\n\nvar incident = incidents[0];\n\
+  \nvar offense_id = \"\";\nvar start_time = \"\";\nvar offense_type = \"\";\nvar\
+  \ incident_type = \"\";\nvar labels = dq(incident,\"labels\");\n\nlabels.forEach(function(label){\n\
+  \    if (label.type == 'id'){\n        offense_id = label.value;\n    }\n    if\
+  \ (label.type == 'start_time'){\n        start_time = label.value;\n    }\n});\n\
+  \nresp =  executeCommand('QRadarFullSearch', {query_expression :QUERY.format(offense_id,start_time)});\n\
+  if (isError(resp[0])){\n    return resp;\n}\nelse {\n    data = dq(resp[0],'Contents.events');\n\
+  \    offense_type = (data instanceof Array && data.length > 0) ? dq(data[0],'categoryname_highlevelcategory')\
+  \ : '';\n}\nif (offense_type){\n    incident_type = QRADAR_CATEGORIES[offense_type]\
+  \ ? offense_type in QRADAR_CATEGORIES : '';\n    setContext(CONTEXT_OUTPUT,offense_type);\n\
+  }\n\nif (incident_type){\n    resp =  executeCommand('IncidentSet', {'type': incident_type,\
+  \ 'updatePlaybookForType' : 'yes'});\n    if (isError(resp[0])){\n        return\
+  \ resp;\n    }\n}\nelse {\n    return { ContentsFormat: formats.text, Type: entryTypes.error,\
+  \ Contents: \"Couldn't extract incident type for QRadar offense ID '{0}'\".format(offense_id)\
+  \ };\n}\n"
+scripttarget: 0
+system: true
+tags:
+- QRadar
+- Classifier
+toversion: 4.1.9
+type: javascript

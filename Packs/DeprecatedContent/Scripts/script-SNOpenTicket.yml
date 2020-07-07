@@ -1,54 +1,46 @@
+args:
+- default: true
+  description: New ticket category
+  name: category
+- description: New ticket sub category
+  name: subcategory
+- description: New ticket short desciption category
+  name: shortdescription
+- description: New ticket comments
+  name: comments
+- description: New ticket assignment group
+  name: assignmentgroup
+comment: Create a ServiceNow ticket.
 commonfields:
   id: SNOpenTicket
   version: -1
-name: SNOpenTicket
-script: |-
-  DISPLAY_FIELDS = ['number', 'severity', 'category', 'opened_at', 'subcategory', 'priority', 'comments', 'short_description']
-  res = []
-  dArgs = demisto.args()
-  if 'assignmentgroup' in dArgs:
-      dArgs['assignment-group'] = dArgs.pop('assignmentgroup')
-  if 'shortdescription' in dArgs:
-      dArgs['short-description'] = dArgs.pop('shortdescription')
-  resCmdName = demisto.executeCommand("servicenow-incident-create", dArgs)
-  try:
-      for entry in resCmdName:
-          if isError(entry):
-              res = resCmdName
-              break
-          else:
-              myData = demisto.get(entry, 'Contents.result')
-              if myData:
-                  myData = {k: formatCell(myData[k]) for k in DISPLAY_FIELDS}
-                  res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": myData})
-              else:
-                  res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                              "Contents": "Could not extract result list from response: " + json.dumps(entry["Contents"])})
-  except Exception as ex:
-      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                  "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmdName)})
-  demisto.results(res)
-type: python
-subtype: python2
-tags:
-- servicenow
-comment: "Create a ServiceNow ticket."
-system: true
-deprecated: true
-args:
-- name: category
-  default: true
-  description: New ticket category
-- name: subcategory
-  description: New ticket sub category
-- name: shortdescription
-  description: New ticket short desciption category
-- name: comments
-  description: New ticket comments
-- name: assignmentgroup
-  description: New ticket assignment group
-scripttarget: 0
 dependson:
   must:
   - servicenow-incident-create
+deprecated: true
+name: SNOpenTicket
+script: "DISPLAY_FIELDS = ['number', 'severity', 'category', 'opened_at', 'subcategory',\
+  \ 'priority', 'comments', 'short_description']\nres = []\ndArgs = demisto.args()\n\
+  if 'assignmentgroup' in dArgs:\n    dArgs['assignment-group'] = dArgs.pop('assignmentgroup')\n\
+  if 'shortdescription' in dArgs:\n    dArgs['short-description'] = dArgs.pop('shortdescription')\n\
+  resCmdName = demisto.executeCommand(\"servicenow-incident-create\", dArgs)\ntry:\n\
+  \    for entry in resCmdName:\n        if isError(entry):\n            res = resCmdName\n\
+  \            break\n        else:\n            myData = demisto.get(entry, 'Contents.result')\n\
+  \            if myData:\n                myData = {k: formatCell(myData[k]) for\
+  \ k in DISPLAY_FIELDS}\n                res.append({\"Type\": entryTypes[\"note\"\
+  ], \"ContentsFormat\": formats[\"table\"], \"Contents\": myData})\n            else:\n\
+  \                res.append({\"Type\": entryTypes[\"error\"], \"ContentsFormat\"\
+  : formats[\"text\"],\n                            \"Contents\": \"Could not extract\
+  \ result list from response: \" + json.dumps(entry[\"Contents\"])})\nexcept Exception\
+  \ as ex:\n    res.append({\"Type\": entryTypes[\"error\"], \"ContentsFormat\": formats[\"\
+  text\"],\n                \"Contents\": \"Error occurred while parsing output from\
+  \ command. Exception info:\\n\" + str(ex) + \"\\n\\nInvalid output:\\n\" + str(resCmdName)})\n\
+  demisto.results(res)"
+scripttarget: 0
+subtype: python2
+system: true
+tags:
+- servicenow
 timeout: 0s
+toversion: 4.1.9
+type: python

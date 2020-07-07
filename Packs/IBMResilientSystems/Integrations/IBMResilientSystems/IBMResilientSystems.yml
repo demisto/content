@@ -31,11 +31,11 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: 'First fetch timestamp (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z'
+- defaultvalue: ''
+  display: 'First fetch timestamp (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z'
   name: fetch_time
-  defaultvalue: ""
-  type: 0
   required: false
+  type: 0
 description: Case management that enables visibility across your tools for continual
   IR improvement
 display: IBM Resilient Systems
@@ -594,3 +594,4 @@ script:
   script: '-'
   subtype: python3
   type: python
+toversion: 4.1.9

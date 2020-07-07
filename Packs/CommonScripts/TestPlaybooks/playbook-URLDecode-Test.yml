@@ -1,160 +1,124 @@
-id: URLDecode-Test
-version: -1
-rolename: []
-name: URLDecode-Test
 description: 'Testing output of URLDecode '
-starttaskid: "0"
+id: URLDecode-Test
+inputs: []
+name: URLDecode-Test
+outputs: []
+rolename: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 51f3c5c4-68fb-4e22-8827-71fe3e73108c
+      iscommand: false
+      name: ''
+      version: -1
     taskid: 51f3c5c4-68fb-4e22-8827-71fe3e73108c
     type: start
-    task:
-      id: 51f3c5c4-68fb-4e22-8827-71fe3e73108c
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "4"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
+      - '2'
     note: false
-  "1":
-    id: "1"
-    taskid: 8d170e20-df55-4302-83fa-267285681829
-    type: regular
-    task:
-      id: 8d170e20-df55-4302-83fa-267285681829
-      version: -1
-      name: URLDecode
-      description: |-
-        Converts
-        https:%2F%2Fexample.com
-        into
-        https://example.com
-      scriptName: URLDecode
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
     scriptarguments:
       value:
         simple: https:%2F%2Fexample.com/%2F%2F
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-  "2":
-    id: "2"
-    taskid: b80c239c-d58a-4fda-8b99-57847c3f0875
-    type: condition
     task:
-      id: b80c239c-d58a-4fda-8b99-57847c3f0875
-      version: -1
-      name: Check args
-      type: condition
+      brand: ''
+      description: 'Converts
+
+        https:%2F%2Fexample.com
+
+        into
+
+        https://example.com'
+      id: 8d170e20-df55-4302-83fa-267285681829
       iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "3"
-    separatecontext: false
+      name: URLDecode
+      scriptName: URLDecode
+      type: regular
+      version: -1
+    taskid: 8d170e20-df55-4302-83fa-267285681829
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '2':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: DecodedURL
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: https://example.com///
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
+      label: 'yes'
+    id: '2'
+    nexttasks:
+      'yes':
+      - '3'
     note: false
-  "3":
-    id: "3"
-    taskid: 5749107c-6584-4e5d-8f17-15fb7f7a3bed
-    type: title
+    separatecontext: false
     task:
-      id: 5749107c-6584-4e5d-8f17-15fb7f7a3bed
+      brand: ''
+      id: b80c239c-d58a-4fda-8b99-57847c3f0875
+      iscommand: false
+      name: Check args
+      type: condition
       version: -1
+    taskid: b80c239c-d58a-4fda-8b99-57847c3f0875
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '3':
+    id: '3'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 5749107c-6584-4e5d-8f17-15fb7f7a3bed
+      iscommand: false
       name: End test
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-  "4":
-    id: "4"
-    taskid: 63b09765-9535-4bbc-8b74-1e191a670a3a
-    type: regular
-    task:
-      id: 63b09765-9535-4bbc-8b74-1e191a670a3a
       version: -1
-      name: DeleteContext
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: 5749107c-6584-4e5d-8f17-15fb7f7a3bed
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '4':
+    id: '4'
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 735,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    task:
+      brand: ''
+      id: 63b09765-9535-4bbc-8b74-1e191a670a3a
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 63b09765-9535-4bbc-8b74-1e191a670a3a
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 735,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

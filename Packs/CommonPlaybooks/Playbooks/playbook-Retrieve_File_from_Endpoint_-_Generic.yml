@@ -1,59 +1,88 @@
-id: Retrieve File from Endpoint - Generic
-version: -1
-name: Retrieve File from Endpoint - Generic
-fromversion: 4.0.0
-description: |-
-  This playbook retrieves a file sample from an endpoint using the following playbooks:
-  - Get File Sample From Path - Generic
-  - Get File Sample By Hash - Generic v2
-starttaskid: "0"
-tasks:
-  "0":
-    id: "0"
-    taskid: aafd2bad-97ae-4462-85cb-8ef1cad54fc5
-    type: start
-    task:
-      id: aafd2bad-97ae-4462-85cb-8ef1cad54fc5
-      version: -1
-      name: ""
-      description: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-      - "4"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 91b91a1f-227c-433f-8fa0-80fd671e1a1d
-    type: playbook
-    task:
-      id: 91b91a1f-227c-433f-8fa0-80fd671e1a1d
-      version: -1
-      name: Get File Sample From Path - Generic
-      description: |-
-        Returns a file sample to the war-room from a path on an endpoint using one or more integrations
+description: 'This playbook retrieves a file sample from an endpoint using the following
+  playbooks:
 
-        inputs:
-        * UseD2 - if "True", use Demisto Dissolvable Agent (D2) to return the file (default: False)
-      playbookName: Get File Sample From Path - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
+  - Get File Sample From Path - Generic
+
+  - Get File Sample By Hash - Generic v2'
+fromversion: 4.0.0
+id: Retrieve File from Endpoint - Generic
+inputs:
+- description: Get file sample from MD5 input.
+  key: MD5
+  required: false
+  value:
+    complex:
+      accessor: MD5
+      root: File
+      transformers:
+      - operator: uniq
+- description: Get file sample from SHA256 input.
+  key: SHA256
+  required: false
+  value:
+    complex:
+      accessor: SHA256
+      root: File
+      transformers:
+      - operator: uniq
+- description: Hostname of the machine on which the file is located.
+  key: Hostname
+  required: false
+  value:
+    complex:
+      accessor: Hostname
+      root: Endpoint
+      transformers:
+      - operator: uniq
+- description: File path.
+  key: Path
+  required: false
+  value:
+    complex:
+      accessor: Path
+      root: File
+- description: 'Determines whether a D2 agent will be used to retrieve the file.
+
+    Default is no.'
+  key: UseD2
+  required: false
+  value:
+    simple: 'no'
+name: Retrieve File from Endpoint - Generic
+outputs: []
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "3"
+      - '2'
+      - '4'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: aafd2bad-97ae-4462-85cb-8ef1cad54fc5
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: aafd2bad-97ae-4462-85cb-8ef1cad54fc5
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 50\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
     scriptarguments:
       Hostname:
         complex:
@@ -65,62 +94,54 @@ tasks:
         complex:
           root: inputs.UseD2
     separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: 21df4e3f-565e-48ca-8937-7106ed312e6e
-    type: title
     task:
-      id: 21df4e3f-565e-48ca-8937-7106ed312e6e
-      version: -1
-      name: Done
-      description: ""
-      type: title
+      brand: ''
+      description: 'Returns a file sample to the war-room from a path on an endpoint
+        using one or more integrations
+
+
+        inputs:
+
+        * UseD2 - if "True", use Demisto Dissolvable Agent (D2) to return the file
+        (default: False)'
+      id: 91b91a1f-227c-433f-8fa0-80fd671e1a1d
       iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: e6fa1361-9097-4532-8d10-e0c53b74aee7
-    type: playbook
-    task:
-      id: e6fa1361-9097-4532-8d10-e0c53b74aee7
-      version: -1
-      name: Get File Sample By Hash - Generic v2
-      description: |-
-        This playbook returns a file sample correlating to a hash from the war-room using the following sub-playbooks:
-        - Get File Sample By Hash - Carbon Black Enterprise Response
-        - Get File Sample By Hash - Cylance Protect v2
-      playbookName: Get File Sample By Hash - Generic v2
+      name: Get File Sample From Path - Generic
+      playbookName: Get File Sample From Path - Generic
       type: playbook
+      version: -1
+    taskid: 91b91a1f-227c-433f-8fa0-80fd671e1a1d
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 21df4e3f-565e-48ca-8937-7106ed312e6e
       iscommand: false
-      brand: ""
+      name: Done
+      type: title
+      version: -1
+    taskid: 21df4e3f-565e-48ca-8937-7106ed312e6e
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 370\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
     scriptarguments:
       MD5:
         complex:
@@ -129,74 +150,28 @@ tasks:
         complex:
           root: inputs.SHA256
     separatecontext: true
-    loop:
+    task:
+      brand: ''
+      description: 'This playbook returns a file sample correlating to a hash from
+        the war-room using the following sub-playbooks:
+
+        - Get File Sample By Hash - Carbon Black Enterprise Response
+
+        - Get File Sample By Hash - Cylance Protect v2'
+      id: e6fa1361-9097-4532-8d10-e0c53b74aee7
       iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 195
-        }
-      }
-    note: false
+      name: Get File Sample By Hash - Generic v2
+      playbookName: Get File Sample By Hash - Generic v2
+      type: playbook
+      version: -1
+    taskid: e6fa1361-9097-4532-8d10-e0c53b74aee7
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 385,
-        "width": 810,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs:
-- key: MD5
-  value:
-    complex:
-      root: File
-      accessor: MD5
-      transformers:
-      - operator: uniq
-  required: false
-  description: Get file sample from MD5 input.
-- key: SHA256
-  value:
-    complex:
-      root: File
-      accessor: SHA256
-      transformers:
-      - operator: uniq
-  required: false
-  description: Get file sample from SHA256 input.
-- key: Hostname
-  value:
-    complex:
-      root: Endpoint
-      accessor: Hostname
-      transformers:
-      - operator: uniq
-  required: false
-  description: Hostname of the machine on which the file is located.
-- key: Path
-  value:
-    complex:
-      root: File
-      accessor: Path
-  required: false
-  description: File path.
-- key: UseD2
-  value:
-    simple: "no"
-  required: false
-  description: |-
-    Determines whether a D2 agent will be used to retrieve the file.
-    Default is no.
-outputs: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 195\n  }\n}"
 tests:
-  - No test
+- No test
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 385,\n      \"width\": 810,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

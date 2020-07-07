@@ -1,33 +1,23 @@
+comment: Use Active Directory to retrieve the email address associated with all users.
 commonfields:
   id: ADGetEmailForAllUsers
   version: -1
-name: ADGetEmailForAllUsers
-script: |
-  mails = []
-  MAIL_CONTEXT_KEY = "Mailboxes"
-
-  attrs = 'mail'
-  filterstr = r"(&(objectClass=User))"
-  resp = demisto.executeCommand( 'ad-search' , { 'filter' : filterstr, 'attributes' : attrs } )
-  if isError(resp[0]):
-      demisto.results(resp)
-  else:
-      data = demisto.get(resp[0], "Contents")
-      for item in data:
-          mails += [item["mail"]] if item["mail"] else []
-
-      demisto.setContext(MAIL_CONTEXT_KEY, ",".join(mails))
-
-      demisto.results('yes')
-type: python
-subtype: python2
-tags:
-- active directory
-comment: Use Active Directory to retrieve the email address associated with all users.
-system: true
-scripttarget: 0
-deprecated: true
 dependson:
   must:
   - ad-search
+deprecated: true
+name: ADGetEmailForAllUsers
+script: "mails = []\nMAIL_CONTEXT_KEY = \"Mailboxes\"\n\nattrs = 'mail'\nfilterstr\
+  \ = r\"(&(objectClass=User))\"\nresp = demisto.executeCommand( 'ad-search' , { 'filter'\
+  \ : filterstr, 'attributes' : attrs } )\nif isError(resp[0]):\n    demisto.results(resp)\n\
+  else:\n    data = demisto.get(resp[0], \"Contents\")\n    for item in data:\n  \
+  \      mails += [item[\"mail\"]] if item[\"mail\"] else []\n\n    demisto.setContext(MAIL_CONTEXT_KEY,\
+  \ \",\".join(mails))\n\n    demisto.results('yes')\n"
+scripttarget: 0
+subtype: python2
+system: true
+tags:
+- active directory
 timeout: 0s
+toversion: 4.1.9
+type: python

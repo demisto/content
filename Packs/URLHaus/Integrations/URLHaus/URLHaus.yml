@@ -25,7 +25,8 @@ configuration:
   name: compromised_is_malicious
   required: false
   type: 8
-- additionalinfo: Determines how many times a command should be retried before raising an error.
+- additionalinfo: Determines how many times a command should be retried before raising
+    an error.
   defaultvalue: '3'
   display: Number of retries
   hidden: false
@@ -262,3 +263,4 @@ script:
   type: python
 tests:
 - Test_URLhaus
+toversion: 4.1.9

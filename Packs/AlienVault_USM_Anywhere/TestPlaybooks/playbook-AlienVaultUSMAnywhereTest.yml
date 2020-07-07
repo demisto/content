@@ -1,85 +1,112 @@
 id: AlienVaultUSMAnywhereTest
-version: -1
+inputs: []
 name: AlienVaultUSMAnywhereTest
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 11ea892b-ca95-4a24-874f-932468b6facc
-    type: start
-    task:
-      id: 11ea892b-ca95-4a24-874f-932468b6facc
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 50
-        }
-      }
+      - '1'
     note: false
-    timertriggers: []
-  "1":
-    id: "1"
-    taskid: cd3f00c4-a826-4fde-885b-3f2543b70a8e
-    type: regular
+    separatecontext: false
     task:
-      id: cd3f00c4-a826-4fde-885b-3f2543b70a8e
-      version: -1
-      name: Clean Start
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      id: 11ea892b-ca95-4a24-874f-932468b6facc
       iscommand: false
-      brand: ""
+      name: ''
+      version: -1
+    taskid: 11ea892b-ca95-4a24-874f-932468b6facc
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "2"
-      - "11"
+      - '2'
+      - '11'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-  "2":
-    id: "2"
-    taskid: 8fc3581b-a478-40b4-81ce-ff262366b33b
-    type: regular
     task:
-      id: 8fc3581b-a478-40b4-81ce-ff262366b33b
-      version: -1
-      name: Search alarms
-      description: Get alarms from service.
-      script: '|||alienvault-search-alarms'
+      brand: ''
+      description: Delete field from context
+      id: cd3f00c4-a826-4fde-885b-3f2543b70a8e
+      iscommand: false
+      name: Clean Start
+      scriptName: DeleteContext
       type: regular
+      version: -1
+    taskid: cd3f00c4-a826-4fde-885b-3f2543b70a8e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 195\n  }\n}"
+  '10':
+    id: '10'
+    note: false
+    scriptarguments:
+      alarm_id:
+        simple: ${AV.AlarmID}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Get events associated with an alarm.
+      id: 7ea3115a-c861-492a-873a-491d4c51beff
       iscommand: true
-      brand: ""
+      name: Get Events by Alarm ID
+      script: '|||alienvault-get-events-by-alarm'
+      type: regular
+      version: -1
+    taskid: 7ea3115a-c861-492a-873a-491d4c51beff
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 920,\n    \"y\": 1070\n  }\n}"
+  '11':
+    id: '11'
+    note: false
+    scriptarguments:
+      account_name: {}
+      end_time: {}
+      event_name:
+        simple: ET POLICY RDP connection confirm
+      limit:
+        simple: '5'
+      source_name: {}
+      start_time: {}
+      time_frame:
+        simple: Today
+    separatecontext: false
+    task:
+      brand: ''
+      description: Search events.
+      id: db25d685-d8fd-4325-80ac-6f9392b094d7
+      iscommand: true
+      name: Search events
+      script: '|||alienvault-search-events'
+      type: regular
+      version: -1
+    taskid: db25d685-d8fd-4325-80ac-6f9392b094d7
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -180,\n    \"y\": 370\n  }\n}"
+  '2':
+    id: '2'
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
     scriptarguments:
       end_time: {}
       limit:
-        simple: "6"
+        simple: '6'
       priority: {}
       rule_intent: {}
       rule_method: {}
@@ -89,170 +116,146 @@ tasks:
       status: {}
       time_frame: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-  "3":
-    id: "3"
-    taskid: 9ae31abc-9945-4eb8-8318-ad9622805555
-    type: condition
     task:
-      id: 9ae31abc-9945-4eb8-8318-ad9622805555
+      brand: ''
+      description: Get alarms from service.
+      id: 8fc3581b-a478-40b4-81ce-ff262366b33b
+      iscommand: true
+      name: Search alarms
+      script: '|||alienvault-search-alarms'
+      type: regular
       version: -1
-      name: Verify Command Success
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "4"
-      "yes":
-      - "5"
-    separatecontext: false
+    taskid: 8fc3581b-a478-40b4-81ce-ff262366b33b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 370\n  }\n}"
+  '3':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: AlienVault
                 accessor: Alarm
+                root: AlienVault
                 transformers:
                 - operator: GetFirstObject
-                - operator: getField
-                  args:
+                - args:
                     field:
                       value:
                         simple: ID
+                  operator: getField
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               complex:
-                root: AlienVault
                 accessor: Alarm
+                root: AlienVault
                 transformers:
                 - operator: GetFirstObject
-                - operator: getField
-                  args:
+                - args:
                     field:
                       value:
                         simple: Priority
+                  operator: getField
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: AlienVault.Alarm.OccurredTime
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: AlienVault.Alarm.Source.IPAddress
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 545
-        }
-      }
+          operator: isExists
+      label: 'yes'
+    id: '3'
+    nexttasks:
+      '#default#':
+      - '4'
+      'yes':
+      - '5'
     note: false
-    timertriggers: []
-  "4":
-    id: "4"
-    taskid: 99c897af-114b-4559-8e19-3f3851561943
-    type: regular
+    separatecontext: false
     task:
-      id: 99c897af-114b-4559-8e19-3f3851561943
-      version: -1
-      name: Error
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
+      brand: ''
+      id: 9ae31abc-9945-4eb8-8318-ad9622805555
       iscommand: false
-      brand: ""
+      name: Verify Command Success
+      type: condition
+      version: -1
+    taskid: 9ae31abc-9945-4eb8-8318-ad9622805555
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 545\n  }\n}"
+  '4':
+    id: '4'
+    note: false
     scriptarguments:
       message:
         simple: Invalid Outputs
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-  "5":
-    id: "5"
-    taskid: 2ff050b8-65e8-4fa1-88f6-a5a2672b5076
-    type: regular
     task:
-      id: 2ff050b8-65e8-4fa1-88f6-a5a2672b5076
-      version: -1
-      name: Save one ID
-      description: Sets a value into the context with the given context key
-      scriptName: Set
-      type: regular
+      brand: ''
+      description: Prints an error entry with a given message
+      id: 99c897af-114b-4559-8e19-3f3851561943
       iscommand: false
-      brand: ""
+      name: Error
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 99c897af-114b-4559-8e19-3f3851561943
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1420\n  }\n}"
+  '5':
+    id: '5'
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
+    note: false
     scriptarguments:
       append: {}
       key:
         simple: AV.AlarmID
       value:
         complex:
-          root: AlienVault
           accessor: Alarm
+          root: AlienVault
           transformers:
-          - operator: atIndex
-            args:
+          - args:
               index:
                 value:
-                  simple: "0"
-          - operator: getField
-            args:
+                  simple: '0'
+            operator: atIndex
+          - args:
               field:
                 value:
                   simple: ID
+            operator: getField
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-  "6":
-    id: "6"
-    taskid: 5813d409-d4ce-43e3-86cc-512c476a3df3
-    type: regular
     task:
-      id: 5813d409-d4ce-43e3-86cc-512c476a3df3
-      version: -1
-      name: Clear Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      description: Sets a value into the context with the given context key
+      id: 2ff050b8-65e8-4fa1-88f6-a5a2672b5076
       iscommand: false
-      brand: ""
+      name: Save one ID
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 2ff050b8-65e8-4fa1-88f6-a5a2672b5076
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 720\n  }\n}"
+  '6':
+    id: '6'
     nexttasks:
       '#none#':
-      - "7"
-      - "10"
+      - '7'
+      - '10'
+    note: false
     scriptarguments:
       all: {}
       index: {}
@@ -261,182 +264,99 @@ tasks:
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-  "7":
-    id: "7"
-    taskid: f8ecbafd-a595-4691-8723-a5878238e1c6
-    type: regular
     task:
-      id: f8ecbafd-a595-4691-8723-a5878238e1c6
-      version: -1
-      name: Get Specific Alarm
-      description: Get an alarm's details using ID
-      script: '|||alienvault-get-alarm'
+      brand: ''
+      description: Delete field from context
+      id: 5813d409-d4ce-43e3-86cc-512c476a3df3
+      iscommand: false
+      name: Clear Context
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: 5813d409-d4ce-43e3-86cc-512c476a3df3
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 895\n  }\n}"
+  '7':
+    id: '7'
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
+    note: false
     scriptarguments:
       alarm_id:
         simple: ${AV.AlarmID}
       id:
         simple: ${AV.AlarmID}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-  "8":
-    id: "8"
-    taskid: 6dba6e3a-bd3c-478a-8f75-968a4648acb2
-    type: condition
     task:
-      id: 6dba6e3a-bd3c-478a-8f75-968a4648acb2
+      brand: ''
+      description: Get an alarm's details using ID
+      id: f8ecbafd-a595-4691-8723-a5878238e1c6
+      iscommand: true
+      name: Get Specific Alarm
+      script: '|||alienvault-get-alarm'
+      type: regular
       version: -1
-      name: Verify Command Success
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "4"
-      "yes":
-      - "9"
-    separatecontext: false
+    taskid: f8ecbafd-a595-4691-8723-a5878238e1c6
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 1070\n  }\n}"
+  '8':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: AlienVault.Alarm.ID
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: AlienVault.Alarm.Priority
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: AlienVault.Alarm.OccurredTime
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 1245
-        }
-      }
+          operator: isExists
+      label: 'yes'
+    id: '8'
+    nexttasks:
+      '#default#':
+      - '4'
+      'yes':
+      - '9'
     note: false
-    timertriggers: []
-  "9":
-    id: "9"
-    taskid: 3eea87db-d087-4ffc-8aff-d0959872f42d
-    type: title
+    separatecontext: false
     task:
-      id: 3eea87db-d087-4ffc-8aff-d0959872f42d
+      brand: ''
+      id: 6dba6e3a-bd3c-478a-8f75-968a4648acb2
+      iscommand: false
+      name: Verify Command Success
+      type: condition
       version: -1
+    taskid: 6dba6e3a-bd3c-478a-8f75-968a4648acb2
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 1245\n  }\n}"
+  '9':
+    id: '9'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 3eea87db-d087-4ffc-8aff-d0959872f42d
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1435
-        }
-      }
-    note: false
-    timertriggers: []
-  "10":
-    id: "10"
-    taskid: 7ea3115a-c861-492a-873a-491d4c51beff
-    type: regular
-    task:
-      id: 7ea3115a-c861-492a-873a-491d4c51beff
       version: -1
-      name: Get Events by Alarm ID
-      description: Get events associated with an alarm.
-      script: '|||alienvault-get-events-by-alarm'
-      type: regular
-      iscommand: true
-      brand: ""
-    scriptarguments:
-      alarm_id:
-        simple: ${AV.AlarmID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 920,
-          "y": 1070
-        }
-      }
-    note: false
+    taskid: 3eea87db-d087-4ffc-8aff-d0959872f42d
     timertriggers: []
-  "11":
-    id: "11"
-    taskid: db25d685-d8fd-4325-80ac-6f9392b094d7
-    type: regular
-    task:
-      id: db25d685-d8fd-4325-80ac-6f9392b094d7
-      version: -1
-      name: Search events
-      description: Search events.
-      script: '|||alienvault-search-events'
-      type: regular
-      iscommand: true
-      brand: ""
-    scriptarguments:
-      account_name: {}
-      end_time: {}
-      event_name:
-        simple: ET POLICY RDP connection confirm
-      limit:
-        simple: "5"
-      source_name: {}
-      start_time: {}
-      time_frame:
-        simple: Today
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -180,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1465,
-        "width": 1480,
-        "x": -180,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1435\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1465,\n      \"width\": 1480,\n      \"x\": -180,\n      \"y\"\
+  : 50\n    }\n  }\n}"

@@ -1,48 +1,34 @@
 id: playbook-checkEmailAuthenticity-test
-version: -1
+inputs: []
 name: playbook-checkEmailAuthenticity-test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 8f3af618-18e3-454d-836f-2179ca55aed0
-    type: start
-    task:
-      id: 8f3af618-18e3-454d-836f-2179ca55aed0
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: b58b4b73-e328-4e88-8f1e-58201c9f6aec
-    type: regular
-    task:
-      id: b58b4b73-e328-4e88-8f1e-58201c9f6aec
-      version: -1
-      name: Bring email from server
-      description: Sends http request. Returns the response as json.
-      scriptName: http
-      type: regular
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 8f3af618-18e3-454d-836f-2179ca55aed0
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 8f3af618-18e3-454d-836f-2179ca55aed0
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
     scriptarguments:
       body: {}
       filename: {}
@@ -53,74 +39,62 @@ tasks:
       password: {}
       proxy: {}
       saveAsFile:
-        simple: "yes"
+        simple: 'yes'
       unsecure: {}
       url:
         simple: https://raw.githubusercontent.com/demisto/content/master/TestData/CheckEmailAuthenticity_test_mail.eml
       username: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 010d86e9-a3e6-45ae-8762-e7847d7f29d8
-    type: regular
     task:
-      id: 010d86e9-a3e6-45ae-8762-e7847d7f29d8
+      brand: ''
+      description: Sends http request. Returns the response as json.
+      id: b58b4b73-e328-4e88-8f1e-58201c9f6aec
+      iscommand: false
+      name: Bring email from server
+      scriptName: http
+      type: regular
       version: -1
-      name: Parse Email
+    taskid: b58b4b73-e328-4e88-8f1e-58201c9f6aec
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    results:
+    - AttachmentName
+    scriptarguments:
+      entryid:
+        simple: ${File.EntryID}
+      max_depth: {}
+      parse_only_headers: {}
+    separatecontext: false
+    task:
+      brand: ''
       description: Parse an email from an eml or msg file and populate all relevant
         context data to investigate the email. Also extracts inner attachments and
         returns them to the war room. The incident labels themselves are preserved
         and not modified - only the "Label/x" context items that originated from the
         labels, and the best practice is to rely on these for the remainder of the
         playbook.
+      id: 010d86e9-a3e6-45ae-8762-e7847d7f29d8
+      iscommand: false
+      name: Parse Email
       scriptName: ParseEmailFiles
       type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      entryid:
-        simple: ${File.EntryID}
-      max_depth: {}
-      parse_only_headers: {}
-    results:
-    - AttachmentName
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: 651f04dc-657a-45c9-8580-5bb531564f58
-    type: regular
-    task:
-      id: 651f04dc-657a-45c9-8580-5bb531564f58
       version: -1
-      name: Check Authenticity
-      description: Checks Email authenticity based on its SPF, DMARC and DKIM
-      scriptName: CheckEmailAuthenticity
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: 010d86e9-a3e6-45ae-8762-e7847d7f29d8
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
+    note: false
     scriptarguments:
       DKIM_override_fail: {}
       DKIM_override_neutral: {}
@@ -144,27 +118,21 @@ tasks:
       headers:
         simple: ${Email.Headers}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      description: Checks Email authenticity based on its SPF, DMARC and DKIM
+      id: 651f04dc-657a-45c9-8580-5bb531564f58
+      iscommand: false
+      name: Check Authenticity
+      scriptName: CheckEmailAuthenticity
+      type: regular
+      version: -1
+    taskid: 651f04dc-657a-45c9-8580-5bb531564f58
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 590,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 590,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

@@ -1,27 +1,29 @@
+args:
+- description: An array of email addresses to be filtered by domain.
+  name: value
+  required: true
+- description: A regex pattern who's groups to be replaced by the replaceWith argument.
+  name: regex
+  required: true
+- description: The replacement string.
+  name: replace_with
+  required: true
+comment: Returns a string with all matches of a regex pattern groups replaced by a
+  replacement.
 commonfields:
   id: ReplaceMatchGroup
   version: -1
+dockerimage: demisto/python3:3.7.3.286
+enabled: true
 name: ReplaceMatchGroup
+runas: DBotWeakRole
+runonce: false
 script: ''
-type: python
+scripttarget: 0
 subtype: python3
 tags:
 - transformer
-comment: Returns a string with all matches of a regex pattern groups replaced by a replacement.
-enabled: true
-args:
-- name: value
-  required: true
-  description: An array of email addresses to be filtered by domain.
-- name: regex
-  required: true
-  description: A regex pattern who's groups to be replaced by the replaceWith argument.
-- name: replace_with
-  required: true
-  description: The replacement string.
-scripttarget: 0
-runonce: false
-dockerimage: demisto/python3:3.7.3.286
-runas: DBotWeakRole
 tests:
 - No test - unit test
+toversion: 4.1.9
+type: python

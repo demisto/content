@@ -17,9 +17,9 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: Use system proxy settings
+- defaultvalue: ''
+  display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
   required: false
   type: 8
 - defaultvalue: 24 hours
@@ -222,11 +222,11 @@ script:
       required: false
       secret: false
     - default: false
-      description: If set to `true` then the ticket’s closed_at, resolved_at and first_responded_at
-        time will be included in the response. Note that this is not set by default
-        because setting this to 'true' will consume an additional API credit per API
-        call. To see more details, please turn to the Freshdesk API documentation
-        - https://developers.freshdesk.com/api/#embedding
+      description: "If set to `true` then the ticket\u2019s closed_at, resolved_at\
+        \ and first_responded_at time will be included in the response. Note that\
+        \ this is not set by default because setting this to 'true' will consume an\
+        \ additional API credit per API call. To see more details, please turn to\
+        \ the Freshdesk API documentation - https://developers.freshdesk.com/api/#embedding"
       isArray: false
       name: include_stats
       predefined:
@@ -966,9 +966,9 @@ script:
       description: Signature of the agent (in HTML format)
       type: String
     - contextPath: Freshdesk.Agent.TicketScope
-      description: |-
-        Ticket permission of the agent
-        (1 - Global Access, 2 - Group Access, 3 - Restricted Access)
+      description: 'Ticket permission of the agent
+
+        (1 - Global Access, 2 - Group Access, 3 - Restricted Access)'
       type: Number
     - contextPath: Freshdesk.Agent.GroupID
       description: Group IDs associated with the agent
@@ -1146,12 +1146,15 @@ script:
     name: fd-delete-ticket
   - arguments:
     - default: false
-      description: |-
-        Predefined filters for filtering tickets. The options are:
-        'new_and_my_open' - New and my open tickets.
-        'watching' - Tickets I'm watching.
-        'spam' - Tickets that have been marked as spam.
-        'deleted' - Tickets that have been soft-deleted, aka moved to Trash.
+      description: 'Predefined filters for filtering tickets. The options are:
+
+        ''new_and_my_open'' - New and my open tickets.
+
+        ''watching'' - Tickets I''m watching.
+
+        ''spam'' - Tickets that have been marked as spam.
+
+        ''deleted'' - Tickets that have been soft-deleted, aka moved to Trash.'
       isArray: false
       name: filter
       predefined:
@@ -1199,10 +1202,11 @@ script:
       required: false
       secret: false
     - default: false
-      description: If set to 'true' then ticket’s closed_at, resolved_at and first_responded_at
-        time will be included. Note that this is not set by default because setting
-        this to 'true' will consume an additional 2 API credits per API call. To see
-        more details, see the Freshdesk API documentation - https://developers.freshdesk.com/api/#embedding
+      description: "If set to 'true' then ticket\u2019s closed_at, resolved_at and\
+        \ first_responded_at time will be included. Note that this is not set by default\
+        \ because setting this to 'true' will consume an additional 2 API credits\
+        \ per API call. To see more details, see the Freshdesk API documentation -\
+        \ https://developers.freshdesk.com/api/#embedding"
       isArray: false
       name: include_stats
       predefined:
@@ -1236,26 +1240,35 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Filter tickets using a custom query.
+      description: 'Filter tickets using a custom query.
 
-        Format - "(ticket_field:integer OR ticket_field:'string') AND ticket_field:boolean"
-        Example - "(type:'Question' OR type:'Problem') AND (due_by:>'2017-10-01' AND due_by:<'2017-10-07')"
+
+        Format - "(ticket_field:integer OR ticket_field:''string'') AND ticket_field:boolean"
+
+        Example - "(type:''Question'' OR type:''Problem'') AND (due_by:>''2017-10-01''
+        AND due_by:<''2017-10-07'')"
+
         For more examples, see the Freshdesk API documentation https://developers.freshdesk.com/api/#filter_tickets
 
-        Note that the custom_query argument cannot be used in conjunction with this command's other arguments.
+
+        Note that the custom_query argument cannot be used in conjunction with this
+        command''s other arguments.'
       isArray: false
       name: custom_query
       required: false
       secret: false
     deprecated: false
-    description: |-
-      Returns a list of all tickets that match the filter criteria. If
+    description: 'Returns a list of all tickets that match the filter criteria. If
+
       no filters are specified, all tickets from the last 30 days are returned.
+
       Note that this command can consume multiple API credits - this can occur
+
       if the count of tickets resulting from your query exceeds 30 - in that instance
+
       this command makes additional calls to the API to retrieve additional tickets
-      matching your query.
+
+      matching your query.'
     execution: false
     name: fd-search-tickets
     outputs:
@@ -1313,10 +1326,11 @@ script:
     - contextPath: Freshdesk.Ticket.Attachment.Size
       description: Size of the file attached to the ticket
       type: String
-  subtype: python2
   isfetch: true
   runonce: false
   script: '-'
+  subtype: python2
   type: python
 tests:
 - Freshdesk-Test
+toversion: 4.1.9

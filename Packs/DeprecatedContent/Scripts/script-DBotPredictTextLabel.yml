@@ -1,94 +1,28 @@
+args:
+- description: The input text to predict on
+  isArray: true
+  name: inputText
+  required: true
+- defaultValue: phishing_model
+  description: Demisto list name that stores the machine learning model
+  name: modelListName
+- auto: PREDEFINED
+  defaultValue: 'no'
+  description: Is the input text is hashed
+  name: hashData
+  predefined:
+  - 'yes'
+  - 'no'
+comment: This script is deprecated. See https://xsoar.pan.dev/docs/reference/playbooks/d-bot-create-phishing-classifier-v2
+  for more information.
 commonfields:
   id: DBotPredictTextLabel
   version: -1
-name: DBotPredictTextLabel
-script: |+
-  import sys, base64, re
-  import demisto_ml
-
-  HASH_WORDS = (demisto.args()['hashData'] == 'yes')
-  HASH_SEED = 5381
-
-  def get_input_text_prediction(model, input_text):
-      number_of_tokens = len(input_text.split(" "))
-      label, probability =  demisto_ml.predict(model, input_text)
-      return {
-          'Label': label,
-          'Probability': "%.2f" % probability,
-          'InputTextNumberOfTokens': number_of_tokens,
-          'InputTextTokens': input_text
-      }
-
-
-
-  def load_model(list_name):
-      lst = demisto.executeCommand("getList", {"listName": list_name})
-      lst = lst[0]
-      if lst['Type'] == entryTypes['error']:
-        return_error("error reading list %s from demisto" % list_name)
-        sys.exit(0)
-      model_as_string = lst["Contents"]
-      return demisto_ml.decode_model(model_as_string)
-
-  # validate input text
-  input_txt = demisto.args().get('inputText', '')
-  if len(input_txt) == 0:
-      return_error("Input text is missing")
-  res = demisto.executeCommand('WordTokenizer', {
-      'value': input_txt,
-      'hashWordWithSeed': HASH_SEED if HASH_WORDS else None,
-      'type': 'punkt'
-  })
-  if isError(res[0]):
-      demisto.results(res)
-      sys.exit(0)
-  input_txt = res[0]['Contents']
-  if len(input_txt) == 0:
-      return_error("Input text after remove HTML tags is empty: %s" % input_txt)
-  if type(input_txt) is not list:
-      input_txt = [input_txt]
-
-  model = load_model(demisto.args()['modelListName'])
-
-  predictions = map(lambda x: get_input_text_prediction(model, x), input_txt)
-  if len(predictions) == 1:
-      predictions = predictions[0]
-  context = {
-      "DBotPredictTextLabel": predictions
-  }
-
-  demisto.results({
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': predictions,
-        'EntryContext':context,
-        "HumanReadable": tableToMarkdown('DBot label suggestion', predictions),
-        "HumanReadableFormat" : formats["markdown"]
-  })
-
-
-type: python
-subtype: python2
-tags:
-- ml
-- phishing
-comment: This script is deprecated. See https://xsoar.pan.dev/docs/reference/playbooks/d-bot-create-phishing-classifier-v2 for more information.
+deprecated: true
+dockerimage: demisto/dl:1.1
 enabled: true
-args:
-- name: inputText
-  required: true
-  description: The input text to predict on
-  isArray: true
-- name: modelListName
-  description: Demisto list name that stores the machine learning model
-  defaultValue: phishing_model
-- name: hashData
-  auto: PREDEFINED
-  predefined:
-  - "yes"
-  - "no"
-  description: Is the input text is hashed
-  defaultValue: "no"
+fromversion: 4.1.0
+name: DBotPredictTextLabel
 outputs:
 - contextPath: DBotPredictTextLabel.Label
   description: The suggested label
@@ -101,10 +35,37 @@ outputs:
   type: number
 - contextPath: DBotPredictTextLabel.InputTextTokens
   description: The input text
-scripttarget: 0
 runonce: false
-dockerimage: demisto/dl:1.1
-deprecated: true
-fromversion: 4.1.0
+script: "import sys, base64, re\nimport demisto_ml\n\nHASH_WORDS = (demisto.args()['hashData']\
+  \ == 'yes')\nHASH_SEED = 5381\n\ndef get_input_text_prediction(model, input_text):\n\
+  \    number_of_tokens = len(input_text.split(\" \"))\n    label, probability = \
+  \ demisto_ml.predict(model, input_text)\n    return {\n        'Label': label,\n\
+  \        'Probability': \"%.2f\" % probability,\n        'InputTextNumberOfTokens':\
+  \ number_of_tokens,\n        'InputTextTokens': input_text\n    }\n\n\n\ndef load_model(list_name):\n\
+  \    lst = demisto.executeCommand(\"getList\", {\"listName\": list_name})\n    lst\
+  \ = lst[0]\n    if lst['Type'] == entryTypes['error']:\n      return_error(\"error\
+  \ reading list %s from demisto\" % list_name)\n      sys.exit(0)\n    model_as_string\
+  \ = lst[\"Contents\"]\n    return demisto_ml.decode_model(model_as_string)\n\n#\
+  \ validate input text\ninput_txt = demisto.args().get('inputText', '')\nif len(input_txt)\
+  \ == 0:\n    return_error(\"Input text is missing\")\nres = demisto.executeCommand('WordTokenizer',\
+  \ {\n    'value': input_txt,\n    'hashWordWithSeed': HASH_SEED if HASH_WORDS else\
+  \ None,\n    'type': 'punkt'\n})\nif isError(res[0]):\n    demisto.results(res)\n\
+  \    sys.exit(0)\ninput_txt = res[0]['Contents']\nif len(input_txt) == 0:\n    return_error(\"\
+  Input text after remove HTML tags is empty: %s\" % input_txt)\nif type(input_txt)\
+  \ is not list:\n    input_txt = [input_txt]\n\nmodel = load_model(demisto.args()['modelListName'])\n\
+  \npredictions = map(lambda x: get_input_text_prediction(model, x), input_txt)\n\
+  if len(predictions) == 1:\n    predictions = predictions[0]\ncontext = {\n    \"\
+  DBotPredictTextLabel\": predictions\n}\n\ndemisto.results({\n      'ContentsFormat':\
+  \ formats['json'],\n      'Type': entryTypes['note'],\n      'Contents': predictions,\n\
+  \      'EntryContext':context,\n      \"HumanReadable\": tableToMarkdown('DBot label\
+  \ suggestion', predictions),\n      \"HumanReadableFormat\" : formats[\"markdown\"\
+  ]\n})\n\n\n"
+scripttarget: 0
+subtype: python2
+tags:
+- ml
+- phishing
 tests:
-  - CreatePhishingClassifierMLTest
+- CreatePhishingClassifierMLTest
+toversion: 4.1.9
+type: python

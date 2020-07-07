@@ -1,219 +1,21 @@
-id: Account Enrichment - Generic v2
-version: -1
-fromversion: 4.1.0
-name: Account Enrichment - Generic v2
-description: |-
-  Enrich accounts using one or more integrations.
+description: 'Enrich accounts using one or more integrations.
+
   Supported integrations:
-  - Active Directory
-starttaskid: "0"
-tasks:
-  "0":
-    id: "0"
-    taskid: 03bb7183-afc8-4bcd-8f32-5c35d41fdcad
-    type: start
-    task:
-      id: 03bb7183-afc8-4bcd-8f32-5c35d41fdcad
-      version: -1
-      name: ""
-      description: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "1":
-    id: "1"
-    taskid: f4d7cbdd-cd4a-48bd-8360-740b97fba2e0
-    type: condition
-    task:
-      id: f4d7cbdd-cd4a-48bd-8360-740b97fba2e0
-      version: -1
-      name: Is there an account to enrich?
-      description: Checks if there is at least one username to enrich.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "3"
-      "yes":
-      - "4"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: inputs.Username
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 203
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: ee0fc2dd-d3aa-4e72-82ac-f12d9bd4a9fa
-    type: title
-    task:
-      id: ee0fc2dd-d3aa-4e72-82ac-f12d9bd4a9fa
-      version: -1
-      name: Done
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 765
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 6d452be6-9cf3-47e7-8424-180ff698cb8b
-    type: condition
-    task:
-      id: 6d452be6-9cf3-47e7-8424-180ff698cb8b
-      version: -1
-      name: Is Active Directory enabled?
-      description: Checks if there is an active instance of the Active Directory integration enabled.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "3"
-      "yes":
-      - "5"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: activedir
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 395
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 34511610-25f6-4cba-88be-5efe1ce7a69e
-    type: regular
-    task:
-      id: 34511610-25f6-4cba-88be-5efe1ce7a69e
-      version: -1
-      name: Get account info from Active Directory
-      description: Queries Active Directory for the username's information.
-      scriptName: ADGetUser
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      attributes: {}
-      customFieldData: {}
-      customFieldType: {}
-      dn: {}
-      email: {}
-      headers: {}
-      limit: {}
-      name: {}
-      nestedSearch: {}
-      userAccountControlOut: {}
-      username:
-        complex:
-          root: inputs.Username
-          transformers:
-          - operator: uniq
-    reputationcalc: 1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 320,
-          "y": 580
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {
-      "1_3_#default#": 0.62
-    },
-    "paper": {
-      "dimensions": {
-        "height": 780,
-        "width": 650,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
+
+  - Active Directory'
+fromversion: 4.1.0
+id: Account Enrichment - Generic v2
 inputs:
-- key: Username
+- description: The username to enrich.
+  key: Username
+  required: false
   value:
     complex:
-      root: Account
       accessor: Username
+      root: Account
       transformers:
       - operator: uniq
-  required: false
-  description: The username to enrich.
+name: Account Enrichment - Generic v2
 outputs:
 - contextPath: Account
   description: The account object.
@@ -237,5 +39,165 @@ outputs:
 - contextPath: Account.Manager
   description: The account's manager.
   type: string
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 03bb7183-afc8-4bcd-8f32-5c35d41fdcad
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 03bb7183-afc8-4bcd-8f32-5c35d41fdcad
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Username
+          operator: isExists
+      label: 'yes'
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '3'
+      'yes':
+      - '4'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Checks if there is at least one username to enrich.
+      id: f4d7cbdd-cd4a-48bd-8360-740b97fba2e0
+      iscommand: false
+      name: Is there an account to enrich?
+      type: condition
+      version: -1
+    taskid: f4d7cbdd-cd4a-48bd-8360-740b97fba2e0
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 203\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: ee0fc2dd-d3aa-4e72-82ac-f12d9bd4a9fa
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: ee0fc2dd-d3aa-4e72-82ac-f12d9bd4a9fa
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 765\n  }\n}"
+  '4':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: activedir
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: 'yes'
+    id: '4'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '3'
+      'yes':
+      - '5'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Checks if there is an active instance of the Active Directory integration
+        enabled.
+      id: 6d452be6-9cf3-47e7-8424-180ff698cb8b
+      iscommand: false
+      name: Is Active Directory enabled?
+      type: condition
+      version: -1
+    taskid: 6d452be6-9cf3-47e7-8424-180ff698cb8b
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 395\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      attributes: {}
+      customFieldData: {}
+      customFieldType: {}
+      dn: {}
+      email: {}
+      headers: {}
+      limit: {}
+      name: {}
+      nestedSearch: {}
+      userAccountControlOut: {}
+      username:
+        complex:
+          root: inputs.Username
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    task:
+      brand: ''
+      description: Queries Active Directory for the username's information.
+      id: 34511610-25f6-4cba-88be-5efe1ce7a69e
+      iscommand: false
+      name: Get account info from Active Directory
+      scriptName: ADGetUser
+      type: regular
+      version: -1
+    taskid: 34511610-25f6-4cba-88be-5efe1ce7a69e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 320,\n    \"y\": 580\n  }\n}"
 tests:
-  - Account Enrichment - Generic v2 - Test
+- Account Enrichment - Generic v2 - Test
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"1_3_#default#\": 0.62\n  },\n  \"paper\"\
+  : {\n    \"dimensions\": {\n      \"height\": 780,\n      \"width\": 650,\n    \
+  \  \"x\": 50,\n      \"y\": 50\n    }\n  }\n}"

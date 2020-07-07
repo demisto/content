@@ -1,39 +1,24 @@
+comment: 'Sets IPs in context for testing purposes.
+
+  3 IPs are set: 1 internal, and 2 external.'
 commonfields:
   id: SetIPsTest
   version: -1
+enabled: true
 name: SetIPsTest
-script: |2+
-
-  context_output = [{
-      'Address': '98.137.246.7'
-      },
-      {
-      'Address': '23.210.254.113'
-      },
-      {
-      'Address': '172.16.0.10'
-      }
-      ]
-
-  demisto.results( {
-      'Type': entryTypes['note'],
-      'ContentsFormat': formats['json'],
-      'Contents': context_output,
-      'EntryContext': {
-          'IP(val.Address === obj.Address)': context_output
-                   }
-  } )
-
-type: python
+runas: DBotWeakRole
+runonce: false
+script: "\ncontext_output = [{\n    'Address': '98.137.246.7'\n    },\n    {\n   \
+  \ 'Address': '23.210.254.113'\n    },\n    {\n    'Address': '172.16.0.10'\n   \
+  \ }\n    ]\n\ndemisto.results( {\n    'Type': entryTypes['note'],\n    'ContentsFormat':\
+  \ formats['json'],\n    'Contents': context_output,\n    'EntryContext': {\n   \
+  \     'IP(val.Address === obj.Address)': context_output\n                 }\n} )\n\
+  \n"
+scripttarget: 0
 subtype: python2
 tags:
 - test
-comment: |-
-  Sets IPs in context for testing purposes.
-  3 IPs are set: 1 internal, and 2 external.
-enabled: true
-scripttarget: 0
-runonce: false
-runas: DBotWeakRole
 tests:
-  - no test (it's a part of ip enrichment test playbook)
+- no test (it's a part of ip enrichment test playbook)
+toversion: 4.1.9
+type: python

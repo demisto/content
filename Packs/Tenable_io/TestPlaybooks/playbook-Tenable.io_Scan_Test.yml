@@ -1,102 +1,76 @@
 id: Tenable.io Scan Test
-version: -1
+inputs: []
 name: Tenable.io Scan Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 44f901f3-0641-4dd2-8bd4-a27d26c2b1d8
+      iscommand: false
+      name: ''
+      version: -1
     taskid: 44f901f3-0641-4dd2-8bd4-a27d26c2b1d8
     type: start
-    task:
-      id: 44f901f3-0641-4dd2-8bd4-a27d26c2b1d8
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '2':
+    id: '2'
     nexttasks:
       '#none#':
-      - "2"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
+      - '3'
     note: false
-  "2":
-    id: "2"
-    taskid: b03c3491-b59b-4fe1-86be-e510119d6f89
-    type: regular
-    task:
-      id: b03c3491-b59b-4fe1-86be-e510119d6f89
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-  "3":
-    id: "3"
-    taskid: ed072f62-3151-4c4c-89d5-3cf6e9a42dfa
-    type: playbook
     task:
-      id: ed072f62-3151-4c4c-89d5-3cf6e9a42dfa
+      brand: ''
+      description: Delete field from context
+      id: b03c3491-b59b-4fe1-86be-e510119d6f89
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
       version: -1
+    taskid: b03c3491-b59b-4fe1-86be-e510119d6f89
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '3':
+    id: '3'
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    note: false
+    scriptarguments:
+      scan-id:
+        simple: '25'
+      targets: {}
+    separatecontext: true
+    task:
+      brand: ''
+      id: ed072f62-3151-4c4c-89d5-3cf6e9a42dfa
+      iscommand: false
       name: Tenable.io Scan
       playbookName: Tenable.io Scan
       type: playbook
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      scan-id:
-        simple: "25"
-      targets: {}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 375
-        }
-      }
-    note: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 420,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+      version: -1
+    taskid: ed072f62-3151-4c4c-89d5-3cf6e9a42dfa
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 375\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 420,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

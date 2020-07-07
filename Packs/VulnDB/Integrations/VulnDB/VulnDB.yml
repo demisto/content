@@ -141,13 +141,15 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
+      description: Maximum number of entries to return. A high number of entries might
+        affect performance. The default value is "20".
       isArray: false
       name: max_size
       required: false
       secret: false
     deprecated: false
-    description: Returns all, or specific, vendor details to include vendor name and ID.
+    description: Returns all, or specific, vendor details to include vendor name and
+      ID.
     execution: false
     name: vulndb-get-vendor
     outputs:
@@ -178,7 +180,8 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
+      description: Maximum number of entries to return. A high number of entries might
+        affect performance. The default value is "20".
       isArray: false
       name: max_size
       required: false
@@ -209,7 +212,8 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
+      description: Maximum number of entries to return. A high number of entries might
+        affect performance. The default value is "20".
       isArray: false
       name: max_size
       required: false
@@ -246,7 +250,8 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
+      description: Maximum number of entries to return. A high number of entries might
+        affect performance. The default value is "20".
       isArray: false
       name: max_size
       required: false
@@ -355,14 +360,15 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
+      description: Maximum number of entries to return. A high number of entries might
+        affect performance. The default value is "20".
       isArray: false
       name: max_size
       required: false
       secret: false
     deprecated: false
-    description: Returns full details about a specific vulnerability, by vendor name and
-      product name.
+    description: Returns full details about a specific vulnerability, by vendor name
+      and product name.
     execution: false
     name: vulndb-get-vuln-by-vendor-and-product-name
     outputs:
@@ -465,14 +471,15 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
+      description: Maximum number of entries to return. A high number of entries might
+        affect performance. The default value is "20".
       isArray: false
       name: max_size
       required: false
       secret: false
     deprecated: false
-    description: Returns full details about a specific vulnerability, by vendor ID and
-      product ID.
+    description: Returns full details about a specific vulnerability, by vendor ID
+      and product ID.
     execution: false
     name: vulndb-get-vuln-by-vendor-and-product-id
     outputs:
@@ -569,7 +576,8 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
+      description: Maximum number of entries to return. A high number of entries might
+        affect performance. The default value is "20".
       isArray: false
       name: max_size
       required: false
@@ -672,7 +680,8 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
+      description: Maximum number of entries to return. A high number of entries might
+        affect performance. The default value is "20".
       isArray: false
       name: max_size
       required: false
@@ -775,7 +784,8 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
+      description: Maximum number of entries to return. A high number of entries might
+        affect performance. The default value is "20".
       isArray: false
       name: max_size
       required: false
@@ -877,7 +887,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
+      description: Maximum number of entries to return. A high number of entries might
+        affect performance. The default value is "20".
       isArray: false
       name: max_size
       required: false
@@ -913,3 +924,4 @@ script:
   type: python
 tests:
 - Test-VulnDB
+toversion: 4.1.9

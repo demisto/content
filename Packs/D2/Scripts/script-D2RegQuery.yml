@@ -1,19 +1,20 @@
+args:
+- default: true
+  description: The registry path of the key to be queried
+  name: regpath
+  required: true
+comment: Use the D2 agent to retrieve the value of the given registry key.
 commonfields:
   id: D2RegQuery
   version: -1
+dependson: {}
 name: D2RegQuery
 script: pack(registry(args.regpath));
-type: javascript
+scripttarget: 1
+system: true
 tags:
 - agent
 - registry
-comment: Use the D2 agent to retrieve the value of the given registry key.
-system: true
-args:
-- name: regpath
-  required: true
-  default: true
-  description: The registry path of the key to be queried
-scripttarget: 1
-dependson: {}
 timeout: 0s
+toversion: 4.1.9
+type: javascript

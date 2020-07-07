@@ -1,173 +1,107 @@
-commonfields:
-  id: EmailAskUser
-  version: -1
-name: EmailAskUser
-fromversion: 4.0.0
-script: |-
-  // email body type
-  var bodyType = 'text';
-  if (args.bodyType === 'html') {
-      bodyType = 'html';
-  }
-
-  // Get entitlement
-  var entitlement;
-  var retries = parseInt(args.retries) || 10;
-  for (i = 0 ; i < retries; i++) {
-      res = executeCommand('addEntitlement', {'persistent': args.persistent, 'replyEntriesTag': args.replyEntriesTag})
-      if (isError(res[0])) {
-          if (res[0].Contents.contains('[investigations] [investigation] (15)')) {
-              wait(1);
-              continue;
-          }
-          return res;
-      }
-      entitlement = res[0].Contents;
-      break;
-  }
-
-  // Create email subject
-  var subjectSuffix = ' - #' + incidents[0].id + ' ' + entitlement;
-  if (args.task) {
-      subjectSuffix += ' #' + args.task;
-      if (args.playbookTaskID && args.playbookTaskID != 'all' && args.playbookTaskID.trim().length > 0) {
-          subjectSuffix += ' #' + args.playbookTaskID;
-      }
-  }
-  var subject = args.subject + subjectSuffix;
-
-  // Handle options
-  var reply = args.replyAddress;
-  var option1 = args.option1;
-  if (!option1) {
-      option1 = 'yes';
-  }
-  var option2 = args.option2;
-  if (!option2) {
-      option2 = 'no';
-  }
-  var additionalOptions = [];
-  if (args.additionalOptions) {
-      additionalOptions = args.additionalOptions.split(',');
-  }
-  var additionalOptionsHTML = [];
-  if (reply && bodyType === 'html') {
-      option1 = '<a href="mailto:' + reply + '?subject=' + subject + '&body=' + option1 + '">' + option1 + '</a>';
-      option2 = '<a href="mailto:' + reply + '?subject=' + subject + '&body=' + option2 + '">' + option2 + '</a>';
-      for (var i=0; i<additionalOptions.length; i++) {
-          additionalOptionsHTML.push('<a href="mailto:' + reply + '?subject=' + subject + '&body=' + additionalOptions[i] + '">' + additionalOptions[i] + '</a>');
-      }
-  }
-
-  // Create email body
-  var message = args.message;
-  if (bodyType === 'html') {
-      message += '<br/><br/>';
-  } else {
-      message += '\n\n';
-  }
-  message += 'Please reply with either ' + option1 + ' or ' + option2;
-  if (additionalOptions.length > 0) {
-      message += ' or ' + (additionalOptionsHTML.length > 0 ? additionalOptionsHTML.join(' or ') : additionalOptions.join(' or '));
-  }
-
-  // Get email recipients
-  var addresses = [];
-  if (args.roles) {
-      var usersRes = executeCommand('getUsers', { 'roles': args.roles });
-      if (usersRes[0].Contents.length > 0) {
-          addresses = addresses.concat(dq(usersRes, 'Contents.email'));
-      }
-  }
-  var email = args.email;
-  if (email) {
-      addresses = addresses.concat(email.split(','));
-  }
-
-  if (addresses.length > 0) {
-      // prepare args and run send-mail
-      emailArgs = args;
-      emailArgs.to = addresses.join(',');
-      emailArgs.subject = subject;
-      if (bodyType === 'html') {
-          emailArgs.htmlBody = message;
-      } else {
-          emailArgs.body = message;
-      }
-      if (args.attachIds) {
-          emailArgs.attachIDs = args.attachIds;
-      }
-      if (reply) {
-          emailArgs.replyTo = reply;
-      }
-      if (args.cc) {
-          emailArgs.cc = args.cc;
-      }
-      if (args.bcc) {
-          emailArgs.bcc = args.bcc;
-      }
-      return executeCommand('send-mail', emailArgs);
-  } else {
-      return {Type: entryTypes.error, ContentsFormat: formats.text, Contents: 'No email address found'};
-  }
-type: javascript
-tags:
-- email
-comment: Ask a user a question via email and process the reply directly into the investigation.
-system: true
 args:
-- name: email
-  default: true
+- default: true
   description: The email of the user to ask
-- name: subject
+  name: email
+- description: The subject for the email
+  name: subject
   required: true
-  description: The subject for the email
-- name: message
+- description: The message to the user to ask
+  name: message
   required: true
-  description: The message to the user to ask
-- name: option1
-  description: First option for a user reply. "yes" is the default.
-- name: option2
-  description: Second option for the user reply. "no" is the default.
-- name: additionalOptions
-  description: A comma delimited list of additional options if you have more than
+- description: First option for a user reply. "yes" is the default.
+  name: option1
+- description: Second option for the user reply. "no" is the default.
+  name: option2
+- description: A comma delimited list of additional options if you have more than
     2
-- name: task
-  description: Which task should we close with the reply. If none then no playbook
+  name: additionalOptions
+- description: Which task should we close with the reply. If none then no playbook
     tasks will be closed.
-- name: roles
-  description: Send mail to all users of these roles (csv list)
-- name: attachIds
-  description: Attachments
-- name: bodyType
-  auto: PREDEFINED
+  name: task
+- description: Send mail to all users of these roles (csv list)
+  name: roles
+- description: Attachments
+  name: attachIds
+- auto: PREDEFINED
+  defaultValue: text
+  description: Type of email body to send - text ot HTML
+  name: bodyType
   predefined:
   - text
   - html
-  description: Type of email body to send - text ot HTML
-  defaultValue: text
-- name: replyAddress
-  description: Address of reply for html links
-- name: replyEntriesTag
-  description: Tag to add on email reply entries
-- name: persistent
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
+- description: Address of reply for html links
+  name: replyAddress
+- description: Tag to add on email reply entries
+  name: replyEntriesTag
+- auto: PREDEFINED
+  defaultValue: 'false'
   description: Indicates whether to use one-time entitlement or a persistent one
-  defaultValue: "false"
-- name: retries
+  name: persistent
+  predefined:
+  - 'true'
+  - 'false'
+- defaultValue: '10'
   description: Indicates how many times to try and create an entitlement in case of
     failure
-  defaultValue: "10"
-- name: cc
-  description: The CC email address
-- name: bcc
-  description: The BCC email address
-- name: playbookTaskID
+  name: retries
+- description: The CC email address
+  name: cc
+- description: The BCC email address
+  name: bcc
+- defaultValue: ${currentPlaybookID}
   description: Subplaybook ID, use ${currentPlaybookID} to get it from context, `all`
     to complete all tasks from all plabooks
-  defaultValue: ${currentPlaybookID}
-scripttarget: 0
+  name: playbookTaskID
+comment: Ask a user a question via email and process the reply directly into the investigation.
+commonfields:
+  id: EmailAskUser
+  version: -1
+fromversion: 4.0.0
+name: EmailAskUser
 runonce: false
+script: "// email body type\nvar bodyType = 'text';\nif (args.bodyType === 'html')\
+  \ {\n    bodyType = 'html';\n}\n\n// Get entitlement\nvar entitlement;\nvar retries\
+  \ = parseInt(args.retries) || 10;\nfor (i = 0 ; i < retries; i++) {\n    res = executeCommand('addEntitlement',\
+  \ {'persistent': args.persistent, 'replyEntriesTag': args.replyEntriesTag})\n  \
+  \  if (isError(res[0])) {\n        if (res[0].Contents.contains('[investigations]\
+  \ [investigation] (15)')) {\n            wait(1);\n            continue;\n     \
+  \   }\n        return res;\n    }\n    entitlement = res[0].Contents;\n    break;\n\
+  }\n\n// Create email subject\nvar subjectSuffix = ' - #' + incidents[0].id + ' '\
+  \ + entitlement;\nif (args.task) {\n    subjectSuffix += ' #' + args.task;\n   \
+  \ if (args.playbookTaskID && args.playbookTaskID != 'all' && args.playbookTaskID.trim().length\
+  \ > 0) {\n        subjectSuffix += ' #' + args.playbookTaskID;\n    }\n}\nvar subject\
+  \ = args.subject + subjectSuffix;\n\n// Handle options\nvar reply = args.replyAddress;\n\
+  var option1 = args.option1;\nif (!option1) {\n    option1 = 'yes';\n}\nvar option2\
+  \ = args.option2;\nif (!option2) {\n    option2 = 'no';\n}\nvar additionalOptions\
+  \ = [];\nif (args.additionalOptions) {\n    additionalOptions = args.additionalOptions.split(',');\n\
+  }\nvar additionalOptionsHTML = [];\nif (reply && bodyType === 'html') {\n    option1\
+  \ = '<a href=\"mailto:' + reply + '?subject=' + subject + '&body=' + option1 + '\"\
+  >' + option1 + '</a>';\n    option2 = '<a href=\"mailto:' + reply + '?subject='\
+  \ + subject + '&body=' + option2 + '\">' + option2 + '</a>';\n    for (var i=0;\
+  \ i<additionalOptions.length; i++) {\n        additionalOptionsHTML.push('<a href=\"\
+  mailto:' + reply + '?subject=' + subject + '&body=' + additionalOptions[i] + '\"\
+  >' + additionalOptions[i] + '</a>');\n    }\n}\n\n// Create email body\nvar message\
+  \ = args.message;\nif (bodyType === 'html') {\n    message += '<br/><br/>';\n} else\
+  \ {\n    message += '\\n\\n';\n}\nmessage += 'Please reply with either ' + option1\
+  \ + ' or ' + option2;\nif (additionalOptions.length > 0) {\n    message += ' or\
+  \ ' + (additionalOptionsHTML.length > 0 ? additionalOptionsHTML.join(' or ') : additionalOptions.join('\
+  \ or '));\n}\n\n// Get email recipients\nvar addresses = [];\nif (args.roles) {\n\
+  \    var usersRes = executeCommand('getUsers', { 'roles': args.roles });\n    if\
+  \ (usersRes[0].Contents.length > 0) {\n        addresses = addresses.concat(dq(usersRes,\
+  \ 'Contents.email'));\n    }\n}\nvar email = args.email;\nif (email) {\n    addresses\
+  \ = addresses.concat(email.split(','));\n}\n\nif (addresses.length > 0) {\n    //\
+  \ prepare args and run send-mail\n    emailArgs = args;\n    emailArgs.to = addresses.join(',');\n\
+  \    emailArgs.subject = subject;\n    if (bodyType === 'html') {\n        emailArgs.htmlBody\
+  \ = message;\n    } else {\n        emailArgs.body = message;\n    }\n    if (args.attachIds)\
+  \ {\n        emailArgs.attachIDs = args.attachIds;\n    }\n    if (reply) {\n  \
+  \      emailArgs.replyTo = reply;\n    }\n    if (args.cc) {\n        emailArgs.cc\
+  \ = args.cc;\n    }\n    if (args.bcc) {\n        emailArgs.bcc = args.bcc;\n  \
+  \  }\n    return executeCommand('send-mail', emailArgs);\n} else {\n    return {Type:\
+  \ entryTypes.error, ContentsFormat: formats.text, Contents: 'No email address found'};\n\
+  }"
+scripttarget: 0
+system: true
+tags:
+- email
+toversion: 4.1.9
+type: javascript

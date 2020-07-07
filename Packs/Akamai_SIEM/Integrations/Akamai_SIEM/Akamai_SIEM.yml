@@ -67,9 +67,10 @@ script:
       required: true
       secret: false
     - default: false
-      description: This token denotes the last message. If specified, this operation
-        fetches only security events that have occurred from the offset. This is a
-        required parameter for offset mode and you can’t use it in time-based requests.
+      description: "This token denotes the last message. If specified, this operation\
+        \ fetches only security events that have occurred from the offset. This is\
+        \ a required parameter for offset mode and you can\u2019t use it in time-based\
+        \ requests."
       isArray: false
       name: offset
       required: false
@@ -94,7 +95,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Timestamp of events (<number> <time unit>. For example, 12 hours, 7 days.
+      description: Timestamp of events (<number> <time unit>. For example, 12 hours,
+        7 days.
       isArray: false
       name: time_stamp
       required: false
@@ -186,3 +188,4 @@ script:
   type: python
 tests:
 - Akamai_WAF_SIEM-Test
+toversion: 4.1.9

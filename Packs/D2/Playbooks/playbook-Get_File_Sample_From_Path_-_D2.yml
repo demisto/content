@@ -1,54 +1,98 @@
-id: get_file_sample_from_path_-_d2
-version: -1
-name: Get File Sample From Path - D2
-fromversion: "3.5.0"
-description: |-
-  Returns a file sample to the war-room from a path on an endpoint using Demisto Dissolvable Agent (D2)
+description: 'Returns a file sample to the war-room from a path on an endpoint using
+  Demisto Dissolvable Agent (D2)
+
 
   Input:
-  * Credentials - credentials to use when trying to deploy Demisto Dissolvable Agent (D2)  (default: Admin)
+
+  * Credentials - credentials to use when trying to deploy Demisto Dissolvable Agent
+  (D2)  (default: Admin)
+
   * ${Endpoint.Hostname} - deploy agent on target endpoint
-  * ${File.Path} - file's path to collect
-starttaskid: "0"
+
+  * ${File.Path} - file''s path to collect'
+fromversion: 3.5.0
+id: get_file_sample_from_path_-_d2
+inputs:
+- description: Name of the credential set from Demisto Settings -> Integrations ->
+    Credentials
+  key: Credentials
+  required: false
+  value:
+    simple: Admin
+- description: Endpoint hostname
+  key: Hostname
+  required: false
+  value:
+    simple: ${Endpoint.Hostname}
+- description: The file path
+  key: Path
+  required: false
+  value:
+    simple: ${File.Path}
+name: Get File Sample From Path - D2
+outputs:
+- contextPath: File
+  description: The file to sample.
+  type: unknown
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
+    nexttasks:
+      '#none#':
+      - '7'
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 62c65b41-e6f2-42d5-8abf-a3c971ae42b0
+      iscommand: false
+      name: ''
+      version: -1
     taskid: 62c65b41-e6f2-42d5-8abf-a3c971ae42b0
     type: start
-    task:
-      id: 62c65b41-e6f2-42d5-8abf-a3c971ae42b0
-      version: -1
-      description: ""
-      name: ""
-      iscommand: false
-      brand: ""
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '11':
+    id: '11'
     nexttasks:
       '#none#':
-      - "7"
+      - '12'
+    scriptarguments:
+      filepath:
+        simple: ${inputs.Path}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-  "3":
-    id: "3"
-    taskid: a5a0b6b9-bd4d-42e6-8e96-5a5daeb0d5a5
-    type: regular
     task:
-      id: a5a0b6b9-bd4d-42e6-8e96-5a5daeb0d5a5
-      version: -1
-      name: Add the endpoint as a System to this incident
-      description: Add the relevant endpoint to the System
-      scriptName: IncidentAddSystem
-      type: regular
+      brand: ''
+      description: ''
+      id: 9f3aab69-b584-4929-815c-0579eb307807
       iscommand: false
-      brand: ""
+      name: d2 agent - Collect file from endpoint
+      scriptName: FetchFileD2
+      type: regular
+      version: -1
+    taskid: 9f3aab69-b584-4929-815c-0579eb307807
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 545\n  }\n}"
+  '12':
+    id: '12'
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 642cf7ac-e922-4379-8656-55c1eb4de929
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 642cf7ac-e922-4379-8656-55c1eb4de929
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '3':
+    continueonerror: true
+    id: '3'
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     scriptarguments:
       arch: {}
       credentialSet:
@@ -64,135 +108,58 @@ tasks:
       sshPort: {}
       username: {}
       workgroup: {}
-    continueonerror: true
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 370
-        }
-      }
-  "7":
-    id: "7"
-    taskid: ba4872a3-3460-470f-81cd-14afaacd29d8
-    type: condition
     task:
-      id: ba4872a3-3460-470f-81cd-14afaacd29d8
-      version: -1
-      name: Does Hostname and filepath exists?
-      description: Check if there is hostname and file path to get.
-      type: condition
+      brand: ''
+      description: Add the relevant endpoint to the System
+      id: a5a0b6b9-bd4d-42e6-8e96-5a5daeb0d5a5
       iscommand: false
-      brand: ""
+      name: Add the endpoint as a System to this incident
+      scriptName: IncidentAddSystem
+      type: regular
+      version: -1
+    taskid: a5a0b6b9-bd4d-42e6-8e96-5a5daeb0d5a5
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 370\n  }\n}"
+  '7':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Hostname
+          operator: general.isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Path
+          operator: general.isExists
+      label: 'yes'
+    id: '7'
     nexttasks:
       '#default#':
-      - "12"
-      "yes":
-      - "3"
+      - '12'
+      'yes':
+      - '3'
     scriptarguments:
       value:
         simple: ${Endpoint.Hostname}
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: general.isExists
-          left:
-            value:
-              simple: inputs.Hostname
-            iscontext: true
-      - - operator: general.isExists
-          left:
-            value:
-              simple: inputs.Path
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-  "11":
-    id: "11"
-    taskid: 9f3aab69-b584-4929-815c-0579eb307807
-    type: regular
     task:
-      id: 9f3aab69-b584-4929-815c-0579eb307807
-      version: -1
-      description: ""
-      name: d2 agent - Collect file from endpoint
-      scriptName: FetchFileD2
-      type: regular
+      brand: ''
+      description: Check if there is hostname and file path to get.
+      id: ba4872a3-3460-470f-81cd-14afaacd29d8
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      filepath:
-        simple: ${inputs.Path}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 545
-        }
-      }
-  "12":
-    id: "12"
-    taskid: 642cf7ac-e922-4379-8656-55c1eb4de929
-    type: title
-    task:
-      id: 642cf7ac-e922-4379-8656-55c1eb4de929
+      name: Does Hostname and filepath exists?
+      type: condition
       version: -1
-      description: ""
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 735,
-        "width": 492.5,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs:
-- key: Credentials
-  value:
-    simple: Admin
-  required: false
-  description: Name of the credential set from Demisto Settings -> Integrations ->
-    Credentials
-- key: Hostname
-  value:
-    simple: ${Endpoint.Hostname}
-  required: false
-  description: Endpoint hostname
-- key: Path
-  value:
-    simple: ${File.Path}
-  required: false
-  description: The file path
-outputs:
-- contextPath: File
-  description: The file to sample.
-  type: unknown
+    taskid: ba4872a3-3460-470f-81cd-14afaacd29d8
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
 tests:
-  - get_file_sample_from_path_-_d2_-_test
+- get_file_sample_from_path_-_d2_-_test
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 735,\n      \"width\": 492.5,\n      \"x\": 50,\n      \"y\":\
+  \ 50\n    }\n  }\n}"

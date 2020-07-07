@@ -1,69 +1,53 @@
-commonfields:
-  id: 2aa9f737-8c7c-42f5-815f-4d104bb3af06
-  version: -1
-name: SEPScan
-deprecated: true
-script: |-
-  SCAN_DEFAULT_TIMEOUT = 600;
-  SCAN_DEFAULT_INTERVAL = 30;
-
-  if (!args.ip && !args.hostname) {
-      throw 'Please provide an IP address or a hostname.'
-  }
-
-  var response = executeCommand("sep-scan", {scanType: args.scanType, ip: args.ip, hostname: args.hostname});
-
-  var timeout = args.timeout ? parseInt(args.timeout) : SCAN_DEFAULT_TIMEOUT;
-  var interval = args.interval ? parseInt(args.interval) : SCAN_DEFAULT_INTERVAL;
-  var retries = timeout / interval;
-  var isDone = false;
-  for (var i = 0; i < retries; i++) {
-      response = executeCommand("sep-command-status", {commandId: response[0].Contents.commandId});
-      var stateId = response[0].Contents.cmdStatusDetail.stateId;
-      if (stateId == '2' || stateId == '3') {
-          isDone = true;
-          break;
-      }
-
-      wait(interval);
-  }
-
-  endpoint = args.hostname ? args.hostname : args.ip;
-  response[0].HumanReadable = '## Launched scan command for endpoint {0}, here is the output.\n'.format(endpoint) + response[0].HumanReadable;
-
-  if (!isDone) {
-      response[0].HumanReadable += '\n\n### Command timed out after {0} seconds.'.format(timeout);
-  }
-
-  return response;
-type: javascript
-tags:
-- sep
-- symantec
-comment: Scans ip/hostname with Symantec Endpoint Protection. DEPRECATED - this automation is deprecated as it was replaced by `sep-scan-endpoint` command in 'Symantec Endpoint Protection V2' integration.
-enabled: true
 args:
-- name: scanType
-  required: true
+- auto: PREDEFINED
   default: true
-  auto: PREDEFINED
+  description: Type of scan.
+  name: scanType
   predefined:
   - ScanNow_Quick
   - ScanNow_Full
   - ScanNow_Custom
-  description: Type of scan.
-- name: ip
-  description: The IP address of the endpoint.
-- name: hostname
-  description: The hostname of the endpoint.
-- name: timeout
-  description: The timeout of the command.
-- name: interval
-  description: The polling interval of the command.
-scripttarget: 0
-timeout: 600ns
-tests:
-  - No test - deprecated
+  required: true
+- description: The IP address of the endpoint.
+  name: ip
+- description: The hostname of the endpoint.
+  name: hostname
+- description: The timeout of the command.
+  name: timeout
+- description: The polling interval of the command.
+  name: interval
+comment: Scans ip/hostname with Symantec Endpoint Protection. DEPRECATED - this automation
+  is deprecated as it was replaced by `sep-scan-endpoint` command in 'Symantec Endpoint
+  Protection V2' integration.
+commonfields:
+  id: 2aa9f737-8c7c-42f5-815f-4d104bb3af06
+  version: -1
 dependson:
   must:
   - sep-command-status
+deprecated: true
+enabled: true
+name: SEPScan
+script: "SCAN_DEFAULT_TIMEOUT = 600;\nSCAN_DEFAULT_INTERVAL = 30;\n\nif (!args.ip\
+  \ && !args.hostname) {\n    throw 'Please provide an IP address or a hostname.'\n\
+  }\n\nvar response = executeCommand(\"sep-scan\", {scanType: args.scanType, ip: args.ip,\
+  \ hostname: args.hostname});\n\nvar timeout = args.timeout ? parseInt(args.timeout)\
+  \ : SCAN_DEFAULT_TIMEOUT;\nvar interval = args.interval ? parseInt(args.interval)\
+  \ : SCAN_DEFAULT_INTERVAL;\nvar retries = timeout / interval;\nvar isDone = false;\n\
+  for (var i = 0; i < retries; i++) {\n    response = executeCommand(\"sep-command-status\"\
+  , {commandId: response[0].Contents.commandId});\n    var stateId = response[0].Contents.cmdStatusDetail.stateId;\n\
+  \    if (stateId == '2' || stateId == '3') {\n        isDone = true;\n        break;\n\
+  \    }\n\n    wait(interval);\n}\n\nendpoint = args.hostname ? args.hostname : args.ip;\n\
+  response[0].HumanReadable = '## Launched scan command for endpoint {0}, here is\
+  \ the output.\\n'.format(endpoint) + response[0].HumanReadable;\n\nif (!isDone)\
+  \ {\n    response[0].HumanReadable += '\\n\\n### Command timed out after {0} seconds.'.format(timeout);\n\
+  }\n\nreturn response;"
+scripttarget: 0
+tags:
+- sep
+- symantec
+tests:
+- No test - deprecated
+timeout: 600ns
+toversion: 4.1.9
+type: javascript

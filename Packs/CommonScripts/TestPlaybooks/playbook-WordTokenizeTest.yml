@@ -1,79 +1,60 @@
-id: WordTokenizeTest
-version: -1
-name: WordTokenizeTest
 description: Test for WordTokenize automation
-starttaskid: "0"
+id: WordTokenizeTest
+inputs: []
+name: WordTokenizeTest
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 619219ed-afd5-4cfa-875f-537493560623
-    type: start
-    task:
-      id: 619219ed-afd5-4cfa-875f-537493560623
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
+      - '1'
     note: false
-    timertriggers: []
-  "1":
-    id: "1"
-    taskid: 69a368ef-9036-4ace-817c-72d573f6a41c
-    type: regular
+    separatecontext: false
     task:
-      id: 69a368ef-9036-4ace-817c-72d573f6a41c
-      version: -1
-      name: Delete context
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      id: 619219ed-afd5-4cfa-875f-537493560623
       iscommand: false
-      brand: ""
+      name: ''
+      version: -1
+    taskid: 619219ed-afd5-4cfa-875f-537493560623
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 210
-        }
-      }
-    note: false
-    timertriggers: []
-  "2":
-    id: "2"
-    taskid: 8908966d-6105-4b52-8fd3-3f13d9fdff6d
-    type: regular
     task:
-      id: 8908966d-6105-4b52-8fd3-3f13d9fdff6d
-      version: -1
-      name: WordTokenizer
-      scriptName: WordTokenizer
-      type: regular
+      brand: ''
+      id: 69a368ef-9036-4ace-817c-72d573f6a41c
       iscommand: false
-      brand: ""
+      name: Delete context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 69a368ef-9036-4ace-817c-72d573f6a41c
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 210\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
+    note: false
     scriptarguments:
       cleanHtml: {}
       encoding: {}
@@ -81,194 +62,157 @@ tasks:
       removeLineBreaks: {}
       type: {}
       value:
-        simple: |-
-          <bla> this is a
-          test </bla>
+        simple: '<bla> this is a
+
+          test </bla>'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 6a8eda53-e18a-4f4c-8a09-120a0a25de2c
-    type: regular
     task:
-      id: 6a8eda53-e18a-4f4c-8a09-120a0a25de2c
-      version: -1
-      name: Delete context
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      id: 8908966d-6105-4b52-8fd3-3f13d9fdff6d
       iscommand: false
-      brand: ""
+      name: WordTokenizer
+      scriptName: WordTokenizer
+      type: regular
+      version: -1
+    taskid: 8908966d-6105-4b52-8fd3-3f13d9fdff6d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 400\n  }\n}"
+  '4':
+    id: '4'
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 780
-        }
-      }
-    note: false
-    timertriggers: []
-  "5":
-    id: "5"
-    taskid: 548bbe70-8a63-427c-84c4-249cf2d47b82
-    type: regular
     task:
-      id: 548bbe70-8a63-427c-84c4-249cf2d47b82
-      version: -1
-      name: Hash words
-      scriptName: WordTokenizer
-      type: regular
+      brand: ''
+      id: 6a8eda53-e18a-4f4c-8a09-120a0a25de2c
       iscommand: false
-      brand: ""
+      name: Delete context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 6a8eda53-e18a-4f4c-8a09-120a0a25de2c
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 780\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
+    note: false
     scriptarguments:
       cleanHtml: {}
       encoding: {}
       hashWordWithSeed:
-        simple: "5381"
+        simple: '5381'
       removeLineBreaks: {}
       type: {}
       value:
-        simple: <bla> בדיקה </bla>
+        simple: "<bla> \u05D1\u05D3\u05D9\u05E7\u05D4 </bla>"
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 990
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "7":
-    id: "7"
-    taskid: 03b08ddc-a475-4dd8-8793-67a3b396696e
-    type: condition
     task:
-      id: f1f812b6-cdfb-453b-870e-235c7b97829d
-      version: -1
-      name: Validate context
-      type: condition
+      brand: ''
+      id: 548bbe70-8a63-427c-84c4-249cf2d47b82
       iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "4"
-    separatecontext: false
+      name: Hash words
+      scriptName: WordTokenizer
+      type: regular
+      version: -1
+    taskid: 548bbe70-8a63-427c-84c4-249cf2d47b82
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 990\n  }\n}"
+  '7':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
                 root: WordTokenizeOutput
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: this is a test
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 600
-        }
-      }
-    note: false
-    timertriggers: []
+      label: 'yes'
+    id: '7'
     ignoreworker: false
-  "8":
-    id: "8"
-    taskid: 4b3c0491-442a-4edd-8b9f-6d2b2805b958
-    type: condition
+    nexttasks:
+      'yes':
+      - '4'
+    note: false
+    separatecontext: false
     task:
-      id: 443cf11e-5404-4cf1-8bb0-2546f22f5cdd
-      version: -1
+      brand: ''
+      id: f1f812b6-cdfb-453b-870e-235c7b97829d
+      iscommand: false
       name: Validate context
       type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "9"
-    separatecontext: false
+      version: -1
+    taskid: 03b08ddc-a475-4dd8-8793-67a3b396696e
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 600\n  }\n}"
+  '8':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualNumber
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
                 root: WordTokenizeOutput
-            iscontext: true
+          operator: isEqualNumber
           right:
             value:
-              simple: "1955252253"
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1190
-        }
-      }
-    note: false
-    timertriggers: []
+              simple: '1955252253'
+      label: 'yes'
+    id: '8'
     ignoreworker: false
-  "9":
-    id: "9"
-    taskid: f6bb02ae-99c8-4c13-878a-ba56b4854c44
-    type: title
+    nexttasks:
+      'yes':
+      - '9'
+    note: false
+    separatecontext: false
     task:
-      id: f6bb02ae-99c8-4c13-878a-ba56b4854c44
+      brand: ''
+      id: 443cf11e-5404-4cf1-8bb0-2546f22f5cdd
+      iscommand: false
+      name: Validate context
+      type: condition
       version: -1
+    taskid: 4b3c0491-442a-4edd-8b9f-6d2b2805b958
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1190\n  }\n}"
+  '9':
+    id: '9'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: f6bb02ae-99c8-4c13-878a-ba56b4854c44
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1380
-        }
-      }
-    note: false
+      version: -1
+    taskid: f6bb02ae-99c8-4c13-878a-ba56b4854c44
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1395,
-        "width": 380,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1380\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1395,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\":\
+  \ 50\n    }\n  }\n}"

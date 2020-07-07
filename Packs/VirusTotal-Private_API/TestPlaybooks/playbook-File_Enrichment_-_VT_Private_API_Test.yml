@@ -1,247 +1,191 @@
-id: File Enrichment - Virus Total Private API Test
-version: -1
-name: File Enrichment - Virus Total Private API Test
 description: File Enrichment - Virus Total Private API test playbook
-starttaskid: "0"
+id: File Enrichment - Virus Total Private API Test
+inputs: []
+name: File Enrichment - Virus Total Private API Test
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: b3afab55-f5d7-4e92-8e0e-e120957b3132
-    type: start
-    task:
-      id: b3afab55-f5d7-4e92-8e0e-e120957b3132
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
+      - '1'
     note: false
-    timertriggers: []
-  "1":
-    id: "1"
-    taskid: 9648565b-c711-4355-8aa2-df7a641867ce
-    type: regular
+    separatecontext: false
     task:
-      id: 9648565b-c711-4355-8aa2-df7a641867ce
-      version: -1
-      name: Add File MD5 to context
-      scriptName: Set
-      type: regular
+      brand: ''
+      id: b3afab55-f5d7-4e92-8e0e-e120957b3132
       iscommand: false
-      brand: ""
+      name: ''
+      version: -1
+    taskid: b3afab55-f5d7-4e92-8e0e-e120957b3132
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: File.MD5
       value:
         simple: 3f066dd1f1da052248aed5abc4a0c6a1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-  "2":
-    id: "2"
-    taskid: 7065f015-a151-4f28-8b33-b119da6d3dc7
-    type: regular
     task:
-      id: 7065f015-a151-4f28-8b33-b119da6d3dc7
-      version: -1
-      name: Add File SHA1 to context
+      brand: ''
+      id: 9648565b-c711-4355-8aa2-df7a641867ce
+      iscommand: false
+      name: Add File MD5 to context
       scriptName: Set
       type: regular
+      version: -1
+    taskid: 9648565b-c711-4355-8aa2-df7a641867ce
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '10':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: DBotScore
+          operator: isExists
+      label: 'yes'
+    id: '10'
+    nexttasks:
+      'yes':
+      - '8'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 7cb7fa42-950b-4413-88fb-3a036d6e4aed
       iscommand: false
-      brand: ""
+      name: DBot Score exists?
+      type: condition
+      version: -1
+    taskid: 7cb7fa42-950b-4413-88fb-3a036d6e4aed
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+  '11':
+    id: '11'
     nexttasks:
       '#none#':
-      - "3"
+      - '9'
+    note: false
+    scriptarguments:
+      seconds:
+        simple: '60'
+    separatecontext: false
+    task:
+      brand: ''
+      description: Sleep for X seconds
+      id: f0e70bb8-8e19-40e6-8ef0-224f5f8280d7
+      iscommand: false
+      name: Sleep
+      scriptName: Sleep
+      type: regular
+      version: -1
+    taskid: f0e70bb8-8e19-40e6-8ef0-224f5f8280d7
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '2':
+    id: '2'
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: File.SHA1
       value:
         simple: 795b33795f0308fc5e83abc2daff1d7129dfa400
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-  "3":
-    id: "3"
-    taskid: 37a08a29-a86c-4bb8-8b14-e56f2890f4fa
-    type: regular
     task:
-      id: 37a08a29-a86c-4bb8-8b14-e56f2890f4fa
-      version: -1
-      name: Add File SHA256 to context
+      brand: ''
+      id: 7065f015-a151-4f28-8b33-b119da6d3dc7
+      iscommand: false
+      name: Add File SHA1 to context
       scriptName: Set
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 7065f015-a151-4f28-8b33-b119da6d3dc7
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '3':
+    id: '3'
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
+    note: false
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: File.SHA256
       value:
         simple: 42dfb222ce97c7517bc0b6333a1881bfa91539f457d261e6626d662995b97df5
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-  "8":
-    id: "8"
-    taskid: 53527db1-b330-4cc3-8cd2-cf6c34ef41fe
-    type: title
     task:
-      id: 53527db1-b330-4cc3-8cd2-cf6c34ef41fe
+      brand: ''
+      id: 37a08a29-a86c-4bb8-8b14-e56f2890f4fa
+      iscommand: false
+      name: Add File SHA256 to context
+      scriptName: Set
+      type: regular
       version: -1
+    taskid: 37a08a29-a86c-4bb8-8b14-e56f2890f4fa
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '8':
+    id: '8'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 53527db1-b330-4cc3-8cd2-cf6c34ef41fe
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-  "9":
-    id: "9"
-    taskid: f530d2b6-3122-4cf9-80c8-2c95807d8f7a
-    type: playbook
-    task:
-      id: f530d2b6-3122-4cf9-80c8-2c95807d8f7a
       version: -1
+    taskid: 53527db1-b330-4cc3-8cd2-cf6c34ef41fe
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+  '9':
+    id: '9'
+    nexttasks:
+      '#none#':
+      - '10'
+    note: false
+    separatecontext: true
+    task:
+      brand: ''
+      id: f530d2b6-3122-4cf9-80c8-2c95807d8f7a
+      iscommand: false
       name: File Enrichment - Virus Total Private API
       playbookName: File Enrichment - Virus Total Private API
       type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "10"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-  "10":
-    id: "10"
-    taskid: 7cb7fa42-950b-4413-88fb-3a036d6e4aed
-    type: condition
-    task:
-      id: 7cb7fa42-950b-4413-88fb-3a036d6e4aed
       version: -1
-      name: DBot Score exists?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "8"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: DBotScore
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
+    taskid: f530d2b6-3122-4cf9-80c8-2c95807d8f7a
     timertriggers: []
-  "11":
-    id: "11"
-    taskid: f0e70bb8-8e19-40e6-8ef0-224f5f8280d7
-    type: regular
-    task:
-      id: f0e70bb8-8e19-40e6-8ef0-224f5f8280d7
-      version: -1
-      name: Sleep
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      seconds:
-        simple: "60"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1260,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1260,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

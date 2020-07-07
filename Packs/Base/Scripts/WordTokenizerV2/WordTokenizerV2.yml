@@ -142,7 +142,8 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: English
-  description: The language of the input text. Default is "English". Can be "English", "German", "French", "Spanish", "Portuguese", "Italian", "Dutch", or "Other".
+  description: The language of the input text. Default is "English". Can be "English",
+    "German", "French", "Spanish", "Portuguese", "Italian", "Dutch", or "Other".
   isArray: false
   name: language
   predefined:
@@ -159,7 +160,8 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: tokenizer
-  description: Tokenization method for text. Only required when the language argument is set to "Other". Can be "tokenizer", "byWords", or "byLetters".
+  description: Tokenization method for text. Only required when the language argument
+    is set to "Other". Can be "tokenizer", "byWords", or "byLetters".
   isArray: false
   name: tokenizationMethod
   predefined:
@@ -172,22 +174,23 @@ comment: Tokenize the words in a input text.
 commonfields:
   id: WordTokenizerNLP
   version: -1
+dockerimage: demisto/dl:1.2
 enabled: true
 name: WordTokenizerNLP
 outputs:
 - contextPath: WordTokenizeOutput
   description: Output text
   type: Unknown
+runas: DBotWeakRole
+runonce: true
 script: '-'
 subtype: python2
 system: false
 tags:
 - phishing
 - ml
-timeout: 60µs
-type: python
-dockerimage: demisto/dl:1.2
-runas: DBotWeakRole
-runonce: true
 tests:
 - No test
+timeout: "60\xB5s"
+toversion: 4.1.9
+type: python

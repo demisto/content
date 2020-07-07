@@ -1,74 +1,74 @@
+category: Network Security
 commonfields:
   id: Tufin
   version: -1
-name: Tufin
-display: Tufin
-category: Network Security
+configuration:
+- defaultvalue: ''
+  display: SecureTrack IP or FQDN
+  name: SecureTrack-Server
+  required: true
+  type: 0
+- defaultvalue: ''
+  display: SecureTrack User Credentials
+  name: SecureTrack-User
+  required: true
+  type: 9
+- defaultvalue: ''
+  display: SecureChange IP or FQDN
+  name: SecureChange-Server
+  required: false
+  type: 0
+- defaultvalue: ''
+  display: SecureChange User Credentials
+  name: SecureChange-User
+  required: false
+  type: 9
+- defaultvalue: ''
+  display: SecureApp IP or FQDN
+  name: SecureApp-Server
+  required: false
+  type: 0
+- defaultvalue: ''
+  display: SecureApp User Credentials
+  name: SecureApp-User
+  required: false
+  type: 9
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
+  name: unsecure
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: '100'
+  display: Maximum number of rules returned from device durring a policy search
+  name: MaxRules
+  required: false
+  type: 0
 description: Retrieve and analyze network access controls across Tufin-managed firewalls,
   SDN, and public cloud to identify vulnerable access paths of an attack
-configuration:
-- display: SecureTrack IP or FQDN
-  name: SecureTrack-Server
-  defaultvalue: ""
-  type: 0
-  required: true
-- display: SecureTrack User Credentials
-  name: SecureTrack-User
-  defaultvalue: ""
-  type: 9
-  required: true
-- display: SecureChange IP or FQDN
-  name: SecureChange-Server
-  defaultvalue: ""
-  type: 0
-  required: false
-- display: SecureChange User Credentials
-  name: SecureChange-User
-  defaultvalue: ""
-  type: 9
-  required: false
-- display: SecureApp IP or FQDN
-  name: SecureApp-Server
-  defaultvalue: ""
-  type: 0
-  required: false
-- display: SecureApp User Credentials
-  name: SecureApp-User
-  defaultvalue: ""
-  type: 9
-  required: false
-- display: Trust any certificate (not secure)
-  name: unsecure
-  defaultvalue: ""
-  type: 8
-  required: false
-- display: Use system proxy settings
-  name: proxy
-  defaultvalue: "false"
-  type: 8
-  required: false
-- display: Maximum number of rules returned from device durring a policy search
-  name: MaxRules
-  defaultvalue: "100"
-  type: 0
-  required: false
+display: Tufin
+name: Tufin
 script:
-  script: ''
-  type: python
   commands:
-  - name: tufin-search-topology
-    arguments:
-    - name: source
-      required: true
-      description: Source address/addresses (may contain multiple, comma separated
+  - arguments:
+    - description: Source address/addresses (may contain multiple, comma separated
         values) e.g. 192.168.100.32 or 192.168.100.32/32,192.168.100.33
-    - name: destination
+      name: source
       required: true
-      description: Destination address/addresses (may contain multiple, comma separated
+    - description: Destination address/addresses (may contain multiple, comma separated
         values) e.g. 192.168.100.32 or 192.168.100.32/32,192.168.100.33
-    - name: service
-      description: Service parameter can be a port (for example, “tcp:80”, “any”)
-        or an application (for example, “Skype”, “Facebook”).
+      name: destination
+      required: true
+    - description: "Service parameter can be a port (for example, \u201Ctcp:80\u201D\
+        , \u201Cany\u201D) or an application (for example, \u201CSkype\u201D, \u201C\
+        Facebook\u201D)."
+      name: service
+    description: Search the Tufin Topology Map
+    name: tufin-search-topology
     outputs:
     - contextPath: Tufin.Topology.TrafficAllowed
       description: Traffic Permitted
@@ -76,48 +76,49 @@ script:
     - contextPath: Tufin.Topology.TrafficDevices
       description: List of devices in path
       type: string
-    description: Search the Tufin Topology Map
-  - name: tufin-search-topology-image
-    arguments:
-    - name: source
-      required: true
-      description: Source address/addresses (may contain multiple, comma separated
+  - arguments:
+    - description: Source address/addresses (may contain multiple, comma separated
         values)
-    - name: destination
+      name: source
       required: true
-      description: Destination address/addresses (may contain multiple, comma separated
+    - description: Destination address/addresses (may contain multiple, comma separated
         values)
-    - name: service
-      description: Service parameter can be a port (for example, “tcp:80”, “any”)
-        or an application (for example, “Skype”, “Facebook”).
+      name: destination
+      required: true
+    - description: "Service parameter can be a port (for example, \u201Ctcp:80\u201D\
+        , \u201Cany\u201D) or an application (for example, \u201CSkype\u201D, \u201C\
+        Facebook\u201D)."
+      name: service
     description: Search the Tufin Topology Map, returning an image
-  - name: tufin-object-resolve
-    arguments:
-    - name: ip
+    name: tufin-search-topology-image
+  - arguments:
+    - description: IP Address to Resolve to Network Object
+      name: ip
       required: true
-      description: IP Address to Resolve to Network Object
+    description: Resolve IP address to Network Object
+    name: tufin-object-resolve
     outputs:
     - contextPath: Tufin.ObjectResolve.NumberOfObjects
       description: Number of objects that resolve to given IP address.
       type: number
-    description: Resolve IP address to Network Object
-  - name: tufin-policy-search
-    arguments:
-    - name: search
-      required: true
-      description: The text format is for a field is <fieldname>:<text> for example
+  - arguments:
+    - description: The text format is for a field is <fieldname>:<text> for example
         source:192.168.1.1 or bareword for free text search. See the search info documentation
         in Securetrack Policy Browser page for more information.
+      name: search
+      required: true
+    description: Search the policies of all devices managed by Tufin
+    name: tufin-policy-search
     outputs:
     - contextPath: Tufin.Policysearch.NumberRulesFound
       description: Number of rules found via search
       type: number
-    description: Search the policies of all devices managed by Tufin
-  - name: tufin-get-zone-for-ip
-    arguments:
-    - name: ip
+  - arguments:
+    - description: IP Address
+      name: ip
       required: true
-      description: IP Address
+    description: Match the IP address to the assigned Tufin Zone
+    name: tufin-get-zone-for-ip
     outputs:
     - contextPath: Tufin.Zone.ID
       description: Tufin Zone ID
@@ -125,65 +126,65 @@ script:
     - contextPath: Tufin.Zone.Name
       description: Tufin Zone Name
       type: string
-    description: Match the IP address to the assigned Tufin Zone
-  - name: tufin-submit-change-request
-    arguments:
-    - name: request-type
-      required: true
-      auto: PREDEFINED
+  - arguments:
+    - auto: PREDEFINED
+      description: Request Type
+      name: request-type
       predefined:
       - Firewall Change Request
       - Server Decommission Request
-      description: Request Type
-    - name: priority
       required: true
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: Request Priority
+      name: priority
       predefined:
       - Critical
       - High
       - Normal
       - Low
-      description: Request Priority
-    - name: source
       required: true
-      description: Source or Target
-    - name: destination
-      description: Destination (Mandatory for FW Change)
-    - name: protocol
-      auto: PREDEFINED
+    - description: Source or Target
+      name: source
+      required: true
+    - description: Destination (Mandatory for FW Change)
+      name: destination
+    - auto: PREDEFINED
+      description: Protocol (Mandatory for FW Change)
+      name: protocol
       predefined:
       - TCP
       - UDP
-      description: Protocol (Mandatory for FW Change)
-    - name: port
-      description: Port (Mandatory for FW Change)
-    - name: action
-      auto: PREDEFINED
+    - description: Port (Mandatory for FW Change)
+      name: port
+    - auto: PREDEFINED
+      description: Action (Mandatory for FW Change)
+      name: action
       predefined:
       - Accept
       - Drop
       - Remove
-      description: Action (Mandatory for FW Change)
-    - name: comment
-      description: Comment
-    - name: subject
+    - description: Comment
+      name: comment
+    - description: Ticket Subject
+      name: subject
       required: true
-      description: Ticket Subject
+    description: Submit a change request to SecureChange
+    name: tufin-submit-change-request
     outputs:
     - contextPath: Tufin.Request.Status
       description: Status of the request submission
       type: string
-    description: Submit a change request to SecureChange
-  - name: tufin-search-devices
-    arguments:
-    - name: name
-      description: Device name
-    - name: ip
-      description: Device IP
-    - name: vendor
-      description: Device vendor
-    - name: model
-      description: Device model
+  - arguments:
+    - description: Device name
+      name: name
+    - description: Device IP
+      name: ip
+    - description: Device vendor
+      name: vendor
+    - description: Device model
+      name: model
+    description: Search SecureTrack devices
+    name: tufin-search-devices
     outputs:
     - contextPath: Tufin.Device.ID
       description: Device ID
@@ -200,12 +201,13 @@ script:
     - contextPath: Tufin.Device.IP
       description: Device IP
       type: string
-    description: Search SecureTrack devices
-  - name: tufin-get-change-info
-    arguments:
-    - name: ticket-id
-      description: SecureChange Ticket ID
+  - arguments:
+    - description: SecureChange Ticket ID
+      name: ticket-id
       required: true
+    description: Get information on a SecureChange Ticket (ID retrieved from SecureChange
+      UI)
+    name: tufin-get-change-info
     outputs:
     - contextPath: Tufin.Ticket.ID
       description: Ticket ID
@@ -231,11 +233,11 @@ script:
     - contextPath: Tufin.Ticket.CurrentStep
       description: Ticket current step
       type: string
-    description: Get information on a SecureChange Ticket (ID retrieved from SecureChange UI)
-  - name: tufin-search-applications
-    arguments:
-    - name: name
-      description: Application name
+  - arguments:
+    - description: Application name
+      name: name
+    description: Search SecureApp applications
+    name: tufin-search-applications
     outputs:
     - contextPath: Tufin.App.ID
       description: Application ID
@@ -258,12 +260,12 @@ script:
     - contextPath: Tufin.App.Comments
       description: Application comments
       type: string
-    description: Search SecureApp applications
-  - name: tufin-search-application-connections
-    arguments:
-    - name: application-id
+  - arguments:
+    - description: Application ID
+      name: application-id
       required: true
-      description: Application ID
+    description: Get SecureApp application connections
+    name: tufin-search-application-connections
     outputs:
     - contextPath: Tufin.AppConnection.ID
       description: Connection ID
@@ -289,7 +291,9 @@ script:
     - contextPath: Tufin.AppConnection.Comment
       description: Connection comment
       type: string
-    description: Get SecureApp application connections
   dockerimage: demisto/netutils:1.0.0.5165
   runonce: false
+  script: ''
   subtype: python3
+  type: python
+toversion: 4.1.9

@@ -116,12 +116,15 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: |-
-        Threat of this file. Can be one of:
+      description: 'Threat of this file. Can be one of:
+
         -1=Unknown
+
         0=Clean
+
         50=Potential risk
-        100=Malicious
+
+        100=Malicious'
       isArray: false
       name: threat
       predefined:
@@ -133,13 +136,17 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: |-
-        File state of this hash. Can be one of:
+      description: 'File state of this hash. Can be one of:
+
         1=Unapproved
+
         2=Approved
+
         3=Banned
+
         4=Approved by Policy
-        5=Banned by Policy
+
+        5=Banned by Policy'
       isArray: false
       name: fileState
       predefined:
@@ -384,17 +391,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: '(Int) Cache consistency check flags set for agent. Can be 0 or
-        combination of: 0x0001 = Whether this is just a test run or not 0x0002 = Should
-        the state of invalid files be preserved 0x0004 = Should new files found be
-        locally approved or not 0x0008 = Should we re-evaluate whether a file’s certificate
-        information is still valid or not 0x0010 = Whether the check was scheduled
-        or not 0x0020 = Whether the agent should run constraint checks to test for
-        invalid results 0x0040 = Whether we are only searching for new script types
-        as a result of a change to what ‘IsScript’ means 0x0080 = Whether we are doing
-        a level 3 check for initialization 0x0100 = This cache check is to remediate
-        CR# 18041 0x0200 = Force the re-evaluation of the IsCrawlable state and archive
-        type.'
+      description: "(Int) Cache consistency check flags set for agent. Can be 0 or\
+        \ combination of: 0x0001 = Whether this is just a test run or not 0x0002 =\
+        \ Should the state of invalid files be preserved 0x0004 = Should new files\
+        \ found be locally approved or not 0x0008 = Should we re-evaluate whether\
+        \ a file\u2019s certificate information is still valid or not 0x0010 = Whether\
+        \ the check was scheduled or not 0x0020 = Whether the agent should run constraint\
+        \ checks to test for invalid results 0x0040 = Whether we are only searching\
+        \ for new script types as a result of a change to what \u2018IsScript\u2019\
+        \ means 0x0080 = Whether we are doing a level 3 check for initialization 0x0100\
+        \ = This cache check is to remediate CR# 18041 0x0200 = Force the re-evaluation\
+        \ of the IsCrawlable state and archive type."
       isArray: false
       name: cCFlags
       required: false
@@ -422,13 +429,18 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: |-
-        (Int) Mode of template cleanup. Can be one of:
+      description: '(Int) Mode of template cleanup. Can be one of:
+
         1=Manual (from console)
+
         2=Automatic, by time (specified by templateCloneCleanupTime and templateCloneCleanupTimeScale)
+
         3=Automatic, when new computer with the same name comes online
+
         4=Automatic, as soon as computer goes offline
-        This value can be changed only if the "changeTemplate" request parameter is set to "True".
+
+        This value can be changed only if the "changeTemplate" request parameter is
+        set to "True".'
       isArray: false
       name: templateCloneCleanupMode
       predefined:
@@ -449,12 +461,16 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: |-
-        (Int) Time unit of the template cleanup. Can be one of:
+      description: '(Int) Time unit of the template cleanup. Can be one of:
+
         1=Hours
+
         2=Days
+
         3=Weeks
-        This value can be changed only if the "changeTemplate" request parameter is set to "True".
+
+        This value can be changed only if the "changeTemplate" request parameter is
+        set to "True".'
       isArray: false
       name: templateCloneCleanupTimeScale
       predefined:
@@ -711,16 +727,23 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: |-
-        Event type. Can be one of:
+      description: 'Event type. Can be one of:
+
         0 = Server Management
+
         1 = Session Management
+
         2 = Computer Management
+
         3 = Policy Management
+
         4 = Policy Enforcement
+
         5 = Discovery
+
         6 = General Management
-        8 = Internal Events
+
+        8 = Internal Events'
       isArray: false
       name: type
       predefined:
@@ -755,14 +778,19 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: |-
-        Event severity. Can be one of:
+      description: 'Event severity. Can be one of:
+
         2 = Critical
+
         3 = Error
+
         4 = Warning
+
         5 = Notice
+
         6 = Info
-        7 = Debug
+
+        7 = Debug'
       isArray: false
       name: severity
       predefined:
@@ -781,9 +809,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: Id of fileCatalog entry associated with this fileRule. Can be null
-        if file hasn’t been seen on any endpoints yet. You can get this by executing
-        cbp-fileCatalog-search
+      description: "Id of fileCatalog entry associated with this fileRule. Can be\
+        \ null if file hasn\u2019t been seen on any endpoints yet. You can get this\
+        \ by executing cbp-fileCatalog-search"
       isArray: false
       name: fileCatalogId
       required: false
@@ -1022,9 +1050,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: Id of fileCatalog entry associated with this fileRule. Can be null
-        if file hasn’t been seen on any endpoints yet. You can get this by executing
-        cbp-fileCatalog-search
+      description: "Id of fileCatalog entry associated with this fileRule. Can be\
+        \ null if file hasn\u2019t been seen on any endpoints yet. You can get this\
+        \ by executing cbp-fileCatalog-search"
       isArray: false
       name: fileCatalogId
       required: false
@@ -1037,11 +1065,13 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: |-
-        File state for this rule. Can be one of:
+      description: 'File state for this rule. Can be one of:
+
         1=Unapproved
+
         2=Approved
-        3=Banned
+
+        3=Banned'
       isArray: false
       name: fileState
       predefined:
@@ -1211,13 +1241,17 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: |-
-        Target enforcement level. Can be one of:
+      description: 'Target enforcement level. Can be one of:
+
         20=High (Block Unapproved)
+
         30=Medium (Prompt Unapproved)
+
         40=Low (Monitor Unapproved)
+
         60=None (Visibility)
-        80=None (Disabled)
+
+        80=None (Disabled)'
       isArray: false
       name: enforcementLevel
       predefined:
@@ -1230,13 +1264,18 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: |-
-        Target enforcement level for disconnected computers. Can be one of:
+      description: 'Target enforcement level for disconnected computers. Can be one
+        of:
+
         20=High (Block Unapproved)
+
         30=Medium (Prompt Unapproved)
+
         40=Low (Monitor Unapproved)
+
         60=None (Visibility)
-        80=None (Disabled)
+
+        80=None (Disabled)'
       isArray: false
       name: disconnectedEnforcementLevel
       predefined:
@@ -1414,12 +1453,15 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: |-
-        Reputation of this publisher. Can be one of:
+      description: 'Reputation of this publisher. Can be one of:
+
         0=Not trusted (Unknown)
+
         1=Low
+
         2=Medium
-        3=High
+
+        3=High'
       isArray: false
       name: publisherReputation
       predefined:
@@ -1431,13 +1473,17 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: |-
-        State for this publisher. Can be one of:
+      description: 'State for this publisher. Can be one of:
+
         1=Unapproved
+
         2=Approved
+
         3=Banned
+
         4=Approved By Policy
-        5=Banned By Policy
+
+        5=Banned By Policy'
       isArray: false
       name: publisherState
       predefined:
@@ -1697,22 +1743,28 @@ script:
       required: false
       secret: false
     - default: false
-      description: |
-        Name of the file where file exists on the endpoint
+      description: 'Name of the file where file exists on the endpoint
+
+        '
       isArray: false
       name: fileName
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: |-
-        Status of analysis. Can be one of:
+      description: 'Status of analysis. Can be one of:
+
         0 = scheduled
+
         1 = submitted (file is sent for analysis)
+
         2 = processed (file is processed but results are not available yet)
+
         3 = analyzed (file is processed and results are available)
+
         4 = error
-        5 = cancelled
+
+        5 = cancelled'
       isArray: false
       name: analysisStatus
       predefined:
@@ -1726,12 +1778,15 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: |-
-        Result of the analysis. Can be one of:
+      description: 'Result of the analysis. Can be one of:
+
         0 = Not yet available
+
         1 = File is clean
+
         2 = File is a potential threat
-        3 = File is malicious
+
+        3 = File is malicious'
       isArray: false
       name: analysisResult
       predefined:
@@ -1988,15 +2043,21 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: |-
-        Status of upload. Can be one of:
+      description: 'Status of upload. Can be one of:
+
         0 = Queued
+
         1 = Initiated
+
         2 = Uploading
+
         3 = Completed
+
         4 = Error
+
         5 = Cancelled
-        6 = Deleted
+
+        6 = Deleted'
       isArray: false
       name: uploadStatus
       predefined:
@@ -2178,16 +2239,24 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: |-
-        Resolution of the request. Resolution can be changed for open requests or
+      description: 'Resolution of the request. Resolution can be changed for open
+        requests or
+
         closed requests only. It can be one of:
+
         0=Not Resolved
+
         1=Rejected
+
         2=Resolved - Approved
+
         3=Resolved - Rule Change4=Resolved - Installer
+
         5=Resolved - Updater
+
         6=Resolved - Publisher
-        7=Resolved - Other
+
+        7=Resolved - Other'
       isArray: false
       name: resolution
       predefined:
@@ -2312,8 +2381,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: (Boolean) "True" if this file is forced to act as installer, even
-        if the product detected it as ‘not installer’.
+      description: "(Boolean) \"True\" if this file is forced to act as installer,\
+        \ even if the product detected it as \u2018not installer\u2019."
       isArray: false
       name: forceInstaller
       predefined:
@@ -2323,8 +2392,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: (Boolean) "True" if this file is forced to act as ‘not installer’,
-        even if the product detected it as installer.
+      description: "(Boolean) \"True\" if this file is forced to act as \u2018not\
+        \ installer\u2019, even if the product detected it as installer."
       isArray: false
       name: forceNotInstaller
       predefined:
@@ -2451,8 +2520,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: (Boolean) "True" if this file is forced to act as installer, even
-        if the product detected it as ‘not installer’.
+      description: "(Boolean) \"True\" if this file is forced to act as installer,\
+        \ even if the product detected it as \u2018not installer\u2019."
       isArray: false
       name: forceInstaller
       predefined:
@@ -2462,8 +2531,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: (Boolean) "True" if this file is forced to act as ‘not installer’,
-        even if the product detected it as installer.
+      description: "(Boolean) \"True\" if this file is forced to act as \u2018not\
+        \ installer\u2019, even if the product detected it as installer."
       isArray: false
       name: forceNotInstaller
       predefined:
@@ -2522,10 +2591,11 @@ script:
       description: Is this rule "reporting only" or is it also "enforcing".
       type: String
   dockerimage: demisto/python3:3.8.3.8715
-  subtype: python3
   isfetch: true
   runonce: false
   script: '-'
+  subtype: python3
   type: python
 tests:
 - Carbon Black Enterprise Protection V2 Test
+toversion: 4.1.9

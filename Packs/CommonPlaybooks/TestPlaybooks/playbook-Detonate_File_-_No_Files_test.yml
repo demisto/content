@@ -1,120 +1,88 @@
 id: Detonate File - No Files test
-version: -1
+inputs: []
 name: Detonate File - No Files test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 5582e6af-5671-4da2-8797-817dd974b35a
-    type: start
-    task:
-      id: 5582e6af-5671-4da2-8797-817dd974b35a
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
+      - '1'
     note: false
-    timertriggers: []
-  "1":
-    id: "1"
-    taskid: 7e1d40b1-a30e-4533-8ac0-9c57f466b96d
-    type: regular
+    separatecontext: false
     task:
-      id: 7e1d40b1-a30e-4533-8ac0-9c57f466b96d
-      version: -1
-      name: Delete Context
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      id: 5582e6af-5671-4da2-8797-817dd974b35a
       iscommand: false
-      brand: ""
+      name: ''
+      version: -1
+    taskid: 5582e6af-5671-4da2-8797-817dd974b35a
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-  "2":
-    id: "2"
-    taskid: a84f5fa7-70c6-4ad2-8526-29bea5198794
-    type: playbook
     task:
-      id: a84f5fa7-70c6-4ad2-8526-29bea5198794
+      brand: ''
+      id: 7e1d40b1-a30e-4533-8ac0-9c57f466b96d
+      iscommand: false
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
       version: -1
+    taskid: 7e1d40b1-a30e-4533-8ac0-9c57f466b96d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '2':
+    id: '2'
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    separatecontext: true
+    task:
+      brand: ''
+      id: a84f5fa7-70c6-4ad2-8526-29bea5198794
+      iscommand: false
       name: Detonate File - Generic
       playbookName: Detonate File - Generic
       type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-  "3":
-    id: "3"
-    taskid: 8ed7c5d9-6d25-4739-8f17-a6e8d53da200
-    type: title
-    task:
-      id: 8ed7c5d9-6d25-4739-8f17-a6e8d53da200
       version: -1
+    taskid: a84f5fa7-70c6-4ad2-8526-29bea5198794
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '3':
+    id: '3'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 8ed7c5d9-6d25-4739-8f17-a6e8d53da200
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
+      version: -1
+    taskid: 8ed7c5d9-6d25-4739-8f17-a6e8d53da200
     timertriggers: []
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 560,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 560,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

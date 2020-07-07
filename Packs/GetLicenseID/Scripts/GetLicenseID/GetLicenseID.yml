@@ -1,18 +1,19 @@
+comment: Returns the license ID.
 commonfields:
   id: GetLicenseID
   version: -1
-name: GetLicenseID
-script: '-'
-type: python
-tags: []
-comment: Returns the license ID.
+dockerimage: demisto/python3:3.8.1.6120
 enabled: true
+name: GetLicenseID
 outputs:
 - contextPath: License.ID
   description: The license ID.
   type: string
+runas: DBotWeakRole
+runonce: false
+script: '-'
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.8.1.6120
-runas: DBotWeakRole
+tags: []
+toversion: 4.1.9
+type: python

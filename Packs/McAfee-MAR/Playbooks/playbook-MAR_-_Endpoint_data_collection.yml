@@ -1,269 +1,82 @@
-id: MAR - Endpoint data collection
-version: -1
-name: MAR - Endpoint data collection
-fromversion: ""
-description: |-
-  Use McAfee Active Response to collect data from an endpoint for IR purposes (requires ePO as well)
+description: 'Use McAfee Active Response to collect data from an endpoint for IR purposes
+  (requires ePO as well)
+
 
   Input:
-  * Hostname (Default: ${Endpoint.Hostname})
-starttaskid: "0"
+
+  * Hostname (Default: ${Endpoint.Hostname})'
+fromversion: ''
+id: MAR - Endpoint data collection
+inputs:
+- description: Hostname to run on
+  key: Hostname
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: ${Endpoint.Hostname}
+name: MAR - Endpoint data collection
+outputs: []
+starttaskid: '0'
+system: true
 tasks:
-  "0":
-    id: "0"
-    taskid: 14834984-3a59-4eed-8de7-54179611c63d
-    type: start
-    task:
-      id: 14834984-3a59-4eed-8de7-54179611c63d
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-      description: ""
+  '0':
+    id: '0'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
-      - "4"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 705,
-          "y": 50
-        }
-      }
+      - '1'
+      - '4'
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
-    taskid: 528a058d-8c60-46dc-80b0-8139b45eeafd
-    type: condition
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 528a058d-8c60-46dc-80b0-8139b45eeafd
-      version: -1
-      name: is ePO enabled?
-      scriptName: Exists
-      type: condition
+      brand: ''
+      description: ''
+      id: 14834984-3a59-4eed-8de7-54179611c63d
       iscommand: false
-      brand: ""
-      description: ""
+      name: ''
+      version: -1
+    taskid: 14834984-3a59-4eed-8de7-54179611c63d
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 705,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
     nexttasks:
       '#default#':
-      - "3"
-      "yes":
-      - "2"
+      - '3'
+      'yes':
+      - '2'
+    note: false
+    quietmode: 0
     scriptarguments:
       value:
         simple: ${modules(val.brand=="epo")}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 369,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "2":
-    id: "2"
-    taskid: 5c61873e-d9e2-4967-8776-82db5c05628b
-    type: regular
     task:
-      id: 5c61873e-d9e2-4967-8776-82db5c05628b
-      version: -1
-      name: Get host info from ePO
-      scriptName: EPOFindSystem
-      type: regular
+      brand: ''
+      description: ''
+      id: 528a058d-8c60-46dc-80b0-8139b45eeafd
       iscommand: false
-      brand: ""
-      description: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      searchText:
-        simple: ${inputs.Hostname}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 92.5,
-          "y": 355
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "3":
-    id: "3"
-    taskid: fed35557-6859-44e6-817a-ee0538819714
-    type: title
-    task:
-      id: fed35557-6859-44e6-817a-ee0538819714
-      version: -1
-      name: Done
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 612.5,
-          "y": 1710
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "4":
-    id: "4"
-    taskid: 71f42a72-b2e7-479a-86e7-bc6ff218671e
-    type: condition
-    task:
-      id: 71f42a72-b2e7-479a-86e7-bc6ff218671e
-      version: -1
-      name: is MAR enabled?
+      name: is ePO enabled?
       scriptName: Exists
       type: condition
-      iscommand: false
-      brand: ""
-      description: ""
-    nexttasks:
-      '#default#':
-      - "3"
-      "yes":
-      - "26"
-    scriptarguments:
-      value:
-        simple: ${modules(val.brand=="McAfee Active Response")}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1122,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "6":
-    id: "6"
-    taskid: d3c21d0d-fc2a-4ba5-8bb9-da70f49ae96c
-    type: regular
-    task:
-      id: d3c21d0d-fc2a-4ba5-8bb9-da70f49ae96c
       version: -1
-      name: Get host Processes
-      script: McAfee Active Response|||mar-search-multiple
-      type: regular
-      iscommand: true
-      brand: McAfee Active Response
-      description: ""
+    taskid: 528a058d-8c60-46dc-80b0-8139b45eeafd
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 369,\n    \"y\": 195\n  }\n}"
+  '10':
+    id: '10'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "10"
-    scriptarguments:
-      collector:
-        simple: Processes
-      collectors:
-        simple: HostInfo,Processes
-      filter-by:
-        simple: hostname
-      filter-operator:
-        simple: Equals
-      filter-value:
-        simple: ${inputs.Hostname}
-      filter_collector:
-        simple: HostInfo
-      outputs: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 612.5,
-          "y": 835
-        }
-      }
+      - '11'
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
-  "9":
-    id: "9"
-    taskid: 98827aec-511a-4f30-8fdb-04240496380d
-    type: regular
-    task:
-      id: 98827aec-511a-4f30-8fdb-04240496380d
-      version: -1
-      name: Get host Scheduled tasks
-      script: McAfee Active Response|||mar-search-multiple
-      type: regular
-      iscommand: true
-      brand: McAfee Active Response
-      description: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      collector:
-        simple: Processes
-      collectors:
-        simple: HostInfo,ScheduledTasks
-      filter-by:
-        simple: hostname
-      filter-operator:
-        simple: Equals
-      filter-value:
-        simple: ${inputs.Hostname}
-      filter_collector:
-        simple: HostInfo
-      outputs: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 612.5,
-          "y": 660
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "10":
-    id: "10"
-    taskid: 38ad462f-1c16-4c4a-8cd8-446e19c24694
-    type: regular
-    task:
-      id: 38ad462f-1c16-4c4a-8cd8-446e19c24694
-      version: -1
-      name: Get host services
-      script: McAfee Active Response|||mar-search-multiple
-      type: regular
-      iscommand: true
-      brand: McAfee Active Response
-      description: ""
-    nexttasks:
-      '#none#':
-      - "11"
     scriptarguments:
       collector:
         simple: Processes
@@ -279,34 +92,28 @@ tasks:
         simple: HostInfo
       outputs: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 612.5,
-          "y": 1010
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "11":
-    id: "11"
-    taskid: 6e9fb885-21b5-417d-800c-e02aa81cb91f
-    type: regular
     task:
-      id: 6e9fb885-21b5-417d-800c-e02aa81cb91f
-      version: -1
-      name: Get host Command line history
+      brand: McAfee Active Response
+      description: ''
+      id: 38ad462f-1c16-4c4a-8cd8-446e19c24694
+      iscommand: true
+      name: Get host services
       script: McAfee Active Response|||mar-search-multiple
       type: regular
-      iscommand: true
-      brand: McAfee Active Response
-      description: ""
+      version: -1
+    taskid: 38ad462f-1c16-4c4a-8cd8-446e19c24694
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 612.5,\n    \"y\": 1010\n  }\n}"
+  '11':
+    id: '11'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "23"
+      - '23'
+    note: false
+    quietmode: 0
     scriptarguments:
       collector:
         simple: Processes
@@ -322,34 +129,28 @@ tasks:
         simple: HostInfo
       outputs: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 612.5,
-          "y": 1185
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "12":
-    id: "12"
-    taskid: 69f8efa1-8783-4165-8ce4-2f5e0f3db937
-    type: regular
     task:
-      id: 69f8efa1-8783-4165-8ce4-2f5e0f3db937
-      version: -1
-      name: Get host "Current flow"
+      brand: McAfee Active Response
+      description: ''
+      id: 6e9fb885-21b5-417d-800c-e02aa81cb91f
+      iscommand: true
+      name: Get host Command line history
       script: McAfee Active Response|||mar-search-multiple
       type: regular
-      iscommand: true
-      brand: McAfee Active Response
-      description: ""
+      version: -1
+    taskid: 6e9fb885-21b5-417d-800c-e02aa81cb91f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 612.5,\n    \"y\": 1185\n  }\n}"
+  '12':
+    id: '12'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "13"
+      - '13'
+    note: false
+    quietmode: 0
     scriptarguments:
       collector:
         simple: Processes
@@ -365,34 +166,28 @@ tasks:
         simple: HostInfo
       outputs: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1042.5,
-          "y": 660
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "13":
-    id: "13"
-    taskid: 08612fec-a2cb-4b1c-8a10-e8148722075f
-    type: regular
     task:
-      id: 08612fec-a2cb-4b1c-8a10-e8148722075f
-      version: -1
-      name: Get host DNS cache
+      brand: McAfee Active Response
+      description: ''
+      id: 69f8efa1-8783-4165-8ce4-2f5e0f3db937
+      iscommand: true
+      name: Get host "Current flow"
       script: McAfee Active Response|||mar-search-multiple
       type: regular
-      iscommand: true
-      brand: McAfee Active Response
-      description: ""
+      version: -1
+    taskid: 69f8efa1-8783-4165-8ce4-2f5e0f3db937
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1042.5,\n    \"y\": 660\n  }\n}"
+  '13':
+    id: '13'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
+    note: false
+    quietmode: 0
     scriptarguments:
       collector:
         simple: Processes
@@ -408,34 +203,28 @@ tasks:
         simple: HostInfo
       outputs: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1042.5,
-          "y": 835
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "14":
-    id: "14"
-    taskid: 5479417e-4e95-422a-8e92-4f585f40fd50
-    type: regular
     task:
-      id: 5479417e-4e95-422a-8e92-4f585f40fd50
-      version: -1
-      name: Get host environment variables
+      brand: McAfee Active Response
+      description: ''
+      id: 08612fec-a2cb-4b1c-8a10-e8148722075f
+      iscommand: true
+      name: Get host DNS cache
       script: McAfee Active Response|||mar-search-multiple
       type: regular
-      iscommand: true
-      brand: McAfee Active Response
-      description: ""
+      version: -1
+    taskid: 08612fec-a2cb-4b1c-8a10-e8148722075f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1042.5,\n    \"y\": 835\n  }\n}"
+  '14':
+    id: '14'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "21"
+      - '21'
+    note: false
+    quietmode: 0
     scriptarguments:
       collector:
         simple: Processes
@@ -451,34 +240,28 @@ tasks:
         simple: HostInfo
       outputs: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1902.5,
-          "y": 1360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "15":
-    id: "15"
-    taskid: cd3926a0-6157-4ef3-8fd1-86b6cbd79e7c
-    type: regular
     task:
-      id: cd3926a0-6157-4ef3-8fd1-86b6cbd79e7c
-      version: -1
-      name: Get host local groups
+      brand: McAfee Active Response
+      description: ''
+      id: 5479417e-4e95-422a-8e92-4f585f40fd50
+      iscommand: true
+      name: Get host environment variables
       script: McAfee Active Response|||mar-search-multiple
       type: regular
-      iscommand: true
-      brand: McAfee Active Response
-      description: ""
+      version: -1
+    taskid: 5479417e-4e95-422a-8e92-4f585f40fd50
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1902.5,\n    \"y\": 1360\n  }\n}"
+  '15':
+    id: '15'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
+    note: false
+    quietmode: 0
     scriptarguments:
       collector:
         simple: Processes
@@ -494,34 +277,28 @@ tasks:
         simple: HostInfo
       outputs: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1472.5,
-          "y": 1185
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "17":
-    id: "17"
-    taskid: 0287ca41-8587-4bb2-84d6-4824b5133df1
-    type: regular
     task:
-      id: 0287ca41-8587-4bb2-84d6-4824b5133df1
-      version: -1
-      name: Get host logged in users
+      brand: McAfee Active Response
+      description: ''
+      id: cd3926a0-6157-4ef3-8fd1-86b6cbd79e7c
+      iscommand: true
+      name: Get host local groups
       script: McAfee Active Response|||mar-search-multiple
       type: regular
-      iscommand: true
-      brand: McAfee Active Response
-      description: ""
+      version: -1
+    taskid: cd3926a0-6157-4ef3-8fd1-86b6cbd79e7c
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1472.5,\n    \"y\": 1185\n  }\n}"
+  '17':
+    id: '17'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "22"
+      - '22'
+    note: false
+    quietmode: 0
     scriptarguments:
       collector:
         simple: Processes
@@ -537,34 +314,28 @@ tasks:
         simple: HostInfo
       outputs: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1472.5,
-          "y": 1360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "18":
-    id: "18"
-    taskid: c781977e-2b17-4273-86c2-246912262601
-    type: regular
     task:
-      id: c781977e-2b17-4273-86c2-246912262601
-      version: -1
-      name: Get host network shares
+      brand: McAfee Active Response
+      description: ''
+      id: 0287ca41-8587-4bb2-84d6-4824b5133df1
+      iscommand: true
+      name: Get host logged in users
       script: McAfee Active Response|||mar-search-multiple
       type: regular
-      iscommand: true
-      brand: McAfee Active Response
-      description: ""
+      version: -1
+    taskid: 0287ca41-8587-4bb2-84d6-4824b5133df1
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1472.5,\n    \"y\": 1360\n  }\n}"
+  '18':
+    id: '18'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
+    note: false
+    quietmode: 0
     scriptarguments:
       collector:
         simple: Processes
@@ -580,34 +351,28 @@ tasks:
         simple: HostInfo
       outputs: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1042.5,
-          "y": 1010
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "19":
-    id: "19"
-    taskid: ebfbc02e-b674-4899-8586-ea8621533c3b
-    type: regular
     task:
-      id: ebfbc02e-b674-4899-8586-ea8621533c3b
-      version: -1
-      name: Get host interactive sessions
+      brand: McAfee Active Response
+      description: ''
+      id: c781977e-2b17-4273-86c2-246912262601
+      iscommand: true
+      name: Get host network shares
       script: McAfee Active Response|||mar-search-multiple
       type: regular
-      iscommand: true
-      brand: McAfee Active Response
-      description: ""
+      version: -1
+    taskid: c781977e-2b17-4273-86c2-246912262601
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1042.5,\n    \"y\": 1010\n  }\n}"
+  '19':
+    id: '19'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "20"
+      - '20'
+    note: false
+    quietmode: 0
     scriptarguments:
       collector:
         simple: Processes
@@ -623,34 +388,54 @@ tasks:
         simple: HostInfo
       outputs: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1042.5,
-          "y": 1185
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "20":
-    id: "20"
-    taskid: 79f385d1-1aa0-47f9-84de-f0b579492151
-    type: regular
     task:
-      id: 79f385d1-1aa0-47f9-84de-f0b579492151
-      version: -1
-      name: Get host network interfaces
+      brand: McAfee Active Response
+      description: ''
+      id: ebfbc02e-b674-4899-8586-ea8621533c3b
+      iscommand: true
+      name: Get host interactive sessions
       script: McAfee Active Response|||mar-search-multiple
       type: regular
-      iscommand: true
-      brand: McAfee Active Response
-      description: ""
+      version: -1
+    taskid: ebfbc02e-b674-4899-8586-ea8621533c3b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1042.5,\n    \"y\": 1185\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "24"
+      - '3'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      searchText:
+        simple: ${inputs.Hostname}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 5c61873e-d9e2-4967-8776-82db5c05628b
+      iscommand: false
+      name: Get host info from ePO
+      scriptName: EPOFindSystem
+      type: regular
+      version: -1
+    taskid: 5c61873e-d9e2-4967-8776-82db5c05628b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 92.5,\n    \"y\": 355\n  }\n}"
+  '20':
+    id: '20'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '24'
+    note: false
+    quietmode: 0
     scriptarguments:
       collector:
         simple: Processes
@@ -666,34 +451,28 @@ tasks:
         simple: HostInfo
       outputs: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1042.5,
-          "y": 1360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "21":
-    id: "21"
-    taskid: c35f205c-5c9a-4846-85b9-0a11e1b9f5ad
-    type: regular
     task:
-      id: c35f205c-5c9a-4846-85b9-0a11e1b9f5ad
-      version: -1
-      name: Get host's connected USB Storage Devices
+      brand: McAfee Active Response
+      description: ''
+      id: 79f385d1-1aa0-47f9-84de-f0b579492151
+      iscommand: true
+      name: Get host network interfaces
       script: McAfee Active Response|||mar-search-multiple
       type: regular
-      iscommand: true
-      brand: McAfee Active Response
-      description: ""
+      version: -1
+    taskid: 79f385d1-1aa0-47f9-84de-f0b579492151
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1042.5,\n    \"y\": 1360\n  }\n}"
+  '21':
+    id: '21'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
+    quietmode: 0
     scriptarguments:
       collector:
         simple: Processes
@@ -709,34 +488,28 @@ tasks:
         simple: HostInfo
       outputs: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1902.5,
-          "y": 1535
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "22":
-    id: "22"
-    taskid: cac5062b-32b7-4789-8f25-c28ea0e40873
-    type: regular
     task:
-      id: cac5062b-32b7-4789-8f25-c28ea0e40873
-      version: -1
-      name: Get host user profiles
+      brand: McAfee Active Response
+      description: ''
+      id: c35f205c-5c9a-4846-85b9-0a11e1b9f5ad
+      iscommand: true
+      name: Get host's connected USB Storage Devices
       script: McAfee Active Response|||mar-search-multiple
       type: regular
-      iscommand: true
-      brand: McAfee Active Response
-      description: ""
+      version: -1
+    taskid: c35f205c-5c9a-4846-85b9-0a11e1b9f5ad
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1902.5,\n    \"y\": 1535\n  }\n}"
+  '22':
+    id: '22'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
+    quietmode: 0
     scriptarguments:
       collector:
         simple: Processes
@@ -752,34 +525,28 @@ tasks:
         simple: HostInfo
       outputs: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1472.5,
-          "y": 1535
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "23":
-    id: "23"
-    taskid: 00e3cf95-5dda-411c-8ec5-027ba3348a21
-    type: regular
     task:
-      id: 00e3cf95-5dda-411c-8ec5-027ba3348a21
-      version: -1
-      name: Get host installed software
+      brand: McAfee Active Response
+      description: ''
+      id: cac5062b-32b7-4789-8f25-c28ea0e40873
+      iscommand: true
+      name: Get host user profiles
       script: McAfee Active Response|||mar-search-multiple
       type: regular
-      iscommand: true
-      brand: McAfee Active Response
-      description: ""
+      version: -1
+    taskid: cac5062b-32b7-4789-8f25-c28ea0e40873
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1472.5,\n    \"y\": 1535\n  }\n}"
+  '23':
+    id: '23'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "25"
+      - '25'
+    note: false
+    quietmode: 0
     scriptarguments:
       collector:
         simple: Processes
@@ -795,34 +562,28 @@ tasks:
         simple: HostInfo
       outputs: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 612.5,
-          "y": 1360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "24":
-    id: "24"
-    taskid: 4afc3a44-f5f9-462a-8f41-dc697c9366e2
-    type: regular
     task:
-      id: 4afc3a44-f5f9-462a-8f41-dc697c9366e2
-      version: -1
-      name: Get host Network Sessions
+      brand: McAfee Active Response
+      description: ''
+      id: 00e3cf95-5dda-411c-8ec5-027ba3348a21
+      iscommand: true
+      name: Get host installed software
       script: McAfee Active Response|||mar-search-multiple
       type: regular
-      iscommand: true
-      brand: McAfee Active Response
-      description: ""
+      version: -1
+    taskid: 00e3cf95-5dda-411c-8ec5-027ba3348a21
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 612.5,\n    \"y\": 1360\n  }\n}"
+  '24':
+    id: '24'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
+    quietmode: 0
     scriptarguments:
       collector:
         simple: Processes
@@ -838,34 +599,28 @@ tasks:
         simple: HostInfo
       outputs: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1042.5,
-          "y": 1535
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "25":
-    id: "25"
-    taskid: e7fcd15d-3273-4163-803e-26d5e76f712e
-    type: regular
     task:
-      id: e7fcd15d-3273-4163-803e-26d5e76f712e
-      version: -1
-      name: Get host Startup items
+      brand: McAfee Active Response
+      description: ''
+      id: 4afc3a44-f5f9-462a-8f41-dc697c9366e2
+      iscommand: true
+      name: Get host Network Sessions
       script: McAfee Active Response|||mar-search-multiple
       type: regular
-      iscommand: true
-      brand: McAfee Active Response
-      description: ""
+      version: -1
+    taskid: 4afc3a44-f5f9-462a-8f41-dc697c9366e2
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1042.5,\n    \"y\": 1535\n  }\n}"
+  '25':
+    id: '25'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
+    quietmode: 0
     scriptarguments:
       collector:
         simple: Processes
@@ -881,183 +636,258 @@ tasks:
         simple: HostInfo
       outputs: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 612.5,
-          "y": 1535
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "26":
-    id: "26"
-    taskid: 41252036-b29b-4a75-82e7-68fe3fa9b0a5
-    type: title
     task:
-      id: 41252036-b29b-4a75-82e7-68fe3fa9b0a5
+      brand: McAfee Active Response
+      description: ''
+      id: e7fcd15d-3273-4163-803e-26d5e76f712e
+      iscommand: true
+      name: Get host Startup items
+      script: McAfee Active Response|||mar-search-multiple
+      type: regular
       version: -1
+    taskid: e7fcd15d-3273-4163-803e-26d5e76f712e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 612.5,\n    \"y\": 1535\n  }\n}"
+  '26':
+    id: '26'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '27'
+      - '28'
+      - '29'
+      - '30'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 41252036-b29b-4a75-82e7-68fe3fa9b0a5
+      iscommand: false
       name: Collect data from endpoint
       type: title
-      iscommand: false
-      brand: ""
-      description: ""
+      version: -1
+    taskid: 41252036-b29b-4a75-82e7-68fe3fa9b0a5
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 1257.5,\n    \"y\": 370\n  }\n}"
+  '27':
+    id: '27'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "27"
-      - "28"
-      - "29"
-      - "30"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1257.5,
-          "y": 370
-        }
-      }
+      - '15'
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
-  "27":
-    id: "27"
-    taskid: 23bbdc19-0b43-4b5e-8d2b-939183909e09
-    type: title
+    separatecontext: false
+    skipunavailable: false
     task:
+      brand: ''
+      description: ''
       id: 23bbdc19-0b43-4b5e-8d2b-939183909e09
-      version: -1
+      iscommand: false
       name: Users and groups
       type: title
-      iscommand: false
-      brand: ""
-      description: ""
+      version: -1
+    taskid: 23bbdc19-0b43-4b5e-8d2b-939183909e09
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 1472.5,\n    \"y\": 515\n  }\n}"
+  '28':
+    id: '28'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "15"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1472.5,
-          "y": 515
-        }
-      }
+      - '9'
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
-  "28":
-    id: "28"
-    taskid: bf8c2f0a-d98b-4059-82db-a9f06f937177
-    type: title
+    separatecontext: false
+    skipunavailable: false
     task:
+      brand: ''
+      description: ''
       id: bf8c2f0a-d98b-4059-82db-a9f06f937177
-      version: -1
+      iscommand: false
       name: Executable
       type: title
-      iscommand: false
-      brand: ""
-      description: ""
+      version: -1
+    taskid: bf8c2f0a-d98b-4059-82db-a9f06f937177
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 612.5,\n    \"y\": 515\n  }\n}"
+  '29':
+    id: '29'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "9"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 612.5,
-          "y": 515
-        }
-      }
+      - '12'
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
-  "29":
-    id: "29"
-    taskid: abee0804-81a8-45da-8fab-a3792b165c49
-    type: title
+    separatecontext: false
+    skipunavailable: false
     task:
+      brand: ''
+      description: ''
       id: abee0804-81a8-45da-8fab-a3792b165c49
-      version: -1
+      iscommand: false
       name: Network
       type: title
+      version: -1
+    taskid: abee0804-81a8-45da-8fab-a3792b165c49
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 1042.5,\n    \"y\": 515\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: fed35557-6859-44e6-817a-ee0538819714
       iscommand: false
-      brand: ""
-      description: ""
+      name: Done
+      type: title
+      version: -1
+    taskid: fed35557-6859-44e6-817a-ee0538819714
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 612.5,\n    \"y\": 1710\n  }\n}"
+  '30':
+    id: '30'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "12"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1042.5,
-          "y": 515
-        }
-      }
+      - '14'
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
-  "30":
-    id: "30"
-    taskid: c5ff2c93-f30c-45eb-87b7-bcd676d1e7a2
-    type: title
+    separatecontext: false
+    skipunavailable: false
     task:
+      brand: ''
+      description: ''
       id: c5ff2c93-f30c-45eb-87b7-bcd676d1e7a2
-      version: -1
+      iscommand: false
       name: Others
       type: title
+      version: -1
+    taskid: c5ff2c93-f30c-45eb-87b7-bcd676d1e7a2
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 1902.5,\n    \"y\": 515\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '3'
+      'yes':
+      - '26'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${modules(val.brand=="McAfee Active Response")}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 71f42a72-b2e7-479a-86e7-bc6ff218671e
       iscommand: false
-      brand: ""
-      description: ""
+      name: is MAR enabled?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: 71f42a72-b2e7-479a-86e7-bc6ff218671e
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 1122,\n    \"y\": 195\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "14"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1902.5,
-          "y": 515
-        }
-      }
+      - '10'
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
-system: true
-view: |-
-  {
-    "linkLabelsPosition": {
-      "1_2_yes": 0.54
-    },
-    "paper": {
-      "dimensions": {
-        "height": 1725,
-        "width": 2190,
-        "x": 92.5,
-        "y": 50
-      }
-    }
-  }
-inputs:
-- key: Hostname
-  value:
-    simple: ${Endpoint.Hostname}
-  required: false
-  description: Hostname to run on
-  playbookInputQuery: null
-outputs: []
+    scriptarguments:
+      collector:
+        simple: Processes
+      collectors:
+        simple: HostInfo,Processes
+      filter-by:
+        simple: hostname
+      filter-operator:
+        simple: Equals
+      filter-value:
+        simple: ${inputs.Hostname}
+      filter_collector:
+        simple: HostInfo
+      outputs: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: McAfee Active Response
+      description: ''
+      id: d3c21d0d-fc2a-4ba5-8bb9-da70f49ae96c
+      iscommand: true
+      name: Get host Processes
+      script: McAfee Active Response|||mar-search-multiple
+      type: regular
+      version: -1
+    taskid: d3c21d0d-fc2a-4ba5-8bb9-da70f49ae96c
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 612.5,\n    \"y\": 835\n  }\n}"
+  '9':
+    id: '9'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      collector:
+        simple: Processes
+      collectors:
+        simple: HostInfo,ScheduledTasks
+      filter-by:
+        simple: hostname
+      filter-operator:
+        simple: Equals
+      filter-value:
+        simple: ${inputs.Hostname}
+      filter_collector:
+        simple: HostInfo
+      outputs: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: McAfee Active Response
+      description: ''
+      id: 98827aec-511a-4f30-8fdb-04240496380d
+      iscommand: true
+      name: Get host Scheduled tasks
+      script: McAfee Active Response|||mar-search-multiple
+      type: regular
+      version: -1
+    taskid: 98827aec-511a-4f30-8fdb-04240496380d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 612.5,\n    \"y\": 660\n  }\n}"
 tests:
-  - MAR - Endpoint data collection test
+- MAR - Endpoint data collection test
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"1_2_yes\": 0.54\n  },\n  \"paper\": {\n\
+  \    \"dimensions\": {\n      \"height\": 1725,\n      \"width\": 2190,\n      \"\
+  x\": 92.5,\n      \"y\": 50\n    }\n  }\n}"

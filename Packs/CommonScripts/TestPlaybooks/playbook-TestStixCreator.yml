@@ -1,561 +1,456 @@
 id: StixCreator-Test
-version: -1
+inputs: []
 name: StixCreator-Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 836efd42-b9a2-409d-8979-099a1dd7ad73
-    type: start
-    task:
-      id: 836efd42-b9a2-409d-8979-099a1dd7ad73
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
+      - '1'
     note: false
-    timertriggers: []
-    ignoreworker: false
-  "1":
-    id: "1"
-    taskid: e50d117c-df8b-44c2-87ba-906ed0625623
-    type: regular
+    separatecontext: false
     task:
-      id: e50d117c-df8b-44c2-87ba-906ed0625623
+      brand: ''
+      id: 836efd42-b9a2-409d-8979-099a1dd7ad73
+      iscommand: false
+      name: ''
       version: -1
+    taskid: 836efd42-b9a2-409d-8979-099a1dd7ad73
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    scriptarguments:
+      doubleBackslash: {}
+      indicators:
+        simple: "{\"0\": {\"firstSeen\": \"2019-03-13T11:39:11+02:00\", \"id\": \"\
+          320\", \"indicator_type\":\n          \"Email\", \"investigationIDs\": \"\
+          101, 128, 237, 283, 343, 462, 466\", \"lastSeen\":\n          \"2019-03-25T17:08:25+02:00\"\
+          , \"source\": \"DBot\", \"timestamp\": \"2019-03-13T11:39:11+02:00\",\n\
+          \          \"value\": \"koko@demisto.com\"}}"
+    separatecontext: false
+    task:
+      brand: ''
+      id: e50d117c-df8b-44c2-87ba-906ed0625623
+      iscommand: false
       name: Stix2Creator with Email
       scriptName: StixCreator
       type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      doubleBackslash: {}
-      indicators:
-        simple: |-
-          {"0": {"firstSeen": "2019-03-13T11:39:11+02:00", "id": "320", "indicator_type":
-                    "Email", "investigationIDs": "101, 128, 237, 283, 343, 462, 466", "lastSeen":
-                    "2019-03-25T17:08:25+02:00", "source": "DBot", "timestamp": "2019-03-13T11:39:11+02:00",
-                    "value": "koko@demisto.com"}}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 230
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 45693cf4-7a89-42e8-8c28-259e09e9624b
-    type: condition
-    task:
-      id: 45693cf4-7a89-42e8-8c28-259e09e9624b
       version: -1
-      name: Check STIX Export Result
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "4"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: StixExportedIndicators.pattern
-            iscontext: true
-          right:
-            value:
-              simple: '[email-message:sender_ref.value = ''koko@demisto.com'']'
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 440
-        }
-      }
-    note: false
+    taskid: e50d117c-df8b-44c2-87ba-906ed0625623
     timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: f841d097-00eb-403e-8168-799cd6f3ac0c
-    type: title
-    task:
-      id: f841d097-00eb-403e-8168-799cd6f3ac0c
-      version: -1
-      name: Success
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2890
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 073ee3b1-687b-4e73-8c8c-d24e1fdb228b
     type: regular
-    task:
-      id: 073ee3b1-687b-4e73-8c8c-d24e1fdb228b
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+  '10':
+    id: '10'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "5"
+      - '14'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 650
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 7c729ae3-0b1d-4f96-8693-925524d75044
-    type: regular
     task:
-      id: 7c729ae3-0b1d-4f96-8693-925524d75044
-      version: -1
-      name: Stix2Creator with IP
-      scriptName: StixCreator
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      doubleBackslash: {}
-      indicators:
-        simple: |-
-          {"0": {"firstSeen": "2019-03-13T12:06:20+02:00", "id": "994", "indicator_type":
-                    "IP", "investigationIDs": "237, 283, 466", "lastSeen": "2019-03-24T10:33:42+02:00",
-                    "score": "Bad", "source": "DBot", "timestamp": "2019-03-13T12:06:27+02:00",
-                    "value": "1.2.3.4"}}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 820
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 41dd7376-9b63-410b-881b-69daa8628a34
-    type: condition
-    task:
-      id: 41dd7376-9b63-410b-881b-69daa8628a34
-      version: -1
-      name: Check STIX Export Result
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "9"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: StixExportedIndicators.pattern
-            iscontext: true
-          right:
-            value:
-              simple: '[ipv4-addr:value = ''1.2.3.4'']'
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1010
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "7":
-    id: "7"
-    taskid: 08a26486-4db0-43cf-8cc9-b89523f902b1
-    type: regular
-    task:
-      id: 08a26486-4db0-43cf-8cc9-b89523f902b1
-      version: -1
-      name: Stix2Creator with Domain
-      description: Gets a list of indicators from the indicators argument, and generates
-        a JSON file in STIX 2.0 format.
-      scriptName: StixCreator
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      doubleBackslash: {}
-      indicators:
-        simple: |-
-          {"0": {"firstSeen": "2019-03-13T12:06:20+02:00", "id": "994", "indicator_type":
-                    "Domain", "investigationIDs": "237, 283, 466", "lastSeen": "2019-03-24T10:33:42+02:00",
-                    "score": "Bad", "source": "DBot", "timestamp": "2019-03-13T12:06:27+02:00",
-                    "value": "demisto.com"}}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "9":
-    id: "9"
-    taskid: 2dafd11f-d122-4ce5-8e67-942323fa9422
-    type: regular
-    task:
-      id: 2dafd11f-d122-4ce5-8e67-942323fa9422
-      version: -1
-      name: DeleteContext
+      brand: ''
       description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1190
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "10":
-    id: "10"
-    taskid: 831757ba-0104-41bf-8930-e910aae5572c
-    type: regular
-    task:
       id: 831757ba-0104-41bf-8930-e910aae5572c
-      version: -1
+      iscommand: false
       name: DeleteContext
-      description: Delete field from context
       scriptName: DeleteContext
       type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1760
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "12":
-    id: "12"
-    taskid: 99b8be0c-8702-4eaf-890c-34d82717f888
-    type: condition
-    task:
-      id: 99b8be0c-8702-4eaf-890c-34d82717f888
       version: -1
-      name: Check STIX Export Result
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "10"
-    separatecontext: false
+    taskid: 831757ba-0104-41bf-8930-e910aae5572c
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1760\n  }\n}"
+  '12':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: StixExportedIndicators.pattern
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: '[domain-name:value = ''demisto.com'']'
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1570
-        }
-      }
-    note: false
-    timertriggers: []
+      label: 'yes'
+    id: '12'
     ignoreworker: false
-  "14":
-    id: "14"
-    taskid: c2cf359d-8f36-4ad5-8ab5-a2aeabeb0a56
-    type: regular
+    nexttasks:
+      'yes':
+      - '10'
+    note: false
+    separatecontext: false
     task:
-      id: c2cf359d-8f36-4ad5-8ab5-a2aeabeb0a56
-      version: -1
-      name: Stix2Creator with Registry
-      description: Gets a list of indicators from the indicators argument, and generates
-        a JSON file in STIX 2.0 format.
-      scriptName: StixCreator
-      type: regular
+      brand: ''
+      id: 99b8be0c-8702-4eaf-890c-34d82717f888
       iscommand: false
-      brand: ""
+      name: Check STIX Export Result
+      type: condition
+      version: -1
+    taskid: 99b8be0c-8702-4eaf-890c-34d82717f888
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1570\n  }\n}"
+  '14':
+    id: '14'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
+    note: false
     scriptarguments:
       doubleBackslash: {}
       indicators:
-        simple: |-
-          {"0": {"firstSeen": "2019-03-13T12:06:20+02:00", "id": "994", "indicator_type":
-                    "Registry path reputation", "investigationIDs": "237, 283, 466", "lastSeen": "2019-03-24T10:33:42+02:00",
-                    "score": "Bad", "source": "DBot", "timestamp": "2019-03-13T12:06:27+02:00",
-                    "value": "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Run"}}
+        simple: "{\"0\": {\"firstSeen\": \"2019-03-13T12:06:20+02:00\", \"id\": \"\
+          994\", \"indicator_type\":\n          \"Registry path reputation\", \"investigationIDs\"\
+          : \"237, 283, 466\", \"lastSeen\": \"2019-03-24T10:33:42+02:00\",\n    \
+          \      \"score\": \"Bad\", \"source\": \"DBot\", \"timestamp\": \"2019-03-13T12:06:27+02:00\"\
+          ,\n          \"value\": \"HKEY_LOCAL_MACHINE\\\\Software\\\\Microsoft\\\\\
+          Windows\\\\CurrentVersion\\\\Run\"}}"
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1980
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "15":
-    id: "15"
-    taskid: b53a59e9-a5c8-4beb-8899-4835b7f392ec
-    type: condition
     task:
-      id: b53a59e9-a5c8-4beb-8899-4835b7f392ec
-      version: -1
-      name: Check STIX Export Result
-      type: condition
+      brand: ''
+      description: Gets a list of indicators from the indicators argument, and generates
+        a JSON file in STIX 2.0 format.
+      id: c2cf359d-8f36-4ad5-8ab5-a2aeabeb0a56
       iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "16"
-    separatecontext: false
+      name: Stix2Creator with Registry
+      scriptName: StixCreator
+      type: regular
+      version: -1
+    taskid: c2cf359d-8f36-4ad5-8ab5-a2aeabeb0a56
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1980\n  }\n}"
+  '15':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: StixExportedIndicators.pattern
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: '[windows-registry-key:key = ''HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Run'']'
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2160
-        }
-      }
-    note: false
-    timertriggers: []
+      label: 'yes'
+    id: '15'
     ignoreworker: false
-  "16":
-    id: "16"
-    taskid: 8229c593-10d1-4d5d-87d7-4698959bfde1
-    type: regular
+    nexttasks:
+      'yes':
+      - '16'
+    note: false
+    separatecontext: false
     task:
-      id: 8229c593-10d1-4d5d-87d7-4698959bfde1
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      id: b53a59e9-a5c8-4beb-8899-4835b7f392ec
       iscommand: false
-      brand: ""
+      name: Check STIX Export Result
+      type: condition
+      version: -1
+    taskid: b53a59e9-a5c8-4beb-8899-4835b7f392ec
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2160\n  }\n}"
+  '16':
+    id: '16'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "17":
-    id: "17"
-    taskid: 22107ce2-82dd-47ec-8014-1ba33dd149b7
-    type: regular
     task:
-      id: 22107ce2-82dd-47ec-8014-1ba33dd149b7
-      version: -1
-      name: Stix2Creator with CVE
-      description: Gets a list of indicators from the indicators argument, and generates
-        a JSON file in STIX 2.0 format.
-      scriptName: StixCreator
-      type: regular
+      brand: ''
+      description: Delete field from context
+      id: 8229c593-10d1-4d5d-87d7-4698959bfde1
       iscommand: false
-      brand: ""
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 8229c593-10d1-4d5d-87d7-4698959bfde1
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2370\n  }\n}"
+  '17':
+    id: '17'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
+    note: false
     scriptarguments:
       doubleBackslash: {}
       indicators:
-        simple: |-
-          {"0": {"firstSeen": "2019-03-13T12:06:20+02:00", "id": "994", "indicator_type":
-                    "cve cvss score", "investigationIDs": "237, 283, 466", "lastSeen": "2019-03-24T10:33:42+02:00",
-                    "score": "Bad", "source": "DBot", "timestamp": "2019-03-13T12:06:27+02:00",
-                    "value": "CVE-1234-5678"}}
+        simple: "{\"0\": {\"firstSeen\": \"2019-03-13T12:06:20+02:00\", \"id\": \"\
+          994\", \"indicator_type\":\n          \"cve cvss score\", \"investigationIDs\"\
+          : \"237, 283, 466\", \"lastSeen\": \"2019-03-24T10:33:42+02:00\",\n    \
+          \      \"score\": \"Bad\", \"source\": \"DBot\", \"timestamp\": \"2019-03-13T12:06:27+02:00\"\
+          ,\n          \"value\": \"CVE-1234-5678\"}}"
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2540
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "18":
-    id: "18"
-    taskid: c323230c-3548-4f18-801f-22eb7863e2f3
-    type: condition
     task:
-      id: c323230c-3548-4f18-801f-22eb7863e2f3
-      version: -1
-      name: Check STIX Export Result
-      type: condition
+      brand: ''
+      description: Gets a list of indicators from the indicators argument, and generates
+        a JSON file in STIX 2.0 format.
+      id: 22107ce2-82dd-47ec-8014-1ba33dd149b7
       iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "3"
-    separatecontext: false
+      name: Stix2Creator with CVE
+      scriptName: StixCreator
+      type: regular
+      version: -1
+    taskid: 22107ce2-82dd-47ec-8014-1ba33dd149b7
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2540\n  }\n}"
+  '18':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: StixExportedIndicators
                 accessor: type
-            iscontext: true
+                root: StixExportedIndicators
+          operator: isEqualString
           right:
             value:
               simple: vulnerability
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2690
-        }
-      }
-    note: false
-    timertriggers: []
+      label: 'yes'
+    id: '18'
     ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {
-      "2_4_yes": 0.39
-    },
-    "paper": {
-      "dimensions": {
-        "height": 2905,
-        "width": 380,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    nexttasks:
+      'yes':
+      - '3'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: c323230c-3548-4f18-801f-22eb7863e2f3
+      iscommand: false
+      name: Check STIX Export Result
+      type: condition
+      version: -1
+    taskid: c323230c-3548-4f18-801f-22eb7863e2f3
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2690\n  }\n}"
+  '2':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: StixExportedIndicators.pattern
+          operator: isEqualString
+          right:
+            value:
+              simple: '[email-message:sender_ref.value = ''koko@demisto.com'']'
+      label: 'yes'
+    id: '2'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '4'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 45693cf4-7a89-42e8-8c28-259e09e9624b
+      iscommand: false
+      name: Check STIX Export Result
+      type: condition
+      version: -1
+    taskid: 45693cf4-7a89-42e8-8c28-259e09e9624b
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 440\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: f841d097-00eb-403e-8168-799cd6f3ac0c
+      iscommand: false
+      name: Success
+      type: title
+      version: -1
+    taskid: f841d097-00eb-403e-8168-799cd6f3ac0c
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2890\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: 073ee3b1-687b-4e73-8c8c-d24e1fdb228b
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 073ee3b1-687b-4e73-8c8c-d24e1fdb228b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 650\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    scriptarguments:
+      doubleBackslash: {}
+      indicators:
+        simple: "{\"0\": {\"firstSeen\": \"2019-03-13T12:06:20+02:00\", \"id\": \"\
+          994\", \"indicator_type\":\n          \"IP\", \"investigationIDs\": \"237,\
+          \ 283, 466\", \"lastSeen\": \"2019-03-24T10:33:42+02:00\",\n          \"\
+          score\": \"Bad\", \"source\": \"DBot\", \"timestamp\": \"2019-03-13T12:06:27+02:00\"\
+          ,\n          \"value\": \"1.2.3.4\"}}"
+    separatecontext: false
+    task:
+      brand: ''
+      id: 7c729ae3-0b1d-4f96-8693-925524d75044
+      iscommand: false
+      name: Stix2Creator with IP
+      scriptName: StixCreator
+      type: regular
+      version: -1
+    taskid: 7c729ae3-0b1d-4f96-8693-925524d75044
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 820\n  }\n}"
+  '6':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: StixExportedIndicators.pattern
+          operator: isEqualString
+          right:
+            value:
+              simple: '[ipv4-addr:value = ''1.2.3.4'']'
+      label: 'yes'
+    id: '6'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '9'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 41dd7376-9b63-410b-881b-69daa8628a34
+      iscommand: false
+      name: Check STIX Export Result
+      type: condition
+      version: -1
+    taskid: 41dd7376-9b63-410b-881b-69daa8628a34
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1010\n  }\n}"
+  '7':
+    id: '7'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '12'
+    note: false
+    scriptarguments:
+      doubleBackslash: {}
+      indicators:
+        simple: "{\"0\": {\"firstSeen\": \"2019-03-13T12:06:20+02:00\", \"id\": \"\
+          994\", \"indicator_type\":\n          \"Domain\", \"investigationIDs\":\
+          \ \"237, 283, 466\", \"lastSeen\": \"2019-03-24T10:33:42+02:00\",\n    \
+          \      \"score\": \"Bad\", \"source\": \"DBot\", \"timestamp\": \"2019-03-13T12:06:27+02:00\"\
+          ,\n          \"value\": \"demisto.com\"}}"
+    separatecontext: false
+    task:
+      brand: ''
+      description: Gets a list of indicators from the indicators argument, and generates
+        a JSON file in STIX 2.0 format.
+      id: 08a26486-4db0-43cf-8cc9-b89523f902b1
+      iscommand: false
+      name: Stix2Creator with Domain
+      scriptName: StixCreator
+      type: regular
+      version: -1
+    taskid: 08a26486-4db0-43cf-8cc9-b89523f902b1
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1400\n  }\n}"
+  '9':
+    id: '9'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: 2dafd11f-d122-4ce5-8e67-942323fa9422
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 2dafd11f-d122-4ce5-8e67-942323fa9422
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1190\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"2_4_yes\": 0.39\n  },\n  \"paper\": {\n\
+  \    \"dimensions\": {\n      \"height\": 2905,\n      \"width\": 380,\n      \"\
+  x\": 450,\n      \"y\": 50\n    }\n  }\n}"

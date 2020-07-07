@@ -9,6 +9,8 @@ comment: Search Carbon Black for connection to specified IP addresses.
 commonfields:
   id: CBFindIP
   version: -1
+dependson:
+  must: []
 enabled: true
 name: CBFindIP
 outputs:
@@ -28,28 +30,27 @@ outputs:
   description: Process name.
   type: String
 - contextPath: Process.CbSegmentID
-  description: Carbon Black "segment" where this process instance is stored. Required to fetch
-    additional information for a process.
+  description: Carbon Black "segment" where this process instance is stored. Required
+    to fetch additional information for a process.
   type: String
 - contextPath: Process.CbID
-  description: Carbon Black unique ID for this process instance. Required (together with CbSegmentID)
-    to fetch additional information for a process.
+  description: Carbon Black unique ID for this process instance. Required (together
+    with CbSegmentID) to fetch additional information for a process.
   type: String
 - contextPath: Process.Endpoint
   description: The endpoint of the process.
   type: String
+runas: DBotWeakRole
+runonce: false
 script: '-'
+subtype: python2
 system: false
 tags:
 - carbon-black
 - endpoint
 - enhancement
-timeout: '0'
-type: python
-subtype: python2
-runas: DBotWeakRole
-runonce: false
 tests:
 - CBFindIP - Test
-dependson:
-  must: []
+timeout: '0'
+toversion: 4.1.9
+type: python

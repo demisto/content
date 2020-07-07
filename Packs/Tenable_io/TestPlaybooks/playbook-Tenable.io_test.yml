@@ -1,224 +1,179 @@
 elasticcommonfields: {}
 id: Tenable.io test
-version: -1
+inputs: []
 name: Tenable.io test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 62e769aa-1e67-45a6-8486-5639a888ccc5
-    type: start
-    task:
-      elasticcommonfields: {}
-      id: 62e769aa-1e67-45a6-8486-5639a888ccc5
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "4"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 50
-        }
-      }
+      - '4'
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
-    taskid: d5184e1e-2ad8-4800-8aa3-53d52d6f514f
-    type: regular
+    separatecontext: false
+    skipunavailable: false
     task:
+      brand: ''
       elasticcommonfields: {}
-      id: d5184e1e-2ad8-4800-8aa3-53d52d6f514f
+      id: 62e769aa-1e67-45a6-8486-5639a888ccc5
+      iscommand: false
+      name: ''
       version: -1
-      name: tenable-io-list-scans
-      description: Retrive scans from the Tenable platform.
-      script: '|||tenable-io-list-scans'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: 62e769aa-1e67-45a6-8486-5639a888ccc5
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    note: false
+    quietmode: 0
     scriptarguments:
       folderId: {}
       lastModifiedDate: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "2":
-    id: "2"
-    taskid: 9634a316-8a3b-4465-81fe-57ffad58de35
-    type: regular
     task:
+      brand: ''
+      description: Retrive scans from the Tenable platform.
       elasticcommonfields: {}
-      id: 9634a316-8a3b-4465-81fe-57ffad58de35
+      id: d5184e1e-2ad8-4800-8aa3-53d52d6f514f
+      iscommand: true
+      name: tenable-io-list-scans
+      script: '|||tenable-io-list-scans'
+      type: regular
       version: -1
-      name: tenable-io-get-scan-status
+    taskid: d5184e1e-2ad8-4800-8aa3-53d52d6f514f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      scanId:
+        simple: '10'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
       description: 'Check the status of a specific scan using its ID. The status can
         hold following possible values : Running, Completed and Empty (Ready to run).'
+      elasticcommonfields: {}
+      id: 9634a316-8a3b-4465-81fe-57ffad58de35
+      iscommand: true
+      name: tenable-io-get-scan-status
       script: '|||tenable-io-get-scan-status'
       type: regular
-      iscommand: true
-      brand: ""
-    scriptarguments:
-      scanId:
-        simple: "10"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "3":
-    id: "3"
-    taskid: a35b2c05-a636-44a5-81f1-78ca8515d361
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: a35b2c05-a636-44a5-81f1-78ca8515d361
       version: -1
-      name: tenable-io-get-scan-report
-      description: Retrive scan-report for the given scan.
-      script: '|||tenable-io-get-scan-report'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: 9634a316-8a3b-4465-81fe-57ffad58de35
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 370\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
+    note: false
+    quietmode: 0
     scriptarguments:
       detailed:
-        simple: "yes"
+        simple: 'yes'
       info:
-        simple: "yes"
+        simple: 'yes'
       scanId:
-        simple: "25"
+        simple: '25'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "4":
-    id: "4"
-    taskid: 24ff10a9-0083-4901-8445-8e30269ce776
-    type: regular
     task:
+      brand: ''
+      description: Retrive scan-report for the given scan.
       elasticcommonfields: {}
-      id: 24ff10a9-0083-4901-8445-8e30269ce776
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
+      id: a35b2c05-a636-44a5-81f1-78ca8515d361
+      iscommand: true
+      name: tenable-io-get-scan-report
+      script: '|||tenable-io-get-scan-report'
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: a35b2c05-a636-44a5-81f1-78ca8515d361
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 370\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
-      - "2"
-      - "3"
+      - '1'
+      - '2'
+      - '3'
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "5":
-    id: "5"
-    taskid: ade32dca-adc8-4d9e-8b64-4d69592c9392
-    type: regular
     task:
+      brand: ''
+      description: Delete field from context
       elasticcommonfields: {}
-      id: ade32dca-adc8-4d9e-8b64-4d69592c9392
-      version: -1
-      name: tenable-io-get-vulnerability-details
-      description: Retrieve details for the given vulnerability.
-      script: '|||tenable-io-get-vulnerability-details'
+      id: 24ff10a9-0083-4901-8445-8e30269ce776
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: 24ff10a9-0083-4901-8445-8e30269ce776
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 195\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
+    note: false
+    quietmode: 0
     scriptarguments:
       dateRange: {}
       vulnerabilityId:
         complex:
-          root: TenableIO
           accessor: Vulnerabilities.[0].Id
+          root: TenableIO
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "6":
-    id: "6"
-    taskid: ba50515f-f1cb-4bf9-85ee-78917ce6d9c3
-    type: regular
     task:
+      brand: ''
+      description: Retrieve details for the given vulnerability.
       elasticcommonfields: {}
-      id: ba50515f-f1cb-4bf9-85ee-78917ce6d9c3
-      version: -1
-      name: tenable-io-get-vulnerabilities-by-asset
-      description: Get a list of up to 5000 of the vulnerabilities recorded for a
-        given asset. By default, this list is sorted by vulnerability count, descending.
-      script: '|||tenable-io-get-vulnerabilities-by-asset'
-      type: regular
+      id: ade32dca-adc8-4d9e-8b64-4d69592c9392
       iscommand: true
-      brand: ""
+      name: tenable-io-get-vulnerability-details
+      script: '|||tenable-io-get-vulnerability-details'
+      type: regular
+      version: -1
+    taskid: ade32dca-adc8-4d9e-8b64-4d69592c9392
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 720\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
+    note: false
+    quietmode: 0
     scriptarguments:
       assetId: {}
       dateRange: {}
@@ -226,29 +181,24 @@ tasks:
         simple: debian8628.aspadmin.net
       ip: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 765,
-        "width": 1240,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    task:
+      brand: ''
+      description: Get a list of up to 5000 of the vulnerabilities recorded for a
+        given asset. By default, this list is sorted by vulnerability count, descending.
+      elasticcommonfields: {}
+      id: ba50515f-f1cb-4bf9-85ee-78917ce6d9c3
+      iscommand: true
+      name: tenable-io-get-vulnerabilities-by-asset
+      script: '|||tenable-io-get-vulnerabilities-by-asset'
+      type: regular
+      version: -1
+    taskid: ba50515f-f1cb-4bf9-85ee-78917ce6d9c3
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 545\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 765,\n      \"width\": 1240,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

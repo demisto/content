@@ -1,691 +1,73 @@
-id: Indicator Pivoting - DomainTools Iris
-version: -1
-name: Indicator Pivoting - DomainTools Iris
 description: Pivots are used to gather data that share a common attribute with a domain.
   For instance, pivoting on an IP Address will give you back all domains related to
   that IP address.
-starttaskid: '0'
-tasks:
-  '0':
-    id: '0'
-    taskid: a8ce28a7-1083-45bb-8c3c-311bf5a43932
-    type: start
-    task:
-      id: a8ce28a7-1083-45bb-8c3c-311bf5a43932
-      version: -1
-      name: ''
-      description: Start of playbook.
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '16'
-    separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": -300\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '3':
-    id: '3'
-    taskid: 776aa67e-951c-42db-8258-9ae384c13030
-    type: title
-    task:
-      id: 776aa67e-951c-42db-8258-9ae384c13030
-      version: -1
-      name: Done
-      description: End of playbook.
-      type: title
-      iscommand: false
-      brand: ''
-    separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 740,\n    \"y\": 660\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '4':
-    id: '4'
-    taskid: 4101f161-91b9-4d5d-8be7-8412255ce7f8
-    type: condition
-    task:
-      id: 4101f161-91b9-4d5d-8be7-8412255ce7f8
-      version: -1
-      name: Pivot on E-mail address?
-      description: Determines whether to pivot on an Email address.
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#default#':
-      - '3'
-      email_address:
-      - '5'
-    separatecontext: false
-    conditions:
-    - label: email_address
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.EmailAddress
-                transformers:
-                - operator: uniq
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: inputs.EmailAddressCount
-            iscontext: true
-      - - operator: lessThanOrEqual
-          left:
-            value:
-              simple: inputs.EmailAddressCount
-            iscontext: true
-          right:
-            value:
-              simple: inputs.PivotThreshold
-            iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": -740,\n    \"y\": 180\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '5':
-    id: '5'
-    taskid: d183d95c-7d02-45b1-832d-bf95ad0fdbd1
-    type: regular
-    task:
-      id: d183d95c-7d02-45b1-832d-bf95ad0fdbd1
-      version: -1
-      name: E-mail Pivot
-      description: Pivots on an Email.
-      script: DomainTools Iris|||domaintoolsiris-pivot
-      type: regular
-      iscommand: true
-      brand: DomainTools Iris
-    nexttasks:
-      '#none#':
-      - '3'
-    scriptarguments:
-      email:
-        complex:
-          root: inputs.EmailAddress
-          transformers:
-          - operator: uniq
-      ip: {}
-      mailserver_host: {}
-      nameserver_host: {}
-      nameserver_ip: {}
-      ssl_hash: {}
-    separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -940,\n    \"y\": 350\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '6':
-    id: '6'
-    taskid: 33062c78-7259-4717-8cf4-3b56d33bd085
-    type: regular
-    task:
-      id: 33062c78-7259-4717-8cf4-3b56d33bd085
-      version: -1
-      name: IP Pivot
-      description: Pivots on an IP address.
-      script: DomainTools Iris|||domaintoolsiris-pivot
-      type: regular
-      iscommand: true
-      brand: DomainTools Iris
-    nexttasks:
-      '#none#':
-      - '3'
-    scriptarguments:
-      email: {}
-      ip:
-        complex:
-          root: inputs.IPAddress
-          transformers:
-          - operator: uniq
-      mailserver_host: {}
-      nameserver_host: {}
-      nameserver_ip: {}
-      ssl_hash: {}
-    separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -380,\n    \"y\": 350\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '7':
-    id: '7'
-    taskid: c3a1c6b6-c0b2-405f-8649-9b43f3a4a19e
-    type: regular
-    task:
-      id: c3a1c6b6-c0b2-405f-8649-9b43f3a4a19e
-      version: -1
-      name: NameServer IP Pivot
-      description: Pivots on a NameServer IP address.
-      script: DomainTools Iris|||domaintoolsiris-pivot
-      type: regular
-      iscommand: true
-      brand: DomainTools Iris
-    nexttasks:
-      '#none#':
-      - '3'
-    scriptarguments:
-      email: {}
-      ip: {}
-      mailserver_host: {}
-      nameserver_host: {}
-      nameserver_ip:
-        complex:
-          root: inputs.NameServerIPAddress
-          transformers:
-          - operator: uniq
-      ssl_hash: {}
-    separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 210,\n    \"y\": 350\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '8':
-    id: '8'
-    taskid: 5b1e99a2-4c8e-444b-88c0-2e22f21edb3d
-    type: regular
-    task:
-      id: 5b1e99a2-4c8e-444b-88c0-2e22f21edb3d
-      version: -1
-      name: SSL Hash Pivot
-      description: Pivots on a SSL Hash.
-      script: DomainTools Iris|||domaintoolsiris-pivot
-      type: regular
-      iscommand: true
-      brand: DomainTools Iris
-    nexttasks:
-      '#none#':
-      - '3'
-    scriptarguments:
-      email: {}
-      ip: {}
-      mailserver_host: {}
-      nameserver_host: {}
-      nameserver_ip: {}
-      ssl_hash:
-        complex:
-          root: inputs.SSLHash
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1250,\n    \"y\": 360\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '9':
-    id: '9'
-    taskid: 7d6ff0de-a24b-41c9-8d64-dd0743f1cdf1
-    type: regular
-    task:
-      id: 7d6ff0de-a24b-41c9-8d64-dd0743f1cdf1
-      version: -1
-      name: NameServer HostName Pivot
-      description: Pivots on a NameServer HostName.
-      script: DomainTools Iris|||domaintoolsiris-pivot
-      type: regular
-      iscommand: true
-      brand: DomainTools Iris
-    nexttasks:
-      '#none#':
-      - '3'
-    scriptarguments:
-      email: {}
-      ip: {}
-      mailserver_host: {}
-      nameserver_host:
-        complex:
-          root: inputs.NameServerHostName
-          transformers:
-          - operator: uniq
-      nameserver_ip: {}
-      ssl_hash: {}
-    separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1770,\n    \"y\": 360\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '10':
-    id: '10'
-    taskid: 1c2d4e3d-2a80-42ae-8dbc-c532148f5196
-    type: regular
-    task:
-      id: 1c2d4e3d-2a80-42ae-8dbc-c532148f5196
-      version: -1
-      name: MailServer HostName
-      description: Pivots on a MailServer HostName.
-      script: DomainTools Iris|||domaintoolsiris-pivot
-      type: regular
-      iscommand: true
-      brand: DomainTools Iris
-    nexttasks:
-      '#none#':
-      - '3'
-    scriptarguments:
-      email: {}
-      ip: {}
-      mailserver_host:
-        complex:
-          root: inputs.MailServerHostName
-          transformers:
-          - operator: uniq
-      nameserver_host: {}
-      nameserver_ip: {}
-      ssl_hash: {}
-    separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 2340,\n    \"y\": 380\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '11':
-    id: '11'
-    taskid: 116e7c75-54e2-4947-8332-171ea2fcc051
-    type: condition
-    task:
-      id: 116e7c75-54e2-4947-8332-171ea2fcc051
-      version: -1
-      name: Pivot on an IP address?
-      description: Determines whether to pivot on an IP Address.
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#default#':
-      - '3'
-      ip:
-      - '6'
-    separatecontext: false
-    conditions:
-    - label: ip
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.IPAddress
-                transformers:
-                - operator: uniq
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: inputs.IPAddressCount
-            iscontext: true
-      - - operator: lessThanOrEqual
-          left:
-            value:
-              simple: inputs.IPAddressCount
-            iscontext: true
-          right:
-            value:
-              simple: inputs.PivotThreshold
-            iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": -180,\n    \"y\": 180\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '12':
-    id: '12'
-    taskid: 3f0eb85b-f974-4845-805a-297bc7166dec
-    type: condition
-    task:
-      id: 3f0eb85b-f974-4845-805a-297bc7166dec
-      version: -1
-      name: Pivot on a NameServer IP?
-      description: Determines whether to pivot on a NameServer IP address.
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#default#':
-      - '3'
-      nameserver_ip:
-      - '7'
-    separatecontext: false
-    conditions:
-    - label: nameserver_ip
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.NameServerIPAddress
-                transformers:
-                - operator: uniq
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.NameServerIPAddressCount
-            iscontext: true
-      - - operator: lessThan
-          left:
-            value:
-              complex:
-                root: inputs.IPAddressCount
-            iscontext: true
-          right:
-            value:
-              simple: inputs.PivotThreshold
-            iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 390,\n    \"y\": 180\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '13':
-    id: '13'
-    taskid: 92e7c263-9249-44d6-852c-c02eb4f4de75
-    type: condition
-    task:
-      id: 92e7c263-9249-44d6-852c-c02eb4f4de75
-      version: -1
-      name: Pivot on a SSL Hash?
-      description: Determines whether to pivot on a SSL Hash.
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#default#':
-      - '3'
-      ssl_hash:
-      - '8'
-    separatecontext: false
-    conditions:
-    - label: ssl_hash
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.SSLHash
-                transformers:
-                - operator: uniq
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.SSLHashCount
-            iscontext: true
-      - - operator: lessThanOrEqual
-          left:
-            value:
-              complex:
-                root: inputs.IPAddressCount
-            iscontext: true
-          right:
-            value:
-              simple: inputs.PivotThreshold
-            iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 1080,\n    \"y\": 180\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '14':
-    id: '14'
-    taskid: 2e14b0b4-1fa7-4ac5-87a9-5f561da83afa
-    type: condition
-    task:
-      id: 2e14b0b4-1fa7-4ac5-87a9-5f561da83afa
-      version: -1
-      name: Pivot on NameServer HostName?
-      description: Determines whether to pivot on a NameServer HostName.
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#default#':
-      - '3'
-      nameserver_host:
-      - '9'
-    separatecontext: false
-    conditions:
-    - label: nameserver_host
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.NameServerHostName
-                transformers:
-                - operator: uniq
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.NameServerHostNameCount
-            iscontext: true
-      - - operator: lessThanOrEqual
-          left:
-            value:
-              complex:
-                root: inputs.NameServerHostNameCount
-            iscontext: true
-          right:
-            value:
-              simple: inputs.PivotThreshold
-            iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 1610,\n    \"y\": 180\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '15':
-    id: '15'
-    taskid: 08927281-b7fa-4735-8fef-fd4cafddf63e
-    type: condition
-    task:
-      id: 08927281-b7fa-4735-8fef-fd4cafddf63e
-      version: -1
-      name: Pivot on a MailServer HostName?
-      description: Determines whether to pivot on a MailServer HostName.
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#default#':
-      - '3'
-      mailserver_host:
-      - '10'
-    separatecontext: false
-    conditions:
-    - label: mailserver_host
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.MailServerHostName
-                transformers:
-                - operator: uniq
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.MailServerHostNameCount
-            iscontext: true
-      - - operator: lessThan
-          left:
-            value:
-              complex:
-                root: inputs.MailServerHostNameCount
-            iscontext: true
-          right:
-            value:
-              simple: inputs.PivotThreshold
-            iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 2140,\n    \"y\": 180\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '16':
-    id: '16'
-    taskid: 48dc1f6f-6c12-4a80-8939-17dd36c149ea
-    type: condition
-    task:
-      id: 48dc1f6f-6c12-4a80-8939-17dd36c149ea
-      version: -1
-      name: Is DomainTools Iris enabled?
-      description: Checks whether the DomainTools Iris integration is enabled.
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#default#':
-      - '18'
-      yes:
-      - '17'
-    separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: DomainTools Iris
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": -130\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '17':
-    id: '17'
-    taskid: 0197bd89-9066-4970-86e9-6be1a85fdc1c
-    type: title
-    task:
-      id: 0197bd89-9066-4970-86e9-6be1a85fdc1c
-      version: -1
-      name: Indicator Pivoting
-      type: title
-      iscommand: false
-      brand: ''
-      description: ''
-    nexttasks:
-      '#none#':
-      - '4'
-      - '11'
-      - '12'
-      - '13'
-      - '14'
-      - '15'
-    separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": 40\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '18':
-    id: '18'
-    taskid: 0ef54c67-04b3-45e3-830c-1cfbddb5f2ab
-    type: title
-    task:
-      id: 0ef54c67-04b3-45e3-830c-1cfbddb5f2ab
-      version: -1
-      name: Integration Not Enabled
-      type: title
-      iscommand: false
-      brand: ''
-      description: ''
-    nexttasks:
-      '#none#':
-      - '3'
-    separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -1450,\n    \"y\": 40\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
-view: "{\n  \"linkLabelsPosition\": {\n    \"11_3_#default#\": 0.29,\n    \"12_3_#default#\"\
-  : 0.59,\n    \"13_3_#default#\": 0.6,\n    \"14_3_#default#\": 0.29,\n    \"15_3_#default#\"\
-  : 0.19,\n    \"16_18_#default#\": 0.16,\n    \"4_3_#default#\": 0.2\n  },\n  \"\
-  paper\": {\n    \"dimensions\": {\n      \"height\": 1025,\n      \"width\": 4170,\n\
-  \      \"x\": -1450,\n      \"y\": -300\n    }\n  }\n}"
+fromversion: 4.1.0
+id: Indicator Pivoting - DomainTools Iris
 inputs:
-- key: IPAddress
+- description: The IP address to pivot.
+  key: IPAddress
+  required: false
   value:
     complex:
-      root: IP
       accessor: Address
+      root: IP
       transformers:
       - operator: uniq
+- description: The Email address for which to pivot.
+  key: EmailAddress
   required: false
-  description: The IP address to pivot.
-- key: EmailAddress
   value:
     complex:
-      root: Account
       accessor: Email.Address
+      root: Account
       transformers:
       - operator: uniq
+- description: The Name Server IP address for which to pivot.
+  key: NameServerIPAddress
   required: false
-  description: The Email address for which to pivot.
-- key: NameServerIPAddress
   value: {}
+- description: The SSL Hash for which to pivot.
+  key: SSLHash
   required: false
-  description: The Name Server IP address for which to pivot.
-- key: SSLHash
   value: {}
+- description: The Name Server Host Name for which to pivot.
+  key: NameServerHostName
   required: false
-  description: The SSL Hash for which to pivot.
-- key: NameServerHostName
   value: {}
+- description: The Mail Server Host Name for which to pivot.
+  key: MailServerHostName
   required: false
-  description: The Name Server Host Name for which to pivot.
-- key: MailServerHostName
   value: {}
+- description: The number of matches for the IP address.
+  key: IPAddressCount
   required: false
-  description: The Mail Server Host Name for which to pivot.
-- key: IPAddressCount
   value: {}
+- description: The number of matches for the Email address.
+  key: EmailAddressCount
   required: false
-  description: The number of matches for the IP address.
-- key: EmailAddressCount
   value: {}
+- description: The number of matches for the Name Server IP address.
+  key: NameServerIPAddressCount
   required: false
-  description: The number of matches for the Email address.
-- key: NameServerIPAddressCount
   value: {}
+- description: The number of matches for the SSL Hash.
+  key: SSLHashCount
   required: false
-  description: The number of matches for the Name Server IP address.
-- key: SSLHashCount
   value: {}
+- description: The number of matches for the Name Server Host Name.
+  key: NameServerHostNameCount
   required: false
-  description: The number of matches for the SSL Hash.
-- key: NameServerHostNameCount
   value: {}
+- description: The number of matches for the Mail Server Host Name.
+  key: MailServerHostNameCount
   required: false
-  description: The number of matches for the Name Server Host Name.
-- key: MailServerHostNameCount
   value: {}
+- description: 'The threshold for matches less than to pivot on. '
+  key: PivotThreshold
   required: false
-  description: The number of matches for the Mail Server Host Name.
-- key: PivotThreshold
   value:
     simple: '500'
-  required: false
-  description: 'The threshold for matches less than to pivot on. '
+name: Indicator Pivoting - DomainTools Iris
 outputs:
 - contextPath: DomainTools.PivotedDomains.Name
   description: The DomainTools Domain Name.
@@ -946,6 +328,625 @@ outputs:
   description: The tracking code of Google Analytics.
   type: Number
 sourceplaybookid: Indicator Pivoting - DomainTools Iris
-fromversion: 4.1.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '16'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Start of playbook.
+      id: a8ce28a7-1083-45bb-8c3c-311bf5a43932
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: a8ce28a7-1083-45bb-8c3c-311bf5a43932
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": -300\n  }\n}"
+  '10':
+    id: '10'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    scriptarguments:
+      email: {}
+      ip: {}
+      mailserver_host:
+        complex:
+          root: inputs.MailServerHostName
+          transformers:
+          - operator: uniq
+      nameserver_host: {}
+      nameserver_ip: {}
+      ssl_hash: {}
+    separatecontext: false
+    task:
+      brand: DomainTools Iris
+      description: Pivots on a MailServer HostName.
+      id: 1c2d4e3d-2a80-42ae-8dbc-c532148f5196
+      iscommand: true
+      name: MailServer HostName
+      script: DomainTools Iris|||domaintoolsiris-pivot
+      type: regular
+      version: -1
+    taskid: 1c2d4e3d-2a80-42ae-8dbc-c532148f5196
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 2340,\n    \"y\": 380\n  }\n}"
+  '11':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.IPAddress
+                transformers:
+                - operator: uniq
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.IPAddressCount
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.IPAddressCount
+          operator: lessThanOrEqual
+          right:
+            iscontext: true
+            value:
+              simple: inputs.PivotThreshold
+      label: ip
+    id: '11'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '3'
+      ip:
+      - '6'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Determines whether to pivot on an IP Address.
+      id: 116e7c75-54e2-4947-8332-171ea2fcc051
+      iscommand: false
+      name: Pivot on an IP address?
+      type: condition
+      version: -1
+    taskid: 116e7c75-54e2-4947-8332-171ea2fcc051
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": -180,\n    \"y\": 180\n  }\n}"
+  '12':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.NameServerIPAddress
+                transformers:
+                - operator: uniq
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.NameServerIPAddressCount
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.IPAddressCount
+          operator: lessThan
+          right:
+            iscontext: true
+            value:
+              simple: inputs.PivotThreshold
+      label: nameserver_ip
+    id: '12'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '3'
+      nameserver_ip:
+      - '7'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Determines whether to pivot on a NameServer IP address.
+      id: 3f0eb85b-f974-4845-805a-297bc7166dec
+      iscommand: false
+      name: Pivot on a NameServer IP?
+      type: condition
+      version: -1
+    taskid: 3f0eb85b-f974-4845-805a-297bc7166dec
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 390,\n    \"y\": 180\n  }\n}"
+  '13':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.SSLHash
+                transformers:
+                - operator: uniq
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.SSLHashCount
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.IPAddressCount
+          operator: lessThanOrEqual
+          right:
+            iscontext: true
+            value:
+              simple: inputs.PivotThreshold
+      label: ssl_hash
+    id: '13'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '3'
+      ssl_hash:
+      - '8'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Determines whether to pivot on a SSL Hash.
+      id: 92e7c263-9249-44d6-852c-c02eb4f4de75
+      iscommand: false
+      name: Pivot on a SSL Hash?
+      type: condition
+      version: -1
+    taskid: 92e7c263-9249-44d6-852c-c02eb4f4de75
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 1080,\n    \"y\": 180\n  }\n}"
+  '14':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.NameServerHostName
+                transformers:
+                - operator: uniq
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.NameServerHostNameCount
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.NameServerHostNameCount
+          operator: lessThanOrEqual
+          right:
+            iscontext: true
+            value:
+              simple: inputs.PivotThreshold
+      label: nameserver_host
+    id: '14'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '3'
+      nameserver_host:
+      - '9'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Determines whether to pivot on a NameServer HostName.
+      id: 2e14b0b4-1fa7-4ac5-87a9-5f561da83afa
+      iscommand: false
+      name: Pivot on NameServer HostName?
+      type: condition
+      version: -1
+    taskid: 2e14b0b4-1fa7-4ac5-87a9-5f561da83afa
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 1610,\n    \"y\": 180\n  }\n}"
+  '15':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.MailServerHostName
+                transformers:
+                - operator: uniq
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.MailServerHostNameCount
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.MailServerHostNameCount
+          operator: lessThan
+          right:
+            iscontext: true
+            value:
+              simple: inputs.PivotThreshold
+      label: mailserver_host
+    id: '15'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '3'
+      mailserver_host:
+      - '10'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Determines whether to pivot on a MailServer HostName.
+      id: 08927281-b7fa-4735-8fef-fd4cafddf63e
+      iscommand: false
+      name: Pivot on a MailServer HostName?
+      type: condition
+      version: -1
+    taskid: 08927281-b7fa-4735-8fef-fd4cafddf63e
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 2140,\n    \"y\": 180\n  }\n}"
+  '16':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: DomainTools Iris
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: true
+    id: '16'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '18'
+      true:
+      - '17'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Checks whether the DomainTools Iris integration is enabled.
+      id: 48dc1f6f-6c12-4a80-8939-17dd36c149ea
+      iscommand: false
+      name: Is DomainTools Iris enabled?
+      type: condition
+      version: -1
+    taskid: 48dc1f6f-6c12-4a80-8939-17dd36c149ea
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": -130\n  }\n}"
+  '17':
+    id: '17'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '4'
+      - '11'
+      - '12'
+      - '13'
+      - '14'
+      - '15'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 0197bd89-9066-4970-86e9-6be1a85fdc1c
+      iscommand: false
+      name: Indicator Pivoting
+      type: title
+      version: -1
+    taskid: 0197bd89-9066-4970-86e9-6be1a85fdc1c
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": 40\n  }\n}"
+  '18':
+    id: '18'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 0ef54c67-04b3-45e3-830c-1cfbddb5f2ab
+      iscommand: false
+      name: Integration Not Enabled
+      type: title
+      version: -1
+    taskid: 0ef54c67-04b3-45e3-830c-1cfbddb5f2ab
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": -1450,\n    \"y\": 40\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: End of playbook.
+      id: 776aa67e-951c-42db-8258-9ae384c13030
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 776aa67e-951c-42db-8258-9ae384c13030
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 740,\n    \"y\": 660\n  }\n}"
+  '4':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.EmailAddress
+                transformers:
+                - operator: uniq
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.EmailAddressCount
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.EmailAddressCount
+          operator: lessThanOrEqual
+          right:
+            iscontext: true
+            value:
+              simple: inputs.PivotThreshold
+      label: email_address
+    id: '4'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '3'
+      email_address:
+      - '5'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Determines whether to pivot on an Email address.
+      id: 4101f161-91b9-4d5d-8be7-8412255ce7f8
+      iscommand: false
+      name: Pivot on E-mail address?
+      type: condition
+      version: -1
+    taskid: 4101f161-91b9-4d5d-8be7-8412255ce7f8
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": -740,\n    \"y\": 180\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    scriptarguments:
+      email:
+        complex:
+          root: inputs.EmailAddress
+          transformers:
+          - operator: uniq
+      ip: {}
+      mailserver_host: {}
+      nameserver_host: {}
+      nameserver_ip: {}
+      ssl_hash: {}
+    separatecontext: false
+    task:
+      brand: DomainTools Iris
+      description: Pivots on an Email.
+      id: d183d95c-7d02-45b1-832d-bf95ad0fdbd1
+      iscommand: true
+      name: E-mail Pivot
+      script: DomainTools Iris|||domaintoolsiris-pivot
+      type: regular
+      version: -1
+    taskid: d183d95c-7d02-45b1-832d-bf95ad0fdbd1
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -940,\n    \"y\": 350\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    scriptarguments:
+      email: {}
+      ip:
+        complex:
+          root: inputs.IPAddress
+          transformers:
+          - operator: uniq
+      mailserver_host: {}
+      nameserver_host: {}
+      nameserver_ip: {}
+      ssl_hash: {}
+    separatecontext: false
+    task:
+      brand: DomainTools Iris
+      description: Pivots on an IP address.
+      id: 33062c78-7259-4717-8cf4-3b56d33bd085
+      iscommand: true
+      name: IP Pivot
+      script: DomainTools Iris|||domaintoolsiris-pivot
+      type: regular
+      version: -1
+    taskid: 33062c78-7259-4717-8cf4-3b56d33bd085
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -380,\n    \"y\": 350\n  }\n}"
+  '7':
+    id: '7'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    scriptarguments:
+      email: {}
+      ip: {}
+      mailserver_host: {}
+      nameserver_host: {}
+      nameserver_ip:
+        complex:
+          root: inputs.NameServerIPAddress
+          transformers:
+          - operator: uniq
+      ssl_hash: {}
+    separatecontext: false
+    task:
+      brand: DomainTools Iris
+      description: Pivots on a NameServer IP address.
+      id: c3a1c6b6-c0b2-405f-8649-9b43f3a4a19e
+      iscommand: true
+      name: NameServer IP Pivot
+      script: DomainTools Iris|||domaintoolsiris-pivot
+      type: regular
+      version: -1
+    taskid: c3a1c6b6-c0b2-405f-8649-9b43f3a4a19e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 210,\n    \"y\": 350\n  }\n}"
+  '8':
+    id: '8'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    scriptarguments:
+      email: {}
+      ip: {}
+      mailserver_host: {}
+      nameserver_host: {}
+      nameserver_ip: {}
+      ssl_hash:
+        complex:
+          root: inputs.SSLHash
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    task:
+      brand: DomainTools Iris
+      description: Pivots on a SSL Hash.
+      id: 5b1e99a2-4c8e-444b-88c0-2e22f21edb3d
+      iscommand: true
+      name: SSL Hash Pivot
+      script: DomainTools Iris|||domaintoolsiris-pivot
+      type: regular
+      version: -1
+    taskid: 5b1e99a2-4c8e-444b-88c0-2e22f21edb3d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1250,\n    \"y\": 360\n  }\n}"
+  '9':
+    id: '9'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    scriptarguments:
+      email: {}
+      ip: {}
+      mailserver_host: {}
+      nameserver_host:
+        complex:
+          root: inputs.NameServerHostName
+          transformers:
+          - operator: uniq
+      nameserver_ip: {}
+      ssl_hash: {}
+    separatecontext: false
+    task:
+      brand: DomainTools Iris
+      description: Pivots on a NameServer HostName.
+      id: 7d6ff0de-a24b-41c9-8d64-dd0743f1cdf1
+      iscommand: true
+      name: NameServer HostName Pivot
+      script: DomainTools Iris|||domaintoolsiris-pivot
+      type: regular
+      version: -1
+    taskid: 7d6ff0de-a24b-41c9-8d64-dd0743f1cdf1
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1770,\n    \"y\": 360\n  }\n}"
 tests:
 - DomainTools Iris - Test
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"11_3_#default#\": 0.29,\n    \"12_3_#default#\"\
+  : 0.59,\n    \"13_3_#default#\": 0.6,\n    \"14_3_#default#\": 0.29,\n    \"15_3_#default#\"\
+  : 0.19,\n    \"16_18_#default#\": 0.16,\n    \"4_3_#default#\": 0.2\n  },\n  \"\
+  paper\": {\n    \"dimensions\": {\n      \"height\": 1025,\n      \"width\": 4170,\n\
+  \      \"x\": -1450,\n      \"y\": -300\n    }\n  }\n}"

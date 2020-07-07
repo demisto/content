@@ -1,396 +1,109 @@
-id: Entity Enrichment - Phishing v2
-version: -1
-fromversion: 4.1.0
-name: Entity Enrichment - Phishing v2
 description: Enrich entities using one or more integrations
-starttaskid: "0"
-tasks:
-  "0":
-    id: "0"
-    taskid: cdd6228a-7feb-4386-8ab1-7dfdf77d99c2
-    type: start
-    task:
-      id: cdd6228a-7feb-4386-8ab1-7dfdf77d99c2
-      version: -1
-      name: ""
-      description: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
-      - "19"
-      - "22"
-      - "23"
-      - "24"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 280,
-          "y": 70
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "15":
-    id: "15"
-    taskid: 38007764-1687-47b1-8490-0f3cded9dc95
-    type: title
-    task:
-      id: 38007764-1687-47b1-8490-0f3cded9dc95
-      version: -1
-      name: Done
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 280,
-          "y": 751
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "18":
-    id: "18"
-    taskid: 8189698a-475c-433b-8fbf-20275b3b2084
-    type: playbook
-    task:
-      id: 8189698a-475c-433b-8fbf-20275b3b2084
-      version: -1
-      name: File Enrichment - Generic v2
-      description: ""
-      playbookName: File Enrichment - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      MD5:
-        complex:
-          root: inputs.MD5
-          transformers:
-          - operator: uniq
-      SHA1:
-        complex:
-          root: inputs.SHA1
-          transformers:
-          - operator: uniq
-      SHA256:
-        complex:
-          root: inputs.SHA256
-          transformers:
-          - operator: uniq
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 70,
-          "y": 225
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "19":
-    id: "19"
-    taskid: b00cb02f-d44b-4e40-8c27-281d17a94723
-    type: playbook
-    task:
-      id: b00cb02f-d44b-4e40-8c27-281d17a94723
-      version: -1
-      name: URL Enrichment - Generic v2
-      description: ""
-      playbookName: URL Enrichment - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      Rasterize:
-        simple: "True"
-      URL:
-        complex:
-          root: inputs.URL
-          transformers:
-          - operator: uniq
-      VerifyURL:
-        simple: "False"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 386
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "22":
-    id: "22"
-    taskid: a0821297-87be-4b3b-86a3-c073e6bbc0bd
-    type: playbook
-    task:
-      id: a0821297-87be-4b3b-86a3-c073e6bbc0bd
-      version: -1
-      name: Domain Enrichment - Generic v2
-      description: |-
-        Enrich domains using one or more integrations.
-        Domain enrichment includes:
-        * Threat information
-      playbookName: Domain Enrichment - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      Domain:
-        complex:
-          root: inputs.Domain
-          transformers:
-          - operator: uniq
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 570
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "23":
-    id: "23"
-    taskid: 0ba8dffe-9aac-40a7-8303-ff40de2d91f9
-    type: playbook
-    task:
-      id: 0ba8dffe-9aac-40a7-8303-ff40de2d91f9
-      version: -1
-      name: Email Address Enrichment - Generic v2.1
-      description: ""
-      playbookName: Email Address Enrichment - Generic v2.1
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      Domain:
-        complex:
-          root: inputs.Domain
-          transformers:
-          - operator: uniq
-      Email:
-        complex:
-          root: inputs.Email
-          transformers:
-          - operator: uniq
-      InternalDomains:
-        complex:
-          root: inputs.InternalDomains
-          transformers:
-          - operator: uniq
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 70,
-          "y": 386
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "24":
-    id: "24"
-    taskid: f8fb676b-42d5-4d3a-8513-bfc235733742
-    type: playbook
-    task:
-      id: f8fb676b-42d5-4d3a-8513-bfc235733742
-      version: -1
-      name: IP Enrichment - External - Generic v2
-      description: ""
-      playbookName: IP Enrichment - External - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      IP:
-        complex:
-          root: inputs.IP
-          transformers:
-          - operator: uniq
-      InternalRange:
-        complex:
-          root: inputs.InternalRange
-          transformers:
-          - operator: uniq
-      ResolveIP:
-        complex:
-          root: inputs.ResolveIP
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 225
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 746,
-        "width": 800,
-        "x": 70,
-        "y": 70
-      }
-    }
-  }
+fromversion: 4.1.0
+id: Entity Enrichment - Phishing v2
 inputs:
-- key: IP
+- description: The IP addresses to enrich
+  key: IP
+  required: false
   value:
     complex:
-      root: IP
       accessor: Address
+      root: IP
       transformers:
       - operator: uniq
-  required: false
-  description: The IP addresses to enrich
-- key: InternalRange
-  value: {}
-  required: false
-  description: 'A list of internal IP ranges to check IP addresses against. The list
+- description: 'A list of internal IP ranges to check IP addresses against. The list
     should be provided in CIDR notation, separated by commas. An example of a list
     of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).
     If a list is not provided, will use default list provided in the IsIPInRanges
     script (the known IPv4 private address ranges).'
-- key: MD5
+  key: InternalRange
+  required: false
+  value: {}
+- description: File MD5 to enrich
+  key: MD5
+  required: false
   value:
     complex:
-      root: File
       accessor: MD5
+      root: File
       transformers:
       - operator: uniq
+- description: File SHA256 to enrich
+  key: SHA256
   required: false
-  description: File MD5 to enrich
-- key: SHA256
   value:
     complex:
-      root: File
       accessor: SHA256
-      transformers:
-      - operator: uniq
-  required: false
-  description: File SHA256 to enrich
-- key: SHA1
-  value:
-    complex:
       root: File
+      transformers:
+      - operator: uniq
+- description: File SHA1 to enrich
+  key: SHA1
+  required: false
+  value:
+    complex:
       accessor: SHA1
+      root: File
       transformers:
       - operator: uniq
+- description: URL to enrich
+  key: URL
   required: false
-  description: File SHA1 to enrich
-- key: URL
   value:
     complex:
-      root: URL
       accessor: Data
+      root: URL
       transformers:
       - operator: uniq
+- description: The email addresses to enrich
+  key: Email
   required: false
-  description: URL to enrich
-- key: Email
   value:
     complex:
-      root: Account
       accessor: Email.Address
-      transformers:
-      - operator: uniq
-  required: false
-  description: The email addresses to enrich
-- key: Hostname
-  value:
-    complex:
-      root: Endpoint
-      accessor: Hostname
-      transformers:
-      - operator: uniq
-  required: false
-  description: The hostname to enrich
-- key: Username
-  value:
-    complex:
       root: Account
-      accessor: Username
       transformers:
       - operator: uniq
+- description: The hostname to enrich
+  key: Hostname
   required: false
-  description: The Username to enrich
-- key: Domain
   value:
     complex:
-      root: Domain
-      accessor: Name
+      accessor: Hostname
+      root: Endpoint
       transformers:
       - operator: uniq
+- description: The Username to enrich
+  key: Username
   required: false
-  description: The domain name to enrich
-- key: ResolveIP
   value:
-    simple: "False"
+    complex:
+      accessor: Username
+      root: Account
+      transformers:
+      - operator: uniq
+- description: The domain name to enrich
+  key: Domain
   required: false
-  description: Determines whether the IP Enrichment - Generic playbook should convert
+  value:
+    complex:
+      accessor: Name
+      root: Domain
+      transformers:
+      - operator: uniq
+- description: Determines whether the IP Enrichment - Generic playbook should convert
     IP addresses to hostnames using a DNS query. You can set this to either True or
     False.
-- key: InternalDomains
-  value: {}
+  key: ResolveIP
   required: false
-  description: A CSV list of internal domains. The list will be used
-    to determine whether an email address is internal or external.
+  value:
+    simple: 'False'
+- description: A CSV list of internal domains. The list will be used to determine
+    whether an email address is internal or external.
+  key: InternalDomains
+  required: false
+  value: {}
+name: Entity Enrichment - Phishing v2
 outputs:
 - contextPath: IP
   description: The IP object.
@@ -496,5 +209,243 @@ outputs:
   description: The device information about the hostname that was enriched using Cylance
     Protect v2.
   type: unknown
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '18'
+      - '19'
+      - '22'
+      - '23'
+      - '24'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: cdd6228a-7feb-4386-8ab1-7dfdf77d99c2
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: cdd6228a-7feb-4386-8ab1-7dfdf77d99c2
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 280,\n    \"y\": 70\n  }\n}"
+  '15':
+    id: '15'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 38007764-1687-47b1-8490-0f3cded9dc95
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 38007764-1687-47b1-8490-0f3cded9dc95
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 280,\n    \"y\": 751\n  }\n}"
+  '18':
+    id: '18'
+    ignoreworker: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '15'
+    note: false
+    scriptarguments:
+      MD5:
+        complex:
+          root: inputs.MD5
+          transformers:
+          - operator: uniq
+      SHA1:
+        complex:
+          root: inputs.SHA1
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: inputs.SHA256
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    task:
+      brand: ''
+      description: ''
+      id: 8189698a-475c-433b-8fbf-20275b3b2084
+      iscommand: false
+      name: File Enrichment - Generic v2
+      playbookName: File Enrichment - Generic v2
+      type: playbook
+      version: -1
+    taskid: 8189698a-475c-433b-8fbf-20275b3b2084
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 70,\n    \"y\": 225\n  }\n}"
+  '19':
+    id: '19'
+    ignoreworker: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '15'
+    note: false
+    scriptarguments:
+      Rasterize:
+        simple: 'True'
+      URL:
+        complex:
+          root: inputs.URL
+          transformers:
+          - operator: uniq
+      VerifyURL:
+        simple: 'False'
+    separatecontext: true
+    task:
+      brand: ''
+      description: ''
+      id: b00cb02f-d44b-4e40-8c27-281d17a94723
+      iscommand: false
+      name: URL Enrichment - Generic v2
+      playbookName: URL Enrichment - Generic v2
+      type: playbook
+      version: -1
+    taskid: b00cb02f-d44b-4e40-8c27-281d17a94723
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 386\n  }\n}"
+  '22':
+    id: '22'
+    ignoreworker: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '15'
+    note: false
+    scriptarguments:
+      Domain:
+        complex:
+          root: inputs.Domain
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    task:
+      brand: ''
+      description: 'Enrich domains using one or more integrations.
+
+        Domain enrichment includes:
+
+        * Threat information'
+      id: a0821297-87be-4b3b-86a3-c073e6bbc0bd
+      iscommand: false
+      name: Domain Enrichment - Generic v2
+      playbookName: Domain Enrichment - Generic v2
+      type: playbook
+      version: -1
+    taskid: a0821297-87be-4b3b-86a3-c073e6bbc0bd
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 570\n  }\n}"
+  '23':
+    id: '23'
+    ignoreworker: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '15'
+    note: false
+    scriptarguments:
+      Domain:
+        complex:
+          root: inputs.Domain
+          transformers:
+          - operator: uniq
+      Email:
+        complex:
+          root: inputs.Email
+          transformers:
+          - operator: uniq
+      InternalDomains:
+        complex:
+          root: inputs.InternalDomains
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    task:
+      brand: ''
+      description: ''
+      id: 0ba8dffe-9aac-40a7-8303-ff40de2d91f9
+      iscommand: false
+      name: Email Address Enrichment - Generic v2.1
+      playbookName: Email Address Enrichment - Generic v2.1
+      type: playbook
+      version: -1
+    taskid: 0ba8dffe-9aac-40a7-8303-ff40de2d91f9
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 70,\n    \"y\": 386\n  }\n}"
+  '24':
+    id: '24'
+    ignoreworker: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '15'
+    note: false
+    scriptarguments:
+      IP:
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: uniq
+      InternalRange:
+        complex:
+          root: inputs.InternalRange
+          transformers:
+          - operator: uniq
+      ResolveIP:
+        complex:
+          root: inputs.ResolveIP
+    separatecontext: true
+    task:
+      brand: ''
+      description: ''
+      id: f8fb676b-42d5-4d3a-8513-bfc235733742
+      iscommand: false
+      name: IP Enrichment - External - Generic v2
+      playbookName: IP Enrichment - External - Generic v2
+      type: playbook
+      version: -1
+    taskid: f8fb676b-42d5-4d3a-8513-bfc235733742
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 225\n  }\n}"
 tests:
-  - no test - each entity has or will have its own test
+- no test - each entity has or will have its own test
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 746,\n      \"width\": 800,\n      \"x\": 70,\n      \"y\": 70\n\
+  \    }\n  }\n}"

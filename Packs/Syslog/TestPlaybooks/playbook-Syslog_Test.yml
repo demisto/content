@@ -1,79 +1,60 @@
 id: Test Syslog
-version: -1
+inputs: []
 name: Test Syslog
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 45ee5f16-24fb-46f2-8c70-c2e9c55a8380
-    type: start
-    task:
-      id: 45ee5f16-24fb-46f2-8c70-c2e9c55a8380
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
+      - '1'
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
-    taskid: 7897b5ec-c981-4fdf-8134-50a915c9991b
-    type: regular
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 7897b5ec-c981-4fdf-8134-50a915c9991b
+      brand: ''
+      id: 45ee5f16-24fb-46f2-8c70-c2e9c55a8380
+      iscommand: false
+      name: ''
       version: -1
-      name: Get the server URL
+    taskid: 45ee5f16-24fb-46f2-8c70-c2e9c55a8380
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
       description: Get the Server URL.
+      id: 7897b5ec-c981-4fdf-8134-50a915c9991b
+      iscommand: false
+      name: Get the server URL
       scriptName: GetServerURL
       type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "2":
-    id: "2"
-    taskid: de26d64e-1220-485d-8c5a-d6ed2b66c757
-    type: regular
-    task:
-      id: de26d64e-1220-485d-8c5a-d6ed2b66c757
       version: -1
-      name: syslog-send
-      description: Send a message to syslog
-      script: Syslog Sender|||syslog-send
-      type: regular
-      iscommand: true
-      brand: Syslog Sender
+    taskid: 7897b5ec-c981-4fdf-8134-50a915c9991b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
+    quietmode: 0
     scriptarguments:
       address:
         simple: ${ServerURL.Host}
@@ -82,70 +63,58 @@ tasks:
       message:
         simple: This is a test from syslog
       port:
-        simple: "5140"
+        simple: '5140'
       protocol:
         simple: TCP
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "3":
-    id: "3"
-    taskid: 8c7b75d8-f763-4790-862c-9a91a13b6b1f
-    type: regular
     task:
-      id: 8c7b75d8-f763-4790-862c-9a91a13b6b1f
-      version: -1
-      name: Wait for the incident
-      description: Sleep for X seconds
-      scriptName: Sleep
+      brand: Syslog Sender
+      description: Send a message to syslog
+      id: de26d64e-1220-485d-8c5a-d6ed2b66c757
+      iscommand: true
+      name: syslog-send
+      script: Syslog Sender|||syslog-send
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: de26d64e-1220-485d-8c5a-d6ed2b66c757
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
+    note: false
+    quietmode: 0
     scriptarguments:
       seconds:
-        simple: "70"
+        simple: '70'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "4":
-    id: "4"
-    taskid: 507be312-76f3-4d7b-8569-8c94acc0ca40
-    type: regular
     task:
-      id: 507be312-76f3-4d7b-8569-8c94acc0ca40
-      version: -1
-      name: SearchIncidentsV2
-      description: Searches Demisto incidents
-      scriptName: SearchIncidentsV2
-      type: regular
+      brand: ''
+      description: Sleep for X seconds
+      id: 8c7b75d8-f763-4790-862c-9a91a13b6b1f
       iscommand: false
-      brand: ""
+      name: Wait for the incident
+      scriptName: Sleep
+      type: regular
+      version: -1
+    taskid: 8c7b75d8-f763-4790-862c-9a91a13b6b1f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
+    note: false
+    quietmode: 0
     scriptarguments:
       details:
         simple: syslog
@@ -168,120 +137,95 @@ tasks:
       toduedate: {}
       type: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "5":
-    id: "5"
-    taskid: 2a6e2761-3cbd-43fd-8803-2319f7f973e2
-    type: condition
     task:
-      id: 2a6e2761-3cbd-43fd-8803-2319f7f973e2
-      version: -1
-      name: Found incidents?
-      type: condition
+      brand: ''
+      description: Searches Demisto incidents
+      id: 507be312-76f3-4d7b-8569-8c94acc0ca40
       iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "6"
-    separatecontext: false
+      name: SearchIncidentsV2
+      scriptName: SearchIncidentsV2
+      type: regular
+      version: -1
+    taskid: 507be312-76f3-4d7b-8569-8c94acc0ca40
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+  '5':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: foundIncidents
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
+          operator: isExists
+      label: 'yes'
+    id: '5'
     ignoreworker: false
-    skipunavailable: false
+    nexttasks:
+      'yes':
+      - '6'
+    note: false
     quietmode: 0
-  "6":
-    id: "6"
-    taskid: cf3d7672-e9cb-4bf6-8126-41574aaeb1f3
-    type: title
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: cf3d7672-e9cb-4bf6-8126-41574aaeb1f3
+      brand: ''
+      id: 2a6e2761-3cbd-43fd-8803-2319f7f973e2
+      iscommand: false
+      name: Found incidents?
+      type: condition
       version: -1
+    taskid: 2a6e2761-3cbd-43fd-8803-2319f7f973e2
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: cf3d7672-e9cb-4bf6-8126-41574aaeb1f3
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "7":
-    id: "7"
-    taskid: 755092c0-a08c-465b-8e7f-e180b597bfcf
-    type: regular
-    task:
-      id: 755092c0-a08c-465b-8e7f-e180b597bfcf
       version: -1
-      name: Wait for syslog
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: cf3d7672-e9cb-4bf6-8126-41574aaeb1f3
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+  '7':
+    id: '7'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
+    quietmode: 0
     scriptarguments:
       seconds:
-        simple: "60"
+        simple: '60'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1260,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    task:
+      brand: ''
+      description: Sleep for X seconds
+      id: 755092c0-a08c-465b-8e7f-e180b597bfcf
+      iscommand: false
+      name: Wait for syslog
+      scriptName: Sleep
+      type: regular
+      version: -1
+    taskid: 755092c0-a08c-465b-8e7f-e180b597bfcf
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1260,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

@@ -1,332 +1,25 @@
-id: Detonate URL - Cuckoo
-version: -1
-name: Detonate URL - Cuckoo
 description: Detonating URL with Cuckoo
-fromversion: "4.0.0"
-starttaskid: "0"
-tasks:
-  "0":
-    id: "0"
-    taskid: ac486e14-1500-41db-8579-c2acb8b805ef
-    type: start
-    task:
-      id: ac486e14-1500-41db-8579-c2acb8b805ef
-      version: -1
-      name: ""
-      description: starting test
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-    note: false
-  "1":
-    id: "1"
-    taskid: 470c6166-f089-4486-80c1-2e0ab0d650eb
-    type: condition
-    task:
-      description: Check for active instance
-      id: 470c6166-f089-4486-80c1-2e0ab0d650eb
-      version: -1
-      name: Is there any active Cuckoo instance?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "6"
-      "yes":
-      - "2"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Cuckoo Sandbox
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-  "2":
-    id: "2"
-    taskid: 1e9c332f-bfcc-4323-899c-c29476110b53
-    type: condition
-    task:
-      description: Check for URL
-      id: 1e9c332f-bfcc-4323-899c-c29476110b53
-      version: -1
-      name: Is there a URL?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "6"
-      "yes":
-      - "3"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: inputs.URL
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 370
-        }
-      }
-    note: false
-  "3":
-    id: "3"
-    taskid: 1ee9c8d9-b62b-4e27-858f-ae9735ddb857
-    type: regular
-    task:
-      description: create task from url
-      id: 1ee9c8d9-b62b-4e27-858f-ae9735ddb857
-      version: -1
-      name: Send URL to Cuckoo
-      script: '|||cuckoo-create-task-from-url'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      url:
-        simple: ${inputs.URL}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 545
-        }
-      }
-    note: false
-  "4":
-    id: "4"
-    taskid: 9ad01520-9f27-44be-8a20-2caa2ce4b1c4
-    type: playbook
-    task:
-      id: 9ad01520-9f27-44be-8a20-2caa2ce4b1c4
-      version: -1
-      name: GenericPolling
-      description: |-
-        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continually running the command in Step #2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
-      playbookName: GenericPolling
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      Ids:
-        simple: ${Cuckoo.Task.ID}
-      Interval:
-        simple: ${inputs.interval}
-      PollingCommandArgName:
-        simple: id
-      PollingCommandName:
-        simple: cuckoo-view-task
-      Timeout:
-        simple: ${inputs.timeout}
-      dt:
-        simple: Cuckoo.Task(val.CompletedOn == null).ID
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 1070
-        }
-      }
-    note: false
-  "6":
-    id: "6"
-    taskid: bee9857d-c4a9-4e9f-8939-822514c68078
-    type: title
-    task:
-      description: "-"
-      id: bee9857d-c4a9-4e9f-8939-822514c68078
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-  "7":
-    id: "7"
-    taskid: 244fc667-b769-4232-809c-424cf5d174f0
-    type: regular
-    task:
-      description: get task report
-      id: 244fc667-b769-4232-809c-424cf5d174f0
-      version: -1
-      name: Get task report
-      script: '|||cuckoo-get-task-report'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      id:
-        simple: ${Cuckoo.Task.ID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 1245
-        }
-      }
-    note: false
-  "8":
-    id: "8"
-    taskid: f9d3406d-4b34-44e7-88eb-b2523f8e0897
-    type: regular
-    task:
-      description: sleep
-      id: f9d3406d-4b34-44e7-88eb-b2523f8e0897
-      version: -1
-      name: Sleep (let the sandbox create the task)
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      seconds:
-        simple: "5"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 720
-        }
-      }
-    note: false
-  "9":
-    id: "9"
-    taskid: 666d7185-d292-42cf-8d42-882e5f80c0d8
-    type: regular
-    task:
-      description: view task
-      id: 666d7185-d292-42cf-8d42-882e5f80c0d8
-      version: -1
-      name: View task
-      script: '|||cuckoo-view-task'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      id:
-        simple: ${Cuckoo.Task.ID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 895
-        }
-      }
-    note: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1435,
-        "width": 605,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
+fromversion: 4.0.0
+id: Detonate URL - Cuckoo
 inputs:
-- key: URL
+- description: URL to detonate
+  key: URL
+  required: false
   value:
     complex:
-      root: URL
       accessor: Data
+      root: URL
+- description: How often to poll for results
+  key: interval
   required: false
-  description: URL to detonate
-- key: interval
   value:
-    simple: "1"
+    simple: '1'
+- description: How long to wait before giving up waiting for results
+  key: timeout
   required: false
-  description: How often to poll for results
-- key: timeout
   value:
-    simple: "10"
-  required: false
-  description: How long to wait before giving up waiting for results
+    simple: '10'
+name: Detonate URL - Cuckoo
 outputs:
 - contextPath: Cuckoo.Task.Category
   description: Category of task
@@ -372,5 +65,256 @@ outputs:
   description: Reported score of the the task
 - contextPath: Cuckoo.Task.Monitor
   description: Monitor of the reported task
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: starting test
+      id: ac486e14-1500-41db-8579-c2acb8b805ef
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: ac486e14-1500-41db-8579-c2acb8b805ef
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Cuckoo Sandbox
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: 'yes'
+    id: '1'
+    nexttasks:
+      '#default#':
+      - '6'
+      'yes':
+      - '2'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Check for active instance
+      id: 470c6166-f089-4486-80c1-2e0ab0d650eb
+      iscommand: false
+      name: Is there any active Cuckoo instance?
+      type: condition
+      version: -1
+    taskid: 470c6166-f089-4486-80c1-2e0ab0d650eb
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '2':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.URL
+          operator: isExists
+      label: 'yes'
+    id: '2'
+    nexttasks:
+      '#default#':
+      - '6'
+      'yes':
+      - '3'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Check for URL
+      id: 1e9c332f-bfcc-4323-899c-c29476110b53
+      iscommand: false
+      name: Is there a URL?
+      type: condition
+      version: -1
+    taskid: 1e9c332f-bfcc-4323-899c-c29476110b53
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 370\n  }\n}"
+  '3':
+    id: '3'
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    scriptarguments:
+      url:
+        simple: ${inputs.URL}
+    separatecontext: false
+    task:
+      brand: ''
+      description: create task from url
+      id: 1ee9c8d9-b62b-4e27-858f-ae9735ddb857
+      iscommand: true
+      name: Send URL to Cuckoo
+      script: '|||cuckoo-create-task-from-url'
+      type: regular
+      version: -1
+    taskid: 1ee9c8d9-b62b-4e27-858f-ae9735ddb857
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 545\n  }\n}"
+  '4':
+    id: '4'
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    scriptarguments:
+      Ids:
+        simple: ${Cuckoo.Task.ID}
+      Interval:
+        simple: ${inputs.interval}
+      PollingCommandArgName:
+        simple: id
+      PollingCommandName:
+        simple: cuckoo-view-task
+      Timeout:
+        simple: ${inputs.timeout}
+      dt:
+        simple: Cuckoo.Task(val.CompletedOn == null).ID
+    separatecontext: true
+    task:
+      brand: ''
+      description: 'Use as a sub-playbook to block execution of the master playbook
+        until a remote action is complete.
+
+        This playbook implements polling by continually running the command in Step
+        #2 until the operation completes.
+
+        The remote action should have the following structure:
+
+
+        1. Initiate the operation.
+
+        2. Poll to check if the operation completed.
+
+        3. (optional) Get the results of the operation.'
+      id: 9ad01520-9f27-44be-8a20-2caa2ce4b1c4
+      iscommand: false
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 9ad01520-9f27-44be-8a20-2caa2ce4b1c4
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 1070\n  }\n}"
+  '6':
+    id: '6'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: '-'
+      id: bee9857d-c4a9-4e9f-8939-822514c68078
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: bee9857d-c4a9-4e9f-8939-822514c68078
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+  '7':
+    id: '7'
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    scriptarguments:
+      id:
+        simple: ${Cuckoo.Task.ID}
+    separatecontext: false
+    task:
+      brand: ''
+      description: get task report
+      id: 244fc667-b769-4232-809c-424cf5d174f0
+      iscommand: true
+      name: Get task report
+      script: '|||cuckoo-get-task-report'
+      type: regular
+      version: -1
+    taskid: 244fc667-b769-4232-809c-424cf5d174f0
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 1245\n  }\n}"
+  '8':
+    id: '8'
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
+    scriptarguments:
+      seconds:
+        simple: '5'
+    separatecontext: false
+    task:
+      brand: ''
+      description: sleep
+      id: f9d3406d-4b34-44e7-88eb-b2523f8e0897
+      iscommand: false
+      name: Sleep (let the sandbox create the task)
+      scriptName: Sleep
+      type: regular
+      version: -1
+    taskid: f9d3406d-4b34-44e7-88eb-b2523f8e0897
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 720\n  }\n}"
+  '9':
+    id: '9'
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    scriptarguments:
+      id:
+        simple: ${Cuckoo.Task.ID}
+    separatecontext: false
+    task:
+      brand: ''
+      description: view task
+      id: 666d7185-d292-42cf-8d42-882e5f80c0d8
+      iscommand: true
+      name: View task
+      script: '|||cuckoo-view-task'
+      type: regular
+      version: -1
+    taskid: 666d7185-d292-42cf-8d42-882e5f80c0d8
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 895\n  }\n}"
 tests:
-  - CuckooTest
+- CuckooTest
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1435,\n      \"width\": 605,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

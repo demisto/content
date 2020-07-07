@@ -1,51 +1,37 @@
+description: 'test pb of:
+
+  Detonate URL - WildFire-v2'
 id: Detonate URL - WildFire-v2 - Test
-version: -1
+inputs: []
 name: Detonate URL - WildFire-v2 - Test
-description: |-
-  test pb of:
-  Detonate URL - WildFire-v2
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 9d96aea8-1fac-4828-8ed9-e6b0d5489627
-    type: start
-    task:
-      id: 9d96aea8-1fac-4828-8ed9-e6b0d5489627
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: 56faf649-c942-40d2-8cd5-9d8d1a3fcec9
-    type: regular
-    task:
-      id: 56faf649-c942-40d2-8cd5-9d8d1a3fcec9
-      version: -1
-      name: set remote file url
-      description: Sets a value into the context with the given context key
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 9d96aea8-1fac-4828-8ed9-e6b0d5489627
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 9d96aea8-1fac-4828-8ed9-e6b0d5489627
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
     scriptarguments:
       append: {}
       key:
@@ -53,110 +39,96 @@ tasks:
       value:
         simple: http://www.software995.net/bin/pdf995s.exe
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 7f491fe6-aa7f-450c-8bda-797c9b140a20
-    type: playbook
     task:
-      id: 7f491fe6-aa7f-450c-8bda-797c9b140a20
-      version: -1
-      name: Detonate URL - WildFire-v2
-      description: |-
-        Detonate a webpage or a remote file using the WildFire integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
-        The detonation supports the following file types -
-        APK, JAR, DOC, DOCX, RTF, OOXLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG, RAR, 7Z
-      playbookName: Detonate URL - WildFire-v2
-      type: playbook
+      brand: ''
+      description: Sets a value into the context with the given context key
+      id: 56faf649-c942-40d2-8cd5-9d8d1a3fcec9
       iscommand: false
-      brand: ""
+      name: set remote file url
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 56faf649-c942-40d2-8cd5-9d8d1a3fcec9
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 195\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
     scriptarguments:
       Interval:
-        simple: "1"
+        simple: '1'
       ReportFileType: {}
       Timeout:
-        simple: "15"
+        simple: '15'
       URL:
         complex:
-          root: URL
           accessor: Data
+          root: URL
     separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: 38798132-af2b-43ff-89f3-235c1ba139d3
-    type: regular
     task:
-      id: 38798132-af2b-43ff-89f3-235c1ba139d3
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      description: 'Detonate a webpage or a remote file using the WildFire integration.
+        This playbook returns relevant reports to the War Room and file reputations
+        to the context data.
+
+        The detonation supports the following file types -
+
+        APK, JAR, DOC, DOCX, RTF, OOXLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG,
+        RAR, 7Z'
+      id: 7f491fe6-aa7f-450c-8bda-797c9b140a20
       iscommand: false
-      brand: ""
+      name: Detonate URL - WildFire-v2
+      playbookName: Detonate URL - WildFire-v2
+      type: playbook
+      version: -1
+    taskid: 7f491fe6-aa7f-450c-8bda-797c9b140a20
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 370\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: be794cad-cb1f-4558-86df-1be6ba5f1941
-    type: regular
     task:
-      id: be794cad-cb1f-4558-86df-1be6ba5f1941
-      version: -1
-      name: wildfire-report
-      description: Retrieves results for a file hash using WildFire.
-      script: WildFire-v2|||wildfire-report
+      brand: ''
+      description: Delete field from context
+      id: 38798132-af2b-43ff-89f3-235c1ba139d3
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: WildFire-v2
+      version: -1
+    taskid: 38798132-af2b-43ff-89f3-235c1ba139d3
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 545\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
+    note: false
     scriptarguments:
       format:
         simple: pdf
@@ -166,116 +138,92 @@ tasks:
         simple: 253d142703041dd25197550a0fc11d6ac03befc1e64a1320009f1edf400c39aa
       verbose: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 657dd2ec-fa79-4f15-8f43-eddc7a21915c
-    type: condition
     task:
-      id: 657dd2ec-fa79-4f15-8f43-eddc7a21915c
+      brand: WildFire-v2
+      description: Retrieves results for a file hash using WildFire.
+      id: be794cad-cb1f-4558-86df-1be6ba5f1941
+      iscommand: true
+      name: wildfire-report
+      script: WildFire-v2|||wildfire-report
+      type: regular
       version: -1
-      name: Check status Notfound
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "7"
-      "yes":
-      - "6"
-    separatecontext: false
+    taskid: be794cad-cb1f-4558-86df-1be6ba5f1941
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 720\n  }\n}"
+  '5':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: WildFire
                 accessor: Report.Status
-            iscontext: true
+                root: WildFire
+          operator: isEqualString
           right:
             value:
               simple: NotFound
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
+      label: 'yes'
+    id: '5'
     ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 511b9b93-e75d-4f66-86cc-b784a443b0f0
-    type: title
+    nexttasks:
+      '#default#':
+      - '7'
+      'yes':
+      - '6'
+    note: false
+    separatecontext: false
     task:
-      id: 511b9b93-e75d-4f66-86cc-b784a443b0f0
+      brand: ''
+      id: 657dd2ec-fa79-4f15-8f43-eddc7a21915c
+      iscommand: false
+      name: Check status Notfound
+      type: condition
       version: -1
+    taskid: 657dd2ec-fa79-4f15-8f43-eddc7a21915c
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 895\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 511b9b93-e75d-4f66-86cc-b784a443b0f0
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1085
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "7":
-    id: "7"
-    taskid: b68af2f6-686b-4c68-8b05-4b6baac2c0c9
-    type: regular
-    task:
-      id: b68af2f6-686b-4c68-8b05-4b6baac2c0c9
       version: -1
-      name: Print Error
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: 511b9b93-e75d-4f66-86cc-b784a443b0f0
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1085\n  }\n}"
+  '7':
+    id: '7'
+    ignoreworker: false
+    note: false
     scriptarguments:
       message:
         simple: Status for the benign URL is not "NotFound"
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1070
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      description: Prints an error entry with a given message
+      id: b68af2f6-686b-4c68-8b05-4b6baac2c0c9
+      iscommand: false
+      name: Print Error
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: b68af2f6-686b-4c68-8b05-4b6baac2c0c9
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1115,
-        "width": 810,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1070\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1115,\n      \"width\": 810,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

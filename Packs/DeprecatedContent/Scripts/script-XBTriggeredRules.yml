@@ -1,36 +1,32 @@
+args:
+- default: true
+  description: Session to query
+  name: session
+  required: true
+comment: This script is deprecated. Use the Exabeam integration instead.
 commonfields:
   id: XBTriggeredRules
   version: -1
+dependson:
+  must:
+  - xb-triggered-rules
+deprecated: true
 name: XBTriggeredRules
-script: |-
-  res = []
-  entry = demisto.executeCommand('xb-triggered-rules', {'containerId': demisto.args()['session']})[0]
-  if entry['Type'] != entryTypes['error'] and entry['ContentsFormat'] == formats['json']:
-      model = demisto.get(entry, 'Contents.modelDefs')
-      if model:
-          for key in model:
-              m = model[key]['attributes']
-              if m:
-                  res.append({'1.ID': key, '2.Description': demisto.get(m, 'description'), '3.Type': demisto.get(m, 'modelType'), '4.Template': demisto.get(m, 'modelTemplate')})
-      demisto.results({'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': res})
-  else:
-      demisto.results(entry)
-type: python
+script: "res = []\nentry = demisto.executeCommand('xb-triggered-rules', {'containerId':\
+  \ demisto.args()['session']})[0]\nif entry['Type'] != entryTypes['error'] and entry['ContentsFormat']\
+  \ == formats['json']:\n    model = demisto.get(entry, 'Contents.modelDefs')\n  \
+  \  if model:\n        for key in model:\n            m = model[key]['attributes']\n\
+  \            if m:\n                res.append({'1.ID': key, '2.Description': demisto.get(m,\
+  \ 'description'), '3.Type': demisto.get(m, 'modelType'), '4.Template': demisto.get(m,\
+  \ 'modelTemplate')})\n    demisto.results({'ContentsFormat': formats['table'], 'Type':\
+  \ entryTypes['note'], 'Contents': res})\nelse:\n    demisto.results(entry)"
+scripttarget: 0
 subtype: python2
+system: true
 tags:
 - server
 - analytics
 - exabeam
-comment: This script is deprecated. Use the Exabeam integration instead.
-system: true
-deprecated: true
-args:
-- name: session
-  required: true
-  default: true
-  description: Session to query
-scripttarget: 0
-dependson:
-  must:
-  - xb-triggered-rules
 timeout: 0s
+toversion: 4.1.9
+type: python

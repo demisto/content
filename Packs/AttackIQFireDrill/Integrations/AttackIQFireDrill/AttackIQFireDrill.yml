@@ -227,9 +227,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Runs only on-demand tests in the assessment. If true, executes tests
-        in the assessment that are not scheduled to run. If false, executes all tests
-        in the assessment including scheduled tests. Default is false.
+      description: Runs only on-demand tests in the assessment. If true, executes
+        tests in the assessment that are not scheduled to run. If false, executes
+        all tests in the assessment including scheduled tests. Default is false.
       isArray: false
       name: on_demand_only
       predefined:
@@ -398,7 +398,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Shows the last result. If true, shows the last result. Default is false.
+      description: Shows the last result. If true, shows the last result. Default
+        is false.
       isArray: false
       name: show_last_result
       predefined:
@@ -692,7 +693,8 @@ script:
   isfetch: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 tests:
 - AttackIQ - Test
+toversion: 4.1.9

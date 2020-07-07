@@ -1,312 +1,23 @@
+description: Starts a Nexpose scan according to asset IP addresses or host names,
+  and waits for the scan to finish by polling the scan status in pre-defined intervals.
+fromversion: 4.0.0
 id: scan_assets_nexpose
-version: -1
-name: Scan Assets - Nexpose
-description: Starts a Nexpose scan according to asset IP addresses or host names, and waits for the scan to finish by polling the scan status in pre-defined intervals.
-starttaskid: "0"
-tasks:
-  "0":
-    id: "0"
-    taskid: 391dde59-b247-4641-8ef2-24a5c11b6d39
-    type: start
-    task:
-      id: 391dde59-b247-4641-8ef2-24a5c11b6d39
-      version: -1
-      name: ""
-      description: start
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-    note: false
-  "1":
-    id: "1"
-    taskid: f123b950-46f6-4ffe-8ba5-3e327482cccd
-    type: regular
-    task:
-      id: f123b950-46f6-4ffe-8ba5-3e327482cccd
-      version: -1
-      name: Start scan
-      description: Starts a scan for specified asset IP addresses and host names.
-      script: Rapid7 Nexpose|||nexpose-start-assets-scan
-      type: regular
-      iscommand: true
-      brand: Rapid7 Nexpose
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      IPs:
-        complex:
-          root: inputs.IPs
-      hostNames:
-        complex:
-          root: inputs.HostNames
-      name:
-        complex:
-          root: inputs.Name
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 380,
-          "y": 545
-        }
-      }
-    note: false
-  "5":
-    id: "5"
-    taskid: 25518fb4-9985-4885-8d24-e3886014b9e3
-    type: title
-    task:
-      id: 25518fb4-9985-4885-8d24-e3886014b9e3
-      version: -1
-      name: Done
-      description: Final task
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-  "7":
-    id: "7"
-    taskid: bcc7a757-5464-43d9-8b00-756116fae3fa
-    type: regular
-    task:
-      id: bcc7a757-5464-43d9-8b00-756116fae3fa
-      version: -1
-      name: nexpose-get-scan
-      description: Returns the specified scan.
-      script: Rapid7 Nexpose|||nexpose-get-scan
-      type: regular
-      iscommand: true
-      brand: Rapid7 Nexpose
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      id:
-        simple: ${Nexpose.Scan.Id}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 380,
-          "y": 1070
-        }
-      }
-    note: false
-  "8":
-    id: "8"
-    taskid: d8fac3db-f673-4daf-8ad8-a1cb112ddd01
-    type: playbook
-    task:
-      id: d8fac3db-f673-4daf-8ad8-a1cb112ddd01
-      version: -1
-      name: GenericPolling
-      description: Generic Polling Playbook
-      playbookName: GenericPolling
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      Ids:
-        simple: ${Nexpose.Scan.Id}
-      Interval:
-        simple: "1"
-      PollingCommandArgName:
-        simple: id
-      PollingCommandName:
-        simple: nexpose-get-scan
-      Timeout:
-        simple: "60"
-      dt:
-        simple: Nexpose.Scan(val.Status != 'finished' && val.Status != 'error' &&
-          val.Status != 'aborted' && val.Status != 'stopped').Id
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 380,
-          "y": 895
-        }
-      }
-    note: false
-  "9":
-    id: "9"
-    taskid: 6d61b22a-1fbe-4ffe-866a-81b522256c65
-    type: condition
-    task:
-      id: 6d61b22a-1fbe-4ffe-866a-81b522256c65
-      version: -1
-      name: Is Nexpose enabled?
-      description: Checks wheter nexpose is enabled
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "10"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Rapid7 Nexpose
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-  "10":
-    id: "10"
-    taskid: 0f6c2fdc-f87f-4397-87a7-bcc7f8a54b50
-    type: condition
-    task:
-      id: 0f6c2fdc-f87f-4397-87a7-bcc7f8a54b50
-      version: -1
-      name: Is there an ip or host to scan?
-      description: Checks whether there's an ip or an host to scan.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "1"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: inputs.IPs
-            iscontext: true
-        - operator: isExists
-          left:
-            value:
-              simple: inputs.HostNames
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 380,
-          "y": 360
-        }
-      }
-    note: false
-  "11":
-    id: "11"
-    taskid: 3b3f273c-1886-489d-83d7-48e1073c9880
-    type: condition
-    task:
-      id: 3b3f273c-1886-489d-83d7-48e1073c9880
-      version: -1
-      name: Did scan find assets?
-      description: Checks whether assets were found
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "8"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: Nexpose.Scan.Id
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 380,
-          "y": 720
-        }
-      }
-    note: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1260,
-        "width": 710,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
 inputs:
-- key: IPs
+- description: Asset IPs to scan
+  key: IPs
+  required: false
   value:
     simple: ${IP.Address}
+- description: Hostnames of the assets to scan
+  key: HostNames
   required: false
-  description: Asset IPs to scan
-- key: HostNames
   value:
     simple: ${Nexpose.Asset.HostName}
+- description: The scan name as specified by the user.
+  key: Name
   required: false
-  description: Hostnames of the assets to scan
-- key: Name
   value: {}
-  required: false
-  description: The scan name as specified by the user.
+name: Scan Assets - Nexpose
 outputs:
 - contextPath: Nexpose.Scan.ScanType
   description: The scan type (automated, manual, scheduled).
@@ -331,6 +42,240 @@ outputs:
   description: The number of severe vulnerabilities.
 - contextPath: Nexpose.Scan.Vulnerabilities.Total
   description: The total number of vulnerabilities.
-fromversion: 4.0.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: start
+      id: 391dde59-b247-4641-8ef2-24a5c11b6d39
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 391dde59-b247-4641-8ef2-24a5c11b6d39
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    nexttasks:
+      '#none#':
+      - '11'
+    note: false
+    scriptarguments:
+      IPs:
+        complex:
+          root: inputs.IPs
+      hostNames:
+        complex:
+          root: inputs.HostNames
+      name:
+        complex:
+          root: inputs.Name
+    separatecontext: false
+    task:
+      brand: Rapid7 Nexpose
+      description: Starts a scan for specified asset IP addresses and host names.
+      id: f123b950-46f6-4ffe-8ba5-3e327482cccd
+      iscommand: true
+      name: Start scan
+      script: Rapid7 Nexpose|||nexpose-start-assets-scan
+      type: regular
+      version: -1
+    taskid: f123b950-46f6-4ffe-8ba5-3e327482cccd
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 380,\n    \"y\": 545\n  }\n}"
+  '10':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.IPs
+          operator: isExists
+        - left:
+            iscontext: true
+            value:
+              simple: inputs.HostNames
+          operator: isExists
+      label: 'yes'
+    id: '10'
+    nexttasks:
+      '#default#':
+      - '5'
+      'yes':
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Checks whether there's an ip or an host to scan.
+      id: 0f6c2fdc-f87f-4397-87a7-bcc7f8a54b50
+      iscommand: false
+      name: Is there an ip or host to scan?
+      type: condition
+      version: -1
+    taskid: 0f6c2fdc-f87f-4397-87a7-bcc7f8a54b50
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 380,\n    \"y\": 360\n  }\n}"
+  '11':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Nexpose.Scan.Id
+          operator: isExists
+      label: 'yes'
+    id: '11'
+    nexttasks:
+      '#default#':
+      - '5'
+      'yes':
+      - '8'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Checks whether assets were found
+      id: 3b3f273c-1886-489d-83d7-48e1073c9880
+      iscommand: false
+      name: Did scan find assets?
+      type: condition
+      version: -1
+    taskid: 3b3f273c-1886-489d-83d7-48e1073c9880
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 380,\n    \"y\": 720\n  }\n}"
+  '5':
+    id: '5'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Final task
+      id: 25518fb4-9985-4885-8d24-e3886014b9e3
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 25518fb4-9985-4885-8d24-e3886014b9e3
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+  '7':
+    id: '7'
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    scriptarguments:
+      id:
+        simple: ${Nexpose.Scan.Id}
+    separatecontext: false
+    task:
+      brand: Rapid7 Nexpose
+      description: Returns the specified scan.
+      id: bcc7a757-5464-43d9-8b00-756116fae3fa
+      iscommand: true
+      name: nexpose-get-scan
+      script: Rapid7 Nexpose|||nexpose-get-scan
+      type: regular
+      version: -1
+    taskid: bcc7a757-5464-43d9-8b00-756116fae3fa
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 380,\n    \"y\": 1070\n  }\n}"
+  '8':
+    id: '8'
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    scriptarguments:
+      Ids:
+        simple: ${Nexpose.Scan.Id}
+      Interval:
+        simple: '1'
+      PollingCommandArgName:
+        simple: id
+      PollingCommandName:
+        simple: nexpose-get-scan
+      Timeout:
+        simple: '60'
+      dt:
+        simple: Nexpose.Scan(val.Status != 'finished' && val.Status != 'error' &&
+          val.Status != 'aborted' && val.Status != 'stopped').Id
+    separatecontext: true
+    task:
+      brand: ''
+      description: Generic Polling Playbook
+      id: d8fac3db-f673-4daf-8ad8-a1cb112ddd01
+      iscommand: false
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      version: -1
+    taskid: d8fac3db-f673-4daf-8ad8-a1cb112ddd01
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 380,\n    \"y\": 895\n  }\n}"
+  '9':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Rapid7 Nexpose
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: 'yes'
+    id: '9'
+    nexttasks:
+      '#default#':
+      - '5'
+      'yes':
+      - '10'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Checks wheter nexpose is enabled
+      id: 6d61b22a-1fbe-4ffe-866a-81b522256c65
+      iscommand: false
+      name: Is Nexpose enabled?
+      type: condition
+      version: -1
+    taskid: 6d61b22a-1fbe-4ffe-866a-81b522256c65
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
 tests:
 - No test
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1260,\n      \"width\": 710,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

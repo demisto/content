@@ -43,7 +43,8 @@ configuration:
   required: false
   type: 0
 - defaultvalue: auto-discovery
-  display: Time Format e.g. %Y-%m-%dT%H:%M:%SZ. Select "auto-discovery" to try to automatically determine the format.
+  display: Time Format e.g. %Y-%m-%dT%H:%M:%SZ. Select "auto-discovery" to try to
+    automatically determine the format.
   name: time_format
   required: false
   type: 0
@@ -74,7 +75,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to include suppressed alarms in the search. Can be "true" or "false".
+      description: Whether to include suppressed alarms in the search. Can be "true"
+        or "false".
       isArray: false
       name: show_suppressed
       predefined:
@@ -84,7 +86,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The time frame by which to filter the results, for example: Last 48 Hours.'
+      description: 'The time frame by which to filter the results, for example: Last
+        48 Hours.'
       isArray: false
       name: time_frame
       predefined:
@@ -99,15 +102,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'If the value of the time_frame argument is "Custom", specify the start time for the time range,
-        for example: 2017-06-01T12:48:16Z.'
+      description: 'If the value of the time_frame argument is "Custom", specify the
+        start time for the time range, for example: 2017-06-01T12:48:16Z.'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'If the value of the time_frame argument is "Custom", specify the end time for the time range,
-        for example: 2017-06-01T12:48:16Z.'
+      description: 'If the value of the time_frame argument is "Custom", specify the
+        end time for the time range, for example: 2017-06-01T12:48:16Z.'
       isArray: false
       name: end_time
       required: false
@@ -288,7 +291,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The time frame by which to filter the results, for example: Last 48 Hours.'
+      description: 'The time frame by which to filter the results, for example: Last
+        48 Hours.'
       isArray: false
       name: time_frame
       predefined:
@@ -303,15 +307,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'If the value of the time_frame argument is "Custom", specify the start time for the time range,
-        for example: 2017-06-01T12:48:16Z.'
+      description: 'If the value of the time_frame argument is "Custom", specify the
+        start time for the time range, for example: 2017-06-01T12:48:16Z.'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'If the value of the time_frame argument is "Custom", specify the end time for the time range,
-        for example: 2017-06-01T12:48:16Z.'
+      description: 'If the value of the time_frame argument is "Custom", specify the
+        end time for the time range, for example: 2017-06-01T12:48:16Z.'
       isArray: false
       name: end_time
       required: false
@@ -362,8 +366,8 @@ script:
       type: String
   - arguments:
     - default: true
-      description: The ID of the alarm for which to get events. Can be obtained by running the `alienvault-search-alarms`
-        command.
+      description: The ID of the alarm for which to get events. Can be obtained by
+        running the `alienvault-search-alarms` command.
       isArray: false
       name: alarm_id
       required: true
@@ -418,5 +422,6 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
+toversion: 4.1.9

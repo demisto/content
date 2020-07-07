@@ -1,97 +1,50 @@
+args:
+- default: true
+  description: The text to extract URLs from. If object will convert to JSON.
+  name: text
+  required: true
+- description: Regex to recognize urls
+  name: urlRegex
+comment: Deprecated - We recommend using extractIndicators command instead. Extract
+  URLs from the given text and place them both as output and in the context of a playbook.
+  If given an object, will convert to JSON.
 commonfields:
   id: ExtractURL
   version: -1
-name: ExtractURL
-script: |-
-  var checkMatch = function(reg,str) {
-      if (reg === str) {
-          return true;
-      }
-
-      if(reg.indexOf('~') === 0) {
-          reg = reg.substring(1);
-          return str.match(reg);
-      }
-
-      return false;
-  };
-
-  var text = args.text;
-  if (typeof text !== 'string') {
-      text = JSON.stringify(text).replace(/\\n/g,' '); // need to replace \n
-  }
-
-  var matches = {};
-  var found;
-  var reg;
-
-  if (args.urlRegex) {
-      reg = new RegExp(args.urlRegex, "gmi");
-  } else {
-      reg = /(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-A-Z0-9]+\[?\.\]?)+[-A-Z0-9]+(?::[0-9]+)?(?:(?:\/|\?)[-A-Z0-9+&@#\/%=~_$?!:,.\(\);]*[A-Z0-9+&@#\/%=~_$\(\);])?/gmi;
-  }
-
-  var whitelist = getCSVListAsArray('Indicators Whitelist');
-  while (found = reg.exec(text)) {
-      matches[found[0]] = true;
-      for (var i = 0 ; i < whitelist.length; i++) {
-          if (checkMatch(whitelist[i],found[0])) {
-                delete matches[found[0]];
-                break;
-          }
-      }
-  }
-
-  var uniqueMatches = Object.keys(matches);
-
-  // check URLs in query params
-  uniqueMatches.forEach(function(url) {
-      var parts = url.split('?');
-      if (parts.length > 1) {
-          var params = parts[1].split('&');
-          params.forEach(function(param) {
-              var pair = param.split('=');
-              while (found = reg.exec(pair[1])) {
-                  matches[found[0]] = true;
-                  for (var i = 0 ; i < whitelist.length; i++) {
-                      if (checkMatch(whitelist[i],found[0])) {
-                            delete matches[found[0]];
-                            break;
-                      }
-                  }
-              }
-          });
-      }
-  });
-
-  uniqueMatches = Object.keys(matches);
-
-  var ec = {};
-  ec[outputPaths.url] = [];
-
-  var md = '### Extract URL\n';
-  for (var i=0; i < uniqueMatches.length; i++) {
-      ec[outputPaths.url].push({Data: uniqueMatches[i]});
-      md += '- ' + uniqueMatches[i] + '\n';
-  }
-
-  return { Type: entryTypes.note, Contents: ec[outputPaths.url], ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec };
-type: javascript
-tags:
-- Utility
-comment: Deprecated - We recommend using extractIndicators command instead.
-  Extract URLs from the given text and place them both as output and in the
-  context of a playbook. If given an object, will convert to JSON.
+deprecated: true
 enabled: true
-args:
-- name: text
-  required: true
-  default: true
-  description: The text to extract URLs from. If object will convert to JSON.
-- name: urlRegex
-  description: Regex to recognize urls
+name: ExtractURL
 outputs:
 - contextPath: URL.Data
   description: Extracted URLs
+script: "var checkMatch = function(reg,str) {\n    if (reg === str) {\n        return\
+  \ true;\n    }\n\n    if(reg.indexOf('~') === 0) {\n        reg = reg.substring(1);\n\
+  \        return str.match(reg);\n    }\n\n    return false;\n};\n\nvar text = args.text;\n\
+  if (typeof text !== 'string') {\n    text = JSON.stringify(text).replace(/\\\\n/g,'\
+  \ '); // need to replace \\n\n}\n\nvar matches = {};\nvar found;\nvar reg;\n\nif\
+  \ (args.urlRegex) {\n    reg = new RegExp(args.urlRegex, \"gmi\");\n} else {\n \
+  \   reg = /(?:(?:https?|ftp|hxxps?):\\/\\/|www\\[?\\.\\]?|ftp\\[?\\.\\]?)(?:[-A-Z0-9]+\\\
+  [?\\.\\]?)+[-A-Z0-9]+(?::[0-9]+)?(?:(?:\\/|\\?)[-A-Z0-9+&@#\\/%=~_$?!:,.\\(\\);]*[A-Z0-9+&@#\\\
+  /%=~_$\\(\\);])?/gmi;\n}\n\nvar whitelist = getCSVListAsArray('Indicators Whitelist');\n\
+  while (found = reg.exec(text)) {\n    matches[found[0]] = true;\n    for (var i\
+  \ = 0 ; i < whitelist.length; i++) {\n        if (checkMatch(whitelist[i],found[0]))\
+  \ {\n              delete matches[found[0]];\n              break;\n        }\n\
+  \    }\n}\n\nvar uniqueMatches = Object.keys(matches);\n\n// check URLs in query\
+  \ params\nuniqueMatches.forEach(function(url) {\n    var parts = url.split('?');\n\
+  \    if (parts.length > 1) {\n        var params = parts[1].split('&');\n      \
+  \  params.forEach(function(param) {\n            var pair = param.split('=');\n\
+  \            while (found = reg.exec(pair[1])) {\n                matches[found[0]]\
+  \ = true;\n                for (var i = 0 ; i < whitelist.length; i++) {\n     \
+  \               if (checkMatch(whitelist[i],found[0])) {\n                     \
+  \     delete matches[found[0]];\n                          break;\n            \
+  \        }\n                }\n            }\n        });\n    }\n});\n\nuniqueMatches\
+  \ = Object.keys(matches);\n\nvar ec = {};\nec[outputPaths.url] = [];\n\nvar md =\
+  \ '### Extract URL\\n';\nfor (var i=0; i < uniqueMatches.length; i++) {\n    ec[outputPaths.url].push({Data:\
+  \ uniqueMatches[i]});\n    md += '- ' + uniqueMatches[i] + '\\n';\n}\n\nreturn {\
+  \ Type: entryTypes.note, Contents: ec[outputPaths.url], ContentsFormat: formats.json,\
+  \ HumanReadable: md, EntryContext: ec };"
 scripttarget: 0
-deprecated: true
+tags:
+- Utility
+toversion: 4.1.9
+type: javascript

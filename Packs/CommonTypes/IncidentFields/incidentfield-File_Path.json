@@ -27,5 +27,6 @@
     "systemAssociatedTypes": null,
     "associatedToAll": true,
     "unmapped": false,
-    "unsearchable": false
+    "unsearchable": false,
+    "toVersion": "4.1.9"
 }

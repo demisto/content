@@ -1,51 +1,28 @@
-commonfields:
-  id: TrendmicroSystemEventRetrieve
-  version: -1
-name: TrendmicroSystemEventRetrieve
-script: |2
-
-  resp = demisto.executeCommand("trendmicro-system-event-retrieve", demisto.args())
-
-  if isError(resp[0]):
-      demisto.results(resp)
-  else:
-      data = demisto.get(resp[0], "Contents.systemEventRetrieveReturn.systemEvents.item")
-      if data:
-          data = data if isinstance(data, list) else [data]
-          data = [{k: formatCell(row[k]) for k in row} for row in data]
-          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
-      else:
-          demisto.results("No results.")
-type: python
-subtype: python2
-tags:
-- Trend Micro
-comment: Get system events
-system: true
 args:
-- name: rangeFrom
-  description: Time interval start
-- name: rangeTo
-  description: Time interval end
-- name: specificTime
-  description: Specific time
-- name: timeFilterType
-  auto: PREDEFINED
+- description: Time interval start
+  name: rangeFrom
+- description: Time interval end
+  name: rangeTo
+- description: Specific time
+  name: specificTime
+- auto: PREDEFINED
+  description: Define time filter mode. mandatory if filtering by time.
+  name: timeFilterType
   predefined:
   - LAST_HOUR
   - LAST_24_HOURS
   - LAST_7_DAYS
   - CUSTOM_RANGE
   - SPECIFIC_TIME
-  description: Define time filter mode. mandatory if filtering by time.
-- name: hostGroupID
-  description: Filter by host group ID
-- name: hostID
-  description: Filter by host ID
-- name: securityProfileID
-  description: Filter by host security profile ID
-- name: hostFilterType
-  auto: PREDEFINED
+- description: Filter by host group ID
+  name: hostGroupID
+- description: Filter by host ID
+  name: hostID
+- description: Filter by host security profile ID
+  name: securityProfileID
+- auto: PREDEFINED
+  description: Define host filter mode. mandatory if filtering by host/s.
+  name: hostFilterType
   predefined:
   - ALL_HOSTS
   - HOSTS_IN_GROUP
@@ -53,25 +30,42 @@ args:
   - HOSTS_IN_GROUP_AND_ALL_SUBGROUPS
   - SPECIFIC_HOST
   - MY_HOSTS
-  description: Define host filter mode. mandatory if filtering by host/s.
-- name: eventID
-  description: filter by event ID
-- name: eventFilterOperator
-  auto: PREDEFINED
+- description: filter by event ID
+  name: eventID
+- auto: PREDEFINED
+  description: event ID operator
+  name: eventFilterOperator
   predefined:
   - GREATER_THAN
   - LESS_THAN
   - EQUAL
-  description: event ID operator
-- name: includeNonHostEvents
+- auto: PREDEFINED
   description: Include non host event
-  required: true
-  auto: PREDEFINED
+  name: includeNonHostEvents
   predefined:
-  - "false"
-  - "true"
-scripttarget: 0
+  - 'false'
+  - 'true'
+  required: true
+comment: Get system events
+commonfields:
+  id: TrendmicroSystemEventRetrieve
+  version: -1
 dependson:
   must:
   - trendmicro-system-event-retrieve
+name: TrendmicroSystemEventRetrieve
+script: "\nresp = demisto.executeCommand(\"trendmicro-system-event-retrieve\", demisto.args())\n\
+  \nif isError(resp[0]):\n    demisto.results(resp)\nelse:\n    data = demisto.get(resp[0],\
+  \ \"Contents.systemEventRetrieveReturn.systemEvents.item\")\n    if data:\n    \
+  \    data = data if isinstance(data, list) else [data]\n        data = [{k: formatCell(row[k])\
+  \ for k in row} for row in data]\n        demisto.results({\"ContentsFormat\": formats[\"\
+  table\"], \"Type\": entryTypes[\"note\"], \"Contents\": data} )\n    else:\n   \
+  \     demisto.results(\"No results.\")\n"
+scripttarget: 0
+subtype: python2
+system: true
+tags:
+- Trend Micro
 timeout: 0s
+toversion: 4.1.9
+type: python

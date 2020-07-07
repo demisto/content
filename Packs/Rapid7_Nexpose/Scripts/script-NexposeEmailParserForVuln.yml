@@ -1,71 +1,49 @@
+args:
+- description: Full XML contents of the Nexpose report. If not provided, it will be
+    taken from the Incident Details.
+  name: report
+comment: 'Parses nexpose report into a clear table that contain risk score and vulnerability
+  count for each server,
+
+  And creates a new incident for each server.'
 commonfields:
   id: NexposeEmailParserForVuln
   version: -1
-name: NexposeEmailParserForVuln
-script: |-
-  var report = args.report ? args.report : incidents[0].details;
-  var contents = {};
-  var nodes = report.split(/<\/node>/);
-  for (var i=0; i < nodes.length; i++) {
-      var nodeRegexp = /<node address="(.*)" status="(.*)" device-id="(.*)" site-name="(.*)" site-importance="(.*)" scan-template="(.*)" risk-score="(.*)">/g;
-      var vulnRegexp = /(<test id="(.*)" key="(.*)" status="(.*)" scan-id="(.*)" vulnerable-since="(.*)" pci-compliance-status="fail">)/g;
-      var res = nodes[i].match(/(<test .*>)/g);
-      var match = nodeRegexp.exec(nodes[i]);
-      if (nodes[i] && match) {
-          var vulnCount = nodes[i].match(vulnRegexp) ? nodes[i].match(vulnRegexp).length : '0';
-          var data = {
-                  Address: match[1],
-                  Name: match[4],
-                  Risk: match[6],
-                  Status: match[2],
-                  Importance: match[5],
-                  Vulnerabilities: vulnCount
-              };
-          for (var j = 0; res && j < res.length; j++) {
-              var current = vulnRegexp.exec(res[j]);
-              if (current) {
-                  if (contents[current[2]]) {
-                      contents[current[2]].labels.push(data);
-                  } else {
-                      contents[current[2]] = {labels: [], Name: current[2]};
-                  }
-              }
-          }
-      }
-  }
-  var k = 0;
-  for (var key in contents) {
-      var element = contents[key];
-      var labels = '';
-      for (var j = 0; j < element.labels.length; j++) {
-                  labels += element.labels[j].Address + ',';
-              }
-      labels = labels.slice(0, -1);
-      if (labels.length > 0) {
-          createNewIncident({
-                                        type: 'Nexpose alert',
-                                        details: JSON.stringify(element.labels),
-                                        severity: args.defaultNexposeSeverity,
-                                        name: key,
-                                        systems: labels
-                                    });
-      }
-  }
-  return closeInvestigation({Reason: 'Spawned ' + k + ' child incidents'});
-type: javascript
-tags:
-- nexpose
-- ingestion
-comment: |-
-  Parses nexpose report into a clear table that contain risk score and vulnerability count for each server,
-  And creates a new incident for each server.
-system: true
-args:
-- name: report
-  description: Full XML contents of the Nexpose report. If not provided, it will be
-    taken from the Incident Details.
-scripttarget: 0
 dependson:
   must:
   - nexpose
+name: NexposeEmailParserForVuln
+script: "var report = args.report ? args.report : incidents[0].details;\nvar contents\
+  \ = {};\nvar nodes = report.split(/<\\/node>/);\nfor (var i=0; i < nodes.length;\
+  \ i++) {\n    var nodeRegexp = /<node address=\"(.*)\" status=\"(.*)\" device-id=\"\
+  (.*)\" site-name=\"(.*)\" site-importance=\"(.*)\" scan-template=\"(.*)\" risk-score=\"\
+  (.*)\">/g;\n    var vulnRegexp = /(<test id=\"(.*)\" key=\"(.*)\" status=\"(.*)\"\
+  \ scan-id=\"(.*)\" vulnerable-since=\"(.*)\" pci-compliance-status=\"fail\">)/g;\n\
+  \    var res = nodes[i].match(/(<test .*>)/g);\n    var match = nodeRegexp.exec(nodes[i]);\n\
+  \    if (nodes[i] && match) {\n        var vulnCount = nodes[i].match(vulnRegexp)\
+  \ ? nodes[i].match(vulnRegexp).length : '0';\n        var data = {\n           \
+  \     Address: match[1],\n                Name: match[4],\n                Risk:\
+  \ match[6],\n                Status: match[2],\n                Importance: match[5],\n\
+  \                Vulnerabilities: vulnCount\n            };\n        for (var j\
+  \ = 0; res && j < res.length; j++) {\n            var current = vulnRegexp.exec(res[j]);\n\
+  \            if (current) {\n                if (contents[current[2]]) {\n     \
+  \               contents[current[2]].labels.push(data);\n                } else\
+  \ {\n                    contents[current[2]] = {labels: [], Name: current[2]};\n\
+  \                }\n            }\n        }\n    }\n}\nvar k = 0;\nfor (var key\
+  \ in contents) {\n    var element = contents[key];\n    var labels = '';\n    for\
+  \ (var j = 0; j < element.labels.length; j++) {\n                labels += element.labels[j].Address\
+  \ + ',';\n            }\n    labels = labels.slice(0, -1);\n    if (labels.length\
+  \ > 0) {\n        createNewIncident({\n                                      type:\
+  \ 'Nexpose alert',\n                                      details: JSON.stringify(element.labels),\n\
+  \                                      severity: args.defaultNexposeSeverity,\n\
+  \                                      name: key,\n                            \
+  \          systems: labels\n                                  });\n    }\n}\nreturn\
+  \ closeInvestigation({Reason: 'Spawned ' + k + ' child incidents'});"
+scripttarget: 0
+system: true
+tags:
+- nexpose
+- ingestion
 timeout: 0s
+toversion: 4.1.9
+type: javascript

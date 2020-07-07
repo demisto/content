@@ -1,771 +1,643 @@
 id: LogRhythm REST test
-version: -1
+inputs: []
 name: LogRhythm REST test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 580d0fca-d223-4a66-85c6-c0b7538e0721
-    type: start
-    task:
-      id: 580d0fca-d223-4a66-85c6-c0b7538e0721
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: 39e16077-e504-4969-831d-2e0a7acbdda3
-    type: regular
-    task:
-      id: 39e16077-e504-4969-831d-2e0a7acbdda3
-      version: -1
-      name: Clear context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 580d0fca-d223-4a66-85c6-c0b7538e0721
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 580d0fca-d223-4a66-85c6-c0b7538e0721
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 45f1703e-d7dc-4d77-8f9c-599163198df2
-    type: regular
     task:
-      id: 45f1703e-d7dc-4d77-8f9c-599163198df2
-      version: -1
-      name: Get hosts
-      description: Retrieves a list of hosts for a given entity, or an empty list
-        if none is found.
-      script: '|||lr-get-hosts-by-entity'
+      brand: ''
+      description: Delete field from context
+      id: 39e16077-e504-4969-831d-2e0a7acbdda3
+      iscommand: false
+      name: Clear context
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: 39e16077-e504-4969-831d-2e0a7acbdda3
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '10':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Host.Status
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Logrhythm.Host.ID
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: '5'
+                root: Logrhythm
+          operator: isEqualString
+          right:
+            value:
+              simple: Active
+      label: 'yes'
+    id: '10'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '11'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 457ca935-2075-4e13-8a44-f97ef6f39158
+      iscommand: false
+      name: Verify output
+      type: condition
+      version: -1
+    taskid: 457ca935-2075-4e13-8a44-f97ef6f39158
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1420\n  }\n}"
+  '11':
+    id: '11'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "4"
+      - '12'
+    note: false
+    scriptarguments:
+      count: {}
+      person-id:
+        simple: '2'
+    separatecontext: false
+    task:
+      brand: ''
+      description: Retrieves a list of persons
+      id: 29decea9-3029-4027-85ba-b893429c1bb9
+      iscommand: true
+      name: Get persons
+      script: '|||lr-get-persons'
+      type: regular
+      version: -1
+    taskid: 29decea9-3029-4027-85ba-b893429c1bb9
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1595\n  }\n}"
+  '12':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Logrhythm.Person.ID
+          operator: isEqualString
+          right:
+            value:
+              simple: '2'
+      - - left:
+            iscontext: true
+            value:
+              simple: Logrhythm.Person.FirstName
+          operator: isEqualString
+          right:
+            value:
+              simple: API
+      - - left:
+            iscontext: true
+            value:
+              simple: Logrhythm.Person.UserLogin
+          operator: isEqualString
+          right:
+            value:
+              simple: demisto
+      label: 'yes'
+    id: '12'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '13'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: dc7e0fc8-b085-4e40-876b-5ec346d6821a
+      iscommand: false
+      name: Verify output
+      type: condition
+      version: -1
+    taskid: dc7e0fc8-b085-4e40-876b-5ec346d6821a
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1770\n  }\n}"
+  '13':
+    id: '13'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '14'
+    note: false
+    scriptarguments:
+      count: {}
+      network-id: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Retrieves a list of networks
+      id: 8fd0f8f2-8623-4f99-8e77-37b17fdd2417
+      iscommand: true
+      name: Get networks
+      script: '|||lr-get-networks'
+      type: regular
+      version: -1
+    taskid: 8fd0f8f2-8623-4f99-8e77-37b17fdd2417
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1945\n  }\n}"
+  '14':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Logrhythm.Network.ID
+          operator: isEqualString
+          right:
+            value:
+              simple: '1'
+      - - left:
+            iscontext: true
+            value:
+              simple: Logrhythm.Network.Name
+          operator: isEqualString
+          right:
+            value:
+              simple: test
+      - - left:
+            iscontext: true
+            value:
+              simple: Logrhythm.Network.BeganIP
+          operator: isEqualString
+          right:
+            value:
+              simple: 1.1.1.1
+      label: 'yes'
+    id: '14'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '15'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 8908068f-2226-4a1d-825e-1a6491197e22
+      iscommand: false
+      name: Verify output
+      type: condition
+      version: -1
+    taskid: 8908068f-2226-4a1d-825e-1a6491197e22
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2120\n  }\n}"
+  '15':
+    id: '15'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '16'
+    note: false
+    scriptarguments:
+      count: {}
+      host-id:
+        simple: '1'
+    separatecontext: false
+    task:
+      brand: ''
+      description: Retrieves a list of hosts.
+      id: 17c426b2-3c48-4cfe-8244-0cf0100824f1
+      iscommand: true
+      name: Get hosts
+      script: '|||lr-get-hosts'
+      type: regular
+      version: -1
+    taskid: 17c426b2-3c48-4cfe-8244-0cf0100824f1
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2295\n  }\n}"
+  '16':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Logrhythm.Host.ID
+          operator: isEqualString
+          right:
+            value:
+              simple: '1'
+      - - left:
+            iscontext: true
+            value:
+              simple: Logrhythm.Host.Name
+          operator: isEqualString
+          right:
+            value:
+              simple: WIN-JSBOL5ERCQA
+      - - left:
+            iscontext: true
+            value:
+              simple: Logrhythm.Host.RiskLevel
+          operator: isEqualString
+          right:
+            value:
+              simple: Medium-Medium
+      label: 'yes'
+    id: '16'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '17'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 46980f51-0a6d-4ebd-8d4d-36b2c14d5fbc
+      iscommand: false
+      name: Verify output
+      type: condition
+      version: -1
+    taskid: 46980f51-0a6d-4ebd-8d4d-36b2c14d5fbc
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2470\n  }\n}"
+  '17':
+    id: '17'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '18'
+    note: false
+    scriptarguments:
+      alarm-id:
+        simple: '2980'
+    separatecontext: false
+    task:
+      brand: ''
+      description: Retrieves alarm data
+      id: 949d19c8-3862-45c1-84da-08b8d00ed915
+      iscommand: true
+      name: Get alarm data
+      script: '|||lr-get-alarm-data'
+      type: regular
+      version: -1
+    taskid: 949d19c8-3862-45c1-84da-08b8d00ed915
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2645\n  }\n}"
+  '18':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Logrhythm.Alarm.ID
+          operator: isEqualString
+          right:
+            value:
+              simple: '2980'
+      - - left:
+            iscontext: true
+            value:
+              simple: Logrhythm.Alarm.Status
+          operator: isEqualString
+          right:
+            value:
+              simple: Completed
+      - - left:
+            iscontext: true
+            value:
+              simple: Logrhythm.Alarm.Priority
+          operator: isEqualString
+          right:
+            value:
+              simple: '55'
+      label: 'yes'
+    id: '18'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '19'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: eb2fd87c-50a0-4b05-80a8-4c0c0466267f
+      iscommand: false
+      name: Verify output
+      type: condition
+      version: -1
+    taskid: eb2fd87c-50a0-4b05-80a8-4c0c0466267f
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2820\n  }\n}"
+  '19':
+    id: '19'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '20'
+    note: false
+    scriptarguments:
+      alarm-id:
+        simple: '2980'
+      count: {}
+      fields: {}
+      get-log-message: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Retrieves a list of events by alarm id
+      id: 710daa19-6ce6-4e83-8714-d5a279ea6de4
+      iscommand: true
+      name: Get alarm events
+      script: '|||lr-get-alarm-events'
+      type: regular
+      version: -1
+    taskid: 710daa19-6ce6-4e83-8714-d5a279ea6de4
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2995\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
     scriptarguments:
       count: {}
       entity-name:
         simple: Primary Site
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: 78021504-11ad-45be-8ba2-a1e96ff47896
-    type: title
     task:
-      id: 78021504-11ad-45be-8ba2-a1e96ff47896
+      brand: ''
+      description: Retrieves a list of hosts for a given entity, or an empty list
+        if none is found.
+      id: 45f1703e-d7dc-4d77-8f9c-599163198df2
+      iscommand: true
+      name: Get hosts
+      script: '|||lr-get-hosts-by-entity'
+      type: regular
       version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
+    taskid: 45f1703e-d7dc-4d77-8f9c-599163198df2
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '20':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Logrhythm.Alarm.ID
+          operator: isEqualString
+          right:
+            value:
+              simple: '2980'
+      - - left:
+            iscontext: true
+            value:
+              simple: Logrhythm.Alarm.Event
+          operator: isExists
+      label: 'yes'
+    id: '20'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '3'
+    note: false
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3345
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: db4e8671-ff2b-493e-866a-089981521c22
-    type: condition
     task:
-      id: db4e8671-ff2b-493e-866a-089981521c22
-      version: -1
+      brand: ''
+      id: b642384f-3d4a-45e5-8ea8-1aa72db63010
+      iscommand: false
       name: Verify output
       type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "5"
+      version: -1
+    taskid: b642384f-3d4a-45e5-8ea8-1aa72db63010
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3170\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
+    note: false
     separatecontext: false
+    task:
+      brand: ''
+      id: 78021504-11ad-45be-8ba2-a1e96ff47896
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 78021504-11ad-45be-8ba2-a1e96ff47896
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3345\n  }\n}"
+  '4':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: Logrhythm.Host
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isEqualString
-          left:
             value:
               simple: Logrhythm.Host.EntityName
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: Primary Site
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
+      label: 'yes'
+    id: '4'
     ignoreworker: false
-  "5":
-    id: "5"
-    taskid: c03450cb-1f9b-4731-84fb-2b9b6ef0b152
-    type: regular
+    nexttasks:
+      'yes':
+      - '5'
+    note: false
+    separatecontext: false
     task:
-      id: c03450cb-1f9b-4731-84fb-2b9b6ef0b152
+      brand: ''
+      id: db4e8671-ff2b-493e-866a-089981521c22
+      iscommand: false
+      name: Verify output
+      type: condition
       version: -1
-      name: Execute query
-      description: Executes a query for logs that match query parameters.
-      script: '|||lr-execute-query'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: db4e8671-ff2b-493e-866a-089981521c22
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
+    note: false
     scriptarguments:
       end-date: {}
       keyword:
         simple: WIN-JSBOL5ERCQA.demisto.lab
       page-size:
-        simple: "100"
+        simple: '100'
       start-date: {}
       time-frame:
         simple: LastWeek
       time_frame: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "7":
-    id: "7"
-    taskid: 6ef2f73c-82e8-4023-8061-e517fa008de2
-    type: regular
     task:
-      id: 6ef2f73c-82e8-4023-8061-e517fa008de2
-      version: -1
-      name: Update status to Retired
-      description: Updates an host status.
-      script: '|||lr-update-host-status'
-      type: regular
+      brand: ''
+      description: Executes a query for logs that match query parameters.
+      id: c03450cb-1f9b-4731-84fb-2b9b6ef0b152
       iscommand: true
-      brand: ""
+      name: Execute query
+      script: '|||lr-execute-query'
+      type: regular
+      version: -1
+    taskid: c03450cb-1f9b-4731-84fb-2b9b6ef0b152
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '7':
+    id: '7'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
+    note: false
     scriptarguments:
       host-id:
-        simple: "5"
+        simple: '5'
       status:
         simple: Retired
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "8":
-    id: "8"
-    taskid: 431d42bd-27ac-4262-8955-efb398110389
-    type: condition
     task:
-      id: 431d42bd-27ac-4262-8955-efb398110389
+      brand: ''
+      description: Updates an host status.
+      id: 6ef2f73c-82e8-4023-8061-e517fa008de2
+      iscommand: true
+      name: Update status to Retired
+      script: '|||lr-update-host-status'
+      type: regular
       version: -1
-      name: Verify output
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "9"
-    separatecontext: false
+    taskid: 6ef2f73c-82e8-4023-8061-e517fa008de2
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+  '8':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: Logrhythm
+                accessor: Host.Status
                 filters:
-                - - operator: isEqualString
-                    left:
+                - - left:
+                      iscontext: true
                       value:
                         simple: Logrhythm.Host.ID
-                      iscontext: true
+                    operator: isEqualString
                     right:
                       value:
-                        simple: "5"
-                accessor: Host.Status
-            iscontext: true
+                        simple: '5'
+                root: Logrhythm
+          operator: isEqualString
           right:
             value:
               simple: Retired
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
+      label: 'yes'
+    id: '8'
     ignoreworker: false
-  "9":
-    id: "9"
-    taskid: 68afee3b-3c0e-4c76-80cb-a9ce1a1c5c3d
-    type: regular
+    nexttasks:
+      'yes':
+      - '9'
+    note: false
+    separatecontext: false
     task:
-      id: 68afee3b-3c0e-4c76-80cb-a9ce1a1c5c3d
+      brand: ''
+      id: 431d42bd-27ac-4262-8955-efb398110389
+      iscommand: false
+      name: Verify output
+      type: condition
       version: -1
-      name: Update status to Active
-      description: Updates an host status.
-      script: '|||lr-update-host-status'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: 431d42bd-27ac-4262-8955-efb398110389
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+  '9':
+    id: '9'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
+    note: false
     scriptarguments:
       host-id:
-        simple: "5"
+        simple: '5'
       status:
         simple: Active
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "10":
-    id: "10"
-    taskid: 457ca935-2075-4e13-8a44-f97ef6f39158
-    type: condition
     task:
-      id: 457ca935-2075-4e13-8a44-f97ef6f39158
-      version: -1
-      name: Verify output
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "11"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: Logrhythm
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Logrhythm.Host.ID
-                      iscontext: true
-                    right:
-                      value:
-                        simple: "5"
-                accessor: Host.Status
-            iscontext: true
-          right:
-            value:
-              simple: Active
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "11":
-    id: "11"
-    taskid: 29decea9-3029-4027-85ba-b893429c1bb9
-    type: regular
-    task:
-      id: 29decea9-3029-4027-85ba-b893429c1bb9
-      version: -1
-      name: Get persons
-      description: Retrieves a list of persons
-      script: '|||lr-get-persons'
-      type: regular
+      brand: ''
+      description: Updates an host status.
+      id: 68afee3b-3c0e-4c76-80cb-a9ce1a1c5c3d
       iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      count: {}
-      person-id:
-        simple: "2"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "12":
-    id: "12"
-    taskid: dc7e0fc8-b085-4e40-876b-5ec346d6821a
-    type: condition
-    task:
-      id: dc7e0fc8-b085-4e40-876b-5ec346d6821a
-      version: -1
-      name: Verify output
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "13"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Logrhythm.Person.ID
-            iscontext: true
-          right:
-            value:
-              simple: "2"
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Logrhythm.Person.FirstName
-            iscontext: true
-          right:
-            value:
-              simple: API
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Logrhythm.Person.UserLogin
-            iscontext: true
-          right:
-            value:
-              simple: demisto
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "13":
-    id: "13"
-    taskid: 8fd0f8f2-8623-4f99-8e77-37b17fdd2417
-    type: regular
-    task:
-      id: 8fd0f8f2-8623-4f99-8e77-37b17fdd2417
-      version: -1
-      name: Get networks
-      description: Retrieves a list of networks
-      script: '|||lr-get-networks'
+      name: Update status to Active
+      script: '|||lr-update-host-status'
       type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      count: {}
-      network-id: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "14":
-    id: "14"
-    taskid: 8908068f-2226-4a1d-825e-1a6491197e22
-    type: condition
-    task:
-      id: 8908068f-2226-4a1d-825e-1a6491197e22
       version: -1
-      name: Verify output
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "15"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Logrhythm.Network.ID
-            iscontext: true
-          right:
-            value:
-              simple: "1"
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Logrhythm.Network.Name
-            iscontext: true
-          right:
-            value:
-              simple: test
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Logrhythm.Network.BeganIP
-            iscontext: true
-          right:
-            value:
-              simple: 1.1.1.1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2120
-        }
-      }
-    note: false
+    taskid: 68afee3b-3c0e-4c76-80cb-a9ce1a1c5c3d
     timertriggers: []
-    ignoreworker: false
-  "15":
-    id: "15"
-    taskid: 17c426b2-3c48-4cfe-8244-0cf0100824f1
     type: regular
-    task:
-      id: 17c426b2-3c48-4cfe-8244-0cf0100824f1
-      version: -1
-      name: Get hosts
-      description: Retrieves a list of hosts.
-      script: '|||lr-get-hosts'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      count: {}
-      host-id:
-        simple: "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2295
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "16":
-    id: "16"
-    taskid: 46980f51-0a6d-4ebd-8d4d-36b2c14d5fbc
-    type: condition
-    task:
-      id: 46980f51-0a6d-4ebd-8d4d-36b2c14d5fbc
-      version: -1
-      name: Verify output
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "17"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Logrhythm.Host.ID
-            iscontext: true
-          right:
-            value:
-              simple: "1"
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Logrhythm.Host.Name
-            iscontext: true
-          right:
-            value:
-              simple: WIN-JSBOL5ERCQA
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Logrhythm.Host.RiskLevel
-            iscontext: true
-          right:
-            value:
-              simple: Medium-Medium
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "17":
-    id: "17"
-    taskid: 949d19c8-3862-45c1-84da-08b8d00ed915
-    type: regular
-    task:
-      id: 949d19c8-3862-45c1-84da-08b8d00ed915
-      version: -1
-      name: Get alarm data
-      description: Retrieves alarm data
-      script: '|||lr-get-alarm-data'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      alarm-id:
-        simple: "2980"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2645
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "18":
-    id: "18"
-    taskid: eb2fd87c-50a0-4b05-80a8-4c0c0466267f
-    type: condition
-    task:
-      id: eb2fd87c-50a0-4b05-80a8-4c0c0466267f
-      version: -1
-      name: Verify output
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "19"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Logrhythm.Alarm.ID
-            iscontext: true
-          right:
-            value:
-              simple: "2980"
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Logrhythm.Alarm.Status
-            iscontext: true
-          right:
-            value:
-              simple: Completed
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Logrhythm.Alarm.Priority
-            iscontext: true
-          right:
-            value:
-              simple: "55"
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2820
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "19":
-    id: "19"
-    taskid: 710daa19-6ce6-4e83-8714-d5a279ea6de4
-    type: regular
-    task:
-      id: 710daa19-6ce6-4e83-8714-d5a279ea6de4
-      version: -1
-      name: Get alarm events
-      description: Retrieves a list of events by alarm id
-      script: '|||lr-get-alarm-events'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "20"
-    scriptarguments:
-      alarm-id:
-        simple: "2980"
-      count: {}
-      fields: {}
-      get-log-message: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2995
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "20":
-    id: "20"
-    taskid: b642384f-3d4a-45e5-8ea8-1aa72db63010
-    type: condition
-    task:
-      id: b642384f-3d4a-45e5-8ea8-1aa72db63010
-      version: -1
-      name: Verify output
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "3"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Logrhythm.Alarm.ID
-            iscontext: true
-          right:
-            value:
-              simple: "2980"
-      - - operator: isExists
-          left:
-            value:
-              simple: Logrhythm.Alarm.Event
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3170
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 3360,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 3360,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

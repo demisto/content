@@ -6,15 +6,20 @@ args:
   name: entryID
   required: true
   secret: false
-comment: |-
-  Used to extract indicators from Word files (DOC, DOCX).
-  The script does not extract data from macros (e.g., embedded code).
+comment: 'Used to extract indicators from Word files (DOC, DOCX).
+
+  The script does not extract data from macros (e.g., embedded code).'
 commonfields:
   id: ExtractIndicatorsFromWordFile
   version: -1
+dockerimage: demisto/office-utils:1.0.0.91
 enabled: true
+fromversion: 4.1.0
 name: ExtractIndicatorsFromWordFile
+runas: DBotWeakRole
+runonce: false
 script: '-'
+subtype: python2
 system: false
 tags:
 - parser
@@ -23,9 +28,5 @@ tags:
 - docx
 - word
 timeout: '0'
+toversion: 4.1.9
 type: python
-subtype: python2
-dockerimage: demisto/office-utils:1.0.0.91
-runas: DBotWeakRole
-runonce: false
-fromversion: 4.1.0

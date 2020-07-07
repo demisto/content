@@ -1,35 +1,27 @@
+args:
+- description: Indicator value to get
+  name: value
+  required: true
+comment: ''
 commonfields:
   id: GetIndicator
   version: -1
-name: GetIndicator
-script: |-
-  value = demisto.args().get('value')
-  res = demisto.executeCommand("getIndicator", {"value": value})
-  if True in [isError(entry) for entry in res]:
-      demisto.results(res)
-      sys.exit(0)
-  data = demisto.get(res[0], "Contents")
-  if not data:
-      demisto.results("No results.")
-      sys.exit(0)
-
-  ec = {'Indicator(val.id === obj.id)': data}
-  demisto.results(ec)
-
-  return_outputs(tableToMarkdown(f'Indicator value: {value}', data), ec, res)
-type: python
-tags: []
+dockerimage: demisto/python3:3.8.3.9324
 enabled: true
-args:
-- name: value
-  required: true
-  description: Indicator value to get
+name: GetIndicator
 outputs:
 - contextPath: Indicator
   description: Indicator object
+runas: DBotWeakRole
+runonce: false
+script: "value = demisto.args().get('value')\nres = demisto.executeCommand(\"getIndicator\"\
+  , {\"value\": value})\nif True in [isError(entry) for entry in res]:\n    demisto.results(res)\n\
+  \    sys.exit(0)\ndata = demisto.get(res[0], \"Contents\")\nif not data:\n    demisto.results(\"\
+  No results.\")\n    sys.exit(0)\n\nec = {'Indicator(val.id === obj.id)': data}\n\
+  demisto.results(ec)\n\nreturn_outputs(tableToMarkdown(f'Indicator value: {value}',\
+  \ data), ec, res)"
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.8.3.9324
-runas: DBotWeakRole
-comment: ''
+tags: []
+toversion: 4.1.9
+type: python

@@ -268,14 +268,19 @@ script:
       required: true
       secret: false
     - default: true
-      description: |-
-        Entity to add into the Access Control List.
+      description: 'Entity to add into the Access Control List.
+
         Common entity formats are:
+
         * user-<userId or email>
+
         * group-<groupId or email>
+
         * allUsers
+
         * allAuthenticatedUsers
-        For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource
+
+        For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource'
       isArray: false
       name: entity
       required: true
@@ -292,9 +297,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: |-
-      Adds a new entity to a bucket's Access Control List.
-      Note: use the gcs-put-bucket-policy command to update an existing entry.
+    description: 'Adds a new entity to a bucket''s Access Control List.
+
+      Note: use the gcs-put-bucket-policy command to update an existing entry.'
     execution: false
     name: gcs-create-bucket-policy
   - arguments:
@@ -305,14 +310,19 @@ script:
       required: true
       secret: false
     - default: true
-      description: |-
-        The entity to update in the Access Control List.
+      description: 'The entity to update in the Access Control List.
+
         Common entity formats are:
+
         * user-<userId or email>
+
         * group-<groupId or email>
+
         * allUsers
+
         * allAuthenticatedUsers
-        For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource
+
+        For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource'
       isArray: false
       name: entity
       required: true
@@ -329,9 +339,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: |-
-      Updates an existing entity in a bucket's Access Control List.
-      Note: use the gcs-create-bucket-policy command to create a new entry.
+    description: 'Updates an existing entity in a bucket''s Access Control List.
+
+      Note: use the gcs-create-bucket-policy command to create a new entry.'
     execution: false
     name: gcs-put-bucket-policy
   - arguments:
@@ -342,14 +352,19 @@ script:
       required: true
       secret: false
     - default: true
-      description: |-
-        Entity to remove from the Access Control List.
+      description: 'Entity to remove from the Access Control List.
+
         Common entity formats are:
+
         * user-<userId or email>
+
         * group-<groupId or email>
+
         * allUsers
+
         * allAuthenticatedUsers
-        For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource
+
+        For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource'
       isArray: false
       name: entity
       required: true
@@ -408,14 +423,19 @@ script:
       required: true
       secret: false
     - default: true
-      description: |-
-        Entity to add into the Access Control List.
+      description: 'Entity to add into the Access Control List.
+
         Common entity formats are:
+
         * user-<userId or email>
+
         * group-<groupId or email>
+
         * allUsers
+
         * allAuthenticatedUsers
-        For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource
+
+        For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource'
       isArray: false
       name: entity
       required: true
@@ -431,9 +451,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: |-
-      Adds a new entity to an object's Access Control List.
-      Note: use the gcs-put-bucket-object-policy command to update an existing entry.
+    description: 'Adds a new entity to an object''s Access Control List.
+
+      Note: use the gcs-put-bucket-object-policy command to update an existing entry.'
     execution: false
     name: gcs-create-bucket-object-policy
   - arguments:
@@ -450,14 +470,19 @@ script:
       required: true
       secret: false
     - default: true
-      description: |-
-        The entity to update in the Access Control List.
+      description: 'The entity to update in the Access Control List.
+
         Common entity formats are:
+
         * user-<userId or email>
+
         * group-<groupId or email>
+
         * allUsers
+
         * allAuthenticatedUsers
-        For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource
+
+        For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource'
       isArray: false
       name: entity
       required: true
@@ -473,9 +498,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: |-
-      Updates an existing entity in an object's Access Control List.
-      Note: use gcs-create-bucket-object-policy command to create a new entry.
+    description: 'Updates an existing entity in an object''s Access Control List.
+
+      Note: use gcs-create-bucket-object-policy command to create a new entry.'
     execution: false
     name: gcs-put-bucket-object-policy
   - arguments:
@@ -492,14 +517,19 @@ script:
       required: true
       secret: false
     - default: true
-      description: |-
-        Entity to remove from the Access Control List.
+      description: 'Entity to remove from the Access Control List.
+
         Common entity formats are:
+
         * user-<userId or email>
+
         * group-<groupId or email>
+
         * allUsers
+
         * allAuthenticatedUsers
-        For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource
+
+        For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource'
       isArray: false
       name: entity
       required: true
@@ -514,7 +544,8 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 tests:
 - GCS - Test
+toversion: 4.1.9

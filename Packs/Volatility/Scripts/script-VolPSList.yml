@@ -1,28 +1,31 @@
+args:
+- description: Path to memory dump file on the system being used
+  name: memdump
+  required: true
+- description: System with Volatility installed to be used for the analysis
+  name: system
+  required: true
+- description: Volatility profile to use
+  name: profile
+comment: Volatility script for command pslist
 commonfields:
   id: VolPSList
   version: -1
+dependson: {}
 name: VolPSList
-script: |-
-  var cmdline = 'pslist';
-  var out = executeCommand('Volatility', {memdump:args.memdump, profile:args.profile, system: args.system, cmd:cmdline});
-  return out;
-type: javascript
+script: 'var cmdline = ''pslist'';
+
+  var out = executeCommand(''Volatility'', {memdump:args.memdump, profile:args.profile,
+  system: args.system, cmd:cmdline});
+
+  return out;'
+scripttarget: 0
+system: true
 tags:
 - memory
 - forensics
 - volatility
 - server
-comment: Volatility script for command pslist
-system: true
-args:
-- name: memdump
-  required: true
-  description: Path to memory dump file on the system being used
-- name: system
-  required: true
-  description: System with Volatility installed to be used for the analysis
-- name: profile
-  description: Volatility profile to use
-scripttarget: 0
-dependson: {}
 timeout: 0s
+toversion: 4.1.9
+type: javascript

@@ -1,46 +1,31 @@
 id: RegexGroups Test
-version: -1
+inputs: []
 name: RegexGroups Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 30f8460b-5a57-45ad-80ee-311122ca6816
+      iscommand: false
+      name: ''
+      version: -1
     taskid: 30f8460b-5a57-45ad-80ee-311122ca6816
     type: start
-    task:
-      id: 30f8460b-5a57-45ad-80ee-311122ca6816
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 50
-        }
-      }
+      - '5'
     note: false
-  "1":
-    id: "1"
-    taskid: cb35c1a2-af3b-4965-8a78-e80c0581b25a
-    type: regular
-    task:
-      id: cb35c1a2-af3b-4965-8a78-e80c0581b25a
-      version: -1
-      name: Set test data
-      description: Sets a value into the context with the given context key
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
     scriptarguments:
       append: {}
       key:
@@ -48,30 +33,59 @@ tasks:
       value:
         simple: The quick brown fox
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 195
-        }
-      }
-    note: false
-  "2":
-    id: "2"
-    taskid: 261af029-dddb-4183-8354-eff3f0fada49
-    type: regular
     task:
-      id: 261af029-dddb-4183-8354-eff3f0fada49
-      version: -1
-      name: Set test 2 output
+      brand: ''
       description: Sets a value into the context with the given context key
+      id: cb35c1a2-af3b-4965-8a78-e80c0581b25a
+      iscommand: false
+      name: Set test data
       scriptName: Set
       type: regular
+      version: -1
+    taskid: cb35c1a2-af3b-4965-8a78-e80c0581b25a
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 195\n  }\n}"
+  '10':
+    id: '10'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: a34c587a-2f40-49e6-8d1a-ebf9789adb92
       iscommand: false
-      brand: ""
+      name: Success
+      type: title
+      version: -1
+    taskid: a34c587a-2f40-49e6-8d1a-ebf9789adb92
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1550\n  }\n}"
+  '11':
+    id: '11'
+    note: false
+    scriptarguments:
+      actual: {}
+      details: {}
+      error:
+        simple: Test 2 output verification failed
+      expected: {}
+    separatecontext: false
+    task:
+      brand: ''
+      id: 7c7b79e3-b7f9-4f45-897b-350dffb01fef
+      iscommand: false
+      name: Failure
+      scriptName: RaiseError
+      type: regular
+      version: -1
+    taskid: 7c7b79e3-b7f9-4f45-897b-350dffb01fef
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1535\n  }\n}"
+  '2':
+    id: '2'
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
+    note: false
     scriptarguments:
       append: {}
       key:
@@ -80,8 +94,7 @@ tasks:
         complex:
           root: TestData
           transformers:
-          - operator: RegexGroups
-            args:
+          - args:
               groups:
                 value:
                   simple: 0,1
@@ -91,108 +104,86 @@ tasks:
               regex:
                 value:
                   simple: (The)\s(quick).*(fox)
+            operator: RegexGroups
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1185
-        }
-      }
-    note: false
-  "4":
-    id: "4"
-    taskid: e4e72a77-65bb-4855-837f-34ddfac9450d
-    type: title
     task:
-      id: e4e72a77-65bb-4855-837f-34ddfac9450d
+      brand: ''
+      description: Sets a value into the context with the given context key
+      id: 261af029-dddb-4183-8354-eff3f0fada49
+      iscommand: false
+      name: Set test 2 output
+      scriptName: Set
+      type: regular
       version: -1
+    taskid: 261af029-dddb-4183-8354-eff3f0fada49
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1185\n  }\n}"
+  '4':
+    id: '4'
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: e4e72a77-65bb-4855-837f-34ddfac9450d
+      iscommand: false
       name: Test 2 - with groups and keys
       type: title
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: e4e72a77-65bb-4855-837f-34ddfac9450d
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 865\n  }\n}"
+  '5':
+    id: '5'
     nexttasks:
       '#none#':
-      - "6"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 865
-        }
-      }
+      - '7'
     note: false
-  "5":
-    id: "5"
-    taskid: b8922c3d-ba0f-4bcf-8173-e012d39ee19c
-    type: title
+    separatecontext: false
     task:
+      brand: ''
       id: b8922c3d-ba0f-4bcf-8173-e012d39ee19c
-      version: -1
+      iscommand: false
       name: Test 1 - without groups and keys
       type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 370
-        }
-      }
-    note: false
-  "6":
-    id: "6"
-    taskid: 1a8ca9ce-cd6c-4749-8450-5617ff7f33b7
-    type: regular
-    task:
-      id: 1a8ca9ce-cd6c-4749-8450-5617ff7f33b7
       version: -1
-      name: Delete Context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: b8922c3d-ba0f-4bcf-8173-e012d39ee19c
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 370\n  }\n}"
+  '6':
+    id: '6'
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep:
         simple: TestData
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1010
-        }
-      }
-    note: false
-  "7":
-    id: "7"
-    taskid: 3d8629e7-ac5a-4c39-821c-66bc68af8556
-    type: regular
     task:
-      id: 3d8629e7-ac5a-4c39-821c-66bc68af8556
-      version: -1
-      name: Set test 1 output
-      scriptName: Set
-      type: regular
+      brand: ''
+      id: 1a8ca9ce-cd6c-4749-8450-5617ff7f33b7
       iscommand: false
-      brand: ""
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 1a8ca9ce-cd6c-4749-8450-5617ff7f33b7
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1010\n  }\n}"
+  '7':
+    id: '7'
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
+    note: false
     scriptarguments:
       append: {}
       key:
@@ -201,37 +192,31 @@ tasks:
         complex:
           root: TestData
           transformers:
-          - operator: RegexGroups
-            args:
+          - args:
               groups: {}
               keys: {}
               regex:
                 value:
                   simple: (The)\s(quick)
+            operator: RegexGroups
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 515
-        }
-      }
-    note: false
-  "8":
-    id: "8"
-    taskid: e902bac7-ab6a-4539-8e70-87d8c229b6e1
-    type: regular
     task:
-      id: e902bac7-ab6a-4539-8e70-87d8c229b6e1
-      version: -1
-      name: Verify test 1 output
-      scriptName: VerifyContext
-      type: regular
+      brand: ''
+      id: 3d8629e7-ac5a-4c39-821c-66bc68af8556
       iscommand: false
-      brand: ""
+      name: Set test 1 output
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 3d8629e7-ac5a-4c39-821c-66bc68af8556
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 515\n  }\n}"
+  '8':
+    id: '8'
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
+    note: false
     scriptarguments:
       expectedValue:
         simple: '["The","quick"]'
@@ -239,116 +224,57 @@ tasks:
       path:
         simple: Output
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 690
-        }
-      }
-    note: false
-  "9":
-    id: "9"
-    taskid: ab1fd458-eeb9-4f77-8ddf-2f4af4f0f079
-    type: condition
     task:
-      id: ab1fd458-eeb9-4f77-8ddf-2f4af4f0f079
-      version: -1
-      name: Verify test 2 output
-      type: condition
+      brand: ''
+      id: e902bac7-ab6a-4539-8e70-87d8c229b6e1
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "11"
-      Passesd:
-      - "10"
-    separatecontext: false
+      name: Verify test 1 output
+      scriptName: VerifyContext
+      type: regular
+      version: -1
+    taskid: e902bac7-ab6a-4539-8e70-87d8c229b6e1
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 690\n  }\n}"
+  '9':
     conditions:
-    - label: Passesd
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: Output.article
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: The
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: Output.noun
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: quick
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1360
-        }
-      }
+      label: Passesd
+    id: '9'
+    nexttasks:
+      '#default#':
+      - '11'
+      Passesd:
+      - '10'
     note: false
-  "10":
-    id: "10"
-    taskid: a34c587a-2f40-49e6-8d1a-ebf9789adb92
-    type: title
-    task:
-      id: a34c587a-2f40-49e6-8d1a-ebf9789adb92
-      version: -1
-      name: Success
-      type: title
-      iscommand: false
-      brand: ""
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1550
-        }
-      }
-    note: false
-  "11":
-    id: "11"
-    taskid: 7c7b79e3-b7f9-4f45-897b-350dffb01fef
-    type: regular
     task:
-      id: 7c7b79e3-b7f9-4f45-897b-350dffb01fef
-      version: -1
-      name: Failure
-      scriptName: RaiseError
-      type: regular
+      brand: ''
+      id: ab1fd458-eeb9-4f77-8ddf-2f4af4f0f079
       iscommand: false
-      brand: ""
-    scriptarguments:
-      actual: {}
-      details: {}
-      error:
-        simple: Test 2 output verification failed
-      expected: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1535
-        }
-      }
-    note: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1580,
-        "width": 810,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+      name: Verify test 2 output
+      type: condition
+      version: -1
+    taskid: ab1fd458-eeb9-4f77-8ddf-2f4af4f0f079
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1360\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1580,\n      \"width\": 810,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

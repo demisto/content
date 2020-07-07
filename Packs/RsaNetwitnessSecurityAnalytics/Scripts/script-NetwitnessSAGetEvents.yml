@@ -1,37 +1,7 @@
-commonfields:
-  id: NetwitnessSAGetEvents
-  version: -1
-name: NetwitnessSAGetEvents
-script: |
-  resp = demisto.executeCommand("nw-get-events", demisto.args())
-
-  if isError(resp[0]):
-      demisto.results(resp)
-  else:
-      data = demisto.get(resp[0], "Contents.events")
-      if data:
-          data = data if isinstance(data, list) else [data]
-          formatTimeColumns(data,  ['time'])
-          for row in data:
-              newMeta = {}
-              for var in row['meta']:
-                  newMeta['meta.' + var['name']] = var['value']
-              row['meta'] = newMeta
-              raiseTable(row, 'meta')
-          data = [{k: formatCell(row[k]) for k in row} for row in data]
-          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
-      else:
-          demisto.results("No results.")
-type: python
-subtype: python2
-tags:
-- RSA NetWitness Security Analytics
-comment: Returns all the RSA NetWitness SA events in the defined time range
-system: true
 args:
-- name: timeRangeType
-  required: true
-  auto: PREDEFINED
+- auto: PREDEFINED
+  description: Filter of time range in which events occured
+  name: timeRangeType
   predefined:
   - LAST_5_MINUTES
   - LAST_10_MINUTES
@@ -54,37 +24,58 @@ args:
   - LAST_WEEK
   - ALL_DATA
   - CUSTOM
-  description: Filter of time range in which events occured
-- name: deviceId
   required: true
-  description: '[number] Id of the device where the events stored/occurred. In order
+- description: '[number] Id of the device where the events stored/occurred. In order
     to get list of available devices/components run command nw-get-components'
-- name: collectionName
-  description: '[optional]'
-- name: predicateIds
-  description: '[optional]'
-- name: startDate
-  description: '[optional datetime] If timeRangeType defined as CUSTOM, set this argument'
-- name: endDate
-  description: '[optional datetime] If timeRangeType defined as CUSTOM, set this argument'
-- name: lastCollectionTime
-  description: '[optional datetime] Last collection time'
-- name: mid1
-  description: "mID1"
-- name: mid2
-  description: "mID2"
-- name: investigationToken
-  description: '[optional guid] Investigation id token'
-- name: page
-  description: '[optional number] Default set to 1. The page number'
-- name: start
-  description: '[optional number] Default set to 0. The starting index of event in
+  name: deviceId
+  required: true
+- description: '[optional]'
+  name: collectionName
+- description: '[optional]'
+  name: predicateIds
+- description: '[optional datetime] If timeRangeType defined as CUSTOM, set this argument'
+  name: startDate
+- description: '[optional datetime] If timeRangeType defined as CUSTOM, set this argument'
+  name: endDate
+- description: '[optional datetime] Last collection time'
+  name: lastCollectionTime
+- description: mID1
+  name: mid1
+- description: mID2
+  name: mid2
+- description: '[optional guid] Investigation id token'
+  name: investigationToken
+- description: '[optional number] Default set to 1. The page number'
+  name: page
+- description: '[optional number] Default set to 0. The starting index of event in
     page.'
-- name: limit
-  description: '[optional number] Default set to 25. Limits the number of events per
+  name: start
+- description: '[optional number] Default set to 25. Limits the number of events per
     page'
-scripttarget: 0
+  name: limit
+comment: Returns all the RSA NetWitness SA events in the defined time range
+commonfields:
+  id: NetwitnessSAGetEvents
+  version: -1
 dependson:
   must:
   - nw-get-events
+name: NetwitnessSAGetEvents
+script: "resp = demisto.executeCommand(\"nw-get-events\", demisto.args())\n\nif isError(resp[0]):\n\
+  \    demisto.results(resp)\nelse:\n    data = demisto.get(resp[0], \"Contents.events\"\
+  )\n    if data:\n        data = data if isinstance(data, list) else [data]\n   \
+  \     formatTimeColumns(data,  ['time'])\n        for row in data:\n           \
+  \ newMeta = {}\n            for var in row['meta']:\n                newMeta['meta.'\
+  \ + var['name']] = var['value']\n            row['meta'] = newMeta\n           \
+  \ raiseTable(row, 'meta')\n        data = [{k: formatCell(row[k]) for k in row}\
+  \ for row in data]\n        demisto.results({\"ContentsFormat\": formats[\"table\"\
+  ], \"Type\": entryTypes[\"note\"], \"Contents\": data} )\n    else:\n        demisto.results(\"\
+  No results.\")\n"
+scripttarget: 0
+subtype: python2
+system: true
+tags:
+- RSA NetWitness Security Analytics
 timeout: 0s
+toversion: 4.1.9
+type: python

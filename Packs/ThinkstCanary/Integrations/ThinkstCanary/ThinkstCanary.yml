@@ -1,53 +1,53 @@
+category: Deception
 commonfields:
   id: Thinkst Canary
   version: -1
-name: Thinkst Canary
-display: Thinkst Canary
-category: Deception
-description: By presenting itself as an apparently benign and legitimate service(s), the Canary draws the attention of
-  unwanted activity. When someone trips one of the Canary's triggers, an alert is sent to notify the responsible
-  parties so that action can be taken before valubale systems in your network are compromised.
 configuration:
-- display: Canary Server URL (e.g., https://***.canary.tools)
+- defaultvalue: ''
+  display: Canary Server URL (e.g., https://***.canary.tools)
   name: server
-  defaultvalue: ""
+  required: true
   type: 0
-  required: true
-- display: API Authentication Token
+- defaultvalue: ''
+  display: API Authentication Token
   name: auth_token
-  defaultvalue: ""
-  type: 4
   required: true
-- display: Trust any certificate (not secure)
+  type: 4
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
-  type: 8
   required: false
-- display: Use system proxy settings
+  type: 8
+- defaultvalue: ''
+  display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 - display: Fetch incidents
   name: isFetch
+  required: false
   type: 8
-  required: false
-- display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+- defaultvalue: 24 hours
+  display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months,
+    1 year)
   name: fetchDelta
-  defaultvalue: "24 hours"
-  type: 0
   required: false
+  type: 0
 - display: Incident type
   name: incidentType
-  type: 13
   required: false
+  type: 13
+description: By presenting itself as an apparently benign and legitimate service(s),
+  the Canary draws the attention of unwanted activity. When someone trips one of the
+  Canary's triggers, an alert is sent to notify the responsible parties so that action
+  can be taken before valubale systems in your network are compromised.
+display: Thinkst Canary
+name: Thinkst Canary
 script:
-  script: ''
-  type: python
-  subtype: python2
   commands:
-  - name: canarytools-list-canaries
-    arguments: []
+  - arguments: []
+    description: Lists all registered Canaries.
+    name: canarytools-list-canaries
     outputs:
     - contextPath: CanaryTools.Device.ID
       description: Device ID
@@ -76,9 +76,9 @@ script:
     - contextPath: CanaryTools.Device.LastUpdated
       description: Device last updated time
       type: date
-    description: Lists all registered Canaries.
-  - name: canarytools-list-tokens
-    arguments: []
+  - arguments: []
+    description: Lists all Canary tokens.
+    name: canarytools-list-tokens
     outputs:
     - contextPath: CanaryTools.Token.CanaryToken
       description: Canary Token
@@ -101,14 +101,14 @@ script:
     - contextPath: CanaryTools.Token.TokenURL
       description: Token URL (How the token is presented)
       type: string
-    description: Lists all Canary tokens.
-  - name: canarytools-check-whitelist
-    arguments:
-    - name: ip
+  - arguments:
+    - description: IP address
+      name: ip
       required: true
-      description: IP address
-    - name: port
-      description: Destination port
+    - description: Destination port
+      name: port
+    description: Checks whether a given IP address and port are whitelisted.
+    name: canarytools-check-whitelist
     outputs:
     - contextPath: CanaryTools.IP.Address
       description: IP address
@@ -119,14 +119,14 @@ script:
     - contextPath: CanaryTools.IP.Whitelisted
       description: Is the IP address whitelisted (true/false)
       type: boolean
-    description: Checks whether a given IP address and port are whitelisted.
-  - name: canarytools-whitelist-ip
-    arguments:
-    - name: ip
+  - arguments:
+    - description: IP address to whitelist
+      name: ip
       required: true
-      description: IP address to whitelist
-    - name: port
-      description: Destination port to whitelist
+    - description: Destination port to whitelist
+      name: port
+    description: Adds an IP address to the whitelist in Canary
+    name: canarytools-whitelist-ip
     outputs:
     - contextPath: CanaryTools.IP.Address
       description: IP address
@@ -137,20 +137,20 @@ script:
     - contextPath: CanaryTools.IP.Whitelisted
       description: Is the IP address whitelisted (True/False)
       type: boolean
-    description: Adds an IP address to the whitelist in Canary
-  - name: canarytools-edit-alert-status
-    arguments:
-    - name: alert_id
+  - arguments:
+    - description: Alert ID (e.g., incident:canarytoken:d6fe0ae4dfd36cc3cc6d9d4f::1548593719,
+        Can be retrieved through fetch incidents)
+      name: alert_id
       required: true
-      description: 'Alert ID (e.g., incident:canarytoken:d6fe0ae4dfd36cc3cc6d9d4f::1548593719, Can be retrieved through
-      fetch incidents)'
-    - name: status
-      required: true
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: Required status for the alert (Acknowledge, Unacknowledge)
+      name: status
       predefined:
       - Acknowledge
       - Unacknowledge
-      description: Required status for the alert (Acknowledge, Unacknowledge)
+      required: true
+    description: Edits the status for an alert in Canary Tools.
+    name: canarytools-edit-alert-status
     outputs:
     - contextPath: CanaryTools.Alert.ID
       description: Alert ID
@@ -158,12 +158,12 @@ script:
     - contextPath: CanaryTools.Alert.Status
       description: Alert status
       type: string
-    description: Edits the status for an alert in Canary Tools.
-  - name: canarytools-get-token
-    arguments:
-    - name: token
+  - arguments:
+    - description: Canary Token, Can be retrieved through list-tokens command
+      name: token
       required: true
-      description: Canary Token, Can be retrieved through list-tokens command
+    description: Fetches a Canary Token file from the Canary Tools server.
+    name: canarytools-get-token
     outputs:
     - contextPath: CanaryTools.Token.CanaryToken
       description: Canary Token
@@ -198,8 +198,11 @@ script:
     - contextPath: File.Extension
       description: File extension
       type: string
-    description: Fetches a Canary Token file from the Canary Tools server.
   isfetch: true
   runonce: false
+  script: ''
+  subtype: python2
+  type: python
 tests:
 - CanaryTools Test
+toversion: 4.1.9

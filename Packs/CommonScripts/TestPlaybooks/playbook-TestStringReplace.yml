@@ -1,292 +1,63 @@
 id: TestStringReplace
-version: -1
+inputs: []
 name: TestStringReplace
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 9507bc8d-6eb9-48dd-8dc0-468ee73325e9
-    type: start
-    task:
-      id: 9507bc8d-6eb9-48dd-8dc0-468ee73325e9
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
+      - '1'
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
-    taskid: 9bca8b1a-070d-4060-8b45-e7193b33f24e
-    type: regular
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 9bca8b1a-070d-4060-8b45-e7193b33f24e
+      brand: ''
+      id: 9507bc8d-6eb9-48dd-8dc0-468ee73325e9
+      iscommand: false
+      name: ''
       version: -1
+    taskid: 9507bc8d-6eb9-48dd-8dc0-468ee73325e9
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: 'yes'
+      key: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 9bca8b1a-070d-4060-8b45-e7193b33f24e
+      iscommand: false
       name: Delete Context
       scriptName: DeleteContext
       type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "5":
-    id: "5"
-    taskid: 70fdf797-8170-46d0-86bd-0aeffdc37f2c
-    type: regular
-    task:
-      id: 70fdf797-8170-46d0-86bd-0aeffdc37f2c
       version: -1
-      name: StringReplace - default arguments
-      description: |-
-        case-Insensitive : true (default)
-        replace-All: true (default)
-        multi-line: true (default)
-      scriptName: StringReplace
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      caseInsensitive: {}
-      contextKey:
-        simple: string
-      data:
-        simple: cdbbdccDbdbdbbdsbz
-      multiLine: {}
-      newValue:
-        simple: AA
-      regex:
-        simple: d(b+)d
-      replaceAll: {}
-      str: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 394
-        }
-      }
-    note: false
+    taskid: 9bca8b1a-070d-4060-8b45-e7193b33f24e
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "6":
-    id: "6"
-    taskid: 25afc299-f352-4218-8cd2-10b608746b80
     type: regular
-    task:
-      id: 25afc299-f352-4218-8cd2-10b608746b80
-      version: -1
-      name: Verify string
-      scriptName: VerifyContextFields
-      type: regular
-      iscommand: false
-      brand: ""
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '10':
+    id: '10'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "7"
-    scriptarguments:
-      field1:
-        simple: StringReplace.Result
-      field2: {}
-      field3: {}
-      field4: {}
-      value1:
-        simple: cAAccAAbAAsbz
-      value2: {}
-      value3: {}
-      value4: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 560
-        }
-      }
+      - '11'
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
-  "7":
-    id: "7"
-    taskid: 87f142f7-e385-4243-82ef-d4bd46059284
-    type: regular
-    task:
-      id: 87f142f7-e385-4243-82ef-d4bd46059284
-      version: -1
-      name: StringReplace- case-insensitive, multi-line
-      description: "case-Insensitive : true (default)\nreplace-All: false \nmulti-line:
-        true (default)"
-      scriptName: StringReplace
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      caseInsensitive: {}
-      contextKey:
-        simple: string
-      data:
-        simple: cdbbdccDbdbdbbdsbz
-      multiLine: {}
-      newValue:
-        simple: AA
-      regex:
-        simple: d(b+)d
-      replaceAll:
-        simple: "false"
-      str: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 736
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "8":
-    id: "8"
-    taskid: acab630a-28fb-40ae-8ac9-5326be6b58c5
-    type: regular
-    task:
-      id: acab630a-28fb-40ae-8ac9-5326be6b58c5
-      version: -1
-      name: Verify string
-      scriptName: VerifyContextFields
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      field1:
-        simple: StringReplace.Result
-      field2: {}
-      field3: {}
-      field4: {}
-      value1:
-        simple: cAAccDbdbdbbdsbz
-      value2: {}
-      value3: {}
-      value4: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 910
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "9":
-    id: "9"
-    taskid: a1a85db0-581d-4345-855f-03edbaebd0a4
-    type: regular
-    task:
-      id: a1a85db0-581d-4345-855f-03edbaebd0a4
-      version: -1
-      name: StringReplace- multi-line, replace-all
-      description: "case-Insensitive :false\nreplace-All: true \nmulti-line: true
-        (default)"
-      scriptName: StringReplace
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      caseInsensitive:
-        simple: "false"
-      contextKey:
-        simple: string
-      data:
-        simple: cdbbdccDbdbdbbdsbz
-      multiLine: {}
-      newValue:
-        simple: AA
-      regex:
-        simple: d(b+)d
-      replaceAll: {}
-      str: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1077
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "10":
-    id: "10"
-    taskid: 9f160f00-2a5f-4164-81f4-793d6133ab1d
-    type: regular
-    task:
-      id: 9f160f00-2a5f-4164-81f4-793d6133ab1d
-      version: -1
-      name: Verify string
-      scriptName: VerifyContextFields
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
     scriptarguments:
       field1:
         simple: StringReplace.Result
@@ -299,35 +70,27 @@ tasks:
       value3: {}
       value4: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1238
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "11":
-    id: "11"
-    taskid: 63b911f2-043e-4561-8ab6-1f55358a56f6
-    type: regular
     task:
-      id: 63b911f2-043e-4561-8ab6-1f55358a56f6
-      version: -1
-      name: StringReplace- no match
-      description: "case-Insensitive :true (default)\nreplace-All: true (default)
-        \nmulti-line: true (default)"
-      scriptName: StringReplace
-      type: regular
+      brand: ''
+      id: 9f160f00-2a5f-4164-81f4-793d6133ab1d
       iscommand: false
-      brand: ""
+      name: Verify string
+      scriptName: VerifyContextFields
+      type: regular
+      version: -1
+    taskid: 9f160f00-2a5f-4164-81f4-793d6133ab1d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1238\n  }\n}"
+  '11':
+    id: '11'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "12"
+      - '12'
+    note: false
+    quietmode: 0
     scriptarguments:
       caseInsensitive: {}
       contextKey:
@@ -342,30 +105,26 @@ tasks:
       replaceAll: {}
       str: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1401
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "12":
-    id: "12"
-    taskid: 31ed4d53-930c-4aea-8c87-f0978dc10206
-    type: regular
     task:
-      id: 31ed4d53-930c-4aea-8c87-f0978dc10206
-      version: -1
-      name: Verify string
-      scriptName: VerifyContextFields
-      type: regular
+      brand: ''
+      description: "case-Insensitive :true (default)\nreplace-All: true (default)\
+        \ \nmulti-line: true (default)"
+      id: 63b911f2-043e-4561-8ab6-1f55358a56f6
       iscommand: false
-      brand: ""
+      name: StringReplace- no match
+      scriptName: StringReplace
+      type: regular
+      version: -1
+    taskid: 63b911f2-043e-4561-8ab6-1f55358a56f6
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1401\n  }\n}"
+  '12':
+    id: '12'
+    ignoreworker: false
+    note: false
+    quietmode: 0
     scriptarguments:
       field1:
         simple: StringReplace.Result
@@ -378,29 +137,203 @@ tasks:
       value3: {}
       value4: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1563
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
+    task:
+      brand: ''
+      id: 31ed4d53-930c-4aea-8c87-f0978dc10206
+      iscommand: false
+      name: Verify string
+      scriptName: VerifyContextFields
+      type: regular
+      version: -1
+    taskid: 31ed4d53-930c-4aea-8c87-f0978dc10206
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1563\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
     quietmode: 0
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1608,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    scriptarguments:
+      caseInsensitive: {}
+      contextKey:
+        simple: string
+      data:
+        simple: cdbbdccDbdbdbbdsbz
+      multiLine: {}
+      newValue:
+        simple: AA
+      regex:
+        simple: d(b+)d
+      replaceAll: {}
+      str: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'case-Insensitive : true (default)
+
+        replace-All: true (default)
+
+        multi-line: true (default)'
+      id: 70fdf797-8170-46d0-86bd-0aeffdc37f2c
+      iscommand: false
+      name: StringReplace - default arguments
+      scriptName: StringReplace
+      type: regular
+      version: -1
+    taskid: 70fdf797-8170-46d0-86bd-0aeffdc37f2c
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 394\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      field1:
+        simple: StringReplace.Result
+      field2: {}
+      field3: {}
+      field4: {}
+      value1:
+        simple: cAAccAAbAAsbz
+      value2: {}
+      value3: {}
+      value4: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 25afc299-f352-4218-8cd2-10b608746b80
+      iscommand: false
+      name: Verify string
+      scriptName: VerifyContextFields
+      type: regular
+      version: -1
+    taskid: 25afc299-f352-4218-8cd2-10b608746b80
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 560\n  }\n}"
+  '7':
+    id: '7'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      caseInsensitive: {}
+      contextKey:
+        simple: string
+      data:
+        simple: cdbbdccDbdbdbbdsbz
+      multiLine: {}
+      newValue:
+        simple: AA
+      regex:
+        simple: d(b+)d
+      replaceAll:
+        simple: 'false'
+      str: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: "case-Insensitive : true (default)\nreplace-All: false \nmulti-line:\
+        \ true (default)"
+      id: 87f142f7-e385-4243-82ef-d4bd46059284
+      iscommand: false
+      name: StringReplace- case-insensitive, multi-line
+      scriptName: StringReplace
+      type: regular
+      version: -1
+    taskid: 87f142f7-e385-4243-82ef-d4bd46059284
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 736\n  }\n}"
+  '8':
+    id: '8'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      field1:
+        simple: StringReplace.Result
+      field2: {}
+      field3: {}
+      field4: {}
+      value1:
+        simple: cAAccDbdbdbbdsbz
+      value2: {}
+      value3: {}
+      value4: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: acab630a-28fb-40ae-8ac9-5326be6b58c5
+      iscommand: false
+      name: Verify string
+      scriptName: VerifyContextFields
+      type: regular
+      version: -1
+    taskid: acab630a-28fb-40ae-8ac9-5326be6b58c5
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 910\n  }\n}"
+  '9':
+    id: '9'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '10'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      caseInsensitive:
+        simple: 'false'
+      contextKey:
+        simple: string
+      data:
+        simple: cdbbdccDbdbdbbdsbz
+      multiLine: {}
+      newValue:
+        simple: AA
+      regex:
+        simple: d(b+)d
+      replaceAll: {}
+      str: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: "case-Insensitive :false\nreplace-All: true \nmulti-line: true\
+        \ (default)"
+      id: a1a85db0-581d-4345-855f-03edbaebd0a4
+      iscommand: false
+      name: StringReplace- multi-line, replace-all
+      scriptName: StringReplace
+      type: regular
+      version: -1
+    taskid: a1a85db0-581d-4345-855f-03edbaebd0a4
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1077\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1608,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

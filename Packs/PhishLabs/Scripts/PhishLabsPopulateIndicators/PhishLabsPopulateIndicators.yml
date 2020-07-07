@@ -62,20 +62,20 @@ comment: Populate indicators by the PhishLabs IOC global feed.
 commonfields:
   id: PhishLabsPopulateIndicators
   version: -1
+dependson:
+  must: []
+  should:
+  - PhishLabs IOC|||phishlabs-global-feed
+dockerimage: demisto/python3:3.7.3.221
 enabled: true
 name: PhishLabsPopulateIndicators
+runas: DBotWeakRole
+runonce: false
 script: '-'
+subtype: python3
 system: false
 tags:
 - PhishLabs
-timeout: 3.6µs
+timeout: "3.6\xB5s"
+toversion: 4.1.9
 type: python
-runas: DBotWeakRole
-dockerimage: demisto/python3:3.7.3.221
-subtype: python3
-runonce: false
-dependson:
-  must: [
-    ]
-  should:
-  - PhishLabs IOC|||phishlabs-global-feed

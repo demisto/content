@@ -9,6 +9,7 @@ comment: Converts HTML to Markdown.
 commonfields:
   id: HTMLtoMD
   version: -1
+dockerimage: demisto/btfl-soup:1.0.1.6233
 enabled: true
 name: HTMLtoMD
 outputs:
@@ -18,14 +19,14 @@ outputs:
 - contextPath: HTMLtoMD.Result
   description: The Markdown that was converted from the passed HTML.
   type: String
-script: '-'
-system: false
-timeout: '0'
-type: python
-tags: []
-dockerimage: demisto/btfl-soup:1.0.1.6233
 runas: DBotWeakRole
 runonce: false
+script: '-'
 subtype: python3
+system: false
+tags: []
 tests:
 - Test_HTMLtoMD
+timeout: '0'
+toversion: 4.1.9
+type: python

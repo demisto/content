@@ -1,92 +1,14 @@
+args:
+- default: true
+  description: URL to verify
+  isArray: true
+  name: url
+  required: true
+comment: Verify URL SSL certificate
 commonfields:
   id: URLSSLVerification
   version: -1
 name: URLSSLVerification
-script: |-
-  import requests
-
-  NON_SSL_PREFIX = "http"
-  SSL_PREFIX = "https"
-  VENDOR = "URL SSL Verification"
-  SUSPICIOUS_SCORE = 2
-
-  urls = argToList(demisto.get(demisto.args(),"url"))
-  url_list = []
-
-  ec = {
-      'URL': [],
-      'DBotScore' : []
-  }
-
-  for url in urls:
-      url_obj = {
-          "Data": url
-      }
-      malicious = None
-
-      #Check if url is non SSL
-      if not SSL_PREFIX in url.lower():
-          malicious = {
-              "Vendor": VENDOR,
-              "Description" : "The URL is not secure under SSL"
-          }
-      #Check SSL signature
-      else:
-          try:
-              requests.get(url)
-          except requests.exceptions.SSLError as e:
-              malicious = {
-                  "Vendor": VENDOR,
-                  "Description" : "SSL Certificate verification failed"
-              }
-          except requests.exceptions.RequestException as e:
-              malicious = {
-                  "Vendor": VENDOR,
-                  "Description" : "Failed to establish a new connection with the URL"
-              }
-
-      if malicious:
-          ec["DBotScore"].append({
-              "Indicator": url,
-              "Type" : "url",
-              "Vendor": VENDOR,
-              "Score": SUSPICIOUS_SCORE
-          })
-
-          url_obj["Verified"] = False
-          url_obj["Malicious"] = malicious
-      else:
-          url_obj["Verified"] = True
-
-      url_list.append(url_obj)
-
-
-  ec["URL(val.Data && val.Data === obj.Data)"] = url_list
-
-  preview_list = [{"URL": url["Data"],"Verified": url["Verified"], "Description": demisto.get(url, "Malicious.Description") or "SSL certificate is verified"} for url in url_list]
-
-  md = tableToMarkdown("URL SSL Verification",preview_list,["URL","Verified","Description"])
-
-  demisto.results({
-      "Type" : entryTypes["note"],
-      "Contents" : url_list,
-      "ContentsFormat": formats["json"],
-      "HumanReadable": md,
-      "EntryContext": ec
-  })
-type: python
-subtype: python2
-tags:
-- url
-- Enrichment
-comment: Verify URL SSL certificate
-system: true
-args:
-- name: url
-  required: true
-  default: true
-  description: URL to verify
-  isArray: true
 outputs:
 - contextPath: URL
   description: The URL object
@@ -109,5 +31,37 @@ outputs:
 - contextPath: DBotScore.Score
   description: The reputation score
   type: number
-scripttarget: 0
 runonce: false
+script: "import requests\n\nNON_SSL_PREFIX = \"http\"\nSSL_PREFIX = \"https\"\nVENDOR\
+  \ = \"URL SSL Verification\"\nSUSPICIOUS_SCORE = 2\n\nurls = argToList(demisto.get(demisto.args(),\"\
+  url\"))\nurl_list = []\n\nec = {\n    'URL': [],\n    'DBotScore' : []\n}\n\nfor\
+  \ url in urls:\n    url_obj = {\n        \"Data\": url\n    }\n    malicious = None\n\
+  \n    #Check if url is non SSL\n    if not SSL_PREFIX in url.lower():\n        malicious\
+  \ = {\n            \"Vendor\": VENDOR,\n            \"Description\" : \"The URL\
+  \ is not secure under SSL\"\n        }\n    #Check SSL signature\n    else:\n  \
+  \      try:\n            requests.get(url)\n        except requests.exceptions.SSLError\
+  \ as e:\n            malicious = {\n                \"Vendor\": VENDOR,\n      \
+  \          \"Description\" : \"SSL Certificate verification failed\"\n         \
+  \   }\n        except requests.exceptions.RequestException as e:\n            malicious\
+  \ = {\n                \"Vendor\": VENDOR,\n                \"Description\" : \"\
+  Failed to establish a new connection with the URL\"\n            }\n\n    if malicious:\n\
+  \        ec[\"DBotScore\"].append({\n            \"Indicator\": url,\n         \
+  \   \"Type\" : \"url\",\n            \"Vendor\": VENDOR,\n            \"Score\"\
+  : SUSPICIOUS_SCORE\n        })\n\n        url_obj[\"Verified\"] = False\n      \
+  \  url_obj[\"Malicious\"] = malicious\n    else:\n        url_obj[\"Verified\"]\
+  \ = True\n\n    url_list.append(url_obj)\n\n\nec[\"URL(val.Data && val.Data ===\
+  \ obj.Data)\"] = url_list\n\npreview_list = [{\"URL\": url[\"Data\"],\"Verified\"\
+  : url[\"Verified\"], \"Description\": demisto.get(url, \"Malicious.Description\"\
+  ) or \"SSL certificate is verified\"} for url in url_list]\n\nmd = tableToMarkdown(\"\
+  URL SSL Verification\",preview_list,[\"URL\",\"Verified\",\"Description\"])\n\n\
+  demisto.results({\n    \"Type\" : entryTypes[\"note\"],\n    \"Contents\" : url_list,\n\
+  \    \"ContentsFormat\": formats[\"json\"],\n    \"HumanReadable\": md,\n    \"\
+  EntryContext\": ec\n})"
+scripttarget: 0
+subtype: python2
+system: true
+tags:
+- url
+- Enrichment
+toversion: 4.1.9
+type: python

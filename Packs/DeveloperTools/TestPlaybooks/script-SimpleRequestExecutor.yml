@@ -1,42 +1,31 @@
+comment: Executes the SimpleRequest automation with `debug-mode=True`.
 commonfields:
   id: SimpleRequestExecutor
   version: -1
-name: SimpleRequestExecutor
-script: |-
-  from urllib3 import disable_warnings
-
-  # disable insecure warnings
-  disable_warnings()
-
-  res = []
-
-  cmd_args = {'debug-mode': 'True'}
-
-  # Calling a command - returns a list of one or more entries
-  cmd_res = demisto.executeCommand('SimpleRequest', cmd_args)
-  try:
-      for entry in cmd_res:
-          if isError(entry):
-              # Check if it's that error we know about and have a solution for - notify, retry, display a specific error message, etc.
-              if "failed with status 404 NOT FOUND" in entry["Contents"]:
-                  res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                              "Contents": "Received HTTP Error 404 from Session API. Please ensure that you do not already have an active session with that sensor."})
-              else:
-                  # If it's not an error we recognize - send all entries returned from the command back to the war room as-is.
-                  res = cmd_res
-                  break
-          else:
-              res.append(entry)
-  except Exception as ex:
-      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                  "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(cmd_res)})
-  demisto.results(res)
-type: python
-tags: []
-comment: Executes the SimpleRequest automation with `debug-mode=True`.
+dockerimage: demisto/python3:3.7.4.977
 enabled: true
+name: SimpleRequestExecutor
+runas: DBotWeakRole
+runonce: false
+script: "from urllib3 import disable_warnings\n\n# disable insecure warnings\ndisable_warnings()\n\
+  \nres = []\n\ncmd_args = {'debug-mode': 'True'}\n\n# Calling a command - returns\
+  \ a list of one or more entries\ncmd_res = demisto.executeCommand('SimpleRequest',\
+  \ cmd_args)\ntry:\n    for entry in cmd_res:\n        if isError(entry):\n     \
+  \       # Check if it's that error we know about and have a solution for - notify,\
+  \ retry, display a specific error message, etc.\n            if \"failed with status\
+  \ 404 NOT FOUND\" in entry[\"Contents\"]:\n                res.append({\"Type\"\
+  : entryTypes[\"error\"], \"ContentsFormat\": formats[\"text\"],\n              \
+  \              \"Contents\": \"Received HTTP Error 404 from Session API. Please\
+  \ ensure that you do not already have an active session with that sensor.\"})\n\
+  \            else:\n                # If it's not an error we recognize - send all\
+  \ entries returned from the command back to the war room as-is.\n              \
+  \  res = cmd_res\n                break\n        else:\n            res.append(entry)\n\
+  except Exception as ex:\n    res.append({\"Type\": entryTypes[\"error\"], \"ContentsFormat\"\
+  : formats[\"text\"],\n                \"Contents\": \"Error occurred while parsing\
+  \ output from command. Exception info:\\n\" + str(ex) + \"\\n\\nInvalid output:\\\
+  n\" + str(cmd_res)})\ndemisto.results(res)"
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.7.4.977
-runas: DBotWeakRole
+tags: []
+toversion: 4.1.9
+type: python

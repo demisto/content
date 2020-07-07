@@ -26,8 +26,10 @@ configuration:
   name: is_public
   required: false
   type: 8
+defaultEnabled: false
 description: Urlscan.io reputation
 display: urlscan.io
+fromversion: 3.1.1
 name: urlscan.io
 script:
   commands:
@@ -400,7 +402,6 @@ script:
   longRunningPort: false
   runonce: false
   script: ''
-  type: python
   subtype: python2
-defaultEnabled: false
-fromversion: 3.1.1
+  type: python
+toversion: 4.1.9

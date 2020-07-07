@@ -1,77 +1,57 @@
-id: JoeSecurityTestDetonation
-version: -1
-name: JoeSecurityTestDetonation
 fromversion: 4.0.0
-starttaskid: "0"
+id: JoeSecurityTestDetonation
+inputs: []
+name: JoeSecurityTestDetonation
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 74f5bd5f-389c-4711-8c19-28816e4268a7
+      iscommand: false
+      name: ''
+      version: -1
     taskid: 74f5bd5f-389c-4711-8c19-28816e4268a7
     type: start
-    task:
-      id: 74f5bd5f-389c-4711-8c19-28816e4268a7
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 50
-        }
-      }
+      - '9'
+      - '8'
+      - '5'
     note: false
-  "1":
-    id: "1"
-    taskid: aa10000d-1cda-4d0a-8b96-36d7150f90ea
-    type: regular
-    task:
-      id: aa10000d-1cda-4d0a-8b96-36d7150f90ea
-      version: -1
-      name: Clean Start
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-      - "8"
-      - "5"
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       key: {}
       keysToKeep: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 195
-        }
-      }
-    note: false
-  "5":
-    id: "5"
-    taskid: 45165634-8ed7-496e-8e6e-0a2fa4849a90
-    type: regular
     task:
-      id: 45165634-8ed7-496e-8e6e-0a2fa4849a90
-      version: -1
-      name: Create a sample file
-      scriptName: FileCreateAndUpload
-      type: regular
+      brand: ''
+      id: aa10000d-1cda-4d0a-8b96-36d7150f90ea
       iscommand: false
-      brand: ""
+      name: Clean Start
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: aa10000d-1cda-4d0a-8b96-36d7150f90ea
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 195\n  }\n}"
+  '5':
+    id: '5'
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
+    note: false
     scriptarguments:
       data:
         simple: this is a regular file
@@ -79,144 +59,120 @@ tasks:
       filename:
         simple: suspicious.txt
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-  "7":
-    id: "7"
-    taskid: c7d2db12-7ba9-44d7-8fd1-081a5bc12f8a
-    type: playbook
     task:
-      id: c7d2db12-7ba9-44d7-8fd1-081a5bc12f8a
-      version: -1
-      name: Detonate File - JoeSecurity
-      playbookName: Detonate File - JoeSecurity
-      type: playbook
+      brand: ''
+      id: 45165634-8ed7-496e-8e6e-0a2fa4849a90
       iscommand: false
-      brand: ""
+      name: Create a sample file
+      scriptName: FileCreateAndUpload
+      type: regular
+      version: -1
+    taskid: 45165634-8ed7-496e-8e6e-0a2fa4849a90
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '7':
+    id: '7'
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    note: false
     scriptarguments:
+      Comments:
+        simple: Detonation Testing
       File:
         complex:
           root: File
-      Comments:
-        simple: Detonation Testing
       InternetAccess:
-        simple: "True"
+        simple: 'True'
       Interval:
-        simple: "1"
+        simple: '1'
       ReportFileType: {}
       Systems:
         simple: w10
       Timeout:
-        simple: "15"
+        simple: '15'
     separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-  "8":
-    id: "8"
-    taskid: b39a9586-4e31-4ed2-82f6-238bff24bf51
-    type: playbook
     task:
-      id: b39a9586-4e31-4ed2-82f6-238bff24bf51
-      version: -1
-      name: Detonate File From URL - JoeSecurity
-      playbookName: Detonate File From URL - JoeSecurity
-      type: playbook
+      brand: ''
+      id: c7d2db12-7ba9-44d7-8fd1-081a5bc12f8a
       iscommand: false
-      brand: ""
+      name: Detonate File - JoeSecurity
+      playbookName: Detonate File - JoeSecurity
+      type: playbook
+      version: -1
+    taskid: c7d2db12-7ba9-44d7-8fd1-081a5bc12f8a
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '8':
+    id: '8'
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    note: false
     scriptarguments:
-      FileURL:
-        simple: https://www.sample-videos.com/img/Sample-jpg-image-500kb.jpg
       Comments:
         simple: Detonation Testing
+      FileURL:
+        simple: https://www.sample-videos.com/img/Sample-jpg-image-500kb.jpg
       Internet-access:
-        simple: "True"
+        simple: 'True'
       Interval:
-        simple: "1"
+        simple: '1'
       ReportFileType: {}
       Systems:
         simple: w7_1
       Timeout:
-        simple: "15"
+        simple: '15'
     separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 370
-        }
-      }
-    note: false
-  "9":
-    id: "9"
-    taskid: 56f11659-1b0e-40b1-8daa-9dbc64490f91
-    type: playbook
     task:
-      id: 56f11659-1b0e-40b1-8daa-9dbc64490f91
-      version: -1
-      name: Detonate URL - JoeSecurity
-      playbookName: Detonate URL - JoeSecurity
-      type: playbook
+      brand: ''
+      id: b39a9586-4e31-4ed2-82f6-238bff24bf51
       iscommand: false
-      brand: ""
+      name: Detonate File From URL - JoeSecurity
+      playbookName: Detonate File From URL - JoeSecurity
+      type: playbook
+      version: -1
+    taskid: b39a9586-4e31-4ed2-82f6-238bff24bf51
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 370\n  }\n}"
+  '9':
+    id: '9'
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    note: false
     scriptarguments:
       Comments:
         simple: Detonation Testing
       InternetAccess:
-        simple: "True"
+        simple: 'True'
       Interval:
-        simple: "1"
+        simple: '1'
       ReportFileType:
         simple: html
       Systems:
         simple: w7
       Timeout:
-        simple: "15"
+        simple: '15'
       URL:
         simple: https://www.sample-videos.com/img/Sample-jpg-image-500kb.jpg
     separatecontext: true
-    loop:
+    task:
+      brand: ''
+      id: 56f11659-1b0e-40b1-8daa-9dbc64490f91
       iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 370
-        }
-      }
-    note: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 590,
-        "width": 1240,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+      name: Detonate URL - JoeSecurity
+      playbookName: Detonate URL - JoeSecurity
+      type: playbook
+      version: -1
+    taskid: 56f11659-1b0e-40b1-8daa-9dbc64490f91
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 370\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 590,\n      \"width\": 1240,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

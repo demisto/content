@@ -1,55 +1,53 @@
+category: Deception
 commonfields:
   id: Attivo Botsink
   version: -1
-name: Attivo Botsink
-display: Attivo Botsink
-category: Deception
-description: Network-based Threat Deception for Post-Compromise Threat Detection.
 configuration:
-- display: Botsink name or address
+- defaultvalue: ''
+  display: Botsink name or address
   name: server
-  defaultvalue: ""
-  type: 0
   required: true
-- display: BOTsink API credentials
+  type: 0
+- defaultvalue: ''
+  display: BOTsink API credentials
   name: credentials
-  defaultvalue: ""
+  required: true
   type: 9
-  required: true
-- display: Trust any certificate (not secure)
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
-  type: 8
   required: false
-- display: Minimum severity when fetching events; "Very High", "High", "Medium"
+  type: 8
+- defaultvalue: High
+  display: Minimum severity when fetching events; "Very High", "High", "Medium"
   name: fetch_severity
-  defaultvalue: High
-  type: 0
   required: true
+  type: 0
 - display: Fetch incidents
   name: isFetch
-  type: 8
   required: false
+  type: 8
 - display: Incident type
   name: incidentType
-  type: 13
   required: false
-- display: Number of days to go back for the initial fetch. Use "0" to only retrieve
+  type: 13
+- defaultvalue: '0'
+  display: Number of days to go back for the initial fetch. Use "0" to only retrieve
     new incidents.
   name: first_fetch
-  defaultvalue: "0"
-  type: 0
   required: true
+  type: 0
+description: Network-based Threat Deception for Post-Compromise Threat Detection.
+display: Attivo Botsink
+name: Attivo Botsink
 script:
-  script: ''
-  type: python
-  subtype: python2
   commands:
-  - name: attivo-check-user
-    arguments:
-    - name: user
+  - arguments:
+    - description: User to validate
+      name: user
       required: true
-      description: User to validate
+    description: Checks whether a user is deceptive
+    name: attivo-check-user
     outputs:
     - contextPath: Attivo.User.IsDeceptive
       description: Is the user part of the Deception environment
@@ -57,13 +55,13 @@ script:
     - contextPath: Attivo.User.Groups
       description: If the user is part of the Deception environment, the member is
         a member of these groups
-    description: Checks whether a user is deceptive
-  - name: attivo-check-host
-    arguments:
-    - name: host
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: Hostname or IP to validate
+      name: host
+      required: true
+    description: Checks whether a host is deceptive
+    name: attivo-check-host
     outputs:
     - contextPath: Attivo.Host.IsDeceptive
       description: Is the IP or hostname part of the Decpetion environment
@@ -86,15 +84,15 @@ script:
       description: Name of the ThreatDirect device projecting this deceptive host
     - contextPath: Attivo.Host.ThreatDirect.Type
       description: The type of ThreatDirect device projecting the deceptive host
-    description: Checks whether a host is deceptive
-  - name: attivo-run-playbook
-    arguments:
-    - name: playbook_name
+  - arguments:
+    - description: The name of the prebuilt playbook
+      name: playbook_name
       required: true
-      description: The name of the prebuilt playbook
-    - name: attacker_ip
+    - description: Malicious source IP
+      name: attacker_ip
       required: true
-      description: Malicious source IP
+    description: Runs a prebuilt playbook on the BOTsink appliance
+    name: attivo-run-playbook
     outputs:
     - contextPath: Attivo.Playbook.Message
       description: Complete status message
@@ -102,16 +100,16 @@ script:
     - contextPath: Attivo.Playbook.Status
       description: Was the playbook successful
       type: boolean
-    description: Runs a prebuilt playbook on the BOTsink appliance
-  - name: attivo-deploy-decoy
-    arguments:
-    - name: vulnerable_ip
+  - arguments:
+    - description: Used to determine which subnet to deploy to
+      name: vulnerable_ip
       required: true
-      description: Used to determine which subnet to deploy to
-    - name: decoy_number
-      default: true
+    - default: true
+      defaultValue: '1'
       description: The number of decoys to deploy, default is "1"
-      defaultValue: "1"
+      name: decoy_number
+    description: 'Deploys a new network decoy '
+    name: attivo-deploy-decoy
     outputs:
     - contextPath: Attivo.DeployDecoy.Status
       description: Was the network decoy successfully deployed
@@ -119,14 +117,15 @@ script:
     - contextPath: Attivo.DeployDecoy.Message
       description: Complete status message
       type: string
-    description: 'Deploys a new network decoy '
-  - name: attivo-get-events
-    arguments:
-    - name: attacker_ip
+  - arguments:
+    - description: Source IP address
+      name: attacker_ip
       required: true
-      description: Source IP address
-    - name: severity
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      defaultValue: Medium
+      description: The minimum Attivo severity for the events, default is "Medium";
+        "VeryHigh", "High", "Medium", "Low", "VeryLow", "SystemActivity"
+      name: severity
       predefined:
       - VeryHigh
       - High
@@ -134,15 +133,14 @@ script:
       - Low
       - VeryLow
       - SystemActivity
-      description: The minimum Attivo severity for the events, default is "Medium";
-        "VeryHigh", "High", "Medium", "Low", "VeryLow", "SystemActivity"
-      defaultValue: Medium
-    - name: alerts_start_date
-      description: Date and time to start looking for events, e.g.,  2018-12-10 or
+    - description: Date and time to start looking for events, e.g.,  2018-12-10 or
         2018-12-10T13:59:05Z
-    - name: alerts_end_date
-      description: Date and time to stop looking for events, e.g.,  2018-12-10 or
+      name: alerts_start_date
+    - description: Date and time to stop looking for events, e.g.,  2018-12-10 or
         2018-12-10T13:59:05Z
+      name: alerts_end_date
+    description: Retrieves events for a specified source IP
+    name: attivo-get-events
     outputs:
     - contextPath: Attivo.Events.Count
       description: Total number of events retrieved
@@ -176,17 +174,20 @@ script:
     - contextPath: Attivo.Events.List.Severity
       description: Attivo severity of the attack
       type: string
-    description: Retrieves events for a specified source IP
-  - name: attivo-list-playbooks
-    arguments: []
+  - arguments: []
     description: List information about playbooks configured on the Attivo device
-  - name: attivo-list-hosts
-    arguments: []
+    name: attivo-list-playbooks
+  - arguments: []
     description: List information about network decoys
-  - name: attivo-list-users
-    arguments: []
+    name: attivo-list-hosts
+  - arguments: []
     description: List all deceptive users
+    name: attivo-list-users
   isfetch: true
   runonce: false
+  script: ''
+  subtype: python2
+  type: python
 tests:
 - AttivoBotsinkTest
+toversion: 4.1.9

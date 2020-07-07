@@ -1,47 +1,29 @@
+args:
+- description: Path in the context
+  name: path
+- default: true
+  description: Value to search
+  name: value
+  required: true
+comment: This script searches for a value in a context path.
 commonfields:
   id: ContextContains
   version: -1
+enabled: true
 name: ContextContains
-script: |
-  def search(context, path, value):
-      '''
-      searches a value in a context path.
-      @param context - context tree to search in
-      @param path - a path to search in the context
-      @value - value to search
-      '''
-
-      if isinstance(context, dict):
-          if len(path) > 0 and path[0] in context:
-              return search(context[path[0]], path[1:], value)
-          else:
-              return False
-      elif isinstance(context, list):
-          # in case current context has multiple objects, search them all.
-          return any([search(c, path, value) for c in context])
-      else:
-          # if we got to a leaf in the context
-          return len(path) == 0 and context == value
-
-  path = demisto.args().get(u'path', u'')
-  value = demisto.args().get(u'value')
-
-  results = {
-      True : 'yes',
-      False : 'no',
-  }
-
-  demisto.results(results[search(demisto.context(), path.split('.'), value)])
-type: python
+script: "def search(context, path, value):\n    '''\n    searches a value in a context\
+  \ path.\n    @param context - context tree to search in\n    @param path - a path\
+  \ to search in the context\n    @value - value to search\n    '''\n\n    if isinstance(context,\
+  \ dict):\n        if len(path) > 0 and path[0] in context:\n            return search(context[path[0]],\
+  \ path[1:], value)\n        else:\n            return False\n    elif isinstance(context,\
+  \ list):\n        # in case current context has multiple objects, search them all.\n\
+  \        return any([search(c, path, value) for c in context])\n    else:\n    \
+  \    # if we got to a leaf in the context\n        return len(path) == 0 and context\
+  \ == value\n\npath = demisto.args().get(u'path', u'')\nvalue = demisto.args().get(u'value')\n\
+  \nresults = {\n    True : 'yes',\n    False : 'no',\n}\n\ndemisto.results(results[search(demisto.context(),\
+  \ path.split('.'), value)])\n"
+scripttarget: 0
 subtype: python2
 tags: []
-comment: "This script searches for a value in a context path."
-enabled: true
-args:
-- name: path
-  description: Path in the context
-- name: value
-  required: true
-  default: true
-  description: Value to search
-scripttarget: 0
+toversion: 4.1.9
+type: python

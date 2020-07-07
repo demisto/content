@@ -32,7 +32,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Uses the Have I Been Pwned? service to check whether email addresses, domains, or usernames were compromised in previous breaches.
+description: Uses the Have I Been Pwned? service to check whether email addresses,
+  domains, or usernames were compromised in previous breaches.
 display: Have I Been Pwned? v2
 name: Have I Been Pwned? V2
 script:
@@ -237,3 +238,4 @@ script:
   type: python
 tests:
 - Pwned v2 test
+toversion: 4.1.9

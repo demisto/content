@@ -1,346 +1,95 @@
 id: Jira-Test
-version: -1
+inputs: []
 name: Jira-Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 866194e1-a181-4860-89c3-12c399906661
-    type: start
-    task:
-      id: 866194e1-a181-4860-89c3-12c399906661
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: 3c58da08-7839-4473-8319-bf44ec6db001
-    type: regular
-    task:
-      id: 3c58da08-7839-4473-8319-bf44ec6db001
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 866194e1-a181-4860-89c3-12c399906661
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 866194e1-a181-4860-89c3-12c399906661
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       key: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 1b267d2e-ce51-4d14-8248-fd63c504da3f
-    type: regular
     task:
-      id: 1b267d2e-ce51-4d14-8248-fd63c504da3f
-      version: -1
-      name: jira-create-issue
-      description: Create a new issue on Jira
-      script: '|||jira-create-issue'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      assignee: {}
-      description:
-        simple: '"delete - this is test"'
-      dueDate: {}
-      issueJson: {}
-      issueTypeId:
-        simple: "10001"
-      issueTypeName:
-        simple: Incident
-      labels: {}
-      parentIssueId: {}
-      parentIssueKey: {}
-      priority: {}
-      projectKey:
-        simple: DEM
-      projectName: {}
-      reporter: {}
-      summary:
-        simple: '"jira playbook test - delete"'
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: de36e03d-39df-47f0-8770-3814fb47309d
-    type: regular
-    task:
-      id: de36e03d-39df-47f0-8770-3814fb47309d
-      version: -1
-      name: jira-get-issue
-      description: Fetch issue from Jira
-      script: '|||jira-get-issue'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      expandLinks:
-        simple: "true"
-      getAttachments: {}
-      headers: {}
-      issueId:
-        simple: ${Ticket.Id}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: adae51f9-aa32-4b00-81d6-0697df495494
-    type: condition
-    task:
-      id: adae51f9-aa32-4b00-81d6-0697df495494
-      version: -1
-      name: VerifyContextFields
-      type: condition
+      brand: ''
+      description: Delete field from context
+      id: 3c58da08-7839-4473-8319-bf44ec6db001
       iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "5"
-    separatecontext: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 3c58da08-7839-4473-8319-bf44ec6db001
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '11':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: Ticket
                 accessor: Creator
+                root: Ticket
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               complex:
-                root: Ticket
-                accessor: Id
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 41323a15-5d9c-4cf3-8b2f-606f9691cfb1
-    type: regular
-    task:
-      id: 41323a15-5d9c-4cf3-8b2f-606f9691cfb1
-      version: -1
-      name: jira-issue-add-comment
-      description: Add new comment to existing Jira issue
-      script: '|||jira-issue-add-comment'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      comment:
-        simple: Test Comment
-      issueId:
-        simple: ${Ticket.Id}
-      visibility: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: ef7eb477-7bc8-4da5-8ea0-e56a35b33386
-    type: regular
-    task:
-      id: ef7eb477-7bc8-4da5-8ea0-e56a35b33386
-      version: -1
-      name: jira-issue-add-link
-      description: Creates (or updates) issue link
-      script: '|||jira-issue-add-link'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "13"
-    scriptarguments:
-      globalId: {}
-      issueId:
-        simple: ${Ticket.Id}
-      relationship: {}
-      summary: {}
-      title:
-        simple: Demisto
-      url:
-        simple: http://www.demisto.com
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "9":
-    id: "9"
-    taskid: 9f28722d-9a90-4567-83a6-981df7a5d32e
-    type: regular
-    task:
-      id: 9f28722d-9a90-4567-83a6-981df7a5d32e
-      version: -1
-      name: jira-issue-upload-file
-      description: Upload a file attachments to an issue
-      script: '|||jira-issue-upload-file'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      issueId:
-        simple: ${Ticket.Id}
-      upload:
-        simple: ${File.EntryID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "11":
-    id: "11"
-    taskid: 44e29318-8db9-4ccb-834d-fb6c68a15c13
-    type: condition
-    task:
-      id: 44e29318-8db9-4ccb-834d-fb6c68a15c13
-      version: -1
-      name: VerifyContextFields
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "14"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: Ticket
-                accessor: Creator
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: Ticket
                 accessor: Status
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
+                root: Ticket
+          operator: isExists
+      label: 'yes'
+    id: '11'
     ignoreworker: false
-  "12":
-    id: "12"
-    taskid: 8593a6f2-f2c0-418b-833c-a9b6c13b86af
-    type: regular
+    nexttasks:
+      'yes':
+      - '14'
+    note: false
+    separatecontext: false
     task:
-      id: 8593a6f2-f2c0-418b-833c-a9b6c13b86af
+      brand: ''
+      id: 44e29318-8db9-4ccb-834d-fb6c68a15c13
+      iscommand: false
+      name: VerifyContextFields
+      type: condition
       version: -1
-      name: jira-issue-query
-      description: Query Jira issues
-      script: '|||jira-issue-query'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: 44e29318-8db9-4ccb-834d-fb6c68a15c13
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1770\n  }\n}"
+  '12':
+    id: '12'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
+    note: false
     scriptarguments:
       headers: {}
       maxResults: {}
@@ -348,64 +97,55 @@ tasks:
         simple: id = ${Ticket.[0].Id}
       startAt: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "13":
-    id: "13"
-    taskid: 94503749-9577-49e0-843c-f1ec13b3e38f
-    type: regular
     task:
-      id: 94503749-9577-49e0-843c-f1ec13b3e38f
-      version: -1
-      name: FileCreateAndUpload
-      description: |
-        Will create a file(using the given data input) and upload it to current investigation war room.
-      scriptName: FileCreateAndUpload
+      brand: ''
+      description: Query Jira issues
+      id: 8593a6f2-f2c0-418b-833c-a9b6c13b86af
+      iscommand: true
+      name: jira-issue-query
+      script: '|||jira-issue-query'
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 8593a6f2-f2c0-418b-833c-a9b6c13b86af
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1595\n  }\n}"
+  '13':
+    id: '13'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
+    note: false
     scriptarguments:
       data:
         simple: Hello Demisto
       filename:
         simple: Ho
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "14":
-    id: "14"
-    taskid: b64bfaf1-2688-4b84-8e40-12f88afda0dd
-    type: regular
     task:
-      id: b64bfaf1-2688-4b84-8e40-12f88afda0dd
-      version: -1
-      name: jira-edit-issue
-      script: '|||jira-edit-issue'
+      brand: ''
+      description: 'Will create a file(using the given data input) and upload it to
+        current investigation war room.
+
+        '
+      id: 94503749-9577-49e0-843c-f1ec13b3e38f
+      iscommand: false
+      name: FileCreateAndUpload
+      scriptName: FileCreateAndUpload
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: 94503749-9577-49e0-843c-f1ec13b3e38f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+  '14':
+    id: '14'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
+    note: false
     scriptarguments:
       assignee: {}
       description: {}
@@ -420,172 +160,183 @@ tasks:
       summary:
         simple: please delete this issue
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "18":
-    id: "18"
-    taskid: acab642c-cb9f-4dd1-864e-96b7d1e050b4
-    type: condition
     task:
-      id: acab642c-cb9f-4dd1-864e-96b7d1e050b4
+      brand: ''
+      id: b64bfaf1-2688-4b84-8e40-12f88afda0dd
+      iscommand: true
+      name: jira-edit-issue
+      script: '|||jira-edit-issue'
+      type: regular
       version: -1
-      name: VerifyContext - Summary&Status
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "25"
-    separatecontext: false
+    taskid: b64bfaf1-2688-4b84-8e40-12f88afda0dd
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1945\n  }\n}"
+  '18':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: Ticket
                 accessor: Summary
-            iscontext: true
+                root: Ticket
+          operator: isEqualString
           right:
             value:
               simple: please delete this issue
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: Ticket
                 accessor: Status
-            iscontext: true
+                root: Ticket
+          operator: isEqualString
           right:
             value:
               simple: Done
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2120
-        }
-      }
-    note: false
-    timertriggers: []
+      label: 'yes'
+    id: '18'
     ignoreworker: false
-  "22":
-    id: "22"
-    taskid: 178e2167-e603-4868-8920-20489b8227e4
-    type: regular
+    nexttasks:
+      'yes':
+      - '25'
+    note: false
+    separatecontext: false
     task:
-      id: 178e2167-e603-4868-8920-20489b8227e4
+      brand: ''
+      id: acab642c-cb9f-4dd1-864e-96b7d1e050b4
+      iscommand: false
+      name: VerifyContext - Summary&Status
+      type: condition
       version: -1
-      name: jira-get-comments
-      script: '|||jira-get-comments'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: acab642c-cb9f-4dd1-864e-96b7d1e050b4
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2120\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "23"
+      - '3'
+    note: false
+    scriptarguments:
+      assignee: {}
+      description:
+        simple: '"delete - this is test"'
+      dueDate: {}
+      issueJson: {}
+      issueTypeId:
+        simple: '10001'
+      issueTypeName:
+        simple: Incident
+      labels: {}
+      parentIssueId: {}
+      parentIssueKey: {}
+      priority: {}
+      projectKey:
+        simple: DEM
+      projectName: {}
+      reporter: {}
+      summary:
+        simple: '"jira playbook test - delete"'
+    separatecontext: false
+    task:
+      brand: ''
+      description: Create a new issue on Jira
+      id: 1b267d2e-ce51-4d14-8248-fd63c504da3f
+      iscommand: true
+      name: jira-create-issue
+      script: '|||jira-create-issue'
+      type: regular
+      version: -1
+    taskid: 1b267d2e-ce51-4d14-8248-fd63c504da3f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '22':
+    id: '22'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '23'
+    note: false
     scriptarguments:
       issueId:
         simple: ${Ticket.Id}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "23":
-    id: "23"
-    taskid: 06dc839a-80f7-4c4c-8a1b-796653d56a93
-    type: condition
     task:
-      id: 06dc839a-80f7-4c4c-8a1b-796653d56a93
+      brand: ''
+      id: 178e2167-e603-4868-8920-20489b8227e4
+      iscommand: true
+      name: jira-get-comments
+      script: '|||jira-get-comments'
+      type: regular
       version: -1
-      name: VerifyContext - comment
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "24"
-    separatecontext: false
+    taskid: 178e2167-e603-4868-8920-20489b8227e4
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2470\n  }\n}"
+  '23':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: Ticket
                 accessor: Comment.Comment
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2645
-        }
-      }
-    note: false
-    timertriggers: []
+                root: Ticket
+          operator: isExists
+      label: 'yes'
+    id: '23'
     ignoreworker: false
-  "24":
-    id: "24"
-    taskid: de947b49-a588-4983-8176-b3677c8575cd
-    type: regular
+    nexttasks:
+      'yes':
+      - '24'
+    note: false
+    separatecontext: false
     task:
-      id: de947b49-a588-4983-8176-b3677c8575cd
+      brand: ''
+      id: 06dc839a-80f7-4c4c-8a1b-796653d56a93
+      iscommand: false
+      name: VerifyContext - comment
+      type: condition
       version: -1
-      name: delete-issue
-      script: '|||jira-delete-issue'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: 06dc839a-80f7-4c4c-8a1b-796653d56a93
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2645\n  }\n}"
+  '24':
+    id: '24'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "26"
+      - '26'
+    note: false
     scriptarguments:
       issueIdOrKey:
         simple: ${Ticket.Id}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2820
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "25":
-    id: "25"
-    taskid: 0c7ebbec-bbc5-46cc-8de8-72c73f11ffe8
-    type: regular
     task:
-      id: 0c7ebbec-bbc5-46cc-8de8-72c73f11ffe8
-      version: -1
-      name: jira-get-issue with getAttachments
-      script: '|||jira-get-issue'
-      type: regular
+      brand: ''
+      id: de947b49-a588-4983-8176-b3677c8575cd
       iscommand: true
-      brand: ""
+      name: delete-issue
+      script: '|||jira-delete-issue'
+      type: regular
+      version: -1
+    taskid: de947b49-a588-4983-8176-b3677c8575cd
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2820\n  }\n}"
+  '25':
+    id: '25'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "22"
+      - '22'
+    note: false
     scriptarguments:
       getAttachments:
         simple: '"true"'
@@ -593,49 +344,184 @@ tasks:
       issueId:
         simple: ${Ticket.[0].Id}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2295
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "26":
-    id: "26"
-    taskid: f54ce494-de4a-4783-80ff-734135872669
-    type: title
     task:
-      id: f54ce494-de4a-4783-80ff-734135872669
+      brand: ''
+      id: 0c7ebbec-bbc5-46cc-8de8-72c73f11ffe8
+      iscommand: true
+      name: jira-get-issue with getAttachments
+      script: '|||jira-get-issue'
+      type: regular
       version: -1
+    taskid: 0c7ebbec-bbc5-46cc-8de8-72c73f11ffe8
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2295\n  }\n}"
+  '26':
+    id: '26'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: f54ce494-de4a-4783-80ff-734135872669
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2995
-        }
-      }
-    note: false
+      version: -1
+    taskid: f54ce494-de4a-4783-80ff-734135872669
     timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2995\n  }\n}"
+  '3':
+    id: '3'
     ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 3010,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    scriptarguments:
+      expandLinks:
+        simple: 'true'
+      getAttachments: {}
+      headers: {}
+      issueId:
+        simple: ${Ticket.Id}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Fetch issue from Jira
+      id: de36e03d-39df-47f0-8770-3814fb47309d
+      iscommand: true
+      name: jira-get-issue
+      script: '|||jira-get-issue'
+      type: regular
+      version: -1
+    taskid: de36e03d-39df-47f0-8770-3814fb47309d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '4':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Creator
+                root: Ticket
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Id
+                root: Ticket
+          operator: isExists
+      label: 'yes'
+    id: '4'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '5'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: adae51f9-aa32-4b00-81d6-0697df495494
+      iscommand: false
+      name: VerifyContextFields
+      type: condition
+      version: -1
+    taskid: adae51f9-aa32-4b00-81d6-0697df495494
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    scriptarguments:
+      comment:
+        simple: Test Comment
+      issueId:
+        simple: ${Ticket.Id}
+      visibility: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Add new comment to existing Jira issue
+      id: 41323a15-5d9c-4cf3-8b2f-606f9691cfb1
+      iscommand: true
+      name: jira-issue-add-comment
+      script: '|||jira-issue-add-comment'
+      type: regular
+      version: -1
+    taskid: 41323a15-5d9c-4cf3-8b2f-606f9691cfb1
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '13'
+    note: false
+    scriptarguments:
+      globalId: {}
+      issueId:
+        simple: ${Ticket.Id}
+      relationship: {}
+      summary: {}
+      title:
+        simple: Demisto
+      url:
+        simple: http://www.demisto.com
+    separatecontext: false
+    task:
+      brand: ''
+      description: Creates (or updates) issue link
+      id: ef7eb477-7bc8-4da5-8ea0-e56a35b33386
+      iscommand: true
+      name: jira-issue-add-link
+      script: '|||jira-issue-add-link'
+      type: regular
+      version: -1
+    taskid: ef7eb477-7bc8-4da5-8ea0-e56a35b33386
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+  '9':
+    id: '9'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '12'
+    note: false
+    scriptarguments:
+      issueId:
+        simple: ${Ticket.Id}
+      upload:
+        simple: ${File.EntryID}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Upload a file attachments to an issue
+      id: 9f28722d-9a90-4567-83a6-981df7a5d32e
+      iscommand: true
+      name: jira-issue-upload-file
+      script: '|||jira-issue-upload-file'
+      type: regular
+      version: -1
+    taskid: 9f28722d-9a90-4567-83a6-981df7a5d32e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1420\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 3010,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

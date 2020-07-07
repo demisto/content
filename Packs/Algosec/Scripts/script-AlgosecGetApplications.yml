@@ -1,43 +1,36 @@
-commonfields:
-  id: AlgosecGetApplications
-  version: -1
-name: AlgosecGetApplications
-script: |2
-
-  resp = demisto.executeCommand("algosec-get-applications", demisto.args())
-
-  if isError(resp[0]):
-      demisto.results(resp)
-  else:
-      data = [demisto.get(x, "Contents") for x in resp]
-      if data:
-          data = data if isinstance(data, list) else [data]
-          data = flattenTable(data)
-          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
-      else:
-          demisto.results("No results.")
-type: python
-subtype: python2
-tags:
-- Algosec
-comment: Find applications containing network objects related to IP address using
-  BusinessFlow
-system: true
 args:
-- name: address
-  required: true
-  default: true
+- default: true
   description: The IP/Subnet to search
-- name: type
-  auto: PREDEFINED
+  name: address
+  required: true
+- auto: PREDEFINED
+  description: The search method for the address
+  name: type
   predefined:
   - INTERSECT
   - CONTAINED
   - CONTAINING
   - EXACT
-  description: The search method for the address
-scripttarget: 0
-timeout: 0s
+comment: Find applications containing network objects related to IP address using
+  BusinessFlow
+commonfields:
+  id: AlgosecGetApplications
+  version: -1
 dependson:
   must:
   - algosec-get-applications
+name: AlgosecGetApplications
+script: "\nresp = demisto.executeCommand(\"algosec-get-applications\", demisto.args())\n\
+  \nif isError(resp[0]):\n    demisto.results(resp)\nelse:\n    data = [demisto.get(x,\
+  \ \"Contents\") for x in resp]\n    if data:\n        data = data if isinstance(data,\
+  \ list) else [data]\n        data = flattenTable(data)\n        demisto.results({\"\
+  ContentsFormat\": formats[\"table\"], \"Type\": entryTypes[\"note\"], \"Contents\"\
+  : data} )\n    else:\n        demisto.results(\"No results.\")\n"
+scripttarget: 0
+subtype: python2
+system: true
+tags:
+- Algosec
+timeout: 0s
+toversion: 4.1.9
+type: python

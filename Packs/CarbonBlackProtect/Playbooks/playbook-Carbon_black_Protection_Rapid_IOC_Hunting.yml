@@ -1,218 +1,171 @@
-id: playbook17
-fromversion: 2.5.0
-system: true
-version: -1
-name: Carbon black Protection Rapid IOC Hunting
 description: Hunt for endpoint activity involving hash and domain IOCs, using Carbon
   black Protection (Bit9).
-starttaskid: "0"
+fromversion: 2.5.0
+id: playbook17
+inputs: []
+name: Carbon black Protection Rapid IOC Hunting
+outputs: []
+starttaskid: '0'
+system: true
 tasks:
-  "0":
-    id: "0"
-    taskid: a68f66e4-9f00-4be5-82d5-66a604a8e127
-    type: start
+  '0':
+    id: '0'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '10'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
+      brand: ''
+      description: ''
       id: a68f66e4-9f00-4be5-82d5-66a604a8e127
-      version: -1
-      description: ""
+      iscommand: false
       name: start_task
       type: start
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "10"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "8":
-    id: "8"
-    taskid: ee3ec982-b1ea-4c96-81d6-6b1ea068cfb4
-    type: regular
-    task:
-      id: ee3ec982-b1ea-4c96-81d6-6b1ea068cfb4
       version: -1
-      name: Search observed hashes in the Bit9 file catalog
-      description: Searching The Bit9 file catalog for the hashes
-      scriptName: CBPCatalogFindHash
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      md5:
-        simple: ${File.MD5}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 572
-        }
-      }
-    note: false
+    taskid: a68f66e4-9f00-4be5-82d5-66a604a8e127
     timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '10':
+    id: '10'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "9":
-    id: "9"
-    taskid: 0f461a0b-6e31-4537-8b10-564d6c2e0dfa
-    type: regular
-    task:
-      id: 0f461a0b-6e31-4537-8b10-564d6c2e0dfa
-      version: -1
-      name: Check if the hashes are included in any Bit9 rules
-      description: If the hashes have been approved or blocked in the past, they will
-        be in existing rules. It is useful to see whether the hash was in some blacklist
-        or whitelist or a person marked them as such, possibly with a comment explaining
-        their reasons.
-      scriptName: CBPFindRule
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      hash:
-        simple: ${File.MD5}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 734
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "10":
-    id: "10"
-    taskid: ec572e1b-78cf-4daf-8185-688d7b04041b
-    type: condition
-    task:
-      id: ec572e1b-78cf-4daf-8185-688d7b04041b
-      version: -1
-      name: Is CarbonBlack Protection v2 enabled?
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
-      scriptName: Exists
-      type: condition
-      iscommand: false
-      brand: ""
     nexttasks:
       '#default#':
-      - "11"
-      "yes":
-      - "12"
+      - '11'
+      'yes':
+      - '12'
+    note: false
+    quietmode: 0
     scriptarguments:
       value:
         simple: ${modules(val.brand == 'CarbonBlackProtectionV2' && val.state == 'active')}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "11":
-    id: "11"
-    taskid: b403c310-7926-4e04-8c81-ce7a9defb5c4
-    type: title
     task:
-      id: b403c310-7926-4e04-8c81-ce7a9defb5c4
-      version: -1
-      name: Done
-      description: Done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 902
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "12":
-    id: "12"
-    taskid: 71e0a3f7-355e-41b2-8623-b6a606e9e79f
-    type: condition
-    task:
-      id: 71e0a3f7-355e-41b2-8623-b6a606e9e79f
-      version: -1
-      name: Do we have files to hunt?
+      brand: ''
       description: Check if a given value exists in the context. Will return 'no'
         for empty empty arrays. To be used mostly with DQ and selectors.
+      id: ec572e1b-78cf-4daf-8185-688d7b04041b
+      iscommand: false
+      name: Is CarbonBlack Protection v2 enabled?
       scriptName: Exists
       type: condition
+      version: -1
+    taskid: ec572e1b-78cf-4daf-8185-688d7b04041b
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '11':
+    id: '11'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Done
+      id: b403c310-7926-4e04-8c81-ce7a9defb5c4
       iscommand: false
-      brand: ""
+      name: Done
+      type: title
+      version: -1
+    taskid: b403c310-7926-4e04-8c81-ce7a9defb5c4
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 902\n  }\n}"
+  '12':
+    id: '12'
+    ignoreworker: false
     nexttasks:
       '#default#':
-      - "11"
-      "yes":
-      - "8"
+      - '11'
+      'yes':
+      - '8'
+    note: false
+    quietmode: 0
     scriptarguments:
       value:
         simple: ${File.MD5}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 382
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
+    task:
+      brand: ''
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: 71e0a3f7-355e-41b2-8623-b6a606e9e79f
+      iscommand: false
+      name: Do we have files to hunt?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: 71e0a3f7-355e-41b2-8623-b6a606e9e79f
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 382\n  }\n}"
+  '8':
+    id: '8'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
     quietmode: 0
-view: |-
-  {
-    "linkLabelsPosition": {
-      "10_11_#default#": 0.36,
-      "12_11_#default#": 0.16
-    },
-    "paper": {
-      "dimensions": {
-        "height": 917,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    scriptarguments:
+      md5:
+        simple: ${File.MD5}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Searching The Bit9 file catalog for the hashes
+      id: ee3ec982-b1ea-4c96-81d6-6b1ea068cfb4
+      iscommand: false
+      name: Search observed hashes in the Bit9 file catalog
+      scriptName: CBPCatalogFindHash
+      type: regular
+      version: -1
+    taskid: ee3ec982-b1ea-4c96-81d6-6b1ea068cfb4
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 572\n  }\n}"
+  '9':
+    id: '9'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '11'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      hash:
+        simple: ${File.MD5}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: If the hashes have been approved or blocked in the past, they will
+        be in existing rules. It is useful to see whether the hash was in some blacklist
+        or whitelist or a person marked them as such, possibly with a comment explaining
+        their reasons.
+      id: 0f461a0b-6e31-4537-8b10-564d6c2e0dfa
+      iscommand: false
+      name: Check if the hashes are included in any Bit9 rules
+      scriptName: CBPFindRule
+      type: regular
+      version: -1
+    taskid: 0f461a0b-6e31-4537-8b10-564d6c2e0dfa
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 734\n  }\n}"
 tests:
-  - no test
+- no test
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"10_11_#default#\": 0.36,\n    \"12_11_#default#\"\
+  : 0.16\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 917,\n  \
+  \    \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n    }\n  }\n}"

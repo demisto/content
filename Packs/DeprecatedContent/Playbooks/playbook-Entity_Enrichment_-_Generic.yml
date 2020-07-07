@@ -1,343 +1,57 @@
-id: entity_enrichment_generic
-version: -1
-name: Entity Enrichment - Generic
-fromversion: 3.6.0
 description: Enrich entities using one or more integrations
-starttaskid: "0"
-tasks:
-  "0":
-    id: "0"
-    taskid: cdd6228a-7feb-4386-8ab1-7dfdf77d99c2
-    type: start
-    task:
-      id: cdd6228a-7feb-4386-8ab1-7dfdf77d99c2
-      version: -1
-      name: ""
-      description: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-      - "1"
-      - "9"
-      - "10"
-      - "12"
-      - "11"
-      - "13"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 67
-        }
-      }
-  "1":
-    id: "1"
-    taskid: 92a63802-d111-4add-8e92-03f485d20bab
-    type: playbook
-    task:
-      id: 92a63802-d111-4add-8e92-03f485d20bab
-      version: -1
-      name: IP Enrichment - Generic
-      description: Enrich IP using one or more integrations
-      playbookName: IP Enrichment - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      IP:
-        simple: ${inputs.IP}
-      InternalRange: {}
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 225
-        }
-      }
-  "2":
-    id: "2"
-    taskid: 427040f6-9903-4122-8537-bd72d6fcdab2
-    type: playbook
-    task:
-      id: 427040f6-9903-4122-8537-bd72d6fcdab2
-      version: -1
-      name: URL Enrichment - Generic
-      description: Enrich URL using one or more integrations
-      playbookName: URL Enrichment - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      url:
-        simple: ${inputs.url}
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 386
-        }
-      }
-  "9":
-    id: "9"
-    taskid: 7ea079dc-c904-4088-878d-908e7b5b1ab3
-    type: playbook
-    task:
-      id: 7ea079dc-c904-4088-878d-908e7b5b1ab3
-      version: -1
-      name: Email Address Enrichment - Generic
-      description: Get email address reputation using one or more integrations
-      playbookName: Email Address Enrichment - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      Domain: {}
-      Email:
-        simple: ${inputs.Email}
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 386
-        }
-      }
-  "10":
-    id: "10"
-    taskid: 06158760-6f5f-466e-8e57-d37f7ec29066
-    type: playbook
-    task:
-      id: 06158760-6f5f-466e-8e57-d37f7ec29066
-      version: -1
-      name: Endpoint Enrichment - Generic
-      description: Enrich an Endpoint Hostname using one or more integrations
-      playbookName: Endpoint Enrichment - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      Hostname:
-        simple: ${inputs.Hostname}
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 545
-        }
-      }
-  "11":
-    id: "11"
-    taskid: 5799a021-f77c-457b-85bc-e362b7ff4b43
-    type: playbook
-    task:
-      id: 5799a021-f77c-457b-85bc-e362b7ff4b43
-      version: -1
-      name: Domain Enrichment - Generic
-      description: Enrich Domain using one or more integrations
-      playbookName: Domain Enrichment - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      Domain:
-        simple: ${inputs.Domain}
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 709
-        }
-      }
-  "12":
-    id: "12"
-    taskid: f9ef04ef-5311-4cd3-8c5e-eff47f95b3d3
-    type: playbook
-    task:
-      id: f9ef04ef-5311-4cd3-8c5e-eff47f95b3d3
-      version: -1
-      name: Account Enrichment - Generic
-      description: Enrich Accounts using one or more integrations
-      playbookName: Account Enrichment - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      Username:
-        simple: ${inputs.Username}
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-  "13":
-    id: "13"
-    taskid: 07d8b6e7-df26-4c17-80f0-e8bd093720e0
-    type: playbook
-    task:
-      id: 07d8b6e7-df26-4c17-80f0-e8bd093720e0
-      version: -1
-      name: File Enrichment - Generic
-      description: Get file reputation using one or more integrations
-      playbookName: File Enrichment - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      MD5:
-        simple: ${inputs.MD5}
-      SHA1:
-        simple: ${inputs.SHA1}
-      SHA256:
-        simple: ${inputs.SHA256}
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 225
-        }
-      }
-  "15":
-    id: "15"
-    taskid: 38007764-1687-47b1-8490-0f3cded9dc95
-    type: title
-    task:
-      id: 38007764-1687-47b1-8490-0f3cded9dc95
-      version: -1
-      name: Done
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 881
-        }
-      }
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 879,
-        "width": 810,
-        "x": 50,
-        "y": 67
-      }
-    }
-  }
+fromversion: 3.6.0
+id: entity_enrichment_generic
 inputs:
-- key: IP
+- description: The IP addresses to enrich
+  key: IP
+  required: false
   value:
     simple: ${IP.Address}
+- description: The internal range to check against the IPs
+  key: InternalRange
   required: false
-  description: The IP addresses to enrich
-- key: InternalRange
   value: {}
+- description: File MD5 to enrich
+  key: MD5
   required: false
-  description: The internal range to check against the IPs
-- key: MD5
   value:
     simple: ${File.MD5}
+- description: File SHA256 to enrich
+  key: SHA256
   required: false
-  description: File MD5 to enrich
-- key: SHA256
   value:
     simple: ${File.SHA256}
+- description: File SHA1 to enrich
+  key: SHA1
   required: false
-  description: File SHA256 to enrich
-- key: SHA1
   value:
     simple: ${File.SHA1}
+- description: url to enrich
+  key: url
   required: false
-  description: File SHA1 to enrich
-- key: url
   value:
     simple: ${URL.Data}
+- description: The email addresses to enrich
+  key: Email
   required: false
-  description: url to enrich
-- key: Email
   value:
     simple: ${Account.Email.Address}
+- description: The hostname to enrich
+  key: Hostname
   required: false
-  description: The email addresses to enrich
-- key: Hostname
   value:
     simple: ${Endpoint.Hostname}
+- description: The Username to enrich
+  key: Username
   required: false
-  description: The hostname to enrich
-- key: Username
   value:
     simple: ${Account.Username}
+- description: The domain name to enrich
+  key: Domain
   required: false
-  description: The Username to enrich
-- key: Domain
   value:
     simple: ${Domain.Name}
-  required: false
-  description: The domain name to enrich
+name: Entity Enrichment - Generic
 outputs:
 - contextPath: Account
   description: The Account's object
@@ -447,5 +161,229 @@ outputs:
 - contextPath: DBotScore.Score
   description: The DBot score
   type: number
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    nexttasks:
+      '#none#':
+      - '2'
+      - '1'
+      - '9'
+      - '10'
+      - '12'
+      - '11'
+      - '13'
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: cdd6228a-7feb-4386-8ab1-7dfdf77d99c2
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: cdd6228a-7feb-4386-8ab1-7dfdf77d99c2
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 67\n  }\n}"
+  '1':
+    id: '1'
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      IP:
+        simple: ${inputs.IP}
+      InternalRange: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Enrich IP using one or more integrations
+      id: 92a63802-d111-4add-8e92-03f485d20bab
+      iscommand: false
+      name: IP Enrichment - Generic
+      playbookName: IP Enrichment - Generic
+      type: playbook
+      version: -1
+    taskid: 92a63802-d111-4add-8e92-03f485d20bab
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 225\n  }\n}"
+  '10':
+    id: '10'
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      Hostname:
+        simple: ${inputs.Hostname}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Enrich an Endpoint Hostname using one or more integrations
+      id: 06158760-6f5f-466e-8e57-d37f7ec29066
+      iscommand: false
+      name: Endpoint Enrichment - Generic
+      playbookName: Endpoint Enrichment - Generic
+      type: playbook
+      version: -1
+    taskid: 06158760-6f5f-466e-8e57-d37f7ec29066
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 545\n  }\n}"
+  '11':
+    id: '11'
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      Domain:
+        simple: ${inputs.Domain}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Enrich Domain using one or more integrations
+      id: 5799a021-f77c-457b-85bc-e362b7ff4b43
+      iscommand: false
+      name: Domain Enrichment - Generic
+      playbookName: Domain Enrichment - Generic
+      type: playbook
+      version: -1
+    taskid: 5799a021-f77c-457b-85bc-e362b7ff4b43
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 709\n  }\n}"
+  '12':
+    id: '12'
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      Username:
+        simple: ${inputs.Username}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Enrich Accounts using one or more integrations
+      id: f9ef04ef-5311-4cd3-8c5e-eff47f95b3d3
+      iscommand: false
+      name: Account Enrichment - Generic
+      playbookName: Account Enrichment - Generic
+      type: playbook
+      version: -1
+    taskid: f9ef04ef-5311-4cd3-8c5e-eff47f95b3d3
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '13':
+    id: '13'
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      MD5:
+        simple: ${inputs.MD5}
+      SHA1:
+        simple: ${inputs.SHA1}
+      SHA256:
+        simple: ${inputs.SHA256}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Get file reputation using one or more integrations
+      id: 07d8b6e7-df26-4c17-80f0-e8bd093720e0
+      iscommand: false
+      name: File Enrichment - Generic
+      playbookName: File Enrichment - Generic
+      type: playbook
+      version: -1
+    taskid: 07d8b6e7-df26-4c17-80f0-e8bd093720e0
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 225\n  }\n}"
+  '15':
+    id: '15'
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 38007764-1687-47b1-8490-0f3cded9dc95
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 38007764-1687-47b1-8490-0f3cded9dc95
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 881\n  }\n}"
+  '2':
+    id: '2'
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      url:
+        simple: ${inputs.url}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Enrich URL using one or more integrations
+      id: 427040f6-9903-4122-8537-bd72d6fcdab2
+      iscommand: false
+      name: URL Enrichment - Generic
+      playbookName: URL Enrichment - Generic
+      type: playbook
+      version: -1
+    taskid: 427040f6-9903-4122-8537-bd72d6fcdab2
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 386\n  }\n}"
+  '9':
+    id: '9'
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      Domain: {}
+      Email:
+        simple: ${inputs.Email}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Get email address reputation using one or more integrations
+      id: 7ea079dc-c904-4088-878d-908e7b5b1ab3
+      iscommand: false
+      name: Email Address Enrichment - Generic
+      playbookName: Email Address Enrichment - Generic
+      type: playbook
+      version: -1
+    taskid: 7ea079dc-c904-4088-878d-908e7b5b1ab3
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 386\n  }\n}"
 tests:
-  - no test - each enrichment sub-playbook has or will have its own test
+- no test - each enrichment sub-playbook has or will have its own test
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 879,\n      \"width\": 810,\n      \"x\": 50,\n      \"y\": 67\n\
+  \    }\n  }\n}"

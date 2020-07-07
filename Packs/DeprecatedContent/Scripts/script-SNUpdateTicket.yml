@@ -1,57 +1,49 @@
+args:
+- default: true
+  description: Ticket new category
+  name: category
+- description: Ticket new sub category
+  name: subcategory
+- description: Ticket new short description
+  name: shortdescription
+- description: Ticket new comments
+  name: comments
+- description: Ticket new assignment group
+  name: assignmentgroup
+- description: ID of the Ticket/Incident in ServiceNow
+  name: id
+  required: true
+comment: Update a ServiceNow ticket.
 commonfields:
   id: SNUpdateTicket
   version: -1
-name: SNUpdateTicket
-script: |-
-  DISPLAY_FIELDS = ['number', 'severity', 'category', 'opened_at', 'subcategory', 'priority', 'comments', 'short_description']
-  res = []
-  dArgs = demisto.args()
-  if 'assignmentgroup' in dArgs:
-      dArgs['assignment-group'] = dArgs.pop('assignmentgroup')
-  if 'shortdescription' in dArgs:
-      dArgs['short-description'] = dArgs.pop('shortdescription')
-  resCmdName = demisto.executeCommand("servicenow-incident-update", dArgs)
-  try:
-      for entry in resCmdName:
-          if isError(entry):
-              res = resCmdName
-              break
-          else:
-              myData = demisto.get(entry, 'Contents.result')
-              if myData:
-                  myData = {k: formatCell(myData[k]) for k in DISPLAY_FIELDS}
-                  res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": myData})
-              else:
-                  res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                              "Contents": "Could not extract result list from response: " + json.dumps(entry["Contents"])})
-  except Exception as ex:
-      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                  "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmdName)})
-  demisto.results(res)
-type: python
-subtype: python2
-tags:
-- servicenow
-comment: "Update a ServiceNow ticket."
-system: true
-deprecated: true
-args:
-- name: category
-  default: true
-  description: Ticket new category
-- name: subcategory
-  description: Ticket new sub category
-- name: shortdescription
-  description: Ticket new short description
-- name: comments
-  description: Ticket new comments
-- name: assignmentgroup
-  description: Ticket new assignment group
-- name: id
-  required: true
-  description: ID of the Ticket/Incident in ServiceNow
-scripttarget: 0
 dependson:
   must:
   - servicenow-incident-update
+deprecated: true
+name: SNUpdateTicket
+script: "DISPLAY_FIELDS = ['number', 'severity', 'category', 'opened_at', 'subcategory',\
+  \ 'priority', 'comments', 'short_description']\nres = []\ndArgs = demisto.args()\n\
+  if 'assignmentgroup' in dArgs:\n    dArgs['assignment-group'] = dArgs.pop('assignmentgroup')\n\
+  if 'shortdescription' in dArgs:\n    dArgs['short-description'] = dArgs.pop('shortdescription')\n\
+  resCmdName = demisto.executeCommand(\"servicenow-incident-update\", dArgs)\ntry:\n\
+  \    for entry in resCmdName:\n        if isError(entry):\n            res = resCmdName\n\
+  \            break\n        else:\n            myData = demisto.get(entry, 'Contents.result')\n\
+  \            if myData:\n                myData = {k: formatCell(myData[k]) for\
+  \ k in DISPLAY_FIELDS}\n                res.append({\"Type\": entryTypes[\"note\"\
+  ], \"ContentsFormat\": formats[\"table\"], \"Contents\": myData})\n            else:\n\
+  \                res.append({\"Type\": entryTypes[\"error\"], \"ContentsFormat\"\
+  : formats[\"text\"],\n                            \"Contents\": \"Could not extract\
+  \ result list from response: \" + json.dumps(entry[\"Contents\"])})\nexcept Exception\
+  \ as ex:\n    res.append({\"Type\": entryTypes[\"error\"], \"ContentsFormat\": formats[\"\
+  text\"],\n                \"Contents\": \"Error occurred while parsing output from\
+  \ command. Exception info:\\n\" + str(ex) + \"\\n\\nInvalid output:\\n\" + str(resCmdName)})\n\
+  demisto.results(res)"
+scripttarget: 0
+subtype: python2
+system: true
+tags:
+- servicenow
 timeout: 0s
+toversion: 4.1.9
+type: python

@@ -1,51 +1,37 @@
-id: Digital Defense FrontlineVM - Test Playbook
-version: -1
-fromversion: 4.1.0
-name: Digital Defense FrontlineVM - Test Playbook
 description: This is a test playbook for the Digital Defense Inc. FrontlineVM Integration
+fromversion: 4.1.0
+id: Digital Defense FrontlineVM - Test Playbook
+inputs: []
+name: Digital Defense FrontlineVM - Test Playbook
+outputs: []
 starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: e86e43e0-38fd-4b62-84c4-f9d4dd6e0d4c
-    type: start
-    task:
-      id: e86e43e0-38fd-4b62-84c4-f9d4dd6e0d4c
-      version: -1
-      name: ''
-      iscommand: false
-      brand: ''
-      description: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - '1'
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 285,
-          "y": 50
-        }
-      }
     note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: e86e43e0-38fd-4b62-84c4-f9d4dd6e0d4c
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: e86e43e0-38fd-4b62-84c4-f9d4dd6e0d4c
     timertriggers: []
-    ignoreworker: false
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 285,\n    \"y\": 50\n  }\n}"
   '1':
     id: '1'
-    taskid: fe5cc8f6-95fd-4298-8032-a48d5d4f2a4f
-    type: regular
-    task:
-      id: fe5cc8f6-95fd-4298-8032-a48d5d4f2a4f
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - '2'
+    note: false
     scriptarguments:
       all:
         simple: 'yes'
@@ -54,32 +40,180 @@ tasks:
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 285,
-          "y": 195
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: fe5cc8f6-95fd-4298-8032-a48d5d4f2a4f
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: fe5cc8f6-95fd-4298-8032-a48d5d4f2a4f
     timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 285,\n    \"y\": 195\n  }\n}"
+  '10':
+    id: '10'
     ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: 8c0d4052-3680-4ebf-8d3e-0e21e4f56d52
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 8c0d4052-3680-4ebf-8d3e-0e21e4f56d52
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 172.5,\n    \"y\": 720\n  }\n}"
+  '11':
+    id: '11'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: 4dc1d943-fc4e-4a37-8f17-6bbc4027f656
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 4dc1d943-fc4e-4a37-8f17-6bbc4027f656
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 60,\n    \"y\": 1245\n  }\n}"
+  '12':
+    id: '12'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '13'
+    note: false
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: 290b29f0-1437-4273-83e7-4524410e7bd5
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 290b29f0-1437-4273-83e7-4524410e7bd5
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1770\n  }\n}"
+  '13':
+    id: '13'
+    ignoreworker: false
+    note: false
+    scriptarguments:
+      value:
+        simple: Test Playbook returned successful.
+    separatecontext: false
+    task:
+      brand: ''
+      description: Prints text to war room (Markdown supported)
+      id: 0980908a-2d95-4d1d-8048-2cb95cfef373
+      iscommand: false
+      name: Success
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: 0980908a-2d95-4d1d-8048-2cb95cfef373
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1945\n  }\n}"
+  '14':
+    id: '14'
+    ignoreworker: false
+    note: false
+    scriptarguments:
+      value:
+        simple: Unsuccessful results for verifying Digital Defense FrontlineVM commands.
+    separatecontext: false
+    task:
+      brand: ''
+      description: Prints text to war room (Markdown supported)
+      id: 82333f1a-e6e9-4e3c-874a-75cc6a4cc51e
+      iscommand: false
+      name: Unsuccessful
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: 82333f1a-e6e9-4e3c-874a-75cc6a4cc51e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 1945\n  }\n}"
+  '15':
+    id: '15'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '14'
+    note: false
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: df479bab-092e-4952-8960-8f96ec5f2ea6
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: df479bab-092e-4952-8960-8f96ec5f2ea6
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 1770\n  }\n}"
   '2':
     id: '2'
-    taskid: cbe23583-d37e-410f-849b-aa7935b3ea15
-    type: regular
-    task:
-      id: cbe23583-d37e-410f-849b-aa7935b3ea15
-      version: -1
-      name: frontline-get-assets (get asset that does not exists)
-      description: Pull asset that does not exists within Frontline.Cloud
-      script: '|||frontline-get-assets'
-      type: regular
-      iscommand: true
-      brand: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - '3'
+    note: false
     scriptarguments:
       hostname: {}
       ip_address:
@@ -87,69 +221,57 @@ tasks:
       label_name: {}
       max_days_since_scan: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 285,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '3':
-    id: '3'
-    taskid: 700f76bb-4e89-45c7-8c2e-c647457de847
-    type: condition
     task:
-      id: 700f76bb-4e89-45c7-8c2e-c647457de847
-      version: -1
-      name: Verify Command Results
-      description: Verify command results from task 'frontline-get-assets (get asset
-        that does not exits)'.
-      type: condition
-      iscommand: false
       brand: ''
+      description: Pull asset that does not exists within Frontline.Cloud
+      id: cbe23583-d37e-410f-849b-aa7935b3ea15
+      iscommand: true
+      name: frontline-get-assets (get asset that does not exists)
+      script: '|||frontline-get-assets'
+      type: regular
+      version: -1
+    taskid: cbe23583-d37e-410f-849b-aa7935b3ea15
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 285,\n    \"y\": 370\n  }\n}"
+  '3':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: FrontlineVM.Hosts
+          operator: isEmpty
+      label: 'yes'
+    id: '3'
+    ignoreworker: false
     nexttasks:
       '#default#':
       - '15'
       'yes':
       - '10'
-    separatecontext: false
-    conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isEmpty
-          left:
-            value:
-              simple: FrontlineVM.Hosts
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 285,
-          "y": 545
-        }
-      }
     note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Verify command results from task 'frontline-get-assets (get asset
+        that does not exits)'.
+      id: 700f76bb-4e89-45c7-8c2e-c647457de847
+      iscommand: false
+      name: Verify Command Results
+      type: condition
+      version: -1
+    taskid: 700f76bb-4e89-45c7-8c2e-c647457de847
     timertriggers: []
-    ignoreworker: false
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 285,\n    \"y\": 545\n  }\n}"
   '5':
     id: '5'
-    taskid: d54829e6-2845-483e-84e9-72bb8a8ec98e
-    type: regular
-    task:
-      id: d54829e6-2845-483e-84e9-72bb8a8ec98e
-      version: -1
-      name: frontline-get-vulns (get all vulnerabilities)
-      description: Pull all vulnerability data from Frontline.Cloud
-      script: '|||frontline-get-vulns'
-      type: regular
-      iscommand: true
-      brand: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - '6'
+    note: false
     scriptarguments:
       host_id: {}
       ip_address: {}
@@ -158,326 +280,109 @@ tasks:
       min_severity: {}
       severity: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 60,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '6':
-    id: '6'
-    taskid: 25732b98-143a-47a7-870a-415c1e936987
-    type: condition
     task:
-      id: 25732b98-143a-47a7-870a-415c1e936987
-      version: -1
-      name: Verify Command Results
-      description: Verify command results from task 'frontline-get-vulns'.
-      type: condition
-      iscommand: false
       brand: ''
+      description: Pull all vulnerability data from Frontline.Cloud
+      id: d54829e6-2845-483e-84e9-72bb8a8ec98e
+      iscommand: true
+      name: frontline-get-vulns (get all vulnerabilities)
+      script: '|||frontline-get-vulns'
+      type: regular
+      version: -1
+    taskid: d54829e6-2845-483e-84e9-72bb8a8ec98e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 60,\n    \"y\": 1420\n  }\n}"
+  '6':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: FrontlineVM.Vulns
+          operator: isNotEmpty
+      label: 'yes'
+    id: '6'
+    ignoreworker: false
     nexttasks:
       '#default#':
       - '15'
       'yes':
       - '12'
-    separatecontext: false
-    conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: FrontlineVM.Vulns
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 60,
-          "y": 1595
-        }
-      }
     note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Verify command results from task 'frontline-get-vulns'.
+      id: 25732b98-143a-47a7-870a-415c1e936987
+      iscommand: false
+      name: Verify Command Results
+      type: condition
+      version: -1
+    taskid: 25732b98-143a-47a7-870a-415c1e936987
     timertriggers: []
-    ignoreworker: false
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 60,\n    \"y\": 1595\n  }\n}"
   '8':
     id: '8'
-    taskid: 14336845-da8b-4536-8f76-e0276650b9a5
-    type: regular
-    task:
-      id: 14336845-da8b-4536-8f76-e0276650b9a5
-      version: -1
-      name: frontline-get-assets (get all assets)
-      description: Pull all asset data from Frontline.Cloud
-      script: '|||frontline-get-assets'
-      type: regular
-      iscommand: true
-      brand: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - '9'
+    note: false
     scriptarguments:
       hostname: {}
       ip_address: {}
       label_name: {}
       max_days_since_scan: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 172.5,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '9':
-    id: '9'
-    taskid: 2bcee246-a649-4dec-823b-e04f9e4cc884
-    type: condition
     task:
-      id: 2bcee246-a649-4dec-823b-e04f9e4cc884
-      version: -1
-      name: Verify Command Results
-      description: Verify command results from task 'frontline-get-assets (get all
-        assets)'.
-      type: condition
-      iscommand: false
       brand: ''
+      description: Pull all asset data from Frontline.Cloud
+      id: 14336845-da8b-4536-8f76-e0276650b9a5
+      iscommand: true
+      name: frontline-get-assets (get all assets)
+      script: '|||frontline-get-assets'
+      type: regular
+      version: -1
+    taskid: 14336845-da8b-4536-8f76-e0276650b9a5
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 172.5,\n    \"y\": 895\n  }\n}"
+  '9':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: FrontlineVM.Hosts
+          operator: isNotEmpty
+      label: 'yes'
+    id: '9'
+    ignoreworker: false
     nexttasks:
       '#default#':
       - '15'
       'yes':
       - '11'
-    separatecontext: false
-    conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: FrontlineVM.Hosts
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 172.5,
-          "y": 1070
-        }
-      }
     note: false
-    timertriggers: []
-    ignoreworker: false
-  '10':
-    id: '10'
-    taskid: 8c0d4052-3680-4ebf-8d3e-0e21e4f56d52
-    type: regular
+    separatecontext: false
     task:
-      id: 8c0d4052-3680-4ebf-8d3e-0e21e4f56d52
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
       brand: ''
-    nexttasks:
-      '#none#':
-      - '8'
-    scriptarguments:
-      all:
-        simple: 'yes'
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 172.5,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '11':
-    id: '11'
-    taskid: 4dc1d943-fc4e-4a37-8f17-6bbc4027f656
-    type: regular
-    task:
-      id: 4dc1d943-fc4e-4a37-8f17-6bbc4027f656
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
+      description: Verify command results from task 'frontline-get-assets (get all
+        assets)'.
+      id: 2bcee246-a649-4dec-823b-e04f9e4cc884
       iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '5'
-    scriptarguments:
-      all:
-        simple: 'yes'
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 60,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '12':
-    id: '12'
-    taskid: 290b29f0-1437-4273-83e7-4524410e7bd5
-    type: regular
-    task:
-      id: 290b29f0-1437-4273-83e7-4524410e7bd5
+      name: Verify Command Results
+      type: condition
       version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '13'
-    scriptarguments:
-      all:
-        simple: 'yes'
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1770
-        }
-      }
-    note: false
+    taskid: 2bcee246-a649-4dec-823b-e04f9e4cc884
     timertriggers: []
-    ignoreworker: false
-  '13':
-    id: '13'
-    taskid: 0980908a-2d95-4d1d-8048-2cb95cfef373
-    type: regular
-    task:
-      id: 0980908a-2d95-4d1d-8048-2cb95cfef373
-      version: -1
-      name: Success
-      description: Prints text to war room (Markdown supported)
-      scriptName: Print
-      type: regular
-      iscommand: false
-      brand: ''
-    scriptarguments:
-      value:
-        simple: Test Playbook returned successful.
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '14':
-    id: '14'
-    taskid: 82333f1a-e6e9-4e3c-874a-75cc6a4cc51e
-    type: regular
-    task:
-      id: 82333f1a-e6e9-4e3c-874a-75cc6a4cc51e
-      version: -1
-      name: Unsuccessful
-      description: Prints text to war room (Markdown supported)
-      scriptName: Print
-      type: regular
-      iscommand: false
-      brand: ''
-    scriptarguments:
-      value:
-        simple: Unsuccessful results for verifying Digital Defense FrontlineVM commands.
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '15':
-    id: '15'
-    taskid: df479bab-092e-4952-8960-8f96ec5f2ea6
-    type: regular
-    task:
-      id: df479bab-092e-4952-8960-8f96ec5f2ea6
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '14'
-    scriptarguments:
-      all:
-        simple: 'yes'
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {
-      "3_10_yes": 0.89,
-      "6_12_yes": 0.89,
-      "9_11_yes": 0.83
-    },
-    "paper": {
-      "dimensions": {
-        "height": 1990,
-        "width": 820,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 172.5,\n    \"y\": 1070\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"3_10_yes\": 0.89,\n    \"6_12_yes\":\
+  \ 0.89,\n    \"9_11_yes\": 0.83\n  },\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1990,\n      \"width\": 820,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"
