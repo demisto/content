@@ -1,0 +1,5 @@
+!get-user scim={"id":"4916534"} using=ExceedLMSITAdmin
+!create-user scim={"name":{"familyName":"test","givenName":"demisto"},"emails":[{"type":"work","primary":true,"value":"testdemistouser@paloaltonetworks.com"}],"userName":"testXoar7July@paloaltonetworks.com","urn:scim:schemas:extension:custom:1.0:user":{"firstname":"testMydesmisto7"}} using=ExceedLMSITAdmin
+!update-user oldScim={"id":"4916534"} newScim={"name":{"familyName":"test","givenName":"demistouser"},"emails":[{"type":"work","primary":true,"value":"testdemistouser@paloaltonetworks.com"}],"urn:scim:schemas:extension:custom:1.0:user":{"userName":"testxsoar123@paloaltonetworks.com"}} using=ExceedLMSITAdmin
+!enable-user scim={"id":"4916534"} using=ExceedLMSITAdmin
+!disable-user scim={"id":"4916534"} using=ExceedLMSITAdmin
