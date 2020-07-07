@@ -592,7 +592,6 @@ script:
     - contextPath: Panorama.AddressGroups.Tag
       description: Address group tags.
       type: String
-
   - arguments:
     - default: false
       auto: PREDEFINED
@@ -609,29 +608,28 @@ script:
         - reset-client
         - reset-server
     - default: false
-      description: Name of vulnerability profile
+      description: Name of vulnerability profile.
       isArray: false
       name: vulnerability_profile
       required: true
       secret: false
     - default: false
-      description: Numberical Threat ID
+      description: Numerical Threat ID.
       isArray: false
       name: threat_id
       required: true
       secret: false
     deprecated: false
-    description: Sets a vulnerability signature to block mode
+    description: Sets a vulnerability signature to block mode.
     execution: false
     name: panorama-block-vulnerability
     outputs:
     - contextPath: Panorama.Vulnerability.ID
-      description: ID Of vulnerability that has been blocked/overridden  
+      description: ID of vulnerability that has been blocked/overridden.
       type: string
     - contextPath: Panorama.Vulnerability.NewAction
       description: New action for vulnerability 
       type: string
-
   - arguments:
     - default: false
       description: Name of address group to delete.
