@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-
 ''' IMPORTS '''
 import requests
 import os
