@@ -36,7 +36,11 @@ echo "Finished copying successfully."
 echo "Updating modified content packs in the bucket ..."
 
 if [ ! -n "${NIGHTLY}" ]; then
-  CONTENT_PACKS_TO_INSTALL_FILE="./Tests/content_packs_to_install.txt"
+    CONTENT_PACKS_TO_INSTALL_FILE="./Tests/content_packs_to_install.txt"
+
+  if [ -n "${CONTRIB_BRANCH}" ]; then
+    echo -e "\n$CONTRIB_PACK_NAME" >> $CONTENT_PACKS_TO_INSTALL_FILE
+  fi
   if [ ! -f $CONTENT_PACKS_TO_INSTALL_FILE ]; then
     echo "Could not find file $CONTENT_PACKS_TO_INSTALL_FILE."
   else
