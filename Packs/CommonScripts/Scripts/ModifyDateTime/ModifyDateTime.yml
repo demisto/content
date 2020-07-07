@@ -9,10 +9,10 @@ args:
 comment: Takes a date / time input and adds or subtracts a determined amount of time.
   Returns a string in date / time in ISO Format.
 commonfields:
-  id: AddTime
+  id: ModifyDateTime
   version: -1
 enabled: true
-name: AddTime
+name: ModifyDateTime
 script: '-'
 system: false
 tags:

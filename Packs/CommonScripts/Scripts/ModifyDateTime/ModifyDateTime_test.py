@@ -1,4 +1,4 @@
-from AddTime import apply_variation
+from ModifyDateTime import apply_variation
 args = {
     'value': '2020/01/01',
     'variation': 'in 1 day'
