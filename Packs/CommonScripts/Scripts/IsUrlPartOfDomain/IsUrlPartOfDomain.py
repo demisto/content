@@ -23,7 +23,7 @@ def main(domain_name: str, urls: str) -> CommandResults:
         results = demisto.executeCommand('ExtractDomainFromUrlAndEmail', {'input': url.lower()})
         if is_error(results):
             demisto.debug(f'Could not get domain from url {url}')
-            return_warning(get_error(results))
+            return_error(get_error(results))
         else:
             domain_from_url = results[0]['Contents']
             outputs.append({
