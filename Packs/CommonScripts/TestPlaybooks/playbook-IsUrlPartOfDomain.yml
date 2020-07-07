@@ -48,9 +48,9 @@ tasks:
       - "2"
     scriptarguments:
       domains:
-        simple: example.com
+        simple: example.com,ready.com
       urls:
-        simple: md.example.com,http://example.com,www.example.com,example.com
+        simple: md.example.com,http://example.com,www.example.com,example.com,www.ready.com/index.html
     separatecontext: false
     view: |-
       {
