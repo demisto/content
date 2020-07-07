@@ -2921,6 +2921,11 @@
             "integrations": "TruSTAR v2",
             "playbookID": "TruSTAR v2-Test",
             "timeout": 500
+        },
+        {
+            "integrations": "RSA Archer v2",
+            "playbookID": "Archer v2 - Test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
