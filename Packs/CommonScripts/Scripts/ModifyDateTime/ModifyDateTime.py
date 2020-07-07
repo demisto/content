@@ -24,5 +24,5 @@ def main():
     demisto.results(new_time.isoformat())
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', 'builtin', 'builtins'):
     main()
