@@ -20,6 +20,12 @@ echo "starting configure_and_test_integration_instances"
 python3 ./Tests/configure_and_test_integration_instances.py -u "$USERNAME" -p "$PASSWORD" -c "$CONF_PATH" -s "$SECRET_CONF_PATH" -g "$GIT_SHA1" --ami_env "$1" -n $IS_NIGHTLY --branch "$CIRCLE_BRANCH" --build-number "$CIRCLE_BUILD_NUM"
 code_1=$?
 
+echo 'export GOOGLE_APPLICATION_CREDENTIALS="creds.json"' >> $BASH_ENV
+source $BASH_ENV
+cat <<EOF > "$GOOGLE_APPLICATION_CREDENTIALS"
+$GCS_ARTIFACTS_KEY
+EOF
+
 if [ $code_1 -ne 1 ] ; then
   if [ -n "${NON_AMI_RUN}" ]; then
     # non AMI
@@ -32,5 +38,6 @@ fi
 
 code_2=$?
 let "exit_code = $code_1 + $code_2"
+rm $GOOGLE_APPLICATION_CREDENTIALS
 
 exit $exit_code
