@@ -79,6 +79,7 @@ references:
         if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
           pip3 install git+https://github.com/demisto/demisto-sdk@master
         fi
+        pip3 install git+https://github.com/demisto/demisto-sdk@content_creator_yml_write_fix
 
         echo "========== Build Parameters =========="
         echo "Parameters: NIGHTLY: $NIGHTLY, INSTANCE_TESTS: $INSTANCE_TESTS, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME, ARTIFACT_BUILD_NUM: $ARTIFACT_BUILD_NUM, DEMISTO_SDK_NIGHTLY: $DEMISTO_SDK_NIGHTLY, TIME_TO_LIVE: $TIME_TO_LIVE, CONTRIB_BRANCH: $CONTRIB_BRANCH"
