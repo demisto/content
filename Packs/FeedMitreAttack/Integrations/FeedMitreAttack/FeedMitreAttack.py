@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
-from typing import List, Dict, Set
+from typing import List, Dict, Set, Any
 import json
 import requests
 from stix2 import TAXIICollectionSource, Filter
@@ -359,11 +359,11 @@ def reputation_command(client, args):
     all_indicators: List[Dict] = list()
     page = 0
     size = 1000
-    raw_data = demisto.searchIndicators(query=f'type:"{client.indicatorType}" value:{input_indicator}', page=page,
+    raw_data: dict = demisto.searchIndicators(query=f'type:"{client.indicatorType}" value:{input_indicator}', page=page,
                                         size=size)
     if raw_data.get('total') == 0:
         md = 'No indicators found.'
-        ec = score = {}
+        ec = {}
     else:
         while len(raw_data.get('iocs', [])) > 0:
             all_indicators.extend(raw_data.get('iocs', []))
@@ -391,8 +391,9 @@ def reputation_command(client, args):
                     'customFields': custom_fields
                 }
             }
+        raw_data = {'indicators': all_indicators}
 
-    return_outputs(md, ec, score)
+    return_outputs(md, ec, raw_data)
 
 
 def main():
