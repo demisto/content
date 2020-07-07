@@ -7,7 +7,7 @@ args:
   required: true
   secret: false
 - default: false
-  description: Grid ID to modify.
+  description: "Grid ID to modify. This argument can be either: \n1) Grid name as it appears in the layout. \n2) Grid \"Machine name\", as can be found in the grid incident field editor under Settings->Advanced->Fields (Incidents)."
   isArray: false
   name: grid_id
   required: true
@@ -24,7 +24,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: 'Comma-separated list of grid columns, for example: (col1,col2,..,coln).'
+  description: 'Comma-separated list of grid columns to populate (as appear in the original Grid), for example: (col1,col2,..,coln).'
   isArray: true
   name: columns
   required: true
@@ -55,10 +55,10 @@ args:
   secret: false
 comment: Creates a Grid table from items or key-value pairs.
 commonfields:
-  id: SetGridField
+  id: SetGridField1
   version: -1
 enabled: false
-name: SetGridField
+name: SetGridField1
 script: '-'
 subtype: python3
 system: false
