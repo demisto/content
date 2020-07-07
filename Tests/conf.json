@@ -2836,7 +2836,10 @@
             "integrations": "Deep Instinct",
             "playbookID": "Deep_Instinct-Test",
             "fromversion": "5.0.0"
-        }
+        },
+	{   "integrations": "Exceed_LMS_IT_Admin",
+	    "playbookID": "ExceedLMSITAdmin-Test"
+	}
 
     ],
     "skipped_tests": {
