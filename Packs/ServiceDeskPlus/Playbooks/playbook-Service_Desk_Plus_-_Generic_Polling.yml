@@ -2,6 +2,7 @@ id: Service Desk Plus - Generic Polling
 version: -1
 name: Service Desk Plus - Generic Polling
 starttaskid: "0"
+description: 'This playbook uses generic polling to wait until a request is closed.'
 tasks:
   "0":
     id: "0"
@@ -226,3 +227,5 @@ outputs:
 - contextPath: ${ServiceDeskPlus.Request.Status}
   type: unknown
 fromversion: 5.0.0
+tests:
+- Service Desk Plus - Generic Polling Test
