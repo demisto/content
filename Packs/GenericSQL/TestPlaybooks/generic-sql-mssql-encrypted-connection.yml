@@ -2,6 +2,7 @@ id: generic-sql-mssql-encrypted-connection
 version: -1
 name: generic-sql-mssql-encrypted-connection
 starttaskid: "0"
+description: The initial state of the table is that in each database there are 4 records. While the playbook run, another record is added and later removed from the table.
 tasks:
   "0":
     id: "0"
