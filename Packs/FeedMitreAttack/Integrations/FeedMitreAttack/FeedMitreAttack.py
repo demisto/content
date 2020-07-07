@@ -1,8 +1,8 @@
 import demistomock as demisto
-from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
-from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
+from CommonServerPython import *
+from CommonServerUserPython import *
 
-from typing import List, Dict, Set, Any
+from typing import List, Dict, Set
 import json
 import requests
 from stix2 import TAXIICollectionSource, Filter
