@@ -361,34 +361,38 @@ def reputation_command(client, args):
     size = 1000
     raw_data = demisto.searchIndicators(query=f'type:"{client.indicatorType}" value:{input_indicator}', page=page,
                                         size=size)
-    while len(raw_data.get('iocs', [])) > 0:
-        all_indicators.extend(raw_data.get('iocs', []))
-        page += 1
-        raw_data = demisto.searchIndicators(query=f'type:"{client.indicatorType}" value:{input_indicator}', page=page,
-                                            size=size)
-    for indicator in all_indicators:
-        custom_fields = indicator.get('CustomFields', {})
+    if raw_data.get('total') == 0:
+        md = 'No indicators found.'
+        ec = score = {}
+    else:
+        while len(raw_data.get('iocs', [])) > 0:
+            all_indicators.extend(raw_data.get('iocs', []))
+            page += 1
+            raw_data = demisto.searchIndicators(query=f'type:"{client.indicatorType}" value:{input_indicator}', page=page,
+                                                size=size)
+        for indicator in all_indicators:
+            custom_fields = indicator.get('CustomFields', {})
 
-        score = indicator.get('score')
-        value = indicator.get('value')
-        indicator_id = indicator.get('id')
-        url = indicator_url + indicator_id
-        md = f"## {[value]}({url}):\n {custom_fields.get('mitredescription', '')}"
-        ec = {
-            "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor && val.Vendor == obj.Vendor)": {
-                "Indicator": value,
-                "Type": client.indicatorType,
-                "Vendor": "MITRE ATT&CK",
-                "Score": score
-            },
-            "MITRE.ATT&CK(val.value && val.value = obj.value)": {
-                'value': value,
-                'indicatorid': indicator_id,
-                'customFields': custom_fields
+            score = indicator.get('score')
+            value = indicator.get('value')
+            indicator_id = indicator.get('id')
+            url = indicator_url + indicator_id
+            md = f"## {[value]}({url}):\n {custom_fields.get('mitredescription', '')}"
+            ec = {
+                "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor && val.Vendor == obj.Vendor)": {
+                    "Indicator": value,
+                    "Type": client.indicatorType,
+                    "Vendor": "MITRE ATT&CK",
+                    "Score": score
+                },
+                "MITRE.ATT&CK(val.value && val.value = obj.value)": {
+                    'value': value,
+                    'indicatorid': indicator_id,
+                    'customFields': custom_fields
+                }
             }
-        }
 
-        return_outputs(md, ec, score)
+    return_outputs(md, ec, score)
 
 
 def main():
