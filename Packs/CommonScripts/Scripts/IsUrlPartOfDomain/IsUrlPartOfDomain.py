@@ -31,7 +31,7 @@ def main(domain_name: str, urls: str) -> CommandResults:
                 'Domain': domain,
                 'IsInternal': domain == domain_from_url
             })
-    return CommandResults('IsUrlPartOfDomain', 'URL', outputs)
+    return CommandResults('IsUrlPartOfDomain', outputs=outputs)
 
 
 if __name__ in ('builtins', '__builtin__'):
