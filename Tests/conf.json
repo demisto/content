@@ -1486,6 +1486,7 @@
                 "virus_total_general"
             ],
             "timeout": 1400,
+            "fromversion": "5.5.0",
             "nightly": true
         },
         {
