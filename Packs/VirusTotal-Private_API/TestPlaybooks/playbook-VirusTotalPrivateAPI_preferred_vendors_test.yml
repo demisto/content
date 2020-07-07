@@ -152,7 +152,7 @@ tasks:
     task:
       id: 7fd0a5a4-8050-4c5c-8459-105bd0ed2472
       version: -1
-      name: 'Verify file is malicious '
+      name: 'Verify file is not malicious '
       type: condition
       iscommand: false
       brand: ""
@@ -170,7 +170,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "3"
+              simple: "1"
     view: |-
       {
         "position": {
