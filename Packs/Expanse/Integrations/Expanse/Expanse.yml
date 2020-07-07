@@ -45,6 +45,7 @@ configuration:
   name: minimum_severity
   required: false
   type: 15
+  defaultvalue: WARNING
   options:
   - ROUTINE
   - WARNING
