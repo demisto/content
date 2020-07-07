@@ -1,6 +1,6 @@
 GDPR data breach investigations require security teams to reconcile data from multiple sources, and follow a series of processes to notify the relevant sources, according to the sensitivity of the information breached. Valuable time is lost shuttling between screens and executing repeatable tasks while the sensitive data is out there and the SLA time to handle the incident keeps ticking.
 The ‘GDPR’ content pack contains the ‘GDPR Breach Notification’ playbook, that automates response to a data breach incident according to the GDPR requirements. The pack also contains the corresponding GDPR automation scripts, incident fields, views and layouts to facilitate the breach notification process.  
-The General Data Protection Regulation (the GDPR) is a regulation in EU law on data protection and privacy of individuals. ***Disclaimer: This pack does not ensure compliance to the GDPR regulation. Before using the pack, we advise consulting with the relevant authorities, and adjusting it to the organization’s needs.
+The General Data Protection Regulation (the GDPR) is a regulation in EU law on data protection and privacy of individuals. ***Disclaimer: This pack does not ensure compliance to the GDPR regulation. Before using the pack, we advise consulting with the relevant authorities, and adjusting it to the organization’s needs.***
 
 
 ##### What does this pack do?

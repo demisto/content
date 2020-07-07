@@ -12,7 +12,7 @@ This SANS content pack contains several playbooks to help streamline your incide
 ##### What does this pack do?
 The playbooks in this pack contain the phases for handling an incident as they are described in the SANS Institute ‘Incident Handler’s Handbook’ by Patrick Kral.
 https://www.sans.org/reading-room/whitepapers/incident/incident-handlers-handbook-33901
-***Disclaimer: This playbooks don’t ensure compliance to SANS regulations.
+***Disclaimer: This playbooks don’t ensure compliance to SANS regulations.***
 The “SANS - Incident Handler's Handbook Template” playbook provides a template that helps analysts follow these stages. 
 The “SANS - Incident Handlers Checklist” playbook follows the “Incident Handler’s Checklist” described in the SANS Institute ‘Incident Handler’s Handbook’ by Patrick Kral, and provides the analyst an easy solution for following the correct stages and tasks while handling an incident.
 The “SANS - Lessons Learned” helps SOC teams process an incident after it occurs and facilitates the lessons learned, organized by SANS stages.
