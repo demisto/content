@@ -429,7 +429,10 @@ def extract_from_xml(xml, path):
 
 
 def generate_field_contents(fields_values, level_fields):
-    fields_values = json.loads(fields_values)
+    try:
+        fields_values = json.loads(fields_values)
+    except Exception:
+        raise Exception('Failed to parese fields-values argument')
 
     field_content = {}
     for field_name in fields_values.keys():
@@ -861,6 +864,11 @@ def search_records_by_report_command(client: Client, args: Dict[str, str]):
     return_outputs(markdown, context, json.loads(xml2json(raw_res)))
 
 
+def print_cache_command(client: Client, args: Dict[str, str]):
+    cache = demisto.getIntegrationContext()
+    return_outputs(cache, {}, {})
+
+
 def fetch_incidents(client, last_run, first_fetch_time, params):
     # Get the last fetch time, if exists
     last_fetch = last_run.get('last_fetch')
@@ -928,7 +936,8 @@ def main():
         'archer-get-file': download_file_command,
         'archer-list-users': list_users_command,
         'archer-search-records': search_records_command,
-        'archer-search-records-by-report': search_records_by_report_command
+        'archer-search-records-by-report': search_records_by_report_command,
+        'archer-print-cache': print_cache_command
     }
 
     command = demisto.command()
