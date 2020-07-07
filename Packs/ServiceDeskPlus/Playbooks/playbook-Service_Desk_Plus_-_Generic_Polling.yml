@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 70c4ae14-c968-4329-8f12-886c87cbc18a
+    taskid: 6ca85d2e-e3c6-44db-8f9e-5e9bd882741d
     type: start
     task:
-      id: 70c4ae14-c968-4329-8f12-886c87cbc18a
+      id: 6ca85d2e-e3c6-44db-8f9e-5e9bd882741d
       version: -1
       name: ""
       iscommand: false
@@ -31,10 +31,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: a4f938f0-12ad-4e7b-852b-e4d220ddd809
+    taskid: e2044667-4290-4fc3-86a1-7d58d05a7b28
     type: playbook
     task:
-      id: a4f938f0-12ad-4e7b-852b-e4d220ddd809
+      id: e2044667-4290-4fc3-86a1-7d58d05a7b28
       version: -1
       name: GenericPolling
       description: |-
@@ -87,10 +87,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 756b2779-0f94-4fc9-853c-167dd9f61d86
+    taskid: 9f900310-4434-49d1-8fd0-61900f39172b
     type: regular
     task:
-      id: 756b2779-0f94-4fc9-853c-167dd9f61d86
+      id: 9f900310-4434-49d1-8fd0-61900f39172b
       version: -1
       name: Refresh Request Status
       description: View the details of requests. If no parameters are given the details
@@ -124,10 +124,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 242412a0-5137-4573-8d18-fa340e071b39
+    taskid: 8e0d6b9e-9dcc-4442-8266-fad3d042f692
     type: condition
     task:
-      id: 242412a0-5137-4573-8d18-fa340e071b39
+      id: 8e0d6b9e-9dcc-4442-8266-fad3d042f692
       version: -1
       name: Validate Request is Closed
       description: Check whether the values provided in arguments are equal. If either
@@ -161,10 +161,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: bd858782-8d65-457a-8cde-bc51eee51795
+    taskid: a8ee09dd-692a-4e27-8145-73198cb12267
     type: title
     task:
-      id: bd858782-8d65-457a-8cde-bc51eee51795
+      id: a8ee09dd-692a-4e27-8145-73198cb12267
       version: -1
       name: Done
       type: title
@@ -215,7 +215,7 @@ inputs:
   description: Frequency that the polling command will run (minutes).
   playbookInputQuery: null
 outputs:
-- contextPath: ${subplaybook-1.ServiceDeskPlus.Request.ClosureInfo.closure_comments}
+- contextPath: ${ServiceDeskPlus.Request.ClosureInfo.closure_comments}
   description: The closure comments added to the request.
   type: unknown
 - contextPath: ${ServiceDeskPlus.Request.ClosureInfo.closure_code}
