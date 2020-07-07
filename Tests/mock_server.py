@@ -364,6 +364,9 @@ class MITMProxy:
             self.repo_folder, get_folder_path(playbook_id), 'problematic_keys.json'
         )
         current_problem_keys_filepath = os.path.join(path, get_folder_path(playbook_id), 'problematic_keys.json')
+        silence_output(
+            self.ami.check_call, ['mv', repo_problem_keys_filepath, current_problem_keys_filepath], stdout='null'
+        )
 
         script_filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'timestamp_replacer.py')
         remote_script_path = self.ami.copy_file(script_filepath)
