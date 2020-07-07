@@ -1,10 +1,9 @@
 {
-	"TypeName": "Expanse Appearance",
+	"TypeName": "Expanse Behavior",
 	"kind": "details",
-	"fromVersion": "5.0.0",
 	"layout": {
 		"TypeName": "",
-		"id": "Expanse Appearance",
+		"id": "Expanse Behavior",
 		"kind": "details",
 		"name": "",
 		"system": false,
@@ -27,84 +26,82 @@
 							{
 								"endCol": 2,
 								"fieldId": "type",
-								"height": 24,
+								"height": 22,
 								"id": "incident-type-field",
 								"index": 0,
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "expanseexposuretype",
-								"height": 24,
-								"id": "1f5c1220-48f0-11ea-ade3-abbb3423f45b",
-								"index": 1,
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "expanseseverity",
-								"height": 24,
-								"id": "2249e340-48f0-11ea-ade3-abbb3423f45b",
-								"index": 2,
-								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "expansebusinessunit",
-								"height": 22,
-								"id": "cfae0370-af4a-11ea-af3d-1b2598e4d95e",
-								"index": 3,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
 								"fieldId": "severity",
-								"height": 24,
+								"height": 22,
 								"id": "incident-severity-field",
-								"index": 3,
+								"index": 1,
+								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
 								"fieldId": "owner",
-								"height": 24,
+								"height": 22,
 								"id": "incident-owner-field",
-								"index": 4,
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "sourcebrand",
-								"height": 24,
-								"id": "incident-sourceBrand-field",
-								"index": 5,
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "sourceinstance",
-								"height": 24,
-								"id": "incident-sourceInstance-field",
-								"index": 6,
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "playbookid",
-								"height": 24,
-								"id": "incident-playbookId-field",
-								"index": 7,
+								"index": 2,
+								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
 								"fieldId": "dbotsource",
-								"height": 24,
+								"height": 22,
 								"id": "incident-source-field",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourcebrand",
+								"height": 22,
+								"id": "incident-sourceBrand-field",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "expansebusinessunit",
+								"height": 22,
+								"id": "6178aa40-af4a-11ea-af3d-1b2598e4d95e",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "expansebehaviorrule",
+								"height": 22,
+								"id": "64e4d320-af4a-11ea-af3d-1b2598e4d95e",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "playbookid",
+								"height": 22,
+								"id": "incident-playbookId-field",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourceinstance",
+								"height": 22,
+								"id": "incident-sourceInstance-field",
 								"index": 8,
+								"sectionItemType": "field",
 								"startCol": 0
 							}
 						],
@@ -194,41 +191,46 @@
 							{
 								"endCol": 1,
 								"fieldId": "occurred",
-								"height": 24,
+								"height": 53,
 								"id": "incident-occurred-field",
 								"index": 0,
+								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 1,
 								"fieldId": "dbotmodified",
-								"height": 24,
+								"height": 53,
 								"id": "incident-modified-field",
-								"index": 1,
+								"index": 2,
+								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
 								"fieldId": "dbotduedate",
-								"height": 24,
+								"height": 53,
 								"id": "incident-dueDate-field",
-								"index": 2,
+								"index": 3,
+								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
 								"fieldId": "dbotcreated",
-								"height": 24,
+								"height": 53,
 								"id": "incident-created-field",
 								"index": 0,
+								"sectionItemType": "field",
 								"startCol": 1
 							},
 							{
 								"endCol": 2,
 								"fieldId": "dbotclosed",
-								"height": 24,
+								"height": 53,
 								"id": "incident-closed-field",
-								"index": 1,
+								"index": 2,
+								"sectionItemType": "field",
 								"startCol": 1
 							}
 						],
@@ -246,25 +248,28 @@
 							{
 								"endCol": 2,
 								"fieldId": "dbotclosed",
-								"height": 24,
+								"height": 22,
 								"id": "incident-dbotClosed-field",
 								"index": 0,
+								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
 								"fieldId": "closereason",
-								"height": 24,
+								"height": 22,
 								"id": "incident-closeReason-field",
 								"index": 1,
+								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
 								"fieldId": "closenotes",
-								"height": 24,
+								"height": 22,
 								"id": "incident-closeNotes-field",
 								"index": 2,
+								"sectionItemType": "field",
 								"startCol": 0
 							}
 						],
@@ -280,20 +285,23 @@
 						"isVisible": true,
 						"items": [
 							{
+								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "expanserawjsonevent",
 								"height": 53,
-								"id": "d3e655f0-af4a-11ea-af3d-1b2598e4d95e",
+								"id": "94b4d0a0-af4a-11ea-af3d-1b2598e4d95e",
 								"index": 0,
+								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
 								"fieldId": "details",
-								"height": 24,
+								"height": 106,
 								"id": "incident-details-field",
-								"index": 0,
+								"index": 1,
+								"sectionItemType": "field",
 								"startCol": 0
 							}
 						],
@@ -331,9 +339,9 @@
 				"type": "canvas"
 			}
 		],
-		"typeId": "Expanse Appearance",
+		"typeId": "Expanse Behavior",
 		"version": -1
 	},
-	"typeId": "Expanse Appearance",
+	"typeId": "Expanse Behavior",
 	"version": -1
 }
