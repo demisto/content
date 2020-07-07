@@ -5,6 +5,7 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     get_record_command, update_record_command, create_record_command, delete_record_command, query_table_command, \
     list_table_fields_command, query_computers_command, get_table_name_command, add_tag_command, query_items_command, \
     get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents, main
+from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_QUERY_TICKETS, RESPONSE_ADD_LINK, \
     RESPONSE_ADD_COMMENT, RESPONSE_UPLOAD_FILE, RESPONSE_GET_TICKET_NOTES, RESPONSE_GET_RECORD, \
@@ -378,3 +379,25 @@ def test_not_authenticated_retry_negative(requests_mock, mocker):
     assert debug[0][0][0] == expected_debug_msg
     assert debug[1][0][0] == expected_debug_msg
     assert debug[2][0][0] == expected_debug_msg
+
+
+def test_test_module(mocker):
+    """Unit test
+    Given
+    - test module command
+    - command args
+    - command raw response
+    When
+    - mock the parse_date_range.
+    - mock the Client's send_request.
+    Then
+    - run the test module command using the Client
+    Validate the content of the HumanReadable.
+    """
+    mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
+    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+                    'sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    ticket_type='incident', get_attachments=False, incident_name='description')
+    mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
+    result = module(client)
+    assert result[0] == 'ok'
