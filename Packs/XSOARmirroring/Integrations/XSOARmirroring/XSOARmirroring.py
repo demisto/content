@@ -478,6 +478,12 @@ def get_mapping_fields_command(client: Client) -> Dict[str, dict]:
     return res
 
 
+class SchemeTypeMapping:
+    def __init__(self, type, fields):
+        self.type = type
+        self.fields = fields
+
+
 def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> IncidentMirror:
     """get-remote-data command: Returns an updated incident and entries
 
