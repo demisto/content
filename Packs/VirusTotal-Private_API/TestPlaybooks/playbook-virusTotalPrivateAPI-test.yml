@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f0d8436c-3c2e-4042-8e7a-49c04234eeb3
+    taskid: bf6ced84-68ce-44a0-8537-cc4d0b0be2fb
     type: start
     task:
-      id: f0d8436c-3c2e-4042-8e7a-49c04234eeb3
+      id: bf6ced84-68ce-44a0-8537-cc4d0b0be2fb
       version: -1
       name: ""
       iscommand: false
@@ -31,10 +31,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: dadae763-3c66-4bd2-8b6c-95fc58065492
+    taskid: d37c3fc5-451f-4d41-8a7f-40e1bc9f1c85
     type: regular
     task:
-      id: dadae763-3c66-4bd2-8b6c-95fc58065492
+      id: d37c3fc5-451f-4d41-8a7f-40e1bc9f1c85
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -62,10 +62,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: ff0ac861-9e8e-43ad-804e-0e01d1ff827c
+    taskid: 285a30c1-336a-4abf-8296-7df72a9c0569
     type: regular
     task:
-      id: ff0ac861-9e8e-43ad-804e-0e01d1ff827c
+      id: 285a30c1-336a-4abf-8296-7df72a9c0569
       version: -1
       name: vt-private-check-file-behaviour
       script: '|||vt-private-check-file-behaviour'
@@ -95,10 +95,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 97d09381-e8ee-4702-8bbe-79b5371db3bf
+    taskid: 2a2965f8-8ebf-48f6-8b63-5bb4a779797d
     type: regular
     task:
-      id: 97d09381-e8ee-4702-8bbe-79b5371db3bf
+      id: 2a2965f8-8ebf-48f6-8b63-5bb4a779797d
       version: -1
       name: vt-private-get-domain-report
       script: '|||vt-private-get-domain-report'
@@ -128,10 +128,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 48fa34d1-e518-42f7-834b-9390c9583dd3
+    taskid: d7e33d9a-4b0d-4924-86a7-9de1a47200cf
     type: condition
     task:
-      id: 48fa34d1-e518-42f7-834b-9390c9583dd3
+      id: d7e33d9a-4b0d-4924-86a7-9de1a47200cf
       version: -1
       name: Verify Outputs
       type: condition
@@ -188,10 +188,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: e57a8a25-398e-4bbc-8126-10a65f9c1b49
+    taskid: 18bdc683-43bf-41b1-84fe-d0d3344e69db
     type: regular
     task:
-      id: e57a8a25-398e-4bbc-8126-10a65f9c1b49
+      id: 18bdc683-43bf-41b1-84fe-d0d3344e69db
       version: -1
       name: vt-private-get-file-report
       script: '|||vt-private-get-file-report'
@@ -222,10 +222,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 003fb0c7-9013-47dc-8386-9525ff2fa621
+    taskid: f29462be-55fb-4611-8f4f-a58ca8a78089
     type: condition
     task:
-      id: 003fb0c7-9013-47dc-8386-9525ff2fa621
+      id: f29462be-55fb-4611-8f4f-a58ca8a78089
       version: -1
       name: Verify Outputs
       type: condition
@@ -302,10 +302,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: d8e7e998-1277-4fe1-8a55-69e4964042db
+    taskid: 35f23dd8-d63b-470c-8d51-692e05fb2b18
     type: regular
     task:
-      id: d8e7e998-1277-4fe1-8a55-69e4964042db
+      id: 35f23dd8-d63b-470c-8d51-692e05fb2b18
       version: -1
       name: vt-private-get-url-report
       script: '|||vt-private-get-url-report'
@@ -339,10 +339,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 0c2e91a8-436d-4b31-8764-0322fbfc7338
+    taskid: b3e6bb66-0a59-4a5f-8bc2-855569176d2f
     type: condition
     task:
-      id: 0c2e91a8-436d-4b31-8764-0322fbfc7338
+      id: b3e6bb66-0a59-4a5f-8bc2-855569176d2f
       version: -1
       name: Verify Outputs
       type: condition
@@ -399,10 +399,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: d009908b-0a11-460e-87ff-add8fcc1d5ca
+    taskid: b1fbbfb6-f89a-4410-86c1-62e2af4108da
     type: regular
     task:
-      id: d009908b-0a11-460e-87ff-add8fcc1d5ca
+      id: b1fbbfb6-f89a-4410-86c1-62e2af4108da
       version: -1
       name: vt-private-get-ip-report
       script: '|||vt-private-get-ip-report'
@@ -432,10 +432,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 3c5a79dc-7945-4137-8f51-fb5d8cddb053
+    taskid: 671d98fc-1e83-4711-8f7c-2c0133d16e95
     type: condition
     task:
-      id: 3c5a79dc-7945-4137-8f51-fb5d8cddb053
+      id: 671d98fc-1e83-4711-8f7c-2c0133d16e95
       version: -1
       name: Verify Outputs
       type: condition
@@ -552,10 +552,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 3d22eeb1-fc38-4e11-8a52-c1983ba20f27
+    taskid: 7b9dcf89-a09c-44bf-8377-43a01c164903
     type: regular
     task:
-      id: 3d22eeb1-fc38-4e11-8a52-c1983ba20f27
+      id: 7b9dcf89-a09c-44bf-8377-43a01c164903
       version: -1
       name: vt-private-search-file
       script: '|||vt-private-search-file'
@@ -584,10 +584,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 293021d2-2387-4b93-8b58-86d06a48161a
+    taskid: 88b479e1-ffeb-403c-8cca-c76be347c35c
     type: condition
     task:
-      id: 293021d2-2387-4b93-8b58-86d06a48161a
+      id: 88b479e1-ffeb-403c-8cca-c76be347c35c
       version: -1
       name: Verify Outputs
       type: condition
@@ -624,10 +624,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 3a3e340a-b25f-41b0-8f73-c359dee4a75c
+    taskid: e850846e-3f40-4a65-8bcb-9f7d1929113f
     type: regular
     task:
-      id: 3a3e340a-b25f-41b0-8f73-c359dee4a75c
+      id: e850846e-3f40-4a65-8bcb-9f7d1929113f
       version: -1
       name: vt-private-hash-communication
       script: '|||vt-private-hash-communication'
@@ -636,7 +636,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+      - "17"
     scriptarguments:
       fullResponse: {}
       hash:
@@ -654,24 +654,17 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "16":
-    id: "16"
-    taskid: f15ee0d0-f7bd-407a-80a7-2378d72f5ff3
-    type: regular
+  "17":
+    id: "17"
+    taskid: e4a2a001-19b1-4964-8abf-be90f7522245
+    type: title
     task:
-      id: f15ee0d0-f7bd-407a-80a7-2378d72f5ff3
+      id: e4a2a001-19b1-4964-8abf-be90f7522245
       version: -1
-      name: vt-private-download-file
-      script: '|||vt-private-download-file'
-      type: regular
-      iscommand: true
+      name: Test Done
+      type: title
+      iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      hash:
-        simple: ba5d0f897e89ff70cffb3e95e4d54ea152d6a273a95bdff2224a224c90c0d16e
     separatecontext: false
     view: |-
       {
@@ -685,36 +678,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "17":
-    id: "17"
-    taskid: c0511158-5425-4d10-8ace-669375f9cad1
-    type: title
-    task:
-      id: c0511158-5425-4d10-8ace-669375f9cad1
-      version: -1
-      name: Test Done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2645
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2660,
+        "height": 2485,
         "width": 380,
         "x": 50,
         "y": 50
