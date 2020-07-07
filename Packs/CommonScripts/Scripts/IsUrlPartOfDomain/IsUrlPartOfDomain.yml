@@ -1,12 +1,12 @@
 args:
 - default: false
-  description: Name of the domain
-  isArray: false
-  name: domain_name
+  description: A comma separated list of domains.
+  isArray: true
+  name: domains
   required: true
   secret: false
 - default: false
-  description: A comma separated list of urls
+  description: A comma separated list of urls.
   isArray: true
   name: urls
   required: true

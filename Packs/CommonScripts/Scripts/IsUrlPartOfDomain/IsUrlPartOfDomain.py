@@ -5,18 +5,18 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 
-def main(domain_name: str, urls: str) -> CommandResults:
+def main(domains: str, urls: str) -> CommandResults:
     """Checks that the urls are in the domain in the domain name.
 
     Args:
-        domain_name: A domain
-        urls: URLs to check if the domain in them.
+        domains: A comma separated list of domains.
+        urls: A comma separated list of urls.
 
     Returns:
         Results to display in CortexXSOAR
     """
     urls = argToList(urls)
-    domain = domain_name.lower()
+    domains = set(argToList(domains))
 
     outputs: List[Dict] = list()
     for url in urls:
@@ -26,11 +26,11 @@ def main(domain_name: str, urls: str) -> CommandResults:
             return_error(get_error(results))
         else:
             domain_from_url = results[0]['Contents']
-            outputs.append({
+            outputs.extend([{
                 'URL': url,
                 'Domain': domain,
-                'IsInternal': domain == domain_from_url
-            })
+                'IsInternal': domain_from_url == domain
+            } for domain in domains])
     return CommandResults('IsUrlPartOfDomain', outputs=outputs)
 
 

@@ -47,7 +47,7 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      domain_name:
+      domains:
         simple: example.com
       urls:
         simple: md.example.com,http://example.com,www.example.com,example.com
@@ -151,7 +151,7 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      domain_name:
+      domains:
         simple: example.com
       urls:
         simple: notexample.com
