@@ -416,7 +416,7 @@ inputs:
   description: ""
   playbookInputQuery:
     query: (type:ip or type:file or type:Domain or type:URL) -tags:pending_review
-      and (tags:approved_black or tags:approved_white or tags:approved_watchlist)
+      and (tags:approved_black or tags:approved_white or tags:approved_watchlist) and expirationStatus:active
     queryEntity: indicators
     results: null
     daterange:
