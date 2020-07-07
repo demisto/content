@@ -30,6 +30,9 @@ parameters:
   contrib_branch:
     type: string
     default: ""
+  contrib_pack_name:
+    type: string
+    default: ""
 
 
 references:
@@ -45,6 +48,12 @@ references:
       MEM_CHECK: << pipeline.parameters.mem_check >>
       TIME_TO_LIVE: << pipeline.parameters.time_to_live >>
       CONTRIB_BRANCH: << pipeline.parameters.contrib_branch >>
+      CONTRIB_PACK_NAME: << pipeline.parameters.contrib_pack_name >>
+      # Giving different names to the following pipeline parameters to avoid collision, handling such collision case
+      # is done in 'Prepare Environment' step.
+      NIGHTLY_PARAMETER: << pipeline.parameters.nightly >>
+      INSTANCE_TESTS_PARAMETER: << pipeline.parameters.instance_tests >>
+      DEMISTO_SDK_NIGHTLY_PARAMETER: << pipeline.parameters.demisto_sdk_nightly >>
 
   container_config: &container_config
     docker:
@@ -71,11 +80,6 @@ references:
     run:
       name: Prepare Environment
       when: always
-      environment:
-        # In case this is a triggered build with nightly as parameter, we need to give the given parameter priority
-        NIGHTLY_PARAMETER: << pipeline.parameters.nightly >>
-        INSTANCE_TESTS_PARAMETER: << pipeline.parameters.instance_tests >>
-        DEMISTO_SDK_NIGHTLY_PARAMETER: << pipeline.parameters.demisto_sdk_nightly >>
       command: |
         echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
         echo 'export PATH="/home/circleci/.local/bin:${PWD}/node_modules/.bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
@@ -83,15 +87,15 @@ references:
         echo 'export DEMISTO_README_VALIDATION=true' >> $BASH_ENV
         if [ -n "${NIGHTLY_PARAMETER}" ];
         then
-            echo 'export NIGHTLY=$NIGHTLY_PARAMETER' >> $BASH_ENV
+            echo 'export NIGHTLY=true' >> $BASH_ENV
         fi
         if [ -n "${INSTANCE_TESTS_PARAMETER}" ];
         then
-            echo 'export INSTANCE_TESTS=INSTANCE_TESTS_PARAMETER' >> $BASH_ENV
+            echo 'export INSTANCE_TESTS=true' >> $BASH_ENV
         fi
         if [ -n "${DEMISTO_SDK_NIGHTLY_PARAMETER}" ];
         then
-            echo 'export DEMISTO_SDK_NIGHTLY=DEMISTO_SDK_NIGHTLY_PARAMETER' >> $BASH_ENV
+            echo 'export DEMISTO_SDK_NIGHTLY=true' >> $BASH_ENV
         fi
         echo "=== sourcing $BASH_ENV ==="
         source $BASH_ENV
@@ -119,7 +123,7 @@ references:
         fi
 
         echo "========== Build Parameters =========="
-        echo "Parameters: NIGHTLY: $NIGHTLY, INSTANCE_TESTS: $INSTANCE_TESTS, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME, ARTIFACT_BUILD_NUM: $ARTIFACT_BUILD_NUM, DEMISTO_SDK_NIGHTLY: $DEMISTO_SDK_NIGHTLY, TIME_TO_LIVE: $TIME_TO_LIVE, CONTRIB_BRANCH: $CONTRIB_BRANCH"
+        set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH="
         python --version
         python3 --version
         demisto-sdk --version
@@ -145,6 +149,11 @@ references:
         if [ -n "${TIME_TO_LIVE}" ]
         then
             echo "Skipping - Time to live was set to $TIME_TO_LIVE minutes"
+            exit 0
+        fi
+        if [ -n "${DEMISTO_SDK_NIGHTLY}" ]
+          then
+            echo "Skipping - not running in demisto-sdk nightly"
             exit 0
         fi
         echo "$INSTANCE_ROLE"
@@ -271,11 +280,6 @@ references:
       name: Update Tests step
       when: always
       command: |
-        if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
-          then
-            echo "Skipping - running only in container number 0"
-            exit 0
-        fi
         python3 ./Tests/scripts/update_conf_json.py
         cp "./Tests/conf.json" "$CIRCLE_ARTIFACTS/conf.json"
 jobs:
@@ -293,24 +297,21 @@ jobs:
             - venv
             - node_modules
           key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
-      - run:
-          name: Get Contributor pack
-          when: always
-          command: |
-            if [ -z $CONTRIB_BRANCH ]
-            then
-              echo "Skipping, contributor branch not given."
-              exit 0
-            else
-              USER=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
-              BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
-              PACK=$(echo $CONTRIB_BRANCH | cut -d ":" -f 3)
-              echo 'Copy the changes from the contributor branch $USER/$BRANCH in the pack $PACK'
-              git remote add $USER git@github.com:$USER/content.git
-              git fetch $USER $BRANCH
-              git checkout $USER/$BRANCH $PACK
-              exit 0
-            fi
+      - when:
+          condition: << pipeline.parameters.contrib_branch >>
+          steps:
+            - run:
+                name: Get Contributor pack
+                when: always
+                command: |
+                    USER=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
+                    BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
+                    PACK=$(echo $CONTRIB_BRANCH | cut -d ":" -f 3)
+                    echo 'Copy the changes from the contributor branch $USER/$BRANCH in the pack $PACK'
+                    git remote add $USER git@github.com:$USER/content.git
+                    git fetch $USER $BRANCH
+                    git checkout $USER/$BRANCH $PACK
+                    exit 0
       - *add_ssh_keys
       - *persist_to_workspace
 
@@ -320,71 +321,77 @@ jobs:
     <<: *environment
     steps:
       - *attach_workspace
-      - setup_remote_docker
-      - *restore_cache
-      - *add_ssh_keys
-      - *prepare_environment
-      - *infrastructure_testing
-      - *run_unit_testing_and_lint
-      - store_test_results:
-          path: ./unit-tests
-      - run:
-          name: Slack Notifier
-          shell: /bin/bash
-          command: |
-            ./Tests/scripts/slack_notifier.sh 'unittests' ./env_results.json
-          when: always
-      - *store_artifacts
+      - unless:
+          condition: << pipeline.parameters.instance_tests >>
+          steps:
+            - setup_remote_docker
+            - *restore_cache
+            - *add_ssh_keys
+            - *prepare_environment
+            - *infrastructure_testing
+            - *run_unit_testing_and_lint
+            - store_test_results:
+                path: ./unit-tests
+            - run:
+                name: Slack Notifier
+                shell: /bin/bash
+                command: |
+                  ./Tests/scripts/slack_notifier.sh 'unittests' ./env_results.json
+                when: always
+            - *store_artifacts
   Run Validations:
     <<: *container_config
     resource_class: medium+
     <<: *environment
     steps:
       - *attach_workspace
-      - setup_remote_docker
-      - *restore_cache
-      - *add_ssh_keys
-      - *prepare_environment
-      - *Secrets
-      - *validate_files_and_yaml
-      - run:
-          name: Content Docs Site
-          when: always
-          command: |
-            ./Documentation/docs_site_update.sh
-      - run:
-          name: Spell Checks
-          command: |
-            python3 ./Tests/scripts/circleci_spell_checker.py $CIRCLE_BRANCH
-      - run:
-          name: Check if CircleCI's config file is up to date
-          when: always
-          command: |
-            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
-              echo "Skipping, Should not run on contributor's branch."
-              exit 0
-            fi
-            # Checks if there's any diff from master
-            if [[ `git diff origin/master -- .circleci/config.yml` ]]; then
-                # Checks if part of the branch's changes
-                if [[ -z `git diff origin/master..."$CIRCLE_BRANCH" --name-only | grep .circleci/config.yml` ]]; then
-                    echo ".circleci/config.yml has been changed. Merge from master"
-                    exit 1
-                else
-                    echo ".circleci/config.yml is part of the branch changes, proceeding"
+      - unless:
+          condition: << pipeline.parameters.instance_tests >>
+          steps:
+            - setup_remote_docker
+            - *restore_cache
+            - *add_ssh_keys
+            - *prepare_environment
+            - *Secrets
+            - *validate_files_and_yaml
+            - run:
+                name: Content Docs Site
+                when: always
+                command: |
+                  ./Documentation/docs_site_update.sh
+            - run:
+                name: Spell Checks
+                command: |
+                  python3 ./Tests/scripts/circleci_spell_checker.py $CIRCLE_BRANCH
+            - run:
+                name: Check if CircleCI's config file is up to date
+                when: always
+                command: |
+                  if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+                    echo "Skipping, Should not run on contributor's branch."
                     exit 0
-                fi
-            else
-                echo ".circleci/config.yml is up to date!"
-            fi
-      - run:
-          name: Verify Base Branch for Contribution
-          when: always
-          command: |
-            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]] ;
-              then
-                python3 ./Tests/scripts/verify_base_branch_for_contribution.py $CIRCLE_BRANCH
-            fi
+                  fi
+                  # Checks if there's any diff from master
+                  if [[ `git diff origin/master -- .circleci/config.yml` ]]; then
+                      # Checks if part of the branch's changes
+                      if [[ -z `git diff origin/master..."$CIRCLE_BRANCH" --name-only | grep .circleci/config.yml` ]]; then
+                          echo ".circleci/config.yml has been changed. Merge from master"
+                          exit 1
+                      else
+                          echo ".circleci/config.yml is part of the branch changes, proceeding"
+                          exit 0
+                      fi
+                  else
+                      echo ".circleci/config.yml is up to date!"
+                  fi
+            - run:
+                name: Verify Base Branch for Contribution
+                when: always
+                command: |
+                  if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]] ;
+                    then
+                      python3 ./Tests/scripts/verify_base_branch_for_contribution.py $CIRCLE_BRANCH
+                  fi
   Create Instances:
     <<: *container_config
     resource_class: medium+
@@ -427,61 +434,64 @@ jobs:
             fi
       - *collect_test_list_and_content_packs
       - *calculate_packs_dependencies
-      - run:
-          name: Prepare Content Packs For Testing
-          when: always
-          command: |
-            ./Tests/scripts/prepare_content_packs_for_testing.sh
-            echo "$CIRCLE_BUILD_NUM" > create_instances_build_num.txt  # so that later jobs in this workflow could configure the right path
-      - run:
-          name: Zip Content Packs From GCS
-          command: |
-            GCS_PATH=$(mktemp)
-            ZIP_FOLDER=$(mktemp -d)
-            echo $GCS_MARKET_KEY > $GCS_PATH
-            python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-ci-build' -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_PATH -n $CIRCLE_BUILD_NUM -br $CIRCLE_BRANCH
-            rm $GCS_PATH
-          when: always
-      - run:
-          name: Store Artifacts to GCS
-          command: ./Tests/scripts/upload_artifacts.sh
-          when: always
-      - run:
-          name: Create Instance
-          when: always
-          command: |
-            [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=180
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                if [ -n "${NIGHTLY}" ] ;
-                  then
-                    export IFRA_ENV_TYPE=Nightly # disable-secrets-detection
-                elif [ -n "${INSTANCE_TESTS}" ] ;
-                  then
-                    export IFRA_ENV_TYPE="Demisto PreGA" # disable-secrets-detection
-                elif [ -n "${CONTRIB_BRANCH}" ] ;
-                  then
-                    export IFRA_ENV_TYPE="Demisto Marketplace" # disable-secrets-detection
-                else
-                  export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
-                fi
-                python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile ./env_results.json
+      - unless:
+          condition: << pipeline.parameters.demisto_sdk_nightly >>
+          steps:
+            - run:
+                name: Prepare Content Packs For Testing
+                when: always
+                command: |
+                  ./Tests/scripts/prepare_content_packs_for_testing.sh
+                  echo "$CIRCLE_BUILD_NUM" > create_instances_build_num.txt  # so that later jobs in this workflow could configure the right path
+            - run:
+                name: Zip Content Packs From GCS
+                command: |
+                  GCS_PATH=$(mktemp)
+                  ZIP_FOLDER=$(mktemp -d)
+                  echo $GCS_MARKET_KEY > $GCS_PATH
+                  python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-ci-build' -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_PATH -n $CIRCLE_BUILD_NUM -br $CIRCLE_BRANCH
+                  rm $GCS_PATH
+                when: always
+            - run:
+                name: Store Artifacts to GCS
+                command: ./Tests/scripts/upload_artifacts.sh
+                when: always
+            - run:
+                name: Create Instance
+                when: always
+                command: |
+                  [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=180
+                  if ./Tests/scripts/is_ami.sh ;
+                    then
+                      if [ -n "${NIGHTLY}" ] ;
+                        then
+                          export IFRA_ENV_TYPE=Nightly # disable-secrets-detection
+                      elif [ -n "${INSTANCE_TESTS}" ] ;
+                        then
+                          export IFRA_ENV_TYPE="Demisto PreGA" # disable-secrets-detection
+                      elif [ -n "${CONTRIB_BRANCH}" ] ;
+                        then
+                          export IFRA_ENV_TYPE="Demisto Marketplace" # disable-secrets-detection
+                      else
+                        export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
+                      fi
+                      python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile ./env_results.json
 
-              else
-                . ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
-                python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -custombuild true -circleurl $SERVER_DOWNLOAD_LINK -circleToken $SERVER_CI_TOKEN -timetolive $TTL -outfile ./env_results.json
-            fi
-      - run:
-          name: Setup Instance
-          when: always
-          command: |
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                python3 ./Tests/scripts/run_content_installation.py
-              else
-                ./Tests/lastest_server_build_scripts/run_installer_on_instance.sh
-            fi
-      - *store_artifacts
+                    else
+                      . ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
+                      python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -custombuild true -circleurl $SERVER_DOWNLOAD_LINK -circleToken $SERVER_CI_TOKEN -timetolive $TTL -outfile ./env_results.json
+                  fi
+            - run:
+                name: Setup Instance
+                when: always
+                command: |
+                  if ./Tests/scripts/is_ami.sh ;
+                    then
+                      python3 ./Tests/scripts/run_content_installation.py
+                    else
+                      ./Tests/lastest_server_build_scripts/run_installer_on_instance.sh
+                  fi
+            - *store_artifacts
       - *persist_to_workspace
   Server 4_1:
     <<: *container_config
@@ -489,246 +499,268 @@ jobs:
     <<: *environment
     steps:
       - setup_remote_docker
-      - *attach_workspace
-      - *restore_cache
-      - *add_ssh_keys
-      - *prepare_environment
-      - run:
-          name: Wait until server ready
-          shell: /bin/bash
-          when: always
-          command: |
-            python3 ./Tests/scripts/wait_until_server_ready.py "Demisto two before GA"
-      - run:
-          name: Run Tests - Server 4.1
-          shell: /bin/bash
-          when: always
-          command: |
-            if [ -n "${CONTRIB_BRANCH}" ];
-              then
-                echo "Skipping - not running in contributor branch"
-                exit 0
-            fi
-            echo 'export INSTANCE_ROLE="Demisto two before GA"' >> $BASH_ENV
-            source $BASH_ENV
-            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto two before GA"')
-            echo "Demisto two before GA filter=$TEMP"
-            if [[ "$TEMP" == "false" ]];
-              then
-                echo "Skipping - instance was not setup"
-                exit 0
-            fi
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
+      - unless:
+          condition:
+            or:
+              - << pipeline.parameters.instance_tests >>
+              - << pipeline.parameters.contrib_branch >>
+              - << pipeline.parameters.demisto_sdk_nightly >>
+              - << pipeline.parameters.nightly >>
+              - << pipeline.parameters.non_ami_run >>
+          steps:
+            - *attach_workspace
+            - *restore_cache
+            - *add_ssh_keys
+            - *prepare_environment
+            - run:
+                name: Wait until server ready
+                shell: /bin/bash
+                when: always
+                command: |
+                  python3 ./Tests/scripts/wait_until_server_ready.py "Demisto two before GA"
+            - run:
+                name: Run Tests - Server 4.1
+                shell: /bin/bash
+                when: always
+                command: |
+                  echo 'export INSTANCE_ROLE="Demisto two before GA"' >> $BASH_ENV
+                  source $BASH_ENV
+                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto two before GA"')
+                  echo "Demisto two before GA filter=$TEMP"
+                  if [[ "$TEMP" == "false" ]];
+                    then
+                      echo "Skipping - instance was not setup"
+                      exit 0
+                  fi
+                  if ./Tests/scripts/is_ami.sh ;
+                    then
+                      ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
 
-              else
-                echo "Not AMI run, can't run on this version"
-            fi
-      - *destroy_instances
-      - *store_artifacts
+                    else
+                      echo "Not AMI run, can't run on this version"
+                  fi
+            - *destroy_instances
+            - *store_artifacts
   Server 4_5:
     <<: *container_config
     resource_class: medium+
     <<: *environment
     steps:
       - setup_remote_docker
-      - *attach_workspace
-      - *add_ssh_keys
-      - *prepare_environment
-      - run:
-          name: Wait until server ready
-          shell: /bin/bash
-          when: always
-          command: |
-            python3 ./Tests/scripts/wait_until_server_ready.py "Demisto one before GA"
-      - run:
-          name: Run Tests - Server 4.5
-          shell: /bin/bash
-          when: always
-          command: |
-            if [ -n "${CONTRIB_BRANCH}" ];
-              then
-                echo "Skipping - not running in contributor branch"
-                exit 0
-            fi
-            echo 'export INSTANCE_ROLE="Demisto one before GA"' >> $BASH_ENV
-            source $BASH_ENV
-            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto one before GA"')
-            echo "Demisto one before GA filter=$TEMP"
-            if [[ "$TEMP" == "false" ]];
-              then
-                echo "Skipping - instance was not setup"
-                exit 0
-            fi
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
+      - unless:
+          condition:
+            or:
+              - << pipeline.parameters.instance_tests >>
+              - << pipeline.parameters.contrib_branch >>
+              - << pipeline.parameters.demisto_sdk_nightly >>
+              - << pipeline.parameters.nightly >>
+              - << pipeline.parameters.non_ami_run >>
+          steps:
+            - *attach_workspace
+            - *add_ssh_keys
+            - *prepare_environment
+            - run:
+                name: Wait until server ready
+                shell: /bin/bash
+                when: always
+                command: |
+                  python3 ./Tests/scripts/wait_until_server_ready.py "Demisto one before GA"
+            - run:
+                name: Run Tests - Server 4.5
+                shell: /bin/bash
+                when: always
+                command: |
+                  echo 'export INSTANCE_ROLE="Demisto one before GA"' >> $BASH_ENV
+                  source $BASH_ENV
+                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto one before GA"')
+                  echo "Demisto one before GA filter=$TEMP"
+                  if [[ "$TEMP" == "false" ]];
+                    then
+                      echo "Skipping - instance was not setup"
+                      exit 0
+                  fi
+                  if ./Tests/scripts/is_ami.sh ;
+                    then
+                      ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
 
-              else
-                echo "Not AMI run, can't run on this version"
-            fi
-      - *destroy_instances
-      - *store_artifacts
+                    else
+                      echo "Not AMI run, can't run on this version"
+                  fi
+            - *destroy_instances
+            - *store_artifacts
   Server 5_0:
     <<: *container_config
     resource_class: medium+
     <<: *environment
     steps:
-      - *attach_workspace
       - setup_remote_docker
-      - *restore_cache
-      - *add_ssh_keys
-      - *prepare_environment
-      - run:
-          name: Wait until server ready
-          shell: /bin/bash
-          when: always
-          command: |
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                python3 ./Tests/scripts/wait_until_server_ready.py "Demisto GA"
-              else
-                python3 ./Tests/scripts/wait_until_server_ready.py "Demisto"
-            fi
-      - run:
-          name: Run Tests - Server 5.0
-          shell: /bin/bash
-          when: always
-          command: |
-            if [ -n "${CONTRIB_BRANCH}" ];
-              then
-                echo "Skipping - not running in contributor branch"
-                exit 0
-            fi
-            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto GA"')
-            echo "Demisto GA filter=$TEMP"
-            if [[ "$TEMP" == "false" ]];
-              then
-                echo "Skipping - instance was not setup"
-                exit 0
-            fi
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                echo 'export INSTANCE_ROLE="Demisto GA"' >> $BASH_ENV
-              else
-                'export INSTANCE_ROLE="master"' >> $BASH_ENV
-            fi
-            source $BASH_ENV
-            ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
+      - unless:
+          condition:
+            or:
+              - << pipeline.parameters.instance_tests >>
+              - << pipeline.parameters.contrib_branch >>
+              - << pipeline.parameters.demisto_sdk_nightly >>
+              - << pipeline.parameters.nightly >>
+          steps:
+            - *attach_workspace
+            - *restore_cache
+            - *add_ssh_keys
+            - *prepare_environment
+            - run:
+                name: Wait until server ready
+                shell: /bin/bash
+                when: always
+                command: |
+                  if ./Tests/scripts/is_ami.sh ;
+                    then
+                      python3 ./Tests/scripts/wait_until_server_ready.py "Demisto GA"
+                    else
+                      python3 ./Tests/scripts/wait_until_server_ready.py "Demisto"
+                  fi
+            - run:
+                name: Run Tests - Server 5.0
+                shell: /bin/bash
+                when: always
+                command: |
+                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto GA"')
+                  echo "Demisto GA filter=$TEMP"
+                  if [[ "$TEMP" == "false" ]];
+                    then
+                      echo "Skipping - instance was not setup"
+                      exit 0
+                  fi
+                  if ./Tests/scripts/is_ami.sh ;
+                    then
+                      echo 'export INSTANCE_ROLE="Demisto GA"' >> $BASH_ENV
+                    else
+                      'export INSTANCE_ROLE="master"' >> $BASH_ENV
+                  fi
+                  source $BASH_ENV
+                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
 
-      - *destroy_instances
-      - *store_artifacts
+            - *destroy_instances
+            - *store_artifacts
   Server 5_5:
     <<: *container_config
     resource_class: medium+
     <<: *environment
     steps:
       - setup_remote_docker
-      - *attach_workspace
-      - *add_ssh_keys
-      - *prepare_environment
-      - run:
-          name: Wait until server ready
-          shell: /bin/bash
-          when: always
-          command: |
-            python3 ./Tests/scripts/wait_until_server_ready.py "Demisto PreGA"
-      - run:
-          name: Run Tests - 5.5
-          shell: /bin/bash
-          when: always
-          command: |
-            if [ -n "${CONTRIB_BRANCH}" ];
-              then
-                echo "Skipping - not running in contributor branch"
-                exit 0
-            fi
-            echo 'export INSTANCE_ROLE="Demisto PreGA"' >> $BASH_ENV
-            source $BASH_ENV
-            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto PreGA"')
-            echo "Demisto PreGA filter=$TEMP"
-            if [[ "$TEMP" == "false" ]];
-              then
-                echo "Skipping - instance was not setup"
-                exit 0
-            fi
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
-                export RETVAL=$?
-                cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
-                exit $RETVAL
+      - unless:
+          condition:
+            or:
+              - << pipeline.parameters.instance_tests >>
+              - << pipeline.parameters.contrib_branch >>
+              - << pipeline.parameters.demisto_sdk_nightly >>
+              - << pipeline.parameters.nightly >>
+              - << pipeline.parameters.non_ami_run >>
+          steps:
+            - *attach_workspace
+            - *add_ssh_keys
+            - *prepare_environment
+            - run:
+                name: Wait until server ready
+                shell: /bin/bash
+                when: always
+                command: |
+                  python3 ./Tests/scripts/wait_until_server_ready.py "Demisto PreGA"
+            - run:
+                name: Run Tests - 5.5
+                shell: /bin/bash
+                when: always
+                command: |
+                  echo 'export INSTANCE_ROLE="Demisto PreGA"' >> $BASH_ENV
+                  source $BASH_ENV
+                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto PreGA"')
+                  echo "Demisto PreGA filter=$TEMP"
+                  if [[ "$TEMP" == "false" ]];
+                    then
+                      echo "Skipping - instance was not setup"
+                      exit 0
+                  fi
+                  if ./Tests/scripts/is_ami.sh ;
+                    then
+                      ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
+                      export RETVAL=$?
+                      cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
+                      exit $RETVAL
 
-            else
-                echo "Not AMI run, can't run on this version"
-            fi
-      - run:
-          name: Slack Notifier
-          shell: /bin/bash
-          command: |
-            ./Tests/scripts/slack_notifier.sh 'test_playbooks' ./env_results.json
-          when: always
-      - *destroy_instances
-      - *store_artifacts
+                  else
+                      echo "Not AMI run, can't run on this version"
+                  fi
+            - run:
+                name: Slack Notifier
+                shell: /bin/bash
+                command: |
+                  ./Tests/scripts/slack_notifier.sh 'test_playbooks' ./env_results.json
+                when: always
+            - *destroy_instances
+            - *store_artifacts
   Server 6_0:
     <<: *container_config
     resource_class: medium+
     <<: *environment
     steps:
       - setup_remote_docker
-      - *attach_workspace
-      - *add_ssh_keys
-      - *prepare_environment
-      - run:
-          name: Wait until server ready
-          shell: /bin/bash
-          when: always
-          command: |
-            python3 ./Tests/scripts/wait_until_server_ready.py "Demisto Marketplace"
-      - run:
-          name: Run Tests - Demisto 6.0
-          shell: /bin/bash
-          when: always
-          no_output_timeout: 5h
-          command: |
-            echo 'export INSTANCE_ROLE="Demisto Marketplace"' >> $BASH_ENV
-            source $BASH_ENV
-            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto Marketplace"')
-            echo "Demisto Marketplace filter=$TEMP"
-            if [[ "$TEMP" == "false" ]];
-              then
-                echo "Skipping - instance was not setup"
-                exit 0
-            fi
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
-                export RETVAL=$?
-                cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
-                exit $RETVAL
-            else
-                echo "Not AMI run, can't run on this version"
-            fi
-      - run:
-          name: Upload Packs To Marketplace Storage
-          command: |
-            if [[ $CIRCLE_BRANCH != master ]]; then
-              echo "Skipping packs uploading on non master branch"
-              exit 0
-            fi
+      - unless:
+          condition:
+            or:
+              - << pipeline.parameters.instance_tests >>
+              - << pipeline.parameters.demisto_sdk_nightly >>
+              - << pipeline.parameters.non_ami_run >>
+          steps:
+            - *attach_workspace
+            - *add_ssh_keys
+            - *prepare_environment
+            - run:
+                name: Wait until server ready
+                shell: /bin/bash
+                when: always
+                command: |
+                  python3 ./Tests/scripts/wait_until_server_ready.py "Demisto Marketplace"
+            - run:
+                name: Run Tests - Demisto 6.0
+                shell: /bin/bash
+                when: always
+                no_output_timeout: 5h
+                command: |
+                  echo 'export INSTANCE_ROLE="Demisto Marketplace"' >> $BASH_ENV
+                  source $BASH_ENV
+                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto Marketplace"')
+                  echo "Demisto Marketplace filter=$TEMP"
+                  if [[ "$TEMP" == "false" ]];
+                    then
+                      echo "Skipping - instance was not setup"
+                      exit 0
+                  fi
+                  if ./Tests/scripts/is_ami.sh ;
+                    then
+                      ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
+                      export RETVAL=$?
+                      cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
+                      exit $RETVAL
+                  else
+                      echo "Not AMI run, can't run on this version"
+                  fi
+            - run:
+                name: Upload Packs To Marketplace Storage
+                command: |
+                  if [[ $CIRCLE_BRANCH != master ]]; then
+                    echo "Skipping packs uploading on non master branch"
+                    exit 0
+                  fi
 
-            EXTRACT_FOLDER=$(mktemp -d)
-            PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
-            PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
-            ID_SET=$CIRCLE_ARTIFACTS/id_set.json
-            GCS_PATH=$(mktemp)
-            echo $GCS_MARKET_KEY > $GCS_PATH
-            python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private'
-            rm $GCS_PATH
-          when: on_success
-      - *destroy_instances
-      - *store_artifacts
+                  EXTRACT_FOLDER=$(mktemp -d)
+                  PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
+                  PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
+                  ID_SET=$CIRCLE_ARTIFACTS/id_set.json
+                  GCS_PATH=$(mktemp)
+                  echo $GCS_MARKET_KEY > $GCS_PATH
+                  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private'
+                  rm $GCS_PATH
+                when: on_success
+            - *destroy_instances
+            - *store_artifacts
   Instance Test:
     <<: *container_config
     resource_class: medium+
@@ -743,12 +775,22 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
+            if [ -z $INSTANCE_TESTS ]
+            then
+              echo "Skipping, contributor branch not given."
+              exit 0
+            fi
             python3 ./Tests/scripts/wait_until_server_ready.py "Demisto PreGA"
             echo 'export INSTANCE_ROLE="Demisto PreGA"' >> $BASH_ENV
             source $BASH_ENV
       - run:
           name: Instance Test
           command: |
+            if [ -z $INSTANCE_TESTS ]
+            then
+              echo "Skipping, contributor branch not given."
+              exit 0
+            fi
             ./Tests/scripts/instance_test.sh
             export RETVAL=$?
             cp ./Tests/failed_instances.txt $CIRCLE_ARTIFACTS/failed_instances.txt
@@ -829,6 +871,9 @@ workflows:
           filters:
             branches:
               ignore: /pull\/[0-9]+/
+          requires:
+            - Create Instances
+      - Instance Test:
           requires:
             - Create Instances
 

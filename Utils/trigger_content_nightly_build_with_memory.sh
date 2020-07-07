@@ -11,7 +11,7 @@ post_data=$(cat <<EOF
   "parameters": {
     "nightly": "true",
     "mem_check": "true",
-    "time_to_live": 900
+    "time_to_live": "900"
   }
 }
 EOF
