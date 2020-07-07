@@ -612,7 +612,7 @@ def create_record_command(client: Client, args: Dict[str, str]):
 
     body = {'Content': {'LevelId': level_data['level'], 'FieldContents': field_contents}}
 
-    res = client.do_request('Post', f'rsaarcher/api/core/content', data=body)
+    res = client.do_request('Post', 'rsaarcher/api/core/content', data=body)
 
     errors = get_errors_from_res(res)
     if errors:
@@ -641,7 +641,7 @@ def update_record_command(client: Client, args: Dict[str, str]):
     field_contents = generate_field_contents(fields_values, level_data['mapping'])
 
     body = {'Content': {'Id': record_id, 'LevelId': level_data['level'], 'FieldContents': field_contents}}
-    res = client.do_request('Put', f'rsaarcher/api/core/content', data=body)
+    res = client.do_request('Put', 'rsaarcher/api/core/content', data=body)
 
     errors = get_errors_from_res(res)
     if errors:
@@ -754,7 +754,7 @@ def list_users_command(client: Client, args: Dict[str, str]):
     if user_id:
         res = client.do_request('GET', f'rsaarcher/api/core/system/user/{user_id}')
     else:
-        res = client.do_request('GET', f'rsaarcher/api/core/system/user')
+        res = client.do_request('GET', 'rsaarcher/api/core/system/user')
 
     errors = get_errors_from_res(res)
     if errors:
@@ -778,7 +778,7 @@ def list_users_command(client: Client, args: Dict[str, str]):
 
     markdown = tableToMarkdown('Users list', users)
     context: dict = {
-        f'Archer.User(val.Id && val.Id == obj.Id)':
+        'Archer.User(val.Id && val.Id == obj.Id)':
             users
     }
     return_outputs(markdown, context, res)
