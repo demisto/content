@@ -365,8 +365,8 @@ def run_and_record(conf_json_test_details, tests_queue, tests_settings, c, proxy
                              playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number,
                              server_url, build_name, prints_manager, thread_index=thread_index, is_mock_run=True)
     proxy.stop(thread_index=thread_index, prints_manager=prints_manager)
-    proxy.clean_mock_file(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
     if succeed:
+        proxy.clean_mock_file(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
         proxy.move_mock_file_to_repo(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
 
     proxy.set_repo_folder()
