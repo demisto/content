@@ -51,7 +51,7 @@ if [ ! -n "${NIGHTLY}" ]; then
   fi
 else
   echo "Updating all content packs for nightly build..."
-  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $CIRCLE_ARTIFACTS/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s $KF -n $GITHUB_RUN_NUMBER -o -sb $TARGET_PATH -k $PACK_SIGN_KEY -rt false --id_set_path $ID_SET
+  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $CIRCLE_ARTIFACTS/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s $KF -n $GITHUB_RUN_NUMBER -o -sb $TARGET_PATH -k $PACK_SIGN_KEY -rt false --id_set_path $ID_SET -pr True
   echo "Finished updating content packs successfully."
 fi
 
