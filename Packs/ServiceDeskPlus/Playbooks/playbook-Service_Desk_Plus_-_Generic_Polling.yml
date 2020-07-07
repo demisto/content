@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -170,6 +171,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -202,18 +204,18 @@ inputs:
   value: {}
   required: true
   description: The id of the Service Desk Plus request
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Timeout
   value: {}
   required: true
   description: Amount of time to poll before declaring a timeout and resuming the
     playbook (minutes).
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Interval
   value: {}
   required: true
   description: Frequency that the polling command will run (minutes).
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: ${ServiceDeskPlus.Request.ClosureInfo.closure_comments}
   description: The closure comments added to the request.
@@ -223,3 +225,4 @@ outputs:
   type: unknown
 - contextPath: ${ServiceDeskPlus.Request.Status}
   type: unknown
+fromversion: 5.0.0
