@@ -364,6 +364,8 @@ class MITMProxy:
             self.repo_folder, get_folder_path(playbook_id), 'problematic_keys.json'
         )
         current_problem_keys_filepath = os.path.join(path, get_folder_path(playbook_id), 'problematic_keys.json')
+        # copy the `problematic_keys.json` for the test to current temporary directory if it exists that way
+        # previously recorded or manually added keys will only be added upon and not wiped with an overwrite
         silence_output(
             self.ami.check_call, ['mv', repo_problem_keys_filepath, current_problem_keys_filepath], stdout='null'
         )
