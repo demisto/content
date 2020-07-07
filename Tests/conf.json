@@ -3077,8 +3077,7 @@
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tenable.sc": "unstable instance",
-        "VirusTotal - Private API": "Issue 22638",
-        
+
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Issue 25650",
         "JsonWhoIs": "Issue 25371: Out of quota",
