@@ -925,7 +925,7 @@ def securitydata_search_command(client, args):
             raw_response={},
         )
 
-
+@logger
 def user_create_command(client, args):
     org_name = args.get("orgname")
     username = args.get("username")
@@ -946,6 +946,7 @@ def user_create_command(client, args):
     )
 
 
+@logger
 def user_block_command(client, args):
     username = args.get("username")
     user_id = client.block_user(username)
@@ -960,6 +961,7 @@ def user_block_command(client, args):
     )
 
 
+@logger
 def user_unblock_command(client, args):
     username = args.get("username")
     user_id = client.unblock_user(username)
@@ -974,6 +976,7 @@ def user_unblock_command(client, args):
     )
 
 
+@logger
 def user_deactivate_command(client, args):
     username = args.get("username")
     user_id = client.deactivate_user(username)
@@ -988,6 +991,7 @@ def user_deactivate_command(client, args):
     )
 
 
+@logger
 def user_reactivate_command(client, args):
     username = args.get("username")
     user_id = client.reactivate_user(username)
@@ -1002,6 +1006,7 @@ def user_reactivate_command(client, args):
     )
 
 
+@logger
 def legal_hold_add_user_command(client, args):
     username = args.get("username")
     matter_name = args.get("mattername")
@@ -1024,6 +1029,7 @@ def legal_hold_add_user_command(client, args):
     )
 
 
+@logger
 def legal_hold_remove_user_command(client, args):
     username = args.get("username")
     matter_name = args.get("mattername")
@@ -1042,6 +1048,9 @@ def legal_hold_remove_user_command(client, args):
         readable_output=readable_outputs,
         raw_response=user_uid
     )
+
+
+@logger
 def download_file_command(client, args):
     file_hash = args.get("hash")
     response = client.download_file(file_hash)
