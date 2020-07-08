@@ -28,5 +28,5 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           echo "New PR number is $PR_NUMBER"
-          python request_contributor_review.py --pr_number $PR_NUMBER --github_token $GITHUB_TOKEN
+          python .github/workflows/helper_scripts/request_contributor_review.py --pr_number $PR_NUMBER --github_token $GITHUB_TOKEN
           echo "Finished requesting review of contributor packs"
