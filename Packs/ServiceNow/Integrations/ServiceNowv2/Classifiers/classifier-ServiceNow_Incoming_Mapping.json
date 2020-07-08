@@ -1,0 +1,187 @@
+{
+	"brands": null,
+	"defaultIncidentType": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "25e52e12-2c66-4c8a-8423-c344a4ba553a",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 4,
+	"mapping": {
+		"ServiceNowTicket": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"State": {
+					"complex": null,
+					"simple": "state"
+				},
+				"Ticket Number": {
+					"complex": null,
+					"simple": "number"
+				},
+				"Watch List": {
+					"complex": null,
+					"simple": "watch_list"
+				},
+				"dbotMirrorId": {
+					"complex": null,
+					"simple": "sys_id"
+				},
+				"dbotMirrorInstance": {
+					"complex": null,
+					"simple": ".='ServiceNow v2_copy_instance_1'"
+				},
+				"dbotMirrorTags": {
+					"complex": null,
+					"simple": ".='ForServiceNow'"
+				},
+				"details": {
+					"complex": null,
+					"simple": "comments"
+				},
+				"name": {
+					"complex": null,
+					"simple": "short_description"
+				},
+				"occurred": {
+					"complex": null,
+					"simple": "sys_created_on"
+				},
+				"owner": {
+					"complex": null,
+					"simple": "opened_by.link"
+				},
+				"severity": {
+					"complex": null,
+					"simple": "urgency"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"dbotMirrorDirection": {
+					"complex": null,
+					"simple": ".='Both'"
+				},
+				"dbotMirrorId": {
+					"complex": null,
+					"simple": "sys_id"
+				},
+				"dbotMirrorInstance": {
+					"complex": null,
+					"simple": ".='ServiceNow v2_copy_instance_1'"
+				},
+				"dbotMirrorTags": {
+					"complex": null,
+					"simple": ".='ForServiceNow'"
+				},
+				"name": {
+					"complex": null,
+					"simple": "short_description"
+				},
+				"severity": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "urgency",
+						"transformers": [
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "High"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "1"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "Medium"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "2"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "Low"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "3"
+										}
+									}
+								},
+								"operator": "replace"
+							}
+						]
+					},
+					"simple": ""
+				}
+			}
+		}
+	},
+	"name": "ServiceNow Incoming Mapping",
+	"nameRaw": "ServiceNow Incoming Mapping",
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sortValues": null,
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": null,
+		"simple": ""
+	},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}

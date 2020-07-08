@@ -1813,6 +1813,195 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]
     return 'ok', {}, {}, True
 
 
+def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """get-remote-data command: Returns an updated incident and entries
+
+    :type client: ``Client``
+    :param Client: XSOAR client to use
+
+    :type args: ``Dict[str, Any]``
+    :param args:
+        all command arguments, usually passed from ``demisto.args()``.
+        ``args['id']`` incident id to retrieve
+        ``args['lastUpdate']`` when was the last time we retrieved data
+
+    :return:
+        A ``List[Dict[str, Any]]`` first entry is the incident (which can be completely empty) and others are the new entries
+
+    :rtype: ``List[Dict[str, Any]]``
+    """
+
+    ticket_id = args.get('id')
+    demisto.debug(f'Getting update for remote {ticket_id}')
+    last_update = arg_to_timestamp(
+        arg=args.get('lastUpdate'),
+        arg_name='lastUpdate',
+        required=True
+    )
+    demisto.debug(f'last_update is {last_update}')
+
+    ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
+    number = str(args.get('number', ''))
+    get_attachments = args.get('get_attachments', 'false')
+    custom_fields = split_fields(str(args.get('custom_fields', '')))
+    additional_fields = argToList(str(args.get('additional_fields', '')))
+
+    result = client.get(ticket_type, ticket_id, generate_body({}, custom_fields), number)
+    if not result or 'result' not in result:
+        return 'Ticket was not found.'
+
+    if isinstance(result['result'], list):
+        if len(result['result']) == 0:
+            return 'Ticket was not found.'
+        ticket = result['result'][0]
+    else:
+        ticket = result['result']
+
+    ticket_last_update = arg_to_timestamp(
+        arg=ticket.get('sys_updated_on'),
+        arg_name='sys_updated_on',
+        required=False
+    )
+
+    demisto.debug(f'ticket_last_update is {ticket_last_update}')
+
+    if last_update > ticket_last_update:
+        demisto.debug(f'Nothing new in the ticket')
+        ticket = {}
+    else:
+        demisto.debug(f'ticket is updated: {ticket}')
+
+    # get latest comments
+    entries = []
+
+    sys_param_limit = args.get('limit', client.sys_param_limit)
+    sys_param_offset = args.get('offset', client.sys_param_offset)
+
+    sys_param_query = f'element_id={ticket_id}^element=comments^ORelement=work_notes'
+
+    comments_result = client.query('sys_journal_field', sys_param_limit, sys_param_offset, sys_param_query)
+    demisto.debug(f'Comments result is {comments_result}')
+
+    if not comments_result or 'result' not in comments_result:
+        demisto.debug(f'Pull result is {ticket}')
+        return [ticket]
+
+    for note in comments_result.get('result'):
+        entry_time = arg_to_timestamp(
+            arg=note.get('sys_created_on'),
+            arg_name='sys_created_on',
+            required=False
+        )
+        demisto.debug(f'entry_time is {entry_time}')
+
+        if last_update > entry_time:
+            continue
+
+        entries.append({
+            'Type': 1,
+            'Category': 'chat',
+            'ContentsFormat': 'text',
+            'Contents': note.get('value'),
+        })
+
+    original_ticket = result['result']
+
+    if original_ticket.get('resolved_by') != '':
+        demisto.info(f'ticket is closed: {original_ticket}')
+        entries.append({
+            'Type': EntryType.NOTE,
+            'Contents': {
+                'dbotIncidentClose': True,
+                'closeReason': 'From ServiceNow'
+            },
+            'ContentsFormat': EntryFormat.JSON
+        })
+
+    demisto.debug(f'Pull result is {ticket} + {entries}')
+
+    return [ticket] + entries
+
+
+def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
+    """update-remote-system command: pushes local changes to the remote system
+
+    :type client: ``Client``
+    :param Client: XSOAR client to use
+
+    :type args: ``Dict[str, Any]``
+    :param args:
+        all command arguments, usually passed from ``demisto.args()``.
+        ``args['data']`` the data to send to the remote system
+        ``args['entries']`` the entries to send to the remote system
+        ``args['incidentChanged']`` boolean telling us if the local incident indeed changed or not
+        ``args['remoteId']`` the remote incident id
+
+    :return:
+        ``str`` containing the remote incident id - really important if the incident is newly created remotely
+
+    :rtype: ``str``
+    """
+    data = args.get('data')
+    entries = args.get('entries')
+    incident_changed = args.get('incidentChanged')
+    ticket_id = args.get('remoteId')
+    org_status = args.get('status')
+
+    demisto.debug(f'data is {data}, entries are {entries}, incident_changed is {incident_changed}, and ticket_id is {ticket_id}\n')
+
+    ticket_type = 'incident'
+    if incident_changed:
+        additional_fields = split_fields(str(args.get('additional_fields', '')))
+        additional_fields_keys = list(additional_fields.keys())
+
+        fields = get_ticket_fields(data, ticket_type=ticket_type)
+        fields.update(additional_fields)
+
+        demisto.debug(f'Sending update request to server {ticket_type}, {ticket_id}, {fields}\n')
+        result = client.update(ticket_type, ticket_id, fields, {})
+
+        demisto.info(f'Ticket Update result {result}\n')
+
+    if len(entries) > 0:
+        demisto.debug(f'New entries {entries}\n')
+
+        for entry in entries:
+            key = 'comments'
+            text = str(entry.get('contents', ''))
+
+            result = client.add_comment(ticket_id, ticket_type, key, text)
+
+    return ticket_id
+
+
+def get_mapping_fields_command(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
+    """get-mapping-fields command: Returns the list of fields for an incident type
+
+    :type client: ``Client``
+    :param Client: XSOAR client to use
+
+    :type args: ``Dict[str, Any]``
+    :param args:
+        all command arguments, usually passed from ``demisto.args()``.
+        ``args['type']`` incident type to retrieve fields for
+
+    :return:
+        A ``Dict[str, Any]`` object with keys as field names and description as values
+
+    :rtype: ``Dict[str, Any]``
+    """
+    res = {}
+
+    result = client.send_request(f'table/{client.ticket_type}?sysparm_limit=1', 'GET')
+    if 'result' not in result:
+        raise Exception('ServiceNow error: ' + str(result))
+    ticket = result.get('result')
+    res["Default Schema"] = ticket[0]
+
+    demisto.debug(f'res is {res}\n')
+    return res
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -1881,6 +2070,12 @@ def main():
             demisto.incidents(incidents)
         elif command == 'servicenow-get-ticket':
             demisto.results(get_ticket_command(client, args))
+        elif command == 'get-remote-data':
+            demisto.results(get_remote_data_command(client, demisto.args(), demisto.params()))
+        elif command == 'update-remote-system':
+            demisto.results(update_remote_system_command(client, demisto.args()))
+        elif demisto.command() == 'get-mapping-fields':
+            demisto.results(get_mapping_fields_command(client, demisto.args()))
         elif command in commands:
             md_, ec_, raw_response, ignore_auto_extract = commands[command](client, args)
             return_outputs(md_, ec_, raw_response, ignore_auto_extract=ignore_auto_extract)
