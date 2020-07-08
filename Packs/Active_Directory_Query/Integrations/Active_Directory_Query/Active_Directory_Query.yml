@@ -375,7 +375,7 @@ script:
       description: CSV list of attributes to include in the results, in addition to the
         default attributes.
     - default: false
-      defaultValue: '30'
+      defaultValue: '150'
       description: Time limit (in seconds) for the search to run.
       isArray: false
       name: time_limit
