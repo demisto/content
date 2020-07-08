@@ -132,7 +132,7 @@ def test_module(client):
     """
     # using wootassets to test API
     try:
-        test = client.http_request('GET', 'wootassets')
+        client.http_request('GET', 'wootassets')
         return 'ok'
     except Exception as e:
         return 'not ok'
