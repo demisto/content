@@ -26,7 +26,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-        working-directory: $GITHUB_WORKSPACE
         run: |
           echo "New PR number is $PR_NUMBER"
           pwd
