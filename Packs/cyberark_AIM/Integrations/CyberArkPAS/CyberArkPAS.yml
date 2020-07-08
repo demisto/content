@@ -140,7 +140,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'List of remote machines, separated by semicolons.Example: server1.cyberark.com;server2.cyberark.com'
+      description: List of remote machines, separated by semicolons.Example: server1.cyberark.com;server2.cyberark.com
       isArray: false
       name: remote-machines
       required: false
