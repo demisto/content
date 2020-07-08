@@ -135,8 +135,6 @@ def get_attachments_for_test_playbooks(build_url, env_results_file_name):
     with open(env_results_file_name, 'r') as env_results_file_content:
         env_results = json.load(env_results_file_content)
 
-    # TODO: update this code after switching to parallel tests using multiple server for nightly build
-    instance_dns = env_results[0]['InstanceDNS']
     role = env_results[0]['Role']
     success_file_path = "./Tests/is_build_passed_{}.txt".format(role.replace(' ', ''))
 
@@ -150,9 +148,6 @@ def get_attachments_for_test_playbooks(build_url, env_results_file_name):
         'color': color,
         'title': title,
         'title_link': build_url,
-        "author_name": "Demisto Machine (Click here to open the nightly server)",
-        "author_link": "https://{0}".format(instance_dns),
-        "author_icon": DEMISTO_GREY_ICON,
         'fields': content_team_fields
     }]
 
@@ -160,9 +155,6 @@ def get_attachments_for_test_playbooks(build_url, env_results_file_name):
         'fallback': title,
         'color': color,
         'title': title,
-        "author_name": "Demisto AWS Machine",
-        "author_link": "https://{0}".format(instance_dns),
-        "author_icon": DEMISTO_GREY_ICON,
         'title_link': build_url,
         'fields': content_fields
     }]
