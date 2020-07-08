@@ -1,7 +1,7 @@
 import hashlib
 import subprocess
 import tempfile
-from typing import Dict, Union, Set, Optional
+from typing import Union, Set, Optional
 
 import magic
 
@@ -15,12 +15,13 @@ class InclusiveExclusive:
 
 def get_file_path_from_id(entry_id: Optional[str] = None):
     if entry_id:
-        return demisto.getFilePath(entry_id).get('path')
+        file_obj = demisto.getFilePath(entry_id)
+        return file_obj.get('path'), file_obj.get('name')
     else:
-        return None
+        return None, None
 
 
-def run_process(args: list, stdout=subprocess.PIPE, stderr=subprocess.PIPE):
+def run_command(args: list, stdout=subprocess.PIPE, stderr=subprocess.PIPE):
     """Running a process
 
     Args:
@@ -31,12 +32,13 @@ def run_process(args: list, stdout=subprocess.PIPE, stderr=subprocess.PIPE):
     Raises:
         DemistoException if returncode is different than 0
     """
-    demisto.results(f'running command {args}')
     process = subprocess.Popen(args, stdout=stdout, stderr=stderr)
-    process.wait()
     stdout_data, stderr_data = process.communicate()
     if process.returncode != 0:
-        raise DemistoException(f'Error returned from tshark command: {process.returncode=} {stderr_data}')
+        raise DemistoException(f'Error returned from tshark command: {process.returncode=}\n {stderr_data=}')
+
+    # For debugging purposes
+    return stdout_data, stderr_data
 
 
 def upload_files(
@@ -61,7 +63,7 @@ def upload_files(
         Extracted files to download
 
     """
-    run_process(['tshark', '-r', f'{file_path}', '--export-objects', f'http,{dir_path}',
+    run_command(['tshark', '-r', f'{file_path}', '--export-objects', f'http,{dir_path}',
                  '--export-objects', f'smb,{dir_path}', '--export-objects', f'imf,{dir_path}',
                  '--export-objects', f'tftp,{dir_path}', '--export-objects', f'dicom,{dir_path}'])
 
@@ -72,7 +74,7 @@ def upload_files(
     sha256 = hashlib.sha256()
     # strip `.` from extension
     if extensions:
-        extensions = [extension.split(".")[-1] for extension in extensions]
+        extensions = set([extension.split(".")[-1] for extension in extensions])
     for root, _, files in os.walk(dir_path):
         # Limit the files list to minimum
         files = files[: limit]
@@ -134,47 +136,58 @@ def upload_files(
 
 def decrypt(
         file_path: str,
+        temp_file: str,
         password: Optional[str] = None,
         rsa_key_path: Optional[str] = None
 ) -> str:
     if not password and not rsa_key_path:
         return file_path
-    file_extension = os.path.splitext(file_path)[1]
-    with tempfile.NamedTemporaryFile(suffix=file_extension) as temp_file:
-        command = ['tshark', '-r', file_path, '-w', temp_file.name]
+    command = ['tshark', '-r', file_path, '-w', temp_file]
 
-        if password:
-            command.extend([
-                '-o', 'wlan.enable_decryption:TRUE',
-                '-o', f'uat:80211_keys:"wpa-pwd","{password}"'
-            ])
+    if password:
+        command.extend([
+            '-o', 'wlan.enable_decryption:TRUE',
+            '-o', f'uat:80211_keys:"wpa-pwd","{password}"'
+        ])
 
-        if rsa_key_path:
-            command.extend(['-o', f'uat:rsa_keys:"{rsa_key_path}",""'])
-        run_process(command)
-        return temp_file.name
+    if rsa_key_path:
+        command.extend(['-o', f'uat:rsa_keys:"{rsa_key_path}",""'])
+    run_command(command)
+    return temp_file
 
 
-def main():
+def main(
+        entry_id: str,
+        wpa_password: Optional[str] = None,
+        rsa_decrypt_key_entry_id: Optional[str] = None,
+        types: Optional[str] = None,
+        types_inclusive_or_exclusive: Optional[str] = 'inclusive',
+        extensions: Optional[str] = None,
+        extensions_inclusive_or_exclusive: str = 'inclusive',
+        limit: Optional[str] = '5',
+):
     with tempfile.TemporaryDirectory() as dir_path:
         try:
-            kwargs = demisto.args()
-            file_path = get_file_path_from_id(kwargs.get('entry_id'))
-            file_path = decrypt(
-                file_path, kwargs.get('wpa_password'), get_file_path_from_id(kwargs.get('rsa_decrypt_key_entry_id'))
-            )
-            return_results(upload_files(
-                file_path, dir_path,
-                types=set(argToList(kwargs.get('types'))),
-                extensions=set(argToList(kwargs.get('extensions'))),
-                types_inclusive_or_exclusive=kwargs.get('types_inclusive_or_exclusive'),
-                extensions_inclusive_or_exclusive=kwargs.get('extensions_inclusive_or_exclusive'),
-                limit=int(kwargs.get('limit', 5))
-            ))
+            file_path, file_name = get_file_path_from_id(entry_id)
+            file_extension = os.path.splitext(file_name)[1]
+            with tempfile.NamedTemporaryFile(suffix=file_extension) as temp_file:
+                cert, _ = get_file_path_from_id(rsa_decrypt_key_entry_id)
+                file_path = decrypt(
+                    file_path, temp_file.name,
+                    wpa_password, None
+                )
 
+                return_results(upload_files(
+                    file_path, dir_path,
+                    types=set(argToList(types)),
+                    extensions=set(argToList(extensions)),
+                    types_inclusive_or_exclusive=types_inclusive_or_exclusive,
+                    extensions_inclusive_or_exclusive=extensions_inclusive_or_exclusive,
+                    limit=int(limit) if limit else 5
+                ))
         except Exception as e:
             return_error(f'Failed to execute PcapFileExtracor. Error: {str(e)}')
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
-    main()
+    main(**demisto.args())

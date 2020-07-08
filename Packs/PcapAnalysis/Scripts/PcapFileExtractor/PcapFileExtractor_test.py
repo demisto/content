@@ -1,6 +1,6 @@
 import os
 
-from PcapFileExtractor import upload_files
+from PcapFileExtractor import upload_files, main
 
 OUTPUTS = [
     {
@@ -30,3 +30,10 @@ def test_extract_files(tmpdir):
     assert 'Pcap Extracted Files' in results.readable_output
     assert OUTPUTS == results.outputs
     assert os.path.isfile(os.path.join(tmpdir, 'rfc1350.txt'))
+
+
+def test_decryption(mocker):
+    file_path = './TestData/wpa-Induction.pcap'
+    password = 'Induction'
+    mocker.patch('PcapFileExtractor.get_file_path_from_id', return_value=(file_path, 'wpa-Induction.pcap'))
+    main('111', wpa_password=password)
