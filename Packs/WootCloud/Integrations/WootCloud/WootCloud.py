@@ -131,9 +131,11 @@ def test_module(client):
     Performs basic get request to get information on all WootCloud provided assets
     """
     # using wootassets to test API
-    test = client.http_request('GET', 'wootassets')
-    if test == :
-        pass
+    try:
+        test = client.http_request('GET', 'wootassets')
+        return 'ok'
+    except Exception as e:
+        return 'not ok'
 
 def fetch_single_alert(client, alert_id, type):
     """ Fetches single packet by ID. """
@@ -186,7 +188,7 @@ def main():
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
             result = test_module(client)
-            return_results('ok')
+            return_results(result)
         elif demisto.command() == 'fetch-incidents':
             # Set and define the fetch incidents command to run after activated via integration settings.
             fetch_incidents(client, ALERT_TYPE)
