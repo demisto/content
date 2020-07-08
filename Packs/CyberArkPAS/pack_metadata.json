@@ -1,0 +1,16 @@
+{
+    "name": "CyberArk Privileged Access Security",
+    "description": "An Integration Pack with CyberArk Privileged Access Security",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-07-08T08:06:46Z",
+    "categories": [
+        "Authentication"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

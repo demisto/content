@@ -1,0 +1,2 @@
+!cyberark-list-accounts
+!cyberark-add-account name="user12" address="20.20.20.20" user-name="user12" platform-Id="WinDesktopLocal" safe-name="Labs" platform-account-properties=`{"Location": "IT", "OwnerName": "MSSPAdmin"}`
