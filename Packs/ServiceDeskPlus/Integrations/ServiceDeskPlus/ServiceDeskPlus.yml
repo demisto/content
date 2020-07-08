@@ -68,7 +68,7 @@ configuration:
   name: fetch_filter
   required: false
   type: 12
-description: IT Service Management
+description: Use this integration to manage Service Desk Plus requests. The integration allows you to create, update, and delete requests, assign groups and technicians to requests, and link/unlink requests and modify their resolution.
 display: Service Desk Plus
 name: ServiceDeskPlus
 script:
