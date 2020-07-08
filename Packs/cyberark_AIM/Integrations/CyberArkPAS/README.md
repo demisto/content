@@ -1,5 +1,5 @@
 Use this integration to create, list, modify and delete entities in the PAS solution. 
-This integration was integrated and tested with version11.4 of CyberArk Privileged Account Security
+This integration was integrated and tested with version 11.4 of CyberArk Privileged Account Security
 ## Configure CyberArkPAS on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -175,4 +175,3 @@ A command to add a new CyberArk Account
 >|AccountID|AccountName|CreatedTime|PlatformID|SafeName|UserName|
 >|---|---|---|---|---|---|
 >| 10_29 | user12 | 1593598605 | WinDesktopLocal | Labs | user12 |
-
