@@ -4,10 +4,15 @@ import os
 import sys
 import json
 from pathlib import Path
-from Tests.Marketplace.marketplace_services import PACKS_FOLDER, PACKS_FULL_PATH, Pack, Metadata
 
 REPO_OWNER = "demisto"
 REPO_NAME = "content"
+PACKS_FOLDER = "Packs"
+CONTENT_REPO_FULL_PATH = os.environ.get('GITHUB_WORKSPACE') or os.path.abspath(
+    os.path.join(__file__, '../../../..'))
+PACKS_FULL_PATH = os.path.join(CONTENT_REPO_FULL_PATH, PACKS_FOLDER)
+PACK_METADATA = "pack_metadata.json"
+XSOAR_SUPPORT = "xsoar"
 PACK_METADATA_GITHUB_USER_FIELD = "githubUser"
 
 requests.packages.urllib3.disable_warnings()
@@ -64,14 +69,13 @@ def request_pack_contributor_review(pr_number, github_token=None):
     modified_packs = {Path(p).parts[1] for p in pr_files if p.startswith(PACKS_FOLDER) and len(Path(p).parts) > 1}
 
     for pack in modified_packs:
-        pack_metadata_path = os.path.join(PACKS_FULL_PATH, pack, Pack.USER_METADATA)
+        pack_metadata_path = os.path.join(PACKS_FULL_PATH, pack, PACK_METADATA)
 
         if os.path.exists(pack_metadata_path):
             with open(pack_metadata_path, 'r') as pack_metadata_file:
                 pack_metadata = json.load(pack_metadata_file)
 
-            if pack_metadata.get('support') != Metadata.XSOAR_SUPPORT \
-                    and PACK_METADATA_GITHUB_USER_FIELD in pack_metadata \
+            if pack_metadata.get('support') != XSOAR_SUPPORT and PACK_METADATA_GITHUB_USER_FIELD in pack_metadata \
                     and pack_metadata[PACK_METADATA_GITHUB_USER_FIELD]:
                 print(f"Found github user in pack {pack}")
 
@@ -87,7 +91,7 @@ def request_pack_contributor_review(pr_number, github_token=None):
                 print(f"Finished requesting review from {github_user} user on PR number {pr_number}")
 
         else:
-            print(f"Not found {pack} {Pack.USER_METADATA} file.")
+            print(f"Not found {pack} {PACK_METADATA} file.")
 
 
 def main():
