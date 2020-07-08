@@ -7,12 +7,12 @@ tags:
 - transformer
 - general
 comment: Python alternative to DT. Input can be accessed with variable 'val', the
-  same as DT. demisto.incident(), demisto.context(), and demisto.parentContext() are not accessible from a transformer. Use the variable "context" instead
+  same as DT.
 enabled: true
 args:
 - name: Python
   description: Python code, context can be referenced like a Python dict named "val"
-    . e.g. return_results(val['incident']['id'])
+    . e.g. val+"Hello World"
 scripttarget: 0
 subtype: python3
 pswd: ""

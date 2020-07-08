@@ -6,7 +6,7 @@ def setup_context():
 
 def py_dt(val):
     source = demisto.args().get('Python', 'return_results("Python arg not found")')
-    code = compile(source, '<string>', 'exec')
+    code = compile('return_results({})'.format(source), '<string>', 'exec')
     e = 'ex'
     c = 'ec'
     f'{e}{c}({code})'
