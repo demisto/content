@@ -1496,6 +1496,7 @@
                 "virus_total_general"
             ],
             "timeout": 1400,
+            "fromversion": "5.5.0",
             "nightly": true
         },
         {
@@ -3086,8 +3087,7 @@
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tenable.sc": "unstable instance",
-        "VirusTotal - Private API": "Issue 22638",
-        
+
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Issue 25650",
         "XFE_v2": "Issue 22715",
