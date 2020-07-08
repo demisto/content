@@ -31,7 +31,7 @@ configuration:
 description: Use this integration to create, list, modify and delete entities in the
   PAS solution. This integration was integrated and tested with version 11.4 of CyberArk
   Privileged Account Security
-display: CyberArkPAS
+display: CyberArk PAS
 name: CyberArkPAS
 script:
   commands:
