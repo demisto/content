@@ -94,6 +94,7 @@ else
             exit 1
         fi
         echo "Using python 3 command: `command -v $PY3CMD`"
+        $PY3CMD -c 'import sys;print(sys.version_info.major);print(sys.version_info.minor);'
         if ! $PY3CMD -c 'import sys;assert sys.version_info.major == 3 and sys.version_info.minor >= 7, "python version check failed for: {}".format(sys.version_info)'; then
             echo "ERROR: python 3.7 or above version validation failed. Please make sure you have Python 3.7 (and above) installed on your system" 1>&2
             exit 1
