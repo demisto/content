@@ -1122,7 +1122,8 @@ class Pack(object):
                 raise Exception(f'New mandatory dependencies {mandatory_dependencies} were '
                                 f'found in the core pack {self._pack_name}')
 
-        user_metadata['dependencies'].update(pack_dependencies)
+        pack_dependencies.update(user_metadata['dependencies'])
+        user_metadata['dependencies'] = pack_dependencies
 
     def prepare_for_index_upload(self):
         """ Removes and leaves only necessary files in pack folder.
