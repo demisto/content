@@ -50,7 +50,7 @@ class Client(BaseClient):
         return res
 
     def get_accounts(self, offset="25", limit="25"):
-        LOG('Getting the List of Accounts')
+        demisto.debug('Getting the List of Accounts')
         headers = {
             'Authorization': self.auth_token
         }
