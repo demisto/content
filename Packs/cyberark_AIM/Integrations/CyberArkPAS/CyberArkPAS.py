@@ -70,7 +70,7 @@ class Client(BaseClient):
                     name='', secret='', secret_type='password', platform_account_properties='',
                     automatic_management_enabled='true', manual_management_reason='', remote_machines='',
                     access_restricted_to_remote_machines='false'):
-        LOG('Adding a new Account')
+        demisto.debug('Adding a new Account')
 
         headers = {
             'Authorization': self.auth_token
