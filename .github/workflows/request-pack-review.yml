@@ -26,7 +26,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+        working-directory: $GITHUB_WORKSPACE
         run: |
           echo "New PR number is $PR_NUMBER"
+          pwd
           python .github/workflows/helper_scripts/request_contributor_review.py --pr_number $PR_NUMBER --github_token $GITHUB_TOKEN
           echo "Finished requesting review of contributor packs"
