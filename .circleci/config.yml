@@ -210,23 +210,7 @@ jobs:
                 exit 0
             fi
             demisto-sdk create-id-set -o ./Tests/id_set.json
-      - run:
-          name: Infrastructure testing
-          when: always
-          command: |
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
-              then
-                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
-                exit 0
-            fi
 
-            python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
-            python3 -m pytest ./Tests/Marketplace/Tests/ -v
-
-            if [ -n "${DEMISTO_SDK_NIGHTLY}" ] ; then
-                  ./Tests/scripts/sdk_pylint_check.sh
-            fi
-            exit 0
       - run:
           name: Validate Files and Yaml
           when: always
@@ -818,17 +802,7 @@ jobs:
       - *restore_cache
       - *add_ssh_keys
       - *prepare_environment
-      - run:
-          name: Infrastructure testing
-          when: always
-          command: |
-            python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
-            python3 -m pytest ./Tests/Marketplace/Tests/ -v
 
-            if [ -n "${DEMISTO_SDK_NIGHTLY}" ] ; then
-                  ./Tests/scripts/sdk_pylint_check.sh
-            fi
-            exit 0
       - run:
           name: Run Unit Testing and Lint
           when: always
