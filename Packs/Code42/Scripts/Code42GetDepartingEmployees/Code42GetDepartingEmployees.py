@@ -5,7 +5,6 @@ from CommonServerPython import *
 def main():
     res = {"total": 0}
     res_data = []
-    top = demisto.args().get("top") or 10
 
     try:
         employees = demisto.executeCommand("code42-departingemployee-get-all", {})[0]["Contents"]
@@ -14,16 +13,10 @@ def main():
         # Get each employee on the Departing Employee List and their total alerts.
         for employee in employees:
             username = employee["userName"]
-            alerts = demisto.executeCommand("code42-alert-search", {"username": username})[0]["Contents"]
-            alerts_count = len(alerts)
+            employee_res = {"Username": username}
+            res_data.append(employee_res)
 
-            # Ignores employees without alerts
-            if alerts_count:
-                employee_res = {"Username": username, "Alerts Count": alerts_count}
-                res_data.append(employee_res)
-
-        # Sort such that highest alert counts are first and get top.
-        res["data"] = sorted(res_data, key=lambda x: x["Alerts Count"], reverse=True)[:top]
+        res["data"] = res_data
         demisto.results(res)
     except Exception as e:
         res["total"] = -1

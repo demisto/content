@@ -1,19 +1,13 @@
-args:
-- defaultValue: 10
-  description: To limit results to x number of employees with the highest alert count.
-  name: top
-  type: number
 comment: Gets all departing employees and alerts for each.
 commonfields:
-  id: 468c8e6f-6f50-486f-8cde-7dabe4cbeb2b
+  id: Code42GetDepartingEmployees
   version: -1
 dependson:
   must:
   - Code42|||code42-departingemployee-get-all
-  - Code42|||code42-alerts-search
-dockerimage: demisto/py42:1.0.0.9242
+dockerimage: demisto/py42:1.0.0.9653
 enabled: true
-name: Code42GetDepartingEmployeeAlerts
+name: Code42GetDepartingEmployees
 pswd: ""
 runas: DBotWeakRole
 runonce: false

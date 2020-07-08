@@ -14,9 +14,9 @@
         },
         "toDate": "0001-01-01T00:00:00Z"
     },
-    "id": "570ec235-7ee4-43ea-8fc7-eba94a0cca71",
+    "id": "Departing Employees List",
     "isPredefined": false,
-    "name": "Departing Employee Alerts",
+    "name": "Departing Employees",
     "params": {
         "tableColumns": [
             {
@@ -31,7 +31,7 @@
             }
         ]
     },
-    "query": "Code42GetDepartingEmployeeAlerts",
+    "query": "Code42GetDepartingEmployees",
     "size": 0,
     "sort": null,
     "sortValues": null,

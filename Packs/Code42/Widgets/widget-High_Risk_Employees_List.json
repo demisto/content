@@ -1,0 +1,40 @@
+{
+    "category": "",
+    "dataType": "scripts",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": null,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "High Risk Employees List",
+    "isPredefined": false,
+    "name": "High Risk Employees",
+    "params": {
+        "tableColumns": [
+            {
+                "displayed": true,
+                "isDefault": true,
+                "key": "Username"
+            },
+            {
+                "displayed": true,
+                "isDefault": true,
+                "key": "ExposureEvents"
+            }
+        ]
+    },
+    "query": "Code42GetHighRiskEmployees",
+    "size": 0,
+    "sort": null,
+    "sortValues": null,
+    "version": -1,
+    "widgetType": "table"
+}
