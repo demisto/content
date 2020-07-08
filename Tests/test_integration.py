@@ -398,11 +398,13 @@ def __test_integration_instance(client, module_instance, prints_manager, thread_
     result_object = ast.literal_eval(response_data)
     success, failure_message = bool(result_object.get('success')), result_object.get('message')
     if not success:
+        server_url = client.api_client.configuration.host
         if failure_message:
-            test_failed_msg = 'Test integration failed.\nFailure message: {}'.format(failure_message)
+            test_failed_msg = 'Test integration failed - server: {}.\nFailure message: {}'.format(server_url,
+                                                                                                  failure_message)
             prints_manager.add_print_job(test_failed_msg, print_error, thread_index)
         else:
-            test_failed_msg = 'Test integration failed\nNo failure message.'
+            test_failed_msg = 'Test integration failed - server: {}.\nNo failure message.'.format(server_url)
             prints_manager.add_print_job(test_failed_msg, print_error, thread_index)
     return success, failure_message
 
@@ -888,9 +890,14 @@ def test_integration(client, server_url, integrations, playbook_id, prints_manag
         # give playbook time to run
         time.sleep(1)
 
-        # fetch status
-        playbook_state = __get_investigation_playbook_state(client, investigation_id, prints_manager,
-                                                            thread_index=thread_index)
+        try:
+            # fetch status
+            playbook_state = __get_investigation_playbook_state(client, investigation_id, prints_manager,
+                                                                thread_index=thread_index)
+        except demisto_client.demisto_api.rest.ApiException:
+            playbook_state = 'Pending'
+            client = demisto_client.configure(base_url=client.api_client.configuration.host,
+                                              api_key=client.api_client.configuration.api_key, verify_ssl=False)
 
         if playbook_state in (PB_Status.COMPLETED, PB_Status.NOT_SUPPORTED_VERSION):
             break

@@ -5,7 +5,7 @@
 		"TypeName": "",
 		"id": "domainRepUnified",
 		"kind": "indicatorsDetails",
-		"modified": "2020-03-26T12:40:50.625087+02:00",
+		"modified": "2020-07-02T10:03:32.758057+03:00",
 		"name": "",
 		"system": false,
 		"tabs": [
@@ -330,14 +330,14 @@
 								"startCol": 0
 							},
 							{
-                                "index": 18,
-                                "endCol": 2,
-                                "height": 24,
-                                "startCol": 0,
+								"endCol": 2,
+								"fieldId": "aggregatedreliability",
+								"height": 24,
+								"id": "b49a3ba0-6f8d-11ea-aeac-6dbd1bcce63e",
+								"index": 18,
 								"sectionItemType": "field",
-                                "fieldId": "aggregatedreliability",
-                                "id": "b49a3ba0-6f8d-11ea-aeac-6dbd1bcce63e"
-                            }
+								"startCol": 0
+							}
 						],
 						"maxW": 3,
 						"minH": 1,
@@ -539,6 +539,32 @@
 						"w": 2,
 						"x": 1,
 						"y": 9
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "default-main-00755e60-bc32-11ea-9755-ebbaf4d3af4d",
+						"items": [
+							{
+								"endCol": 6,
+								"fieldId": "feedrelatedindicators",
+								"height": 106,
+								"id": "0eb6d030-bc32-11ea-9755-ebbaf4d3af4d",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Feed Related Indicators",
+						"static": false,
+						"w": 3,
+						"x": 0,
+						"y": 11
 					}
 				],
 				"type": "custom"
@@ -549,5 +575,5 @@
 	},
 	"typeId": "domainRepUnified",
 	"version": -1,
-    "fromversion": "5.5.0"
+	"fromversion": "5.5.0"
 }
