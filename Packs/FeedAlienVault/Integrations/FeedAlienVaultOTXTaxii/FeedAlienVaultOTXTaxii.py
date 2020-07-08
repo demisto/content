@@ -1,7 +1,7 @@
 import demistomock as demisto
+# from Packs.Base.Scripts.CommonServerPython.CommonServerPython import *
 from CommonServerPython import *
 from CommonServerUserPython import *
-
 
 # IMPORTS
 
@@ -20,7 +20,6 @@ from typing import Dict, List
 requests.packages.urllib3.disable_warnings()
 
 SOURCE_NAME = "Alien Vault OTX TAXII"
-
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -108,6 +107,7 @@ class AddressObject(object):
     Implements address object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/AddressObj/AddressObjectType/
     """
+
     @staticmethod
     def decode(props, **kwargs):
         indicator = props.find('Address_Value')
@@ -184,6 +184,7 @@ class DomainNameObject(object):
     Implements domain object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/DomainNameObj/DomainNameObjectType/
     """
+
     @staticmethod
     def decode(props, **kwargs):
         dtype = props.get('type', 'FQDN')
@@ -205,6 +206,7 @@ class FileObject(object):
     Implements file object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/FileObj/FileObjectType/
     """
+
     @staticmethod
     def _decode_basic_props(props):
         result = {}
@@ -266,6 +268,7 @@ class URIObject(object):
     Implements URI object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/URIObj/URIObjectType/
     """
+
     @staticmethod
     def decode(props, **kwargs):
         utype = props.get('type', 'URL')
@@ -291,6 +294,7 @@ class SocketAddressObject(object):
     Implements socket address object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/SocketAddressObj/SocketAddressObjectType/
     """
+
     @staticmethod
     def decode(props, **kwargs):
         ip = props.get('ip_address', None)
@@ -304,6 +308,7 @@ class LinkObject(object):
     Implements link object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/LinkObj/LinkObjectType/
     """
+
     @staticmethod
     def decode(props, **kwargs):
         ltype = props.get('type', 'URL')
@@ -330,6 +335,7 @@ class HTTPSessionObject(object):
     Implements http session object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/HTTPSessionObj/HTTPSessionObjectType/
     """
+
     @staticmethod
     def decode(props, **kwargs):
         if 'http_request_response' in props.keys():
@@ -452,7 +458,7 @@ class StixDecode(object):
 """ Alien Vault OTX TAXII Client """
 
 
-class Client():
+class Client:
     """Client for AlienVault OTX Feed - gets indicator lists from collections using TAXII client
 
         Attributes:
@@ -463,7 +469,7 @@ class Client():
             all_collections(bool): Whether to run on all active collections.
         """
     def __init__(self, api_key: str, collection: str, insecure: bool = False, proxy: bool = False,
-                 all_collections: bool = False, tags: list = []):
+                 all_collections: bool = False):
 
         taxii_client = cabby.create_client(discovery_path="https://otx.alienvault.com/taxii/discovery")
         taxii_client.set_auth(username=str(api_key), password="foo", verify_ssl=not insecure)
@@ -471,7 +477,6 @@ class Client():
             taxii_client.set_proxies(handle_proxy())
 
         self.taxii_client = taxii_client
-        self.tags = tags
 
         self.all_collections = all_collections
         if all_collections:
@@ -519,71 +524,14 @@ class Client():
         return StixDecode.decode(response)
 
 
-def module_test_command(client: Client, args: Dict):
-    """Test module for the integration
-    will run on all the collections given and check for a response.
-    if all_collections is checked will return an error only in case no collection returned a response.
-    if all_collections is not checked will return an error for the collections that did not respond.
-
-    Args:
-        client(Client): The AlienVault OTX client.
-        args(dict): empty dictionary.
-
-    Returns:
-        str,dict,dict. ok if passed - will raise an Exception otherwise.
-    """
-    passed_collections = []  # type:List
-    failed_collections = []  # type:List
-    for collection in client.collections:
-        try:
-
-            client.build_iterator(collection)
-            passed_collections.append(collection)
-
-        except Exception as e:
-            if e.__class__ is requests.exceptions.SSLError:
-                raise Exception("SSL Connection failed - try marking the Trust Any Certificate checkbox.")
-            else:
-                if not client.all_collections:
-                    failed_collections.append(collection)
-                    continue
-
-    if not client.all_collections and len(failed_collections) > 0:
-        raise Exception(f"Unable to poll from the collections {str(failed_collections)} check the collection names and "
-                        f"configuration on Alien Vault")
-
-    if len(passed_collections) == 0:
-        raise Exception("Unable to poll from any collection - please check the configuration on Alien Vault")
-
-    return 'ok', {}, {}
-
-
-def get_indicators_command(client: Client, args: Dict):
-    """Runs fetch indicators and return the indicators.
-
-    Args:
-        client(Client): The AlienVault OTX client.
-        args(dict): The command arguments
-
-    Returns:
-        str,dict,dict. The human readable, and rawJSON from the command - no context created.
-    """
-    limit = int(args.get('limit', 50))
-    indicator_list = fetch_indicators_command(client, limit)
-
-    human_readable = tableToMarkdown("Indicators from AlienVault OTX TAXII:", indicator_list, removeNull=True)
-
-    return human_readable, {}, indicator_list
-
-
 def parse_indicators(sub_indicator_list, full_indicator_list, tags):
     """Gets a decoded indicator list and returns a parsed version of the indicator with accordance with Demisto's
     Feed indicator standards.
 
     Args:
-        tags(list): The tags to add to the indicator.
         sub_indicator_list(list): A list of STIXDecoded indicators
         full_indicator_list(list): A list of all the indicators fetched to this point - used to prevent duplications.
+        tags(list): list of tags to add to the indicator.
 
     Returns:
         list,list. A list of parsed indicators and an updated list of all indicators polled
@@ -597,12 +545,12 @@ def parse_indicators(sub_indicator_list, full_indicator_list, tags):
         indicator['value'] = indicator['indicator']
         indicator['fields'] = {
             "description": indicator["stix_package_short_description"],
-            "tags": tags
+            'tags': tags
         }
 
         temp_copy = indicator.copy()
 
-        del indicator['indicator']
+        del indicator['indicator']  # todo: update IndicatorsObject to this one
 
         indicator['rawJSON'] = temp_copy
         parsed_indicator_list.append(indicator)
@@ -611,68 +559,238 @@ def parse_indicators(sub_indicator_list, full_indicator_list, tags):
     return parsed_indicator_list, full_indicator_list
 
 
-def fetch_indicators_command(client: Client, limit=None):
-    """Fetch indicators from AlienVault OTX.
+class GetIndicatorsCommand(BaseExecutableCommand):
+    @staticmethod
+    def format_response(indicator_list) -> str:
+        return tableToMarkdown("Indicators from AlienVault OTX TAXII:", indicator_list,
+                               headers=['value', 'type'], removeNull=True)
 
-    Args:
-        client(Client): The AlienVault OTX client.
-        limit(any): How many XML elements to parse, None if all should be parsed.
+    @staticmethod
+    def get_indicators(client: Client, tags=None, limit=None):
+        """Fetch indicators from AlienVault OTX.
 
-    Returns:
-        list. A list of indicators.
-    """
-    indicator_list = []  # type:List
-    for collection in client.collections:
-        try:
-            taxii_iter = client.build_iterator(collection)
+        Args:
+            client (Client): The AlienVault OTX client.
+            tags (list): list of tags to add to the argument.
+            limit (any): How many XML elements to parse, None if all should be parsed.
 
-        except Exception as e:
-            if not client.all_collections:
-                raise Exception(e)
+        Returns:
+            list. A list of indicators.
+        """
+        indicator_list = []  # type:List
+        for collection in client.collections:
+            try:
+                taxii_iter = client.build_iterator(collection)
 
-            else:
-                continue
+            except Exception as e:
+                if not client.all_collections:
+                    raise Exception(e)
 
-        only_indicator_list = []  # type:List
-        for raw_response in taxii_iter:
-            _, res = client.decode_indicators(raw_response.content)
-            # the only_indicator_list is a list containing only the indicators themselves.
-            # it is used to prevent duplicated indicators from being created in the system.
-            # this is because AlienVault OTX can return the same indicator several times from the same collection.
-            parsed_list, only_indicator_list = parse_indicators(res, only_indicator_list, client.tags)
-            indicator_list.extend(parsed_list)
-            if limit is not None and limit <= len(indicator_list):
-                indicator_list = indicator_list[:limit]
-                break
+                else:
+                    continue
 
-    return indicator_list
+            only_indicator_list = []  # type:List
+            for raw_response in taxii_iter:
+                _, res = client.decode_indicators(raw_response.content)
+                # the only_indicator_list is a list containing only the indicators themselves.
+                # it is used to prevent duplicated indicators from being created in the system.
+                # this is because AlienVault OTX can return the same indicator several times from the same collection.
+                parsed_list, only_indicator_list = parse_indicators(res, only_indicator_list, tags=tags)
+                indicator_list.extend(parsed_list)
+                if limit is not None and limit <= len(indicator_list):
+                    indicator_list = indicator_list[:limit]
+                    break
+
+        return indicator_list
+
+    def run(self, client, params=None, args=None) -> CommandResults:
+        """Runs fetch indicators and return the indicators.
+
+        Args:
+            client(Client): The AlienVault OTX client.
+            args(dict): The command arguments
+            params(dict): The integration params.
+
+
+        Returns:
+            CommandResults. The CommandResults object of the returned result.
+        """
+        parsed_arguments: Dict[str, CommandArgument] = self.parse_arguments(args)
+        limit = parsed_arguments['limit'].value
+        indicator_list = self.get_indicators(client, limit)
+
+        return CommandResults(
+            readable_output=self.format_response(indicator_list),
+            raw_response=indicator_list
+        )
+
+
+class TestCommand(BaseTestCommand):
+    def run(self, client, params, args=None) -> str:
+        """Test module for the integration
+        will run on all the collections given and check for a response.
+        if all_collections is checked will return an error only in case no collection returned a response.
+        if all_collections is not checked will return an error for the collections that did not respond.
+
+        Args:
+            client(Client): The AlienVault OTX client.
+            args(dict): empty dictionary.
+            params(dict): params dictionary
+
+        Returns:
+            str,dict,dict. ok if passed - will raise an Exception otherwise.
+        """
+        passed_collections = []  # type:List
+        failed_collections = []  # type:List
+        for collection in client.collections:
+            try:
+
+                client.build_iterator(collection)
+                passed_collections.append(collection)
+
+            except Exception as e:
+                if e.__class__ is requests.exceptions.SSLError:
+                    raise Exception("SSL Connection failed - try marking the Trust Any Certificate checkbox.")
+                else:
+                    if not client.all_collections:
+                        failed_collections.append(collection)
+                        continue
+
+        if not client.all_collections and len(failed_collections) > 0:
+            raise Exception(
+                f"Unable to poll from the collections {str(failed_collections)} check the collection names and "
+                f"configuration on Alien Vault")
+
+        if len(passed_collections) == 0:
+            raise Exception("Unable to poll from any collection - please check the configuration on Alien Vault")
+
+        return 'ok'
+
+
+class FetchIndicators(BaseFetchIndicators):
+    def run(self, client, params, args=None) -> IndicatorsObject:
+        indicators_list = GetIndicatorsCommand.get_indicators(client)
+        return IndicatorsObject(indicators_list)
+
+
+commands = [
+    TestCommand(),
+    FetchIndicators(),
+    GetIndicatorsCommand(
+        name='alienvaultotx-get-indicators',
+        description='Gets the indicators from AlienVault OTX.',
+        arguments=[
+            CommandArgument(
+                name='limit',
+                description='The maximum number of indicators to return. The default value is 10.',
+                default_value='10',
+                required=True,
+                type_=int
+            )
+        ]
+    ),
+]
+
+
+settings = GeneralSettings(
+    name='AlienVault OTX TAXII Feed',
+    is_feed=True,
+    fromversion="5.5.0",
+    docker_image='demisto/taxii:1.0.0.6243',
+    category=IntegrationCategory.DATA_ENRICHMENT_THREAT_INTEL,
+    description='This integration fetches indicators from AlienVault OTX using a TAXII client.',
+    display='AlienVault OTX TAXII Feed',
+    params=[
+        IntegrationParam(
+            name='feed',
+            display_name='Fetch indicators',
+            default_value=True,
+            type_=ParamType.BOOLEAN
+        ),
+        IntegrationParam(
+            name='feedReputation',
+            display_name='Indicator Reputation',
+            additional_info='Indicators from this integration instance will '
+                            'be marked with this reputation',
+            default_value='Bad',
+            options_list=['None', 'Good', 'Suspicious', 'Bad'],
+            type_=ParamType.FEED_REPUTATION
+        ),
+        IntegrationParam(
+            name='feedReliability',
+            display_name='Source Reliability',
+            default_value='C - Fairly reliable',
+            additional_info='Reliability of the source providing the intelligence data',
+            options_list=[
+                'A - Completely reliable',
+                'B - Usually reliable',
+                'C - Fairly reliable',
+                'D - Not usually reliable',
+                'E - Unreliable',
+                'F - Reliability cannot be judged'
+            ],
+            required=True,
+            type_=ParamType.SINGLE_SELECT
+        ),
+        IntegrationParam(
+            name='feedExpirationPolicy',
+            options_list=[
+                'never',
+                'interval',
+                'indicatorType',
+                'suddenDeath'
+            ],
+            default_value='indicatorType',
+            display_name='',
+            type_=ParamType.EXPIRATION_POLICY
+        ),
+        IntegrationParam(
+            name='feedExpirationInterval',
+            default_value='20160',
+            display_name='',
+            type_=ParamType.STRING
+        ),
+        IntegrationParam(
+            name='feedFetchInterval',
+            default_value='240',
+            display_name='Feed Fetch Interval',
+            type_=ParamType.TIME_INTERVAL
+        ),
+        IntegrationParam(
+            name='feedBypassExclusionList',
+            display_name='Bypass exclusion list',
+            type_=ParamType.BOOLEAN,
+            additional_info='When selected, the exclusion list is ignored for indicators from'
+                            'this feed. This means that if an indicator from this feed is on the exclusion'
+                            'list, the indicator might still be added to the system.'
+        ),
+        IntegrationParam(
+            name='api_key',
+            display_name='API Key',
+            required=True,
+            type_=ParamType.PASSWORD
+        ),
+        insecure_param,
+        proxy_param
+    ]
+)
 
 
 def main():
-    params = demisto.params()
-    tags = argToList(params.get('feedTags'))
-    client = Client(params.get('api_key'), params.get('collections'), params.get('insecure'), params.get('proxy'),
-                    params.get('all_collections'), tags=tags)
+    settings.parse_params(demisto.params())
+    client = Client(**settings.get_populated_params())
+    demisto.info(f'Command being called is {demisto.command()}')
 
-    command = demisto.command()
-    demisto.info(f'Command being called is {command}')
-    # Switch case
-    commands = {
-        'test-module': module_test_command,
-        'alienvaultotx-get-indicators': get_indicators_command
-    }
     try:
-        if demisto.command() == 'fetch-indicators':
-            indicators = fetch_indicators_command(client)
-            # we submit the indicators in batches
-            for b in batch(indicators, batch_size=2000):
-                demisto.createIndicators(b)
-        else:
-            readable_output, outputs, raw_response = commands[command](client, demisto.args())
-            return_outputs(readable_output, outputs, raw_response)
+        for command in commands:
+            if demisto.command() == command.name:
+                result = command.run(client, settings.params, demisto.args())
+                return_results(result)
+                break
+
     except Exception as e:
-        raise Exception(f'Error in {SOURCE_NAME} Integration [{e}]')
+        return_error(f'Error in {settings.integration_name} Integration [{e}]')
 
 
-if __name__ == '__builtin__' or __name__ == 'builtins':
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

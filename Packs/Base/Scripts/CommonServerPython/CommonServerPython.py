@@ -15,6 +15,7 @@ import sys
 import time
 import traceback
 from random import randint
+from typing import List
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
 from datetime import datetime, timedelta
@@ -2656,6 +2657,11 @@ def return_results(results):
         demisto.results(None)
         return
 
+    if isinstance(results, IndicatorsObject):
+        # we submit the indicators in batches
+        for b in batch(results.indicators, batch_size=2000):
+            demisto.createIndicators(b)
+
     if isinstance(results, CommandResults):
         demisto.results(results.to_context())
         return
@@ -4029,3 +4035,157 @@ def update_integration_context(context, object_keys=None, sync=True):
 
 class DemistoException(Exception):
     pass
+
+
+class IndicatorsObject:
+    def __init__(self, indicators: list):
+        self.indicators: list = indicators
+
+
+from typing import Any
+
+
+class BaseCommand:
+    def __init__(self, name, description='', deprecated=False, arguments=None, outputs=None):
+        self.name = name
+        self.description = description
+        self.deprecated = deprecated
+        self.arguments = {}
+        if arguments:
+            for arg in arguments:
+                self.arguments[arg.name] = arg
+
+        self.outputs = outputs
+
+    def parse_arguments(self, given_arguments) -> {}:
+        given_params = given_arguments.keys()
+        for arg_name, argument_obj in self.arguments.items():
+            if arg_name in given_params:
+                argument_obj.parse_value(given_arguments[arg_name])
+
+        return self.arguments
+
+    def run(self, client, params, args=None) -> Any:
+        pass
+
+
+class BaseExecutableCommand(BaseCommand):
+    def run(self, client, params, args=None) -> CommandResults:
+        pass
+
+
+class BaseTestCommand(BaseCommand):
+    def __init__(self):
+        super(BaseTestCommand, self).__init__(name='test-module')
+
+    def run(self, client, params, args=None) -> str:  # type: ignore
+        pass
+
+
+class BaseFetchIndicators(BaseCommand):
+    def __init__(self):
+        super(BaseFetchIndicators, self).__init__(name='fetch-indicators')
+
+    @abstractmethod
+    def run(self, client, params, args=None) -> IndicatorsObject:  # type: ignore
+        pass
+
+
+class CommandArgument:
+    def __init__(self, name, description, is_default=False, is_array=False,
+                 default_value='', options_list=None, required=False, type_=None):
+        self.name = name
+        self.description = description
+        self.is_default = is_default
+        self.is_array = is_array
+        self.default_value = default_value
+        self.options_list = options_list
+        self.required = required
+
+        self.value = None
+        self.python_type = type_
+
+    def parse_value(self, value=None):
+        value = self.default_value if not value else value
+        try:
+            self.value = self.python_type(value)
+        except TypeError as exc:
+            raise TypeError(f'{str(exc)}\nExpected {self.name} {self.description}')
+
+
+class IntegrationParam:
+    def __init__(self, name: str, type_: int, display_name: str, additional_info: str = None,
+                 required: bool = False, default_value: any = None, options_list=None):
+        self.name = name
+        self.display_name = display_name
+        self.additional_info = additional_info
+        self.required = required
+        self.default_value = default_value
+
+        self.options_list = options_list if options_list else []
+
+        self.value = None
+        self.python_type = PARAM_TYPE_TO_PYTHON_TYPE.get(type_, None)
+
+    def parse_value(self, value):
+        value = self.default_value if not value else value
+        try:
+            self.value = self.python_type(value)
+        except TypeError as exc:
+            raise TypeError(f'{str(exc)}\nExpected {self.name}')
+
+
+class GeneralSettings:
+    def __init__(self, name: str, description: str, display: str, category: str, is_feed: bool = False, is_fetch: bool = False,
+                 params = None, fromversion: str = '0.0.0', toversion: str = '99.99.99',
+                 docker_image: str = ''):
+        self.integration_name: str = name
+        self.description: str = description
+        self.display: str = display
+        self.category: str = category
+        self.is_feed: bool = is_feed
+        self.is_fetch: bool = is_fetch
+        self.params = params if params else []  # type: List[IntegrationParam]
+
+        self.fromversion = fromversion
+        self.toversion = toversion
+        self.docker_image = docker_image
+
+    def parse_params(self, params):
+        given_params = params.keys()
+        for param in self.params:
+            if param.name in given_params:
+                param.parse_value(params[param.name])
+
+    def get_populated_params(self) -> dict:
+        return {param.name: param.value for param in self.params if param.value}
+
+
+
+class IntegrationCategory:
+    DATA_ENRICHMENT_THREAT_INTEL = 'Data Enrichment & Threat Intelligence'
+
+
+class ParamType:
+    STRING = 1
+    PASSWORD = 4
+    BOOLEAN = 8
+    SINGLE_SELECT = 15
+    EXPIRATION_POLICY = 17
+    FEED_REPUTATION = 18
+    TIME_INTERVAL = 19
+
+
+PARAM_TYPE_TO_PYTHON_TYPE = {
+    ParamType.BOOLEAN: bool,
+    ParamType.STRING: str,
+    ParamType.SINGLE_SELECT: str,
+}
+
+
+proxy_param = IntegrationParam(name='proxy',
+                               type_=ParamType.BOOLEAN,
+                               display_name='Use system proxy settings')
+insecure_param = IntegrationParam(name='insecure',
+                                  type_=ParamType.BOOLEAN,
+                                  display_name='Trust any certificate (not secure)')
