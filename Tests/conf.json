@@ -2987,7 +2987,9 @@
         "Send Email To Recipients": "used in EWS Mail Sender Test 2 as sub playbook",
         "Cortex XDR - IOC - Test": "issue #25598",
         "DuoAdmin API test playbook": "Issue 24937",
-        "Mail Sender (New) Test": "Issue 25602"
+        "Mail Sender (New) Test": "Issue 25602",
+        "test-name-placeholder": "Issue 25508",
+        "test-name-placeholder-3": "Issue 26275"
     },
     "skipped_integrations": {
         
