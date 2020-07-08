@@ -1,16 +1,16 @@
-id: Illusive-Data-Enrichment
+id: Illusive - Data Enrichment
 version: -1
-name: Illusive-Data-Enrichment
+name: Illusive - Data Enrichment
 description: This playbook is used for automatic enrichment of incidents in the organization
-  network, with Illusive’s set of forensics and data
+  network, with Illusive's set of forensics and data
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2adc21e6-056c-47ef-8ed7-79eeb7efd791
+    taskid: be6b2a8f-97d6-4cd8-8657-8839adb655aa
     type: start
     task:
-      id: 2adc21e6-056c-47ef-8ed7-79eeb7efd791
+      id: be6b2a8f-97d6-4cd8-8657-8839adb655aa
       version: -1
       name: ""
       iscommand: false
@@ -34,12 +34,12 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 4af1da4d-31f1-486a-86a1-c9acdaa57e04
+    taskid: 7db944b3-07a9-419f-80f5-5ea881eff680
     type: regular
     task:
-      id: 4af1da4d-31f1-486a-86a1-c9acdaa57e04
+      id: 7db944b3-07a9-419f-80f5-5ea881eff680
       version: -1
-      name: illusive-get-incidents
+      name: Illusive - get incidents
       description: Retrieve incidents
       script: IllusiveNetworks|||illusive-get-incidents
       type: regular
@@ -71,10 +71,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 4830af19-e92b-4742-8b67-3ebc2240cdb9
+    taskid: 2ac198a3-76a7-4234-8e76-dcc61bbe993e
     type: condition
     task:
-      id: 4830af19-e92b-4742-8b67-3ebc2240cdb9
+      id: 2ac198a3-76a7-4234-8e76-dcc61bbe993e
       version: -1
       name: 'Incident  has forensics? '
       description: Check If incident has forensics
@@ -112,12 +112,12 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 2d311199-2ba2-40d3-80fc-32ec8ea954c4
+    taskid: 0f5549ae-a6ac-4190-8258-fe9d1de6e788
     type: regular
     task:
-      id: 2d311199-2ba2-40d3-80fc-32ec8ea954c4
+      id: 0f5549ae-a6ac-4190-8258-fe9d1de6e788
       version: -1
-      name: illusive-get-incident-events
+      name: Illusive - get incident events
       description: Retrieve all the events that are associated with an incident
       script: IllusiveNetworks|||illusive-get-incident-events
       type: regular
@@ -136,7 +136,7 @@ tasks:
       {
         "position": {
           "x": 650,
-          "y": 750
+          "y": 770
         }
       }
     note: false
@@ -146,10 +146,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: d7f62952-6dac-4e04-8787-4f43dce686ce
+    taskid: 81693faf-e408-4d97-85f9-7e58f6856385
     type: playbook
     task:
-      id: d7f62952-6dac-4e04-8787-4f43dce686ce
+      id: 81693faf-e408-4d97-85f9-7e58f6856385
       version: -1
       name: Illusive-Collect-Forensics-On-Demand
       description: This playbook is used to collect forensics on-demand on any compromised
@@ -164,7 +164,7 @@ tasks:
     scriptarguments:
       end_date: {}
       'fqdn_or_ip ':
-        simple: ${inputs.fqdn_or_ip }
+        simple: ${inputs.fqdn_or_ip}
       start_date: {}
     separatecontext: true
     loop:
@@ -186,10 +186,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 273c48a7-aedf-47bf-867b-1d394b1fdbd6
+    taskid: afeb322b-49a0-4111-84cf-7adb048d1659
     type: condition
     task:
-      id: 273c48a7-aedf-47bf-867b-1d394b1fdbd6
+      id: afeb322b-49a0-4111-84cf-7adb048d1659
       version: -1
       name: Check input - incident id
       description: Check what input was inserted to playbook
@@ -224,10 +224,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 85395535-5466-4b22-8d60-d65aaea470ac
+    taskid: 53fb022e-65e8-4cec-85ed-31972ec74ddc
     type: condition
     task:
-      id: 85395535-5466-4b22-8d60-d65aaea470ac
+      id: 53fb022e-65e8-4cec-85ed-31972ec74ddc
       version: -1
       name: Input Validation
       description: 'Check we get only one of the following inputs: illusive_incident_id
@@ -252,7 +252,7 @@ tasks:
         - operator: isNotEmpty
           left:
             value:
-              simple: 'inputs.fqdn_or_ip '
+              simple: inputs.fqdn_or_ip
             iscontext: true
       - - operator: isEmpty
           left:
@@ -262,7 +262,7 @@ tasks:
         - operator: isEmpty
           left:
             value:
-              simple: 'inputs.fqdn_or_ip '
+              simple: inputs.fqdn_or_ip
             iscontext: true
     view: |-
       {
@@ -278,12 +278,12 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 49e55a88-e0bf-49d0-8503-bfa1c28fe187
+    taskid: 88bb8cc1-7964-4318-87e0-1881249ce0cf
     type: title
     task:
-      id: 49e55a88-e0bf-49d0-8503-bfa1c28fe187
+      id: 88bb8cc1-7964-4318-87e0-1881249ce0cf
       version: -1
-      name: Input Validation Error
+      name: Done
       type: title
       iscommand: false
       brand: ""
@@ -303,12 +303,12 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: c7438f03-5e66-4de3-8cd2-a2d812104e25
+    taskid: e0955273-9460-4318-8567-4ea7c8375d2b
     type: regular
     task:
-      id: c7438f03-5e66-4de3-8cd2-a2d812104e25
+      id: e0955273-9460-4318-8567-4ea7c8375d2b
       version: -1
-      name: illusive-get-incidents
+      name: Illusive - get incidents
       description: Retrieve incidents
       script: IllusiveNetworks|||illusive-get-incidents
       type: regular
@@ -317,8 +317,6 @@ tasks:
     nexttasks:
       '#none#':
       - "13"
-      - "22"
-      - "24"
     scriptarguments:
       has_forensics: {}
       hostnames: {}
@@ -342,32 +340,36 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: d49ebba0-7c66-442d-8f3c-2fb677b96872
+    taskid: 86788284-8fa5-4b81-88f3-4f5db1ac0fa8
     type: regular
     task:
-      id: d49ebba0-7c66-442d-8f3c-2fb677b96872
+      id: 86788284-8fa5-4b81-88f3-4f5db1ac0fa8
       version: -1
-      name: illusive-get-forensics-analyzers
+      name: Illusive - get forensics analyzers
       description: Retrieve Illusive?s forensics analyzers on a certain event
       script: IllusiveNetworks|||illusive-get-forensics-analyzers
       type: regular
       iscommand: true
       brand: IllusiveNetworks
+    nexttasks:
+      '#none#':
+      - "22"
     scriptarguments:
       event_id:
         simple: ${Illusive.Forensics.Evidence.eventId}
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -280,
-          "y": 810
+          "x": -50,
+          "y": 830
         }
       }
     note: false
     evidencedata:
       description:
-        simple: Retrieve Illusive’s forensics analyzers on a certain event
+        simple: Retrieve Illusive's forensics analyzers on a certain event
       customfields: {}
     timertriggers: []
     ignoreworker: false
@@ -375,12 +377,12 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 52d947f8-d73f-4bdf-8bb6-74bc5d3ab861
+    taskid: 9311652d-a40e-42c2-8ad0-6f7095a51f94
     type: regular
     task:
-      id: 52d947f8-d73f-4bdf-8bb6-74bc5d3ab861
+      id: 9311652d-a40e-42c2-8ad0-6f7095a51f94
       version: -1
-      name: illusive-get-forensics-analyzers
+      name: Illusive - get forensics analyzers
       description: Retrieve Illusive?s forensics analyzers on a certain event
       script: IllusiveNetworks|||illusive-get-forensics-analyzers
       type: regular
@@ -415,7 +417,7 @@ tasks:
     note: false
     evidencedata:
       description:
-        simple: Retrieve Illusive’s forensics analyzers on a certain event
+        simple: Retrieve Illusive's forensics analyzers on a certain event
       customfields: {}
     timertriggers: []
     ignoreworker: false
@@ -423,10 +425,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 02494bf1-6d8d-4f0d-8a7a-a57cfde88e2b
+    taskid: 4c2e4b5e-cc1b-4d84-89d1-0d7549d80e53
     type: playbook
     task:
-      id: 02494bf1-6d8d-4f0d-8a7a-a57cfde88e2b
+      id: 4c2e4b5e-cc1b-4d84-89d1-0d7549d80e53
       version: -1
       name: Illusive-Collect-Forensics-On-Demand
       description: This playbook is used to collect forensics on-demand on any compromised
@@ -437,9 +439,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
-      - "21"
-      - "25"
+      - "13"
     scriptarguments:
       end_date: {}
       'fqdn_or_ip ':
@@ -454,8 +454,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 140,
-          "y": 390
+          "x": 160,
+          "y": 610
         }
       }
     note: false
@@ -465,12 +465,12 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 06a8744f-9c8f-48ab-81c7-2d91b83ef5f3
+    taskid: 4548edac-abd0-4d0e-800f-7c99700ff6fc
     type: regular
     task:
-      id: 06a8744f-9c8f-48ab-81c7-2d91b83ef5f3
+      id: 4548edac-abd0-4d0e-800f-7c99700ff6fc
       version: -1
-      name: illusive-get-forensics-timeline
+      name: Illusive - get forensics timeline
       description: Retrieve forensics timeline for a specific incident
       script: IllusiveNetworks|||illusive-get-forensics-timeline
       type: regular
@@ -502,47 +502,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "19":
-    id: "19"
-    taskid: a31522df-ad9c-4e7f-8ded-8abc8001aa64
-    type: regular
-    task:
-      id: a31522df-ad9c-4e7f-8ded-8abc8001aa64
-      version: -1
-      name: illusive-get-forensics-analyzers
-      description: Retrieve Illusive?s forensics analyzers on a certain event
-      script: IllusiveNetworks|||illusive-get-forensics-analyzers
-      type: regular
-      iscommand: true
-      brand: IllusiveNetworks
-    scriptarguments:
-      event_id:
-        simple: ${Illusive.Forensics.Evidence.eventId}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 140,
-          "y": 810
-        }
-      }
-    note: false
-    evidencedata:
-      description:
-        simple: Retrieve Illusive’s forensics analyzers on a certain event
-      customfields: {}
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "20":
     id: "20"
-    taskid: 938f0cac-3718-41a3-809e-4eb961e163c3
+    taskid: 1c795cbe-e2e2-46d4-8a1a-5522e9af554e
     type: regular
     task:
-      id: 938f0cac-3718-41a3-809e-4eb961e163c3
+      id: 1c795cbe-e2e2-46d4-8a1a-5522e9af554e
       version: -1
-      name: illusive-get-forensics-triggering-process-info
+      name: Illusive - get forensics triggering process info
       description: Retrieve the triggering process information from Illusive?s forensics
       script: IllusiveNetworks|||illusive-get-forensics-triggering-process-info
       type: regular
@@ -583,61 +550,32 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "21":
-    id: "21"
-    taskid: 6795a7e6-0ff1-4afe-8ede-334eb4fba2fe
-    type: regular
-    task:
-      id: 6795a7e6-0ff1-4afe-8ede-334eb4fba2fe
-      version: -1
-      name: illusive-get-forensics-triggering-process-info
-      description: Retrieve the triggering process information from Illusive?s forensics
-      script: IllusiveNetworks|||illusive-get-forensics-triggering-process-info
-      type: regular
-      iscommand: true
-      brand: IllusiveNetworks
-    scriptarguments:
-      event_id:
-        simple: ${Illusive.Forensics.Evidence.eventId}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 140,
-          "y": 970
-        }
-      }
-    note: false
-    evidencedata:
-      description:
-        simple: Retrieve the triggering process information from Illusive's forensics
-      customfields: {}
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "22":
     id: "22"
-    taskid: d5351f79-ae8d-450d-8f5b-854d538ed18f
+    taskid: 51b411d2-7f4e-45c3-87e1-4eeb8cf8aa9b
     type: regular
     task:
-      id: d5351f79-ae8d-450d-8f5b-854d538ed18f
+      id: 51b411d2-7f4e-45c3-87e1-4eeb8cf8aa9b
       version: -1
-      name: illusive-get-forensics-triggering-process-info
+      name: Illusive - get forensics triggering process info
       description: Retrieve the triggering process information from Illusive?s forensics
       script: IllusiveNetworks|||illusive-get-forensics-triggering-process-info
       type: regular
       iscommand: true
       brand: IllusiveNetworks
+    nexttasks:
+      '#none#':
+      - "24"
     scriptarguments:
       event_id:
         simple: ${Illusive.Forensics.Evidence.eventId}
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -280,
-          "y": 970
+          "x": -50,
+          "y": 1015
         }
       }
     note: false
@@ -651,17 +589,20 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: f2bc607b-4016-4e84-8f7c-26b48f57ea88
+    taskid: a70497cc-ca4a-479a-8615-323c9bca701f
     type: regular
     task:
-      id: f2bc607b-4016-4e84-8f7c-26b48f57ea88
+      id: a70497cc-ca4a-479a-8615-323c9bca701f
       version: -1
-      name: illusive-get-forensics-artifacts
+      name: Illusive - get forensics artifacts
       description: Retrieve forensics artifacts from Illusive?s forensics
       script: IllusiveNetworks|||illusive-get-forensics-artifacts
       type: regular
       iscommand: true
       brand: IllusiveNetworks
+    nexttasks:
+      '#none#':
+      - "29"
     scriptarguments:
       artifact_type: {}
       event_id:
@@ -677,6 +618,7 @@ tasks:
                 value:
                   simple: "true"
           accessor: Incident.Event.eventId
+    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -696,59 +638,31 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 74d7fca4-9021-4f39-876d-0337f58833e3
+    taskid: d731a875-9484-4e5e-84f4-f29adf4065a8
     type: regular
     task:
-      id: 74d7fca4-9021-4f39-876d-0337f58833e3
+      id: d731a875-9484-4e5e-84f4-f29adf4065a8
       version: -1
-      name: illusive-get-forensics-artifacts
+      name: Illusive - get forensics artifacts
       description: Retrieve forensics artifacts from Illusive?s forensics
       script: IllusiveNetworks|||illusive-get-forensics-artifacts
       type: regular
       iscommand: true
       brand: IllusiveNetworks
+    nexttasks:
+      '#none#':
+      - "28"
     scriptarguments:
+      artifact_type: {}
       event_id:
         simple: ${Illusive.Forensics.Evidence.eventId}
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -280,
-          "y": 1140
-        }
-      }
-    note: false
-    evidencedata:
-      description:
-        simple: Retrieve forensics artifacts from Illusive's forensics
-      customfields: {}
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "25":
-    id: "25"
-    taskid: b486821f-df56-483a-8892-5f46cd30c324
-    type: regular
-    task:
-      id: b486821f-df56-483a-8892-5f46cd30c324
-      version: -1
-      name: illusive-get-forensics-artifacts
-      description: Retrieve forensics artifacts from Illusive?s forensics
-      script: IllusiveNetworks|||illusive-get-forensics-artifacts
-      type: regular
-      iscommand: true
-      brand: IllusiveNetworks
-    scriptarguments:
-      event_id:
-        simple: ${Illusive.Forensics.Evidence.eventId}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 140,
-          "y": 1140
+          "x": -50,
+          "y": 1190
         }
       }
     note: false
@@ -762,10 +676,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 8bbc65f4-1e29-4050-8f76-61fa7955a9d7
+    taskid: 90caca65-46f5-4abd-8570-d9e1d57a2fd7
     type: regular
     task:
-      id: 8bbc65f4-1e29-4050-8f76-61fa7955a9d7
+      id: 90caca65-46f5-4abd-8570-d9e1d57a2fd7
       version: -1
       name: Set IllusiveNetworksEventsNumber type
       description: commands.local.cmd.set.incident
@@ -1185,10 +1099,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: b6664152-d3a9-4211-82a9-26a6649ce668
+    taskid: 7e688c93-6b25-4def-8fb2-4187ea531b67
     type: condition
     task:
-      id: b6664152-d3a9-4211-82a9-26a6649ce668
+      id: 7e688c93-6b25-4def-8fb2-4187ea531b67
       version: -1
       name: Check Incident type
       description: 'Check if incident type is "Illusive Networks Incident" '
@@ -1224,12 +1138,62 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "28":
+    id: "28"
+    taskid: 987bcd87-1020-4742-8aaf-f85c7b46f6db
+    type: title
+    task:
+      id: 987bcd87-1020-4742-8aaf-f85c7b46f6db
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 3f3ca51a-ff07-449d-881a-3bc54ee704b0
+    type: title
+    task:
+      id: 3f3ca51a-ff07-449d-881a-3bc54ee704b0
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1965,
+        "height": 2105,
         "width": 1840,
         "x": -370,
         "y": -270
@@ -1244,7 +1208,7 @@ inputs:
   description: |
     Illusive incident ID
   playbookInputQuery:
-- key: 'fqdn_or_ip '
+- key: fqdn_or_ip
   value:
     simple: ${Endpoint.Hostname}
   required: false

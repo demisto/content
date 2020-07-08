@@ -1,5 +1,5 @@
 id: IllusiveNetworks-Test
-version: 80
+version: -1
 name: IllusiveNetworks-Test
 starttaskid: "0"
 tasks:
@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -853,6 +854,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -1118,23 +1120,24 @@ inputs:
     simple: "3"
   required: true
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: event_id
   value:
     simple: "5"
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ip
   value:
     simple: 172.27.102.12
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: host_name
   value:
     simple: WIN7@illusive.com
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+fromversion: 5.0.0

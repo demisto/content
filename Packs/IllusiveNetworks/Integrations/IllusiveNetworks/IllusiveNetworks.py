@@ -614,13 +614,13 @@ def get_incidents_command(client: Client, args: dict) -> Tuple:
 
 
 def get_event_incident_id_command(client: Client, args: dict) -> Tuple:
-    event_id = argToList(args.get("event_id"))
+    event_id = args.get("event_id")
     status = "Done"
     try:
-        incident = client.get_event_incident_id(event_id[0])
+        incident = client.get_event_incident_id(event_id)
     except DemistoException as e:
         if "404" in e.args[0]:
-            raise DemistoException("Event id {} doesn't not exist".format(event_id[0]))
+            raise DemistoException("Event id {} doesn't not exist".format(event_id))
         elif "202" in e.args[0]:
             incident = "-"
             status = "InProgress"
@@ -631,7 +631,7 @@ def get_event_incident_id_command(client: Client, args: dict) -> Tuple:
         else:
             raise DemistoException("{}".format(e.args[0]))
     result = [{
-        'eventId': event_id[0],
+        'eventId': event_id,
         'incidentId': incident,
         'status': status
     }]
@@ -662,7 +662,7 @@ def get_incident_events_command(client: Client, args: dict) -> Tuple:
         else:
             raise DemistoException("{}".format(e.args[0]))
 
-    readable_output = tableToMarkdown('Illusive get incident\'s events', events)
+    readable_output = tableToMarkdown('Illusive get incident\'s events', events, metadata="Number of events {}".format(len(events)))
 
     outputs = {
         'Illusive.Incident(val.incidentId == obj.incidentId)': {
@@ -743,7 +743,7 @@ def get_forensics_artifacts_command(client: Client, args: dict):
     event_id = args.get("event_id")
     artifact_type = args.get("artifact_type", "DESKTOP_SCREENSHOT")
     try:
-        client.get_event_incident_id(event_id)
+        client.get_event_incident_id(event_id) # this request is for checking the event exists
         artifact = client.get_forensics_artifacts(event_id, artifact_type)
     except DemistoException as e:
         if "404" in e.args[0]:
@@ -759,7 +759,7 @@ def get_forensics_artifacts_command(client: Client, args: dict):
         raise ValueError("file is empty")
     return (
         fileResult(
-            filename=f'eventId_{event_id}_DesktopScreenshots',
+            filename=f'eventId_{event_id}_{artifact_type}.zip',
             data=artifact,
             file_type=EntryType.ENTRY_INFO_FILE
         )
@@ -768,10 +768,11 @@ def get_forensics_artifacts_command(client: Client, args: dict):
 
 def link_forensics_artifacts_name_command(isArtifactFile: bool, client: Client, args: dict) -> CommandResults:
     event_id = args.get("event_id", 0)
+    artifact_type = args.get("artifact_type", "DESKTOP_SCREENSHOT")
     if isArtifactFile:
         outputs = {
             'eventId': int(event_id),
-            'Artifacts': f'eventId_{event_id}_DesktopScreenshots'
+            'Artifacts': f'eventId_{event_id}_{artifact_type}.zip'
         }
 
         return CommandResults(

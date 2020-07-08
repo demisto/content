@@ -1,4 +1,4 @@
-This playbook is used for creating an automatic analysis of the Illusive’s incident details, in order to end up with a certain score or a set of insights that will enable automatic decisions and actions.
+This playbook is used for creating an automatic analysis of the Illusive's incident details, in order to end up with a certain score or a set of insights that will enable automatic decisions and actions.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -10,13 +10,13 @@ This playbook does not use any sub-playbooks.
 * IllusiveNetworks
 
 ### Scripts
-* DeleteContext
 * Set
 
 ### Commands
+* illusive-get-incidents
+* setIncident
 * illusive-get-forensics-analyzers
 * illusive-get-incident-events
-* illusive-get-incidents
 
 ## Playbook Inputs
 ---
@@ -47,4 +47,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Illusive-Incident-Escalation](Insert the link to your image here)
+![Illusive - Incident Escalation](Insert the link to your image here)

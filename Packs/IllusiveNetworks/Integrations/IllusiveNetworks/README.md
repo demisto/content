@@ -588,13 +588,13 @@ the incident |
 | Illusive.Incident.incidentTypes | Unknown | Type of events detected | 
 | Illusive.Incident.lastSeenUser | String | The user who last reviewed the incident | 
 | Illusive.Incident.policyName | String | The compromised host's policy | 
-| Illusive.Incident.riskInsights.stepsToCrownJewel | Number | The compromised host?s lateral distance from Crown Jewels | 
-| Illusive.Incident.riskInsights.stepsToDomainAdmin | Number | The compromised host?s lateral distance from domain admin accounts | 
+| Illusive.Incident.riskInsights.stepsToCrownJewel | Number | The compromised host's lateral distance from Crown Jewels | 
+| Illusive.Incident.riskInsights.stepsToDomainAdmin | Number | The compromised host's lateral distance from domain admin accounts | 
 | Illusive.Incident.sourceHostname | String | The compromised host's name | 
 | Illusive.Incident.sourceIp | String | The compromised host's IP address | 
-| Illusive.Incident.sourceOperatingSystem | String | The compromised host?s operating system | 
+| Illusive.Incident.sourceOperatingSystem | String | The compromised host's operating system | 
 | Illusive.Incident.unread | Boolean | Whether the incident has been read | 
-| Illusive.Incident.userNotes | String | The analyst?s comments | 
+| Illusive.Incident.userNotes | String | The analyst's comments | 
 
 
 ##### Command Example

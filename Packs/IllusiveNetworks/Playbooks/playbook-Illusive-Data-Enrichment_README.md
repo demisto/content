@@ -1,4 +1,4 @@
-This playbook is used for automatic enrichment of incidents in the organization network, with Illusive’s set of forensics and data
+This playbook is used for automatic enrichment of incidents in the organization network, with Illusive's set of forensics and data
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -13,12 +13,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any scripts.
 
 ### Commands
-* illusive-get-forensics-timeline
-* illusive-get-forensics-artifacts
-* illusive-get-incidents
-* illusive-get-incident-events
 * illusive-get-forensics-analyzers
+* illusive-get-incidents
+* illusive-get-forensics-artifacts
+* illusive-get-forensics-timeline
 * setIncident
+* illusive-get-incident-events
 * illusive-get-forensics-triggering-process-info
 
 ## Playbook Inputs
@@ -28,7 +28,7 @@ This playbook does not use any scripts.
 | --- | --- | --- | --- |
 | illusive_incident_id | Illusive incident ID
  | ${incident.illusivenetworksid} | Optional |
-| fqdn_or_ip  | The endpoint's fqdn or IP address
+| fqdn_or_ip | The endpoint's fqdn or IP address
  | ${Endpoint.Hostname} | Optional |
 
 ## Playbook Outputs
@@ -69,4 +69,4 @@ the incident | string |
 
 ## Playbook Image
 ---
-![Illusive-Data-Enrichment](Insert the link to your image here)
+![Illusive - Data Enrichment](Insert the link to your image here)

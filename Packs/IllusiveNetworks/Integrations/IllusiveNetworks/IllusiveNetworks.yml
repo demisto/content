@@ -478,10 +478,10 @@ script:
       description: The compromised host's policy
       type: String
     - contextPath: Illusive.Incident.riskInsights.stepsToCrownJewel
-      description: The compromised host?s lateral distance from Crown Jewels
+      description: The compromised host's lateral distance from Crown Jewels
       type: Number
     - contextPath: Illusive.Incident.riskInsights.stepsToDomainAdmin
-      description: The compromised host?s lateral distance from domain admin accounts
+      description: The compromised host's lateral distance from domain admin accounts
       type: Number
     - contextPath: Illusive.Incident.sourceHostname
       description: The compromised host's name
@@ -490,13 +490,13 @@ script:
       description: The compromised host's IP address
       type: String
     - contextPath: Illusive.Incident.sourceOperatingSystem
-      description: The compromised host?s operating system
+      description: The compromised host's operating system
       type: String
     - contextPath: Illusive.Incident.unread
       description: Whether the incident has been read
       type: Boolean
     - contextPath: Illusive.Incident.userNotes
-      description: The analyst?s comments
+      description: The analyst's comments
       type: String
   - arguments:
     - default: false
@@ -566,7 +566,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieve Illusive?s forensics analyzers on a certain event
+    description: Retrieve Illusive's forensics analyzers on a certain event
     execution: false
     name: illusive-get-forensics-analyzers
     outputs:
@@ -631,11 +631,14 @@ script:
       name: event_id
       required: true
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       defaultValue: DESKTOP_SCREENSHOTS
       description: 'The type of forensics artifact to retrieve '
       isArray: false
       name: artifact_type
+      predefined:
+      - DESKTOP_SCREENSHOTS
       required: true
       secret: false
     deprecated: false
