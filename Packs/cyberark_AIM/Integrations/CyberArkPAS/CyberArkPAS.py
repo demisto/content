@@ -19,40 +19,40 @@ INTEGRATION_NAME = 'CyberArk PAS'
 
 class Client(BaseClient):
 
-    auth_token = ''
-
-    def login(self, username, password, auth_type='cyberark'):
+    def login(self, username, password):
         body = {
             "username": username,
             "password": password,
             "concurrentSession": "false"
         }
-        if auth_type == 'cyberark':
-            demisto.debug(f'Authenticating using {auth_type} authentication method')
-            self.auth_token = self._http_request(
-                "POST",
-                url_suffix='/PasswordVault/API/Auth/CyberArk/Logon',
-                data=body
-            )
+        demisto.debug(f'Authenticating using CyberArk authentication method')
+        auth_token = self._http_request(
+            "POST",
+            url_suffix='/PasswordVault/API/Auth/CyberArk/Logon',
+            data=body
+        )
+        demisto.setIntegrationContext({
+            "token": auth_token,
+            "valid_until": int(time.time())+300
+        })
 
     def get_system_summary(self):
         demisto.debug('Checking System Summary')
         headers = {
-            'Authorization': self.auth_token
+            'Authorization': demisto.getIntegrationContext()['token']
         }
         res = self._http_request(
             "GET",
             url_suffix='/PasswordVault/API/ComponentsMonitoringSummary',
             resp_type="json",
             headers=headers
-
         )
         return res
 
     def get_accounts(self, offset="25", limit="25"):
         demisto.debug('Getting the List of Accounts')
         headers = {
-            'Authorization': self.auth_token
+            'Authorization': demisto.getIntegrationContext()['token']
         }
         res = self._http_request(
             "GET",
@@ -73,7 +73,7 @@ class Client(BaseClient):
         demisto.debug('Adding a new Account')
 
         headers = {
-            'Authorization': self.auth_token
+            'Authorization': demisto.getIntegrationContext()['token']
         }
 
         body = {
@@ -132,59 +132,57 @@ def list_accounts(client, args):
         for item in raw_response:
             raws.append(item)
             cyberark_ec.append({
-                'AccountName': item['name'],
-                'UserName': item['userName'],
-                'PlatformID': item['platformId'],
-                'SafeName': item['safeName'],
-                'AccountID': item['id'],
-                'CreatedTime': item['createdTime']
+                'AccountName': item.get('name'),
+                'UserName': item.get('userName'),
+                'PlatformID': item.get('platformId'),
+                'SafeName': item.get('safeName'),
+                'AccountID': item.get('id'),
+                'CreatedTime': item.get('createdTime')
             })
 
     if not raws:
-        return f'{INTEGRATION_NAME} - Could not find any Accounts'
+        return_outputs(f'{INTEGRATION_NAME} - Could not find any Accounts', {}, {})
 
-    context_entry = {
-        "CyberArk.Accounts": cyberark_ec
-    }
-
-    human_readable = tableToMarkdown(t=context_entry.get('CyberArk.Accounts'), name=title)
-    return [human_readable, context_entry, raws]
+    return CommandResults(
+        outputs_prefix='CyberArk.Accounts',
+        outputs_key_field='AccountID',
+        outputs=cyberark_ec
+    )
 
 
 def add_account(client, args):
     title = f'{INTEGRATION_NAME} - Add a New Account'
     raws = []
     cyberark_ec = []
-    raw_response = client.add_account(user_name=args.get('user-name'), address=args.get('address'),
-                                      platform_id=args.get('platform-Id'), safe_name=args.get('safe-name'),
+    raw_response = client.add_account(user_name=args.get('user_name'), address=args.get('address'),
+                                      platform_id=args.get('platform_Id'), safe_name=args.get('safe_name'),
                                       name=args.get('name'), secret=args.get('secret'),
-                                      secret_type=args.get('secret-type'),
-                                      platform_account_properties=args.get('platform-account-properties'),
-                                      automatic_management_enabled=args.get('automatic-management-enabled'),
-                                      manual_management_reason=args.get('manual-management-reason'),
-                                      remote_machines=args.get('remote-machines'),
-                                      access_restricted_to_remote_machines=args.get('access-restricted-'
-                                                                                    'to-remote-machines'))
+                                      secret_type=args.get('secret_type'),
+                                      platform_account_properties=args.get('platform_account_properties'),
+                                      automatic_management_enabled=args.get('automatic_management_enabled'),
+                                      manual_management_reason=args.get('manual_management_reason'),
+                                      remote_machines=args.get('remote_machines'),
+                                      access_restricted_to_remote_machines=
+                                      args.get('access_restricted_to_remote_machines'))
     if raw_response:
         raws.append(raw_response)
         cyberark_ec.append({
-            'AccountName': raw_response['name'],
-            'UserName': raw_response['userName'],
-            'PlatformID': raw_response['platformId'],
-            'SafeName': raw_response['safeName'],
-            'AccountID': raw_response['id'],
-            'CreatedTime': raw_response['createdTime']
+            'AccountName': raw_response.get('name'),
+            'UserName': raw_response.get('userName'),
+            'PlatformID': raw_response.get('platformId'),
+            'SafeName': raw_response.get('safeName'),
+            'AccountID': raw_response.get('id'),
+            'CreatedTime': raw_response.get('createdTime')
         })
 
     if not raws:
-        return f'{INTEGRATION_NAME} - Could not create the new Account'
+        return_outputs(f'{INTEGRATION_NAME} - Could not create the new Account', {}, {})
 
-    context_entry = {
-        "CyberArk.Accounts": cyberark_ec
-    }
-
-    human_readable = tableToMarkdown(t=context_entry.get('CyberArk.Accounts'), name=title)
-    return [human_readable, context_entry, raws]
+    return CommandResults(
+        outputs_prefix='CyberArk.Accounts',
+        outputs_key_field='AccountID',
+        outputs=cyberark_ec
+    )
 
 
 def main():
@@ -195,7 +193,6 @@ def main():
     username = params.get('credentials', {}).get('identifier', '')
     password = params.get('credentials', {}).get('password', '')
     base_url = params['url'][:-1] if (params['url'] and params['url'].endswith('/')) else params['url']
-    auth_type = params.get('authType')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
@@ -209,19 +206,25 @@ def main():
             ok_codes=(200, 201, 204),
             headers={'accept': "application/json"}
         )
-        client.login(username=username, password=password, auth_type=auth_type)
+
+        if not (demisto.getIntegrationContext().get('valid_until') or demisto.getIntegrationContext().get('valid_until')):
+            client.login(username=username, password=password)
+
+        if demisto.getIntegrationContext().get('valid_until'):
+            if int(time.time()) > demisto.getIntegrationContext().get('valid_until'):
+                client.login(username=username, password=password)
 
         if demisto.command() == 'test-module':
             result = test_module(client)
-            return_outputs(result)
+            return_results(result)
 
         elif demisto.command() == 'cyberark-list-accounts':
             result = list_accounts(client, args=demisto.args())
-            return_outputs(*result)
+            return_results(result)
 
         elif demisto.command() == 'cyberark-add-account':
             result = add_account(client, args=demisto.args())
-            return_outputs(*result)
+            return_results(result)
 
     except Exception as e:
         return_error(str(f'Failed to execute {demisto.command()} command. Error: {str(e)}'))

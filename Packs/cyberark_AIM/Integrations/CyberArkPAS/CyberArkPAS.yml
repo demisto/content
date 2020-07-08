@@ -20,14 +20,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: cyberark
-  display: Authentication Type
-  hidden: false
-  name: authType
-  options:
-  - cyberark
-  required: false
-  type: 15
 description: Use this integration to create, list, modify and delete entities in the
   PAS solution. This integration was integrated and tested with version 11.4 of CyberArk
   Privileged Account Security
@@ -57,12 +49,27 @@ script:
     execution: false
     name: cyberark-list-accounts
     outputs:
-    - contextPath: CyberArk.Accounts
-      description: CyberArk Accounts
-      type: Unknown
+    - contextPath: CyberArk.Accounts.AccountID
+      description: CyberArk Accounts ID
+      type: String
+    - contextPath: CyberArk.Accounts.AccountName
+      description: CyberArk Accounts Name
+      type: String
+    - contextPath: CyberArk.Accounts.UserName
+      description: CyberArk Accounts Username
+      type: String
+    - contextPath: CyberArk.Accounts.PlatformID
+      description: CyberArk Platform ID
+      type: String
+    - contextPath: CyberArk.Accounts.SafeName
+      description: CyberArk Safe Name
+      type: String
+    - contextPath: CyberArk.Accounts.CreatedTime
+      description: CyberArk Created Time
+      type: String
   - arguments:
     - default: false
-      description: The name of the account.
+      description: An Identifier of the CyberArk Account
       isArray: false
       name: name
       required: false
@@ -79,20 +86,20 @@ script:
     - default: false
       description: Account user's name
       isArray: false
-      name: user-name
+      name: user_name
       required: true
       secret: false
     - default: false
       description: 'The platform assigned to this account, Valid platform IDs, example:
         WinServerLocal'
       isArray: false
-      name: platform-Id
+      name: platform_Id
       required: true
       secret: false
     - default: false
       description: The Safe where the account will be created.
       isArray: false
-      name: safe-name
+      name: safe_name
       required: true
       secret: false
     - default: false
@@ -106,7 +113,7 @@ script:
       defaultValue: password
       description: The type of password, password or key
       isArray: false
-      name: secret-type
+      name: secret_type
       predefined:
       - password
       - key
@@ -118,16 +125,17 @@ script:
         the mandatory and optional properties of the specified platform''s definition;
         example: {"Location": "IT", "OwnerName": "MSSPAdmin"}'
       isArray: false
-      name: platform-account-properties
+      name: platform_account_properties
       required: false
       secret: false
     - auto: PREDEFINED
       default: true
       defaultValue: 'true'
-      description: Whether the account secret is automatically managed by the CPM.True
-        or False
+      description: |-
+        Whether the account secret is automatically managed by the CPM.
+        True or False
       isArray: false
-      name: automatic-management-enabled
+      name: automatic_management_enabled
       predefined:
       - 'true'
       - 'false'
@@ -136,20 +144,20 @@ script:
     - default: false
       description: Reason for disabling automatic secret management.
       isArray: false
-      name: manual-management-reason
+      name: manual_management_reason
       required: false
       secret: false
     - default: false
-      description: List of remote machines, separated by semicolons.Example: server1.cyberark.com;server2.cyberark.com
+      description: List of remote machines, separated by semicolons.Example
       isArray: false
-      name: remote-machines
+      name: remote_machines
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
       description: Whether or not to restrict access only to specified remote machines
       isArray: false
-      name: access-restricted-to-remote-machines
+      name: access_restricted_to_remote_machines
       predefined:
       - 'true'
       - 'false'
@@ -160,10 +168,25 @@ script:
     execution: false
     name: cyberark-add-account
     outputs:
-    - contextPath: CyberArk.Accounts
-      description: CyberArk Accounts
-      type: Unknown
-  dockerimage: demisto/python3:3.7.4.2245
+    - contextPath: CyberArk.Accounts.AccountID
+      description: CyberArk Accounts ID
+      type: String
+    - contextPath: CyberArk.Accounts.AccountName
+      description: CyberArk Accounts Name
+      type: String
+    - contextPath: CyberArk.Accounts.UserName
+      description: CyberArk Accounts Username
+      type: String
+    - contextPath: CyberArk.Accounts.PlatformID
+      description: CyberArk Platform ID
+      type: String
+    - contextPath: CyberArk.Accounts.SafeName
+      description: CyberArk Safe Name
+      type: String
+    - contextPath: CyberArk.Accounts.CreatedTime
+      description: CyberArk Created Time
+      type: String
+  dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: false
   longRunning: false
