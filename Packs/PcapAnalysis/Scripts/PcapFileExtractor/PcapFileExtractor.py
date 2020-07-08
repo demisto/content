@@ -38,6 +38,17 @@ def get_pcap_path(args: Dict) -> str:
     return res[0]['Contents']['path']
 
 
+def run_process(args: list, stdout=subprocess.PIPE, stderr=subprocess.PIPE):
+    """Running a process
+
+    Args:
+        args: args as will be passed to Popen
+        stdout: STDOUT pipe
+        stderr: STDERR pipe
+    """
+    subprocess.Popen(args, stdout=stdout, stderr=stderr).communicate()
+
+
 def upload_files(
         file_path: str, dir_path: str, /,
         types: Optional[Set[str]] = None, extensions: Optional[Set[str]] = None,
@@ -60,12 +71,9 @@ def upload_files(
         Extracted files to download
 
     """
-
-    process = subprocess.Popen(['tshark', '-r', f'{file_path}', '--export-objects', f'http,{dir_path}',
-                                '--export-objects', f'smb,{dir_path}', '--export-objects', f'imf,{dir_path}',
-                                '--export-objects', f'tftp,{dir_path}', '--export-objects', f'dicom,{dir_path}'],
-                               stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    process.communicate()
+    run_process(['tshark', '-r', f'{file_path}', '--export-objects', f'http,{dir_path}',
+                 '--export-objects', f'smb,{dir_path}', '--export-objects', f'imf,{dir_path}',
+                 '--export-objects', f'tftp,{dir_path}', '--export-objects', f'dicom,{dir_path}'])
 
     context = []
     magic_mime = magic.Magic(mime=True)
@@ -150,10 +158,7 @@ def decrypt(
 
         if rsa_key_path:
             command.extend(['-o', f'uat:rsa_keys:"{rsa_key_path}",""'])
-        process = subprocess.Popen(
-            command,
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        process.communicate()
+        run_process(command)
         return temp_file.name
 
 
@@ -170,9 +175,9 @@ def main():
                 types=set(argToList(kwargs.get('types'))),
                 extensions=set(argToList(kwargs.get('extensions'))),
                 types_inclusive_or_exclusive=kwargs.get('types_inclusive_or_exclusive'),
-                extensions_inclusive_or_exclusive=kwargs.get('extensions_inclusive_or_exclusive')),
+                extensions_inclusive_or_exclusive=kwargs.get('extensions_inclusive_or_exclusive'),
                 limit=int(kwargs.get('limit', 5))
-            )
+            ))
 
         except Exception as e:
             return_error(f'Failed to execute PcapFileExtracor. Error: {str(e)}')
