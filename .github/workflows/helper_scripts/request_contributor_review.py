@@ -44,7 +44,7 @@ def request_review_from_user(github_user, pr_number, github_token=None):
     response = requests.post(review_endpoint, data=reviewers_data, headers=headers, verify=False)
 
     if response.status_code not in [200, 201]:
-        print(f"Failed in posting {github_user} user as reviewer")
+        print(f"Failed requesting review of {github_user} user")
         sys.exit()
 
 

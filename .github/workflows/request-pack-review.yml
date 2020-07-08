@@ -8,10 +8,10 @@ jobs:
   request_pr_review:
     runs-on: ubuntu-latest
     steps:
-#      - name: Dump Github context
-#        env:
-#          GITHUB_CONTEXT: ${{ toJson(github) }}
-#        run: echo "$GITHUB_CONTEXT"
+      #      - name: Dump Github context
+      #        env:
+      #          GITHUB_CONTEXT: ${{ toJson(github) }}
+      #        run: echo "$GITHUB_CONTEXT"
       - name: Checkout
         uses: actions/checkout@v2
       - name: Setup Python
@@ -29,3 +29,4 @@ jobs:
         run: |
           echo "New PR number is $PR_NUMBER"
           python .github/workflows/helper_scripts/request_contributor_review.py --pr_number $PR_NUMBER --github_token $GITHUB_TOKEN
+          echo "Finished requesting review of contributor packs"
