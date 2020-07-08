@@ -2985,7 +2985,9 @@
         "GCS Bucket Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "GCS Object Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "Send Email To Recipients": "used in EWS Mail Sender Test 2 as sub playbook",
-        "Cortex XDR - IOC - Test": "issue #25598"
+        "Cortex XDR - IOC - Test": "issue #25598",
+        "DuoAdmin API test playbook": "Issue 24937",
+        "Mail Sender (New) Test": "Issue 25602"
     },
     "skipped_integrations": {
         
@@ -3087,7 +3089,7 @@
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tenable.sc": "unstable instance",
-
+        
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Issue 25650",
         "XFE_v2": "Issue 22715",
