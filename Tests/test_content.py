@@ -1192,11 +1192,11 @@ def safe_lock_integrations(test_timeout: int,
     filtered_integrations_details = [integration for integration in integrations_details if
                                      integration['name'] not in parallel_integrations_names]
     integration_names = get_integrations_list(filtered_integrations_details)
-    prints_manager.add_print_job(
-        f'Attempting to lock integrations {integration_names}, with timeout {test_timeout}',
-        print,
-        thread_index,
-        include_timestamp=True)
+    if integration_names:
+        print_msg = f'Attempting to lock integrations {integration_names}, with timeout {test_timeout}'
+    else:
+        print_msg = 'No integrations to lock'
+    prints_manager.add_print_job(print_msg, print, thread_index, include_timestamp=True)
     try:
         storage_client = storage.Client()
         locked = lock_integrations(filtered_integrations_details, test_timeout, storage_client, prints_manager, thread_index)
