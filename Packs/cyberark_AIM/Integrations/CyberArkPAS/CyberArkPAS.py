@@ -36,7 +36,7 @@ class Client(BaseClient):
             )
 
     def get_system_summary(self):
-        LOG('Checking System Summary')
+        demisto.debug('Checking System Summary')
         headers = {
             'Authorization': self.auth_token
         }
