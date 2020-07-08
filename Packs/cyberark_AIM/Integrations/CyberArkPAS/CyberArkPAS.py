@@ -126,7 +126,7 @@ def list_accounts(client, args):
     title = f'{INTEGRATION_NAME} - List of the Accounts'
     raws = []
     cyberark_ec = []
-    raw_response = client.get_accounts(offset=args['offset'], limit=args['limit'])['value']
+    raw_response = client.get_accounts(offset=args.get('offset', '0'), limit=args.get('limit', '50')).get('value')
 
     if raw_response:
         for item in raw_response:
