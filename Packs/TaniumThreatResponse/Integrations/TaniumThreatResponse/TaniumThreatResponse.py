@@ -14,7 +14,7 @@ from typing import Any
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 ''' GLOBALS/PARAMS '''
-￿REQUEST_TIMEOUT = 60
+REQUEST_TIMEOUT = 60
 FETCH_TIME = demisto.params().get('fetch_time')
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
