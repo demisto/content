@@ -1,7 +1,7 @@
 id: vt-detonate test
 version: -1
 name: vt-detonate test
-fromversion: 4.0.0
+fromversion: 5.5.0
 starttaskid: "0"
 tasks:
   "0":
