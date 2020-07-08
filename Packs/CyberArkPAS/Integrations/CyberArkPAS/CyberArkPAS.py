@@ -227,7 +227,19 @@ def main():
             return_results(result)
 
     except Exception as e:
-        return_error(str(f'Failed to execute {demisto.command()} command. Error: {str(e)}'))
+        if "Not Found" in str(e):
+            return_error(str(
+                f'Failed to execute {demisto.command()} command. Error: API Endpoint not found, please check the URL parameter'))
+        elif "ErrorMessage" in str(e):
+            return_error(str(f'Failed to execute {demisto.command()} command. Error: {str(e).split("ErrorMessage")[1].split(":")[1].split(".")[0].split("}")[0]}'))
+        elif "Connection Timeout" in str(e):
+            return_error(str(f'Failed to execute {demisto.command()} command. Error: Connection Timeout, please check the URL address'))
+        elif "SSL Certificate Verification Failed" in str(e):
+            return_error(str(f'Failed to execute {demisto.command()} command. Error: SSL Certificate Verification Failed - try selecting "Trust any certificate" checkbox in the integration configuration.'))
+        else:
+            return_error(str(f'Failed to execute {demisto.command()} command. Error: {str(e)}'))
+
+
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
