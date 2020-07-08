@@ -5333,8 +5333,8 @@ def panorama_show_location_ip_command():
     ip_address = demisto.args().get('ip_address')
     result = panorama_show_location_ip(ip_address)
 
-    if result['response']['@status'] != 'success':
-        raise Exception(f'Failed to successfully show the location of the specified ip {ip_address}.')
+    if 'response' not in result or '@status' not in result['response'] or result['response']['@status'] != 'success':
+        raise Exception(f'Failed to successfully show the location of the specified ip: {ip_address}.')
 
     if 'response' in result and 'result' in result['response'] and 'entry' in result['response']['result']:
         entry = result['response']['result']['entry']
