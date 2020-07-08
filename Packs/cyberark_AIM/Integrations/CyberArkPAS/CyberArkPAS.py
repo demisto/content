@@ -28,7 +28,7 @@ class Client(BaseClient):
             "concurrentSession": "false"
         }
         if auth_type == 'cyberark':
-            LOG(f'Authenticating using {auth_type} authentication method')
+            demisto.debug(f'Authenticating using {auth_type} authentication method')
             self.auth_token = self._http_request(
                 "POST",
                 url_suffix='/PasswordVault/API/Auth/CyberArk/Logon',
