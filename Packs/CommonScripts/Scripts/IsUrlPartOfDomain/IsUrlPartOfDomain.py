@@ -26,11 +26,11 @@ def main(domains: str, urls: str) -> CommandResults:
             return_error(get_error(results))
         else:
             domain_from_url = results[0]['Contents']
-            outputs.extend([{
+            outputs.append({
                 'URL': url,
-                'Domain': domain,
-                'IsInternal': domain_from_url == domain
-            } for domain in domains])
+                'Domain': domain_from_url,
+                'IsInternal': domain_from_url in domains
+            })
     return CommandResults('IsUrlPartOfDomain', outputs=outputs)
 
 
