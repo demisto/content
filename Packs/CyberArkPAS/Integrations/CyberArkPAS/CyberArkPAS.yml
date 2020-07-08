@@ -186,6 +186,17 @@ script:
     - contextPath: CyberArk.Accounts.CreatedTime
       description: CyberArk Created Time
       type: String
+  - arguments:
+    - default: false
+      description: CyberArk Account ID
+      isArray: false
+      name: account_id
+      required: true
+      secret: false
+    deprecated: false
+    description: A command to delete a CyberArk Account
+    execution: false
+    name: cyberark-delete-account
   dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: false

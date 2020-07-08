@@ -2884,6 +2884,10 @@
             "integrations": "Workday",
             "playbookID": "Workday - Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "CyberArkPAS",
+            "playbookID": "CyberArkPAS_Test"
         }
     ],
     "skipped_tests": {

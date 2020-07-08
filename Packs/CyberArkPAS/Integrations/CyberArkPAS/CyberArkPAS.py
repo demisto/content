@@ -25,7 +25,7 @@ class Client(BaseClient):
             "password": password,
             "concurrentSession": "false"
         }
-        demisto.debug(f'Authenticating using CyberArk authentication method')
+        demisto.debug('Authenticating using CyberArk authentication method')
         auth_token = self._http_request(
             "POST",
             url_suffix='/PasswordVault/API/Auth/CyberArk/Logon',
@@ -33,7 +33,7 @@ class Client(BaseClient):
         )
         demisto.setIntegrationContext({
             "token": auth_token,
-            "valid_until": int(time.time())+300
+            "valid_until": int(time.time()) + 300
         })
 
     def get_system_summary(self):
@@ -113,6 +113,19 @@ class Client(BaseClient):
         )
         return res
 
+    def delete_account(self, account_id):
+        demisto.debug('Deleting an Account')
+        headers = {
+            'Authorization': demisto.getIntegrationContext()['token']
+        }
+        res = self._http_request(
+            "DELETE",
+            url_suffix='/PasswordVault/api/Accounts/' + account_id,
+            resp_type="content",
+            headers=headers,
+        )
+        return res
+
 
 '''' Commands '''
 
@@ -123,7 +136,6 @@ def test_module(client):
 
 
 def list_accounts(client, args):
-    title = f'{INTEGRATION_NAME} - List of the Accounts'
     raws = []
     cyberark_ec = []
     raw_response = client.get_accounts(offset=args.get('offset', '0'), limit=args.get('limit', '50')).get('value')
@@ -146,12 +158,11 @@ def list_accounts(client, args):
     return CommandResults(
         outputs_prefix='CyberArk.Accounts',
         outputs_key_field='AccountID',
-        outputs=cyberark_ec
+        outputs=cyberark_ec,
     )
 
 
 def add_account(client, args):
-    title = f'{INTEGRATION_NAME} - Add a New Account'
     raws = []
     cyberark_ec = []
     raw_response = client.add_account(user_name=args.get('user_name'), address=args.get('address'),
@@ -162,8 +173,8 @@ def add_account(client, args):
                                       automatic_management_enabled=args.get('automatic_management_enabled'),
                                       manual_management_reason=args.get('manual_management_reason'),
                                       remote_machines=args.get('remote_machines'),
-                                      access_restricted_to_remote_machines=
-                                      args.get('access_restricted_to_remote_machines'))
+                                      access_restricted_to_remote_machines=args.get(
+                                          'access_restricted_to_remote_machines'))
     if raw_response:
         raws.append(raw_response)
         cyberark_ec.append({
@@ -183,6 +194,20 @@ def add_account(client, args):
         outputs_key_field='AccountID',
         outputs=cyberark_ec
     )
+
+
+def delete_account(client, args):
+    raws = []
+    cyberark_ec = []
+    raw_response = client.delete_account(account_id=args.get('account_id'))
+
+    if raw_response:
+        raws.append(raw_response)
+        cyberark_ec.append({
+            raw_response
+        })
+
+    return "Account is Deleted"
 
 
 def main():
@@ -226,20 +251,30 @@ def main():
             result = add_account(client, args=demisto.args())
             return_results(result)
 
+        elif demisto.command() == 'cyberark-delete-account':
+            result = delete_account(client, args=demisto.args())
+            return_results(result)
+
     except Exception as e:
-        if "Not Found" in str(e):
+        if "ErrorMessage" in str(e):
             return_error(str(
-                f'Failed to execute {demisto.command()} command. Error: API Endpoint not found, please check the URL parameter'))
-        elif "ErrorMessage" in str(e):
-            return_error(str(f'Failed to execute {demisto.command()} command. Error: {str(e).split("ErrorMessage")[1].split(":")[1].split(".")[0].split("}")[0]}'))
+                f'Failed to execute {demisto.command()} command. Error:'
+                f' {str(e).split("ErrorMessage")[1].split(":")[1].split(".")[0].split("}")[0]}'))
+        elif "Not Found" in str(e):
+            return_error(str(
+                f'Failed to execute {demisto.command()} command. '
+                f'Error: API Endpoint not found, please check the URL parameter'))
         elif "Connection Timeout" in str(e):
-            return_error(str(f'Failed to execute {demisto.command()} command. Error: Connection Timeout, please check the URL address'))
+            return_error(str(
+                f'Failed to execute {demisto.command()} '
+                f'command. Error: Connection Timeout, please check the URL address'))
         elif "SSL Certificate Verification Failed" in str(e):
-            return_error(str(f'Failed to execute {demisto.command()} command. Error: SSL Certificate Verification Failed - try selecting "Trust any certificate" checkbox in the integration configuration.'))
+            return_error(str(
+                f'Failed to execute {demisto.command()} command. '
+                f'Error: SSL Certificate Verification Failed - '
+                f'try selecting "Trust any certificate" checkbox in the integration configuration.'))
         else:
             return_error(str(f'Failed to execute {demisto.command()} command. Error: {str(e)}'))
-
-
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

@@ -1,2 +1,3 @@
 !cyberark-list-accounts
-!cyberark-add-account name="user12" address="20.20.20.20" user-name="user12" platform-Id="WinDesktopLocal" safe-name="Labs" platform-account-properties=`{"Location": "IT", "OwnerName": "MSSPAdmin"}`
+!cyberark-add-account address="20.20.20.20" user_name="user12" platform_Id="WinDesktopLocal" safe_name="Labs" platform_account_properties=`{"Location": "IT", "OwnerName": "MSSPAdmin"}`
+!cyberark-delete-account account_id="10_36"
