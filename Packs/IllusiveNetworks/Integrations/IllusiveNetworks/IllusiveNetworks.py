@@ -662,7 +662,8 @@ def get_incident_events_command(client: Client, args: dict) -> Tuple:
         else:
             raise DemistoException("{}".format(e.args[0]))
 
-    readable_output = tableToMarkdown('Illusive get incident\'s events', events, metadata="Number of events {}".format(len(events)))
+    readable_output = tableToMarkdown('Illusive get incident\'s events', events, metadata="Number of events {}"
+                                      .format(len(events)))
 
     outputs = {
         'Illusive.Incident(val.incidentId == obj.incidentId)': {
@@ -743,7 +744,7 @@ def get_forensics_artifacts_command(client: Client, args: dict):
     event_id = args.get("event_id")
     artifact_type = args.get("artifact_type", "DESKTOP_SCREENSHOT")
     try:
-        client.get_event_incident_id(event_id) # this request is for checking the event exists
+        client.get_event_incident_id(event_id)  # this request is for checking the event exists
         artifact = client.get_forensics_artifacts(event_id, artifact_type)
     except DemistoException as e:
         if "404" in e.args[0]:
