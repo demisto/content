@@ -20,24 +20,6 @@ def get_file_path_from_id(entry_id: Optional[str] = None):
         return None
 
 
-def get_pcap_path(args: Dict) -> str:
-    """
-
-    Args:
-        args: argument from demisto
-
-    Returns: path of pcap file
-
-    """
-    file_entry_id = args.get('entry_id', '')
-
-    res = demisto.executeCommand('getFilePath', {'id': file_entry_id})
-    if is_error(res):
-        raise Exception(f'Failed to get the file path for entry: {file_entry_id} - {get_error(res)}')
-
-    return res[0]['Contents']['path']
-
-
 def run_process(args: list, stdout=subprocess.PIPE, stderr=subprocess.PIPE):
     """Running a process
 
@@ -45,8 +27,16 @@ def run_process(args: list, stdout=subprocess.PIPE, stderr=subprocess.PIPE):
         args: args as will be passed to Popen
         stdout: STDOUT pipe
         stderr: STDERR pipe
+
+    Raises:
+        DemistoException if returncode is different than 0
     """
-    subprocess.Popen(args, stdout=stdout, stderr=stderr).communicate()
+    demisto.results(f'running command {args}')
+    process = subprocess.Popen(args, stdout=stdout, stderr=stderr)
+    process.wait()
+    stdout_data, stderr_data = process.communicate()
+    if process.returncode != 0:
+        raise DemistoException(f'Error returned from tshark command: {process.returncode=} {stderr_data}')
 
 
 def upload_files(
@@ -80,7 +70,11 @@ def upload_files(
     md5 = hashlib.md5()
     sha1 = hashlib.sha1()
     sha256 = hashlib.sha256()
+    # strip `.` from extension
+    if extensions:
+        extensions = [extension.split(".")[-1] for extension in extensions]
     for root, _, files in os.walk(dir_path):
+        # Limit the files list to minimum
         files = files[: limit]
         if not files:
             return 'No files found.'
@@ -91,21 +85,20 @@ def upload_files(
                 mime_type = magic_mime.from_file(os.path.join(root, file))
                 # Inclusive types, take only the types in the list.
                 if types_inclusive_or_exclusive == InclusiveExclusive.INCLUSIVE and mime_type not in types:
-                    files.remove(file)
+                    continue
                 # Exclusive types, don't take those files.
                 elif types_inclusive_or_exclusive == InclusiveExclusive.EXCLUSIVE and mime_type not in types:
-                    files.remove(file)
+                    continue
             if extensions:
-                # Get file extension.
-                f_ext = file.split()[-1]
+                # Get file extension without a leading point.
+                f_ext = os.path.splitext(file)[1].split('.')[-1]
                 # Inclusive extensions, take only the types in the list.
                 if extensions_inclusive_or_exclusive == InclusiveExclusive.INCLUSIVE and f_ext in extensions:
-                    files.remove(file)
+                    continue
                 # Exclude extensions, don't take those files.
                 elif extensions_inclusive_or_exclusive == InclusiveExclusive.EXCLUSIVE and f_ext not in extensions:
-                    files.remove(file)
+                    continue
 
-        for file in files:
             file_path = os.path.join(root, file)
             file_name = os.path.join(file)
 
@@ -146,7 +139,7 @@ def decrypt(
 ) -> str:
     if not password and not rsa_key_path:
         return file_path
-    file_extension = file_path.split('.')[-1]
+    file_extension = os.path.splitext(file_path)[1]
     with tempfile.NamedTemporaryFile(suffix=file_extension) as temp_file:
         command = ['tshark', '-r', file_path, '-w', temp_file.name]
 
@@ -166,7 +159,7 @@ def main():
     with tempfile.TemporaryDirectory() as dir_path:
         try:
             kwargs = demisto.args()
-            file_path = get_pcap_path(kwargs)
+            file_path = get_file_path_from_id(kwargs.get('entry_id'))
             file_path = decrypt(
                 file_path, kwargs.get('wpa_password'), get_file_path_from_id(kwargs.get('rsa_decrypt_key_entry_id'))
             )
