@@ -79,18 +79,18 @@ def unpack_all_data_from_dict(entry_context: Dict[Any, Any], keys: List[str], co
                 for item in value:
                     if isinstance(item, dict):
                         recursively_unpack_data(filter_dict(item, keys), path + '.' + key)
-                    elif isinstance(item, (str, int, float, bool)):
+                    else:
                         unpacked_data.append(
                             {
                                 columns[0]: key,
-                                columns[1]: item
+                                columns[1]: item if isinstance(item, (str, int, float, bool)) else ""
                             }
                         )
-            elif isinstance(value, (str, int, float, bool)):
+            else:
                 unpacked_data.append(
                     {
                         columns[0]: key,
-                        columns[1]: value
+                        columns[1]: value if isinstance(value, (str, int, float, bool)) else ""
                     }
                 )
 
@@ -250,6 +250,10 @@ def build_grid_command(grid_id: str, context_path: str, keys: List[str], columns
         Returns:
             list: Table representation for the Grid.
     """
+    # Assert columns match keys
+    if keys[0] != '*' and (len(columns) != len(keys)):
+        raise DemistoException(f'Error - The number of keys: {len(keys)} should match the number of '
+                               f'columns: {len(columns)}')
     # Get old Data
     old_table = get_current_table(grid_id=grid_id)
     # Normalize columns to match connected words.
