@@ -363,6 +363,6 @@ try:
         delete_u2f_token(demisto.getArg('token_id'))
 
 except Exception as e:
-    demisto.error(f"Duo Admin failed on: {e} on this command {demisto.command}")
+    demisto.error("Duo Admin failed on: {} on this command {}".format(e, demisto.command))
     return_error(e.message)
 sys.exit(0)
