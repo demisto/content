@@ -1,15 +1,11 @@
 {
-    "typeId": "Digital Guardian Security Event",
+    "id": "Digital Guardian Security Event",
+    "group": "incident",
+    "system": true,
+    "name": "Digital Guardian Security Event Incident Layout",
     "version": -1,
-    "TypeName": "Digital Guardian Security Event",
-    "kind": "details",
-    "fromVersion": "5.0.0",
-    "layout": {
-        "TypeName": "",
-        "id": "Digital Guardian Security Event",
-        "kind": "details",
-        "name": "",
-        "system": false,
+    "fromVersion": "6.0.0",
+    "details": {
         "tabs": [
             {
                 "hidden": false,
@@ -551,9 +547,6 @@
                 "name": "Canvas",
                 "type": "canvas"
             }
-        ],
-        "typeId": "Digital Guardian Security Event",
-        "version": -1,
-        "fromVersion": "5.9.9"
+        ]
     }
 }
