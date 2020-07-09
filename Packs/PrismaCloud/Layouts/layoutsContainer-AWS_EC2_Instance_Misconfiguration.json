@@ -1,8 +1,8 @@
 {
-    "id": "AWS CloudTrail Misconfiguration",
+    "id": "AWS EC2 Instance Misconfiguration",
     "group": "incident",
     "system": true,
-    "name": "AWS CloudTrail Misconfiguration Incident Layout",
+    "name": "AWS EC2 Instance Misconfiguration Incident Layout",
     "version": -1,
     "fromVersion": "6.0.0",
     "details": {
