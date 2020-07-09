@@ -31,25 +31,25 @@ def test_validate_args(mocker, parse_all, header, value, expected):
     ]
 )
 def test_does_list_exist(mocker, list_result, expected):
-    from GetListRow import does_list_exist
+    from GetListRow import validate_list_exists
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
-    does_list_exist(list_result)
+    validate_list_exists(list_result)
     assert return_error_mock.call_count == expected
 
 
 @pytest.mark.parametrize(
-    "list_result, header, expected",
+    "headers, header, expected",
     [
-        ("a,b,c,\n,d,e,f", "b", 0),
-        ("id,name,title,\n,1,Or,manager", "id", 0),
-        ("a,b,c,\n,d,e,f", "e", 1),
-        ("id,name,title,\n,1,Or,manager", "nam", 1)
+        (['id', 'name', 'title', 'status'], 'id', 0),
+        (['id', 'name', 'title', 'status'], 'status', 0),
+        (['id', 'name', 'title', 'status'], "statu", 1),
+        (['id', 'name'], "title", 1)
     ]
 )
-def test_does_header_exist(mocker, list_result, header, expected):
-    from GetListRow import does_header_exist
+def test_does_header_exist(mocker, headers, header, expected):
+    from GetListRow import validate_header_exists
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
-    does_header_exist(list_result, header)
+    validate_header_exists(headers, header)
     assert return_error_mock.call_count == expected
 
 

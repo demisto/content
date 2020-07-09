@@ -8,50 +8,36 @@ def validate_args(parse_all, header, value):
 
 
 def validate_list_exists(list_result):
-    if not list_result and "Item not found" not in list_result:
+    if not list_result or "Item not found" in list_result:
         return_error("Error: The supplied list name not found.")
 
 
-def validate_header_exists(list_result, header):
-    list_lines = list_result.split('\n')
-    headers = list_lines[0].split(',')
+def validate_header_exists(headers, header):
     if header not in headers:
         return_error("Error: The supplied header name not found.")
 
 
-def parse_all_rows(list_result, context_result):
-    list_lines = list_result.split('\n')
-    headers = list_lines[0].split(',')
+def list_to_headers_and_list_lines(list_result):
+    list_lines = [line.split(',') for line in list_result.split('\n')]
+    headers = list_lines[0]
+    return list_lines[1:], headers
+
+
+def list_lines_to_parse(list_lines, headers):
     all_result = []
-    for line in list_lines[1:]:
-        current_line = line.split(',')
-        dict_result = {}
-        for item in range(len(current_line)):
-            dict_result[headers[item]] = current_line[item]
+    for line in list_lines:
+        dict_result = {headers[item]: line[item] for item in range(len(line))}
         all_result.append(dict_result)
-    context_result["results"] = all_result
-    markdown = tableToMarkdown('List Result', all_result, headers=headers)
-    return CommandResults(
-        outputs_prefix='''getListRow.Result(val.header == obj.header
-                          && val.value == obj.value && val.list_name == obj.list_name)''',
-        outputs=context_result,
-        readable_output=markdown
-    )
+    return all_result
 
 
-def parse_specific_rows(list_result, header, value, context_result):
-    list_lines = list_result.split('\n')
-    specific_lines_to_parse = []
-    headers = list_lines[0].split(',')
-    header_location = headers.index(header)
-    all_result = []
-    for line in list_lines[1:]:
-        current_line = line.split(',')
-        if current_line[header_location] == value:
-            dict_result = {}
-            for item in range(len(current_line)):
-                dict_result[headers[item]] = current_line[item]
-            all_result.append(dict_result)
+def parse_relevant_rows(headers, list_lines, header, value, context_result, parse_all=False):
+    if parse_all:
+        all_result = list_lines_to_parse(list_lines, headers)
+    else:
+        header_location = headers.index(header)
+        specific_lines_to_parse = [line for line in list_lines if line[header_location] == value]
+        all_result = list_lines_to_parse(specific_lines_to_parse, headers)
     if all_result:
         context_result["results"] = all_result
         markdown = tableToMarkdown('List Result', all_result, headers=headers)
@@ -75,11 +61,12 @@ def parse_list(parse_all, header, value, list_name):
         "value": value,
     }
     validate_list_exists(list_result)
+    list_lines, headers = list_to_headers_and_list_lines(list_result)
     if parse_all.lower() == "true":
-        command_results = parse_all_rows(list_result, context_result)
+        command_results = parse_relevant_rows(headers, list_lines, header, value, context_result, parse_all=True)
     else:
-        validate_header_exists(list_result, header)
-        command_results = parse_specific_rows(list_result, header, value, context_result)
+        validate_header_exists(headers, header)
+        command_results = parse_relevant_rows(headers, list_lines, header, value, context_result)
     return command_results
 
 
