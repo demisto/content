@@ -1255,7 +1255,7 @@ def code42_high_risk_employee_get_mock(code42_sdk_mock, mocker):
     single_high_risk_employee = json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"][0]
     response = create_mock_code42_sdk_response(mocker, json.dumps(single_high_risk_employee))
     code42_sdk_mock.detectionlists.high_risk_employee.get.return_value = response
-
+    return code42_sdk_mock
 
 @pytest.fixture
 def code42_legal_hold_mock(code42_sdk_mock, mocker):
