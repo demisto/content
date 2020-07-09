@@ -1,14 +1,12 @@
 {
-	"TypeName": "accountRep",
-	"kind": "indicatorsDetails",
-	"layout": {
-		"TypeName": "",
-		"id": "accountRep",
-		"kind": "indicatorsDetails",
-		"modified": "2020-03-26T11:59:52.044505+02:00",
-		"name": "",
-		"system": false,
-		"tabs": [
+    "id": "accountRep",
+    "group": "indicator",
+    "system": true,
+    "name": "Account Indicator Layout",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "indicatorsDetails": {
+        "tabs": [
 			{
 				"id": "default-main",
 				"name": "Info",
@@ -373,12 +371,6 @@
 				],
 				"type": "custom"
 			}
-		],
-		"typeId": "accountRep",
-		"version": -1
-	},
-	"typeId": "accountRep",
-	"version": -1,
-    "fromversion": "5.5.0",
-	"toVersion": "5.9.9"
+		]
+    }
 }
