@@ -7,19 +7,19 @@ import json
 with open('test_data/stix_envelope_no_indicators.json', 'r') as f:
     STIX_ENVELOPE_NO_IOCS = json.load(f)
 
-with open('test_data/stix_envelope_17|19.json', 'r') as f:
+with open('test_data/stix_envelope_17-19.json', 'r') as f:
     STIX_ENVELOPE_17_IOCS_19_OBJS = json.load(f)
 
-with open('test_data/stix_envelope_complex_20|19.json', 'r') as f:
+with open('test_data/stix_envelope_complex_20-19.json', 'r') as f:
     STIX_ENVELOPE_20_IOCS_19_OBJS = json.load(f)
 
-with open('test_data/cortex_parsed_indicators_17|19.json', 'r') as f:
+with open('test_data/cortex_parsed_indicators_17-19.json', 'r') as f:
     CORTEX_17_IOCS_19_OBJS = json.load(f)
 
-with open('test_data/cortex_parsed_indicators_complex_20|19.json', 'r') as f:
+with open('test_data/cortex_parsed_indicators_complex_20-19.json', 'r') as f:
     CORTEX_COMPLEX_20_IOCS_19_OBJS = json.load(f)
 
-with open('test_data/cortex_parsed_indicators_complex_skipped_14|19.json', 'r') as f:
+with open('test_data/cortex_parsed_indicators_complex_skipped_14-19.json', 'r') as f:
     CORTEX_COMPLEX_14_IOCS_19_OBJS = json.load(f)
 
 

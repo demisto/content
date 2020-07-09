@@ -1,4 +1,4 @@
-Fully automated malware analysis.
+Use the CrowdStrike Falcon X integration to submit files, file hashes, URLs, and FTPs for sandbox analysis, and to retrieve reports.
 This integration was integrated and tested with version xx of CrowdStrike Falcon X
 ## Configure CrowdStrike Falcon X on Cortex XSOAR
 
@@ -18,7 +18,7 @@ You can execute these commands from the Demisto CLI, as part of an automation, o
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cs-fx-upload-file
 ***
-Upload a file for sandbox analysis.
+Uploads a file for sandbox analysis.
 
 
 #### Base Command
@@ -28,23 +28,23 @@ Upload a file for sandbox analysis.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_name | Name of the file | Required | 
+| file_name | Name of the file to upload for sandbox analysis. | Required | 
 | comment | A descriptive comment to identify the file for other users. | Optional | 
-| is_confidential | Defines visibility of this file in Falcon MalQuery. | Optional | 
+| is_confidential | Determines the visibility of this file in Falcon MalQuery. Can be "true" or "false". If "true", the file is confidential. | Optional | 
 | file | Content of the uploaded sample in binary format. | Required | 
-| submit_file | Submit the given file to the sandbox. | Optional | 
+| submit_file | Whether to submit the given file to the sandbox. Can be "yes" or "no". Default is "no". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| csfalconx.resource.sha256 | String | Uploaded file SHA256 | 
-| csfalconx.resource.file_name | String | Uploaded file name  | 
+| csfalconx.resource.sha256 | String | SHA256 hash of the uploaded file. | 
+| csfalconx.resource.file_name | String | Name of the uploaded file.  | 
 
 
 #### Command Example
-```!cs-fx-upload-file file=172@07031695-ae27-49f6-8bb2-41943c7cb80c file_name=test.pdf comment="example" is_confidential="true" submit_file=no```
+```!cs-fx-upload-file file=895@07031695-ae27-49f6-8bb2-41943c7cb80c file_name=test.pdf comment="example" is_confidential="true" submit_file=no```
 
 #### Context Example
 ```
@@ -52,7 +52,7 @@ Upload a file for sandbox analysis.
     "csfalconx": {
         "resource": {
             "file_name": "test.pdf",
-            "sha256": "05cca3437abcb40c27e97029e9e0ad61",
+            "sha256": "c5fdd1fb2c53cd00aba5b01270f91fd5598f315bef99938ddeb92c23667ec2c9"
         }
     }
 }
@@ -63,12 +63,12 @@ Upload a file for sandbox analysis.
 >### CrowdStrike Falcon X response:
 >|file_name|sha256|
 >|---|---|
->| test.pdf | 0c80535963017adffb8d4ad7f5ded0301864c4ff4c846e2399b40da9c863c2f0 |
+>| test.pdf | c5fdd1fb2c53cd00aba5b01270f91fd5598f315bef99938ddeb92c23667ec2c9 |
 
 
 ### cs-fx-submit-uploaded-file
 ***
-Submit a sample SHA256 for sandbox analysis.
+Submits a sample SHA256 hash for sandbox analysis.
 
 
 #### Base Command
@@ -78,26 +78,26 @@ Submit a sample SHA256 for sandbox analysis.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sha256 | SHA256 ID of the sample, which is a SHA256 hash value. Find a sample ID from the response when uploading a malware sample or search with - cs-fx-upload-file. | Required | 
-| environment_id | Specifies the sandbox environment used for analysis | Required | 
+| sha256 | SHA256 ID of the sample, which is a SHA256 hash value. Find the sample ID from the response when uploading a malware sample or search with the cs-fx-upload-file command. | Required | 
+| environment_id | Sandbox environment used for analysis. | Required | 
 | action_script | Runtime script for sandbox analysis. | Optional | 
 | command_line | Command line script passed to the submitted file at runtime. Max length: 2048 characters. | Optional | 
 | document_password | Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters. | Optional | 
-| enable_tor | If true, sandbox analysis routes network traffic via TOR. | Optional | 
-| submit_name | Name of the malware sample that’s used for file type detection and analysis. | Optional | 
-| system_date | Set a custom date in the format yyyy-MM-dd for the sandbox environment. | Optional | 
-| system_time | Set a custom time in the format HH:mm for the sandbox environment. | Optional | 
+| enable_tor | Whether the sandbox analysis routes network traffic via TOR. Can be "true" or "false". If true, sandbox analysis routes network traffic via TOR. | Optional | 
+| submit_name | Name of the malware sample that’s used for file type detection. and analysis. | Optional | 
+| system_date | Set a custom date for the sandbox environment in the format yyyy-MM-dd. | Optional | 
+| system_time | Sets a custom time for the sandbox environment in the format HH:mm. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| csfalconx.resource.id  | String | Analysis ID | 
-| csfalconx.resource.state | String | Analysis State | 
-| csfalconx.resource.created_timpestamp | String | Time Started | 
-| csfalconx.resource.sha256 | Unknown | SHA256 of the scan | 
-| csfalconx.resource.environment_id | Unknown | Environment ID of the analysis  | 
+| csfalconx.resource.uploaded_id  | String | Analysis ID received after uploading the file. | 
+| csfalconx.resource.state | String | Analysis state. | 
+| csfalconx.resource.created_timpestamp | String | Analysis start time. | 
+| csfalconx.resource.sha256 | Unknown | SHA256 hash of the scanned file. | 
+| csfalconx.resource.environment_id | Unknown | Environment ID of the analysis.  | 
 
 
 #### Command Example
@@ -108,11 +108,11 @@ Submit a sample SHA256 for sandbox analysis.
 {
     "csfalconx": {
         "resource": {
-            "created_timestamp": "2020-06-09T14:04:30Z",
+            "created_timestamp": "2020-07-03T06:36:17Z",
             "environment_id": 160,
-            "id": "1c9fe398b2294301a356_ad87d1f5cf4443e6aeeab9",
-            "sha256": "05cca3437abcb40c27e97029e9e0ad61",
-            "state": "created"
+            "sha256": "a381a7b679119dee5b95c9c09993885e44ad2fd9cd52fa28bc116f8bdea71679",
+            "state": "created",
+            "submitted_id": "1c9fe398b2294301aa3080ede8d77356_943236d30cc349538cab108d61c6986a"
         }
     }
 }
@@ -121,14 +121,14 @@ Submit a sample SHA256 for sandbox analysis.
 #### Human Readable Output
 
 >### CrowdStrike Falcon X response:
->|created_timestamp|environment_id|id|sha256|state|
+>|created_timestamp|environment_id|sha256|state|submitted_id|
 >|---|---|---|---|---|
->| 2020-06-09T14:04:30Z | 160 | 1c9fe398b2294301aa3080ede8d77356_ad87d1f5cf4443e6aeeab9ab9082b250 | a381a7b679119dee5b95c9c09993885e44ad2fd9cd52fa28bc116f8bdea71679 | created |
+>| 2020-07-03T06:36:17Z | 160 | a381a7b679119dee5b95c9c09993885e44ad2fd9cd52fa28bc116f8bdea71679 | created | 1c9fe398b2294301aa3080ede8d77356_943236d30cc349538cab108d61c6986a |
 
 
 ### cs-fx-get-full-report
 ***
-Get a full version of a sandbox report.
+Gets a full version of a sandbox report.
 
 
 #### Base Command
@@ -138,32 +138,32 @@ Get a full version of a sandbox report.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | ID of a submitted malware sample. Find a submission ID from the response when submitting a malware sample or search with cs-fx-submit-uploaded-file. | Required | 
+| ids | ID of a submitted malware sample. Find a submission ID from the response when submitting a malware sample or search with the cs-fx-submit-uploaded-file command. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| csfalconx.resource.id | String | Analysis ID | 
-| csfalconx.resource.verdict | String | Analysis Verdict | 
-| csfalconx.resource.created_timpestamp | String | Time Started | 
-| csfalconx.resource.sandbox_environment_id | String | Environment ID | 
-| csfalconx.resource.snadbox.environment_description | String | Environment Description | 
-| csfalconx.resource.sandbox_threat_score | Int | Score of the threat | 
-| csfalconx.resource.sandbox_submit_url | String | Submitted URL to analysis | 
-| csfalconx.resource.sandbox_submission_type | String | Type of submitted artifact File/URL etc | 
-| csfalconx.resource.sandbox_filetype | String | Type of the file | 
-| csfalconx.resource.sandbox_filesize | Int | Size of the file | 
-| csfalconx.resource.sandbox_sha256 | String | SHS256 of the file Submission | 
-| csfalconx.resource.ioc_strict_csv | String | ID of IOC pack to download | 
-| csfalconx.resource.ioc_broad_csv | String | ID of IOC pack to download | 
-| csfalconx.resource.ioc_strict_jason | Int | ID of IOC pack to download | 
-| csfalconx.resource.ioc_broad_jason | String | ID of IOC pack to download | 
-| csfalconx.resource.ioc_strict_stix | String | ID of IOC pack to download | 
-| csfalconx.resource.ioc_broad_stix | Int | ID of IOC pack to download | 
-| csfalconx.resource.ioc_strict_maec | String | ID of IOC pack to download | 
-| csfalconx.resource.ioc_broad_maec | String | ID of IOC pack to download | 
+| csfalconx.resource.submitted_id | String | Analysis ID received after submitting the file. | 
+| csfalconx.resource.verdict | String | Analysis verdict. | 
+| csfalconx.resource.created_timpestamp | String | Analysis start time. | 
+| csfalconx.resource.environment_id | String | Environment ID. | 
+| csfalconx.resource.snadbox.environment_description | String | Environment description. | 
+| csfalconx.resource.threat_score | Int | Score of the threat. | 
+| csfalconx.resource.submit_url | String | URL submitted for analysis. | 
+| csfalconx.resource.submission_type | String | Type of submitted artifact, for example file, URL, etc. | 
+| csfalconx.resource.filetype | String | File type. | 
+| csfalconx.resource.filesize | Int | File size. | 
+| csfalconx.resource.sha256 | String | SHA256 hash of the submitted file. | 
+| csfalconx.resource.ioc_report_strict_csv_artifact_id | String | ID of the IOC pack to download \(CSV\). | 
+| csfalconx.resource.ioc_report_broad_csv_artifact_id | String | ID of the IOC pack to download \(CSV\). | 
+| csfalconx.resource.ioc_report_strict_json_artifact_id | Int | ID of the IOC pack to download \(JSON\). | 
+| csfalconx.resource.ioc_report_broad_json_artifact_id | String | ID of the IOC pack to download \(JSON\). | 
+| csfalconx.resource.ioc_report_strict_stix_artifact_id | String | ID of the IOC pack to download \(STIX\). | 
+| csfalconx.resource.ioc_report_broad_stix_artifact_id | Int | ID of the IOC pack to download \(STIX\). | 
+| csfalconx.resource.ioc_report_strict_maec_artifact_id | String | ID of the IOC pack to download \(MAEC\). | 
+| csfalconx.resource.ioc_report_broad_maec_artifact_id | String | ID of the IOC pack to download \(MAEC\). | 
 
 
 #### Command Example
@@ -177,7 +177,7 @@ Get a full version of a sandbox report.
             "created_timestamp": "2020-03-16T17:04:48Z",
             "environment_description": "Windows 10 64 bit",
             "environment_id": 160,
-            "id": "1c9fe398b2294301a356_ad87d1f5cf4443e6aeeab9",
+            "id": "1c9fe398b2294301aa3080ede8d77356_8511c69fa47f4188bf59e3ab80f0f39f",
             "ioc_report_broad_csv_artifact_id": "910b844555678892b85afaa6761eb0619b43355a851797f2cd54aa814ad84e04",
             "ioc_report_broad_json_artifact_id": "b02b32f52a8fa67ad42d8b0e002d37622142b6b5f9c8174fa62df859422a8de8",
             "ioc_report_broad_maec_artifact_id": "16f7cb67df103b63badeed41a6d05d717c8aee898b811b1620e7d009dab18945",
@@ -186,7 +186,7 @@ Get a full version of a sandbox report.
             "ioc_report_strict_json_artifact_id": "b02b32f52a8fa67ad42d8b0e002d37622142b6b5f9c8174fa62df859422a8de8",
             "ioc_report_strict_maec_artifact_id": "16f7cb67df103b63badeed41a6d05d717c8aee898b811b1620e7d009dab18945",
             "ioc_report_strict_stix_artifact_id": "90c36e086e9459b8c08503409f58b1d8710b46867736fac292afff45b4ffb1f1",
-            "sha256": "05cca3437abcb40c27e97029e9e0ad61",
+            "sha256": "15fea7cc23194aea10dce58cff8fff050c81e1be0d16e4da542f4fedd5a421c3",
             "submission_type": "page_url",
             "submit_url": "hxxps://www.google.com",
             "threat_score": 13,
@@ -206,7 +206,7 @@ Get a full version of a sandbox report.
 
 ### cs-fx-get-report-summary
 ***
-Get a short summary version of a sandbox report.
+Gets a short summary version of a sandbox report.
 
 
 #### Base Command
@@ -216,32 +216,32 @@ Get a short summary version of a sandbox report.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | ID of a submitted malware sample. Find a submission ID from the response when submitting a malware sample or search with cs-fx-submit-uploaded-file. | Required | 
+| ids | ID of a submitted malware sample. Find a submission ID from the response when submitting a malware sample or search with the cs-fx-submit-uploaded-file command. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| csfalconx.resource.id | String | Analysis ID | 
-| csfalconx.resource.verdict | String | Analysis Verdict | 
-| csfalconx.resource.created_timpestamp | String | Time Started | 
-| csfalconx.resource.sandbox_environment_id | String | Environment ID | 
-| csfalconx.resource.snadbox.environment_description | String | Environment Description | 
-| csfalconx.resource.sandbox_threat_score | Int | Score of the threat | 
-| csfalconx.resource.sandbox_submit_url | String | Submitted URL to analysis | 
-| csfalconx.resource.sandbox_submission_type | String | Type of submitted artifact File/URL etc | 
-| csfalconx.resource.sandbox_filetype | String | Type of the file | 
-| csfalconx.resource.sandbox_filesize | Int | Size of the file | 
-| csfalconx.resource.sandbox_sha256 | String | SHS256 of the file Submission | 
-| csfalconx.resource.ioc_strict_csv | String | ID of IOC pack to download | 
-| csfalconx.resource.ioc_broad_csv | String | ID of IOC pack to download | 
-| csfalconx.resource.ioc_strict_jason | Int | ID of IOC pack to download | 
-| csfalconx.resource.ioc_broad_jason | String | ID of IOC pack to download | 
-| csfalconx.resource.ioc_strict_stix | String | ID of IOC pack to download | 
-| csfalconx.resource.ioc_broad_stix | Int | ID of IOC pack to download | 
-| csfalconx.resource.ioc_strict_maec | String | ID of IOC pack to download | 
-| csfalconx.resource.ioc_broad_maec | String | ID of IOC pack to download | 
+| csfalconx.resource.id | String | Analysis ID. | 
+| csfalconx.resource.verdict | String | Analysis verdict. | 
+| csfalconx.resource.created_timpestamp | String | Analysis start time. | 
+| csfalconx.resource.environment_id | String | Environment ID. | 
+| csfalconx.resource.environment_description | String | Environment description. | 
+| csfalconx.resource.threat_score | Int | Score of the threat. | 
+| csfalconx.resource.submit_url | String | URL submitted for analysis. | 
+| csfalconx.resource.submission_type | String | Type of submitted artifact. For example, file, URL, etc. | 
+| csfalconx.resource.filetype | String | File type. | 
+| csfalconx.resource.filesize | Int | File size. | 
+| csfalconx.resource.sha256 | String | SHA256 hash of the submitted file. | 
+| csfalconx.resource.ioc_report_strict_csv_artifact_id | String | ID of the IOC pack to download \(CSV\). | 
+| csfalconx.resource.ioc_report_broad_csv_artifact_id | String | ID of the IOC pack to download \(CSV\). | 
+| csfalconx.resource.ioc_report_strict_json_artifact_id | Int | ID of the IOC pack to download \(JSON\). | 
+| csfalconx.resource.ioc_report_broad_json_artifact_id | String | ID of the IOC pack to download \(JSON\). | 
+| csfalconx.resource.ioc_report_strict_stix_artifact_id | String | ID of the IOC pack to download \(STIX\). | 
+| csfalconx.resource.ioc_report_broad_stix_artifact_id | Int | ID of the IOC pack to download \(STIX\). | 
+| csfalconx.resource.ioc_report_strict_maec_artifact_id | String | ID of the IOC pack to download \(MAEC\). | 
+| csfalconx.resource.ioc_report_broad_maec_artifact_id | String | ID of the IOC pack to download \(MAEC\). | 
 
 
 #### Command Example
@@ -255,7 +255,7 @@ Get a short summary version of a sandbox report.
             "created_timestamp": "2020-03-16T17:04:48Z",
             "environment_description": "Windows 10 64 bit",
             "environment_id": 160,
-            "id": "1c9fe398b2294301a356_ad87d1f5cf4443e6aeeab9",
+            "id": "1c9fe398b2294301aa3080ede8d77356_8511c69fa47f4188bf59e3ab80f0f39f",
             "ioc_report_broad_csv_artifact_id": "910b844555678892b85afaa6761eb0619b43355a851797f2cd54aa814ad84e04",
             "ioc_report_broad_json_artifact_id": "b02b32f52a8fa67ad42d8b0e002d37622142b6b5f9c8174fa62df859422a8de8",
             "ioc_report_broad_maec_artifact_id": "16f7cb67df103b63badeed41a6d05d717c8aee898b811b1620e7d009dab18945",
@@ -264,7 +264,7 @@ Get a short summary version of a sandbox report.
             "ioc_report_strict_json_artifact_id": "b02b32f52a8fa67ad42d8b0e002d37622142b6b5f9c8174fa62df859422a8de8",
             "ioc_report_strict_maec_artifact_id": "16f7cb67df103b63badeed41a6d05d717c8aee898b811b1620e7d009dab18945",
             "ioc_report_strict_stix_artifact_id": "90c36e086e9459b8c08503409f58b1d8710b46867736fac292afff45b4ffb1f1",
-            "sha256": "05cca3437abcb40c27e97029e9e0ad61",
+            "sha256": "15fea7cc23194aea10dce58cff8fff050c81e1be0d16e4da542f4fedd5a421c3",
             "submission_type": "page_url",
             "submit_url": "hxxps://www.google.com",
             "threat_score": 13,
@@ -284,7 +284,7 @@ Get a short summary version of a sandbox report.
 
 ### cs-fx-get-analysis-status
 ***
-Check the status of a sandbox analysis.
+Checks the status of a sandbox analysis.
 
 
 #### Base Command
@@ -294,32 +294,32 @@ Check the status of a sandbox analysis.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | ID of a submitted malware sample. Find a submission ID from the response when submitting a malware sample or search with cs-fx-submit-uploaded-file/url. | Required | 
+| ids | ID of a submitted malware sample. Find a submission ID from the response when submitting a malware sample or search with the cs-fx-submit-uploaded-file/url command. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| csfalconx.resource.id | String | Analysis ID | 
-| csfalconx.resource.verdict | String | Analysis Verdict | 
-| csfalconx.resource.created_timpestamp | String | Time Started | 
-| csfalconx.resource.sandbox_environment_id | String | Environment ID | 
-| csfalconx.resource.snadbox.environment_description | String | Environment Description | 
-| csfalconx.resource.sandbox_threat_score | Int | Score of the threat | 
-| csfalconx.resource.sandbox_submit_url | String | Submitted URL to analysis | 
-| csfalconx.resource.sandbox_submission_type | String | Type of submitted artifact File/URL etc | 
-| csfalconx.resource.sandbox_filetype | String | Type of the file | 
-| csfalconx.resource.sandbox_filesize | Int | Size of the file | 
-| csfalconx.resource.sandbox_sha256 | String | SHS256 of the file Submission | 
-| csfalconx.resource.ioc_strict_csv | String | ID of IOC pack to download | 
-| csfalconx.resource.ioc_broad_csv | String | ID of IOC pack to download | 
-| csfalconx.resource.ioc_strict_jason | Int | ID of IOC pack to download | 
-| csfalconx.resource.ioc_broad_jason | String | ID of IOC pack to download | 
-| csfalconx.resource.ioc_strict_stix | String | ID of IOC pack to download | 
-| csfalconx.resource.ioc_broad_stix | Int | ID of IOC pack to download | 
-| csfalconx.resource.ioc_strict_maec | String | ID of IOC pack to download | 
-| csfalconx.resource.ioc_broad_maec | String | ID of IOC pack to download | 
+| csfalconx.resource.id | String | Analysis ID. | 
+| csfalconx.resource.verdict | String | Analysis verdict. | 
+| csfalconx.resource.created_timpestamp | String | Analysis start time. | 
+| csfalconx.resource.environment_id | String | Environment ID. | 
+| csfalconx.resource.environment_description | String | Environment description. | 
+| csfalconx.resource.threat_score | Int | Score of the threat. | 
+| csfalconx.resource.submit_url | String | URL submitted for analysis. | 
+| csfalconx.resource.submission_type | String | Type of submitted artifact. For example, file, URL, etc. | 
+| csfalconx.resource.filetype | String | File type. | 
+| csfalconx.resource.filesize | Int | File size. | 
+| csfalconx.resource.sha256 | String | SHA256 hash of the submitted file. | 
+| csfalconx.resource.ioc_report_strict_csv_artifact_id | String | ID of the IOC pack to download \(CSV\). | 
+| csfalconx.resource.ioc_report_broad_csv_artifact_id | String | ID of the IOC pack to download \(CSV\). | 
+| csfalconx.resource.ioc_report_strict_json_artifact_id | Int | ID of the IOC pack to download \(JSON\). | 
+| csfalconx.resource.ioc_report_broad_json_artifact_id | String | ID of the IOC pack to download \(JSON\). | 
+| csfalconx.resource.ioc_report_strict_stix_artifact_id | String | ID of the IOC pack to download \(STIX\). | 
+| csfalconx.resource.ioc_report_broad_stix_artifact_id | Int | ID of the IOC pack to download \(STIX\). | 
+| csfalconx.resource.ioc_report_strict_maec_artifact_id | String | ID of the IOC pack to download \(MAEC\). | 
+| csfalconx.resource.ioc_report_broad_maec_artifact_id | String | ID of the IOC pack to download \(MAEC\). | 
 
 
 #### Command Example
@@ -332,8 +332,8 @@ Check the status of a sandbox analysis.
         "resource": {
             "created_timestamp": "2020-05-26T21:24:41Z",
             "environment_id": 160,
-            "id": "1c9fe398b2294301a356_ad87d1f5cf4443e6aeeab9",
-            "sha256": "05cca3437abcb40c27e97029e9e0ad61",
+            "id": "1c9fe398b2294301aa3080ede8d77356_8cfaaf951fff412090df3d27d4b4193d",
+            "sha256": "05cca3437abcb4057c157ed8b933b07fb198aa0fa0eb7f7c27e97029e9e0ad61",
             "state": "success"
         }
     }
@@ -350,7 +350,7 @@ Check the status of a sandbox analysis.
 
 ### cs-fx-check-quota
 ***
-Shows the total and the in use quota.
+Returns the total quota number and the in use quota number.
 
 
 #### Base Command
@@ -364,9 +364,9 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| csfalconx.resource.quota.total | Number | Total quota number  | 
-| csfalconx.resource.quota.used | Number | Used Quota | 
-| csfalconx.resource.quota.in_progress | Number | Analysis in progress | 
+| csfalconx.resource.quota.total | Number | Total quota number.  | 
+| csfalconx.resource.quota.used | Number | Used quota number. | 
+| csfalconx.resource.quota.in_progress | Number | Analysis in progress. | 
 
 
 #### Command Example
@@ -379,7 +379,7 @@ There are no input arguments for this command.
         "resource": {
             "in_progress": 3,
             "total": 500,
-            "used": 17
+            "used": 11
         }
     }
 }
@@ -390,12 +390,12 @@ There are no input arguments for this command.
 >### CrowdStrike Falcon X response:
 >|in_progress|total|used|
 >|---|---|---|
->| 3 | 500 | 17 |
+>| 3 | 500 | 11 |
 
 
 ### cs-fx-find-reports
 ***
-Find sandbox reports by providing an FQL filter and paging details.
+Finds sandbox reports by providing an FQL filter and paging details.
 
 
 #### Base Command
@@ -405,17 +405,17 @@ Find sandbox reports by providing an FQL filter and paging details.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Optional filter and sort criteria in the form of an FQL query. For more information about FQL queries. | Optional | 
-| offset | The offset to start retrieving reports from. | Optional | 
-| limit | Maximum number of report IDs to return. Max: 5000. | Optional | 
-| sort | Sort order. | Optional | 
+| filter | Optional filter and sort criteria in the form of an FQL query. | Optional | 
+| offset | The offset from which to start retrieving reports. | Optional | 
+| limit | Maximum number of report IDs to return. Maximum is 5000. | Optional | 
+| sort | Sort order. Can be "asc" or "desc". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| csfalconx.resource.id | Number | set of report IDs that match your criteria.  | 
+| csfalconx.resource.id | Number | Set of report IDs that match the search criteria.  | 
 
 
 #### Command Example
@@ -427,11 +427,11 @@ Find sandbox reports by providing an FQL filter and paging details.
     "csfalconx": {
         "resource": {
             "resources": [
-                "1c9fe398b2294301aa3080ede8d77356_c2a06a4739804817941d0278177970b3",
-                "1c9fe398b2294301aa3080ede8d77356_06ddf8a50a8c48b09a88469804206fc8",
-                "1c9fe398b2294301aa3080ede8d77356_e207ea796f2f42f199dbccd65b547225",
-                "1c9fe398b2294301aa3080ede8d77356_beb473d3cc034deea3e67d281f80cb8d",
-                "1c9fe398b2294301aa3080ede8d77356_374ea9f27f714445977f156c2086b7be"
+                "1c9fe398b2294301aa3080ede8d77356_b85ecb950a7946f781055165fb772d1d",
+                "1c9fe398b2294301aa3080ede8d77356_d0b4bc43b10849bdb3a6b47ad21300e4",
+                "1c9fe398b2294301aa3080ede8d77356_91863c129067479198bd150b512bb408",
+                "1c9fe398b2294301aa3080ede8d77356_c94eaa632d5c4166a9b1266bce73d2f4",
+                "1c9fe398b2294301aa3080ede8d77356_d0cd12feda95443d94c8bdc78d513d52"
             ]
         }
     }
@@ -443,12 +443,12 @@ Find sandbox reports by providing an FQL filter and paging details.
 >### CrowdStrike Falcon X response:
 >|resources|
 >|---|
->| 1c9fe398b2294301aa3080ede8d77356_c2a06a4739804817941d0278177970b3,<br/>1c9fe398b2294301aa3080ede8d77356_06ddf8a50a8c48b09a88469804206fc8,<br/>1c9fe398b2294301aa3080ede8d77356_e207ea796f2f42f199dbccd65b547225,<br/>1c9fe398b2294301aa3080ede8d77356_beb473d3cc034deea3e67d281f80cb8d,<br/>1c9fe398b2294301aa3080ede8d77356_374ea9f27f714445977f156c2086b7be |
+>| 1c9fe398b2294301aa3080ede8d77356_b85ecb950a7946f781055165fb772d1d,<br/>1c9fe398b2294301aa3080ede8d77356_d0b4bc43b10849bdb3a6b47ad21300e4,<br/>1c9fe398b2294301aa3080ede8d77356_91863c129067479198bd150b512bb408,<br/>1c9fe398b2294301aa3080ede8d77356_c94eaa632d5c4166a9b1266bce73d2f4,<br/>1c9fe398b2294301aa3080ede8d77356_d0cd12feda95443d94c8bdc78d513d52 |
 
 
 ### cs-fx-find-submission-id
 ***
-Find submission IDs for uploaded files by providing an FQL filter and paging details. Returns a set of submission IDs that match your criteria.
+Finds submission IDs for uploaded files by providing an FQL filter and paging details. Returns a set of submission IDs that match the search criteria.
 
 
 #### Base Command
@@ -458,17 +458,17 @@ Find submission IDs for uploaded files by providing an FQL filter and paging det
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Optional filter and sort criteria in the form of an FQL query. For more information about FQL queries | Optional | 
-| offset | The offset to start retrieving reports from. | Optional | 
-| limit | Maximum number of report IDs to return. Max: 5000. | Optional | 
-| sort | Sort order. | Optional | 
+| filter | Optional filter and sort criteria in the form of an FQL query. | Optional | 
+| offset | The offset from which to start retrieving reports. | Optional | 
+| limit | Maximum number of report IDs to return. Maximum is 5000. | Optional | 
+| sort | Sort order. Can be "asc" or "desc". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| csfalconx.resource.id | Number | set of report IDs that match your criteria.  | 
+| csfalconx.resource.id | Number | Set of report IDs that match the search criteria.  | 
 
 
 #### Command Example
@@ -480,11 +480,11 @@ Find submission IDs for uploaded files by providing an FQL filter and paging det
     "csfalconx": {
         "resource": {
             "resources": [
-                "1c9fe398b2294301aa3080ede8d77356_ad87d1f5cf4443e6aeeab9ab9082b250",
-                "1c9fe398b2294301aa3080ede8d77356_03e2ca5d4df949938840bba630fdea57",
-                "1c9fe398b2294301aa3080ede8d77356_63663fbc226a43dc8dc3ddbfea3b7428",
-                "1c9fe398b2294301aa3080ede8d77356_c2a06a4739804817941d0278177970b3",
-                "1c9fe398b2294301aa3080ede8d77356_06ddf8a50a8c48b09a88469804206fc8"
+                "1c9fe398b2294301aa3080ede8d77356_943236d30cc349538cab108d61c6986a",
+                "1c9fe398b2294301aa3080ede8d77356_853956d90743418b96dea59d190cdaf9",
+                "1c9fe398b2294301aa3080ede8d77356_c97b23377e594218b5df76b512466582",
+                "1c9fe398b2294301aa3080ede8d77356_b85ecb950a7946f781055165fb772d1d",
+                "1c9fe398b2294301aa3080ede8d77356_d0b4bc43b10849bdb3a6b47ad21300e4"
             ]
         }
     }
@@ -496,12 +496,12 @@ Find submission IDs for uploaded files by providing an FQL filter and paging det
 >### CrowdStrike Falcon X response:
 >|resources|
 >|---|
->| 1c9fe398b2294301aa3080ede8d77356_ad87d1f5cf4443e6aeeab9ab9082b250,<br/>1c9fe398b2294301aa3080ede8d77356_03e2ca5d4df949938840bba630fdea57,<br/>1c9fe398b2294301aa3080ede8d77356_63663fbc226a43dc8dc3ddbfea3b7428,<br/>1c9fe398b2294301aa3080ede8d77356_c2a06a4739804817941d0278177970b3,<br/>1c9fe398b2294301aa3080ede8d77356_06ddf8a50a8c48b09a88469804206fc8 |
+>| 1c9fe398b2294301aa3080ede8d77356_943236d30cc349538cab108d61c6986a,<br/>1c9fe398b2294301aa3080ede8d77356_853956d90743418b96dea59d190cdaf9,<br/>1c9fe398b2294301aa3080ede8d77356_c97b23377e594218b5df76b512466582,<br/>1c9fe398b2294301aa3080ede8d77356_b85ecb950a7946f781055165fb772d1d,<br/>1c9fe398b2294301aa3080ede8d77356_d0b4bc43b10849bdb3a6b47ad21300e4 |
 
 
 ### cs-fx-submit-url
 ***
-Submit a URL or FTP for sandbox analysis.
+Submits a URL or FTP for sandbox analysis.
 
 
 #### Base Command
@@ -511,26 +511,26 @@ Submit a URL or FTP for sandbox analysis.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | A web page or file URL. It can be HTTP(S) or FTP.<br/>e.g.-“https://url.com”,“ftp://ftp.com” | Required | 
-| environment_id | Specifies the sandbox environment used for analysis. | Required | 
+| url | A web page or file URL. It can be HTTP(S) or FTP.<br/>For example: “https://url.com”,“ftp://ftp.com” | Required | 
+| environment_id | Sandbox environment used for analysis. | Required | 
 | action_script | Runtime script for sandbox analysis. Values:<br/>default<br/>default_maxantievasion<br/>default_randomfiles<br/>default_randomtheme<br/>default_openie | Optional | 
 | command_line | Command line script passed to the submitted file at runtime. Max length: 2048 characters | Optional | 
 | document_password | Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters. | Optional | 
-| enable_tor | If true, sandbox analysis routes network traffic via TOR. Default: false. | Optional | 
+| enable_tor | Whether the sandbox analysis routes network traffic via TOR. Can be "true" or "false". If true, sandbox analysis routes network traffic via TOR. Default is false. | Optional | 
 | submit_name | Name of the malware sample that’s used for file type detection and analysis. | Optional | 
-| system_date | Set a custom date in the format yyyy-MM-dd for the sandbox environment. | Optional | 
-| system_time | Set a custom time in the format HH:mm for the sandbox environment. | Optional | 
+| system_date | Sets a custom date for the sandbox environment in the format yyyy-MM-dd. | Optional | 
+| system_time | Sets a custom time for the sandbox environment in the format HH:mm. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| csfalconx.resource.id | String | Analysis ID | 
-| csfalconx.resource.state | String | Analysis State | 
-| csfalconx.resource.created_timpestamp | String | Time Started | 
-| csfalconx.resource.sha256 | Unknown | SHA256 of the scan | 
-| csfalconx.resource.environment_id | Unknown | Environment ID of the analysis | 
+| csfalconx.resource.submitted_id | String | Analysis ID received after submitting the file. | 
+| csfalconx.resource.state | String | Analysis state. | 
+| csfalconx.resource.created_timpestamp | String | Analysis start time. | 
+| csfalconx.resource.sha256 | Unknown | SHA256 hash of the scanned file. | 
+| csfalconx.resource.environment_id | Unknown | Environment ID of the analysis. | 
 
 
 #### Command Example
@@ -541,10 +541,10 @@ Submit a URL or FTP for sandbox analysis.
 {
     "csfalconx": {
         "resource": {
-            "created_timestamp": "2020-06-09T14:04:32Z",
+            "created_timestamp": "2020-07-03T06:36:19Z",
             "environment_id": 160,
-            "id": "1c9fe398b2294301a356_ad87d1f5cf4443e6aeeab9",
-            "state": "created"
+            "state": "created",
+            "submitted_id": "1c9fe398b2294301aa3080ede8d77356_472d590fdd4e49639e41f81928df2542"
         }
     }
 }
@@ -553,14 +553,14 @@ Submit a URL or FTP for sandbox analysis.
 #### Human Readable Output
 
 >### CrowdStrike Falcon X response:
->|created_timestamp|environment_id|id|state|
+>|created_timestamp|environment_id|state|submitted_id|
 >|---|---|---|---|
->| 2020-06-09T14:04:32Z | 160 | 1c9fe398b2294301aa3080ede8d77356_5ac0c1e062274053a21503e69bcf4fbe | created |
+>| 2020-07-03T06:36:19Z | 160 | created | 1c9fe398b2294301aa3080ede8d77356_472d590fdd4e49639e41f81928df2542 |
 
 
 ### cs-fx-download-ioc
 ***
-Download IOC packs, PCAP files, and other analysis artifacts.
+Downloads IOC packs, PCAP files, and other analysis artifacts.
 
 
 #### Base Command
@@ -571,8 +571,8 @@ Download IOC packs, PCAP files, and other analysis artifacts.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | ID of an artifact, such as an IOC pack, PCAP file, or actor image. Find an artifact ID in a report or summary. | Required | 
-| name | The name given to your downloaded file. | Optional | 
-| accept_encoding | Format used to compress your downloaded file. Currently, you must provide the value gzip, the only valid format. | Optional | 
+| name | The name given to then downloaded file. | Optional | 
+| accept_encoding | Format used to compress the downloaded file. Currently, you must provide the value of the GZIP file. | Optional | 
 
 
 #### Context Output
@@ -2807,4 +2807,3 @@ There is no context output for this command.
 >| hxxp://worker.cc | runtime | url |
 >| hxxp://writable.cc | runtime | url |
 >| hxxp://writer.cc | runtime | url |
-
