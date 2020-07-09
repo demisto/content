@@ -54,7 +54,8 @@ def parse_rows(list_result, header, value, context_result):
         context_result["results"] = all_result
         markdown = tableToMarkdown('List Result', all_result, headers=headers)
         return CommandResults(
-            outputs_prefix='getListRow.Result(val.header && val.header == obj.header && val.value == obj.value && val.list_name == obj.list_name)',
+            outputs_prefix='''getListRow.Result(val.header && val.header == obj.header
+                              && val.value == obj.value && val.list_name == obj.list_name)''',
             outputs=context_result,
             readable_output=markdown
         )
@@ -92,5 +93,3 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
-

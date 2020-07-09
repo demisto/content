@@ -14,7 +14,7 @@ RETURN_ERROR_TARGET = 'GetListRow.return_error'
         ("False", "", "", 1)
     ]
 )
-def test_validate_args(mocker,  parse_all, header, value, expected):
+def test_validate_args(mocker, parse_all, header, value, expected):
     from GetListRow import validate_args
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     validate_args(parse_all, header, value)
@@ -64,7 +64,7 @@ def test_does_header_exists(mocker, list_result, header, expected):
 def test_parse_list(mocker, parse_all, header, value, list_name, expected):
     from GetListRow import parse_list
     mocker.patch.object(demisto, "executeCommand", return_value=[{"Contents": '''id,name,title,status
-                                                                  1,Chanoch,junior,on 
+                                                                  1,Chanoch,junior,on
                                                                   2,Or,manager,off
                                                                   3,Chen,developer,on'''}])
     res = parse_list(parse_all, header, value, list_name)
