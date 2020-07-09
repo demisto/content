@@ -1,0 +1,33 @@
+{
+	"category": "",
+	"dataType": "scripts",
+	"dateRange": {
+		"fromDate": "0001-01-01T00:00:00Z",
+		"fromDateLicense": "0001-01-01T00:00:00Z",
+		"period": {
+			"by": "",
+			"byFrom": "days",
+			"byTo": "",
+			"field": "",
+			"fromValue": null,
+			"toValue": null
+		},
+		"toDate": "0001-01-01T00:00:00Z"
+	},
+	"fromServerVersion": "",
+	"id": "570051a4-2376-4da0-8a90-594672622aa4",
+	"isPredefined": false,
+	"itemVersion": "",
+	"name": "Code42 Exfiltration Last 30 Days",
+	"packID": "",
+	"params": {
+		"tableColumns": []
+	},
+	"query": "Code42HighRiskEmployeeExfiltrationLastThirtyDays",
+	"size": 0,
+	"sort": null,
+	"sortValues": null,
+	"toServerVersion": "",
+	"version": -1,
+	"widgetType": "number"
+}

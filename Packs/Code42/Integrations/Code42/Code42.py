@@ -230,11 +230,11 @@ class Code42Client(BaseClient):
         self._get_sdk().detectionlists.remove_user_risk_tags(user_id, risk_tags)
         return user_id
 
-    def get_all_high_risk_employees(self, risk_tags, results):
+    def get_all_high_risk_employees(self, risk_tags, results, filter_type):
         risk_tags = _try_convert_str_list_to_list(risk_tags)
         results = int(results) if results else None
         res = []
-        pages = self._get_sdk().detectionlists.high_risk_employee.get_all()
+        pages = self._get_sdk().detectionlists.high_risk_employee.get_all(filter_type=filter_type)
         for page in pages:
             employees = _get_all_high_risk_employees_from_page(page, risk_tags)
             for employee in employees:
@@ -798,7 +798,8 @@ def highriskemployee_remove_command(client, args):
 def highriskemployee_get_all_command(client, args):
     tags = args.get("risktags")
     results = args.get("results") or 50
-    employees = client.get_all_high_risk_employees(tags, results)
+    filter_type = args.get("filtertype")
+    employees = client.get_all_high_risk_employees(tags, results, filter_type)
     if not employees:
         return CommandResults(
             readable_output="No results found",

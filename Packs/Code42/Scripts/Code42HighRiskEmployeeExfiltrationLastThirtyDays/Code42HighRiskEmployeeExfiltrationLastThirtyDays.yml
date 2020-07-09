@@ -1,0 +1,20 @@
+comment: Gets the total number of high-risk employees who exfiltrated files in the
+  last 30 days.
+commonfields:
+  id: 17bc7e3e-f5fd-4efa-8041-398ed2b93b8a
+  version: -1
+dependson:
+  must:
+  - Code42|||code42-departingemployee-get-all
+dockerimage: demisto/py42:1.0.0.9653
+enabled: true
+name: Code42HighRiskEmployeeExfiltrationLastThirtyDays
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- widget
+type: python
