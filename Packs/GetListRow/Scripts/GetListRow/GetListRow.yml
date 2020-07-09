@@ -25,7 +25,7 @@ args:
   required: false
   secret: false
 commonfields:
-  id: 127f45c9-10e5-4135-8188-0e4c34abe8b9
+  id: getListRow
   version: -1
 enabled: true
 name: getListRow
@@ -50,5 +50,6 @@ type: python
 dockerimage: demisto/python3:3.7.3.286
 runas: DBotWeakRole
 runonce: false
-pswd: ''
-vcShouldKeepItemLegacyProdMachine: false
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
