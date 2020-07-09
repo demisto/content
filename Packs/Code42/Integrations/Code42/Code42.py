@@ -192,10 +192,11 @@ class Code42Client(BaseClient):
         self._get_sdk().detectionlists.departing_employee.remove(user_id)
         return user_id
 
-    def get_all_departing_employees(self, results):
+    def get_all_departing_employees(self, results, filter_type):
         res = []
-        results = int(results) if results else None
-        pages = self._get_sdk().detectionlists.departing_employee.get_all()
+        results = int(results) if results else 50
+        filter_type = filter_type if filter_type else "OPEN"
+        pages = self._get_sdk().detectionlists.departing_employee.get_all(filter_type=filter_type)
         for page in pages:
             page_json = json.loads(page.text)
             employees = page_json.get("items") or []
@@ -229,11 +230,12 @@ class Code42Client(BaseClient):
         self._get_sdk().detectionlists.remove_user_risk_tags(user_id, risk_tags)
         return user_id
 
-    def get_all_high_risk_employees(self, risk_tags, results):
+    def get_all_high_risk_employees(self, risk_tags, results, filter_type):
         risk_tags = _try_convert_str_list_to_list(risk_tags)
-        results = int(results) if results else None
+        results = int(results) if results else 50
+        filter_type = filter_type if filter_type else "OPEN"
         res = []
-        pages = self._get_sdk().detectionlists.high_risk_employee.get_all()
+        pages = self._get_sdk().detectionlists.high_risk_employee.get_all(filter_type=filter_type)
         for page in pages:
             page_json = json.loads(page.text)
             employees = _get_all_high_risk_employees_from_page(page_json, risk_tags)
@@ -780,8 +782,9 @@ def departingemployee_remove_command(client, args):
 
 @logger
 def departingemployee_get_all_command(client, args):
-    results = args.get("results") or 50
-    employees = client.get_all_departing_employees(results)
+    results = args.get("results", 50)
+    filter_type = args.get("filtertype", "OPEN")
+    employees = client.get_all_departing_employees(results, filter_type)
     if not employees:
         return CommandResults(
             readable_output="No results found",
@@ -844,8 +847,9 @@ def highriskemployee_remove_command(client, args):
 @logger
 def highriskemployee_get_all_command(client, args):
     tags = args.get("risktags")
-    results = args.get("results") or 50
-    employees = client.get_all_high_risk_employees(tags, results)
+    results = args.get("results", 50)
+    filter_type = args.get("filtertype", "OPEN")
+    employees = client.get_all_high_risk_employees(tags, results, filter_type)
     if not employees:
         return CommandResults(
             readable_output="No results found",
