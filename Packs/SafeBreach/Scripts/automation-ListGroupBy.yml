@@ -1,0 +1,84 @@
+args:
+- default: true
+  description: Input list.
+  isArray: true
+  name: value
+  required: true
+- description: Keys to group by.
+  isArray: true
+  name: keys
+  required: true
+- description: Output key to merge.
+  isArray: true
+  name: outputkey
+  required: true
+- defaultValue: ','
+  description: Separator to use in the merged value.
+  name: separator
+comment: Group an output field from a list using multiple keys.
+commonfields:
+  id: ListGroupBy
+  version: -1
+dockerimage: demisto/python3:3.8.3.9324
+enabled: true
+name: ListGroupBy
+runas: DBotWeakRole
+runonce: false
+script: |-
+  from itertools import groupby
+
+  def find_value_by_key(k, d):
+      if k.startswith('CustomFields.'):
+          if 'CustomFields' not in d:
+              return
+          cf = d.get('CustomFields', None)
+          if not cf:
+              return
+          rk = k.split('.')[1]
+      else:
+          cf = d
+          rk = k
+
+      if rk not in cf:
+          return
+      return cf[rk]
+
+  def group_by(args):
+      list1 = args.get('value')
+      keys = argToList(args.get('keys'))
+      outputkey = args.get('outputkey')
+      separator = args.get('separator')
+
+      def getkey(x):
+          ok = dict()
+          for k in keys:
+              ok[k] = find_value_by_key(k, x)
+          return json.dumps(ok)
+
+      s = {}
+      for k,v in groupby(sorted(list1, key=getkey),key=getkey):
+          s[k] = separator.join([find_value_by_key(outputkey, e) for e in v])
+
+      ret = []
+      for k in s.keys():
+          jl = json.loads(k)
+          jl['value'] = s[k]
+          ret.append(jl)
+      return ret
+
+  def main(args):
+      demisto.results(group_by(args))
+
+
+  if __name__ in ('builtins', '__builtin__'):
+      main(demisto.args())
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+- general
+- entirelist
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

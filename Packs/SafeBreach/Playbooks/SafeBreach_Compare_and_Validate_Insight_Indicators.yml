@@ -1,0 +1,757 @@
+description: This playbook receives an Insight and it's indicators before validation.
+  Updated indicators fetched to perform the validation. Indicators are classified
+  as Remediated or Not Remediated based on their validated status and the appropriate
+  field (SafeBreach Remediation Status) is updated.
+id: SafeBreach - Compare and Validate Insight Indicators (draft)
+inputs:
+- description: Indicators extracted before remediation
+  key: IndicatorsBefore
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: Insight to verify remediation for
+  key: Insight
+  playbookInputQuery:
+  required: true
+  value: {}
+name: SafeBreach - Compare and Validate Insight Indicators (draft)
+outputs:
+- contextPath: RemediatedIndicators
+  description: List of indicators that were remediated
+  type: unknown
+- contextPath: NotRemediatedIndicators
+  description: List of indicators that were not remediated
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 89e3fa5b-8365-4fe1-839e-1582e2bf8d10
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 89e3fa5b-8365-4fe1-839e-1582e2bf8d10
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -510
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b4d9deb2-20a0-41c6-8468-28a787ee6576
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: b4d9deb2-20a0-41c6-8468-28a787ee6576
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1210
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      append: {}
+      key:
+        simple: IndicatorsAfterValidation
+      stringify: {}
+      value:
+        complex:
+          accessor: Insight.RawRemediationData
+          root: SafeBreach
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sets a value into the context with the given context key
+      id: f50255ef-074f-4663-86e1-b8c62a8232a4
+      iscommand: false
+      name: Set Indicators After Validation
+      script: Set
+      type: regular
+      version: -1
+    taskid: f50255ef-074f-4663-86e1-b8c62a8232a4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      append: {}
+      key:
+        simple: IndicatorsAfterValidationFiltered
+      stringify: {}
+      value:
+        complex:
+          accessor: value
+          root: IndicatorsAfterValidation
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sets a value into the context with the given context key
+      id: f4f0abbb-2b90-4c85-8758-01e154a6cf79
+      iscommand: false
+      name: Filter for the Remediation Indicators
+      script: Set
+      type: regular
+      version: -1
+    taskid: f4f0abbb-2b90-4c85-8758-01e154a6cf79
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      append: {}
+      key:
+        simple: RemediatedIndicators
+      stringify: {}
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: IndicatorsBeforeValidationFiltered
+              operator: notIn
+              right:
+                iscontext: true
+                value:
+                  simple: IndicatorsAfterValidationFiltered
+          root: IndicatorsBeforeValidationFiltered
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sets a value into the context with the given context key
+      id: e713d385-5f75-4871-8e47-f34d9c75cd7e
+      iscommand: false
+      name: Extract the Remediated Indicators
+      script: Set
+      type: regular
+      version: -1
+    taskid: e713d385-5f75-4871-8e47-f34d9c75cd7e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 830
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      append: {}
+      key:
+        simple: NotRemediatedIndicators
+      stringify: {}
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: IndicatorsBeforeValidationFiltered
+              operator: in
+              right:
+                iscontext: true
+                value:
+                  simple: IndicatorsAfterValidationFiltered
+          root: IndicatorsBeforeValidationFiltered
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sets a value into the context with the given context key
+      id: 82588205-5aee-4ab8-8ebc-21cdb735ac61
+      iscommand: false
+      name: Extract the Not Remediated Indicators
+      script: Set
+      type: regular
+      version: -1
+    taskid: 82588205-5aee-4ab8-8ebc-21cdb735ac61
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 830
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      employeehealthstatus: {}
+      employeeresponsestatus: {}
+      entryid: {}
+      expirationdate: {}
+      fileextension: {}
+      filetype: {}
+      firstname: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      id: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      jobtitle: {}
+      lastname: {}
+      lastseenbysource: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      mitrealiases: {}
+      mitrecontributors: {}
+      mitredatasources: {}
+      mitredefensebypassed: {}
+      mitredescription: {}
+      mitredetection: {}
+      mitreextendedaliases: {}
+      mitreexternalreferences: {}
+      mitreid: {}
+      mitreimpacttype: {}
+      mitrekillchainphases: {}
+      mitrelabels: {}
+      mitrename: {}
+      mitrepermissionsrequired: {}
+      mitreplatforms: {}
+      mitresystemrequirements: {}
+      mitretype: {}
+      mitreversion: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      recordedfutureevidencedetails: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      reportedby: {}
+      reputation: {}
+      safebreachattackids: {}
+      safebreachinsightids: {}
+      safebreachisbehavioral: {}
+      safebreachremediationstatus:
+        simple: Remediated
+      safebreachseverity: {}
+      safebreachseverityscore: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      subdomains: {}
+      tags: {}
+      threattypes: {}
+      trafficlightprotocol: {}
+      type: {}
+      updateddate: {}
+      username: {}
+      value:
+        complex:
+          root: RemediatedIndicators
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.indicator
+      id: 1c0d89fc-e7cd-4e6e-84f2-681b7a61e68f
+      iscommand: true
+      name: Set Indicator Remediation Status as Remediated
+      script: Builtin|||setIndicator
+      type: regular
+      version: -1
+    taskid: 1c0d89fc-e7cd-4e6e-84f2-681b7a61e68f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 1000
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      employeehealthstatus: {}
+      employeeresponsestatus: {}
+      entryid: {}
+      expirationdate: {}
+      fileextension: {}
+      filetype: {}
+      firstname: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      id: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      jobtitle: {}
+      lastname: {}
+      lastseenbysource: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      mitrealiases: {}
+      mitrecontributors: {}
+      mitredatasources: {}
+      mitredefensebypassed: {}
+      mitredescription: {}
+      mitredetection: {}
+      mitreextendedaliases: {}
+      mitreexternalreferences: {}
+      mitreid: {}
+      mitreimpacttype: {}
+      mitrekillchainphases: {}
+      mitrelabels: {}
+      mitrename: {}
+      mitrepermissionsrequired: {}
+      mitreplatforms: {}
+      mitresystemrequirements: {}
+      mitretype: {}
+      mitreversion: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      recordedfutureevidencedetails: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      reportedby: {}
+      reputation: {}
+      safebreachattackids: {}
+      safebreachinsightids: {}
+      safebreachisbehavioral: {}
+      safebreachremediationstatus:
+        simple: Not Remediated
+      safebreachseverity: {}
+      safebreachseverityscore: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      subdomains: {}
+      tags: {}
+      threattypes: {}
+      trafficlightprotocol: {}
+      type: {}
+      updateddate: {}
+      username: {}
+      value:
+        complex:
+          root: NotRemediatedIndicators
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.indicator
+      id: 43dc6ce5-7ed1-4198-8cb5-1ed903b3e0f6
+      iscommand: true
+      name: Set Indicator Remediation Status as Not Remediated
+      script: Builtin|||setIndicator
+      type: regular
+      version: -1
+    taskid: 43dc6ce5-7ed1-4198-8cb5-1ed903b3e0f6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 1000
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      insightId:
+        complex:
+          accessor: Insight.Id
+          root: SafeBreach
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets remediation data for a specific SafeBreach Insight.
+      id: 66f9c4d1-33af-4f19-8680-81b91ec88844
+      iscommand: true
+      name: Get Insight Remediation Data
+      script: '|||safebreach-get-remediation-data'
+      type: regular
+      version: -1
+    taskid: 66f9c4d1-33af-4f19-8680-81b91ec88844
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 20
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      capitalize: {}
+      inplace: {}
+      input:
+        complex:
+          root: inputs.Insight
+      output_key:
+        simple: SafeBreach.Insight
+      replace_dict: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: 'Enables changing context in two ways. The first is to capitalize
+        the first letter of each key in following level of the context key entered.
+        The second is to change context keys to new values. '
+      id: 993d9910-6e55-4e9b-8fab-147b9db63678
+      iscommand: false
+      name: 'Map Input Insight to Context '
+      script: ChangeContext
+      type: regular
+      version: -1
+    taskid: 993d9910-6e55-4e9b-8fab-147b9db63678
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -350
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      append: {}
+      key:
+        simple: IndicatorsBeforeValidationFiltered
+      stringify: {}
+      value:
+        complex:
+          root: inputs.IndicatorsBefore
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sets a value into the context with the given context key
+      id: f734e7ef-7033-4032-8faa-a4c2e46e6707
+      iscommand: false
+      name: Filter for the Before Indicators
+      script: Set
+      type: regular
+      version: -1
+    taskid: f734e7ef-7033-4032-8faa-a4c2e46e6707
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -160
+        }
+      }
+  "14":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: IndicatorsBeforeValidationFiltered
+                    operator: notIn
+                    right:
+                      iscontext: true
+                      value:
+                        simple: IndicatorsAfterValidationFiltered
+                root: IndicatorsBeforeValidationFiltered
+          operator: isExists
+      label: Remediated Indicators Exist
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: IndicatorsBeforeValidationFiltered
+                    operator: in
+                    right:
+                      iscontext: true
+                      value:
+                        simple: IndicatorsAfterValidationFiltered
+                root: IndicatorsBeforeValidationFiltered
+          operator: isExists
+      label: Not Remediated Indicators Exist
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      Not Remediated Indicators Exist:
+      - "8"
+      Remediated Indicators Exist:
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9cc51531-beb9-40b9-81c3-2102edb95768
+      iscommand: false
+      name: Were Indicators Remediated?
+      type: condition
+      version: -1
+      description: Check if the indicators was remediated.
+    taskid: 9cc51531-beb9-40b9-81c3-2102edb95768
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1785,
+        "width": 940,
+        "x": 150,
+        "y": -510
+      }
+    }
+  }
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

@@ -526,8 +526,8 @@ inputs:
         by: ''
         byto: ''
         byfrom: ''
-        tovalue: null
-        fromvalue: null
+        tovalue:
+        fromvalue:
         field: ''
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: true
@@ -535,4 +535,4 @@ outputs: []
 quiet: true
 fromversion: 5.5.0
 tests:
-  - No Test
+- No Test
