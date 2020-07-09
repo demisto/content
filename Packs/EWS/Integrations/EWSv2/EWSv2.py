@@ -1848,7 +1848,8 @@ def get_compliance_search(search_name):
 
     # Parse search results from script output if the search has completed. Output to warroom as table.
     if stdout[0] == 'Completed':
-        res = list(r[:-1].split(', ') if r[-1] == ',' else r.split(', ') for r in stdout[1][2:-3].split(r'\r\n'))
+        res = stdout[1][2:-3] if len(stdout[1]) >= 3 else stdout[1]
+        res = list(r[:-1].split(', ') if r[-1] == ',' else r.split(', ') for r in res.split(r'\r\n'))
         res = map(lambda x: {k: v for k, v in (s.split(': ') for s in x)}, res)
         results.append(
             {
