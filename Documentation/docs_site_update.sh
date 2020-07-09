@@ -22,7 +22,7 @@ elif [ "$CIRCLE_BRANCH" == "master" ]; then
     if [ -z "$CIRCLE_COMPARE_URL" ]; then
         DIFF_COMPARE="HEAD^1...HEAD"
     else
-        DIFF_COMPARE=$(echo "$CIRCLE_COMPARE_URL" | sed 's:^.*/compare/::g')    
+        DIFF_COMPARE=$(echo "$CIRCLE_COMPARE_URL" | sed 's:^.*/compare/::g')
         if [ -z "${DIFF_COMPARE}" ]; then
             echo "Failed: extracting diff compare from CIRCLE_COMPARE_URL: ${CIRCLE_COMPARE_URL}. Fail.."
             exit 1

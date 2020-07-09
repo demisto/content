@@ -4,8 +4,8 @@
 !code42-departingemployee-remove username="partner.demisto@example.com"
 !code42-departingemployee-get-all
 !code42-departingemployee-get username="partner.demisto@example.com"
-!code42-highriskemployee-add username="partner.demisto@example.com" note="Risky activity"
-!code42-highriskemployee-remove username="partner.demisto@example.com" note="Risky activity"
+!code42-highriskemployee-add username="partner.demisto@example.com" note="Approved activity"
+!code42-highriskemployee-remove username="partner.demisto@example.com" note="Approved activity"
 !code42-highriskemployee-get-all
 !code42-highriskemployee-get username="partner.demisto@example.com"
 !code42-highriskemployee-add-risk-tags username="partner.demisto@example.com" note="PERFORMANCE_CONCERN"
