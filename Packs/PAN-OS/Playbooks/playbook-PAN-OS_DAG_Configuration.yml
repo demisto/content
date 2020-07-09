@@ -120,10 +120,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: bede9976-ff25-47e4-8cfa-ba1ae6fca7de
+    taskid: 6523233b-4db1-4691-8ce8-51803456138b
     type: condition
     task:
-      id: bede9976-ff25-47e4-8cfa-ba1ae6fca7de
+      id: 6523233b-4db1-4691-8ce8-51803456138b
       version: -1
       name: Check if tag exists in address groups
       description: Checks if the given tag exists in the address groups.
@@ -139,23 +139,16 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsString
+      - - operator: inList
           left:
+            value:
+              simple: inputs.tag_name
+            iscontext: true
+          right:
             value:
               complex:
                 root: Panorama
                 accessor: AddressGroups.Match
-                transformers:
-                - operator: Stringify
-                - operator: join
-                  args:
-                    separator:
-                      value:
-                        simple: ' '
-            iscontext: true
-          right:
-            value:
-              simple: inputs.tag_name
             iscontext: true
           ignorecase: true
     view: |-
@@ -239,7 +232,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "21"
     scriptarguments:
       addresses: {}
       description: {}
@@ -357,12 +350,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "19":
-    id: "19"
-    taskid: e320a1b1-3c5e-421e-8b91-c6c379f3813f
+  "21":
+    id: "21"
+    taskid: 987cb459-479b-4011-85dc-0403306d3eb0
     type: playbook
     task:
-      id: e320a1b1-3c5e-421e-8b91-c6c379f3813f
+      id: 987cb459-479b-4011-85dc-0403306d3eb0
       version: -1
       name: PAN-OS - Create Or Edit Rule
       description: ""
@@ -398,12 +391,6 @@ tasks:
       rule-position:
         complex:
           root: inputs.rule-position
-          transformers:
-          - operator: d8d43bef-f48a-47ad-8502-b191d615158c
-            args:
-              defaultValue:
-                value:
-                  simple: top
       rule_name:
         complex:
           root: inputs.rule_name
@@ -416,7 +403,7 @@ tasks:
       {
         "position": {
           "x": 810,
-          "y": 880
+          "y": 890
         }
       }
     note: false
@@ -444,10 +431,9 @@ inputs:
 - key: tag_name
   value: {}
   required: true
-  description: The name of the tag to add to PAN-OS.
+  description: The name of the tag to add to PAN-OS. This can be a single tag.
 - key: ip_list
-  value:
-    simple: 7.7.7.6
+  value: {}
   required: true
   description: The list of the IP addresses to block.
 - key: address_group_name
@@ -507,3 +493,4 @@ inputs:
 outputs: []
 tests:
   - PAN-OS DAG Configuration Test
+sourceplaybookid: PAN-OS DAG Configuration

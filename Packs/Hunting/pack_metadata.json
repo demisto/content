@@ -19,9 +19,7 @@
     "Extract"
   ],
   "useCases": [
-    "Perform hash hunt",
-    "Extract IOCs from a file",
-    "Detect possible threat on the organization endpoints"
+    "Hunting"
   ],
   "keywords": [
     "Hunting",

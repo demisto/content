@@ -513,41 +513,80 @@ def edit_ticket():
 
 def get_ticket_attachments(ticket_id):
     suffix_url = 'ticket/{}/attachments'.format(ticket_id)
-    raw_attachments = http_request('GET', suffix_url).content
+    raw_attachments = http_request('GET', suffix_url).text
 
     attachments = []
     attachments_content = []
-    split_raw_attachment = raw_attachments.split('\n')
-    for i in xrange(len(split_raw_attachment)):
-        if 'Attachments' in split_raw_attachment[i]:
-            attachment_lines = split_raw_attachment[i:]
-            for line in attachment_lines:
-                if line and 'Unnamed' not in line:
-                    split_line = line.split(': ')
-                    if 'Attachments' in split_line:
-                        starting_index = 1
-                    else:
-                        starting_index = 0
-                    attachment_id = split_line[starting_index]
-                    attachment_id = attachment_id.strip()
-                    attachment_name = split_line[starting_index + 1]
-                    attachment_type = attachment_name.replace('(', '').replace(')', '')
-                    split_line_type = attachment_type.split(' ')
-                    attachment_name = split_line_type[0]
-                    attachment_type = split_line_type[1]
-                    attachment_size = split_line_type[3]
+    attachments_list = parse_attachments_list(raw_attachments)
+    for attachment_id, attachment_name, attachment_type, attachment_size in attachments_list:
+        attachments.append({
+            'ID': attachment_id,
+            'Name': attachment_name,
+            'Type': attachment_type,
+            'Size': attachment_size
+        })
 
-                    attachments.append({
-                        'ID': attachment_id,
-                        'Name': attachment_name,
-                        'Type': attachment_type,
-                        'Size': attachment_size
-                    })
-
-                    suffix_url = 'ticket/{}/attachments/{}'.format(ticket_id, attachment_id)
-                    attachment_content = http_request('GET', suffix_url).content
-                    attachments_content.append(fileResult(attachment_name, attachment_content))
+        suffix_url = 'ticket/{}/attachments/{}'.format(ticket_id, attachment_id)
+        raw_attachment_content = http_request('GET', suffix_url).content
+        attachment_content = parse_attachment_content(attachment_id, raw_attachment_content)
+        attachments_content.append(fileResult(attachment_name, attachment_content))
     return attachments, attachments_content
+
+
+def parse_attachments_list(raw_attachments):
+    """
+    Parses attachments details from raw attachments response.
+    Example input:
+        RT/4.4.2 200 Ok
+
+        id: ticket/6325/attachments
+        Attachments: 504: mimecast-get-remediation-incident.log (text/plain / 3.5k)
+        505: mimecast-get-remediation-incident2.log (text/plain / 3.6k)
+
+    Example output:
+        [('504', 'mimecast-get-remediation-incident.log', 'text/plain', '3.5k'),
+         ('505', 'mimecast-get-remediation-incident2.log', 'text/plain', '3.6k')]
+    Args:
+        raw_attachments: The raw attachments response
+    Returns:
+        A list of tuples containing the id, name, format and size of each attachment
+    """
+    attachments_regex = re.compile(r'(\d+): (.+) \((.+) \/ (.+)\)')
+    attachments_list = attachments_regex.findall(raw_attachments)
+    return attachments_list
+
+
+def parse_attachment_content(attachment_id, raw_attachment_content):
+    # type: (str, str) -> str
+    """
+    Parses raw attachment response into the attachment content
+    Example input:
+        From: root@localhost
+        Subject: <ticket subject>
+        X-RT-Interface: REST
+        Content-Type: text/plain
+        Content-Disposition: form-data;
+        name="attachment_1";
+        filename="mimecast-get-remediation-incident.log";
+        filename="mimecast-get-remediation-incident.log"
+        Content-Transfer-Encoding: binary
+        Content-Length: <length of the content>
+
+        Content: <the actual attachment content...>
+    Example output:
+        <the actual attachment content...>
+    Args:
+        attachment_id: The ID of the attachment
+        raw_attachment_content: The raw attachment content, should be like the example input
+
+    Returns:
+        The actual content
+    """
+    attachment_content_pattern = re.compile(r'Content: (.*)', flags=re.DOTALL)
+    attachment_content = attachment_content_pattern.findall(raw_attachment_content)
+    if not attachment_content:
+        return_error('Could not parse attachment content for attachment id {}'.format(attachment_id))
+    return attachment_content[0]
 
 
 def get_ticket_attachments_command():

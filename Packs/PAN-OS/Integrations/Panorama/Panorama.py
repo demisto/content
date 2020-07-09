@@ -313,8 +313,8 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
                 + add_argument_list(application, 'application', True)
                 + add_argument_list(category, 'category', True)
                 + add_argument_open(source_user, 'source-user', True)
-                + add_argument_open(from_, 'from', True)  # default from will always be any
-                + add_argument_open(to, 'to', True)  # default to will always be any
+                + add_argument_list(from_, 'from', True, True)  # default from will always be any
+                + add_argument_list(to, 'to', True, True)  # default to will always be any
                 + add_argument_list(service, 'service', True, True)
                 + add_argument_yes_no(negate_source, 'negate-source')
                 + add_argument_yes_no(negate_destination, 'negate-destination')
@@ -2112,6 +2112,7 @@ def panorama_custom_url_category_add_items(custom_url_category_name, items, type
     """
     custom_url_category = panorama_get_custom_url_category(custom_url_category_name)
     if '@dirtyId' in custom_url_category:
+        LOG(f'Found uncommitted item:\n{custom_url_category}')
         raise Exception('Please commit the instance prior to editing the Custom URL Category.')
     description = custom_url_category.get('description')
 
@@ -2143,6 +2144,7 @@ def panorama_custom_url_category_remove_items(custom_url_category_name, items, t
     """
     custom_url_category = panorama_get_custom_url_category(custom_url_category_name)
     if '@dirtyId' in custom_url_category:
+        LOG(f'Found uncommitted item:\n{custom_url_category}')
         raise Exception('Please commit the instance prior to editing the Custom URL Category.')
     description = custom_url_category.get('description')
 
@@ -2256,9 +2258,9 @@ def panorama_get_url_category_command(url_cmd: str):
 
     title = 'URL Filtering'
     if url_cmd == 'url-info-cloud':
-        title += f' from cloud'
+        title += ' from cloud'
     elif url_cmd == 'url-info-host':
-        title += f' from host'
+        title += ' from host'
     human_readable = tableToMarkdown(f'{title}:', url_category_output_hr, ['URL', 'Category'], removeNull=True)
 
     demisto.results({
@@ -2432,6 +2434,7 @@ def panorama_create_url_filter_command():
 def panorama_edit_url_filter(url_filter_name, element_to_change, element_value, add_remove_element=None):
     url_filter_prev = panorama_get_url_filter(url_filter_name)
     if '@dirtyId' in url_filter_prev:
+        LOG(f'Found uncommitted item:\n{url_filter_prev}')
         raise Exception('Please commit the instance prior to editing the URL Filter.')
 
     url_filter_output = {'Name': url_filter_name}
@@ -2695,6 +2698,8 @@ def panorama_create_rule_command():
     rulename = demisto.args()['rulename'] if 'rulename' in demisto.args() else ('demisto-' + (str(uuid.uuid4()))[:8])
     source = argToList(demisto.args().get('source'))
     destination = argToList(demisto.args().get('destination'))
+    source_zone = argToList(demisto.args().get('source_zone'))
+    destination_zone = argToList(demisto.args().get('destination_zone'))
     negate_source = demisto.args().get('negate_source')
     negate_destination = demisto.args().get('negate_destination')
     action = demisto.args().get('action')
@@ -2721,7 +2726,8 @@ def panorama_create_rule_command():
                                           disable=disable, application=application, source_user=source_user,
                                           disable_server_response_inspection=disable_server_response_inspection,
                                           description=description, target=target,
-                                          log_forwarding=log_forwarding, tags=tags, category=categories)
+                                          log_forwarding=log_forwarding, tags=tags, category=categories,
+                                          from_=source_zone, to=destination_zone)
     result = http_request(
         URL,
         'POST',
@@ -2763,6 +2769,7 @@ def panorama_get_current_element(element_to_change: str, xpath: str) -> list:
 
     result = response.get('response').get('result')
     if '@dirtyId' in result:
+        LOG(f'Found uncommitted item:\n{result}')
         raise Exception('Please commit the instance prior to editing the Security rule.')
     current_object = result.get(element_to_change)
     if 'list' in current_object:
@@ -3406,6 +3413,7 @@ def panorama_create_edl_command():
 def panorama_edit_edl(edl_name, element_to_change, element_value):
     edl_prev = panorama_get_edl(edl_name)
     if '@dirtyId' in edl_prev:
+        LOG(f'Found uncommitted item:\n{edl_prev}')
         raise Exception('Please commit the instance prior to editing the External Dynamic List')
     edl_type = ''.join(edl_prev['type'].keys())
     edl_output = {'Name': edl_name}
@@ -3916,6 +3924,12 @@ def prettify_traffic_logs(traffic_logs):
             pretty_traffic_log['ActionSource'] = traffic_log['action_source']
         if 'application' in traffic_log:
             pretty_traffic_log['Application'] = traffic_log['application']
+        if 'bytes' in traffic_log:
+            pretty_traffic_log['Bytes'] = traffic_log['bytes']
+        if 'bytes_received' in traffic_log:
+            pretty_traffic_log['BytesReceived'] = traffic_log['bytes_received']
+        if 'bytes_sent' in traffic_log:
+            pretty_traffic_log['BytesSent'] = traffic_log['bytes_sent']
         if 'category' in traffic_log:
             pretty_traffic_log['Category'] = traffic_log['category']
         if 'device_name' in traffic_log:
@@ -4209,6 +4223,12 @@ def prettify_log(log):
         pretty_log['Action'] = log['action']
     if 'app' in log:
         pretty_log['Application'] = log['app']
+    if 'bytes' in log:
+        pretty_log['Bytes'] = log['bytes']
+    if 'bytes_received' in log:
+        pretty_log['BytesReceived'] = log['bytes_received']
+    if 'bytes_sent' in log:
+        pretty_log['BytesSent'] = log['bytes_sent']
     if 'category' in log:
         pretty_log['CategoryOrVerdict'] = log['category']
     if 'device_name' in log:
@@ -4695,6 +4715,73 @@ def panorama_add_static_route_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': human_readable,
         'EntryContext': {"Panorama.StaticRoutes(val.Name == obj.Name)": static_route}
+    })
+
+
+def panorama_override_vulnerability(threatid: str, vulnerability_profile: str, drop_mode: str):
+    xpath = "{}profiles/vulnerability/entry[@name='{}']/threat-exception/entry[@name='{}']/action".format(
+        XPATH_OBJECTS,
+        vulnerability_profile,
+        threatid)
+    params = {'action': 'set',
+              'type': 'config',
+              'xpath': xpath,
+              'key': API_KEY,
+              'element': "<{0}></{0}>".format(drop_mode)
+              }
+
+    return http_request(
+        URL,
+        'POST',
+        body=params,
+    )
+
+
+@logger
+def panorama_get_predefined_threats_list(target: str):
+    """
+    Get the entire list of predefined threats as a file in Demisto
+    """
+    params = {
+        'type': 'op',
+        'cmd': '<show><predefined><xpath>/predefined/threats</xpath></predefined></show>',
+        'target': target,
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+    return result
+
+
+def panorama_get_predefined_threats_list_command():
+    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
+    result = panorama_get_predefined_threats_list(target)
+    demisto.results(fileResult('predefined-threats.json', json.dumps(result['response']['result']).encode('utf-8')))
+
+
+def panorama_block_vulnerability():
+    """
+    Ovverride a vulnerability signature such that it is in block mode
+    """
+    threatid = demisto.args().get('threat_id')
+    vulnerability_profile = demisto.args().get('vulnerability_profile')
+    drop_mode = demisto.args().get('drop_mode', 'drop')
+
+    threat = panorama_override_vulnerability(threatid, vulnerability_profile, drop_mode)
+    threat_output = {'ID': threatid, 'NewAction': drop_mode}
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': threat,
+        'ReadableContentsFormat': formats['text'],
+        'HumanReadable': 'Threat with ID {} overridden.'.format(threatid),
+        'EntryContext': {
+            "Panorama.Vulnerability(val.Name == obj.Name)": threat_output
+        }
     })
 
 
@@ -5223,6 +5310,57 @@ def panorama_device_reboot_command():
     demisto.results(result['response']['result'])
 
 
+@logger
+def panorama_show_location_ip(ip_address: str):
+    params = {
+        'type': 'op',
+        'cmd': f'<show><location><ip>{ip_address}</ip></location></show>',
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+
+    return result
+
+
+def panorama_show_location_ip_command():
+    """
+    Check location of a specified ip address
+    """
+    ip_address = demisto.args().get('ip_address')
+    result = panorama_show_location_ip(ip_address)
+
+    if 'response' not in result or '@status' not in result['response'] or result['response']['@status'] != 'success':
+        raise Exception(f'Failed to successfully show the location of the specified ip: {ip_address}.')
+
+    if 'response' in result and 'result' in result['response'] and 'entry' in result['response']['result']:
+        entry = result['response']['result']['entry']
+        show_location_output = {
+            "ip_address": entry.get('ip'),
+            "country_name": entry.get('country'),
+            "country_code": entry.get('@cc'),
+            "status": 'Found'
+        }
+    else:
+        show_location_output = {
+            "ip_address": ip_address,
+            "status": 'NotFound'
+        }
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown(f'IP {ip_address} location:', show_location_output,
+                                         ['ip_address', 'country_name', 'country_code', 'result'], removeNull=True),
+        'EntryContext': {"Panorama.Location.IP(val.ip_address == obj.ip_address)": show_location_output}
+    })
+
+
 def main():
     LOG(f'Command being called is: {demisto.command()}')
 
@@ -5487,6 +5625,17 @@ def main():
         # Reboot Panorama Device
         elif demisto.command() == 'panorama-device-reboot':
             panorama_device_reboot_command()
+
+        # PAN-OS Set vulnerability to drop
+        elif demisto.command() == 'panorama-block-vulnerability':
+            panorama_block_vulnerability()
+
+        # Get pre-defined threats list from the firewall
+        elif demisto.command() == 'panorama-get-predefined-threats-list':
+            panorama_get_predefined_threats_list_command()
+
+        elif demisto.command() == 'panorama-show-location-ip':
+            panorama_show_location_ip_command()
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} was not implemented.')
