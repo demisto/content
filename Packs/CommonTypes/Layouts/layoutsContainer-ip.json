@@ -3,7 +3,6 @@
 	"group": "indicator",
     "system": true,
 	"name": "IP Indicator Layout",
-	"packID": "",
 	"version": -1,
     "fromVersion": "6.0.0",
     "indicatorsDetails": {
