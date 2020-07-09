@@ -30,10 +30,10 @@ def test_validate_args(mocker, parse_all, header, value, expected):
         ("", 1)
     ]
 )
-def test_does_list_exists(mocker, list_result, expected):
-    from GetListRow import does_list_exists
+def test_does_list_exist(mocker, list_result, expected):
+    from GetListRow import does_list_exist
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
-    does_list_exists(list_result)
+    does_list_exist(list_result)
     assert return_error_mock.call_count == expected
 
 
@@ -46,10 +46,10 @@ def test_does_list_exists(mocker, list_result, expected):
         ("id,name,title,\n,1,Or,manager", "nam", 1)
     ]
 )
-def test_does_header_exists(mocker, list_result, header, expected):
-    from GetListRow import does_header_exists
+def test_does_header_exist(mocker, list_result, header, expected):
+    from GetListRow import does_header_exist
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
-    does_header_exists(list_result, header)
+    does_header_exist(list_result, header)
     assert return_error_mock.call_count == expected
 
 

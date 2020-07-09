@@ -7,16 +7,16 @@ def validate_args(parse_all, header, value):
         return_error("No parse all, and no header and value to know what to parse")
 
 
-def does_list_exists(list_result):
-    if not list_result or "Item not found" in list_result:
-        return_error("No list found")
+def validate_list_exists(list_result):
+    if not list_result and "Item not found" not in list_result:
+        return_error("Error: The supplied list name not found.")
 
 
-def does_header_exists(list_result, header):
+def validate_header_exists(list_result, header):
     list_lines = list_result.split('\n')
     headers = list_lines[0].split(',')
     if header not in headers:
-        return_error("This header is not in headers list")
+        return_error("Error: The supplied header name not found.")
 
 
 def parse_all_rows(list_result, context_result):
@@ -32,14 +32,16 @@ def parse_all_rows(list_result, context_result):
     context_result["results"] = all_result
     markdown = tableToMarkdown('List Result', all_result, headers=headers)
     return CommandResults(
-        outputs_prefix='getListRow.Result(val.header == obj.header && val.value == obj.value && val.list_name == obj.list_name)',
+        outputs_prefix='''getListRow.Result(val.header == obj.header
+                          && val.value == obj.value && val.list_name == obj.list_name)''',
         outputs=context_result,
         readable_output=markdown
     )
 
 
-def parse_rows(list_result, header, value, context_result):
+def parse_specific_rows(list_result, header, value, context_result):
     list_lines = list_result.split('\n')
+    specific_lines_to_parse = []
     headers = list_lines[0].split(',')
     header_location = headers.index(header)
     all_result = []
@@ -72,12 +74,12 @@ def parse_list(parse_all, header, value, list_name):
         "header": header,
         "value": value,
     }
-    does_list_exists(list_result)
+    validate_list_exists(list_result)
     if parse_all.lower() == "true":
         command_results = parse_all_rows(list_result, context_result)
     else:
-        does_header_exists(list_result, header)
-        command_results = parse_rows(list_result, header, value, context_result)
+        validate_header_exists(list_result, header)
+        command_results = parse_specific_rows(list_result, header, value, context_result)
     return command_results
 
 
