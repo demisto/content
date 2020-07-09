@@ -31,6 +31,7 @@ from Code42 import (
     Code42AlertNotFoundError,
     Code42UserNotFoundError,
     Code42OrgNotFoundError,
+    Code42UnsupportedHashError,
     Code42MissingSearchArgumentsError,
 )
 import time
@@ -1680,6 +1681,15 @@ def test_download_file_command_when_given_sha256(code42_sdk_mock, mocker):
     _ = download_file_command(client, {"hash": _hash})
     code42_sdk_mock.securitydata.stream_file_by_sha256.assert_called_once_with(_hash)
     assert fr.call_count == 1
+
+
+def test_download_file_when_given_other_hash_raises_Code42UnsupportedHashError(code42_sdk_mock, mocker):
+    fr = mocker.patch("Code42.fileResult")
+    _hash = "41966f10cc59ab466444add08974fde4cd37f88d79321d42da8e4c79b51c214941966f10cc59ab466444add08974fde4cd37" \
+            "f88d79321d42da8e4c79b51c2149"
+    client = create_client(code42_sdk_mock)
+    with pytest.raises(Code42UnsupportedHashError):
+        _ = download_file_command(client, {"hash": _hash})
 
 
 def test_fetch_when_no_significant_file_categories_ignores_filter(
