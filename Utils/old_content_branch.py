@@ -124,14 +124,16 @@ def edit_scripts_or_integrations_directory(new_to_version, dir_path):
         else:
             yml_file_path = os.path.join(package_path, script_name + '.yml')
 
-        with open(yml_file_path, 'r') as yml_file:
-            yml_content = ryaml.load(yml_file)
+        # prevent going to pipfiles and non yml content
+        if yml_file_path.endswith('.yml'):
+            with open(yml_file_path, 'r') as yml_file:
+                yml_content = ryaml.load(yml_file)
 
-        if should_keep_yml_file(yml_content, new_to_version):
-            rewrite_yml(yml_file_path, yml_content, new_to_version)
+            if should_keep_yml_file(yml_content, new_to_version):
+                rewrite_yml(yml_file_path, yml_content, new_to_version)
 
-        else:
-            delete_script_or_integration(package_path)
+            else:
+                delete_script_or_integration(package_path)
 
 
 def edit_playbooks_directory(new_to_version, dir_path):
