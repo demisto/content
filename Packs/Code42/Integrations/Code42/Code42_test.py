@@ -45,6 +45,14 @@ MOCK_SECURITY_DATA_SEARCH_QUERY = {
     "results": 50,
 }
 
+MOCK_SECURITY_DATA_SEARCH_QUERY_WITHOUT_EXPOSURE_TYPE = {
+    "hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "hostname": "DESKTOP-0001",
+    "username": "user3@example.com",
+    "results": 50,
+}
+
+
 MOCK_SECURITY_EVENT_RESPONSE = """
 {
     "totalCount":3,
@@ -70,8 +78,8 @@ MOCK_SECURITY_EVENT_RESPONSE = """
             "deviceUserName":"test@example.com",
             "osHostName":"HOSTNAME",
             "domainName":"host.docker.internal",
-            "publicIpAddress":"162.222.47.183",
-            "privateIpAddresses":["172.20.128.36","127.0.0.1"],
+            "publicIpAddress":"255.255.255.255",
+            "privateIpAddresses":["255.255.255.255","127.0.0.1"],
             "deviceUid":"935873453596901068",
             "userUid":"912098363086307495",
             "actor":null,
@@ -134,7 +142,7 @@ MOCK_SECURITY_EVENT_RESPONSE = """
             "deviceUserName":"test@example.com",
             "osHostName":"TEST'S MAC",
             "domainName":"host.docker.internal",
-            "publicIpAddress":"162.222.47.183",
+            "publicIpAddress":"255.255.255.255",
             "privateIpAddresses":["127.0.0.1"],
             "deviceUid":"935873453596901068",
             "userUid":"912098363086307495",
@@ -198,7 +206,7 @@ MOCK_SECURITY_EVENT_RESPONSE = """
             "deviceUserName":"test@example.com",
             "osHostName":"Test's Windows",
             "domainName":"host.docker.internal",
-            "publicIpAddress":"162.222.47.183",
+            "publicIpAddress":"255.255.255.255",
             "privateIpAddresses":["0:0:0:0:0:0:0:1","127.0.0.1"],
             "deviceUid":"935873453596901068",
             "userUid":"912098363086307495",
@@ -248,7 +256,7 @@ MOCK_SECURITY_EVENT_RESPONSE = """
 MOCK_CODE42_EVENT_CONTEXT = [
     {
         "ApplicationTabURL": "example.com",
-        "DevicePrivateIPAddress": ["172.20.128.36", "127.0.0.1"],
+        "DevicePrivateIPAddress": ["255.255.255.255", "127.0.0.1"],
         "DeviceUsername": "test@example.com",
         "EndpointID": "935873453596901068",
         "EventID": "0_1d71796f-af5b-4231-9d8e-df6434da4663_935873453596901068_956171635867906205_5",
@@ -1380,7 +1388,7 @@ def test_departingemployee_get_all_command_when_no_employees(
         no_employees_response
     )
     client = create_client(code42_departing_employee_mock)
-    cmd_res = departingemployee_get_all_command(client,{})
+    cmd_res = departingemployee_get_all_command(client, {})
     assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
     assert cmd_res.outputs_key_field == "UserID"
     assert cmd_res.raw_response == {}
@@ -1792,3 +1800,27 @@ def test_fetch_incidents_fetch_limit(code42_fetch_incidents_mock):
     assert len(incidents) == 1
     assert next_run["last_fetch"]
     assert not remaining_incidents
+
+
+def test_security_data_search_command_searches_exposure_exists_when_no_exposure_type_is_specified(
+        code42_file_events_mock
+):
+    client = create_client(code42_file_events_mock)
+    cmd_res = securitydata_search_command(client, MOCK_SECURITY_DATA_SEARCH_QUERY_WITHOUT_EXPOSURE_TYPE)
+    code42_res = cmd_res[0]
+    file_res = cmd_res[1]
+
+    assert code42_res.outputs_prefix == "Code42.SecurityData"
+    assert code42_res.outputs_key_field == "EventID"
+    assert file_res.outputs_prefix == "File"
+
+    actual_query = code42_file_events_mock.securitydata.search_file_events.call_args[0][0]
+    filter_groups = json.loads(str(actual_query))["groups"]
+
+    # Assert that the  correct query gets made
+    assert len(filter_groups) == 4
+    for i in range(0, len(filter_groups)):
+        _filter = filter_groups[i]["filters"][0]
+        if _filter["term"] == "exposure":
+            assert _filter["operator"] == 'EXISTS'
+            assert _filter["value"] is None

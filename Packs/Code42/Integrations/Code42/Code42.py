@@ -421,8 +421,9 @@ def build_query_payload(args):
     search_args.append_result(_hash, _create_hash_filter)
     search_args.append_result(hostname, OSHostname.eq)
     search_args.append_result(username, DeviceUsername.eq)
-    search_args.append_result(exposure, _create_exposure_filter)
 
+    exposure_filter = _create_exposure_filter(exposure)
+    search_args.append(exposure_filter)
     query = search_args.to_all_query()
     LOG("File Event Query: {}".format(str(query)))
     return query
@@ -447,7 +448,8 @@ def _create_exposure_filter(exposure_arg):
     # Because the CLI can't accept lists, convert the args to a list if the type is string.
     if isinstance(exposure_arg, str):
         exposure_arg = exposure_arg.split(",")
-    return ExposureType.is_in(exposure_arg)
+        return ExposureType.is_in(exposure_arg)
+    return ExposureType.exists()
 
 
 def _create_category_filter(file_type):

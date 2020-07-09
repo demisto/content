@@ -78,8 +78,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Exposure types to search for. Can be "RemovableMedia", "ApplicationRead",
-        "CloudStorage", "IsPublic", "SharedViaLink", "SharedViaDomain", or "OutsideTrustedDomains".
+      description: Exposure types to search for. Defaults to all. i.e Exposure type
+        exists. Value can be "RemovableMedia", "ApplicationRead", "CloudStorage",
+        "IsPublic", "SharedViaLink", "SharedViaDomain", or "OutsideTrustedDomains".
       isArray: true
       name: exposure
       predefined:
