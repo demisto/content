@@ -1,14 +1,12 @@
 {
-	"TypeName": "cveRep",
-	"kind": "indicatorsDetails",
-	"layout": {
-		"TypeName": "",
-		"id": "cveRep",
-		"kind": "indicatorsDetails",
-		"modified": "2020-03-26T12:05:23.627977+02:00",
-		"name": "",
-		"system": false,
-		"tabs": [
+	"id": "cveRep",
+	"group": "indicator",
+	"system": true,
+	"name": "CVE Indicator Layout",
+	"version": -1,
+	"fromVersion": "6.0.0",
+    "indicatorsDetails": {
+        "tabs": [
 			{
 				"id": "default-main",
 				"name": "Info",
@@ -325,12 +323,6 @@
 				],
 				"type": "custom"
 			}
-		],
-		"typeId": "cveRep",
-		"version": -1
-	},
-	"typeId": "cveRep",
-	"version": -1,
-	"fromversion": "5.5.0",
-	"toVersion": "5.9.9"
+		]
+    }
 }
