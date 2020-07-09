@@ -75,6 +75,7 @@ def rewrite_json(file_path, json_content, new_to_version):
 
 def rewrite_yml(file_path, yml_content, new_to_version):
     yml_content['toversion'] = new_to_version
+    check_dockerimage45(yml_content, new_to_version)
     if 'script' in yml_content:
         if isinstance(yml_content.get('script'), str):
             if yml_content.get('script') not in ('-', ''):
@@ -86,6 +87,13 @@ def rewrite_yml(file_path, yml_content, new_to_version):
     with open(file_path, mode='w', encoding='utf-8') as f:
         ryaml.dump(yml_content, f)
         print(f" - Updating {file_path}")
+
+
+def check_dockerimage45(yml_content, new_to_version):
+    if 'dockerimage45' in yml_content:
+        if parse_version(new_to_version) <= parse_version('4.5.9'):
+            yml_content['dockerimage'] = yml_content['dockerimage45']
+        del yml_content['dockerimage45']
 
 
 def edit_json_content_entity_directory(new_to_version, dir_path):
