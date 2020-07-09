@@ -1740,7 +1740,7 @@ def test_user_create_command(code42_users_mock):
     assert cmd_res.outputs["Email"] == "new.user@example.com"
 
 
-def test_user_create_command_when_org_not_found_raises_Code42OrgNotFoundError(mocker, code42_users_mock):
+def test_user_create_command_when_org_not_found_raises_org_not_found(mocker, code42_users_mock):
     response_json = """{"total": 0, "orgs": []}"""
     code42_users_mock.orgs.get_all.return_value = create_mock_code42_sdk_response_generator(
         mocker, [response_json]
@@ -1855,7 +1855,7 @@ def test_download_file_command_when_given_sha256(code42_sdk_mock, mocker):
     assert fr.call_count == 1
 
 
-def test_download_file_when_given_other_hash_raises_Code42UnsupportedHashError(code42_sdk_mock, mocker):
+def test_download_file_when_given_other_hash_raises_unsupported_hash(code42_sdk_mock, mocker):
     mocker.patch("Code42.fileResult")
     _hash = "41966f10cc59ab466444add08974fde4cd37f88d79321d42da8e4c79b51c214941966f10cc59ab466444add08974fde4cd37" \
             "f88d79321d42da8e4c79b51c2149"
