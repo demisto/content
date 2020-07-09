@@ -88,7 +88,7 @@ def create_api_call():
         client._make_request = lambda method, uri, body, headers: override_make_request(client, method, uri, body, headers)
 
     except Exception as e:
-        demisto.error(f"Error making request - failed to create client: {e.message}")
+        demisto.error("Error making request - failed to create client: {}".format(e))
         raise Exception
 
     return client
@@ -108,7 +108,7 @@ def set_proxy():
         admin_api.set_proxy(host=None, port=None, proxy_type=None)
 
     except Exception as e:
-        demisto.error(f"Error setting proxy: {e.message}")
+        demisto.error('Error setting proxy: {}'.format(e))
         raise Exception
 
 
@@ -363,6 +363,6 @@ try:
         delete_u2f_token(demisto.getArg('token_id'))
 
 except Exception as e:
-    demisto.error(f"Duo Admin failed on: {e.message} on this command {demisto.command}")
+    demisto.error(f"Duo Admin failed on: {e} on this command {demisto.command}")
     return_error(e.message)
 sys.exit(0)
