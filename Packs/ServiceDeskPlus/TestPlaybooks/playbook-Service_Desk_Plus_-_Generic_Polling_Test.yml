@@ -165,7 +165,7 @@ tasks:
       - "5"
     scriptarguments:
       seconds:
-        simple: "120"
+        simple: "60"
     separatecontext: false
     view: |-
       {
@@ -228,3 +228,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
