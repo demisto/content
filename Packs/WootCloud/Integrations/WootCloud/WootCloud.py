@@ -94,7 +94,7 @@ class Client(BaseClient):
             params=params,
             json=json,
             headers=self.headers,
-            auth = requests.auth.HTTPBasicAuth(self.username, self.password)
+            auth=requests.auth.HTTPBasicAuth(self.username, self.password)
         )
         # Handle error responses gracefully
         if res.status_code == 401:
