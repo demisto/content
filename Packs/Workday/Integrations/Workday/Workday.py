@@ -248,7 +248,7 @@ class Client(BaseClient):
             body = GET_EMPLOYEES_REQ.format(
                 token=self.token, username=self.username, password=self.password, api_version=API_VERSION, page=page,
                 count=count)
-        raw_response = self._http_request(method="POST", url_suffix="", data=body, resp_type='text', timeout=30)
+        raw_response = self._http_request(method="POST", url_suffix="", data=body, resp_type='text', timeout=100)
         return convert_to_json(raw_response)
 
 
