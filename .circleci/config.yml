@@ -132,13 +132,12 @@ jobs:
       - checkout
       - setup_remote_docker
       - restore_cache:
-          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
+          key: venv-{{ checksum "package-lock.json" }}
       - *prepare_environment
       - save_cache:
           paths:
-            - venv
             - node_modules
-          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
+          key: venv-{{ checksum "package-lock.json" }}
       - add_ssh_keys:
           fingerprints:
             - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
@@ -343,9 +342,9 @@ jobs:
             mkdir ./unit-tests
             if [ -n "$SHOULD_LINT_ALL" ]; then
               echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-              demisto-sdk lint -p 8 --prev-ver "test_4.1" -a -q --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
+              demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
             else
-              demisto-sdk lint -p 8 -g --prev-ver "test_4.1" -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
+              demisto-sdk lint -p 8 -g --prev-ver 'test_4.1' -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
             fi
       - store_test_results:
           path: ./unit-tests
