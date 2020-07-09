@@ -1143,7 +1143,7 @@ def get_command_map():
         "code42-user-block": user_block_command,
         "code42-user-unblock": user_unblock_command,
         "code42-user-deactivate": user_deactivate_command,
-        "code42_user-reactivate": user_reactivate_command,
+        "code42-user-reactivate": user_reactivate_command,
         "code42-download-file": download_file_command,
     }
 
