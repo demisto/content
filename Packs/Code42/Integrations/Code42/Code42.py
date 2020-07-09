@@ -405,6 +405,7 @@ class Code42MissingSearchArgumentsError(Exception):
     def __init__(self):
         super(Code42MissingSearchArgumentsError, self).__init__(
             "No query args provided for searching Code42 security events."
+        )
 
 
 class Code42LegalHoldMatterNotFoundError(Exception):

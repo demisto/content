@@ -1315,23 +1315,28 @@ def test_client_lazily_inits_sdk(mocker, code42_sdk_mock):
     assert client._sdk is not None
 
 
-def test_client_when_no_alert_found_raises_alert_not_found(code42_sdk_mock):
-    code42_sdk_mock.alerts.get_details.return_value = (
-        json.loads('{"type$": "ALERT_DETAILS_RESPONSE", "alerts": []}')
+def test_client_when_no_alert_found_raises_alert_not_found(mocker, code42_sdk_mock):
+    response_json = """{"alerts": []}"""
+    code42_sdk_mock.alerts.get_details.return_value = create_mock_code42_sdk_response(
+        mocker, response_json
     )
     client = create_client(code42_sdk_mock)
     with pytest.raises(Code42AlertNotFoundError):
         client.get_alert_details("mock-id")
 
 
-def test_client_when_no_user_found_raises_user_not_found(code42_sdk_mock):
-    code42_sdk_mock.users.get_by_username.return_value = json.loads('{"totalCount":0, "users":[]}')
+def test_client_when_no_user_found_raises_user_not_found(mocker, code42_sdk_mock):
+    response_json = """{"totalCount": 0, "users": []}"""
+    code42_sdk_mock.users.get_by_username.return_value = create_mock_code42_sdk_response(
+        mocker, response_json
+    )
     client = create_client(code42_sdk_mock)
     with pytest.raises(Code42UserNotFoundError):
         client.get_user("test@example.com")
 
 
 def test_client_add_to_matter_when_no_legal_hold_matter_found_raises_matter_not_found(code42_sdk_mock, mocker):
+
     code42_sdk_mock.legalhold.get_all_matters.return_value = (
         get_empty_legalhold_matters_response(mocker, MOCK_GET_ALL_MATTERS_RESPONSE)
     )
@@ -1341,8 +1346,9 @@ def test_client_add_to_matter_when_no_legal_hold_matter_found_raises_matter_not_
         client.add_user_to_legal_hold_matter("TESTUSERNAME", "TESTMATTERNAME")
 
 
-def test_client_add_to_matter_when_no_user_found_raises_user_not_found(code42_sdk_mock):
-    code42_sdk_mock.users.get_by_username.return_value = json.loads('{"totalCount":0, "users":[]}')
+def test_client_add_to_matter_when_no_user_found_raises_user_not_found(mocker, code42_sdk_mock):
+    response_json = '{"totalCount":0, "users":[]}'
+    code42_sdk_mock.users.get_by_username.return_value = create_mock_code42_sdk_response(mocker, response_json)
     client = create_client(code42_sdk_mock)
     with pytest.raises(Code42UserNotFoundError):
         client.add_user_to_legal_hold_matter("TESTUSERNAME", "TESTMATTERNAME")
@@ -1358,8 +1364,9 @@ def test_client_remove_from_matter_when_no_legal_hold_matter_found_raises_except
         client.remove_user_from_legal_hold_matter("TESTUSERNAME", "TESTMATTERNAME")
 
 
-def test_client_remove_from_matter_when_no_user_found_raises_user_not_found(code42_sdk_mock):
-    code42_sdk_mock.users.get_by_username.return_value = json.loads('{"totalCount":0, "users":[]}')
+def test_client_remove_from_matter_when_no_user_found_raises_user_not_found(mocker, code42_sdk_mock):
+    response_json = '{"totalCount":0, "users":[]}'
+    code42_sdk_mock.users.get_by_username.return_value = create_mock_code42_sdk_response(mocker, response_json)
     client = create_client(code42_sdk_mock)
     with pytest.raises(Code42UserNotFoundError):
         client.remove_user_from_legal_hold_matter("TESTUSERNAME", "TESTMATTERNAME")
@@ -1851,7 +1858,7 @@ def test_download_file_command_when_given_sha256(code42_sdk_mock, mocker):
 
 
 def test_download_file_when_given_other_hash_raises_Code42UnsupportedHashError(code42_sdk_mock, mocker):
-    mocker.patch("Code42.fileResult")
+    fr = mocker.patch("Code42.fileResult")
     _hash = "41966f10cc59ab466444add08974fde4cd37f88d79321d42da8e4c79b51c214941966f10cc59ab466444add08974fde4cd37" \
             "f88d79321d42da8e4c79b51c2149"
     client = create_client(code42_sdk_mock)
