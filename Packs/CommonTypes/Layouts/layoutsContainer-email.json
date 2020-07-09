@@ -1,14 +1,12 @@
 {
-	"TypeName": "emailRep",
-	"kind": "indicatorsDetails",
-	"layout": {
-		"TypeName": "",
-		"id": "emailRep",
-		"kind": "indicatorsDetails",
-		"modified": "2020-03-26T12:43:40.263901+02:00",
-		"name": "",
-		"system": false,
-		"tabs": [
+    "id": "emailRep",
+    "group": "indicator",
+    "system": true,
+    "name": "Email Indicator Layout",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "indicatorsDetails": {
+        "tabs": [
 			{
 				"id": "default-main",
 				"name": "Info",
@@ -316,12 +314,6 @@
 				],
 				"type": "custom"
 			}
-		],
-		"typeId": "emailRep",
-		"version": -1
-	},
-	"typeId": "emailRep",
-	"version": -1,
-	"fromversion": "5.5.0",
-	"toVersion": "5.9.9"
+		]
+    }
 }
