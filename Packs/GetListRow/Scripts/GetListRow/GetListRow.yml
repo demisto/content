@@ -24,6 +24,7 @@ args:
   name: parse_all
   required: false
   secret: false
+comment: Parse list by header and value
 commonfields:
   id: getListRow
   version: -1
@@ -50,6 +51,6 @@ type: python
 dockerimage: demisto/python3:3.7.3.286
 runas: DBotWeakRole
 runonce: false
-fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+fromversion: 5.0.0
