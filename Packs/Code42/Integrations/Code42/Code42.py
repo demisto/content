@@ -294,12 +294,11 @@ class Code42Client(BaseClient):
         return user_id
 
     def get_legal_hold_matter(self, matter_name):
-        if matter_name:
-            matter_pages = self._get_sdk().legalhold.get_all_matters(name=matter_name)
-            for matter_page in matter_pages:
-                matters = matter_page["legalHolds"]
-                for matter in matters:
-                    return matter
+        matter_pages = self._get_sdk().legalhold.get_all_matters(name=matter_name)
+        for matter_page in matter_pages:
+            matters = matter_page["legalHolds"]
+            for matter in matters:
+                return matter
         raise Code42LegalHoldMatterNotFoundError(matter_name)
 
     def add_user_to_legal_hold_matter(self, username, matter_name):
