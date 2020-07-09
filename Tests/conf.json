@@ -3084,7 +3084,6 @@
 
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Issue 25650",
-        "XFE_v2": "Issue 22715",
         "AlphaSOC Wisdom": "API key has expired",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
