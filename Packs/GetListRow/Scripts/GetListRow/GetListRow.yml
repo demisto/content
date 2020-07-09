@@ -1,0 +1,54 @@
+args:
+- default: false
+  description: Value to search for (You also need to enter header)
+  isArray: false
+  name: value
+  required: false
+  secret: false
+- default: false
+  description: Header to search in (You also need to enter value)
+  isArray: false
+  name: header
+  required: false
+  secret: false
+- default: false
+  description: The list name to search in
+  isArray: false
+  name: list_name
+  required: true
+  secret: false
+- default: false
+  defaultValue: 'False'
+  description: Parse all the list
+  isArray: false
+  name: parse_all
+  required: false
+  secret: false
+commonfields:
+  id: 127f45c9-10e5-4135-8188-0e4c34abe8b9
+  version: -1
+enabled: true
+name: getListRow
+outputs:
+- contextPath: GetListRow.Header
+  description: Header to search in
+  type: String
+- contextPath: GetListRow.Value
+  description: Value to search for
+  type: String
+- contextPath: GetListRow.ListName
+  description: The list name to search in
+  type: String
+- contextPath: GetListRow.Results
+  description: Search results
+  type: Unknown
+script: '-'
+subtype: python3
+system: false
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.7.3.286
+runas: DBotWeakRole
+runonce: false
+pswd: ''
+vcShouldKeepItemLegacyProdMachine: false
