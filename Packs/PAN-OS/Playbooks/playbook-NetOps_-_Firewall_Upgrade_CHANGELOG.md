@@ -1,7 +1,6 @@
 ## [20.2.5] - 2020-07-09
 Updated playbook for DT syntax corrections.
 
-
 ## [20.2.4] - 2020-02-25
 Updated playbook descriptions and task names.
 
