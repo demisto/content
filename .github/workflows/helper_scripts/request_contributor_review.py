@@ -38,9 +38,6 @@ def request_review_from_user(reviewers_list, pr_number, github_token=None, verif
     review_endpoint = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/pulls/{pr_number}/requested_reviewers"
     headers = {'Authorization': 'Bearer ' + github_token} if github_token else {}
 
-    if not github_token:
-        print("NO GITHUB TOKEN PROVIDED")
-
     reviewers_data = {
         "reviewers": reviewers_list,
         "team_reviewers": []
@@ -84,7 +81,7 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True)
                                                    verify_ssl=verify_ssl)
 
                 if user_exists:
-                    reviewers_list.append(user_exists)
+                    reviewers_list.append(github_user)
                 else:
                     print(f"{github_user} user defined in {pack} pack metadata does not exist")
                     continue
