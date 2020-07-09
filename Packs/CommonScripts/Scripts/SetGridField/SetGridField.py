@@ -40,9 +40,10 @@ def filter_dict(dict_obj: Dict[Any, Any], keys: List[str], max_keys: Optional[in
     Returns:
         dict: Filtered dict.
     """
-    new_dict = dict()
     # Iterate over all the items in dictionary
     if keys[0] != "*":
+        # create empty dict of given headers
+        new_dict = {key: "" for key in keys}
         for (key, value) in dict_obj.items():
             # Check if item satisfies the given condition then add to new dict
             if key in keys:
@@ -252,8 +253,7 @@ def build_grid_command(grid_id: str, context_path: str, keys: List[str], columns
     """
     # Assert columns match keys
     if keys[0] != '*' and (len(columns) != len(keys)):
-        raise DemistoException(f'Error - The number of keys: {len(keys)} should match the number of '
-                               f'columns: {len(columns)}')
+        raise DemistoException(f'The number of keys: {len(keys)} should match the number of columns: {len(columns)}.')
     # Get old Data
     old_table = get_current_table(grid_id=grid_id)
     # Normalize columns to match connected words.
