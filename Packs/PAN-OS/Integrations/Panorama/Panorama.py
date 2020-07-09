@@ -2223,6 +2223,18 @@ def populate_url_filter_category_from_context(category):
             return context_urls
 
 
+def calculate_dbot_score(url, category):
+    dbot_score = 1
+    if category in ['phishing', 'command-and-control', 'malware']:
+        dbot_score = 3
+    elif category in ['high-risk', 'hacking', 'proxy-avoidance-and-anonymizers']:
+        dbot_score = 2
+    elif category == 'unknown':
+        dbot_score = 0
+
+    return dbot_score
+
+
 def panorama_get_url_category_command(url_cmd: str):
     """
     Get the url category from Palo Alto URL Filtering
@@ -2231,6 +2243,7 @@ def panorama_get_url_category_command(url_cmd: str):
 
     categories_dict: Dict[str, list] = {}
     categories_dict_hr: Dict[str, list] = {}
+    url_indicator_list = []
     for url in urls:
         category = panorama_get_url_category(url_cmd, url)
         if category in categories_dict:
@@ -2241,6 +2254,20 @@ def panorama_get_url_category_command(url_cmd: str):
             categories_dict_hr[category] = [url]
         context_urls = populate_url_filter_category_from_context(category)
         categories_dict[category] = list((set(categories_dict[category])).union(set(context_urls)))
+
+        score = calculate_dbot_score(url,category)
+        dbot_score = Common.DBotScore(
+            indicator=url,
+            indicator_type=DBotScoreType.URL,
+            integration_name='PAN-OS',
+            score=score
+        )
+        url_obj = Common.URL(
+            url=url,
+            dbot_score=dbot_score,
+            category=category
+        )
+        url_indicator_list.append(url_obj)
 
     url_category_output_hr = []
     for key, value in categories_dict_hr.items():
@@ -2263,16 +2290,16 @@ def panorama_get_url_category_command(url_cmd: str):
         title += ' from host'
     human_readable = tableToMarkdown(f'{title}:', url_category_output_hr, ['URL', 'Category'], removeNull=True)
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': categories_dict,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': human_readable,
-        'EntryContext': {
-            "Panorama.URLFilter(val.Category === obj.Category)": url_category_output
-        }
-    })
+
+    command_results = CommandResults(
+        outputs_prefix='Panorama.URLFilter',
+        outputs_key_field='Category',
+        outputs=url_category_output,
+        readable_output=human_readable,
+        raw_response=categories_dict,
+        indicators=url_indicator_list
+    )
+    return_results(command_results)
 
 
 ''' URL Filter '''
@@ -5407,7 +5434,7 @@ def main():
             panorama_edit_custom_url_category_command()
 
         # URL Filtering capabilities
-        elif demisto.command() == 'panorama-get-url-category':
+        elif demisto.command() in ['panorama-get-url-category', 'url']:
             panorama_get_url_category_command(url_cmd='url')
 
         elif demisto.command() == 'panorama-get-url-category-from-cloud':

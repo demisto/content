@@ -1248,11 +1248,11 @@ script:
       description: Device group for the Custom URL Category (Panorama instances).
       type: string
   - arguments:
-    - default: false
+    - default: true
       description: URL to check.
       isArray: true
       name: url
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Gets a URL category from URL Filtering.
@@ -1265,6 +1265,60 @@ script:
     - contextPath: Panorama.URLFilter.Category
       description: URL category.
       type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: URL.Data
+      description: The URL address.
+      type: String
+    - contextPath: URL.Category
+      description: The URL Category.
+      type: String
+  - arguments:
+    - default: true
+      description: URL to check.
+      isArray: true
+      name: url
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets a URL category from URL Filtering.
+    execution: false
+    name: url
+    outputs:
+    - contextPath: Panorama.URLFilter.URL
+      description: URL.
+      type: string
+    - contextPath: Panorama.URLFilter.Category
+      description: URL category.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: URL.Data
+      description: The URL address.
+      type: String
+    - contextPath: URL.Category
+      description: The URL Category.
+      type: String
   - arguments:
     - default: false
       description: URL to check.
