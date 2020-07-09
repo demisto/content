@@ -90,10 +90,17 @@ def rewrite_yml(file_path, yml_content, new_to_version):
 
 
 def check_dockerimage45(yml_content, new_to_version):
+    # check in scripts
     if 'dockerimage45' in yml_content:
         if parse_version(new_to_version) <= parse_version('4.5.9'):
             yml_content['dockerimage'] = yml_content['dockerimage45']
         del yml_content['dockerimage45']
+
+    # check in integrations
+    elif 'dockerimage45' in yml_content['script']:
+        if parse_version(new_to_version) <= parse_version('4.5.9'):
+            yml_content['script']['dockerimage'] = yml_content['script']['dockerimage45']
+        del yml_content['script']['dockerimage45']
 
 
 def edit_json_content_entity_directory(new_to_version, dir_path):
