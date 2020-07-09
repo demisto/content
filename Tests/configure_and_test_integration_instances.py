@@ -787,6 +787,19 @@ def get_pack_ids_to_install():
         return [pack_id.rstrip('\n') for pack_id in pack_ids]
 
 
+def restart_server(server, prints_manager):
+    installed_content_message = \
+        '\nRestarting servers to apply server config ...'
+    prints_manager.add_print_job(installed_content_message, print_color, 0, LOG_COLORS.GREEN)
+    ssh_string = 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} ' \
+                 '"sudo systemctl restart demisto"'
+    try:
+        subprocess.check_output(
+            ssh_string.format('ec2-user', server.replace('https://', '')), shell=True)
+    except subprocess.CalledProcessError as exc:
+        print(exc.output)
+
+
 def main():
     options = options_handler()
     username = options.user
@@ -816,14 +829,7 @@ def main():
             set_docker_hardening_for_build(client, prints_manager)
             if LooseVersion(server_numeric_version) >= LooseVersion('6.0.0'):
                 set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number)
-            print('Restarting servers to apply server config ...')
-            ssh_string = 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} ' \
-                         '"sudo systemctl restart demisto"'
-            try:
-                subprocess.check_output(
-                    ssh_string.format('ec2-user', server.replace('https://', '')), shell=True)
-            except subprocess.CalledProcessError as exc:
-                print(exc.output)
+            restart_server(server, prints_manager)
         print('Done restarting servers.')
 
     tests = conf['tests']
