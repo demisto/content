@@ -34,6 +34,39 @@ def check_if_user_exists(github_user, github_token=None, verify_ssl=True):
         return False
 
 
+def get_pr_author(pr_number, github_token, verify_ssl):
+    pr_endpoint = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/pulls/{pr_number}"
+    headers = {"Authorization": "Bearer " + github_token} if github_token else {}
+
+    response = requests.get(pr_endpoint, headers=headers, verify=verify_ssl)
+
+    if response.status_code not in [200, 201]:
+        print(f"Failed in pulling PR {pr_number} data")
+        sys.exit(1)
+
+    pr_info = response.json()
+
+    return pr_info.get('user', {}).get('login', '')
+
+
+def get_pr_modified_packs(pr_number, github_token, verify_ssl):
+    pr_endpoint = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/pulls/{pr_number}/files"
+
+    headers = {'Authorization': 'Bearer ' + github_token} if github_token else {}
+
+    response = requests.get(pr_endpoint, headers=headers, verify=verify_ssl)
+
+    if response.status_code not in [200, 201]:
+        print(f"Failed in pulling PR {pr_number} data")
+        sys.exit(1)
+
+    pr_changed_data = response.json()
+    pr_files = [f.get('filename') for f in pr_changed_data]
+    modified_packs = {Path(p).parts[1] for p in pr_files if p.startswith(PACKS_FOLDER) and len(Path(p).parts) > 1}
+
+    return modified_packs
+
+
 def request_review_from_user(reviewers, pr_number, github_token=None, verify_ssl=True):
     review_endpoint = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/pulls/{pr_number}/requested_reviewers"
     headers = {"Authorization": "Bearer " + github_token} if github_token else {}
@@ -50,19 +83,8 @@ def request_review_from_user(reviewers, pr_number, github_token=None, verify_ssl
 
 
 def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True):
-    pr_endpoint = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/pulls/{pr_number}/files"
-
-    headers = {'Authorization': 'Bearer ' + github_token} if github_token else {}
-
-    response = requests.get(pr_endpoint, headers=headers, verify=verify_ssl)
-
-    if response.status_code not in [200, 201]:
-        print(f"Failed in pulling PR {pr_number} data")
-        sys.exit(1)
-
-    pr_changed_data = response.json()
-    pr_files = [f.get('filename') for f in pr_changed_data]
-    modified_packs = {Path(p).parts[1] for p in pr_files if p.startswith(PACKS_FOLDER) and len(Path(p).parts) > 1}
+    modified_packs = get_pr_modified_packs(pr_number=pr_number, github_token=github_token, verify_ssl=verify_ssl)
+    pr_author = get_pr_author(pr_number=pr_number, github_token=github_token, verify_ssl=verify_ssl)
     reviewers = set()
 
     for pack in modified_packs:
@@ -74,11 +96,11 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True)
 
             if pack_metadata.get('support') != XSOAR_SUPPORT and PACK_METADATA_GITHUB_USER_FIELD in pack_metadata \
                     and pack_metadata[PACK_METADATA_GITHUB_USER_FIELD]:
-                github_user = pack_metadata[PACK_METADATA_GITHUB_USER_FIELD].lower()
+                github_user = pack_metadata[PACK_METADATA_GITHUB_USER_FIELD]
                 user_exists = check_if_user_exists(github_user=github_user, github_token=github_token,
                                                    verify_ssl=verify_ssl)
 
-                if user_exists:
+                if user_exists and github_user != pr_author:
                     reviewers.add(github_user)
                 else:
                     print(f"{github_user} user defined in {pack} pack metadata does not exist")
