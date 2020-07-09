@@ -1173,14 +1173,16 @@ def code42_high_risk_employee_mock(code42_sdk_mock, mocker):
 
 @pytest.fixture
 def code42_departing_employee_get_mock(code42_sdk_mock, mocker):
-    response = create_mock_code42_sdk_response(mocker, MOCK_GET_DETECTIONLIST_RESPONSE)
+    single_departing_employee = json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)["items"][0]
+    response = create_mock_code42_sdk_response(mocker, json.dumps(single_departing_employee))
     code42_sdk_mock.detectionlists.departing_employee.get.return_value = response
     return code42_sdk_mock
 
 
 @pytest.fixture
 def code42_high_risk_employee_get_mock(code42_sdk_mock, mocker):
-    response = create_mock_code42_sdk_response(mocker, MOCK_GET_DETECTIONLIST_RESPONSE)
+    single_high_risk_employee = json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"][0]
+    response = create_mock_code42_sdk_response(mocker, json.dumps(single_high_risk_employee))
     code42_sdk_mock.detectionlists.high_risk_employee.get.return_value = response
     return code42_sdk_mock
 
@@ -1428,7 +1430,8 @@ def test_departingemployee_get_command(code42_departing_employee_get_mock):
     assert cmd_res.raw_response == _TEST_USERNAME
     assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
     assert cmd_res.outputs_key_field == "UserID"
-    assert cmd_res.outputs == json.loads(MOCK_GET_DETECTIONLIST_RESPONSE)
+    expected = json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)["items"][0]
+    assert_departingemployee_outputs_match_response([cmd_res.outputs], [expected])
 
 
 def test_highriskemployee_get_command(code42_high_risk_employee_get_mock):
@@ -1441,7 +1444,8 @@ def test_highriskemployee_get_command(code42_high_risk_employee_get_mock):
     assert cmd_res.raw_response == _TEST_USERNAME
     assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
     assert cmd_res.outputs_key_field == "UserID"
-    assert cmd_res.outputs == json.loads(MOCK_GET_DETECTIONLIST_RESPONSE)
+    expected = json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"][0]
+    assert_detection_list_outputs_match_response_items([cmd_res.outputs], [expected])
 
 
 def test_highriskemployee_add_command(code42_high_risk_employee_mock):
