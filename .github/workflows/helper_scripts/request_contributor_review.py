@@ -24,7 +24,7 @@ def check_if_user_exists(github_user, github_token=None, verify_ssl=True):
 
     if response.status_code not in [200, 201]:
         print(f"Failed in pulling user {github_user} data")
-        sys.exit()
+        sys.exit(1)
 
     github_user_info = response.json()
 
@@ -34,22 +34,20 @@ def check_if_user_exists(github_user, github_token=None, verify_ssl=True):
         return False
 
 
-def request_review_from_user(github_user, pr_number, github_token=None, verify_ssl=True):
+def request_review_from_user(reviewers_list, pr_number, github_token=None, verify_ssl=True):
     review_endpoint = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/pulls/{pr_number}/requested_reviewers"
     headers = {'Authorization': 'Bearer ' + github_token} if github_token else {}
 
     reviewers_data = {
-        "reviewers": [
-            github_user
-        ]
+        "reviewers": reviewers_list,
+        "team_reviewers": []
     }
 
     response = requests.post(review_endpoint, data=reviewers_data, headers=headers, verify=verify_ssl)
-    print(f"{response._content}")
 
     if response.status_code not in [200, 201]:
-        print(f"Failed requesting review of {github_user} user")
-        sys.exit()
+        print(f"Failed requesting review on PR {pr_number}")
+        sys.exit(1)
 
 
 def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True):
@@ -61,11 +59,12 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True)
 
     if response.status_code not in [200, 201]:
         print(f"Failed in pulling PR {pr_number} data")
-        sys.exit()
+        sys.exit(1)
 
     pr_changed_data = response.json()
     pr_files = [f.get('filename') for f in pr_changed_data]
     modified_packs = {Path(p).parts[1] for p in pr_files if p.startswith(PACKS_FOLDER) and len(Path(p).parts) > 1}
+    reviewers_list = []
 
     for pack in modified_packs:
         pack_metadata_path = os.path.join(PACKS_FULL_PATH, pack, PACK_METADATA)
@@ -76,26 +75,29 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True)
 
             if pack_metadata.get('support') != XSOAR_SUPPORT and PACK_METADATA_GITHUB_USER_FIELD in pack_metadata \
                     and pack_metadata[PACK_METADATA_GITHUB_USER_FIELD]:
-                print(f"Found github user in pack {pack}")
-
                 github_user = pack_metadata[PACK_METADATA_GITHUB_USER_FIELD]
                 user_exists = check_if_user_exists(github_user=github_user, github_token=github_token,
                                                    verify_ssl=verify_ssl)
 
                 if user_exists:
-                    request_review_from_user(github_user=github_user, pr_number=pr_number, github_token=github_token,
-                                             verify_ssl=verify_ssl)
+                    reviewers_list.append(user_exists)
                 else:
                     print(f"{github_user} user defined in {pack} pack metadata does not exist")
-                    sys.exit()
+                    continue
 
-                print(f"Finished requesting review from {github_user} user on PR number {pr_number}")
+                print(f"Found {github_user} github user in pack {pack}")
             elif pack_metadata.get('support') == XSOAR_SUPPORT:
                 print(f"Skipping check of {pack} pack supported by {XSOAR_SUPPORT}")
             else:
                 print(f"{pack} pack has no default github reviewer")
         else:
             print(f"Not found {pack} {PACK_METADATA} file.")
+
+    if reviewers_list:
+        request_review_from_user(reviewers_list=reviewers_list, pr_number=pr_number, github_token=github_token,
+                                 verify_ssl=verify_ssl)
+    else:
+        print("No reviewers were found.")
 
 
 def main():
