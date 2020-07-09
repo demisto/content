@@ -1,11 +1,11 @@
-name: Request review from pack contributor
+name: Check contributor packs
 on:
   pull_request:
     branches:
       - master
 
 jobs:
-  request_pr_review:
+  check_contributor_pack:
     runs-on: ubuntu-latest
     steps:
       #      - name: Dump Github context
@@ -28,5 +28,6 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           echo "New PR number is $PR_NUMBER"
+          echo "Starting check of contributor packs"
           python .github/workflows/helper_scripts/request_contributor_review.py --pr_number $PR_NUMBER --github_token $GITHUB_TOKEN
-          echo "Finished requesting review of contributor packs"
+          echo "Finished check of contributor packs"

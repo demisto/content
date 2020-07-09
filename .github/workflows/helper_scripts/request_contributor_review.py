@@ -15,14 +15,12 @@ PACK_METADATA = "pack_metadata.json"
 XSOAR_SUPPORT = "xsoar"
 PACK_METADATA_GITHUB_USER_FIELD = "githubUser"
 
-requests.packages.urllib3.disable_warnings()
 
-
-def check_if_user_exists(github_user, github_token=None):
+def check_if_user_exists(github_user, github_token=None, verify_ssl=True):
     user_endpoint = f"https://api.github.com/users/{github_user}"
     headers = {'Authorization': 'Bearer ' + github_token} if github_token else {}
 
-    response = requests.get(user_endpoint, headers=headers, verify=False)
+    response = requests.get(user_endpoint, headers=headers, verify=verify_ssl)
 
     if response.status_code not in [200, 201]:
         print(f"Failed in pulling user {github_user} data")
@@ -36,7 +34,7 @@ def check_if_user_exists(github_user, github_token=None):
         return False
 
 
-def request_review_from_user(github_user, pr_number, github_token=None):
+def request_review_from_user(github_user, pr_number, github_token=None, verify_ssl=True):
     review_endpoint = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/pulls/{pr_number}/requested_reviewers"
     headers = {'Authorization': 'Bearer ' + github_token} if github_token else {}
 
@@ -46,19 +44,19 @@ def request_review_from_user(github_user, pr_number, github_token=None):
         ]
     }
 
-    response = requests.post(review_endpoint, data=reviewers_data, headers=headers, verify=False)
+    response = requests.post(review_endpoint, data=reviewers_data, headers=headers, verify=verify_ssl)
 
     if response.status_code not in [200, 201]:
         print(f"Failed requesting review of {github_user} user")
         sys.exit()
 
 
-def request_pack_contributor_review(pr_number, github_token=None):
+def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True):
     pr_endpoint = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/pulls/{pr_number}/files"
 
     headers = {'Authorization': 'Bearer ' + github_token} if github_token else {}
 
-    response = requests.get(pr_endpoint, headers=headers, verify=False)
+    response = requests.get(pr_endpoint, headers=headers, verify=verify_ssl)
 
     if response.status_code not in [200, 201]:
         print(f"Failed in pulling PR {pr_number} data")
@@ -80,16 +78,21 @@ def request_pack_contributor_review(pr_number, github_token=None):
                 print(f"Found github user in pack {pack}")
 
                 github_user = pack_metadata[PACK_METADATA_GITHUB_USER_FIELD]
-                user_exists = check_if_user_exists(github_user=github_user, github_token=github_token)
+                user_exists = check_if_user_exists(github_user=github_user, github_token=github_token,
+                                                   verify_ssl=verify_ssl)
 
                 if user_exists:
-                    request_review_from_user(github_user=github_user, pr_number=pr_number, github_token=github_token)
+                    request_review_from_user(github_user=github_user, pr_number=pr_number, github_token=github_token,
+                                             verify_ssl=verify_ssl)
                 else:
                     print(f"{github_user} user defined in {pack} pack metadata does not exist")
                     sys.exit()
 
                 print(f"Finished requesting review from {github_user} user on PR number {pr_number}")
-
+            elif pack_metadata.get('support') == XSOAR_SUPPORT:
+                print(f"Skipping check of {pack} pack supported by {XSOAR_SUPPORT}")
+            else:
+                print(f"{pack} pack has no default github reviewer")
         else:
             print(f"Not found {pack} {PACK_METADATA} file.")
 
@@ -100,7 +103,14 @@ def main():
     parser.add_argument('-g', '--github_token', help='Github token', required=False)
     args = parser.parse_args()
 
-    request_pack_contributor_review(pr_number=args.pr_number, github_token=args.github_token)
+    pr_number = args.pr_number
+    github_token = args.github_token
+    verify_ssl = True if github_token else False
+
+    if not verify_ssl:
+        requests.packages.urllib3.disable_warnings()
+
+    check_pack_and_request_review(pr_number=pr_number, github_token=github_token, verify_ssl=verify_ssl)
 
 
 if __name__ == "__main__":
