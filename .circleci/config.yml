@@ -236,7 +236,7 @@ jobs:
                 exit 0
             fi
 
-            demisto-sdk secrets --post-commit --ignore-entropy
+            demisto-sdk secrets --post-commit --ignore-entropy --prev-ver test_4.1
       - run:
           name: Collect Test List And Content Packs
           when: always
@@ -846,7 +846,7 @@ jobs:
           name: Secrets
           when: always
           command: |
-            demisto-sdk secrets --post-commit --ignore-entropy
+            demisto-sdk secrets --post-commit --ignore-entropy --prev-ver test_4.1
       - run:
           name: Validate Files and Yaml
           when: always
