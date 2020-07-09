@@ -1,13 +1,12 @@
 {
-	"typeId": "Access",
-	"fromVersion": "4.1.0",
-	"kind": "details",
-	"layout": {
-		"id": "Access",
-		"version": -1,
-		"modified": "2018-04-25T16:52:35.762995135Z",
-		"name": "",
-		"sections": [
+    "id": "Access",
+    "group": "incident",
+    "system": true,
+    "name": "Access Incident Layout",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "details": {
+        "sections": [
 			{
 				"id": "",
 				"version": 0,
@@ -420,6 +419,5 @@
 				"queryType": ""
 			}
 		]
-	},
-	"toVersion": "5.9.9"
+    }
 }
