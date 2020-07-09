@@ -14,24 +14,19 @@
         },
         "toDate": "0001-01-01T00:00:00Z"
     },
-    "id": "Departing Employees List",
+    "id": "Code42 High Risk Employee Exfiltration Last 24 Hours",
     "isPredefined": false,
-    "name": "Departing Employees",
+    "name": "Code42 High Risk Employee Exfiltration Last 24 Hours",
     "params": {
         "tableColumns": [
             {
                 "displayed": true,
                 "isDefault": true,
                 "key": "Username"
-            },
-            {
-                "displayed": true,
-                "isDefault": true,
-                "key": "Alerts Count"
             }
         ]
     },
-    "query": "Code42GetDepartingEmployees",
+    "query": "Code42HighRiskEmployeeExfiltrationLastTwentyFourHours",
     "size": 0,
     "sort": null,
     "sortValues": null,

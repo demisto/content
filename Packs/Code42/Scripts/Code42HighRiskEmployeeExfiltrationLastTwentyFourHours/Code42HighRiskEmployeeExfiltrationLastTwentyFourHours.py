@@ -5,7 +5,7 @@ from CommonServerPython import *
 def main():
     try:
         employees = demisto.executeCommand("Code42GetHighRiskEmployees",
-                                           {"filtertype": "EXFILTRATION_30_DAYS"})[0]["Contents"]
+                                           {"filtertype": "EXFILTRATION_24_HOURS"})[0]["Contents"]
         demisto.results(employees)
     except Exception as e:
         demisto.results(-1)

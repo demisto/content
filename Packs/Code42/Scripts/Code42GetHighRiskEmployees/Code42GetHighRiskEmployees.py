@@ -2,43 +2,31 @@ import demistomock as demisto
 from CommonServerPython import *
 
 
-def _get_departing_employees(risktags):
-    tags = {} if not risktags else {"risktags": risktags.split(",")}
-    command_result = demisto.executeCommand("code42-highriskemployee-get-all", tags)
+def _get_departing_employees(risk_tags, filter_type):
+    tags = risk_tags.split(",") if risk_tags else None
+    filter_type = "OPEN" if not filter_type else filter_type
+    command_args = {"risktags": tags, "filtertype": filter_type}
+    command_result = demisto.executeCommand("code42-highriskemployee-get-all", command_args)
     if not command_result:
         return []
 
     return command_result[0]["Contents"]
 
 
-def _get_file_events_for_user(username):
-    command_result = demisto.executeCommand("code42-securitydata-search", {"username": username})
-    if not command_result:
-        return
-    return command_result
-
-
 def get_departing_employees():
     res = {"total": 0}
     res_data = []
-    risktags = demisto.args().get("risktags")
+    risk_tags = demisto.args().get("risktags")
+    filter_type = demisto.args().get("filtertype")
 
     try:
-        employees = _get_departing_employees(risktags)
+        employees = _get_departing_employees(risk_tags, filter_type)
         res["total"] = len(employees)
 
-        # TODO: Extract to separate script Code42SearchExposureEvents
+        # Get each employee on the High Risk Employee List.
         for employee in employees:
-            username = employee.get("userName")
-            employee_res = {"Username": username, "ExposureEvents": 0}
-            file_events = _get_file_events_for_user(username)
-            for e in file_events:
-                event_data = e.get("Contents")
-                if event_data and isinstance(event_data, list):
-                    for data in event_data:
-                        if data.get("exposure"):
-                            employee_res["ExposureEvents"] += 1
-
+            username = employee["userName"]
+            employee_res = {"Username": username}
             res_data.append(employee_res)
 
         res["data"] = res_data

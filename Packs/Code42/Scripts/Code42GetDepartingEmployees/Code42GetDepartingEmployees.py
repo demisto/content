@@ -2,17 +2,25 @@ import demistomock as demisto
 from CommonServerPython import *
 
 
-def main():
+def _get_departing_employees():
+    command_result = demisto.executeCommand("code42-departingemployee-get-all", {})
+    if not command_result:
+        return []
+
+    return command_result[0]["Contents"]
+
+
+def get_departing_employees():
     res = {"total": 0}
     res_data = []
 
     try:
-        employees = demisto.executeCommand("code42-departingemployee-get-all", {})[0]["Contents"]
+        employees = _get_departing_employees()
         res["total"] = len(employees)
 
-        # Get each employee on the Departing Employee List and their total alerts.
+        # Get each employee on the Departing Employee List.
         for employee in employees:
-            username = employee["userName"]
+            username = employee.get("userName")
             employee_res = {"Username": username}
             res_data.append(employee_res)
 
@@ -26,4 +34,4 @@ def main():
     demisto.results(res)
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
-    main()
+    get_departing_employees()
