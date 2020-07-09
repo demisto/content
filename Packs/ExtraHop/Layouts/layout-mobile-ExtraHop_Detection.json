@@ -256,5 +256,6 @@
 		"typeId": "ExtraHop Detection",
 		"version": -1
 	},
-	"typeId": "ExtraHop Detection"
+	"typeId": "ExtraHop Detection",
+	"toVersion": "5.9.9"
 }
