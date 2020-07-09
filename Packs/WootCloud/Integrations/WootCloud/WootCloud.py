@@ -28,11 +28,12 @@ HEADERS = {
 # How much time to begin retrieving incidents before the first fetch
 FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 # Fetch filters
-ALERT_TYPE = demisto.params().get('alert_type') # Bluetooth, Packet, Anomaly
-SEVERITY_TYPE = demisto.params().get('severity_type') # Warning, Critical, Notice, Info
+ALERT_TYPE = demisto.params().get('alert_type')  # Bluetooth, Packet, Anomaly
+SEVERITY_TYPE = demisto.params().get('severity_type')  # Warning, Critical, Notice, Info
 
 
 ''' HELPER FUNCTIONS '''
+
 
 def item_to_incident(item):
     incident = {}
@@ -44,6 +45,7 @@ def item_to_incident(item):
     incident['rawJSON'] = json.dumps(item)
     return incident
 
+
 def iter_all_alerts(client, type, start, end, severity=None, skip=None, limit=10, site_id=None):
     """
     Iterate through packet, bluetooth, or anomaly alerts generated in requested time span.
@@ -54,7 +56,7 @@ def iter_all_alerts(client, type, start, end, severity=None, skip=None, limit=10
     if type == 'packet':
         alert_type = 'packet_alerts'
     elif type == 'bluetooth':
-        alert_type = 'alerts' # NOTE: bluetooth alert has same as anamoly alert
+        alert_type = 'alerts'  # NOTE: bluetooth alert has same as anamoly alert
     elif type == 'anomaly':
         alert_type = 'alerts'
 
@@ -66,7 +68,10 @@ def iter_all_alerts(client, type, start, end, severity=None, skip=None, limit=10
         step += limit
     return alerts
 
+
 ''' CLIENT CLASS '''
+
+
 class Client(BaseClient):
     """
     Client will implement the service API, and should not contain any Demisto logic.
@@ -124,7 +129,9 @@ class Client(BaseClient):
         }
         return self.http_request('POST', 'events/' + url, json=payload)
 
+
 ''' COMMANDS + REQUESTS FUNCTIONS '''
+
 
 def test_module(client):
     """
@@ -135,7 +142,9 @@ def test_module(client):
         client.http_request('GET', 'wootassets')
         return 'ok'
     except Exception as e:
+        LOG(e)
         return 'not ok'
+
 
 def fetch_single_alert(client, alert_id, type):
     """ Fetches single packet by ID. """
@@ -148,6 +157,7 @@ def fetch_single_alert(client, alert_id, type):
     else:
         return_error('Type error: %s is not one of the types' % type)
     return client.http_request('GET', 'events/%s/%s' % (url, alert_id))
+
 
 def fetch_incidents(client, alert_type):
     """
@@ -177,7 +187,9 @@ def fetch_incidents(client, alert_type):
     demisto.incidents(incidents)
 
 
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
+
 
 def main():
     LOG('Command being called is %s' % (demisto.command()))

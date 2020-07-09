@@ -546,7 +546,8 @@ def test_fetch_single_alert(requests_mock):
     ID = 'eyJpIjoiU05XT09UQVBQUFJPRDAxXzEzMzIxNThfMDAwIiwidCI6IjIwMTktMDYtMjZUMjA6MjQ6MjZaIn0='
     requests_mock.get(MOCK_URL + '/v1/events/packetalerts/' + ID, json=MOCK_PKT_ALERT)
     client = Client(MOCK_URL, ssl_verify=True, api_version='/v1/', headers=MOCK_HEADERS, username='test_user', password='test123')
-    assert MOCK_PKT_ALERT == fetch_single_alert(client, ID)
+    alert_type = "packet"
+    assert MOCK_PKT_ALERT == fetch_single_alert(client, ID, alert_type)
 
 
 def test_get_woot_alerts(requests_mock):
