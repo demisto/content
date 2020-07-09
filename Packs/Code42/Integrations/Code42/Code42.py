@@ -193,10 +193,10 @@ class Code42Client(BaseClient):
         self._get_sdk().detectionlists.departing_employee.remove(user_id)
         return user_id
 
-    def get_all_departing_employees(self, results):
+    def get_all_departing_employees(self, results, filter_type):
         res = []
         results = int(results) if results else None
-        pages = self._get_sdk().detectionlists.departing_employee.get_all()
+        pages = self._get_sdk().detectionlists.departing_employee.get_all(filter_type=filter_type)
         for page in pages:
             # Note: page is a `Py42Response` and has no `get()` method.
             employees = page["items"]
@@ -733,7 +733,8 @@ def departingemployee_remove_command(client, args):
 @logger
 def departingemployee_get_all_command(client, args):
     results = args.get("results") or 50
-    employees = client.get_all_departing_employees(results)
+    filter_type = args.get("filtertype")
+    employees = client.get_all_departing_employees(results, filter_type)
     if not employees:
         return CommandResults(
             readable_output="No results found",

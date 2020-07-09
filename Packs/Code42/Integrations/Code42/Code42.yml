@@ -356,6 +356,18 @@ script:
       name: results
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: OPEN
+      description: Filters the results based on specific filters.
+      isArray: false
+      name: filtertype
+      predefined:
+      - EXFILTRATION_30_DAYS
+      - EXFILTRATION_24_HOURS
+      - OPEN
+      required: false
+      secret: false
     deprecated: false
     description: Get all employees on the Departing Employee List.
     execution: false
