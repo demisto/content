@@ -74,7 +74,7 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True)
 
             if pack_metadata.get('support') != XSOAR_SUPPORT and PACK_METADATA_GITHUB_USER_FIELD in pack_metadata \
                     and pack_metadata[PACK_METADATA_GITHUB_USER_FIELD]:
-                github_user = pack_metadata[PACK_METADATA_GITHUB_USER_FIELD]
+                github_user = pack_metadata[PACK_METADATA_GITHUB_USER_FIELD].lower()
                 user_exists = check_if_user_exists(github_user=github_user, github_token=github_token,
                                                    verify_ssl=verify_ssl)
 
