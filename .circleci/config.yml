@@ -338,7 +338,7 @@ jobs:
             echo "bandit py3 version: $(python3 -m bandit --version 2>&1)"
             echo "vulture py2 version: $(python2 -m vulture --version) 2>&1"
             echo "vulture py3 version: $(python3 -m vulture --version) 2>&1"
-            SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
+            SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh test_4.1)
             mkdir ./unit-tests
             if [ -n "$SHOULD_LINT_ALL" ]; then
               echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
