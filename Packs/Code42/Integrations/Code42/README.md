@@ -170,6 +170,57 @@ Resolves a Code42 Security alert.
 | eb272d18-bc82-4680-b570-ac5d61c6cca6 |
 
 
+### code42-alert-get
+***
+Retrieve alert details by alert ID
+
+
+#### Base Command
+
+`code42-alert-search`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The alert ID to retrieve. Alert IDs are associated with alerts that are fetched via fetch-incidents. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Code42.SecurityAlert.Username | string | The username associated with the alert. | 
+| Code42.SecurityAlert.Occurred | date | The timestamp when the alert occurred. | 
+| Code42.SecurityAlert.Description | string | The description of the alert. | 
+| Code42.SecurityAlert.ID | string | The alert ID. | 
+| Code42.SecurityAlert.Name | string | The alert rule name that generated the alert. | 
+| Code42.SecurityAlert.State | string | The alert state. | 
+| Code42.SecurityAlert.Type | string | The alert type. | 
+| Code42.SecurityAlert.Severity | string | The severity of the alert. | 
+
+
+#### Command Example
+```!code42-alert-get id="a23557a7-8ca9-4ec6-803f-6a46a2aeca62"```
+
+#### Human Readable Output
+
+| **Type** | **Occurred** | **Username** | **Name** | **Description** | **State** | **ID** |
+| --- | --- | --- | --- | --- | --- | --- |
+| FED\_CLOUD\_SHARE_PERMISSIONS | 2019-10-08T17:38:19.0801650Z | john.user@123.org | Google Drive - Public via Direct Link |  Alert for public Google Drive files | OPEN | a23557a7-8ca9-4ec6-803f-6a46a2aeca62 |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ### code42-departingemployee-add
 ***
 Adds a user to the Departing Employee List.

@@ -248,10 +248,6 @@ class Code42Client(BaseClient):
         res = self._get_sdk().alerts.search(query)
         return res["alerts"]
 
-    def search_alerts(self, username):
-        query = AlertQuery(AlertActor.eq(username))
-        return self._sdk.alerts.search(query)["alerts"]
-
     def get_alert_details(self, alert_id):
         res = self._get_sdk().alerts.get_details(alert_id)["alerts"]
         if not res:
@@ -667,26 +663,6 @@ def alert_resolve_command(client, args):
         outputs=code42_securityalert_context,
         readable_output=readable_outputs,
         raw_response=alert_details,
-    )
-
-
-def alert_search_command(client, args):
-    username = args.get("username")
-    alerts = client.search_alerts(username)
-    alert_context = []
-    for alert in alerts:
-        alert_context.append(map_to_code42_alert_context(alert))
-    readable_outputs = tableToMarkdown(
-        "Code42 Security Alert Search",
-        alert_context,
-        headers=SECURITY_ALERT_HEADERS,
-    )
-    return CommandResults(
-        outputs_prefix="Code42.SecurityAlert",
-        outputs_key_field="ID",
-        outputs=alert_context,
-        readable_output=readable_outputs,
-        raw_response=alerts
     )
 
 
@@ -1131,7 +1107,6 @@ def get_command_map():
     return {
         "code42-alert-get": alert_get_command,
         "code42-alert-resolve": alert_resolve_command,
-        "code42-alert-search": alert_search_command,
         "code42-securitydata-search": securitydata_search_command,
         "code42-departingemployee-add": departingemployee_add_command,
         "code42-departingemployee-remove": departingemployee_remove_command,

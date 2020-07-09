@@ -12,7 +12,6 @@ from Code42 import (
     map_to_file_context,
     alert_get_command,
     alert_resolve_command,
-    alert_search_command,
     departingemployee_add_command,
     departingemployee_remove_command,
     departingemployee_get_all_command,
@@ -1280,13 +1279,6 @@ def test_alert_resolve_command(code42_alerts_mock):
     assert cmd_res.outputs == [MOCK_CODE42_ALERT_CONTEXT[0]]
     assert cmd_res.outputs_prefix == "Code42.SecurityAlert"
     assert cmd_res.outputs_key_field == "ID"
-
-
-def test_alert_search_command(code42_alerts_mock):
-    client = create_client(code42_alerts_mock)
-    cmd_res = alert_search_command(client, {"username": "user1@example.com"})
-    assert cmd_res.raw_response == json.loads(MOCK_ALERTS_RESPONSE)["alerts"]
-    assert cmd_res.outputs == MOCK_CODE42_ALERT_CONTEXT
 
 
 def test_departingemployee_add_command(code42_sdk_mock):
