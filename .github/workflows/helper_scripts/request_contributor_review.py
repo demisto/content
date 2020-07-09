@@ -39,11 +39,11 @@ def request_review_from_user(reviewers_list, pr_number, github_token=None, verif
     headers = {'Authorization': 'Bearer ' + github_token} if github_token else {}
 
     reviewers_data = {
-        "reviewers": reviewers_list,
-        "team_reviewers": []
+        'reviewer': reviewers_list,
+        'team_reviewers': []
     }
 
-    response = requests.post(review_endpoint, data=reviewers_data, headers=headers, verify=verify_ssl)
+    response = requests.post(review_endpoint, json=reviewers_data, headers=headers, verify=verify_ssl)
     print(response._content)
 
     if response.status_code not in [200, 201]:
