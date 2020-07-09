@@ -2263,7 +2263,7 @@ def panorama_get_url_category_command(url_cmd: str):
         context_urls = populate_url_filter_category_from_context(category)
         categories_dict[category] = list((set(categories_dict[category])).union(set(context_urls)))
 
-        score = calculate_dbot_score(url, category)
+        score = calculate_dbot_score(category)
         dbot_score = Common.DBotScore(
             indicator=url,
             indicator_type=DBotScoreType.URL,
