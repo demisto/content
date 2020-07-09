@@ -75,7 +75,9 @@ def rewrite_json(file_path, json_content, new_to_version):
 
 def rewrite_yml(file_path, yml_content, new_to_version):
     yml_content['toversion'] = new_to_version
+
     check_dockerimage45(yml_content, new_to_version)
+
     if 'script' in yml_content:
         if isinstance(yml_content.get('script'), str):
             if yml_content.get('script') not in ('-', ''):
@@ -97,7 +99,7 @@ def check_dockerimage45(yml_content, new_to_version):
         del yml_content['dockerimage45']
 
     # check in integrations
-    elif 'dockerimage45' in yml_content['script']:
+    elif 'dockerimage45' in yml_content.get('script', {}):
         if parse_version(new_to_version) <= parse_version('4.5.9'):
             yml_content['script']['dockerimage'] = yml_content['script']['dockerimage45']
         del yml_content['script']['dockerimage45']
