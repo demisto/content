@@ -1257,6 +1257,7 @@ def code42_high_risk_employee_get_mock(code42_sdk_mock, mocker):
     code42_sdk_mock.detectionlists.high_risk_employee.get.return_value = response
     return code42_sdk_mock
 
+
 @pytest.fixture
 def code42_legal_hold_mock(code42_sdk_mock, mocker):
     code42_sdk_mock.legalhold.get_all_matters.return_value = create_mock_code42_sdk_response_generator(

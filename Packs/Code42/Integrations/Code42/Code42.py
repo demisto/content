@@ -366,7 +366,7 @@ class Code42Client(BaseClient):
         user_id = self._get_user_id(username)
         response = self._get_sdk().detectionlists.high_risk_employee.get(user_id)
         return json.loads(response.text)
-      
+
     def _get_legal_hold_matter_id(self, matter_name):
         matter_id = self.get_legal_hold_matter(matter_name).get("legalHoldUid")
         return matter_id
@@ -379,7 +379,7 @@ class Code42Client(BaseClient):
             for member in members:
                 return member["legalHoldMembershipUid"]
 
-              
+
 class Code42AlertNotFoundError(Exception):
     def __init__(self, alert_id):
         super(Code42AlertNotFoundError, self).__init__(
