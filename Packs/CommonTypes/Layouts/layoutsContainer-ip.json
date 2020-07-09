@@ -1,10 +1,10 @@
 {
-    "id": "ipRep",
+	"id": "ipRep",
 	"group": "indicator",
-    "system": true,
+	"system": true,
 	"name": "IP Indicator Layout",
 	"version": -1,
-    "fromVersion": "6.0.0",
+	"fromVersion": "6.0.0",
     "indicatorsDetails": {
         "tabs": [
 			{
