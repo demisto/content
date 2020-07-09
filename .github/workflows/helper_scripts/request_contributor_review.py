@@ -102,11 +102,8 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True)
 
                 if user_exists and github_user != pr_author:
                     reviewers.add(github_user)
-                else:
-                    print(f"{github_user} user defined in {pack} pack metadata does not exist")
-                    continue
+                    print(f"Found {github_user} default reviewer of pack {pack}")
 
-                print(f"Found {github_user} github user in pack {pack}")
             elif pack_metadata.get('support') == XSOAR_SUPPORT:
                 print(f"Skipping check of {pack} pack supported by {XSOAR_SUPPORT}")
             else:
