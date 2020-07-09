@@ -2,17 +2,16 @@ import subprocess
 import argparse
 import os
 import click
-import yaml
 import ujson
 from ruamel.yaml import YAML
 from ruamel.yaml.scalarstring import FoldedScalarString
-import io
 import json
 from pkg_resources import parse_version
 
 ryaml = YAML()
 ryaml.preserve_quotes = True
 ryaml.width = 50000  # make sure long lines will not break (relevant for code section)
+
 
 def should_keep_yml_file(yml_content, new_to_version):
     if parse_version(yml_content.get('toversion', '99.99.99')) < parse_version(new_to_version) or \
