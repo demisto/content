@@ -5,8 +5,6 @@ from py42.sdk import SDKClient
 from py42.response import Py42Response
 from Code42 import (
     Code42Client,
-    Code42AlertNotFoundError,
-    Code42UserNotFoundError,
     Code42LegalHoldMatterNotFoundError,
     Code42InvalidLegalHoldMembershipError,
     build_query_payload,
@@ -1858,7 +1856,7 @@ def test_download_file_command_when_given_sha256(code42_sdk_mock, mocker):
 
 
 def test_download_file_when_given_other_hash_raises_Code42UnsupportedHashError(code42_sdk_mock, mocker):
-    fr = mocker.patch("Code42.fileResult")
+    mocker.patch("Code42.fileResult")
     _hash = "41966f10cc59ab466444add08974fde4cd37f88d79321d42da8e4c79b51c214941966f10cc59ab466444add08974fde4cd37" \
             "f88d79321d42da8e4c79b51c2149"
     client = create_client(code42_sdk_mock)

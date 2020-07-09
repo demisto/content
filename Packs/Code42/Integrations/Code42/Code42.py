@@ -945,6 +945,7 @@ def securitydata_search_command(client, args):
             raw_response={},
         )
 
+
 @logger
 def user_create_command(client, args):
     org_name = args.get("orgname")
