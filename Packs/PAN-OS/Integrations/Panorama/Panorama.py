@@ -2223,7 +2223,15 @@ def populate_url_filter_category_from_context(category):
             return context_urls
 
 
-def calculate_dbot_score(url, category):
+def calculate_dbot_score(category: str):
+    """translate a category to a dbot score.
+
+    Args:
+        category: the URL category from URLFiltering
+
+    Returns:
+        dbot score.
+    """
     dbot_score = 1
     if category in ['phishing', 'command-and-control', 'malware']:
         dbot_score = 3
@@ -2255,7 +2263,7 @@ def panorama_get_url_category_command(url_cmd: str):
         context_urls = populate_url_filter_category_from_context(category)
         categories_dict[category] = list((set(categories_dict[category])).union(set(context_urls)))
 
-        score = calculate_dbot_score(url,category)
+        score = calculate_dbot_score(url, category)
         dbot_score = Common.DBotScore(
             indicator=url,
             indicator_type=DBotScoreType.URL,
@@ -2289,7 +2297,6 @@ def panorama_get_url_category_command(url_cmd: str):
     elif url_cmd == 'url-info-host':
         title += ' from host'
     human_readable = tableToMarkdown(f'{title}:', url_category_output_hr, ['URL', 'Category'], removeNull=True)
-
 
     command_results = CommandResults(
         outputs_prefix='Panorama.URLFilter',
