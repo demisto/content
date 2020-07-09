@@ -2224,7 +2224,8 @@ def populate_url_filter_category_from_context(category):
 
 
 def calculate_dbot_score(category: str):
-    """translate a category to a dbot score.
+    """translate a category to a dbot score. For more information:
+    https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000Cm5hCAC
 
     Args:
         category: the URL category from URLFiltering
@@ -2235,7 +2236,8 @@ def calculate_dbot_score(category: str):
     dbot_score = 1
     if category in ['phishing', 'command-and-control', 'malware']:
         dbot_score = 3
-    elif category in ['high-risk', 'hacking', 'proxy-avoidance-and-anonymizers']:
+    elif category in ['high-risk', 'medium-risk', 'hacking', 'proxy-avoidance-and-anonymizers', 'grayware',
+                      'not-resolved']:
         dbot_score = 2
     elif category == 'unknown':
         dbot_score = 0
@@ -2263,7 +2265,7 @@ def panorama_get_url_category_command(url_cmd: str):
         context_urls = populate_url_filter_category_from_context(category)
         categories_dict[category] = list((set(categories_dict[category])).union(set(context_urls)))
 
-        score = calculate_dbot_score(category)
+        score = calculate_dbot_score(category.lower())
         dbot_score = Common.DBotScore(
             indicator=url,
             indicator_type=DBotScoreType.URL,
