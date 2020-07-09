@@ -1815,12 +1815,21 @@ def test_security_data_search_command_searches_exposure_exists_when_no_exposure_
     assert file_res.outputs_prefix == "File"
 
     actual_query = code42_file_events_mock.securitydata.search_file_events.call_args[0][0]
-    filter_groups = json.loads(str(actual_query))["groups"]
 
     # Assert that the  correct query gets made
-    assert len(filter_groups) == 4
+    filter_groups = json.loads(str(actual_query))["groups"]
+    expected_query_items = [
+        ("md5Checksum", "d41d8cd98f00b204e9800998ecf8427e"),
+        ("osHostName", "DESKTOP-0001"),
+        ("deviceUserName", "user3@example.com"),
+        ("exposure", None),
+    ]
+
+    # Assert that the  correct query gets made
+    assert len(filter_groups) == len(expected_query_items)
     for i in range(0, len(filter_groups)):
         _filter = filter_groups[i]["filters"][0]
-        if _filter["term"] == "exposure":
-            assert _filter["operator"] == 'EXISTS'
-            assert _filter["value"] is None
+        assert _filter["term"] == expected_query_items[i][0]
+        assert _filter["value"] == expected_query_items[i][1]
+
+    assert len(filter_groups) == 4
