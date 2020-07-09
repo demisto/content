@@ -12,6 +12,8 @@
     - **code42-user-block**
     - **code42-user-unblock**
     - **code42-user-create**
+    - **code42-legalhold-add-user**
+    - **code42-legalhold-remove-user**
     - **code42-file-download**
     - **code42-departingemployee-get**
     - **code42-highriskemployee-get**

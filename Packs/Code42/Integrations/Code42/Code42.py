@@ -293,6 +293,30 @@ class Code42Client(BaseClient):
         self._get_sdk().users.reactivate(user_id)
         return user_id
 
+    def get_legal_hold_matter(self, matter_name):
+        matter_pages = self._get_sdk().legalhold.get_all_matters(name=matter_name)
+        for matter_page in matter_pages:
+            matters = matter_page["legalHolds"]
+            for matter in matters:
+                return matter
+        raise Code42LegalHoldMatterNotFoundError(matter_name)
+
+    def add_user_to_legal_hold_matter(self, username, matter_name):
+        user_uid = self._get_user_id(username)
+        matter_id = self._get_legal_hold_matter_id(matter_name)
+        response = self._get_sdk().legalhold.add_to_matter(user_uid, matter_id)
+        return json.loads(response.text)
+
+    def remove_user_from_legal_hold_matter(self, username, matter_name):
+        user_uid = self._get_user_id(username)
+        matter_id = self._get_legal_hold_matter_id(matter_name)
+        membership_id = self._get_legal_hold_matter_membership_id(user_uid, matter_id)
+        if membership_id:
+            self._get_sdk().legalhold.remove_from_matter(membership_id)
+            return user_uid, matter_id
+
+        raise Code42InvalidLegalHoldMembershipError(username, matter_name)
+
     def get_org(self, org_name):
         org_pages = self._get_sdk().orgs.get_all()
         for org_page in org_pages:
@@ -342,8 +366,20 @@ class Code42Client(BaseClient):
         user_id = self._get_user_id(username)
         response = self._get_sdk().detectionlists.high_risk_employee.get(user_id)
         return json.loads(response.text)
+      
+    def _get_legal_hold_matter_id(self, matter_name):
+        matter_id = self.get_legal_hold_matter(matter_name).get("legalHoldUid")
+        return matter_id
 
+    def _get_legal_hold_matter_membership_id(self, user_id, matter_id):
+        member_pages = self._get_sdk().legalhold.get_all_matter_custodians(legal_hold_uid=matter_id,
+                                                                           user_uid=user_id)
+        for member_page in member_pages:
+            members = member_page["legalHoldMemberships"]
+            for member in members:
+                return member["legalHoldMembershipUid"]
 
+              
 class Code42AlertNotFoundError(Exception):
     def __init__(self, alert_id):
         super(Code42AlertNotFoundError, self).__init__(
@@ -362,6 +398,21 @@ class Code42OrgNotFoundError(Exception):
     def __init__(self, org_name):
         super(Code42OrgNotFoundError, self).__init__(
             "No organization found with name {0}.".format(org_name)
+        )
+
+
+class Code42LegalHoldMatterNotFoundError(Exception):
+    def __init__(self, matter_name):
+        super(Code42LegalHoldMatterNotFoundError, self).__init__(
+            "No legal hold matter found with name {0}.".format(matter_name)
+        )
+
+
+class Code42InvalidLegalHoldMembershipError(Exception):
+    def __init__(self, username, matter_name):
+        super(Code42InvalidLegalHoldMembershipError, self).__init__(
+            "User '{0}' is not an active member of legal hold matter '{1}'".format(username,
+                                                                                   matter_name)
         )
 
 
@@ -922,7 +973,7 @@ def securitydata_search_command(client, args):
             raw_response={},
         )
 
-
+@logger
 def user_create_command(client, args):
     org_name = args.get("orgname")
     username = args.get("username")
@@ -943,6 +994,7 @@ def user_create_command(client, args):
     )
 
 
+@logger
 def user_block_command(client, args):
     username = args.get("username")
     user_id = client.block_user(username)
@@ -957,6 +1009,7 @@ def user_block_command(client, args):
     )
 
 
+@logger
 def user_unblock_command(client, args):
     username = args.get("username")
     user_id = client.unblock_user(username)
@@ -971,6 +1024,7 @@ def user_unblock_command(client, args):
     )
 
 
+@logger
 def user_deactivate_command(client, args):
     username = args.get("username")
     user_id = client.deactivate_user(username)
@@ -985,6 +1039,7 @@ def user_deactivate_command(client, args):
     )
 
 
+@logger
 def user_reactivate_command(client, args):
     username = args.get("username")
     user_id = client.reactivate_user(username)
@@ -999,6 +1054,51 @@ def user_reactivate_command(client, args):
     )
 
 
+@logger
+def legal_hold_add_user_command(client, args):
+    username = args.get("username")
+    matter_name = args.get("mattername")
+    response = client.add_user_to_legal_hold_matter(username, matter_name)
+    legal_hold_info = response.get("legalHold")
+    user_info = response.get("user")
+    outputs = {
+        "MatterID": legal_hold_info.get("legalHoldUid") if legal_hold_info else None,
+        "MatterName": legal_hold_info.get("name") if legal_hold_info else None,
+        "UserID": user_info.get("userUid") if legal_hold_info else None,
+        "Username": user_info.get("username") if user_info else None,
+    }
+    readable_outputs = tableToMarkdown("Code42 User Added to Legal Hold Matter", outputs)
+    return CommandResults(
+        outputs_prefix="Code42.LegalHold",
+        outputs_key_field="MatterID",
+        outputs=outputs,
+        readable_output=readable_outputs,
+        raw_response=response
+    )
+
+
+@logger
+def legal_hold_remove_user_command(client, args):
+    username = args.get("username")
+    matter_name = args.get("mattername")
+    user_uid, matter_id = client.remove_user_from_legal_hold_matter(username, matter_name)
+    outputs = {
+        "MatterID": matter_id,
+        "MatterName": matter_name,
+        "UserID": user_uid,
+        "Username": username
+    }
+    readable_outputs = tableToMarkdown("Code42 User Removed from Legal Hold Matter", outputs)
+    return CommandResults(
+        outputs_prefix="Code42.LegalHold",
+        outputs_key_field="MatterID",
+        outputs=outputs,
+        readable_output=readable_outputs,
+        raw_response=user_uid
+    )
+
+
+@logger
 def download_file_command(client, args):
     file_hash = args.get("hash")
     filename = args.get("filename") or file_hash
@@ -1170,6 +1270,8 @@ def get_command_map():
         "code42-user-unblock": user_unblock_command,
         "code42-user-deactivate": user_deactivate_command,
         "code42-user-reactivate": user_reactivate_command,
+        "code42-legalhold-add-user": legal_hold_add_user_command,
+        "code42-legalhold-remove-user": legal_hold_remove_user_command,
         "code42-download-file": download_file_command,
     }
 

@@ -261,10 +261,10 @@ Retrieve departing employee details.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Code42.DepartingEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. | 
-| Code42.DepartingEmployee.Username | string | The username of the Departing Employee. | 
-| Code42.DepartingEmployee.Note | string | Note associated with the Departing Employee. | 
-| Code42.DepartingEmployee.DepartureDate | Unknown | The departure date for the Departing Employee. | 
+| Code42.DepartingEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. |
+| Code42.DepartingEmployee.Username | string | The username of the Departing Employee. |
+| Code42.DepartingEmployee.Note | string | Note associated with the Departing Employee. |
+| Code42.DepartingEmployee.DepartureDate | Unknown | The departure date for the Departing Employee. |
 
 
 #### Command Example
@@ -477,9 +477,9 @@ Retrieve high risk employee details.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Code42.HighRiskEmployee.UserID | string | Internal Code42 User ID for the High Risk Employee. | 
-| Code42.HighRiskEmployee.Username | string | The username of the High Risk Employee. | 
-| Code42.HighRiskEmployee.Note | string | Note associated with the High Risk Employee. | 
+| Code42.HighRiskEmployee.UserID | string | Internal Code42 User ID for the High Risk Employee. |
+| Code42.HighRiskEmployee.Username | string | The username of the High Risk Employee. |
+| Code42.HighRiskEmployee.Note | string | Note associated with the High Risk Employee. |
 
 
 #### Command Example
@@ -811,11 +811,110 @@ Reactivates the user with the given username.
 ```!code42-user-reactivate username="partner.demisto@example.com"```
 
 #### Human Readable Output
-### Code42 User Deactivated
+### Code42 User Reactivated
 | UserID |
 | ------ |
 | 123456790 |
 
+### code42-legalhold-add-user
+***
+Adds a Code42 user to a legal hold matter.
+
+
+#### Base Command
+
+`code42-legalhold-add-user`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | The username of the user to add to the given legal hold matter. | Required | 
+| mattername | The name of the legal hold matter to which to which the user will be added. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Code42.LegalHold.UserID | Unknown | The ID of a Code42 user. | 
+| Code42.LegalHold.MatterID | String | The ID of a Code42 legal hold matter. |
+| Code42.LegalHold.Username | String | A username for a Code42 user. | 
+| Code42.LegalHold.MatterName | String | A name for a Code42 legal hold matter. | 
+
+
+#### Command Example
+```!code42-legalhold-add-user username="partner.demisto@example.com" mattername="test"```
+
+#### Context Example
+```
+{
+    "Code42": {
+        "LegalHold": {
+            "MatterID": "932880202064992021",
+            "MatterName": "test",
+            "UserID": "942876157732602741",
+            "Username": "partner.demisto@example.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+### Code42 User Added to Legal Hold Matter
+|MatterID|MatterName|UserID|Username|
+|---|---|---|---|
+| 932880202064992021 | test | 942876157732602741 | partner.demisto@example.com |
+
+### code42-legalhold-remove-user
+***
+Removes a Code42 user from a legal hold matter.
+
+
+#### Base Command
+
+`code42-legalhold-remove-user`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | The username of the user to remove from the given legal hold matter. | Required | 
+| mattername | The name of the legal hold matter from which to which the user will be removed. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Code42.LegalHold.UserID | Unknown | The ID of a Code42 user. | 
+| Code42.LegalHold.MatterID | String | The ID of a Code42 legal hold matter. |
+| Code42.LegalHold.Username | String | A username for a Code42 user. | 
+| Code42.LegalHold.MatterName | String | A name for a Code42 legal hold matter. | 
+
+
+#### Command Example
+```!code42-legalhold-remove-user username="partner.demisto@example.com" mattername="test"```
+
+#### Context Example
+```
+{
+    "Code42": {
+        "LegalHold": {
+            "MatterID": "932880202064992021",
+            "MatterName": "test",
+            "UserID": "942876157732602741",
+            "Username": "partner.demisto@example.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+### Code42 User Removed from Legal Hold Matter
+|MatterID|MatterName|UserID|Username|
+|---|---|---|---|
+| 932880202064992021 | test | 942876157732602741 | partner.demisto@example.com |
 
 ### code42-download-file
 ***
@@ -830,11 +929,11 @@ Downloads a file from Code42 servers.
 | --- | --- | --- |
 | hash | Either the SHA256 or MD5 hash of the file. | Required |
 
-
 #### Command Example
 ```!code42-download-file hash="bf6b326107d4d85eb485eed84b28133a"```
 
 #### Human Readable Output
+
 ### Code42 User Deactivated
 | Type   | Size | Info | MD5 | SHA1 | SHA256 | SHA512 | SSDeep |
 | ------ | ---- | ---- | --- | ---- | ------ | ------ | ------ |
