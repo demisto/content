@@ -235,6 +235,16 @@
             "instance_names": "ms_azure_sc_prod"
         },
         {
+            "integrations": "Azure Security Center v2",
+            "playbookID": "Azure SecurityCenter - Test",
+            "instance_names": "ms_azure_sc_dev"
+        },
+        {
+            "integrations": "Azure Security Center v2",
+            "playbookID": "Azure SecurityCenter - Test",
+            "instance_names": "ms_azure_sc_self_deployed"
+        },
+        {
             "integrations": "JsonWhoIs",
             "playbookID": "JsonWhoIs-Test"
         },
@@ -1486,6 +1496,7 @@
                 "virus_total_general"
             ],
             "timeout": 1400,
+            "fromversion": "5.5.0",
             "nightly": true
         },
         {
@@ -2956,7 +2967,6 @@
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
         "RecordedFutureFeed - Test": "Issue 18922",
-        "Recorded Future Test": "Quota issues",
         "IntSights Mssp Test": "Issue #16351",
         "CheckPhish-Test": "Issue 19188",
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
@@ -3077,11 +3087,9 @@
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tenable.sc": "unstable instance",
-        "VirusTotal - Private API": "Issue 22638",
-        
+
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Issue 25650",
-        "JsonWhoIs": "Issue 25371: Out of quota",
         "XFE_v2": "Issue 22715",
         "AlphaSOC Wisdom": "API key has expired",
         "Lastline": "issue 20323",

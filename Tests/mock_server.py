@@ -365,6 +365,13 @@ class MITMProxy:
         )
         current_problem_keys_filepath = os.path.join(path, get_folder_path(playbook_id), 'problematic_keys.json')
 
+        # when recording, copy the `problematic_keys.json` for the test to current temporary directory if it exists
+        # that way previously recorded or manually added keys will only be added upon and not wiped with an overwrite
+        if record:
+            silence_output(
+                self.ami.check, ['mv', repo_problem_keys_filepath, current_problem_keys_filepath], stdout='null'
+            )
+
         script_filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'timestamp_replacer.py')
         remote_script_path = self.ami.copy_file(script_filepath)
 
