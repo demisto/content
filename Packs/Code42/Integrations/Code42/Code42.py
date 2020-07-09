@@ -751,7 +751,13 @@ def departingemployee_get_all_command(client, args):
 @logger
 def departingemployee_get_command(client, args):
     username = args.get("username")
-    de_context = client.get_departing_employee(username)
+    departing_employee = client.get_departing_employee(username)
+    de_context = {
+        "UserID": departing_employee.get("userId"),
+        "Username": departing_employee.get("userName"),
+        "DepartureDate": departing_employee.get("departureDate"),
+        "Note": departing_employee.get("notes"),
+    }
     readable_outputs = tableToMarkdown("Retrieve departing employee", de_context)
     return CommandResults(
         outputs_prefix="Code42.DepartingEmployee",
@@ -765,12 +771,17 @@ def departingemployee_get_command(client, args):
 @logger
 def highriskemployee_get_command(client, args):
     username = args.get("username")
-    he_context = client.get_high_risk_employee(username)
-    readable_outputs = tableToMarkdown("Retrieve high risk employee", he_context)
+    high_risk_employee = client.get_high_risk_employee(username)
+    hre_context = {
+        "UserID": high_risk_employee.get("userId"),
+        "Username": high_risk_employee.get("userName"),
+        "Note": high_risk_employee.get("notes")
+    }
+    readable_outputs = tableToMarkdown("Retrieve high risk employee", hre_context)
     return CommandResults(
         outputs_prefix="Code42.HighRiskEmployee",
         outputs_key_field="UserID",
-        outputs=he_context,
+        outputs=hre_context,
         readable_output=readable_outputs,
         raw_response=username,
     )

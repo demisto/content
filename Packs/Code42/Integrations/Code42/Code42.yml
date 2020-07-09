@@ -620,9 +620,15 @@ script:
     execution: false
     name: code42-highriskemployee-get
     outputs:
-    - contextPath: username
-      description: Email id of the user.
-      type: Unknown
+    - contextPath: Code42.HighRiskEmployee.UserID
+      description: Internal Code42 User ID for the High Risk Employee.
+      type: string
+    - contextPath: Code42.HighRiskEmployee.Username
+      description: The username of the High Risk Employee.
+      type: string
+    - contextPath: Code42.HighRiskEmployee.Note
+      description: Note associated with the High Risk Employee.
+      type: string
   - arguments:
     - default: false
       description: Email id of the departing employee.
@@ -635,8 +641,17 @@ script:
     execution: false
     name: code42-departingemployee-get
     outputs:
-    - contextPath: username
-      description: Email id of the user.
+    - contextPath: Code42.DepartingEmployee.UserID
+      description: Internal Code42 User ID for the Departing Employee.
+      type: string
+    - contextPath: Code42.DepartingEmployee.Username
+      description: The username of the Departing Employee.
+      type: string
+    - contextPath: Code42.DepartingEmployee.Note
+      description: Note associated with the Departing Employee.
+      type: string
+    - contextPath: Code42.DepartingEmployee.DepartureDate
+      description: The departure date for the Departing Employee.
       type: Unknown
   dockerimage: demisto/py42:1.0.0.9653
   feed: false
