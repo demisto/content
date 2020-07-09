@@ -45,6 +45,7 @@ def request_review_from_user(github_user, pr_number, github_token=None, verify_s
     }
 
     response = requests.post(review_endpoint, data=reviewers_data, headers=headers, verify=verify_ssl)
+    print(f"{response._content}")
 
     if response.status_code not in [200, 201]:
         print(f"Failed requesting review of {github_user} user")
