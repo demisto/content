@@ -421,7 +421,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: To filter results by employees who have these risk tags. Space
+      description: To filter results by employees who have these risk tags. Comma
         delimited.
       isArray: false
       name: risktags
@@ -464,7 +464,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Space-delimited risk tags to associate with the High Risk Employee.
+      description: Comma-delimited risk tags to associate with the High Risk Employee.
       isArray: false
       name: risktags
       predefined:
@@ -500,7 +500,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Space-delimited risk tags to disassociate from the High Risk Employee.
+      description: Comma-delimited risk tags to disassociate from the High Risk Employee.
       isArray: false
       name: risktags
       predefined:
