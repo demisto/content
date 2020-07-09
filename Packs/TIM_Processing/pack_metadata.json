@@ -1,8 +1,8 @@
 {
-    "name": "TIM - Processing",
+    "name": "TIM - Indicator Auto-Processing",
     "description": "TIM threat intel management package for processing and working with indicators.",
     "support": "xsoar",
-    "currentVersion": "1.1.1",
+    "currentVersion": "1.1.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
