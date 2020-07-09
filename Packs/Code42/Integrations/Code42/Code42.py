@@ -136,8 +136,7 @@ def _create_alert_query(event_severity_filter, start_time):
 
 def _get_all_high_risk_employees_from_page(page, risk_tags):
     res = []
-    # Note: page is a `Py42Response` and has no `get()` method.
-    employees = page["items"]
+    employees = page.get("items") or []
     for employee in employees:
         if not risk_tags:
             res.append(employee)
@@ -198,8 +197,8 @@ class Code42Client(BaseClient):
         results = int(results) if results else None
         pages = self._get_sdk().detectionlists.departing_employee.get_all()
         for page in pages:
-            # Note: page is a `Py42Response` and has no `get()` method.
-            employees = page["items"]
+            page_json = json.loads(page.text)
+            employees = page_json.get("items") or []
             for employee in employees:
                 res.append(employee)
                 if results and len(res) == results:
@@ -236,7 +235,8 @@ class Code42Client(BaseClient):
         res = []
         pages = self._get_sdk().detectionlists.high_risk_employee.get_all()
         for page in pages:
-            employees = _get_all_high_risk_employees_from_page(page, risk_tags)
+            page_json = json.loads(page.text)
+            employees = _get_all_high_risk_employees_from_page(page_json, risk_tags)
             for employee in employees:
                 res.append(employee)
                 if results and len(res) == results:
@@ -246,10 +246,11 @@ class Code42Client(BaseClient):
     def fetch_alerts(self, start_time, event_severity_filter):
         query = _create_alert_query(event_severity_filter, start_time)
         res = self._get_sdk().alerts.search(query)
-        return res["alerts"]
+        return json.loads(res.text).get("alerts")
 
     def get_alert_details(self, alert_id):
-        res = self._get_sdk().alerts.get_details(alert_id)["alerts"]
+        py42_res = self._get_sdk().alerts.get_details(alert_id)
+        res = json.loads(py42_res.text).get("alerts")
         if not res:
             raise Code42AlertNotFoundError(alert_id)
         return res[0]
@@ -263,7 +264,8 @@ class Code42Client(BaseClient):
         return res
 
     def get_user(self, username):
-        res = self._get_sdk().users.get_by_username(username)["users"]
+        py42_res = self._get_sdk().users.get_by_username(username)
+        res = json.loads(py42_res.text).get("users")
         if not res:
             raise Code42UserNotFoundError(username)
         return res[0]
@@ -296,15 +298,16 @@ class Code42Client(BaseClient):
     def get_org(self, org_name):
         org_pages = self._get_sdk().orgs.get_all()
         for org_page in org_pages:
-            orgs = org_page["orgs"]
+            page_json = json.loads(org_page.text)
+            orgs = page_json.get("orgs")
             for org in orgs:
                 if org.get("orgName") == org_name:
                     return org
         raise Code42OrgNotFoundError(org_name)
 
     def search_file_events(self, payload):
-        res = self._get_sdk().securitydata.search_file_events(payload)
-        return res["fileEvents"]
+        py42_res = self._get_sdk().securitydata.search_file_events(payload)
+        return json.loads(py42_res.text).get("fileEvents")
 
     def download_file(self, hash_arg):
         security_module = self._get_sdk().securitydata
@@ -313,7 +316,7 @@ class Code42Client(BaseClient):
         elif _hash_is_sha256(hash_arg):
             return security_module.stream_file_by_sha256(hash_arg)
         else:
-            raise Exception("Unsupported hash. Must be SHA256 or MD5.")
+            raise Code42UnsupportedHashError()
 
     def _get_user_id(self, username):
         user_id = self.get_user(username).get("userUid")
@@ -352,6 +355,20 @@ class Code42OrgNotFoundError(Exception):
     def __init__(self, org_name):
         super(Code42OrgNotFoundError, self).__init__(
             "No organization found with name {0}.".format(org_name)
+        )
+
+
+class Code42UnsupportedHashError(Exception):
+    def __init__(self):
+        super(Code42UnsupportedHashError, self).__init__(
+            "Unsupported hash. Must be SHA256 or MD5."
+        )
+
+
+class Code42MissingSearchArgumentsError(Exception):
+    def __init__(self):
+        super(Code42MissingSearchArgumentsError, self).__init__(
+            "No query args provided for searching Code42 security events."
         )
 
 
@@ -416,6 +433,9 @@ def build_query_payload(args):
     hostname = args.get("hostname")
     username = args.get("username")
     exposure = args.get("exposure")
+
+    if not _hash and not hostname and not username and not exposure:
+        raise Code42MissingSearchArgumentsError()
 
     search_args = FileEventQueryFilters(pg_size)
     search_args.append_result(_hash, _create_hash_filter)
@@ -1042,7 +1062,7 @@ class Code42SecurityIncidentFetcher(object):
         return self._client.fetch_alerts(start_query_time, self._event_severity_filter)
 
     def _create_incident_from_alert(self, alert):
-        details = self._client.get_alert_details(alert["id"])
+        details = self._client.get_alert_details(alert.get("id"))
         incident = _create_incident_from_alert_details(details)
         if self._include_files:
             details = self._relate_files_to_alert(details)
@@ -1060,7 +1080,7 @@ class Code42SecurityIncidentFetcher(object):
         return alert_details
 
     def _get_file_events_from_alert_details(self, observation, alert_details):
-        security_data_query = map_observation_to_security_query(observation, alert_details["actor"])
+        security_data_query = map_observation_to_security_query(observation, alert_details.get("actor"))
         return self._client.search_file_events(security_data_query)
 
 
