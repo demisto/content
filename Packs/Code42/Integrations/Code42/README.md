@@ -111,21 +111,21 @@ Retrieve alert details by alert ID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The alert ID to retrieve. Alert IDs are associated with alerts that are fetched via fetch-incidents. | Required | 
+| id | The alert ID to retrieve. Alert IDs are associated with alerts that are fetched via fetch-incidents. | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Code42.SecurityAlert.Username | string | The username associated with the alert. | 
-| Code42.SecurityAlert.Occurred | date | The timestamp when the alert occurred. | 
-| Code42.SecurityAlert.Description | string | The description of the alert. | 
-| Code42.SecurityAlert.ID | string | The alert ID. | 
-| Code42.SecurityAlert.Name | string | The alert rule name that generated the alert. | 
-| Code42.SecurityAlert.State | string | The alert state. | 
-| Code42.SecurityAlert.Type | string | The alert type. | 
-| Code42.SecurityAlert.Severity | string | The severity of the alert. | 
+| Code42.SecurityAlert.Username | string | The username associated with the alert. |
+| Code42.SecurityAlert.Occurred | date | The timestamp when the alert occurred. |
+| Code42.SecurityAlert.Description | string | The description of the alert. |
+| Code42.SecurityAlert.ID | string | The alert ID. |
+| Code42.SecurityAlert.Name | string | The alert rule name that generated the alert. |
+| Code42.SecurityAlert.State | string | The alert state. |
+| Code42.SecurityAlert.Type | string | The alert type. |
+| Code42.SecurityAlert.Severity | string | The severity of the alert. |
 
 
 #### Command Example
@@ -150,14 +150,14 @@ Resolves a Code42 Security alert.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The alert ID to resolve. Alert IDs are associated with alerts that are fetched via fetch-incidents. | Required | 
+| id | The alert ID to resolve. Alert IDs are associated with alerts that are fetched via fetch-incidents. | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Code42.SecurityAlert.ID | string | The alert ID of the resolved alert. | 
+| Code42.SecurityAlert.ID | string | The alert ID of the resolved alert. |
 
 
 #### Command Example
@@ -182,20 +182,20 @@ Adds a user to the Departing Employee List.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | The username to add to the Departing Employee List. | Required | 
-| departuredate | The departure date for the employee, in the format YYYY-MM-DD. | Optional | 
-| note | Note to attach to the Departing Employee. | Optional | 
+| username | The username to add to the Departing Employee List. | Required |
+| departuredate | The departure date for the employee, in the format YYYY-MM-DD. | Optional |
+| note | Note to attach to the Departing Employee. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Code42.DepartingEmployee.CaseID | string | Internal Code42 Case ID for the Departing Employee. Deprecated. Use Code42.DepartingEmployee.UserID. | 
-| Code42.DepartingEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. | 
-| Code42.DepartingEmployee.Username | string | The username of the Departing Employee. | 
-| Code42.DepartingEmployee.Note | string | Note associated with the Departing Employee. | 
-| Code42.DepartingEmployee.DepartureDate | Unknown | The departure date for the Departing Employee. | 
+| Code42.DepartingEmployee.CaseID | string | Internal Code42 Case ID for the Departing Employee. Deprecated. Use Code42.DepartingEmployee.UserID. |
+| Code42.DepartingEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. |
+| Code42.DepartingEmployee.Username | string | The username of the Departing Employee. |
+| Code42.DepartingEmployee.Note | string | Note associated with the Departing Employee. |
+| Code42.DepartingEmployee.DepartureDate | Unknown | The departure date for the Departing Employee. |
 
 
 #### Command Example
@@ -220,16 +220,16 @@ Removes a user from the Departing Employee List.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | The username to remove from the Departing Employee List. | Required | 
+| username | The username to remove from the Departing Employee List. | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Code42.DepartingEmployee.CaseID | string | Internal Code42 Case ID for the Departing Employee. Deprecated. Use Code42.DepartingEmployee.UserID. | 
-| Code42.DepartingEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. | 
-| Code42.DepartingEmployee.Username | string | The username of the Departing Employee. | 
+| Code42.DepartingEmployee.CaseID | string | Internal Code42 Case ID for the Departing Employee. Deprecated. Use Code42.DepartingEmployee.UserID. |
+| Code42.DepartingEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. |
+| Code42.DepartingEmployee.Username | string | The username of the Departing Employee. |
 
 
 #### Command Example
@@ -238,7 +238,7 @@ Removes a user from the Departing Employee List.
 #### Human Readable Output
 
 | **UserID** | **Username** |
-| --- | --- | 
+| --- | --- |
 | 123 | john.user@example.com |
 
 
@@ -254,17 +254,17 @@ Get all employees on the Departing Employee List.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| results | The number of items to return. | Optional | 
+| results | The number of items to return. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Code42.DepartingEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. | 
-| Code42.DepartingEmployee.Username | string | The username of the Departing Employee. | 
-| Code42.DepartingEmployee.Note | string | Note associated with the Departing Employee. | 
-| Code42.DepartingEmployee.DepartureDate | Unknown | The departure date for the Departing Employee. | 
+| Code42.DepartingEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. |
+| Code42.DepartingEmployee.Username | string | The username of the Departing Employee. |
+| Code42.DepartingEmployee.Note | string | Note associated with the Departing Employee. |
+| Code42.DepartingEmployee.DepartureDate | Unknown | The departure date for the Departing Employee. |
 
 
 #### Command Example
@@ -327,17 +327,17 @@ Adds a user from the High Risk Employee List.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | The username to add to the High Risk Employee List. | Required | 
-| note | Note to attach to the High Risk Employee. | Optional | 
+| username | The username to add to the High Risk Employee List. | Required |
+| note | Note to attach to the High Risk Employee. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Code42.HighRiskEmployee.UserID | string | Internal Code42 User ID for the High Risk Employee. | 
-| Code42.HighRiskEmployee.Username | string | The username of the High Risk Employee. | 
-| Code42.HighRiskEmployee.Note | string | Note associated with the High Risk Employee. | 
+| Code42.HighRiskEmployee.UserID | string | Internal Code42 User ID for the High Risk Employee. |
+| Code42.HighRiskEmployee.Username | string | The username of the High Risk Employee. |
+| Code42.HighRiskEmployee.Note | string | Note associated with the High Risk Employee. |
 
 
 #### Command Example
@@ -374,15 +374,15 @@ Removes a user from the High Risk Employee List.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | The username to remove from the High Risk Employee List. | Required | 
+| username | The username to remove from the High Risk Employee List. | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Code42.HighRiskEmployee.UserID | Unknown | Internal Code42 User ID for the High Risk Employee. | 
-| Code42.HighRiskEmployee.Username | Unknown | The username of the High Risk Employee. | 
+| Code42.HighRiskEmployee.UserID | Unknown | Internal Code42 User ID for the High Risk Employee. |
+| Code42.HighRiskEmployee.Username | Unknown | The username of the High Risk Employee. |
 
 
 #### Command Example
@@ -428,9 +428,9 @@ Get all employees on the High Risk Employee List.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Code42.HighRiskEmployee.UserID | string | Internal Code42 User ID for the High Risk Employee. | 
-| Code42.HighRiskEmployee.Username | string | The username of the High Risk Employee. | 
-| Code42.HighRiskEmployee.Note | string | Note associated with the High Risk Employee. | 
+| Code42.HighRiskEmployee.UserID | string | Internal Code42 User ID for the High Risk Employee. |
+| Code42.HighRiskEmployee.Username | string | The username of the High Risk Employee. |
+| Code42.HighRiskEmployee.Note | string | Note associated with the High Risk Employee. |
 
 
 #### Command Example
@@ -474,7 +474,7 @@ Get all employees on the High Risk Employee List.
 
 ### code42-highriskemployee-add-risk-tags
 ***
- 
+
 
 
 #### Base Command
@@ -484,17 +484,17 @@ Get all employees on the High Risk Employee List.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | The username of the High Risk Employee. | Required | 
-| risktags | Space-delimited risk tags to associate with the High Risk Employee. | Required | 
+| username | The username of the High Risk Employee. | Required |
+| risktags | Space-delimited risk tags to associate with the High Risk Employee. | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Code42.HighRiskEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. | 
-| Code42.HighRiskEmployee.Username | string | The username of the High Risk Employee. | 
-| Code42.HighRiskEmployee.RiskTags | Unknown | Risk tags to associate with the High Risk Employee. | 
+| Code42.HighRiskEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. |
+| Code42.HighRiskEmployee.Username | string | The username of the High Risk Employee. |
+| Code42.HighRiskEmployee.RiskTags | Unknown | Risk tags to associate with the High Risk Employee. |
 
 
 #### Command Example
@@ -509,7 +509,7 @@ Get all employees on the High Risk Employee List.
 
 ### code42-highriskemployee-remove-risk-tags
 ***
- 
+
 
 
 #### Base Command
@@ -519,17 +519,17 @@ Get all employees on the High Risk Employee List.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | The username of the High Risk Employee. | Required | 
-| risktags | Space-delimited risk tags to disassociate from the High Risk Employee. | Required | 
+| username | The username of the High Risk Employee. | Required |
+| risktags | Space-delimited risk tags to disassociate from the High Risk Employee. | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Code42.HighRiskEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. | 
-| Code42.HighRiskEmployee.Username | string | The username of the High Risk Employee. | 
-| Code42.HighRiskEmployee.RiskTags | Unknown | Risk tags to disassociate from the High Risk Employee. | 
+| Code42.HighRiskEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. |
+| Code42.HighRiskEmployee.Username | string | The username of the High Risk Employee. |
+| Code42.HighRiskEmployee.RiskTags | Unknown | Risk tags to disassociate from the High Risk Employee. |
 
 
 #### Command Example
@@ -569,18 +569,18 @@ Creates a Code42 user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| orgname | The name of the Code42 organization from which to add the user. | Required | 
-| username | The username to give to the user. | Required | 
-| email |  | Required | 
+| orgname | The name of the Code42 organization from which to add the user. | Required |
+| username | The username to give to the user. | Required |
+| email |  | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Code42.User.Username | String | A username for a Code42 user. | 
-| Code42.User.Email | String | An email for a Code42 user. | 
-| Code42.User.UserID | String | An ID for a Code42 user. | 
+| Code42.User.Username | String | A username for a Code42 user. |
+| Code42.User.Email | String | An email for a Code42 user. |
+| Code42.User.UserID | String | An ID for a Code42 user. |
 
 
 #### Command Example
@@ -591,7 +591,7 @@ Creates a Code42 user.
 | Email | UserID | Username |
 | ----- | ------ | -------- |
 | created.in.cortex.xsoar@example.com | 1111158111459014270 | created.in.cortex.xsoar@example.com |
- 
+
 
 ### code42-user-block
 ***
@@ -605,14 +605,14 @@ Blocks a user in Code42.  A blocked user is not allowed to log in or restore fil
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | The username of the user to block. | Required | 
+| username | The username of the user to block. | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Code42.User.UserID | String | An ID for a Code42 user. | 
+| Code42.User.UserID | String | An ID for a Code42 user. |
 
 
 #### Command Example
@@ -636,14 +636,14 @@ Removes a block, if one exists, on the user with the given user ID. Unblocked us
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | The username of the user to unblock. | Required | 
+| username | The username of the user to unblock. | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Code42.User.UserID | String | An ID for a Code42 user. | 
+| Code42.User.UserID | String | An ID for a Code42 user. |
 
 
 #### Command Example
@@ -668,14 +668,14 @@ Deactivate a user in Code42; signing them out of their devices. Backups disconti
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | The username of the user to deactivate. | Optional | 
+| username | The username of the user to deactivate. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Code42.User.UserID | String | The ID of a Code42 User. | 
+| Code42.User.UserID | String | The ID of a Code42 User. |
 
 
 #### Command Example
@@ -699,25 +699,124 @@ Reactivates the user with the given username.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | The username of the user to reactivate. | Optional | 
+| username | The username of the user to reactivate. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Code42.User.UserID | String | The ID of a Code42 User. | 
+| Code42.User.UserID | String | The ID of a Code42 User. |
 
 
 #### Command Example
 ```!code42-user-reactivate username="partner.demisto@example.com"```
 
 #### Human Readable Output
-### Code42 User Deactivated
+### Code42 User Reactivated
 | UserID |
 | ------ |
 | 123456790 |
 
+### code42-legalhold-add-user
+***
+Adds a Code42 user to a legal hold matter.
+
+
+#### Base Command
+
+`code42-legalhold-add-user`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | The username of the user to add to the given legal hold matter. | Required | 
+| mattername | The name of the legal hold matter to which to which the user will be added. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Code42.LegalHold.UserID | Unknown | The ID of a Code42 user. | 
+| Code42.LegalHold.MatterID | String | The ID of a Code42 legal hold matter. |
+| Code42.LegalHold.Username | String | A username for a Code42 user. | 
+| Code42.LegalHold.MatterName | String | A name for a Code42 legal hold matter. | 
+
+
+#### Command Example
+```!code42-legalhold-add-user username="partner.demisto@example.com" mattername="test"```
+
+#### Context Example
+```
+{
+    "Code42": {
+        "LegalHold": {
+            "MatterID": "932880202064992021",
+            "MatterName": "test",
+            "UserID": "942876157732602741",
+            "Username": "partner.demisto@example.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+### Code42 User Added to Legal Hold Matter
+|MatterID|MatterName|UserID|Username|
+|---|---|---|---|
+| 932880202064992021 | test | 942876157732602741 | partner.demisto@example.com |
+
+### code42-legalhold-remove-user
+***
+Removes a Code42 user from a legal hold matter.
+
+
+#### Base Command
+
+`code42-legalhold-remove-user`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | The username of the user to remove from the given legal hold matter. | Required | 
+| mattername | The name of the legal hold matter from which to which the user will be removed. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Code42.LegalHold.UserID | Unknown | The ID of a Code42 user. | 
+| Code42.LegalHold.MatterID | String | The ID of a Code42 legal hold matter. |
+| Code42.LegalHold.Username | String | A username for a Code42 user. | 
+| Code42.LegalHold.MatterName | String | A name for a Code42 legal hold matter. | 
+
+
+#### Command Example
+```!code42-legalhold-remove-user username="partner.demisto@example.com" mattername="test"```
+
+#### Context Example
+```
+{
+    "Code42": {
+        "LegalHold": {
+            "MatterID": "932880202064992021",
+            "MatterName": "test",
+            "UserID": "942876157732602741",
+            "Username": "partner.demisto@example.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+### Code42 User Removed from Legal Hold Matter
+|MatterID|MatterName|UserID|Username|
+|---|---|---|---|
+| 932880202064992021 | test | 942876157732602741 | partner.demisto@example.com |
 
 ### code42-download-file
 ***
@@ -732,11 +831,11 @@ Downloads a file from Code42 servers.
 | --- | --- | --- |
 | hash | Either the SHA256 or MD5 hash of the file. | Required | 
 
-
 #### Command Example
 ```!code42-download-file hash="bf6b326107d4d85eb485eed84b28133a"```
 
 #### Human Readable Output
+
 ### Code42 User Deactivated
 | Type   | Size | Info | MD5 | SHA1 | SHA256 | SHA512 | SSDeep |
 | ------ | ---- | ---- | --- | ---- | ------ | ------ | ------ |

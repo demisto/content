@@ -650,6 +650,66 @@ script:
       type: String
   - arguments:
     - default: false
+      description: The username of the user to add to the given legal hold matter.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    - default: false
+      description: The name of the legal hold matter to which to which the user will be added.
+      isArray: false
+      name: mattername
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds a Code42 user to a legal hold matter.
+    execution: false
+    name: code42-legalhold-add-user
+    outputs:
+    - contextPath: Code42.LegalHold.UserID
+      description: The ID of a Code42 user.
+      type: Unknown
+    - contextPath: Code42.LegalHold.MatterID
+      description: The ID of a Code42 legal hold matter.
+      type: String
+    - contextPath: Code42.LegalHold.Username
+      description: A username for a Code42 user.
+      type: String
+    - contextPath: Code42.LegalHold.MatterName
+      description: A name for a Code42 legal hold matter.
+      type: String
+  - arguments:
+      - default: false
+        description: The username of the user to remove from the given legal hold matter.
+        isArray: false
+        name: username
+        required: true
+        secret: false
+      - default: false
+        description: The name of the legal hold matter from which to which the user will be removed.
+        isArray: false
+        name: mattername
+        required: true
+        secret: false
+    deprecated: false
+    description: Removes a Code42 user from a legal hold matter.
+    execution: false
+    name: code42-legalhold-remove-user
+    outputs:
+      - contextPath: Code42.LegalHold.UserID
+        description: The ID of a Code42 user.
+        type: Unknown
+      - contextPath: Code42.LegalHold.MatterID
+        description: The ID of a Code42 legal hold matter.
+        type: String
+      - contextPath: Code42.LegalHold.Username
+        description: A username for a Code42 user.
+        type: String
+      - contextPath: Code42.LegalHold.MatterName
+        description: A name for a Code42 legal hold matter.
+        type: String
+  - arguments:
+    - default: false
       description: Either the SHA256 or MD5 hash of the file.
       isArray: false
       name: hash

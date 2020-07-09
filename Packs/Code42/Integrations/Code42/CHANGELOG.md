@@ -12,6 +12,8 @@
     - **code42-user-block**
     - **code42-user-unblock**
     - **code42-user-create**
+    - **code42-legalhold-add-user**
+    - **code42-legalhold-remove-user**
     - **code42-file-download**
 - Improve error messages for all Commands to include exception detail.
 - Fixed bug in Fetch where errors occurred when `FileCategory` was set to include only one category.
