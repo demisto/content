@@ -20,7 +20,7 @@ from py42.sdk.queries.fileevents.filters import (
     FileCategory,
 )
 from py42.sdk.queries.alerts.alert_query import AlertQuery
-from py42.sdk.queries.alerts.filters import DateObserved, Severity, AlertState, Actor as AlertActor
+from py42.sdk.queries.alerts.filters import DateObserved, Severity, AlertState
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
