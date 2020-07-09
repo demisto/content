@@ -38,12 +38,16 @@ def request_review_from_user(reviewers_list, pr_number, github_token=None, verif
     review_endpoint = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/pulls/{pr_number}/requested_reviewers"
     headers = {'Authorization': 'Bearer ' + github_token} if github_token else {}
 
+    if not github_token:
+        print("NO GITHUB TOKEN PROVIDED")
+
     reviewers_data = {
-        'reviewers': reviewers_list,
-        'team_reviewers': []
+        "reviewers": reviewers_list,
+        "team_reviewers": []
     }
 
     response = requests.post(review_endpoint, data=reviewers_data, headers=headers, verify=verify_ssl)
+    print(response._content)
 
     if response.status_code not in [200, 201]:
         print(f"Failed requesting review on PR {pr_number}")
