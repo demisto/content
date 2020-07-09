@@ -1,14 +1,13 @@
 {
-	"TypeName": "ipRep",
-	"kind": "indicatorsDetails",
-	"layout": {
-		"TypeName": "",
-		"id": "ipRep",
-		"kind": "indicatorsDetails",
-		"modified": "2020-07-02T10:12:52.396985+03:00",
-		"name": "",
-		"system": false,
-		"tabs": [
+    "id": "ipRep",
+	"group": "indicator",
+    "system": true,
+	"name": "IP Indicator Layout",
+	"packID": "",
+	"version": -1,
+    "fromVersion": "6.0.0",
+    "indicatorsDetails": {
+        "tabs": [
 			{
 				"id": "main",
 				"name": "Info",
@@ -423,12 +422,6 @@
 				],
 				"type": "custom"
 			}
-		],
-		"typeId": "ipRep",
-		"version": -1
-	},
-	"typeId": "ipRep",
-	"version": -1,
-	"fromversion": "5.5.0",
-	"toVersion": "5.9.9"
+		]
+    }
 }
