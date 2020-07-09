@@ -138,8 +138,8 @@ def create_worker_context(workers, num_of_managers):
                     'Work_Shift_Required'),
                 "Critical_Job": position_data_path.get('Job_Profile_Summary_Data', {}).get('Critical_Job'),
                 "Business_Site_id":
-                    position_data_path.get('Business_Site_Summary_Data', {}).get('Location_Reference', {}).
-                        get('ID')[1]['#text'],
+                    position_data_path.get('Business_Site_Summary_Data', {}).get('Location_Reference', {}).get('ID')[1][
+                        '#text'],
                 "Business_Site_Name": position_data_path.get('Business_Site_Summary_Data', {}).get('Name'),
                 "Business_Site_Type": position_data_path.get('Business_Site_Summary_Data', {}).
                     get('Location_Type_Reference').get('ID')[1]['#text'],
