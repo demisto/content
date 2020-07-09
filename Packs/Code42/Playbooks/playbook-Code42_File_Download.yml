@@ -21,6 +21,11 @@ inputs:
       root: File
       transformers:
       - operator: uniq
+- description: The name of the file to save as.
+  key: Filename
+  playbookInputQuery:
+  required: false
+  value: {}
 name: Code42 File Download
 outputs: []
 sourceplaybookid: Code42 File Search
@@ -38,12 +43,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: d045a003-2e7f-4f47-80c7-3882baf399b6
+      id: 6d1ecdee-78b1-4275-8411-f802589a0a45
       iscommand: false
       name: ""
-      description: ""
       version: -1
-    taskid: d045a003-2e7f-4f47-80c7-3882baf399b6
+      description: ""
+    taskid: 6d1ecdee-78b1-4275-8411-f802589a0a45
     timertriggers: []
     type: start
     view: |-
@@ -91,13 +96,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 746c1a4e-7084-45f1-86e6-e9764ffbbf5c
+      description: Checks to see if a Code42 Integration is active.
+      id: dc6b6ed4-b67e-46b2-8bf5-b2fbbc2e0d8e
       iscommand: false
       name: Is Code42 Integration Active?
-      description: "Checks to see if a Code42 Integration is active."
       type: condition
       version: -1
-    taskid: 746c1a4e-7084-45f1-86e6-e9764ffbbf5c
+    taskid: dc6b6ed4-b67e-46b2-8bf5-b2fbbc2e0d8e
     timertriggers: []
     type: condition
     view: |-
@@ -129,13 +134,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 935cb1d6-e328-4a8e-888f-347c3b33ce11
+      description: Checks to see if a SHA256 hash exists in the inputs.
+      id: 7b90d431-46df-45ae-8e2c-d2e888bd6d9c
       iscommand: false
       name: Does SHA256 Exist?
-      description: "Checks to see if a SHA256 hash exists in the inputs."
       type: condition
       version: -1
-    taskid: 935cb1d6-e328-4a8e-888f-347c3b33ce11
+    taskid: 7b90d431-46df-45ae-8e2c-d2e888bd6d9c
     timertriggers: []
     type: condition
     view: |-
@@ -167,13 +172,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 1d0dfb1f-6874-41e9-8593-fca2a96c58c4
+      description: Checks to see if a MD5 hash exists in the inputs.
+      id: a6ccfe5a-31b5-4bb1-81c4-6eeadf53420e
       iscommand: false
       name: Does MD5 Exist?
-      description: "Checks to see if a MD5 hash exists in the inputs."
       type: condition
       version: -1
-    taskid: 1d0dfb1f-6874-41e9-8593-fca2a96c58c4
+    taskid: a6ccfe5a-31b5-4bb1-81c4-6eeadf53420e
     timertriggers: []
     type: condition
     view: |-
@@ -197,6 +202,8 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
+      filename:
+        simple: ${inputs.Filename}
       hash:
         simple: ${inputs.SHA256}
     separatecontext: false
@@ -204,13 +211,13 @@ tasks:
     task:
       brand: Code42
       description: Downloads a file from Code42 servers.
-      id: c83baa5d-207c-44de-868c-8b131dc0357b
+      id: 577615d3-3345-4ecc-8a37-a7d36ae6f898
       iscommand: true
       name: Code42 Download by SHA256
       script: Code42|||code42-download-file
       type: regular
       version: -1
-    taskid: c83baa5d-207c-44de-868c-8b131dc0357b
+    taskid: 577615d3-3345-4ecc-8a37-a7d36ae6f898
     timertriggers: []
     type: regular
     view: |-
@@ -234,6 +241,8 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
+      filename:
+        simple: ${inputs.Filename}
       hash:
         simple: ${inputs.MD5}
     separatecontext: false
@@ -241,13 +250,13 @@ tasks:
     task:
       brand: Code42
       description: Downloads a file from Code42 servers.
-      id: 687edce2-d09d-4ad1-845e-a3ed7b7b7d4a
+      id: c1c84eb4-4b64-41d0-8b07-99be768b4c53
       iscommand: true
       name: Code42 Download by MD5
       script: Code42|||code42-download-file
       type: regular
       version: -1
-    taskid: 687edce2-d09d-4ad1-845e-a3ed7b7b7d4a
+    taskid: c1c84eb4-4b64-41d0-8b07-99be768b4c53
     timertriggers: []
     type: regular
     view: |-
@@ -266,13 +275,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 7f03d6ab-3bb8-4bd5-867b-fe853fa38684
+      id: 05d51ceb-6a80-4e24-8264-f43e2865ffdb
       iscommand: false
       name: Complete
-      description: ""
       type: title
       version: -1
-    taskid: 7f03d6ab-3bb8-4bd5-867b-fe853fa38684
+      description: ""
+    taskid: 05d51ceb-6a80-4e24-8264-f43e2865ffdb
     timertriggers: []
     type: title
     view: |-
@@ -283,9 +292,6 @@ tasks:
         }
       }
 version: -1
-fromversion: 5.0.0
-tests:
-- No Test
 view: |-
   {
     "linkLabelsPosition": {},
@@ -298,3 +304,6 @@ view: |-
       }
     }
   }
+fromversion: 5.0.0
+tests:
+- No Test

@@ -867,21 +867,32 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: 8ef0e565-aa9b-4866-8cae-ec8dcc9a15c9
+    taskid: 136e95ff-4954-4036-89c4-503b5298c61f
     type: playbook
     task:
-      id: 8ef0e565-aa9b-4866-8cae-ec8dcc9a15c9
+      id: 136e95ff-4954-4036-89c4-503b5298c61f
       version: -1
       name: Code42 File Download
+      description: This playbook downloads a file via Code42 by either MD5 or SHA256
+        hash.
       playbookName: Code42 File Download
       type: playbook
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "5"
     scriptarguments:
+      Filename:
+        complex:
+          root: incident
+          accessor: code42fileevents
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: filename
       MD5:
         complex:
           root: incident
