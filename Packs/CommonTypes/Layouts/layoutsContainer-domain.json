@@ -1,14 +1,12 @@
 {
-	"TypeName": "domainRepUnified",
-	"kind": "indicatorsDetails",
-	"layout": {
-		"TypeName": "",
-		"id": "domainRepUnified",
-		"kind": "indicatorsDetails",
-		"modified": "2020-07-02T10:03:32.758057+03:00",
-		"name": "",
-		"system": false,
-		"tabs": [
+    "id": "domainRepUnified",
+    "group": "indicator",
+    "system": true,
+    "name": "Domain Indicator Layout",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "indicatorsDetails": {
+        "tabs": [
 			{
 				"id": "default-main",
 				"name": "Info",
@@ -569,12 +567,6 @@
 				],
 				"type": "custom"
 			}
-		],
-		"typeId": "domainRepUnified",
-		"version": -1
-	},
-	"typeId": "domainRepUnified",
-	"version": -1,
-	"fromversion": "5.5.0",
-	"toVersion": "5.9.9"
+		]
+    }
 }
