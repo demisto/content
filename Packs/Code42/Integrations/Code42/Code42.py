@@ -671,25 +671,24 @@ def alert_resolve_command(client, args):
 
 
 def alert_search_command(client, args):
-    username = args["username"]
-    try:
-        alerts = client.search_alerts(username)
-        alert_context = []
-        for alert in alerts:
-            alert_context.append(map_to_code42_alert_context(alert))
-        readable_outputs = tableToMarkdown(
-            "Code42 Security Alert Search",
-            alert_context,
-            headers=SECURITY_ALERT_HEADERS,
-        )
-        return (
-            readable_outputs,
-            {"Code42.SecurityAlert": alert_context},
-            alerts
-        )
+    username = args.get("username")
+    alerts = client.search_alerts(username)
+    alert_context = []
+    for alert in alerts:
+        alert_context.append(map_to_code42_alert_context(alert))
+    readable_outputs = tableToMarkdown(
+        "Code42 Security Alert Search",
+        alert_context,
+        headers=SECURITY_ALERT_HEADERS,
+    )
+    return CommandResults(
+        outputs_prefix="Code42.SecurityAlert",
+        outputs_key_field="ID",
+        outputs=alert_context,
+        readable_output=readable_outputs,
+        raw_response=alerts
+    )
 
-    except Exception as e:
-        return_error(create_command_error_message(demisto.command(), e))
 
 @logger
 def departingemployee_add_command(client, args):
@@ -1131,6 +1130,7 @@ def get_command_map():
     return {
         "code42-alert-get": alert_get_command,
         "code42-alert-resolve": alert_resolve_command,
+        "code42-alert-search": alert_search_command,
         "code42-securitydata-search": securitydata_search_command,
         "code42-departingemployee-add": departingemployee_add_command,
         "code42-departingemployee-remove": departingemployee_remove_command,
