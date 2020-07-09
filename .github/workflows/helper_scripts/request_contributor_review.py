@@ -36,11 +36,10 @@ def check_if_user_exists(github_user, github_token=None, verify_ssl=True):
 
 def request_review_from_user(reviewers_list, pr_number, github_token=None, verify_ssl=True):
     review_endpoint = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/pulls/{pr_number}/requested_reviewers"
-    headers = {'Authorization': 'Bearer ' + github_token} if github_token else {}
+    headers = {"Authorization": "Bearer " + github_token} if github_token else {}
 
     reviewers_data = {
-        'reviewer': reviewers_list,
-        'team_reviewers': []
+        "reviewers": reviewers_list
     }
 
     response = requests.post(review_endpoint, json=reviewers_data, headers=headers, verify=verify_ssl)
