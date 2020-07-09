@@ -1,13 +1,12 @@
 {
-	"kind": "edit",
-	"fromVersion": "5.5.0",
-	"layout": {
-		"version": -1,
-		"id": "Indicator Feed",
-		"kind": "edit",
-		"modified": "2020-01-12T17:29:56.083609+02:00",
-		"name": "",
-		"sections": [
+    "id": "Indicator Feed",
+    "group": "incident",
+    "system": true,
+    "name": "Indicator Feed Incident Layout",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "edit": {
+        "sections": [
 			{
 				"description": "",
 				"fields": [
@@ -36,10 +35,6 @@
 				"type": "",
 				"version": 0
 			}
-		],
-		"system": false,
-		"typeId": "Indicator Feed"
-	},
-	"typeId": "Indicator Feed",
-	"toVersion": "5.9.9"
+		]
+    }
 }
