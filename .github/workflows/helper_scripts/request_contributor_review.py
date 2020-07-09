@@ -36,14 +36,13 @@ def check_if_user_exists(github_user, github_token=None, verify_ssl=True):
 
 def request_review_from_user(reviewers_list, pr_number, github_token=None, verify_ssl=True):
     review_endpoint = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/pulls/{pr_number}/requested_reviewers"
-    headers = {'Authorization': 'Bearer ' + github_token} if github_token else {}
+    headers = {"Authorization": "Bearer " + github_token} if github_token else {}
 
     reviewers_data = {
-        "reviewers": reviewers_list,
-        "team_reviewers": []
+        "reviewers": reviewers_list
     }
 
-    response = requests.post(review_endpoint, data=reviewers_data, headers=headers, verify=verify_ssl)
+    response = requests.post(review_endpoint, json=reviewers_data, headers=headers, verify=verify_ssl)
 
     if response.status_code not in [200, 201]:
         print(f"Failed requesting review on PR {pr_number}")
@@ -80,7 +79,7 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True)
                                                    verify_ssl=verify_ssl)
 
                 if user_exists:
-                    reviewers_list.append(user_exists)
+                    reviewers_list.append(github_user)
                 else:
                     print(f"{github_user} user defined in {pack} pack metadata does not exist")
                     continue
