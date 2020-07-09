@@ -136,8 +136,7 @@ def _create_alert_query(event_severity_filter, start_time):
 
 def _get_all_high_risk_employees_from_page(page, risk_tags):
     res = []
-    # Note: page is a `Py42Response` and has no `get()` method.
-    employees = page["items"]
+    employees = page.get("items") or []
     for employee in employees:
         if not risk_tags:
             res.append(employee)
@@ -152,7 +151,7 @@ def _get_all_high_risk_employees_from_page(page, risk_tags):
 
 def _try_convert_str_list_to_list(str_list):
     if isinstance(str_list, str):
-        return str_list.split()
+        return str_list.split(",")
     return str_list
 
 
@@ -193,13 +192,14 @@ class Code42Client(BaseClient):
         self._get_sdk().detectionlists.departing_employee.remove(user_id)
         return user_id
 
-    def get_all_departing_employees(self, results):
+    def get_all_departing_employees(self, results, filter_type):
         res = []
-        results = int(results) if results else None
-        pages = self._get_sdk().detectionlists.departing_employee.get_all()
+        results = int(results) if results else 50
+        filter_type = filter_type if filter_type else "OPEN"
+        pages = self._get_sdk().detectionlists.departing_employee.get_all(filter_type=filter_type)
         for page in pages:
-            # Note: page is a `Py42Response` and has no `get()` method.
-            employees = page["items"]
+            page_json = json.loads(page.text)
+            employees = page_json.get("items") or []
             for employee in employees:
                 res.append(employee)
                 if results and len(res) == results:
@@ -230,13 +230,15 @@ class Code42Client(BaseClient):
         self._get_sdk().detectionlists.remove_user_risk_tags(user_id, risk_tags)
         return user_id
 
-    def get_all_high_risk_employees(self, risk_tags, results):
+    def get_all_high_risk_employees(self, risk_tags, results, filter_type):
         risk_tags = _try_convert_str_list_to_list(risk_tags)
-        results = int(results) if results else None
+        results = int(results) if results else 50
+        filter_type = filter_type if filter_type else "OPEN"
         res = []
-        pages = self._get_sdk().detectionlists.high_risk_employee.get_all()
+        pages = self._get_sdk().detectionlists.high_risk_employee.get_all(filter_type=filter_type)
         for page in pages:
-            employees = _get_all_high_risk_employees_from_page(page, risk_tags)
+            page_json = json.loads(page.text)
+            employees = _get_all_high_risk_employees_from_page(page_json, risk_tags)
             for employee in employees:
                 res.append(employee)
                 if results and len(res) == results:
@@ -246,10 +248,11 @@ class Code42Client(BaseClient):
     def fetch_alerts(self, start_time, event_severity_filter):
         query = _create_alert_query(event_severity_filter, start_time)
         res = self._get_sdk().alerts.search(query)
-        return res["alerts"]
+        return json.loads(res.text).get("alerts")
 
     def get_alert_details(self, alert_id):
-        res = self._get_sdk().alerts.get_details(alert_id)["alerts"]
+        py42_res = self._get_sdk().alerts.get_details(alert_id)
+        res = json.loads(py42_res.text).get("alerts")
         if not res:
             raise Code42AlertNotFoundError(alert_id)
         return res[0]
@@ -263,7 +266,8 @@ class Code42Client(BaseClient):
         return res
 
     def get_user(self, username):
-        res = self._get_sdk().users.get_by_username(username)["users"]
+        py42_res = self._get_sdk().users.get_by_username(username)
+        res = json.loads(py42_res.text).get("users")
         if not res:
             raise Code42UserNotFoundError(username)
         return res[0]
@@ -293,18 +297,43 @@ class Code42Client(BaseClient):
         self._get_sdk().users.reactivate(user_id)
         return user_id
 
+    def get_legal_hold_matter(self, matter_name):
+        matter_pages = self._get_sdk().legalhold.get_all_matters(name=matter_name)
+        for matter_page in matter_pages:
+            matters = matter_page["legalHolds"]
+            for matter in matters:
+                return matter
+        raise Code42LegalHoldMatterNotFoundError(matter_name)
+
+    def add_user_to_legal_hold_matter(self, username, matter_name):
+        user_uid = self._get_user_id(username)
+        matter_id = self._get_legal_hold_matter_id(matter_name)
+        response = self._get_sdk().legalhold.add_to_matter(user_uid, matter_id)
+        return json.loads(response.text)
+
+    def remove_user_from_legal_hold_matter(self, username, matter_name):
+        user_uid = self._get_user_id(username)
+        matter_id = self._get_legal_hold_matter_id(matter_name)
+        membership_id = self._get_legal_hold_matter_membership_id(user_uid, matter_id)
+        if membership_id:
+            self._get_sdk().legalhold.remove_from_matter(membership_id)
+            return user_uid, matter_id
+
+        raise Code42InvalidLegalHoldMembershipError(username, matter_name)
+
     def get_org(self, org_name):
         org_pages = self._get_sdk().orgs.get_all()
         for org_page in org_pages:
-            orgs = org_page["orgs"]
+            page_json = json.loads(org_page.text)
+            orgs = page_json.get("orgs")
             for org in orgs:
                 if org.get("orgName") == org_name:
                     return org
         raise Code42OrgNotFoundError(org_name)
 
     def search_file_events(self, payload):
-        res = self._get_sdk().securitydata.search_file_events(payload)
-        return res["fileEvents"]
+        py42_res = self._get_sdk().securitydata.search_file_events(payload)
+        return json.loads(py42_res.text).get("fileEvents")
 
     def download_file(self, hash_arg):
         security_module = self._get_sdk().securitydata
@@ -313,7 +342,7 @@ class Code42Client(BaseClient):
         elif _hash_is_sha256(hash_arg):
             return security_module.stream_file_by_sha256(hash_arg)
         else:
-            raise Exception("Unsupported hash. Must be SHA256 or MD5.")
+            raise Code42UnsupportedHashError()
 
     def _get_user_id(self, username):
         user_id = self.get_user(username).get("userUid")
@@ -332,6 +361,18 @@ class Code42Client(BaseClient):
         if org_uid:
             return org_uid
         raise Code42OrgNotFoundError(org_name)
+
+    def _get_legal_hold_matter_id(self, matter_name):
+        matter_id = self.get_legal_hold_matter(matter_name).get("legalHoldUid")
+        return matter_id
+
+    def _get_legal_hold_matter_membership_id(self, user_id, matter_id):
+        member_pages = self._get_sdk().legalhold.get_all_matter_custodians(legal_hold_uid=matter_id,
+                                                                           user_uid=user_id)
+        for member_page in member_pages:
+            members = member_page["legalHoldMemberships"]
+            for member in members:
+                return member["legalHoldMembershipUid"]
 
 
 class Code42AlertNotFoundError(Exception):
@@ -352,6 +393,36 @@ class Code42OrgNotFoundError(Exception):
     def __init__(self, org_name):
         super(Code42OrgNotFoundError, self).__init__(
             "No organization found with name {0}.".format(org_name)
+        )
+
+
+class Code42UnsupportedHashError(Exception):
+    def __init__(self):
+        super(Code42UnsupportedHashError, self).__init__(
+            "Unsupported hash. Must be SHA256 or MD5."
+        )
+
+
+class Code42MissingSearchArgumentsError(Exception):
+    def __init__(self):
+        super(Code42MissingSearchArgumentsError, self).__init__(
+            "No query args provided for searching Code42 security events."
+        )
+
+
+class Code42LegalHoldMatterNotFoundError(Exception):
+    def __init__(self, matter_name):
+        super(Code42LegalHoldMatterNotFoundError, self).__init__(
+            "No legal hold matter found with name {0}.".format(matter_name)
+        )
+
+
+class Code42InvalidLegalHoldMembershipError(Exception):
+    def __init__(self, username, matter_name):
+        super(Code42InvalidLegalHoldMembershipError, self).__init__(
+            "User '{0}' is not an active member of legal hold matter '{1}'".format(
+                username, matter_name
+            )
         )
 
 
@@ -416,6 +487,9 @@ def build_query_payload(args):
     hostname = args.get("hostname")
     username = args.get("username")
     exposure = args.get("exposure")
+
+    if not _hash and not hostname and not username and not exposure:
+        raise Code42MissingSearchArgumentsError()
 
     search_args = FileEventQueryFilters(pg_size)
     search_args.append_result(_hash, _create_hash_filter)
@@ -710,8 +784,9 @@ def departingemployee_remove_command(client, args):
 
 @logger
 def departingemployee_get_all_command(client, args):
-    results = args.get("results") or 50
-    employees = client.get_all_departing_employees(results)
+    results = args.get("results", 50)
+    filter_type = args.get("filtertype", "OPEN")
+    employees = client.get_all_departing_employees(results, filter_type)
     if not employees:
         return CommandResults(
             readable_output="No results found",
@@ -774,8 +849,9 @@ def highriskemployee_remove_command(client, args):
 @logger
 def highriskemployee_get_all_command(client, args):
     tags = args.get("risktags")
-    results = args.get("results") or 50
-    employees = client.get_all_high_risk_employees(tags, results)
+    results = args.get("results", 50)
+    filter_type = args.get("filtertype", "OPEN")
+    employees = client.get_all_high_risk_employees(tags, results, filter_type)
     if not employees:
         return CommandResults(
             readable_output="No results found",
@@ -876,6 +952,7 @@ def securitydata_search_command(client, args):
         )
 
 
+@logger
 def user_create_command(client, args):
     org_name = args.get("orgname")
     username = args.get("username")
@@ -896,6 +973,7 @@ def user_create_command(client, args):
     )
 
 
+@logger
 def user_block_command(client, args):
     username = args.get("username")
     user_id = client.block_user(username)
@@ -910,6 +988,7 @@ def user_block_command(client, args):
     )
 
 
+@logger
 def user_unblock_command(client, args):
     username = args.get("username")
     user_id = client.unblock_user(username)
@@ -924,6 +1003,7 @@ def user_unblock_command(client, args):
     )
 
 
+@logger
 def user_deactivate_command(client, args):
     username = args.get("username")
     user_id = client.deactivate_user(username)
@@ -938,6 +1018,7 @@ def user_deactivate_command(client, args):
     )
 
 
+@logger
 def user_reactivate_command(client, args):
     username = args.get("username")
     user_id = client.reactivate_user(username)
@@ -952,11 +1033,57 @@ def user_reactivate_command(client, args):
     )
 
 
+@logger
+def legal_hold_add_user_command(client, args):
+    username = args.get("username")
+    matter_name = args.get("mattername")
+    response = client.add_user_to_legal_hold_matter(username, matter_name)
+    legal_hold_info = response.get("legalHold")
+    user_info = response.get("user")
+    outputs = {
+        "MatterID": legal_hold_info.get("legalHoldUid") if legal_hold_info else None,
+        "MatterName": legal_hold_info.get("name") if legal_hold_info else None,
+        "UserID": user_info.get("userUid") if legal_hold_info else None,
+        "Username": user_info.get("username") if user_info else None,
+    }
+    readable_outputs = tableToMarkdown("Code42 User Added to Legal Hold Matter", outputs)
+    return CommandResults(
+        outputs_prefix="Code42.LegalHold",
+        outputs_key_field="MatterID",
+        outputs=outputs,
+        readable_output=readable_outputs,
+        raw_response=response
+    )
+
+
+@logger
+def legal_hold_remove_user_command(client, args):
+    username = args.get("username")
+    matter_name = args.get("mattername")
+    user_uid, matter_id = client.remove_user_from_legal_hold_matter(username, matter_name)
+    outputs = {
+        "MatterID": matter_id,
+        "MatterName": matter_name,
+        "UserID": user_uid,
+        "Username": username
+    }
+    readable_outputs = tableToMarkdown("Code42 User Removed from Legal Hold Matter", outputs)
+    return CommandResults(
+        outputs_prefix="Code42.LegalHold",
+        outputs_key_field="MatterID",
+        outputs=outputs,
+        readable_output=readable_outputs,
+        raw_response=user_uid
+    )
+
+
+@logger
 def download_file_command(client, args):
     file_hash = args.get("hash")
+    filename = args.get("filename") or file_hash
     response = client.download_file(file_hash)
     file_chunks = [c for c in response.iter_content(chunk_size=128) if c]
-    return fileResult(file_hash, data=b"".join(file_chunks))
+    return fileResult(filename, data=b"".join(file_chunks))
 
 
 """Fetching"""
@@ -1043,7 +1170,7 @@ class Code42SecurityIncidentFetcher(object):
         return self._client.fetch_alerts(start_query_time, self._event_severity_filter)
 
     def _create_incident_from_alert(self, alert):
-        details = self._client.get_alert_details(alert["id"])
+        details = self._client.get_alert_details(alert.get("id"))
         incident = _create_incident_from_alert_details(details)
         if self._include_files:
             details = self._relate_files_to_alert(details)
@@ -1061,7 +1188,7 @@ class Code42SecurityIncidentFetcher(object):
         return alert_details
 
     def _get_file_events_from_alert_details(self, observation, alert_details):
-        security_data_query = map_observation_to_security_query(observation, alert_details["actor"])
+        security_data_query = map_observation_to_security_query(observation, alert_details.get("actor"))
         return self._client.search_file_events(security_data_query)
 
 
@@ -1119,7 +1246,9 @@ def get_command_map():
         "code42-user-block": user_block_command,
         "code42-user-unblock": user_unblock_command,
         "code42-user-deactivate": user_deactivate_command,
-        "code42_user-reactivate": user_reactivate_command,
+        "code42-user-reactivate": user_reactivate_command,
+        "code42-legalhold-add-user": legal_hold_add_user_command,
+        "code42-legalhold-remove-user": legal_hold_remove_user_command,
         "code42-download-file": download_file_command,
     }
 

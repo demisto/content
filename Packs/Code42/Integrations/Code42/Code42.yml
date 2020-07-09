@@ -357,6 +357,19 @@ script:
       name: results
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: OPEN
+      description: Filters the results based on specific filters.
+      isArray: false
+      name: filtertype
+      predefined:
+      - EXFILTRATION_30_DAYS
+      - EXFILTRATION_24_HOURS
+      - OPEN
+      - LEAVING_TODAY
+      required: false
+      secret: false
     deprecated: false
     description: Get all employees on the Departing Employee List.
     execution: false
@@ -420,17 +433,38 @@ script:
       description: The username of the High Risk Employee.
       type: Unknown
   - arguments:
-    - default: false
-      description: To filter results by employees who have these risk tags. Space
+    - auto: PREDEFINED
+      default: false
+      description: To filter results by employees who have these risk tags. Comma
         delimited.
       isArray: false
       name: risktags
+      predefined:
+      - PERFORMANCE_CONCERNS
+      - PERFORMANCE_CONCERNS
+      - POOR_SECURITY_PRACTICES
+      - HIGH_IMPACT_EMPLOYEE
+      - ELEVATED_ACCESS_PRIVILEGES
+      - FLIGHT_RISK
+      - CONTRACT_EMPLOYEE
       required: false
       secret: false
     - default: false
       description: The number of items to return.
       isArray: false
       name: results
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: OPEN
+      description: Filters the results based on specific filters.
+      isArray: false
+      name: filtertype
+      predefined:
+      - EXFILTRATION_30_DAYS
+      - EXFILTRATION_24_HOURS
+      - OPEN
       required: false
       secret: false
     deprecated: false
@@ -454,10 +488,19 @@ script:
       name: username
       required: true
       secret: false
-    - default: false
-      description: Space-delimited risk tags to associate with the High Risk Employee.
+    - auto: PREDEFINED
+      default: false
+      description: Comma-delimited risk tags to associate with the High Risk Employee.
       isArray: false
       name: risktags
+      predefined:
+      - PERFORMANCE_CONCERNS
+      - PERFORMANCE_CONCERNS
+      - POOR_SECURITY_PRACTICES
+      - HIGH_IMPACT_EMPLOYEE
+      - ELEVATED_ACCESS_PRIVILEGES
+      - FLIGHT_RISK
+      - CONTRACT_EMPLOYEE
       required: true
       secret: false
     deprecated: false
@@ -481,10 +524,19 @@ script:
       name: username
       required: true
       secret: false
-    - default: false
-      description: Space-delimited risk tags to disassociate from the High Risk Employee.
+    - auto: PREDEFINED
+      default: false
+      description: Comma-delimited risk tags to disassociate from the High Risk Employee.
       isArray: false
       name: risktags
+      predefined:
+      - PERFORMANCE_CONCERNS
+      - PERFORMANCE_CONCERNS
+      - POOR_SECURITY_PRACTICES
+      - HIGH_IMPACT_EMPLOYEE
+      - ELEVATED_ACCESS_PRIVILEGES
+      - FLIGHT_RISK
+      - CONTRACT_EMPLOYEE
       required: true
       secret: false
     deprecated: false
@@ -600,10 +652,76 @@ script:
       type: String
   - arguments:
     - default: false
+      description: The username of the user to add to the given legal hold matter.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    - default: false
+      description: The name of the legal hold matter to which to which the user will be added.
+      isArray: false
+      name: mattername
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds a Code42 user to a legal hold matter.
+    execution: false
+    name: code42-legalhold-add-user
+    outputs:
+    - contextPath: Code42.LegalHold.UserID
+      description: The ID of a Code42 user.
+      type: Unknown
+    - contextPath: Code42.LegalHold.MatterID
+      description: The ID of a Code42 legal hold matter.
+      type: String
+    - contextPath: Code42.LegalHold.Username
+      description: A username for a Code42 user.
+      type: String
+    - contextPath: Code42.LegalHold.MatterName
+      description: A name for a Code42 legal hold matter.
+      type: String
+  - arguments:
+      - default: false
+        description: The username of the user to remove from the given legal hold matter.
+        isArray: false
+        name: username
+        required: true
+        secret: false
+      - default: false
+        description: The name of the legal hold matter from which to which the user will be removed.
+        isArray: false
+        name: mattername
+        required: true
+        secret: false
+    deprecated: false
+    description: Removes a Code42 user from a legal hold matter.
+    execution: false
+    name: code42-legalhold-remove-user
+    outputs:
+      - contextPath: Code42.LegalHold.UserID
+        description: The ID of a Code42 user.
+        type: Unknown
+      - contextPath: Code42.LegalHold.MatterID
+        description: The ID of a Code42 legal hold matter.
+        type: String
+      - contextPath: Code42.LegalHold.Username
+        description: A username for a Code42 user.
+        type: String
+      - contextPath: Code42.LegalHold.MatterName
+        description: A name for a Code42 legal hold matter.
+        type: String
+  - arguments:
+    - default: false
       description: Either the SHA256 or MD5 hash of the file.
       isArray: false
       name: hash
       required: true
+      secret: false
+    - default: false
+      description: The filename to save the file as.
+      isArray: false
+      name: filename
+      required: false
       secret: false
     deprecated: false
     description: Downloads a file from Code42 servers.

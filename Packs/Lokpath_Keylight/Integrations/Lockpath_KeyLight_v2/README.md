@@ -1,5 +1,5 @@
 Use the LockPath KeyLight integration to manage GRC tickets in the Keylight platform.
-This integration was integrated and tested with version xx of Lockpath KeyLight v2
+This integration was integrated and tested with version 5.5.018.10 of Lockpath KeyLight.
 ## Configure Lockpath KeyLight v2 on Demisto
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -8,7 +8,7 @@ This integration was integrated and tested with version xx of Lockpath KeyLight 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| server | Server URL in the form of https://\[server\]:&lt;port&gt; \(e.g. https://192.168.0.1:4443\) | True |
+| server | Server URL in the form of `https://[server]:<port>`; (e.g. https://192.168.0.1:4443) | True |
 | credentials | Credentials | True |
 | incidentType | Incident type | False |
 | component_name | Name of component to fetch from | False |
