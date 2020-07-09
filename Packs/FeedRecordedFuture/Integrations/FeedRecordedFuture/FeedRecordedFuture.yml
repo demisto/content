@@ -110,6 +110,11 @@ configuration:
   name: fusion_file_path
   required: false
   type: 0
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
 - additionalinfo: Time in seconds before HTTP requests timeout.
   defaultvalue: '20'
   display: Request Timeout
@@ -183,7 +188,7 @@ script:
     - contextPath: RecordedFutureFeed.RiskRule.Criticality
       description: The risk rule criticality.
       type: String
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.8.3.9324
   feed: true
   isfetch: false
   longRunning: false
