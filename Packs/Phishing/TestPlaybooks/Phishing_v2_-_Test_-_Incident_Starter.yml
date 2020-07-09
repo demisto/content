@@ -1,6 +1,5 @@
 id: Phishing v2 - Test - Incident Starter
 version: -1
-fromversion: 6.0.0
 name: Phishing v2 - Test - Incident Starter
 description: The reason for having a "starter" test and an "actual incident" test
   is so that we can create a new incident which will have the right incident type
@@ -12,10 +11,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c826fe4f-2e4b-4476-8e6c-950f4dd589f0
+    taskid: 1f263214-dd17-40d5-866e-d1d4481f4413
     type: start
     task:
-      id: c826fe4f-2e4b-4476-8e6c-950f4dd589f0
+      id: 1f263214-dd17-40d5-866e-d1d4481f4413
       version: -1
       name: ""
       iscommand: false
@@ -39,10 +38,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 7f5694ee-ac60-44c1-8f20-e5e7082ebb82
+    taskid: 115ce8e4-0c9a-413e-8e1c-26fbc3ee362d
     type: title
     task:
-      id: 7f5694ee-ac60-44c1-8f20-e5e7082ebb82
+      id: 115ce8e4-0c9a-413e-8e1c-26fbc3ee362d
       version: -1
       name: Begin Real Incident
       type: title
@@ -54,7 +53,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 745
+          "y": 885
         }
       }
     note: false
@@ -64,13 +63,12 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: c6507cb8-7122-450c-8a03-2c9d61cd8696
+    taskid: c7264df9-5332-4e5c-87cf-f6c5bd25bc00
     type: regular
     task:
-      id: c6507cb8-7122-450c-8a03-2c9d61cd8696
+      id: c7264df9-5332-4e5c-87cf-f6c5bd25bc00
       version: -1
       name: Delete Context
-      description: ""
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -100,10 +98,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: d6990ab1-5349-4dd0-81c9-3f061cefe7b7
+    taskid: f7b256f9-7a4f-418c-82de-762c80dee610
     type: regular
     task:
-      id: d6990ab1-5349-4dd0-81c9-3f061cefe7b7
+      id: f7b256f9-7a4f-418c-82de-762c80dee610
       version: -1
       name: Create new Phishing incident
       description: commands.local.cmd.create.inc
@@ -278,10 +276,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: dfa757c0-d6bb-46ad-84d1-f09808f83abf
+    taskid: 457a430b-bbf6-4ef5-84d1-60f9628fa5bd
     type: regular
     task:
-      id: dfa757c0-d6bb-46ad-84d1-f09808f83abf
+      id: 457a430b-bbf6-4ef5-84d1-60f9628fa5bd
       version: -1
       name: Set playbook for new incident
       description: commands.local.cmd.set.playbook
@@ -303,7 +301,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 550
+          "y": 710
         }
       }
     note: false
@@ -313,10 +311,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: ae53dde2-a718-4ef9-84a2-45d2467d1228
+    taskid: a962b541-74ef-481c-8cc8-5313e8b4ec59
     type: regular
     task:
-      id: ae53dde2-a718-4ef9-84a2-45d2467d1228
+      id: a962b541-74ef-481c-8cc8-5313e8b4ec59
       version: -1
       name: Begin investigating the incident
       description: Start investigation of the incident, so that we can later set the
@@ -327,7 +325,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "24"
+      - "26"
     scriptarguments:
       id:
         complex:
@@ -345,12 +343,45 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "26":
+    id: "26"
+    taskid: 2da8fe91-2f0d-4ab1-8c1b-0d32688c6780
+    type: regular
+    task:
+      id: 2da8fe91-2f0d-4ab1-8c1b-0d32688c6780
+      version: -1
+      name: Wait for investigation to begin
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      seconds:
+        simple: "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 950,
+        "height": 1090,
         "width": 380,
         "x": 265,
         "y": -140
@@ -359,3 +390,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.0.0
