@@ -1,0 +1,11 @@
+!infinipoint-get-cve cve_id="CVE-2010-1297"
+!infinipoint-get-assets-programs name="nmap"
+!infinipoint-get-assets-hardware os_type=2
+!infinipoint-get-assets-cloud source="GCP API"
+!infinipoint-get-assets-user host="et"
+!infinipoint-get-device osType=2
+!infinipoint-get-vulnerable-devices device_risk=10
+!infinipoint-get-tag name=et
+!infinipoint-get-networks alias=GCP
+!infinipoint-get-queries name=os_version
+!infinipoint-run-osquery query_id=dcbf29ff-4da6-4228-9d8f-3e269ca8e6fa

@@ -20,7 +20,7 @@ configuration:
 - display: Private Key
   name: private_key
   defaultvalue: ""
-  type: 4
+  type: 12
   required: true
 - display: Server URL (e.g. https://console.infinipoint.io)
   name: url
@@ -42,21 +42,6 @@ configuration:
   defaultvalue: "10"
   type: 0
   required: false
-- display: Fetch alerts with type
-  name: alert_type
-  defaultvalue: ""
-  type: 0
-  required: false
-- display: Minimum severity of alerts to fetch
-  name: min_severity
-  defaultvalue: Low
-  type: 15
-  required: true
-  options:
-  - Low
-  - Medium
-  - High
-  - Critical
 - display: First fetch time
   name: first_fetch
   defaultvalue: 3 days
@@ -79,28 +64,67 @@ configuration:
   required: false
 script:
   script: |-
+    #
+    #
+    from typing import Any, Dict, List, Optional, cast
+
+
+
+    ''' IMPORTS '''
     import jwt
     import math
     import struct
-
-
-
-    #
-    from typing import Any, Dict, List
+    import dateparser
 
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
-    ''' GLOBALS/PARAMS '''
-
-    PAGE_SIZE = int(demisto.params().get('page_size'))
-    PROXY = demisto.params().get('proxy')
-    INSECURE = demisto.params().get('insecure')
-    BASE_URL = demisto.params().get('url')
-    ACCESS_KEY = demisto.params().get('access_key')
-    PRIVATE_KEY = demisto.params().get('private_key')
-
     '''HELPER FUNCTIONS'''
+
+
+    def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
+        """
+        """
+
+        if arg is None:
+            if required is True:
+                raise ValueError(f'Missing "{arg_name}"')
+            return None
+
+        if isinstance(arg, str) and arg.isdigit():
+            # timestamp is a str containing digits - we just convert it to int
+            return int(arg)
+        if isinstance(arg, str):
+            # we use dateparser to handle strings either in ISO8601 format, or
+            # relative time stamps.
+            # For example: format 2019-10-23T00:00:00 or "3 days", etc
+            date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+            if date is None:
+                # if d is None it means dateparser failed to parse it
+                raise ValueError(f'Invalid date: {arg_name}')
+
+            return int(date.timestamp())
+        if isinstance(arg, (int, float)):
+            # Convert to int if the input is a float
+            return int(arg)
+        raise ValueError(f'Invalid date: "{arg_name}"')
+
+
+    def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
+        """
+        """
+
+        if arg is None:
+            if required is True:
+                raise ValueError(f'Missing "{arg_name}"')
+            return None
+        if isinstance(arg, str):
+            if arg.isdigit():
+                return int(arg)
+            raise ValueError(f'Invalid number: "{arg_name}"="{arg}"')
+        if isinstance(arg, int):
+            return arg
+        raise ValueError(f'Invalid number: "{arg_name}"')
 
 
     def http_request(method, token, route, page_index=0, content=None, use_pagination=True):
@@ -180,7 +204,11 @@ script:
                 "iat": int(time.time()),
                 "sub": access_key
             }
-            return jwt.encode(jwt_payload, secret, 'ES256').decode("utf-8")
+            print('access_key: %s' % access_key + "\n" + 'secret: %s' % secret )
+
+            # print(access_key)
+            # print(secret)
+            return jwt.encode(jwt_payload, secret, 'ES256')# .decode("utf-8")
         except Exception as e:
             print(f"Error while signing JWT token - check your private/access keys!\nError message:\n{e}")
             sys.exit(1)
@@ -193,6 +221,84 @@ script:
         convert_ip -= (1 << 32)
         return convert_ip
 
+
+    def fetch_incidents(token: Any, max_results: int, last_run: Dict[str, int],
+                        first_fetch_time: Optional[int]):
+        # Get the last fetch time, if exists
+        # last_run is a dict with a single key, called last_fetch
+        last_fetch = last_run.get('last_fetch', None)
+        # Handle first fetch time
+        if last_fetch is None:
+            # if missing, use what provided via first_fetch_time
+            last_fetch = first_fetch_time
+        else:
+            # otherwise use the stored last fetch
+            last_fetch = int(last_fetch)
+
+        # for type checking, making sure that latest_created_time is int
+        latest_created_time = cast(int, last_fetch)
+
+        # Initialize an empty list of incidents to return
+        # Each incident is a dict with a string as a key
+        incidents: List[Dict[str, Any]] = []
+
+        args = {
+            'limit': max_results,
+            'offset': last_fetch
+        }
+
+        alerts = get_non_compliance_device_command(token, args)
+
+        for alert in alerts.outputs:
+            # If no created_time set is as epoch (0). We use time in ms so we must
+            # convert it from the HelloWorld API response
+            incident_created_time = int(alert.get('timestamp', '0'))
+            incident_created_time_ms = incident_created_time * 1000
+
+            # If no name is present it will throw an exception
+            incident_name = "infinipoint - non compliance device"
+
+            incident = {
+                'name': incident_name,
+                'details': ', '.join([d.get('issueType', None) for d in alert['issues']]),
+                'occurred': timestamp_to_datestring(incident_created_time_ms),
+                'rawJSON': json.dumps(alert),
+                # 'type': alert.get('hostname'),
+                'severity': 2,
+                'CustomFields': {  # Map specific XSOAR Custom Fields
+                    'hostname': alert.get('hostname'),
+                    'policyName': alert.get('policyName'),
+                    'policyVersion': alert.get('policyVersion')
+                    # 'issue Type': alert['issues'].get('issueType')
+                    # 'issue First Seen': alert['issues'].get('issueFirstSeen'),
+                }
+            }
+
+            incidents.append(incident)
+
+            # Update last run and add incident if the incident is newer than last fetch
+            if incident_created_time > latest_created_time:
+                latest_created_time = incident_created_time
+
+        # Save the next_run as a dict with the last_fetch key to be stored
+        next_run = {'last_fetch': latest_created_time}
+        return next_run, incidents
+
+
+    ''' GLOBALS/PARAMS '''
+
+    # PAGE_SIZE = int(demisto.params().get('page_size'))
+    PAGE_SIZE = arg_to_int(arg=demisto.params().get('page_size'), arg_name='page_size', required=False)
+    PROXY = demisto.params().get('proxy')
+    INSECURE = demisto.params().get('insecure')
+    BASE_URL = demisto.params().get('url')
+    ACCESS_KEY = demisto.params().get('access_key')
+    PRIVATE_KEY = demisto.params().get('private_key')
+    FIRST_FETCH_TIME = arg_to_timestamp(arg=demisto.params().get('first_fetch', '3 days'), \
+                                        arg_name='First fetch time',required=True)
+
+    MAX_INCIDENTS_TO_FETCH = 100
+    # INFINIPOINT_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
 
     '''MAIN FUNCTIONS'''
 
@@ -565,25 +671,6 @@ script:
             return command_results
 
 
-    def run_script_command(token, args):
-        script_id = args.get('script_id')
-        method = "POST"
-        route = "/scripts/execute"
-
-        script_id_node = {
-            "scriptId": f"{script_id}"
-        }
-
-        res = call_api(method, route, token, script_id_node, False)
-        LOG('res %s' % (res,))
-        if res:
-            command_results = CommandResults(
-                outputs_prefix='Infinipoint.Scripts.Execute',
-                outputs_key_field='actionId',
-                outputs=res)
-            return command_results
-
-
     def get_action_command(token, args):
         action_id = args.get('action_id')
         method = "POST"
@@ -610,10 +697,10 @@ script:
             return command_results
 
 
-    def get_osquery_command(token, args):
+    def get_queries_command(token, args):
         name = args.get('name')
         method = "POST"
-        route = f"/osquery/search"
+        route = "/all-scripts/search"
         rules = []
 
         if name:
@@ -628,30 +715,88 @@ script:
         LOG('res %s' % (res,))
         if res:
             command_results = CommandResults(
-                outputs_prefix='Infinipoint.Osquery.Search',
-                outputs_key_field='id',
-                outputs=res)
-            return command_results
-
-
-    def run_osquery_command(token, args):
-        query_id = args.get('query_id')
-        method = "POST"
-        route = f"/osquery/execute"
-
-        query_id_node = {
-            'queryId': f'{query_id}'
-        }
-
-        res = call_api(method, route, token, query_id_node, False)
-        LOG('res %s' % (res,))
-        if res:
-            command_results = CommandResults(
-                outputs_prefix='Infinipoint.Osquery.Execute',
+                outputs_prefix='Infinipoint.Scripts.Search',
                 outputs_key_field='actionId',
                 outputs=res)
             return command_results
 
+
+    def run_queries_command(token, args):
+        id = args.get('id')
+        target = args.get('target')
+        method = "POST"
+        route = "/all-scripts/execute"
+        node = {'id': id}
+
+        if target:
+            node['target'] = {'ids': target}
+
+        res = call_api(method, route, token, node, False)
+        LOG('res %s' % (res,))
+        if res:
+            command_results = CommandResults(
+                outputs_prefix='Infinipoint.Scripts.execute',
+                outputs_key_field='actionId',
+                outputs=res)
+            return command_results
+
+
+    def get_non_compliance_device_command(token, args):
+        offset = args.get('offset')
+        limit = args.get('limit')
+        method = "POST"
+        route = "/compliance/incidents"
+        node = {'offset': offset,
+                'limit': limit}
+
+        res = call_api(method, route, token, node, False)
+        LOG('res %s' % (res,))
+        if res:
+            command_results = CommandResults(
+                outputs_prefix='Infinipoint.Compliance.Incidents',
+                outputs_key_field='deviceID',
+                outputs=res)
+            return command_results
+
+        return res
+        # ex = [
+        #     {
+        #         "timestamp": 1593442099,
+        #         "hostname": "et",
+        #         "deviceID": "45edb141-fa9b-4c9c-9233-cda73aeefd0b",
+        #         "policyName": "fsct - Bitlocker",
+        #         "policyVersion": 1,
+        #         "issues": [{
+        #             "policyIdx": 0,
+        #             "issueType": "bitlocker status",
+        #             "issueID": "45edb141-fa9b-4c9c-9233-cda73aeefd0d"
+        #         },
+        #             {
+        #                 "policyIdx": 0,
+        #                 "issueType": "Logged in users",
+        #                 "issueID": "45edb141-fa9b-4c9c-9233-cda73aeef111"
+        #             },
+        #         ]
+        #     }
+        # ]
+        # return ex
+        # id = args.get('id')
+        # target = args.get('target')
+        # method = "POST"
+        # route = "/all-scripts/execute"
+        # node = {'id': id}
+        #
+        # if target:
+        #     node['target'] = {'ids': target}
+        #
+        # res = call_api(method, route, token, node, False)
+        # LOG('res %s' % (res,))
+        # if res:
+        #     command_results = CommandResults(
+        #         outputs_prefix='Infinipoint.Scripts.execute',
+        #         outputs_key_field='actionId',
+        #         outputs=res)
+        #     return command_results
 
     ''' EXECUTION '''
 
@@ -673,12 +818,7 @@ script:
                 test_module(token)
                 demisto.results('ok')
 
-            # todo: replace all fetch-incidents command
             elif demisto.command() == 'fetch-incidents':
-                # Set and define the fetch incidents command to run after activated via integration settings.
-                alert_status = demisto.params().get('alert_status', None)
-                alert_type = demisto.params().get('alert_type', None)
-                min_severity = demisto.params().get('min_severity', None)
 
                 # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
                 max_results = arg_to_int(
@@ -690,15 +830,11 @@ script:
                     max_results = MAX_INCIDENTS_TO_FETCH
 
                 next_run, incidents = fetch_incidents(
-                    client=client,
+                    token,
                     max_results=max_results,
                     last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
-                    first_fetch_time=first_fetch_time,
-                    alert_status=alert_status,
-                    min_severity=min_severity,
-                    alert_type=alert_type
+                    first_fetch_time=FIRST_FETCH_TIME
                 )
-
                 # saves next_run for the time fetch-incidents is invoked
                 demisto.setLastRun(next_run)
                 # fetch-incidents calls ``demisto.incidents()`` to provide the list
@@ -732,17 +868,26 @@ script:
             elif demisto.command() == "infinipoint-get-networks":
                 return_results(get_networks_command(token, demisto.args()))
 
-            elif demisto.command() == "infinipoint-get-osquery":
-                return_results(get_osquery_command(token, demisto.args()))
+            # elif demisto.command() == "infinipoint-get-osquery":
+            #     return_results(get_osquery_command(token, demisto.args()))
 
-            elif demisto.command() == "infinipoint-run-osquery":
-                return_results(run_osquery_command(token, demisto.args()))
+            # elif demisto.command() == "infinipoint-run-osquery":
+            #     return_results(run_osquery_command(token, demisto.args()))
 
-            elif demisto.command() == "infinipoint-run-script":
-                return_results(run_script_command(token, demisto.args()))
+            elif demisto.command() == "infinipoint-get-queries":
+                return_results(get_queries_command(token, demisto.args()))
+
+            elif demisto.command() == "infinipoint-run-queries":
+                return_results(run_queries_command(token, demisto.args()))
+
+            # elif demisto.command() == "infinipoint-run-script":
+            #     return_results(run_script_command(token, demisto.args()))
 
             elif demisto.command() == "infinipoint-get-action":
                 return_results(get_action_command(token, demisto.args()))
+
+            elif demisto.command() == "infinipoint-get-non-compliance":
+                return_results(get_non_compliance_device_command(token, demisto.args()))
 
         except Exception as e:
             err_msg = f'Error - Infinipoint Integration [{e}]'
@@ -1239,19 +1384,6 @@ script:
       type: String
     - contextPath: Infinipoint.Assets.User.username
       type: String
-  - name: infinipoint-run-script
-    arguments:
-    - name: script_id
-      required: true
-    outputs:
-    - contextPath: Infinipoint.Scripts.Execute.actionId
-      type: String
-    - contextPath: Infinipoint.Scripts.Execute.aggColumns
-      type: Unknown
-    - contextPath: Infinipoint.Scripts.Execute.devicesCount
-      type: Number
-    - contextPath: Infinipoint.Scripts.Execute.name
-      type: String
   - name: infinipoint-get-action
     arguments:
     - name: action_id
@@ -1267,44 +1399,71 @@ script:
       type: Number
     - contextPath: Infinipoint.Responses.$type
       type: String
-  - name: infinipoint-get-osquery
+  - name: infinipoint-get-queries
     arguments:
     - name: name
       required: true
     outputs:
-    - contextPath: Infinipoint.Osquery.Search.aggregation
-      type: String
-    - contextPath: Infinipoint.Osquery.Search.catalog
+    - contextPath: Infinipoint.Scripts.Search.aggregation
       type: Number
-    - contextPath: Infinipoint.Osquery.Search.categoryId
-      type: Number
-    - contextPath: Infinipoint.Osquery.Search.createdOn
+    - contextPath: Infinipoint.Scripts.Search.createdOn
       type: Date
-    - contextPath: Infinipoint.Osquery.Search.description
-      type: String
-    - contextPath: Infinipoint.Osquery.Search.id
-      type: String
-    - contextPath: Infinipoint.Osquery.Search.moduleId
+    - contextPath: Infinipoint.Scripts.Search.format
       type: Number
-    - contextPath: Infinipoint.Osquery.Search.name
+    - contextPath: Infinipoint.Scripts.Search.id
       type: String
-    - contextPath: Infinipoint.Osquery.Search.osType
+    - contextPath: Infinipoint.Scripts.Search.interp
       type: Number
-    - contextPath: Infinipoint.Osquery.Search.query
+    - contextPath: Infinipoint.Scripts.Search.module
+      type: Number
+    - contextPath: Infinipoint.Scripts.Search.name
       type: String
-  - name: infinipoint-run-osquery
+    - contextPath: Infinipoint.Scripts.Search.osType
+      type: Number
+  - name: infinipoint-run-queries
     arguments:
-    - name: query_id
+    - name: id
+      required: true
+    - name: target
+      isArray: true
+    outputs:
+    - contextPath: Infinipoint.Scripts.execute.actionId
+      type: String
+    - contextPath: Infinipoint.Scripts.execute.aggColumns
+      type: String
+    - contextPath: Infinipoint.Scripts.execute.devicesCount
+      type: Number
+    - contextPath: Infinipoint.Scripts.execute.name
+      type: String
+  - name: infinipoint-get-non-compliance
+    arguments:
+    - name: offset
+      required: true
+    - name: limit
       required: true
     outputs:
-    - contextPath: Infinipoint.Osquery.Execute.actionId
+    - contextPath: Infinipoint.Compliance.Incidents.deviceID
       type: String
-    - contextPath: Infinipoint.Osquery.Execute.aggColumns
-      type: String
-    - contextPath: Infinipoint.Osquery.Execute.devicesCount
+    - contextPath: Infinipoint.Compliance.Incidents.eventTime
       type: Number
-    - contextPath: Infinipoint.Osquery.Execute.name
+    - contextPath: Infinipoint.Compliance.Incidents.hostname
+      type: Date
+    - contextPath: Infinipoint.Compliance.Incidents.issues.issueID
       type: String
+    - contextPath: Infinipoint.Compliance.Incidents.issues.issueType
+      type: String
+    - contextPath: Infinipoint.Compliance.Incidents.issues.policyIdx
+      type: Number
+    - contextPath: Infinipoint.Compliance.Incidents.issues.ref
+      type: String
+    - contextPath: Infinipoint.Compliance.Incidents.policyID
+      type: String
+    - contextPath: Infinipoint.Compliance.Incidents.policyName
+      type: String
+    - contextPath: Infinipoint.Compliance.Incidents.policyVersion
+      type: Number
+    - contextPath: Infinipoint.Compliance.Incidents.timestamp
+      type: Number
   dockerimage: demisto/pyjwt3:1.0.0.8871
   isfetch: true
   runonce: false
