@@ -34,16 +34,30 @@ def check_if_user_exists(github_user, github_token=None, verify_ssl=True):
         return False
 
 
-def request_review_from_user(reviewers_list, pr_number, github_token=None, verify_ssl=True):
+def get_pr_author(pr_number, github_token, verify_ssl):
+    pr_endpoint = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/pulls/{pr_number}"
+    headers = {"Authorization": "Bearer " + github_token} if github_token else {}
+
+    response = requests.get(pr_endpoint, headers=headers, verify=verify_ssl)
+
+    if response.status_code not in [200, 201]:
+        print(f"Failed in pulling PR {pr_number} data")
+        sys.exit(1)
+
+    pr_info = response.json()
+
+    return pr_info.get('user', {}).get('login', '')
+
+
+def request_review_from_user(reviewers, pr_number, github_token=None, verify_ssl=True):
     review_endpoint = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/pulls/{pr_number}/requested_reviewers"
     headers = {"Authorization": "Bearer " + github_token} if github_token else {}
 
     reviewers_data = {
-        "reviewers": reviewers_list
+        "reviewers": list(reviewers)
     }
 
     response = requests.post(review_endpoint, json=reviewers_data, headers=headers, verify=verify_ssl)
-    print(response._content)
 
     if response.status_code not in [200, 201]:
         print(f"Failed requesting review on PR {pr_number}")
@@ -64,7 +78,7 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True)
     pr_changed_data = response.json()
     pr_files = [f.get('filename') for f in pr_changed_data]
     modified_packs = {Path(p).parts[1] for p in pr_files if p.startswith(PACKS_FOLDER) and len(Path(p).parts) > 1}
-    reviewers_list = []
+    reviewers = set()
 
     for pack in modified_packs:
         pack_metadata_path = os.path.join(PACKS_FULL_PATH, pack, PACK_METADATA)
@@ -80,7 +94,7 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True)
                                                    verify_ssl=verify_ssl)
 
                 if user_exists:
-                    reviewers_list.append(github_user)
+                    reviewers.add(github_user)
                 else:
                     print(f"{github_user} user defined in {pack} pack metadata does not exist")
                     continue
@@ -93,8 +107,10 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True)
         else:
             print(f"Not found {pack} {PACK_METADATA} file.")
 
-    if reviewers_list:
-        request_review_from_user(reviewers_list=reviewers_list, pr_number=pr_number, github_token=github_token,
+    if reviewers:
+        pr_author = get_pr_author(pr_number=pr_number, github_token=github_token, verify_ssl=verify_ssl)
+        reviewers.discard(pr_author)
+        request_review_from_user(reviewers=reviewers, pr_number=pr_number, github_token=github_token,
                                  verify_ssl=verify_ssl)
     else:
         print("No reviewers were found.")
