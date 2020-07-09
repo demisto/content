@@ -31,7 +31,7 @@
   "system": false,
   "systemAssociatedTypes": null,
   "threshold": 72,
-  "type": "shortText",
+  "type": "date",
   "unmapped": false,
   "unsearchable": false,
   "useAsKpi": false,

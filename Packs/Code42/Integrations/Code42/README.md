@@ -1,5 +1,4 @@
 Use the Code42 integration to identify potential data exfiltration from insider threats while speeding investigation and response by providing fast access to file events and metadata across physical and cloud environments.
-This integration was integrated and tested with version xx of Code42
 ## Configure Code42 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

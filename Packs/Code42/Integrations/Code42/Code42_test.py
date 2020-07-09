@@ -5,8 +5,6 @@ from py42.sdk import SDKClient
 from py42.response import Py42Response
 from Code42 import (
     Code42Client,
-    Code42AlertNotFoundError,
-    Code42UserNotFoundError,
     Code42LegalHoldMatterNotFoundError,
     Code42InvalidLegalHoldMembershipError,
     build_query_payload,
@@ -34,6 +32,11 @@ from Code42 import (
     legal_hold_remove_user_command,
     download_file_command,
     fetch_incidents,
+    Code42AlertNotFoundError,
+    Code42UserNotFoundError,
+    Code42OrgNotFoundError,
+    Code42UnsupportedHashError,
+    Code42MissingSearchArgumentsError,
 )
 import time
 
@@ -1293,8 +1296,13 @@ def assert_detection_list_outputs_match_response_items(outputs_list, response_it
 """TESTS"""
 
 
-def test_client_lazily_inits_sdk(mocker):
-    mocker.patch("py42.sdk.from_local_account")
+def test_client_lazily_inits_sdk(mocker, code42_sdk_mock):
+    sdk_factory_mock = mocker.patch("py42.sdk.from_local_account")
+    response_json_mock = """{"total": 1, "users": [{"username": "Test"}]}"""
+    code42_sdk_mock.users.get_by_username.return_value = create_mock_code42_sdk_response(
+        mocker, response_json_mock
+    )
+    sdk_factory_mock.return_value = code42_sdk_mock
 
     # test that sdk does not init during ctor
     client = Code42Client(sdk=None, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=False)
@@ -1305,23 +1313,28 @@ def test_client_lazily_inits_sdk(mocker):
     assert client._sdk is not None
 
 
-def test_client_when_no_alert_found_raises_alert_not_found(code42_sdk_mock):
-    code42_sdk_mock.alerts.get_details.return_value = (
-        json.loads('{"type$": "ALERT_DETAILS_RESPONSE", "alerts": []}')
+def test_client_when_no_alert_found_raises_alert_not_found(mocker, code42_sdk_mock):
+    response_json = """{"alerts": []}"""
+    code42_sdk_mock.alerts.get_details.return_value = create_mock_code42_sdk_response(
+        mocker, response_json
     )
     client = create_client(code42_sdk_mock)
     with pytest.raises(Code42AlertNotFoundError):
         client.get_alert_details("mock-id")
 
 
-def test_client_when_no_user_found_raises_user_not_found(code42_sdk_mock):
-    code42_sdk_mock.users.get_by_username.return_value = json.loads('{"totalCount":0, "users":[]}')
+def test_client_when_no_user_found_raises_user_not_found(mocker, code42_sdk_mock):
+    response_json = """{"totalCount": 0, "users": []}"""
+    code42_sdk_mock.users.get_by_username.return_value = create_mock_code42_sdk_response(
+        mocker, response_json
+    )
     client = create_client(code42_sdk_mock)
     with pytest.raises(Code42UserNotFoundError):
         client.get_user("test@example.com")
 
 
 def test_client_add_to_matter_when_no_legal_hold_matter_found_raises_matter_not_found(code42_sdk_mock, mocker):
+
     code42_sdk_mock.legalhold.get_all_matters.return_value = (
         get_empty_legalhold_matters_response(mocker, MOCK_GET_ALL_MATTERS_RESPONSE)
     )
@@ -1331,8 +1344,9 @@ def test_client_add_to_matter_when_no_legal_hold_matter_found_raises_matter_not_
         client.add_user_to_legal_hold_matter("TESTUSERNAME", "TESTMATTERNAME")
 
 
-def test_client_add_to_matter_when_no_user_found_raises_user_not_found(code42_sdk_mock):
-    code42_sdk_mock.users.get_by_username.return_value = json.loads('{"totalCount":0, "users":[]}')
+def test_client_add_to_matter_when_no_user_found_raises_user_not_found(mocker, code42_sdk_mock):
+    response_json = '{"totalCount":0, "users":[]}'
+    code42_sdk_mock.users.get_by_username.return_value = create_mock_code42_sdk_response(mocker, response_json)
     client = create_client(code42_sdk_mock)
     with pytest.raises(Code42UserNotFoundError):
         client.add_user_to_legal_hold_matter("TESTUSERNAME", "TESTMATTERNAME")
@@ -1348,8 +1362,9 @@ def test_client_remove_from_matter_when_no_legal_hold_matter_found_raises_except
         client.remove_user_from_legal_hold_matter("TESTUSERNAME", "TESTMATTERNAME")
 
 
-def test_client_remove_from_matter_when_no_user_found_raises_user_not_found(code42_sdk_mock):
-    code42_sdk_mock.users.get_by_username.return_value = json.loads('{"totalCount":0, "users":[]}')
+def test_client_remove_from_matter_when_no_user_found_raises_user_not_found(mocker, code42_sdk_mock):
+    response_json = '{"totalCount":0, "users":[]}'
+    code42_sdk_mock.users.get_by_username.return_value = create_mock_code42_sdk_response(mocker, response_json)
     client = create_client(code42_sdk_mock)
     with pytest.raises(Code42UserNotFoundError):
         client.remove_user_from_legal_hold_matter("TESTUSERNAME", "TESTMATTERNAME")
@@ -1725,6 +1740,23 @@ def test_user_create_command(code42_users_mock):
     assert cmd_res.outputs["Email"] == "new.user@example.com"
 
 
+def test_user_create_command_when_org_not_found_raises_org_not_found(mocker, code42_users_mock):
+    response_json = """{"total": 0, "orgs": []}"""
+    code42_users_mock.orgs.get_all.return_value = create_mock_code42_sdk_response_generator(
+        mocker, [response_json]
+    )
+    client = create_client(code42_users_mock)
+    with pytest.raises(Code42OrgNotFoundError):
+        user_create_command(
+            client,
+            {
+                "orgname": _TEST_ORG_NAME,
+                "username": "new.user@example.com",
+                "email": "new.user@example.com",
+            }
+        )
+
+
 def test_user_block_command(code42_users_mock):
     client = create_client(code42_users_mock)
     cmd_res = user_block_command(client, {"username": "new.user@example.com"})
@@ -1798,6 +1830,12 @@ def test_security_data_search_command(code42_file_events_mock):
         assert output_item == mapped_event
 
 
+def test_securitydata_search_command_when_not_given_any_queryable_args_raises_error(code42_file_events_mock):
+    client = create_client(code42_file_events_mock)
+    with pytest.raises(Code42MissingSearchArgumentsError):
+        securitydata_search_command(client, {})
+
+
 def test_download_file_command_when_given_md5(code42_sdk_mock, mocker):
     fr = mocker.patch("Code42.fileResult")
     client = create_client(code42_sdk_mock)
@@ -1815,6 +1853,15 @@ def test_download_file_command_when_given_sha256(code42_sdk_mock, mocker):
     _ = download_file_command(client, {"hash": _hash})
     code42_sdk_mock.securitydata.stream_file_by_sha256.assert_called_once_with(_hash)
     assert fr.call_count == 1
+
+
+def test_download_file_when_given_other_hash_raises_unsupported_hash(code42_sdk_mock, mocker):
+    mocker.patch("Code42.fileResult")
+    _hash = "41966f10cc59ab466444add08974fde4cd37f88d79321d42da8e4c79b51c214941966f10cc59ab466444add08974fde4cd37" \
+            "f88d79321d42da8e4c79b51c2149"
+    client = create_client(code42_sdk_mock)
+    with pytest.raises(Code42UnsupportedHashError):
+        _ = download_file_command(client, {"hash": _hash})
 
 
 def test_fetch_when_no_significant_file_categories_ignores_filter(
@@ -1840,8 +1887,8 @@ def test_fetch_when_no_significant_file_categories_ignores_filter(
     assert "IMAGE" not in actual_query
 
 
-def test_fetch_incidents_handles_single_severity(code42_sdk_mock):
-    client = create_client(code42_sdk_mock)
+def test_fetch_incidents_handles_single_severity(code42_fetch_incidents_mock):
+    client = create_client(code42_fetch_incidents_mock)
     fetch_incidents(
         client=client,
         last_run={"last_fetch": None},
@@ -1851,7 +1898,7 @@ def test_fetch_incidents_handles_single_severity(code42_sdk_mock):
         include_files=True,
         integration_context=None,
     )
-    assert "HIGH" in str(code42_sdk_mock.alerts.search.call_args[0][0])
+    assert "HIGH" in str(code42_fetch_incidents_mock.alerts.search.call_args[0][0])
 
 
 def test_fetch_incidents_handles_multi_severity(code42_fetch_incidents_mock):
