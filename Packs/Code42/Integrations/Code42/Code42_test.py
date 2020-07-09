@@ -5,6 +5,10 @@ from py42.sdk import SDKClient
 from py42.response import Py42Response
 from Code42 import (
     Code42Client,
+    Code42AlertNotFoundError,
+    Code42UserNotFoundError,
+    Code42LegalHoldMatterNotFoundError,
+    Code42InvalidLegalHoldMembershipError,
     build_query_payload,
     map_observation_to_security_query,
     map_to_code42_event_context,
@@ -26,6 +30,8 @@ from Code42 import (
     user_unblock_command,
     user_deactivate_command,
     user_reactivate_command,
+    legal_hold_add_user_command,
+    legal_hold_remove_user_command,
     download_file_command,
     fetch_incidents,
     Code42AlertNotFoundError,
@@ -49,6 +55,7 @@ MOCK_SECURITY_DATA_SEARCH_QUERY = {
     "exposure": "ApplicationRead",
     "results": 50,
 }
+
 
 MOCK_SECURITY_EVENT_RESPONSE = """
 {
@@ -1081,6 +1088,70 @@ MOCK_CREATE_USER_RESPONSE = """
 """
 
 
+MOCK_ADD_TO_MATTER_RESPONSE = """
+{
+    "legalHoldMembershipUid":"645579283748927372",
+    "active":true,
+    "creationDate":"2015-05-16T15:07:44.820-05:00",
+    "legalHold":{
+      "legalHoldUid":"645576513911664484",
+      "name":"Patent Lawsuit"
+    },
+    "user":{
+      "userUid":"123412341234123412",
+      "username":"user1@example.com",
+      "email":"user1@example.com",
+      "userExtRef":null
+    }
+}
+"""
+
+MOCK_GET_ALL_MATTERS_RESPONSE = """
+{
+    "legalHolds":[
+      {
+        "legalHoldUid":"645576513911664484",
+        "name":"Patent Lawsuit",
+        "description":"Lawsuit from Acme Inc demanding we license their software patents.",
+        "notes":"Engineering is still reviewing what, if any, of our components are actually infringing.",
+        "holdExtRef":"Case 13a-32f",
+        "active":true,
+        "creationDate":"2015-05-16T15:07:44.820-05:00",
+        "lastModified":"2015-05-16T15:07:44.820-05:00",
+        "holdPolicyUid":"23456753135798456",
+        "creator":{
+          "userUid":"123412341234123412",
+          "username":"user1@example.com",
+          "email":"user1@example.com",
+          "userExtRef":null
+        }
+      }
+    ]
+}
+"""
+
+MOCK_GET_ALL_MATTER_CUSTODIANS_RESPONSE = """
+{
+    "legalHoldMemberships":[
+          {
+            "legalHoldMembershipUid":"645579283748927372",
+            "active":true,
+            "creationDate":"2015-05-16T15:07:44.820-05:00",
+            "legalHold":{
+              "legalHoldUid":"645576513911664484",
+              "name":"Patent Lawsuit"
+            },
+            "user":{
+              "userUid":"123412341234123412",
+              "username":"user1@example.com",
+              "email":"user1@example.com",
+              "userExtRef":null
+            }
+          }
+        ]
+}
+"""
+
 _TEST_USER_ID = "123412341234123412"  # value found in GET_USER_RESPONSE
 _TEST_USERNAME = "user1@example.com"
 _TEST_ORG_NAME = "TestCortexOrg"
@@ -1160,6 +1231,21 @@ def code42_high_risk_employee_mock(code42_sdk_mock, mocker):
     return code42_sdk_mock
 
 
+@pytest.fixture
+def code42_legal_hold_mock(code42_sdk_mock, mocker):
+    code42_sdk_mock.legalhold.get_all_matters.return_value = create_mock_code42_sdk_response_generator(
+        mocker, [MOCK_GET_ALL_MATTERS_RESPONSE]
+    )
+    code42_sdk_mock.legalhold.get_all_matter_custodians.return_value = (
+        create_mock_code42_sdk_response_generator(mocker, [MOCK_GET_ALL_MATTER_CUSTODIANS_RESPONSE])
+    )
+    code42_sdk_mock.legalhold.add_to_matter.return_value = (
+        create_mock_code42_sdk_response(mocker, MOCK_ADD_TO_MATTER_RESPONSE)
+    )
+
+    return code42_sdk_mock
+
+
 def create_mock_code42_sdk_response(mocker, response_text):
     response_mock = mocker.MagicMock(spec=Response)
     response_mock.text = response_text
@@ -1179,6 +1265,20 @@ def get_empty_detectionlist_response(mocker, base_text):
     no_employees_response_text["items"] = []
     no_employees_response_text = json.dumps(no_employees_response_text)
     return create_mock_code42_sdk_response_generator(mocker, [no_employees_response_text])
+
+
+def get_empty_legalhold_matters_response(mocker, base_text):
+    no_matters_response_text = json.loads(base_text)
+    no_matters_response_text["legalHolds"] = []
+    no_matters_response_text = json.dumps(no_matters_response_text)
+    return create_mock_code42_sdk_response_generator(mocker, [no_matters_response_text])
+
+
+def get_empty_legalhold_custodians_response(mocker, base_text):
+    no_members_response_text = json.loads(base_text)
+    no_members_response_text["legalHoldMemberships"] = []
+    no_members_response_text = json.dumps(no_members_response_text)
+    return create_mock_code42_sdk_response_generator(mocker, [no_members_response_text])
 
 
 def assert_departingemployee_outputs_match_response(outputs_list, response_items):
@@ -1215,24 +1315,63 @@ def test_client_lazily_inits_sdk(mocker, code42_sdk_mock):
     assert client._sdk is not None
 
 
-def test_client_when_no_alert_found_raises_Code42AlertNotFoundError(mocker, code42_sdk_mock):
-    response_json = """{"alerts": []}"""
-    code42_sdk_mock.alerts.get_details.return_value = create_mock_code42_sdk_response(
-        mocker, response_json
+def test_client_when_no_alert_found_raises_alert_not_found(code42_sdk_mock):
+    code42_sdk_mock.alerts.get_details.return_value = (
+        json.loads('{"type$": "ALERT_DETAILS_RESPONSE", "alerts": []}')
     )
     client = create_client(code42_sdk_mock)
     with pytest.raises(Code42AlertNotFoundError):
         client.get_alert_details("mock-id")
 
 
-def test_client_when_no_user_found_raises_Code42UserNotFoundError(mocker, code42_sdk_mock):
-    response_json = """{"totalCount": 0, "users": []}"""
-    code42_sdk_mock.users.get_by_username.return_value = create_mock_code42_sdk_response(
-        mocker, response_json
-    )
+def test_client_when_no_user_found_raises_user_not_found(code42_sdk_mock):
+    code42_sdk_mock.users.get_by_username.return_value = json.loads('{"totalCount":0, "users":[]}')
     client = create_client(code42_sdk_mock)
     with pytest.raises(Code42UserNotFoundError):
         client.get_user("test@example.com")
+
+
+def test_client_add_to_matter_when_no_legal_hold_matter_found_raises_matter_not_found(code42_sdk_mock, mocker):
+    code42_sdk_mock.legalhold.get_all_matters.return_value = (
+        get_empty_legalhold_matters_response(mocker, MOCK_GET_ALL_MATTERS_RESPONSE)
+    )
+
+    client = create_client(code42_sdk_mock)
+    with pytest.raises(Code42LegalHoldMatterNotFoundError):
+        client.add_user_to_legal_hold_matter("TESTUSERNAME", "TESTMATTERNAME")
+
+
+def test_client_add_to_matter_when_no_user_found_raises_user_not_found(code42_sdk_mock):
+    code42_sdk_mock.users.get_by_username.return_value = json.loads('{"totalCount":0, "users":[]}')
+    client = create_client(code42_sdk_mock)
+    with pytest.raises(Code42UserNotFoundError):
+        client.add_user_to_legal_hold_matter("TESTUSERNAME", "TESTMATTERNAME")
+
+
+def test_client_remove_from_matter_when_no_legal_hold_matter_found_raises_exception(code42_sdk_mock, mocker):
+    code42_sdk_mock.legalhold.get_all_matters.return_value = (
+        get_empty_legalhold_matters_response(mocker, MOCK_GET_ALL_MATTERS_RESPONSE)
+    )
+
+    client = create_client(code42_sdk_mock)
+    with pytest.raises(Code42LegalHoldMatterNotFoundError):
+        client.remove_user_from_legal_hold_matter("TESTUSERNAME", "TESTMATTERNAME")
+
+
+def test_client_remove_from_matter_when_no_user_found_raises_user_not_found(code42_sdk_mock):
+    code42_sdk_mock.users.get_by_username.return_value = json.loads('{"totalCount":0, "users":[]}')
+    client = create_client(code42_sdk_mock)
+    with pytest.raises(Code42UserNotFoundError):
+        client.remove_user_from_legal_hold_matter("TESTUSERNAME", "TESTMATTERNAME")
+
+
+def test_client_remove_from_matter_when_no_membership_raises_invalid_legal_hold_membership(code42_legal_hold_mock, mocker):
+    code42_legal_hold_mock.legalhold.get_all_matter_custodians.return_value = (
+        get_empty_legalhold_custodians_response(mocker, MOCK_GET_ALL_MATTER_CUSTODIANS_RESPONSE)
+    )
+    client = create_client(code42_legal_hold_mock)
+    with pytest.raises(Code42InvalidLegalHoldMembershipError):
+        client.remove_user_from_legal_hold_matter("TESTUSERNAME", "TESTMATTERNAME")
 
 
 def test_build_query_payload():
@@ -1550,6 +1689,34 @@ def test_highriskemployee_remove_risk_tags_command(code42_sdk_mock):
     )
 
 
+def test_legalhold_add_user_command(code42_legal_hold_mock):
+    client = create_client(code42_legal_hold_mock)
+    cmd_res = legal_hold_add_user_command(
+        client, {"username": _TEST_USERNAME, "mattername": "Patent Lawsuit"}
+    )
+    assert cmd_res.raw_response == json.loads(MOCK_ADD_TO_MATTER_RESPONSE)
+    assert cmd_res.outputs_prefix == "Code42.LegalHold"
+    assert cmd_res.outputs_key_field == "MatterID"
+    assert cmd_res.outputs["UserID"] == _TEST_USER_ID
+    assert cmd_res.outputs["MatterName"] == "Patent Lawsuit"
+    assert cmd_res.outputs["MatterID"] == "645576513911664484"
+    code42_legal_hold_mock.legalhold.add_to_matter.assert_called_once_with("123412341234123412",
+                                                                           "645576513911664484")
+
+
+def test_legalhold_remove_user_command(code42_legal_hold_mock):
+    client = create_client(code42_legal_hold_mock)
+    cmd_res = legal_hold_remove_user_command(
+        client, {"username": _TEST_USERNAME, "mattername": "Patent Lawsuit"}
+    )
+    assert cmd_res.outputs_prefix == "Code42.LegalHold"
+    assert cmd_res.outputs_key_field == "MatterID"
+    assert cmd_res.outputs["UserID"] == _TEST_USER_ID
+    assert cmd_res.outputs["MatterName"] == "Patent Lawsuit"
+    assert cmd_res.outputs["MatterID"] == "645576513911664484"
+    code42_legal_hold_mock.legalhold.remove_from_matter.assert_called_once_with("645579283748927372")
+
+
 def test_user_create_command(code42_users_mock):
     client = create_client(code42_users_mock)
     cmd_res = user_create_command(
@@ -1684,7 +1851,7 @@ def test_download_file_command_when_given_sha256(code42_sdk_mock, mocker):
 
 
 def test_download_file_when_given_other_hash_raises_Code42UnsupportedHashError(code42_sdk_mock, mocker):
-    fr = mocker.patch("Code42.fileResult")
+    mocker.patch("Code42.fileResult")
     _hash = "41966f10cc59ab466444add08974fde4cd37f88d79321d42da8e4c79b51c214941966f10cc59ab466444add08974fde4cd37" \
             "f88d79321d42da8e4c79b51c2149"
     client = create_client(code42_sdk_mock)
