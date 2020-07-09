@@ -420,8 +420,8 @@ Get all employees on the High Risk Employee List.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| risktags | To filter results by employees who have these risk tags. Space delimited. | Optional |
-| results | The number of items to return. | Optional |
+| risktags | To filter results by employees who have these risk tags. Comma delimited. | Optional | 
+| results | The number of items to return. | Optional | 
 
 
 #### Context Output

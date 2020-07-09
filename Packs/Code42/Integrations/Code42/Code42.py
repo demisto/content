@@ -152,7 +152,7 @@ def _get_all_high_risk_employees_from_page(page, risk_tags):
 
 def _try_convert_str_list_to_list(str_list):
     if isinstance(str_list, str):
-        return str_list.split()
+        return str_list.split(",")
     return str_list
 
 
@@ -1052,9 +1052,10 @@ def legal_hold_remove_user_command(client, args):
 @logger
 def download_file_command(client, args):
     file_hash = args.get("hash")
+    filename = args.get("filename") or file_hash
     response = client.download_file(file_hash)
     file_chunks = [c for c in response.iter_content(chunk_size=128) if c]
-    return fileResult(file_hash, data=b"".join(file_chunks))
+    return fileResult(filename, data=b"".join(file_chunks))
 
 
 """Fetching"""
