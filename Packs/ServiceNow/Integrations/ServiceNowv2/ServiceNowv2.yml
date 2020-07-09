@@ -72,7 +72,7 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: IT service management
+description: Use The ServiceNow IT Service Management (ITSM) solution to modernize the way you manage and deliver services to your users.
 display: ServiceNow v2
 name: ServiceNow v2
 script:
@@ -2208,7 +2208,7 @@ script:
       description: 'Name of the document to be routed by this work item, for example:
         case record.'
       type: String
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: true
   longRunning: false

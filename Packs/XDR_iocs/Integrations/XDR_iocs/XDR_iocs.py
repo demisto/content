@@ -34,6 +34,7 @@ demisto_score_to_xdr: Dict[int, str] = {
 class Client:
     severity: str = ''
     query: str = 'reputation:Bad and (type:File or type:Domain or type:IP)'
+    tag = 'Cortex XDR'
     error_codes: Dict[int, str] = {
         500: 'XDR internal server error.',
         401: 'Unauthorized access. An issue occurred during authentication. This can indicate an ' +    # noqa: W504
@@ -59,8 +60,11 @@ class Client:
 
         if res.status_code in self.error_codes:
             raise DemistoException(f'{self.error_codes[res.status_code]}\t({res.content.decode()})')
-
-        return res.json()
+        try:
+            return res.json()
+        except json.decoder.JSONDecodeError as error:
+            demisto.error(str(res.content))
+            raise error
 
 
 def get_headers(params: Dict) -> Dict:
@@ -115,9 +119,8 @@ def create_file_iocs_to_keep(file_path, batch_size: int = 200):
         total_size: int = get_iocs_size()
         for i in range(0, ceil(total_size / batch_size)):
             iocs: List = get_iocs(page=i, size=batch_size)
-            for ios in map(lambda x: x.get('value'), iocs):
-                _file.write(ios)
-                _file.write('\n')
+            for ios in map(lambda x: x.get('value', ''), iocs):
+                _file.write(ios + '\n')
 
 
 def create_file_sync(file_path, batch_size: int = 200):
@@ -125,9 +128,9 @@ def create_file_sync(file_path, batch_size: int = 200):
         total_size: int = get_iocs_size()
         for i in range(0, ceil(total_size / batch_size)):
             iocs: List = get_iocs(page=i, size=batch_size)
-            for ioc in map(lambda x: json.dumps(demisto_ioc_to_xdr(x)), iocs):
-                _file.write(ioc)
-                _file.write('\n')
+            for ioc in map(lambda x: demisto_ioc_to_xdr(x), iocs):
+                if ioc:
+                    _file.write(json.dumps(ioc) + '\n')
 
 
 def get_iocs_size(query=None) -> int:
@@ -179,26 +182,32 @@ def demisto_types_to_xdr(_type: str) -> str:
 
 
 def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
-    xdr_ioc: Dict = {
-        'indicator': ioc['value'],
-        'severity': Client.severity,
-        'type': demisto_types_to_xdr(str(ioc['indicator_type'])),
-        'reputation': demisto_score_to_xdr.get(ioc.get('score', 0), 'UNKNOWN'),
-        'expiration_date': demisto_expiration_to_xdr(ioc.get('expiration'))
-    }
-    # get last 'IndicatorCommentRegular'
-    comment: Dict = next(filter(lambda x: x.get('type') == 'IndicatorCommentRegular', reversed(ioc.get('comments', []))), {})
-    if comment:
-        xdr_ioc['comment'] = comment.get('content')
-    if ioc.get('aggregatedReliability'):
-        xdr_ioc['reliability'] = ioc['aggregatedReliability'][0]
-    vendors = demisto_vendors_to_xdr(ioc.get('moduleToFeedMap', {}))
-    if vendors:
-        xdr_ioc['vendors'] = vendors
-    threat_type = ioc.get('CustomFields', {}).get('threattypes', {}).get('threatcategory', False)
-    if threat_type:
-        xdr_ioc['class'] = threat_type
-    return xdr_ioc
+    try:
+        xdr_ioc: Dict = {
+            'indicator': ioc['value'],
+            'severity': Client.severity,
+            'type': demisto_types_to_xdr(str(ioc['indicator_type'])),
+            'reputation': demisto_score_to_xdr.get(ioc.get('score', 0), 'UNKNOWN'),
+            'expiration_date': demisto_expiration_to_xdr(ioc.get('expiration'))
+        }
+        # get last 'IndicatorCommentRegular'
+        comment: Dict = next(filter(lambda x: x.get('type') == 'IndicatorCommentRegular', reversed(ioc.get('comments', []))), {})
+        if comment:
+            xdr_ioc['comment'] = comment.get('content')
+        if ioc.get('aggregatedReliability'):
+            xdr_ioc['reliability'] = ioc['aggregatedReliability'][0]
+        vendors = demisto_vendors_to_xdr(ioc.get('moduleToFeedMap', {}))
+        if vendors:
+            xdr_ioc['vendors'] = vendors
+        threat_type = ioc.get('CustomFields', {}).get('threattypes', {}).get('threatcategory')
+        if threat_type:
+            xdr_ioc['class'] = threat_type
+        if ioc.get('CustomFields', {}).get('xdrstatus') == 'disabled':
+            xdr_ioc['status'] = 'DISABLED'
+        return xdr_ioc
+    except KeyError as error:
+        demisto.debug(f'unexpected IOC format in key: {str(error)}, {str(ioc)}')
+        return {}
 
 
 def get_temp_file() -> str:
@@ -230,7 +239,7 @@ def iocs_to_keep(client: Client):
 
 
 def create_last_iocs_query(from_date, to_date):
-    return f'modified:>={from_date} and modified:<{to_date}'
+    return f'modified:>={from_date} and modified:<{to_date} and ({Client.query})'
 
 
 def get_last_iocs(batch_size=200) -> List:
@@ -246,19 +255,34 @@ def get_last_iocs(batch_size=200) -> List:
     return iocs
 
 
+def get_indicators(indicators: str) -> List:
+    if indicators:
+        iocs = []
+        not_found = []
+        for indicator in indicators.split(','):
+            data = demisto.searchIndicators(value=indicator).get('iocs')
+            if data:
+                iocs.extend(data)
+            else:
+                not_found.append(indicator)
+        if not_found:
+            return_warning('The following indicators were not found: {}'.format(', '.join(not_found)))
+        else:
+            return iocs
+    return []
+
+
 def tim_insert_jsons(client: Client):
-    indicators = demisto.args().get('indicator')
+    indicators = demisto.args().get('indicator', '')
     if not indicators:
         iocs = get_last_iocs()
     else:
-        iocs = []
-        for indicator in indicators.split(','):
-            iocs.append(demisto.searchIndicators(query=f'value:{indicator}').get('iocs')[0])
-
-    path = 'tim_insert_jsons/'
-    requests_kwargs: Dict = get_requests_kwargs(_json=list(map(lambda ioc: demisto_ioc_to_xdr(ioc), iocs)))
-    client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
-    return_outputs('push success.')
+        iocs = get_indicators(indicators)
+    if iocs:
+        path = 'tim_insert_jsons/'
+        requests_kwargs: Dict = get_requests_kwargs(_json=list(map(lambda ioc: demisto_ioc_to_xdr(ioc), iocs)))
+        client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
+    return_outputs('push done.')
 
 
 def iocs_command(client: Client):
@@ -292,17 +316,18 @@ def xdr_expiration_to_demisto(expiration) -> Union[str, None]:
 
 
 def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
-    score = int(xdr_reputation_to_demisto.get(ioc.get('REPUTATION'), 0))
-    xdr_entry: Dict = {
-        "status": ioc.get('RULE_STATUS', '').lower(),
-        "score": score,
-        "expiration": xdr_expiration_to_demisto(ioc.get('RULE_EXPIRATION_TIME'))
-    }
+    indicator = ioc.get('RULE_INDICATOR', '')
+    xdr_server_score = int(xdr_reputation_to_demisto.get(ioc.get('REPUTATION'), 0))
+    score = get_indicator_xdr_score(indicator, xdr_server_score)
     entry: Dict = {
-        "value": ioc.get('RULE_INDICATOR'),
+        "value": indicator,
         "type": xdr_types_to_demisto.get(ioc.get('IOC_TYPE')),
         "score": score,
-        "fields": {"xdr": xdr_entry},
+        "fields": {
+            "tags": Client.tag,
+            "xdrstatus": ioc.get('RULE_STATUS', '').lower(),
+            "expirationdate": xdr_expiration_to_demisto(ioc.get('RULE_EXPIRATION_TIME'))
+        },
         "rawJSON": ioc
     }
     return entry
@@ -318,7 +343,6 @@ def get_changes(client: Client):
     if iocs:
         from_time['ts'] = iocs[-1].get('RULE_MODIFY_TIME', from_time) + 1
         demisto.setIntegrationContext(from_time)
-        return_outputs('', timeline=xdr_ioc_to_timeline(list(map(lambda x: str(x.get('RULE_INDICATOR')), iocs))))
         demisto.createIndicators(list(map(xdr_ioc_to_demisto, iocs)))
 
 
@@ -362,6 +386,35 @@ def create_iocs_to_keep_time():
     return hour, minute
 
 
+def is_xdr_data(ioc):
+    return ioc.get('sourceBrand') == 'Cortex XDR - IOC'
+
+
+def get_indicator_xdr_score(indicator: str, xdr_server: int):
+    """
+    the goal is to avoid reliability changes.
+    for example if some feed with reliability 'C' give as the indicator 88.88.88.88 with score 1 (good)
+    we dont wont that xdr will also return with 1 and reliability 'A' so the score will be 0 (unknown).
+    and we will update only on a case that someone really changed th indicator in xdr.
+    :param indicator: the indicator (e.g. 88.88.88.88)
+    :param xdr_server: the score in xdr (e.g. GOOD, BAD ...)
+    :return: the current score (0 - 3)
+    """
+    xdr_local: int = 0
+    score = 0
+    if indicator:
+        ioc = demisto.searchIndicators(value=indicator).get('iocs')
+        if ioc:
+            ioc = ioc[0]
+            score = ioc.get('score', 0)
+            temp: Dict = next(filter(is_xdr_data, ioc.get('moduleToFeedMap', {}).values()), {})
+            xdr_local = temp.get('score', 0)
+    if xdr_server != score:
+        return xdr_server
+    else:
+        return xdr_local
+
+
 def main():
     # """
     # Executes an integration command
@@ -369,6 +422,7 @@ def main():
     params = demisto.params()
     Client.severity = params.get('severity', '').upper()
     Client.query = params.get('query', Client.query)
+    Client.tag = params.get('tag', Client.tag)
     client = Client(params)
     commands = {
         'test-module': module_test,
@@ -383,7 +437,7 @@ def main():
         elif command in commands:
             commands[command](client)
         elif command == 'xdr-iocs-sync':
-            xdr_iocs_sync_command(client, bool(demisto.args().get('firstTime', False)))
+            xdr_iocs_sync_command(client, demisto.args().get('firstTime') == 'true')
         else:
             raise NotImplementedError(command)
     except Exception as error:
