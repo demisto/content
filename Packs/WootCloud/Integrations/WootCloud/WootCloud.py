@@ -94,7 +94,7 @@ class Client(BaseClient):
             params=params,
             json=json,
             headers=self.headers,
-            auth= requests.auth.HTTPBasicAuth(self.username, self.password)
+            auth = requests.auth.HTTPBasicAuth(self.username, self.password)
         )
         # Handle error responses gracefully
         if res.status_code == 401:
@@ -174,7 +174,8 @@ def fetch_incidents(client, alert_type):
 
     incidents = []
     ###
-    items = iter_all_alerts(client, alert_type, last_fetch, datetime.now().strftime(DATE_FORMAT), severity=SEVERITY_TYPE)
+    items = iter_all_alerts(client, alert_type, last_fetch, datetime.now().strftime(DATE_FORMAT),
+                            severity=SEVERITY_TYPE)
     ###
     for item in items:
         incident = item_to_incident(item)
@@ -183,9 +184,8 @@ def fetch_incidents(client, alert_type):
         if incident_date.timestamp() > datetime.strptime(last_fetch, DATE_FORMAT).timestamp():
             last_fetch = incident_date.strftime(DATE_FORMAT)
             incidents.append(incident)
-    demisto.setLastRun({'time' : last_fetch})
+    demisto.setLastRun({'time': last_fetch})
     demisto.incidents(incidents)
-
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -206,30 +206,50 @@ def main():
             fetch_incidents(client, ALERT_TYPE)
         elif demisto.command() == 'wootcloud-get-pkt-alerts':
             starttime, endtime = parse_date_range(demisto.args().get('date_range'), DATE_FORMAT)
-            alerts = client.get_woot_alerts('packet', starttime, endtime, severity=demisto.args().get('severity'), skip=demisto.args().get('skip'), limit=demisto.args().get('limit'), site_id=demisto.args().get('site_id'))
-            return_results(CommandResults(outputs=alerts['packet_alerts'], outputs_prefix='WootCloud.PacketAlert', outputs_key_field='id'))
+            alerts = client.get_woot_alerts('packet', starttime, endtime, severity=demisto.args().get('severity'),
+                                            skip=demisto.args().get('skip'), limit=demisto.args().get('limit'),
+                                            site_id=demisto.args().get('site_id'))
+            return_results(CommandResults(outputs=alerts['packet_alerts'],
+                                          outputs_prefix='WootCloud.PacketAlert',
+                                          outputs_key_field='id'))
         elif demisto.command() == 'wootcloud-get-bt-alerts':
             starttime, endtime = parse_date_range(demisto.args().get('date_range'), DATE_FORMAT)
-            alerts = client.get_woot_alerts('bluetooth', starttime, endtime, severity=demisto.args().get('severity'), skip=demisto.args().get('skip'), limit=demisto.args().get('limit'), site_id=demisto.args().get('site_id'))
-            return_results(CommandResults(outputs=alerts['alerts'], outputs_prefix='WootCloud.BluetoothAlert', outputs_key_field='id'))
+            alerts = client.get_woot_alerts('bluetooth', starttime, endtime,
+                                            severity=demisto.args().get('severity'),
+                                            skip=demisto.args().get('skip'),
+                                            limit=demisto.args().get('limit'),
+                                            site_id=demisto.args().get('site_id'))
+            return_results(CommandResults(outputs=alerts['alerts'],
+                                          outputs_prefix='WootCloud.BluetoothAlert',
+                                          outputs_key_field='id'))
         elif demisto.command() == 'wootcloud-get-anomaly-alerts':
             starttime, endtime = parse_date_range(demisto.args().get('date_range'), DATE_FORMAT)
-            alerts = client.get_woot_alerts('anomaly', starttime, endtime, severity=demisto.args().get('severity'), skip=demisto.args().get('skip'), limit=demisto.args().get('limit'), site_id=demisto.args().get('site_id'))
-            return_results(CommandResults(outputs=alerts['alerts'], outputs_prefix='WootCloud.AnomalyAlert', outputs_key_field='id'))
+            alerts = client.get_woot_alerts('anomaly', starttime, endtime,
+                                            severity=demisto.args().get('severity'),
+                                            skip=demisto.args().get('skip'),
+                                            limit=demisto.args().get('limit'),
+                                            site_id=demisto.args().get('site_id'))
+            return_results(CommandResults(outputs=alerts['alerts'],
+                                          outputs_prefix='WootCloud.AnomalyAlert',
+                                          outputs_key_field='id'))
         elif demisto.command() == 'wootcloud-fetch-packet-alert':
             alert = fetch_single_alert(client, demisto.args().get('alert_id'), 'packet')
-            return_results(CommandResults(outputs=alert, outputs_prefix='WootCloud.PacketAlert', outputs_key_field='id'))
+            return_results(CommandResults(outputs=alert, outputs_prefix='WootCloud.PacketAlert',
+                                          outputs_key_field='id'))
         elif demisto.command() == 'wootcloud-fetch-bt-alert':
             alert = fetch_single_alert(client, demisto.args().get('alert_id'), 'bluetooth')
-            return_results(CommandResults(outputs=alert, outputs_prefix='WootCloud.BluetoothAlert', outputs_key_field='id'))
+            return_results(CommandResults(outputs=alert, outputs_prefix='WootCloud.BluetoothAlert',
+                                          outputs_key_field='id'))
         elif demisto.command() == 'wootcloud-fetch-anomaly-alert':
             alert = fetch_single_alert(client, demisto.args().get('alert_id'), 'anomaly')
-            return_results(CommandResults(outputs=alert, outputs_prefix='WootCloud.AnomalyAlert', outputs_key_field='id'))
+            return_results(CommandResults(outputs=alert, outputs_prefix='WootCloud.AnomalyAlert',
+                                          outputs_key_field='id'))
     # Log exceptions
     except Exception as e:
         LOG(e)
         LOG.print_log()
         raise
+
 
 if __name__ == "builtins":
     main()
