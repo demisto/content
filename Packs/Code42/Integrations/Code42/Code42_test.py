@@ -355,45 +355,43 @@ MOCK_ALERTS_RESPONSE = """{
       "type$": "ALERT_SUMMARY",
       "tenantId": "1d700000-af5b-4231-9d8e-df6434d00000",
       "type": "FED_ENDPOINT_EXFILTRATION",
-      "name": "Exposure on an endpoint",
-      "description": "This default rule alerts you when departing employees move data from an endpoint.",
-      "actor": "test.testerson@example.com",
+      "name": "Departing Employee Alert",
+      "description": "Cortex XSOAR is cool.",
+      "actor": "user1@example.com",
       "target": "N/A",
       "severity": "HIGH",
       "ruleId": "9befe477-3487-40b7-89a6-bbcced4cf1fe",
       "ruleSource": "Departing Employee",
-      "id": "fbeaabc1-9205-4620-ad53-95d0633429a3",
-      "createdAt": "2020-05-04T20:46:45.8106280Z",
+      "id": "36fb8ca5-0533-4d25-9763-e09d35d60610",
+      "createdAt": "2019-10-02T17:02:23.5867670Z",
+      "state": "OPEN"
+    },
+    {
+      "type$": "ALERT_SUMMARY",
+      "tenantId": "1d700000-af5b-4231-9d8e-df6434d00000",
+      "type": "FED_CLOUD_SHARE_PERMISSIONS",
+      "name": "High-Risk Employee Alert",
+      "actor": "user2@example.com",
+      "target": "N/A",
+      "severity": "MEDIUM",
+      "ruleId": "9befe477-3487-40b7-89a6-bbcced4cf1fe",
+      "ruleSource": "Departing Employee",
+      "id": "18ac641d-7d9c-4d37-a48f-c89396c07d03",
+      "createdAt": "2019-10-02T17:02:24.2071980Z",
       "state": "OPEN"
     },
     {
       "type$": "ALERT_SUMMARY",
       "tenantId": "1d700000-af5b-4231-9d8e-df6434d00000",
       "type": "FED_ENDPOINT_EXFILTRATION",
-      "name": "Exposure on an endpoint",
-      "description": "This default rule alerts you when departing employees move data from an endpoint.",
-      "actor": "test.testerson@example.com",
+      "name": "Custom Alert 1",
+      "actor": "user3@example.com",
       "target": "N/A",
       "severity": "LOW",
       "ruleId": "9befe477-3487-40b7-89a6-bbcced4cf1fe",
       "ruleSource": "Departing Employee",
-      "id": "6bb7ca1e-c8cf-447d-a732-9652869e42d0",
-      "createdAt": "2020-05-04T20:35:54.2400240Z",
-      "state": "OPEN"
-    },
-    {
-      "type$": "ALERT_SUMMARY",
-      "tenantId": "1d700000-af5b-4231-9d8e-df6434d00000",
-      "type": "FED_ENDPOINT_EXFILTRATION",
-      "name": "Exposure on an endpoint",
-      "description": "This default rule alerts you when departing employees move data from an endpoint.",
-      "actor": "test.testerson@example.com",
-      "target": "N/A",
-      "severity": "HIGH",
-      "ruleId": "9befe477-3487-40b7-89a6-bbcced4cf1fe",
-      "ruleSource": "Departing Employee",
-      "id": "c2c3aef3-8fd9-4e7a-a04e-16bec9e27625",
-      "createdAt": "2020-05-04T20:19:34.7121300Z",
+      "id": "3137ff1b-b824-42e4-a476-22bccdd8ddb8",
+      "createdAt": "2019-10-02T17:03:28.2885720Z",
       "state": "OPEN"
     }
   ],
@@ -1286,8 +1284,9 @@ def test_alert_resolve_command(code42_alerts_mock):
 
 def test_alert_search_command(code42_alerts_mock):
     client = create_client(code42_alerts_mock)
-    _, _, res = alert_search_command(client, {"username": "user1@example.com"})
-    assert res == json.loads(MOCK_ALERTS_RESPONSE)["alerts"]
+    cmd_res = alert_search_command(client, {"username": "user1@example.com"})
+    assert cmd_res.raw_response == json.loads(MOCK_ALERTS_RESPONSE)["alerts"]
+    assert cmd_res.outputs == MOCK_CODE42_ALERT_CONTEXT
 
 
 def test_departingemployee_add_command(code42_sdk_mock):
