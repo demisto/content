@@ -1,15 +1,11 @@
 {
-    "typeId": "IllusionBLACK",
+    "id": "IllusionBLACK",
+    "group": "incident",
+    "system": true,
+    "name": "IllusionBLACK Incident Layout",
     "version": -1,
-    "TypeName": "IllusionBLACK",
-    "kind": "details",
-    "fromVersion": "5.0.0",
-    "layout": {
-        "TypeName": "",
-        "id": "IllusionBLACK",
-        "kind": "details",
-        "name": "",
-        "system": false,
+    "fromVersion": "6.0.0",
+    "detailsV2": {
         "tabs": [
             {
                 "id": "summary",
@@ -374,9 +370,6 @@
                 "name": "Canvas",
                 "type": "canvas"
             }
-        ],
-        "typeId": "IllusionBLACK",
-        "version": -1
-    },
-    "toVersion": "5.9.9"
+        ]
+    }
 }
