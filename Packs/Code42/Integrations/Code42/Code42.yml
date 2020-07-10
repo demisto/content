@@ -660,7 +660,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The name of the legal hold matter to which to which the user will
+      description: The name of the legal hold matter to which the user will
         be added.
       isArray: false
       name: mattername
@@ -776,7 +776,7 @@ script:
     - contextPath: Code42.DepartingEmployee.DepartureDate
       description: The departure date for the Departing Employee.
       type: Unknown
-  dockerimage: demisto/py42:1.0.0.9801
+  dockerimage: demisto/py42:1.0.0.9806
   feed: false
   isfetch: true
   longRunning: false
