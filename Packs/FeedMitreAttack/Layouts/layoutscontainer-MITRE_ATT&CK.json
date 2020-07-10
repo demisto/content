@@ -1,7 +1,7 @@
 {
     "id": "MITRE ATT&CK",
     "group": "indicator",
-    "name": "MITRE ATT&CK Incident Layout",
+    "name": "MITRE ATT&CK Indicator Layout",
     "version": -1,
     "fromVersion": "6.0.0",
     "indicatorDetails": {
