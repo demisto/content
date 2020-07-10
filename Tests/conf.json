@@ -2813,6 +2813,11 @@
             "integrations": "Deep Instinct",
             "playbookID": "Deep_Instinct-Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Blueliv ThreatCompass",
+            "playbookID": "Blueliv_ThreatCompass_test",
+            "fromversion": "5.0.0"
         }
 
     ],
