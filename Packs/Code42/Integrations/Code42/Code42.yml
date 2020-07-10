@@ -731,6 +731,51 @@ script:
     description: Downloads a file from Code42 servers.
     execution: false
     name: code42-download-file
+  - arguments:
+    - default: false
+      description: Email id of the user.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve high risk employee details.
+    execution: false
+    name: code42-highriskemployee-get
+    outputs:
+    - contextPath: Code42.HighRiskEmployee.UserID
+      description: Internal Code42 User ID for the High Risk Employee.
+      type: string
+    - contextPath: Code42.HighRiskEmployee.Username
+      description: The username of the High Risk Employee.
+      type: string
+    - contextPath: Code42.HighRiskEmployee.Note
+      description: Note associated with the High Risk Employee.
+      type: string
+  - arguments:
+    - default: false
+      description: Email id of the departing employee.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve departing employee details.
+    execution: false
+    name: code42-departingemployee-get
+    outputs:
+    - contextPath: Code42.DepartingEmployee.UserID
+      description: Internal Code42 User ID for the Departing Employee.
+      type: string
+    - contextPath: Code42.DepartingEmployee.Username
+      description: The username of the Departing Employee.
+      type: string
+    - contextPath: Code42.DepartingEmployee.Note
+      description: Note associated with the Departing Employee.
+      type: string
+    - contextPath: Code42.DepartingEmployee.DepartureDate
+      description: The departure date for the Departing Employee.
+      type: Unknown
   dockerimage: demisto/py42:1.0.0.9801
   feed: false
   isfetch: true

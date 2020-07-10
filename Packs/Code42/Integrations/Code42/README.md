@@ -32,60 +32,60 @@ Searches for a file in Security Data by JSON query, hash, username, device hostn
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| json | JSON query payload using Code42 query syntax. | Optional | 
-| hash | MD5 or SHA256 hash of the file to search for. | Optional | 
-| username | Username to search for. | Optional | 
-| hostname | Hostname to search for. | Optional | 
-| exposure | Exposure types to search for. Can be "RemovableMedia", "ApplicationRead", "CloudStorage", "IsPublic", "SharedViaLink", or "SharedViaDomain". | Optional | 
-| results | The number of results to return. The default is 100. | Optional | 
+| json | JSON query payload using Code42 query syntax. | Optional |
+| hash | MD5 or SHA256 hash of the file to search for. | Optional |
+| username | Username to search for. | Optional |
+| hostname | Hostname to search for. | Optional |
+| exposure | Exposure types to search for. Can be "RemovableMedia", "ApplicationRead", "CloudStorage", "IsPublic", "SharedViaLink", or "SharedViaDomain". | Optional |
+| results | The number of results to return. The default is 100. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Code42.SecurityData.EventTimestamp | date | Timestamp for the event. | 
-| Code42.SecurityData.FileCreated | date | File creation date. | 
-| Code42.SecurityData.EndpointID | string | Code42 device ID. | 
-| Code42.SecurityData.DeviceUsername | string | The username that the device is associated with in Code42. | 
-| Code42.SecurityData.EmailFrom | string | The sender email address for email exfiltration events. | 
-| Code42.SecurityData.EmailTo | string | The recipient email address for email exfiltration events. | 
-| Code42.SecurityData.EmailSubject | string | The email subject line for email exfiltration events. | 
-| Code42.SecurityData.EventID | string | The Security Data event ID. | 
-| Code42.SecurityData.EventType | string | The type of Security Data event. | 
-| Code42.SecurityData.FileCategory | string | The file type, as determined by Code42 engine. | 
-| Code42.SecurityData.FileOwner | string | The owner of the file. | 
-| Code42.SecurityData.FileName | string | The file name. | 
-| Code42.SecurityData.FilePath | string | The path to file. | 
-| Code42.SecurityData.FileSize | number | The size of the file \(in bytes\). | 
-| Code42.SecurityData.FileModified | date | The date the file was last modified. | 
-| Code42.SecurityData.FileMD5 | string | MD5 hash of the file. | 
-| Code42.SecurityData.FileHostname | string | Hostname where the file event was captured. | 
-| Code42.SecurityData.DevicePrivateIPAddress | string | Private IP addresses of the device where the event was captured. | 
-| Code42.SecurityData.DevicePublicIPAddress | string | Public IP address of the device where the event was captured. | 
-| Code42.SecurityData.RemovableMediaType | string | Type of removable media. | 
-| Code42.SecurityData.RemovableMediaCapacity | number | Total capacity of removable media \(in bytes\). | 
-| Code42.SecurityData.RemovableMediaMediaName | string | The full name of the removable media. | 
-| Code42.SecurityData.RemovableMediaName | string | The name of the removable media. | 
-| Code42.SecurityData.RemovableMediaSerialNumber | string | The serial number for the removable medial device. | 
-| Code42.SecurityData.RemovableMediaVendor | string | The vendor name for removable device. | 
-| Code42.SecurityData.FileSHA256 | string | The SHA256 hash of the file. | 
-| Code42.SecurityData.FileShared | boolean | Whether the file is shared using a cloud file service. | 
-| Code42.SecurityData.FileSharedWith | string | Accounts that the file is shared with on a cloud file service. | 
-| Code42.SecurityData.Source | string | The source of the file event. Can be "Cloud" or "Endpoint". | 
-| Code42.SecurityData.ApplicationTabURL | string | The URL associated with the application read event. | 
-| Code42.SecurityData.ProcessName | string | The process name for the application read event. | 
-| Code42.SecurityData.ProcessOwner | string | The process owner for the application read event. | 
-| Code42.SecurityData.WindowTitle | string | The process name for the application read event. | 
-| Code42.SecurityData.FileURL | string | The URL of the file on a cloud file service. | 
-| Code42.SecurityData.Exposure | string | The event exposure type. | 
-| Code42.SecurityData.SharingTypeAdded | string | The type of sharing added to the file. | 
-| File.Name | string | The file name. | 
-| File.Path | string | The file path. | 
-| File.Size | number | The file size \(in bytes\). | 
-| File.MD5 | string | The MD5 hash of the file. | 
-| File.SHA256 | string | The SHA256 hash of the file. | 
-| File.Hostname | string | The hostname where the file event was captured. | 
+| Code42.SecurityData.EventTimestamp | date | Timestamp for the event. |
+| Code42.SecurityData.FileCreated | date | File creation date. |
+| Code42.SecurityData.EndpointID | string | Code42 device ID. |
+| Code42.SecurityData.DeviceUsername | string | The username that the device is associated with in Code42. |
+| Code42.SecurityData.EmailFrom | string | The sender email address for email exfiltration events. |
+| Code42.SecurityData.EmailTo | string | The recipient email address for email exfiltration events. |
+| Code42.SecurityData.EmailSubject | string | The email subject line for email exfiltration events. |
+| Code42.SecurityData.EventID | string | The Security Data event ID. |
+| Code42.SecurityData.EventType | string | The type of Security Data event. |
+| Code42.SecurityData.FileCategory | string | The file type, as determined by Code42 engine. |
+| Code42.SecurityData.FileOwner | string | The owner of the file. |
+| Code42.SecurityData.FileName | string | The file name. |
+| Code42.SecurityData.FilePath | string | The path to file. |
+| Code42.SecurityData.FileSize | number | The size of the file \(in bytes\). |
+| Code42.SecurityData.FileModified | date | The date the file was last modified. |
+| Code42.SecurityData.FileMD5 | string | MD5 hash of the file. |
+| Code42.SecurityData.FileHostname | string | Hostname where the file event was captured. |
+| Code42.SecurityData.DevicePrivateIPAddress | string | Private IP addresses of the device where the event was captured. |
+| Code42.SecurityData.DevicePublicIPAddress | string | Public IP address of the device where the event was captured. |
+| Code42.SecurityData.RemovableMediaType | string | Type of removable media. |
+| Code42.SecurityData.RemovableMediaCapacity | number | Total capacity of removable media \(in bytes\). |
+| Code42.SecurityData.RemovableMediaMediaName | string | The full name of the removable media. |
+| Code42.SecurityData.RemovableMediaName | string | The name of the removable media. |
+| Code42.SecurityData.RemovableMediaSerialNumber | string | The serial number for the removable medial device. |
+| Code42.SecurityData.RemovableMediaVendor | string | The vendor name for removable device. |
+| Code42.SecurityData.FileSHA256 | string | The SHA256 hash of the file. |
+| Code42.SecurityData.FileShared | boolean | Whether the file is shared using a cloud file service. |
+| Code42.SecurityData.FileSharedWith | string | Accounts that the file is shared with on a cloud file service. |
+| Code42.SecurityData.Source | string | The source of the file event. Can be "Cloud" or "Endpoint". |
+| Code42.SecurityData.ApplicationTabURL | string | The URL associated with the application read event. |
+| Code42.SecurityData.ProcessName | string | The process name for the application read event. |
+| Code42.SecurityData.ProcessOwner | string | The process owner for the application read event. |
+| Code42.SecurityData.WindowTitle | string | The process name for the application read event. |
+| Code42.SecurityData.FileURL | string | The URL of the file on a cloud file service. |
+| Code42.SecurityData.Exposure | string | The event exposure type. |
+| Code42.SecurityData.SharingTypeAdded | string | The type of sharing added to the file. |
+| File.Name | string | The file name. |
+| File.Path | string | The file path. |
+| File.Size | number | The file size \(in bytes\). |
+| File.MD5 | string | The MD5 hash of the file. |
+| File.SHA256 | string | The SHA256 hash of the file. |
+| File.Hostname | string | The hostname where the file event was captured. |
 
 
 #### Command Example
@@ -239,6 +239,56 @@ Removes a user from the Departing Employee List.
 | **UserID** | **Username** |
 | --- | --- |
 | 123 | john.user@example.com |
+
+
+### code42-departingemployee-get
+***
+Retrieve departing employee details.
+
+
+#### Base Command
+
+`code42-departingemployee-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | Email id of the departing employee. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Code42.DepartingEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. |
+| Code42.DepartingEmployee.Username | string | The username of the Departing Employee. |
+| Code42.DepartingEmployee.Note | string | Note associated with the Departing Employee. |
+| Code42.DepartingEmployee.DepartureDate | Unknown | The departure date for the Departing Employee. |
+
+
+#### Command Example
+```!code42-departingemployee-get username="partner.demisto@example.com"```
+
+#### Context Example
+```
+{
+    "Code42": {
+        "DepartingEmployee": {
+            "DepartureDate": null,
+            "Note": "Risky activity",
+            "UserID": "942876157732602741",
+            "Username": "partner.demisto@example.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+### Retrieve departing employee
+|DepartureDate|Note|UserID|Username|
+|---|---|---|---|
+|  | Risky activity | 942876157732602741 | partner.demisto@example.com |
 
 
 ### code42-departingemployee-get-all
@@ -407,6 +457,54 @@ Removes a user from the High Risk Employee List.
 
 
 
+### code42-highriskemployee-get
+***
+Retrieve high risk employee details.
+
+
+#### Base Command
+
+`code42-highriskemployee-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | Email id of the user. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Code42.HighRiskEmployee.UserID | string | Internal Code42 User ID for the High Risk Employee. |
+| Code42.HighRiskEmployee.Username | string | The username of the High Risk Employee. |
+| Code42.HighRiskEmployee.Note | string | Note associated with the High Risk Employee. |
+
+
+#### Command Example
+```!code42-highriskemployee-get username="partner.demisto@example.com"```
+
+#### Context Example
+```
+{
+    "Code42": {
+        "HighRiskEmployee": {
+            "Note": "Risky activity",
+            "UserID": "942876157732602741",
+            "Username": "partner.demisto@example.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+### Retrieve high risk employee
+|Note|UserID|Username|
+|---|---|---|
+| Risky activity | 942876157732602741 | partner.demisto@example.com |
+
+
 ### code42-highriskemployee-get-all
 ***
 Get all employees on the High Risk Employee List.
@@ -419,8 +517,8 @@ Get all employees on the High Risk Employee List.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| risktags | To filter results by employees who have these risk tags. Comma delimited. | Optional | 
-| results | The number of items to return. | Optional | 
+| risktags | To filter results by employees who have these risk tags. Space delimited. | Optional |
+| results | The number of items to return. | Optional |
 
 
 #### Context Output
@@ -828,7 +926,7 @@ Downloads a file from Code42 servers.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hash | Either the SHA256 or MD5 hash of the file. | Required | 
+| hash | Either the SHA256 or MD5 hash of the file. | Required |
 
 #### Command Example
 ```!code42-download-file hash="bf6b326107d4d85eb485eed84b28133a"```

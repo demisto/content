@@ -15,6 +15,8 @@
     - **code42-legalhold-add-user**
     - **code42-legalhold-remove-user**
     - **code42-file-download**
+    - **code42-departingemployee-get**
+    - **code42-highriskemployee-get**
 - Improve error messages for all Commands to include exception detail.
 - Fixed bug in Fetch where errors occurred when `FileCategory` was set to include only one category.
 - Fixed bug in Fetch to handle new Code42 exposure type **Outside trusted domains**.
