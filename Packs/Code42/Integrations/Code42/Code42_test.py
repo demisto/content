@@ -56,6 +56,28 @@ MOCK_SECURITY_DATA_SEARCH_QUERY = {
     "results": 50,
 }
 
+MOCK_SECURITY_DATA_SEARCH_QUERY_EXPOSURE_TYPE_ALL = {
+    "hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "hostname": "DESKTOP-0001",
+    "username": "user3@example.com",
+    "exposure": "All",
+    "results": 50,
+}
+
+MOCK_SECURITY_DATA_SEARCH_QUERY_EXPOSURE_TYPE_ALL_WITH_OTHERS = {
+    "hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "hostname": "DESKTOP-0001",
+    "username": "user3@example.com",
+    "exposure": "ApplicationRead, All",
+    "results": 50,
+}
+
+MOCK_SECURITY_DATA_SEARCH_QUERY_WITHOUT_EXPOSURE_TYPE = {
+    "hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "hostname": "DESKTOP-0001",
+    "username": "user3@example.com",
+    "results": 50,
+}
 
 MOCK_SECURITY_EVENT_RESPONSE = """
 {
@@ -2067,3 +2089,74 @@ def test_fetch_incidents_fetch_limit(code42_fetch_incidents_mock):
     assert len(incidents) == 1
     assert next_run["last_fetch"]
     assert not remaining_incidents
+
+
+@pytest.mark.parametrize(
+    "query",
+    [MOCK_SECURITY_DATA_SEARCH_QUERY_EXPOSURE_TYPE_ALL,
+     MOCK_SECURITY_DATA_SEARCH_QUERY_EXPOSURE_TYPE_ALL_WITH_OTHERS
+     ]
+)
+def test_security_data_search_command_searches_exposure_exists_when_all_is_specified(
+        code42_file_events_mock, query
+):
+    client = create_client(code42_file_events_mock)
+    cmd_res = securitydata_search_command(client, query)
+    code42_res = cmd_res[0]
+    file_res = cmd_res[1]
+
+    assert code42_res.outputs_prefix == "Code42.SecurityData"
+    assert code42_res.outputs_key_field == "EventID"
+    assert file_res.outputs_prefix == "File"
+
+    actual_query = code42_file_events_mock.securitydata.search_file_events.call_args[0][0]
+
+    # Assert that the  correct query gets made
+    filter_groups = json.loads(str(actual_query))["groups"]
+    expected_query_items = [
+        ("md5Checksum", "d41d8cd98f00b204e9800998ecf8427e"),
+        ("osHostName", "DESKTOP-0001"),
+        ("deviceUserName", "user3@example.com"),
+        ("exposure", None),
+    ]
+
+    # Assert that the  correct query gets made
+    assert len(filter_groups) == len(expected_query_items)
+    for i in range(0, len(filter_groups)):
+        _filter = filter_groups[i]["filters"][0]
+        assert _filter["term"] == expected_query_items[i][0]
+        assert _filter["value"] == expected_query_items[i][1]
+
+    assert len(filter_groups) == 4
+
+
+def test_security_data_search_command_searches_exposure_exists_when_no_exposure_type_is_specified(
+        code42_file_events_mock,
+):
+    client = create_client(code42_file_events_mock)
+    cmd_res = securitydata_search_command(client, MOCK_SECURITY_DATA_SEARCH_QUERY_WITHOUT_EXPOSURE_TYPE)
+    code42_res = cmd_res[0]
+    file_res = cmd_res[1]
+
+    assert code42_res.outputs_prefix == "Code42.SecurityData"
+    assert code42_res.outputs_key_field == "EventID"
+    assert file_res.outputs_prefix == "File"
+
+    actual_query = code42_file_events_mock.securitydata.search_file_events.call_args[0][0]
+
+    # Assert that the  correct query gets made
+    filter_groups = json.loads(str(actual_query))["groups"]
+    expected_query_items = [
+        ("md5Checksum", "d41d8cd98f00b204e9800998ecf8427e"),
+        ("osHostName", "DESKTOP-0001"),
+        ("deviceUserName", "user3@example.com"),
+    ]
+
+    # Assert that the  correct query gets made
+    assert len(filter_groups) == len(expected_query_items)
+    for i in range(0, len(filter_groups)):
+        _filter = filter_groups[i]["filters"][0]
+        assert _filter["term"] == expected_query_items[i][0]
+        assert _filter["value"] == expected_query_items[i][1]
+
+    assert len(filter_groups) == 3

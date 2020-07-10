@@ -529,8 +529,9 @@ def _create_hash_filter(hash_arg):
 
 def _create_exposure_filter(exposure_arg):
     # Because the CLI can't accept lists, convert the args to a list if the type is string.
-    if isinstance(exposure_arg, str):
-        exposure_arg = exposure_arg.split(",")
+    exposure_arg = [arg.strip() for arg in exposure_arg.split(",")]
+    if "All" in exposure_arg:
+        return ExposureType.exists()
     return ExposureType.is_in(exposure_arg)
 
 

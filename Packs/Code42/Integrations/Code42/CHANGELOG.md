@@ -21,6 +21,7 @@
 - Fixed bug in Fetch where errors occurred when `FileCategory` was set to include only one category.
 - Fixed bug in Fetch to handle new Code42 exposure type **Outside trusted domains**.
 - Improved Fetch to handle unsupported exposure types better.
+- Added option to specify `All` in `exposure` argument in `search-securitydata` command to fetch all results with exfiltration.
 
 ## [20.3.3] - 2020-03-18
 #### New Integration
