@@ -1,11 +1,11 @@
 {
-    "id": "Code42 Security Alert",
+    "id": "Claroty Security Incident",
     "group": "incident",
     "system": true,
-    "name": "Code42 Security Alert Incident Layout",
+    "name": "Claroty Security Incident Incident Layout",
     "version": -1,
     "fromVersion": "6.0.0",
-    "details": {
+    "detailsV2": {
         "tabs": [
             {
                 "id": "summary",
@@ -51,7 +51,7 @@
                                 "fieldId": "dbotsource",
                                 "height": 24,
                                 "id": "incident-source-field",
-                                "index": 3,
+                                "index": 4,
                                 "startCol": 0
                             },
                             {
@@ -59,7 +59,7 @@
                                 "fieldId": "sourcebrand",
                                 "height": 24,
                                 "id": "incident-sourceBrand-field",
-                                "index": 4,
+                                "index": 5,
                                 "startCol": 0
                             },
                             {
@@ -67,7 +67,7 @@
                                 "fieldId": "sourceinstance",
                                 "height": 24,
                                 "id": "incident-sourceInstance-field",
-                                "index": 5,
+                                "index": 6,
                                 "startCol": 0
                             },
                             {
@@ -75,7 +75,7 @@
                                 "fieldId": "playbookid",
                                 "height": 24,
                                 "id": "incident-playbookId-field",
-                                "index": 6,
+                                "index": 7,
                                 "startCol": 0
                             }
                         ],
@@ -106,8 +106,8 @@
                         "static": false,
                         "type": "workplan",
                         "w": 1,
-                        "x": 1,
-                        "y": 0
+                        "x": 0,
+                        "y": 4
                     },
                     {
                         "displayType": "ROW",
@@ -119,8 +119,8 @@
                         "static": false,
                         "type": "linkedIncidents",
                         "w": 1,
-                        "x": 0,
-                        "y": 9
+                        "x": 1,
+                        "y": 8
                     },
                     {
                         "displayType": "ROW",
@@ -132,7 +132,19 @@
                         "type": "childInv",
                         "w": 1,
                         "x": 1,
-                        "y": 9
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+                        "moved": false,
+                        "name": "Evidence",
+                        "static": false,
+                        "type": "evidence",
+                        "w": 1,
+                        "x": 2,
+                        "y": 5
                     },
                     {
                         "displayType": "ROW",
@@ -145,11 +157,25 @@
                         "type": "team",
                         "w": 1,
                         "x": 2,
-                        "y": 4
+                        "y": 7
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+                        "moved": false,
+                        "name": "Indicators",
+                        "query": "",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 2,
+                        "x": 0,
+                        "y": 6
                     },
                     {
                         "displayType": "CARD",
-                        "h": 4,
+                        "h": 2,
                         "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
                         "items": [
                             {
@@ -157,7 +183,7 @@
                                 "fieldId": "occurred",
                                 "height": 55,
                                 "id": "incident-occurred-field",
-                                "index": 1,
+                                "index": 0,
                                 "startCol": 0
                             },
                             {
@@ -165,7 +191,7 @@
                                 "fieldId": "dbotmodified",
                                 "height": 55,
                                 "id": "incident-modified-field",
-                                "index": 2,
+                                "index": 1,
                                 "startCol": 0
                             },
                             {
@@ -173,7 +199,7 @@
                                 "fieldId": "dbotduedate",
                                 "height": 55,
                                 "id": "incident-dueDate-field",
-                                "index": 3,
+                                "index": 2,
                                 "startCol": 0
                             },
                             {
@@ -181,7 +207,7 @@
                                 "fieldId": "dbotcreated",
                                 "height": 55,
                                 "id": "incident-created-field",
-                                "index": 1,
+                                "index": 0,
                                 "startCol": 1
                             },
                             {
@@ -189,7 +215,7 @@
                                 "fieldId": "dbotclosed",
                                 "height": 55,
                                 "id": "incident-closed-field",
-                                "index": 2,
+                                "index": 1,
                                 "startCol": 1
                             }
                         ],
@@ -225,7 +251,7 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "closenotes",
-                                "height": 48,
+                                "height": 24,
                                 "id": "incident-closeNotes-field",
                                 "index": 2,
                                 "startCol": 0
@@ -235,65 +261,21 @@
                         "name": "Closing Information",
                         "static": false,
                         "w": 1,
-                        "x": 2,
-                        "y": 2
+                        "x": 0,
+                        "y": 8
                     },
                     {
                         "displayType": "CARD",
-                        "h": 4,
+                        "h": 1,
                         "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
                         "isVisible": true,
                         "items": [
                             {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "name",
-                                "height": 55,
-                                "id": "f4316c20-598a-11ea-b904-997d555669cb",
-                                "index": 0,
-                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-                                "startCol": 0
-                            },
-                            {
                                 "endCol": 2,
                                 "fieldId": "details",
-                                "height": 110,
+                                "height": 24,
                                 "id": "incident-details-field",
-                                "index": 1,
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "code42alerttype",
-                                "height": 55,
-                                "id": "66a7ca60-598b-11ea-b904-997d555669cb",
-                                "index": 2,
-                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "employeedisplayname",
-                                "height": 55,
-                                "id": "9e36d450-5984-11ea-b904-997d555669cb",
-                                "index": 3,
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "employeeemail",
-                                "height": 55,
-                                "id": "a3608bb0-5984-11ea-b904-997d555669cb",
-                                "index": 4,
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "employeemanageremail",
-                                "height": 55,
-                                "id": "a4bc7230-5984-11ea-b904-997d555669cb",
-                                "index": 5,
+                                "index": 0,
                                 "startCol": 0
                             }
                         ],
@@ -301,23 +283,73 @@
                         "name": "Investigation Data",
                         "static": false,
                         "w": 1,
-                        "x": 1,
-                        "y": 2
+                        "x": 2,
+                        "y": 4
                     },
                     {
                         "displayType": "ROW",
-                        "h": 3,
+                        "h": 2,
                         "hideName": false,
-                        "i": "caseinfoid-d0b3fb00-5985-11ea-b904-997d555669cb",
+                        "i": "caseinfoid-11b45a00-501c-11ea-bd57-b106752e2e78",
                         "items": [
                             {
-                                "dropEffect": "move",
-                                "endCol": 6,
-                                "fieldId": "exfiltratedfilelist",
-                                "height": 110,
-                                "id": "d857da20-5985-11ea-b904-997d555669cb",
+                                "endCol": 2,
+                                "fieldId": "clarotydepartment",
+                                "height": 24,
+                                "id": "20a7b6b0-501c-11ea-bd57-b106752e2e78",
                                 "index": 0,
-                                "listId": "caseinfoid-d0b3fb00-5985-11ea-b904-997d555669cb",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "clarotycategory",
+                                "height": 24,
+                                "id": "fde294b0-5269-11ea-8b07-bf84a27b9e16",
+                                "index": 0,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "clarotyalerttype",
+                                "height": 24,
+                                "id": "1d5b98f0-501c-11ea-bd57-b106752e2e78",
+                                "index": 1,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "clarotyresourceid",
+                                "height": 24,
+                                "id": "23802b10-501c-11ea-bd57-b106752e2e78",
+                                "index": 2,
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "clarotysiteid",
+                                "height": 24,
+                                "id": "264899e0-501c-11ea-bd57-b106752e2e78",
+                                "index": 3,
+                                "listId": "caseinfoid-11b45a00-501c-11ea-bd57-b106752e2e78",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "clarotynetworkid",
+                                "height": 24,
+                                "id": "3f6c25e0-501c-11ea-bd57-b106752e2e78",
+                                "index": 3,
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "clarotyalertresolved",
+                                "height": 24,
+                                "id": "2e3d0a00-501c-11ea-bd57-b106752e2e78",
+                                "index": 4,
+                                "listId": "caseinfoid-11b45a00-501c-11ea-bd57-b106752e2e78",
                                 "startCol": 0
                             }
                         ],
@@ -325,11 +357,36 @@
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "File Events",
+                        "name": "Claroty Alert Information",
                         "static": false,
-                        "w": 3,
-                        "x": 0,
-                        "y": 6
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-ae35fcb0-5226-11ea-b664-893d77621a94",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "clarotyrelatedassets",
+                                "height": 110,
+                                "id": "f5cc4020-5226-11ea-b664-893d77621a94",
+                                "index": 0,
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Claroty Asset Information",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 2
                     }
                 ],
                 "type": "custom"

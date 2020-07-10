@@ -4,7 +4,7 @@
     "name": "Employee Offboarding Incident Layout",
     "version": -1,
     "fromVersion": "6.0.0",
-    "details": {
+    "detailsV2": {
         "tabs": [
             {
                 "id": "summary",

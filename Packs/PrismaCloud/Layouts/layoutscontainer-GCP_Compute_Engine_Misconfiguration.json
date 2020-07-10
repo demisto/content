@@ -1,11 +1,11 @@
 {
-    "id": "Prisma Cloud",
+    "id": "GCP Compute Engine Misconfiguration",
     "group": "incident",
     "system": true,
-    "name": "Prisma Cloud Incident Layout",
+    "name": "GCP Compute Engine Misconfiguration Incident Layout",
     "version": -1,
     "fromVersion": "6.0.0",
-    "details": {
+    "detailsV2": {
         "tabs": [
             {
                 "hidden": false,
@@ -284,16 +284,6 @@
                             },
                             {
                                 "dropEffect": "move",
-                                "endCol": 4,
-                                "fieldId": "firstseen",
-                                "height": 24,
-                                "id": "a5bd1cf0-f766-11e9-8c27-6359f1848ae7",
-                                "index": 0,
-                                "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
-                                "startCol": 2
-                            },
-                            {
-                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "prismacloudtime",
                                 "height": 24,
@@ -301,6 +291,34 @@
                                 "index": 1,
                                 "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
                                 "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "prismacloudstatus",
+                                "height": 24,
+                                "id": "7fc5c850-f8b8-11e9-a470-b7537b797c27",
+                                "index": 2,
+                                "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "prismacloudreason",
+                                "height": 24,
+                                "id": "7cf9fe20-f8b8-11e9-a470-b7537b797c27",
+                                "index": 3,
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "firstseen",
+                                "height": 24,
+                                "id": "a5bd1cf0-f766-11e9-8c27-6359f1848ae7",
+                                "index": 0,
+                                "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                                "startCol": 2
                             },
                             {
                                 "dropEffect": "move",
@@ -314,16 +332,6 @@
                             },
                             {
                                 "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "prismacloudstatus",
-                                "height": 24,
-                                "id": "7fc5c850-f8b8-11e9-a470-b7537b797c27",
-                                "index": 2,
-                                "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
                                 "endCol": 4,
                                 "fieldId": "riskscore",
                                 "height": 24,
@@ -331,14 +339,6 @@
                                 "index": 2,
                                 "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
                                 "startCol": 2
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "prismacloudreason",
-                                "height": 24,
-                                "id": "7cf9fe20-f8b8-11e9-a470-b7537b797c27",
-                                "index": 3,
-                                "startCol": 0
                             },
                             {
                                 "dropEffect": "move",
@@ -371,20 +371,21 @@
                 "sections": [
                     {
                         "description": "Remediation tasks information.",
-                        "displayType": "ROW",
-                        "h": 2,
+                        "displayType": "CARD",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "fyjdlofdhd-f70ad9a0-93c3-11e9-a1e7-13edb5b78371",
                         "isVisible": true,
                         "items": [
                             {
                                 "dropEffect": "move",
-                                "endCol": 4,
+                                "endCol": 2,
                                 "fieldId": "policyrecommendation",
                                 "height": 48,
                                 "id": "25b6c980-93c4-11e9-a1e7-13edb5b78371",
                                 "index": 0,
-                                "listId": "f70ad9a0-93c3-11e9-a1e7-13edb5b78371",
+                                "listId": "fyjdlofdhd-f70ad9a0-93c3-11e9-a1e7-13edb5b78371",
                                 "startCol": 0
                             }
                         ],
@@ -394,9 +395,9 @@
                         "moved": false,
                         "name": "Remediation Actions",
                         "static": false,
-                        "w": 3,
-                        "x": 0,
-                        "y": 3
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
                     },
                     {
                         "description": "Violated policy information.",
@@ -552,7 +553,7 @@
                                 "endCol": 2,
                                 "fieldId": "accountname",
                                 "height": 24,
-                                "id": "209fc340-3066-11ea-9aa4-0df78411179a",
+                                "id": "c264f4a0-93c4-11e9-9dd5-3b4f6f9f1bae",
                                 "index": 4,
                                 "listId": "9c8d74a0-93c4-11e9-9dd5-3b4f6f9f1bae",
                                 "startCol": 0
@@ -598,8 +599,9 @@
                     },
                     {
                         "description": "Policy compliance-related information.",
-                        "displayType": "ROW",
+                        "displayType": "CARD",
                         "h": 3,
+                        "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "fyjdlofdhd-98793800-a9d5-11e9-a91e-57df9227e86a",
                         "isVisible": true,
@@ -623,126 +625,11 @@
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 8
-                    },
-                    {
-                        "description": "Resource subscription metadata.",
-                        "displayType": "ROW",
-                        "h": 3,
-                        "hideName": false,
-                        "i": "fyjdlofdhd-5a18c180-a9d9-11e9-a91e-57df9227e86a",
-                        "isVisible": true,
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "subscriptionid",
-                                "height": 24,
-                                "id": "83f1a580-a9d9-11e9-a91e-57df9227e86a",
-                                "index": 0,
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "subscriptionname",
-                                "height": 24,
-                                "id": "89d759e0-a9d9-11e9-a91e-57df9227e86a",
-                                "index": 1,
-                                "listId": "5a18c180-a9d9-11e9-a91e-57df9227e86a",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "subscriptiontype",
-                                "height": 24,
-                                "id": "8f7e0970-a9d9-11e9-a91e-57df9227e86a",
-                                "index": 2,
-                                "listId": "5a18c180-a9d9-11e9-a91e-57df9227e86a",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "subscriptiondescription",
-                                "height": 24,
-                                "id": "b0f03380-a9d9-11e9-a91e-57df9227e86a",
-                                "index": 3,
-                                "listId": "5a18c180-a9d9-11e9-a91e-57df9227e86a",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "skuname",
-                                "height": 24,
-                                "id": "a0994f30-a9d9-11e9-a91e-57df9227e86a",
-                                "index": 4,
-                                "listId": "5a18c180-a9d9-11e9-a91e-57df9227e86a",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "skutier",
-                                "height": 24,
-                                "id": "a21e6890-a9d9-11e9-a91e-57df9227e86a",
-                                "index": 5,
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "subscriptioncreatedby",
-                                "height": 24,
-                                "id": "c4f66430-a9d9-11e9-a91e-57df9227e86a",
-                                "index": 6,
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "subscriptioncreatedon",
-                                "height": 24,
-                                "id": "c67f2710-a9d9-11e9-a91e-57df9227e86a",
-                                "index": 7,
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "subscriptionupdatedby",
-                                "height": 24,
-                                "id": "cdf73b40-a9d9-11e9-a91e-57df9227e86a",
-                                "index": 8,
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "subscriptionupdatedon",
-                                "height": 24,
-                                "id": "cf929bc0-a9d9-11e9-a91e-57df9227e86a",
-                                "index": 9,
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "subscriptionassignedby",
-                                "height": 24,
-                                "id": "dcfebc30-a9d9-11e9-a91e-57df9227e86a",
-                                "index": 10,
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Resource Subscription Details",
-                        "static": false,
-                        "w": 1,
-                        "x": 2,
-                        "y": 0
+                        "y": 6
                     },
                     {
                         "description": "Alert Rules created using the policy.",
-                        "displayType": "ROW",
+                        "displayType": "CARD",
                         "h": 3,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
@@ -767,7 +654,7 @@
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 5
+                        "y": 3
                     }
                 ],
                 "type": "custom"
