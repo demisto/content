@@ -1,16 +1,11 @@
 {
-    "id": "IllusionBLACK",
+    "id": "Impossible Traveler",
     "group": "incident",
-    "name": "IllusionBLACK Incident Layout",
+    "name": "Impossible Traveler Incident Layout",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {
         "tabs": [
-            {
-                "id": "summary",
-                "name": "Legacy Summary",
-                "type": "summary"
-            },
             {
                 "id": "caseinfoid",
                 "name": "Incident Info",
@@ -119,7 +114,7 @@
                         "type": "linkedIncidents",
                         "w": 1,
                         "x": 1,
-                        "y": 6
+                        "y": 4
                     },
                     {
                         "displayType": "ROW",
@@ -131,7 +126,7 @@
                         "type": "childInv",
                         "w": 1,
                         "x": 2,
-                        "y": 8
+                        "y": 4
                     },
                     {
                         "displayType": "ROW",
@@ -143,7 +138,7 @@
                         "type": "evidence",
                         "w": 1,
                         "x": 2,
-                        "y": 4
+                        "y": 2
                     },
                     {
                         "displayType": "ROW",
@@ -157,20 +152,6 @@
                         "w": 1,
                         "x": 2,
                         "y": 6
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
-                        "moved": false,
-                        "name": "Indicators",
-                        "query": "",
-                        "queryType": "input",
-                        "static": false,
-                        "type": "indicators",
-                        "w": 2,
-                        "x": 0,
-                        "y": 8
                     },
                     {
                         "displayType": "CARD",
@@ -223,7 +204,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 4
+                        "y": 2
                     },
                     {
                         "displayType": "ROW",
@@ -261,7 +242,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 6
+                        "y": 4
                     },
                     {
                         "displayType": "CARD",
@@ -283,66 +264,15 @@
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 4
-                    },
-                    {
-                        "description": "Information from IllusionBLACK for the incident.",
-                        "displayType": "ROW",
-                        "h": 2,
-                        "hideName": false,
-                        "i": "caseinfoid-d98c2d10-7721-11ea-84fd-639b22a89607",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "illusionblackattacktype",
-                                "height": 24,
-                                "id": "6807b370-7722-11ea-84fd-639b22a89607",
-                                "index": 0,
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 6,
-                                "fieldId": "illusionblackthreatparse",
-                                "height": 48,
-                                "id": "6b613eb0-7722-11ea-84fd-639b22a89607",
-                                "index": 1,
-                                "listId": "caseinfoid-d98c2d10-7721-11ea-84fd-639b22a89607",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 4,
-                                "fieldId": "illusionblackattackerid",
-                                "height": 24,
-                                "id": "697dd8b0-7722-11ea-84fd-639b22a89607",
-                                "index": 0,
-                                "listId": "caseinfoid-d98c2d10-7721-11ea-84fd-639b22a89607",
-                                "startCol": 2
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 6,
-                                "fieldId": "illusionblackdecoyid",
-                                "height": 24,
-                                "id": "6a79ebf0-7722-11ea-84fd-639b22a89607",
-                                "index": 0,
-                                "listId": "caseinfoid-d98c2d10-7721-11ea-84fd-639b22a89607",
-                                "startCol": 4
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "IllusionBLACK Incident",
-                        "static": false,
-                        "w": 3,
-                        "x": 0,
                         "y": 2
                     }
                 ],
                 "type": "custom"
+            },
+            {
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
             },
             {
                 "id": "warRoom",
@@ -360,14 +290,272 @@
                 "type": "evidenceBoard"
             },
             {
-                "id": "relatedIncidents",
-                "name": "Related Incidents",
-                "type": "relatedIncidents"
-            },
-            {
                 "id": "canvas",
                 "name": "Canvas",
                 "type": "canvas"
+            },
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "hidden": false,
+                "id": "sl6z3tlmim",
+                "name": "Investigation",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "sl6z3tlmim-0309e3d0-0486-11ea-b103-7ba5e7ae90b3",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "username",
+                                "height": 24,
+                                "id": "1f0181f0-0487-11ea-8cae-45b27192ac66",
+                                "index": 0,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "previouscoordinates",
+                                "height": 24,
+                                "id": "0c9128f0-0486-11ea-b103-7ba5e7ae90b3",
+                                "index": 1,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "coordinates",
+                                "height": 24,
+                                "id": "0b80f170-0486-11ea-b103-7ba5e7ae90b3",
+                                "index": 2,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "previoussourceip",
+                                "height": 24,
+                                "id": "126b6ba0-0486-11ea-b103-7ba5e7ae90b3",
+                                "index": 3,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceip",
+                                "height": 24,
+                                "id": "151703a0-0486-11ea-b103-7ba5e7ae90b3",
+                                "index": 4,
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "previouscountry",
+                                "height": 24,
+                                "id": "91718fb0-094a-11ea-9384-35aa869eba47",
+                                "index": 5,
+                                "listId": "sl6z3tlmim-0309e3d0-0486-11ea-b103-7ba5e7ae90b3",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "country",
+                                "height": 24,
+                                "id": "8e1b5fd0-094a-11ea-9384-35aa869eba47",
+                                "index": 6,
+                                "listId": "sl6z3tlmim-0309e3d0-0486-11ea-b103-7ba5e7ae90b3",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "previoussignindatetime",
+                                "height": 24,
+                                "id": "24686960-0487-11ea-8cae-45b27192ac66",
+                                "index": 7,
+                                "listId": "sl6z3tlmim-0309e3d0-0486-11ea-b103-7ba5e7ae90b3",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "signindatetime",
+                                "height": 24,
+                                "id": "237779b0-0487-11ea-8cae-45b27192ac66",
+                                "index": 8,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "destinationip",
+                                "height": 24,
+                                "id": "a07c53e0-0487-11ea-8cae-45b27192ac66",
+                                "index": 9,
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "travelmaplink",
+                                "height": 24,
+                                "id": "b92f58e0-0489-11ea-b56e-27b3581f8973",
+                                "index": 10,
+                                "listId": "sl6z3tlmim-0309e3d0-0486-11ea-b103-7ba5e7ae90b3",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Travel Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 4,
+                        "hideName": false,
+                        "i": "sl6z3tlmim-bae81750-0487-11ea-8cae-45b27192ac66",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Bad or Suspicious Indicators",
+                        "query": "reputation:Bad or reputation:Suspicious",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 2,
+                        "x": 1,
+                        "y": 4
+                    },
+                    {
+                        "h": 4,
+                        "hideName": false,
+                        "i": "sl6z3tlmim-c0813250-0487-11ea-8cae-45b27192ac66",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Travel Map",
+                        "query": {
+                            "categories": [
+                                "attachments"
+                            ],
+                            "lastId": "",
+                            "pageSize": 100,
+                            "tags": [],
+                            "users": []
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 1,
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "h": 4,
+                        "hideName": false,
+                        "i": "sl6z3tlmim-e00e21a0-0487-11ea-8cae-45b27192ac66",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Travel Distance \u0026 Time",
+                        "query": {
+                            "tags": [
+                                "eventduration",
+                                "geodistance"
+                            ]
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "h": 4,
+                        "hideName": false,
+                        "i": "sl6z3tlmim-0d156cc0-0489-11ea-aaf8-2db208b493bd",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Work Plan",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 2,
+                        "y": 8
+                    },
+                    {
+                        "h": 2,
+                        "hideName": false,
+                        "i": "sl6z3tlmim-8db43690-0489-11ea-b56e-27b3581f8973",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Notes",
+                        "static": false,
+                        "type": "notes",
+                        "w": 1,
+                        "x": 1,
+                        "y": 8
+                    },
+                    {
+                        "h": 2,
+                        "hideName": false,
+                        "i": "sl6z3tlmim-9271bea0-0489-11ea-b56e-27b3581f8973",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Evidence",
+                        "static": false,
+                        "type": "evidence",
+                        "w": 1,
+                        "x": 0,
+                        "y": 7
+                    },
+                    {
+                        "h": 4,
+                        "hideName": false,
+                        "i": "sl6z3tlmim-25f2dd20-048b-11ea-b56e-27b3581f8973",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "User Details",
+                        "query": {
+                            "tags": [
+                                "userinfo"
+                            ]
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
             }
         ]
     }
