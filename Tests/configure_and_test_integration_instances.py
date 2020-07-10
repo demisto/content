@@ -39,7 +39,7 @@ def options_handler():
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
     parser.add_argument('-n', '--is-nightly', type=str2bool, help='Is nightly build')
     parser.add_argument('--branch', help='GitHub branch name', required=True)
-    parser.add_argument('--build-number', help='CI build number', required=True)
+    parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
 
     options = parser.parse_args()
 
