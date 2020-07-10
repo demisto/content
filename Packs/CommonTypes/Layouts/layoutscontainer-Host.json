@@ -1,7 +1,6 @@
 {
     "id": "hostRep",
     "group": "indicator",
-    "system": true,
     "name": "Host Indicator Layout",
     "version": -1,
     "fromVersion": "6.0.0",

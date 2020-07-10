@@ -1,7 +1,6 @@
 {
     "id": "Brute Force",
     "group": "incident",
-    "system": true,
     "name": "Brute Force Incident Layout",
     "version": -1,
     "fromVersion": "6.0.0",

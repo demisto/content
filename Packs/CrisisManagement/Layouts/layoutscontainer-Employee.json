@@ -1,6 +1,6 @@
 {
     "id": "Employee",
-    "group": "incident",
+    "group": "indicator",
     "name": "Employee Indicator Layout",
     "version": -1,
     "fromVersion": "6.0.0",

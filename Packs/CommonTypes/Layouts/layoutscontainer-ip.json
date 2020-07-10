@@ -1,7 +1,6 @@
 {
 	"id": "ipRep",
 	"group": "indicator",
-	"system": true,
 	"name": "IP Indicator Layout",
 	"version": -1,
 	"fromVersion": "6.0.0",

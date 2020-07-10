@@ -1,7 +1,6 @@
 {
     "id": "domainRepUnified",
     "group": "indicator",
-    "system": true,
     "name": "Domain Indicator Layout",
     "version": -1,
     "fromVersion": "6.0.0",

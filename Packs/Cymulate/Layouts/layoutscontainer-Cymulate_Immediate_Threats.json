@@ -1,7 +1,6 @@
 {
     "id": "Cymulate Immediate Threats",
     "group": "incident",
-    "system": true,
     "name": "Cymulate Immediate Threats Incident Layout",
     "version": -1,
     "fromVersion": "6.0.0",

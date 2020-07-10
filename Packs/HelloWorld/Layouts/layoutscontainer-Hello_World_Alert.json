@@ -1,7 +1,6 @@
 {
     "id": "Hello World Alert",
     "group": "incident",
-    "system": true,
     "name": "Hello World Alert Incident Layout",
     "version": -1,
     "fromVersion": "6.0.0",

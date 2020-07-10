@@ -1,7 +1,6 @@
 {
     "id": "Digital Guardian Security Event",
     "group": "incident",
-    "system": true,
     "name": "Digital Guardian Security Event Incident Layout",
     "version": -1,
     "fromVersion": "6.0.0",

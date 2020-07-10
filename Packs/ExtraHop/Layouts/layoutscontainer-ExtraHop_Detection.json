@@ -1,7 +1,6 @@
 {
     "id": "ExtraHop Detection",
     "group": "incident",
-    "system": true,
     "name": "ExtraHop Detection Layout",
     "version": -1,
     "fromVersion": "6.0.0",

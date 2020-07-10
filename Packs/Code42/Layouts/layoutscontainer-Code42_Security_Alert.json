@@ -1,7 +1,6 @@
 {
     "id": "Code42 Security Alert",
     "group": "incident",
-    "system": true,
     "name": "Code42 Security Alert Incident Layout",
     "version": -1,
     "fromVersion": "6.0.0",

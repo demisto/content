@@ -1,7 +1,6 @@
 {
     "id": "Indicator Feed",
     "group": "incident",
-    "system": true,
     "name": "Indicator Feed Incident Layout",
     "version": -1,
     "fromVersion": "6.0.0",

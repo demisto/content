@@ -1,7 +1,6 @@
 {
     "id": "emailRep",
     "group": "indicator",
-    "system": true,
     "name": "Email Indicator Layout",
     "version": -1,
     "fromVersion": "6.0.0",

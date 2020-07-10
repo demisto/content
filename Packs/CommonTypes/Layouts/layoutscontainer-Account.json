@@ -1,7 +1,6 @@
 {
     "id": "accountRep",
     "group": "indicator",
-    "system": true,
     "name": "Account Indicator Layout",
     "version": -1,
     "fromVersion": "6.0.0",
