@@ -32,6 +32,8 @@ from Code42 import (
     legal_hold_remove_user_command,
     download_file_command,
     fetch_incidents,
+    highriskemployee_get_command,
+    departingemployee_get_command,
     Code42AlertNotFoundError,
     Code42UserNotFoundError,
     Code42OrgNotFoundError,
@@ -1083,6 +1085,20 @@ MOCK_CREATE_USER_RESPONSE = """
 }
 """
 
+MOCK_GET_DETECTIONLIST_RESPONSE = """
+{
+    "type$": "DEPARTING_EMPLOYEE_V2",
+    "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+    "userId": "942897397520286581",
+    "userName": "new.user@example.com",
+    "displayName": "New user",
+    "notes": "tests and more tests",
+    "createdAt": "2020-05-19T21:17:36.0237810Z",
+    "status": "OPEN",
+    "cloudUsernames": ["new.user.cloud@example.com"]
+}
+"""
+
 
 MOCK_ADD_TO_MATTER_RESPONSE = """
 {
@@ -1228,6 +1244,22 @@ def code42_high_risk_employee_mock(code42_sdk_mock, mocker):
 
 
 @pytest.fixture
+def code42_departing_employee_get_mock(code42_sdk_mock, mocker):
+    single_departing_employee = json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)["items"][0]
+    response = create_mock_code42_sdk_response(mocker, json.dumps(single_departing_employee))
+    code42_sdk_mock.detectionlists.departing_employee.get.return_value = response
+    return code42_sdk_mock
+
+
+@pytest.fixture
+def code42_high_risk_employee_get_mock(code42_sdk_mock, mocker):
+    single_high_risk_employee = json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"][0]
+    response = create_mock_code42_sdk_response(mocker, json.dumps(single_high_risk_employee))
+    code42_sdk_mock.detectionlists.high_risk_employee.get.return_value = response
+    return code42_sdk_mock
+
+
+@pytest.fixture
 def code42_legal_hold_mock(code42_sdk_mock, mocker):
     code42_sdk_mock.legalhold.get_all_matters.return_value = create_mock_code42_sdk_response_generator(
         mocker, [MOCK_GET_ALL_MATTERS_RESPONSE]
@@ -1238,7 +1270,6 @@ def code42_legal_hold_mock(code42_sdk_mock, mocker):
     code42_sdk_mock.legalhold.add_to_matter.return_value = (
         create_mock_code42_sdk_response(mocker, MOCK_ADD_TO_MATTER_RESPONSE)
     )
-
     return code42_sdk_mock
 
 
@@ -1542,6 +1573,34 @@ def test_departingemployee_get_all_command_when_no_employees(
     assert cmd_res.raw_response == {}
     assert cmd_res.outputs == {"Results": []}
     assert code42_departing_employee_mock.detectionlists.departing_employee.get_all.call_count == 1
+
+
+def test_departingemployee_get_command(code42_departing_employee_get_mock):
+    client = create_client(code42_departing_employee_get_mock)
+    cmd_res = departingemployee_get_command(
+        client, {"username": _TEST_USERNAME}
+    )
+    get_func = code42_departing_employee_get_mock.detectionlists.departing_employee.get
+    get_func.assert_called_once_with(_TEST_USER_ID)
+    assert cmd_res.raw_response == _TEST_USERNAME
+    assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    expected = json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)["items"][0]
+    assert_departingemployee_outputs_match_response([cmd_res.outputs], [expected])
+
+
+def test_highriskemployee_get_command(code42_high_risk_employee_get_mock):
+    client = create_client(code42_high_risk_employee_get_mock)
+    cmd_res = highriskemployee_get_command(
+        client, {"username": _TEST_USERNAME}
+    )
+    get_func = code42_high_risk_employee_get_mock.detectionlists.high_risk_employee.get
+    get_func.assert_called_once_with(_TEST_USER_ID)
+    assert cmd_res.raw_response == _TEST_USERNAME
+    assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    expected = json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"][0]
+    assert_detection_list_outputs_match_response_items([cmd_res.outputs], [expected])
 
 
 def test_highriskemployee_add_command(code42_high_risk_employee_mock):

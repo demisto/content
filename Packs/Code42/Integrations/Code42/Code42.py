@@ -362,6 +362,16 @@ class Code42Client(BaseClient):
             return org_uid
         raise Code42OrgNotFoundError(org_name)
 
+    def get_departing_employee(self, username):
+        user_id = self._get_user_id(username)
+        response = self._get_sdk().detectionlists.departing_employee.get(user_id)
+        return json.loads(response.text)
+
+    def get_high_risk_employee(self, username):
+        user_id = self._get_user_id(username)
+        response = self._get_sdk().detectionlists.high_risk_employee.get(user_id)
+        return json.loads(response.text)
+
     def _get_legal_hold_matter_id(self, matter_name):
         matter_id = self.get_legal_hold_matter(matter_name).get("legalHoldUid")
         return matter_id
@@ -814,6 +824,45 @@ def departingemployee_get_all_command(client, args):
 
 
 @logger
+def departingemployee_get_command(client, args):
+    username = args.get("username")
+    departing_employee = client.get_departing_employee(username)
+    de_context = {
+        "UserID": departing_employee.get("userId"),
+        "Username": departing_employee.get("userName"),
+        "DepartureDate": departing_employee.get("departureDate"),
+        "Note": departing_employee.get("notes"),
+    }
+    readable_outputs = tableToMarkdown("Retrieve departing employee", de_context)
+    return CommandResults(
+        outputs_prefix="Code42.DepartingEmployee",
+        outputs_key_field="UserID",
+        outputs=de_context,
+        readable_output=readable_outputs,
+        raw_response=username,
+    )
+
+
+@logger
+def highriskemployee_get_command(client, args):
+    username = args.get("username")
+    high_risk_employee = client.get_high_risk_employee(username)
+    hre_context = {
+        "UserID": high_risk_employee.get("userId"),
+        "Username": high_risk_employee.get("userName"),
+        "Note": high_risk_employee.get("notes")
+    }
+    readable_outputs = tableToMarkdown("Retrieve high risk employee", hre_context)
+    return CommandResults(
+        outputs_prefix="Code42.HighRiskEmployee",
+        outputs_key_field="UserID",
+        outputs=hre_context,
+        readable_output=readable_outputs,
+        raw_response=username,
+    )
+
+
+@logger
 def highriskemployee_add_command(client, args):
     username = args.get("username")
     note = args.get("note")
@@ -1235,11 +1284,13 @@ def get_command_map():
         "code42-departingemployee-add": departingemployee_add_command,
         "code42-departingemployee-remove": departingemployee_remove_command,
         "code42-departingemployee-get-all": departingemployee_get_all_command,
+        "code42-departingemployee-get": departingemployee_get_command,
         "code42-highriskemployee-add": highriskemployee_add_command,
         "code42-highriskemployee-remove": highriskemployee_remove_command,
         "code42-highriskemployee-get-all": highriskemployee_get_all_command,
         "code42-highriskemployee-add-risk-tags": highriskemployee_add_risk_tags_command,
         "code42-highriskemployee-remove-risk-tags": highriskemployee_remove_risk_tags_command,
+        "code42-highriskemployee-get": highriskemployee_get_command,
         "code42-user-create": user_create_command,
         "code42-user-block": user_block_command,
         "code42-user-unblock": user_unblock_command,
