@@ -1,13 +1,10 @@
 {
-    "TypeName": "Panorama Best Practice Assessment",
-    "kind": "details",
-    "layout": {
-        "TypeName": "",
-        "id": "Panorama Best Practice Assessment",
-        "kind": "details",
-        "modified": "2020-06-22T09:49:21.182899224Z",
-        "name": "",
-        "system": false,
+    "id": "IllusionBLACK",
+    "group": "incident",
+    "name": "IllusionBLACK Incident Layout",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "details": {
         "tabs": [
             {
                 "id": "summary",
@@ -295,12 +292,6 @@
                 "name": "Canvas",
                 "type": "canvas"
             }
-        ],
-        "typeId": "Panorama Best Practice Assessment",
-        "version": -1
-    },
-    "typeId": "Panorama Best Practice Assessment",
-    "version": -1,
-    "fromVersion": "4.5.0",
-    "toVersion": "5.9.9"
+        ]
+    }
 }
