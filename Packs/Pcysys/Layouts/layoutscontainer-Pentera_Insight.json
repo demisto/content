@@ -1,13 +1,10 @@
 {
-    "TypeName": "Pentera Insight",
-    "kind": "details",
-    "layout": {
-        "TypeName": "",
-        "id": "Pentera Insight",
-        "kind": "details",
-        "modified": "2020-04-23T12:53:26.087675215+03:00",
-        "name": "",
-        "system": false,
+    "id": "Pentera Insight",
+    "group": "incident",
+    "name": "Pentera Insight Incident Layout",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "detailsV2": {
         "tabs": [
             {
                 "id": "summary",
@@ -326,12 +323,6 @@
                 "name": "Canvas",
                 "type": "canvas"
             }
-        ],
-        "typeId": "Pentera Insight",
-        "version": -1
-    },
-    "typeId": "Pentera Insight",
-    "version": -1,
-    "fromVersion": "5.0.0",
-    "toVersion": "5.9.9"
+        ]
+    }
 }
