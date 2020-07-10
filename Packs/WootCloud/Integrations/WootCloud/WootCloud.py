@@ -106,7 +106,7 @@ class Client(BaseClient):
 
     def get_woot_alerts(self, type, start, end, severity=None, skip=None, limit=None, site_id=None):
         """
-        Lists packet, bluetooth, or anomaly alerts generated in requested time span.
+        Lists/fetches packet, bluetooth, or anomaly alerts generated in requested time span.
         """
         if type == "packet":
             url = 'packetalerts'
