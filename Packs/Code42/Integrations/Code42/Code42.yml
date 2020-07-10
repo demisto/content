@@ -78,12 +78,14 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Exposure types to search for. Defaults to all. i.e Exposure type
-        exists. Value can be "RemovableMedia", "ApplicationRead", "CloudStorage",
-        "IsPublic", "SharedViaLink", "SharedViaDomain", or "OutsideTrustedDomains".
+      description: Exposure types to search for. Values can be "All", "RemovableMedia",
+        "ApplicationRead", "CloudStorage", "IsPublic", "SharedViaLink", "SharedViaDomain",
+        or "OutsideTrustedDomains". When "All" is specified with other types, other
+        types would be ignored and filter rule for all types would be applied.
       isArray: true
       name: exposure
       predefined:
+      - All
       - RemovableMedia
       - ApplicationRead
       - CloudStorage
@@ -658,7 +660,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The name of the legal hold matter to which to which the user will be added.
+      description: The name of the legal hold matter to which to which the user will
+        be added.
       isArray: false
       name: mattername
       required: true
@@ -681,35 +684,36 @@ script:
       description: A name for a Code42 legal hold matter.
       type: String
   - arguments:
-      - default: false
-        description: The username of the user to remove from the given legal hold matter.
-        isArray: false
-        name: username
-        required: true
-        secret: false
-      - default: false
-        description: The name of the legal hold matter from which to which the user will be removed.
-        isArray: false
-        name: mattername
-        required: true
-        secret: false
+    - default: false
+      description: The username of the user to remove from the given legal hold matter.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    - default: false
+      description: The name of the legal hold matter from which to which the user
+        will be removed.
+      isArray: false
+      name: mattername
+      required: true
+      secret: false
     deprecated: false
     description: Removes a Code42 user from a legal hold matter.
     execution: false
     name: code42-legalhold-remove-user
     outputs:
-      - contextPath: Code42.LegalHold.UserID
-        description: The ID of a Code42 user.
-        type: Unknown
-      - contextPath: Code42.LegalHold.MatterID
-        description: The ID of a Code42 legal hold matter.
-        type: String
-      - contextPath: Code42.LegalHold.Username
-        description: A username for a Code42 user.
-        type: String
-      - contextPath: Code42.LegalHold.MatterName
-        description: A name for a Code42 legal hold matter.
-        type: String
+    - contextPath: Code42.LegalHold.UserID
+      description: The ID of a Code42 user.
+      type: Unknown
+    - contextPath: Code42.LegalHold.MatterID
+      description: The ID of a Code42 legal hold matter.
+      type: String
+    - contextPath: Code42.LegalHold.Username
+      description: A username for a Code42 user.
+      type: String
+    - contextPath: Code42.LegalHold.MatterName
+      description: A name for a Code42 legal hold matter.
+      type: String
   - arguments:
     - default: false
       description: Either the SHA256 or MD5 hash of the file.
@@ -727,7 +731,7 @@ script:
     description: Downloads a file from Code42 servers.
     execution: false
     name: code42-download-file
-  dockerimage: demisto/py42:1.0.0.9653
+  dockerimage: demisto/py42:1.0.0.9801
   feed: false
   isfetch: true
   longRunning: false
