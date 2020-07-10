@@ -1,16 +1,12 @@
 {
-	"TypeName": "Hello World Alert",
-	"kind": "details",
-	"typeId": "Hello World Alert",
-	"version": -1,
-	"fromVersion": "5.0.0",
-	"layout": {
-		"TypeName": "",
-		"id": "Hello World Alert",
-		"kind": "details",
-		"name": "",
-		"system": false,
-		"tabs": [
+    "id": "Hello World Alert",
+    "group": "incident",
+    "system": true,
+    "name": "Hello World Alert Incident Layout",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "detailsV2": {
+        "tabs": [
 			{
 				"id": "summary",
 				"name": "Legacy Summary",
@@ -395,10 +391,6 @@
 				"name": "Canvas",
 				"type": "canvas"
 			}
-		],
-		"typeId": "Hello World Alert",
-		"version": -1
-	},
-	"toVersion": "5.9.9"
+		]
+    }
 }
-
