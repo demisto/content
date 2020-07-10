@@ -1,15 +1,10 @@
 {
-    "typeId": "Logz.io Alert",
+    "id": "Logz.io Alert",
+    "group": "incident",
+    "name": "Logz.io Alert Incident Layout",
     "version": -1,
-    "TypeName": "Logz.io Alert",
-    "kind": "details",
-    "fromVersion": "5.0.0",
-    "layout": {
-        "TypeName": "",
-        "id": "Logz.io Alert",
-        "kind": "details",
-        "name": "",
-        "system": false,
+    "fromVersion": "6.0.0",
+    "detailsV2": {
         "tabs": [
             {
                 "id": "summary",
@@ -376,9 +371,6 @@
                 "name": "Canvas",
                 "type": "canvas"
             }
-        ],
-        "typeId": "Logz.io Alert",
-        "version": -1
-    },
-    "toVersion": "5.9.9"
+        ]
+    }
 }
