@@ -828,7 +828,7 @@ Adds a Code42 user to a legal hold matter.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | username | The username of the user to add to the given legal hold matter. | Required | 
-| mattername | The name of the legal hold matter to which to which the user will be added. | Required | 
+| mattername | The name of the legal hold matter to which the user will be added. | Required | 
 
 
 #### Context Output
