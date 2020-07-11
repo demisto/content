@@ -688,12 +688,6 @@ jobs:
                   else
                       echo "Not AMI run, can't run on this version"
                   fi
-            - run:
-                name: Slack Notifier
-                shell: /bin/bash
-                command: |
-                  ./Tests/scripts/slack_notifier.sh 'test_playbooks' ./env_results.json
-                when: always
             - *destroy_instances
             - *store_artifacts
   Server 6_0:
@@ -759,6 +753,12 @@ jobs:
                   python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private'
                   rm $GCS_PATH
                 when: on_success
+            - run:
+                name: Slack Notifier
+                shell: /bin/bash
+                command: |
+                  ./Tests/scripts/slack_notifier.sh 'test_playbooks' ./env_results.json
+                when: always
             - *destroy_instances
             - *store_artifacts
   Instance Test:
@@ -911,6 +911,7 @@ workflows:
       - Create Instances:
           context: nightly_env
       - Run Unit Testing And Lint:
+          context: nightly_env
           requires:
             - Prepare Environment
       - Run Validations:
