@@ -1,6 +1,6 @@
-id: Cisco Spark Test
+id: Cisco Spark Test New
 version: -1
-name: Cisco Spark Test
+name: Cisco Spark Test New
 starttaskid: "0"
 tasks:
   '0':

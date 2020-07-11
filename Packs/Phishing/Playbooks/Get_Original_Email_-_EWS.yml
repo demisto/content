@@ -1,7 +1,6 @@
 id: get_original_email_-_ews
 version: -1
 name: Get Original Email - EWS
-fromversion: 4.0.0
 description: |-
   Use this playbook to retrieve the original email in the thread, including headers and attahcments, when the reporting user forwarded the original email not as an attachment.
 
@@ -16,9 +15,9 @@ tasks:
       id: 5607d1c6-85b0-4181-8b10-bb3a5b113c6f
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -31,6 +30,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
     taskid: 03f2c080-1995-42fc-82ce-16d474fb5438
@@ -87,6 +88,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
     taskid: d2eca123-db35-4b27-88d8-a8b77ffd6784
@@ -95,19 +98,21 @@ tasks:
       id: d2eca123-db35-4b27-88d8-a8b77ffd6784
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -54,
-          "y": 1744
+          "x": -60,
+          "y": 1840
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
     taskid: b2617aaf-5e54-43f5-89fe-82fc78cd099b
@@ -156,6 +161,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
     taskid: f3c1bfda-b3c0-4c7c-8fce-fb180ff6fd07
@@ -191,6 +198,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
     taskid: 25f6439f-778f-45a5-841a-53efe77d590c
@@ -238,6 +247,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
     taskid: c729f95f-bc75-477e-8000-14c99346873d
@@ -272,6 +283,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
     taskid: 6f28ff90-80ff-414e-819b-310a51183da4
@@ -316,6 +329,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
     taskid: 8764cbb0-dd56-4095-8df2-e77035713e2e
@@ -350,12 +365,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
-    taskid: fab3c34b-010a-4203-830a-7dbf0dde26e5
+    taskid: 91028b3f-61f2-4383-8bfd-eff9dd01af96
     type: regular
     task:
-      id: fab3c34b-010a-4203-830a-7dbf0dde26e5
+      id: 91028b3f-61f2-4383-8bfd-eff9dd01af96
       version: -1
       name: Set output
       description: Set the playbook outputs to context.
@@ -367,13 +384,16 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      append: {}
+      append:
+        simple: "false"
       key:
         simple: Email
+      stringify: {}
       value:
-        simple: '${EWS.Items={Subject: val[''subject''], To: val[''toRecipients''],
-          From: val[''sender''], Text: val[''textBody''],HTML: val[''body''], Headers:
-          val[''headers'']}}'
+        simple: '${.={Subject: val[''EWS''][''Items''][''subject''], To: val[''EWS''][''Items''][''toRecipients''],
+          From: val[''EWS''][''Items''][''sender''], Text: val[''EWS''][''Items''][''textBody''],HTML:
+          val[''EWS''][''Items''][''body''], Headers: val[''EWS''][''Items''][''headers''],
+          ''HeadersMap'': val[''Email''][''0''][''HeadersMap''] }}'
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -384,6 +404,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "10":
     id: "10"
     taskid: 75ab61a9-a6cf-4d74-842f-67436507b8f4
@@ -421,6 +443,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
     taskid: 427d5e37-2e56-4522-8e69-caabe8fd70d9
@@ -457,14 +481,16 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1759,
-        "width": 1261.5,
-        "x": -54,
+        "height": 1855,
+        "width": 1267.5,
+        "x": -60,
         "y": 50
       }
     }
@@ -516,5 +542,8 @@ outputs:
 - contextPath: File
   description: Original attachments
   type: unknown
+- contextPath: Email.HeadersMap
+  description: The headers of the email.
+fromversion: 4.0.0
 tests:
-  - No test (no test was ever created for this playbook)
+- No test (no test was ever created for this playbook)

@@ -48,7 +48,7 @@ tags:
 - server
 - analytics
 - exabeam
-comment: Retrieve lockouts from Exabeam
+comment: This script is deprecated. Use the Exabeam integration instead.
 system: true
 deprecated: true
 args:

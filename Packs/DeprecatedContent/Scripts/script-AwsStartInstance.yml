@@ -19,7 +19,7 @@ script: |2
 type: python
 tags:
 - Amazon Web Services
-comment: Starts an Amazon EBS-backed AMI that you've previously stopped.
+comment: This script is deprecated. Use the AWS-EC2 integration instead.
 system: true
 args:
 - default: true

@@ -1,2 +1,0 @@
-# Legacy Content Pack
-

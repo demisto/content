@@ -29,8 +29,7 @@ type: python
 subtype: python2
 tags:
 - lightcyber
-comment: Shows hosts from LightCyber Magna. If looking for a specific host, specify
-  either a name or an IP. Otherwise all hosts will be listed.
+comment: This script is deprecated. LightCyber Magna is no longer available.
 args:
 - name: name
   default: true

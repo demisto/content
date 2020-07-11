@@ -32,7 +32,7 @@ configuration:
   name: vsys
   required: false
   type: 0
-- display: Template - Panorama instances only. routes.
+- display: Template - Panorama instances only.
   name: template
   required: false
   type: 0
@@ -199,6 +199,42 @@ script:
     description: Run any command supported in the API.
     execution: false
     name: panorama
+
+  - name: panorama-get-predefined-threats-list
+    arguments:
+     - name: target
+       description: If specified, retrieves the predefined threats from a specific firewall managed by Panorama. 
+    execution: false
+    description: Get pre-defined threats list from a Firewall or Panorama and stores as a JSON file in the context.
+    outputs:
+    - contextPath: File.Size
+      description: File size.
+      type: number
+    - contextPath: File.Name
+      description: File name.
+      type: string
+    - contextPath: File.Type
+      description: File type.
+      type: string
+    - contextPath: File.Info
+      description: File info.
+      type: string
+    - contextPath: File.Extenstion
+      description: File extension.
+      type: string
+    - contextPath: File.EntryID
+      description: FIle entryID.
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file.
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file.
+      type: string
+
   - deprecated: false
     description: Commits a configuration to Palo Alto Firewall or Panorama, but does
       not validate if the commit was successful. Committing to Panorama does not push
@@ -556,6 +592,44 @@ script:
     - contextPath: Panorama.AddressGroups.Tag
       description: Address group tags.
       type: String
+  - arguments:
+    - default: false
+      auto: PREDEFINED
+      description: Type of session reject
+      isArray: false
+      name: drop_mode
+      required: false
+      secret: false
+      predefined:
+        - drop
+        - alert
+        - block-ip
+        - reset-both
+        - reset-client
+        - reset-server
+    - default: false
+      description: Name of vulnerability profile.
+      isArray: false
+      name: vulnerability_profile
+      required: true
+      secret: false
+    - default: false
+      description: Numerical Threat ID.
+      isArray: false
+      name: threat_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Sets a vulnerability signature to block mode.
+    execution: false
+    name: panorama-block-vulnerability
+    outputs:
+    - contextPath: Panorama.Vulnerability.ID
+      description: ID of vulnerability that has been blocked/overridden.
+      type: string
+    - contextPath: Panorama.Vulnerability.NewAction
+      description: New action for vulnerability 
+      type: string
   - arguments:
     - default: false
       description: Name of address group to delete.
@@ -1716,6 +1790,18 @@ script:
       name: destination
       required: false
       secret: false
+    - default: false
+      description: A comma-separated list of source zones.
+      isArray: true
+      name: source_zone
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of destination zones.
+      isArray: true
+      name: destination_zone
+      required: false
+      secret: false
     - auto: PREDEFINED
       default: false
       description: Whether to negate the source (address, address group). Can be "Yes"
@@ -2606,6 +2692,15 @@ script:
     - contextPath: Panorama.TrafficLogs.Logs.ToZone
       description: To zone of the traffic log.
       type: String
+    - contextPath: Panorama.TrafficLogs.Logs.Bytes
+      description: Total log bytes.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.BytesReceived
+      description: Log bytes received.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.BytesSent
+      description: Log bytes sent.
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -2969,6 +3064,15 @@ script:
       description: |-
         A list of the URL filtering categories that the firewall used to
         enforce the policy.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.Bytes
+      description: Total log bytes.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.BytesReceived
+      description: Log bytes received.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.BytesSent
+      description: Log bytes sent.
       type: String
   - arguments:
     - default: false
@@ -3579,7 +3683,26 @@ script:
     description: Reboots the Firewall device.
     execution: false
     name: panorama-device-reboot
-  dockerimage: demisto/python3:3.8.2.6981
+  - arguments:
+    - name: ip_address
+      required: true
+      description: The IP address to perform the lookup on.
+    outputs:
+    - contextPath: Panorama.Location.IP.country_code
+      description: The IP location country code.
+      type: String
+    - contextPath: Panorama.Location.IP.country_name
+      description: TThe IP location country name.
+      type: String
+    - contextPath: Panorama.Location.IP.ip_address
+      description: The IP address.
+      type: String
+    - contextPath: Panorama.Location.IP.Status
+      description: Whether the IP address was found or not.
+      type: String
+    description: Show the IP location information.
+    name: panorama-show-location-ip
+  dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: false
   longRunning: false

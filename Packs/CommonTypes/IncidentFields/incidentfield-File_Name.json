@@ -23,17 +23,9 @@
     "content": true,
     "group": 0,
     "hidden": false,
-    "associatedTypes": [
-        "Malware",
-        "Traps",
-        "Port Scan"
-    ],
-    "systemAssociatedTypes": [
-        "Malware",
-        "Traps",
-        "Port Scan"
-    ],
-    "associatedToAll": false,
+    "associatedTypes": [],
+    "systemAssociatedTypes": null,
+    "associatedToAll": true,
     "unmapped": false,
     "unsearchable": false
 }

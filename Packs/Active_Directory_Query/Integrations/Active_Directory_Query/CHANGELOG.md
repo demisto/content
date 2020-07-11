@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Improved parsing of custom attributes in the ***ad-get-user*** command.
 
 ## [20.3.4] - 2020-03-30
 Fixed the User Account Control translation value.

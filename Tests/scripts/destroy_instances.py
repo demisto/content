@@ -9,11 +9,12 @@ import Tests.scripts.awsinstancetool.aws_functions as aws_functions
 def main():
     circle_aritfact = sys.argv[1]
     env_file = sys.argv[2]
-
+    instance_role = sys.argv[3]
     with open(env_file, 'r') as json_file:
         env_results = json.load(json_file)
 
-    for env in env_results:
+    filtered_results = [env_result for env_result in env_results if env_result["Role"] == instance_role]
+    for env in filtered_results:
         print(f'Downloading server log from {env.get("Role", "Unknown role")}')
         ssh_string = 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} ' \
                      '"sudo chmod -R 755 /var/log/demisto"'

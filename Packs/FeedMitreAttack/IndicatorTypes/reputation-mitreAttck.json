@@ -9,7 +9,7 @@
     "details": "MITRE ATT&CK",
     "prevDetails": "MITRE ATT&CK",
     "reputationScriptName": "",
-    "reputationCommand": "",
+    "reputationCommand": "mitre-reputation",
     "enhancementScriptNames": [],
     "system": false,
     "locked": false,

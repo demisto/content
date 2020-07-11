@@ -1,6 +1,6 @@
 {
     "id": "RedLock-mapper",
-    "name": "Prisma Cloud App - Incoming Mapper",
+    "name": "Prisma Cloud - Incoming Mapper",
     "type": "mapping-incoming",
     "description": "Maps incoming Prisma Cloud event fields.",
 	"defaultIncidentType": "Prisma Cloud",

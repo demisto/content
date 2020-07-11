@@ -838,7 +838,7 @@
   },
   "endingDate": "0001-01-01T00:00:00Z",
   "sensitive": false,
-  "recipients": null,
+  "recipients": [],
   "type": "pdf",
   "tags": [],
   "createdBy": "DBot",

@@ -33,9 +33,7 @@ type: python
 subtype: python2
 tags:
 - lightcyber
-comment: Mark a host as resolved in LightCyber Magna. Will return an error if you
-  try to resolve a host that isn't in the detected entities list or if the host is
-  already resolved (You can use "unresolve" to change this property back).
+comment: This script is deprecated. LightCyber Magna is no longer available.
 system: true
 deprecated: true
 args:

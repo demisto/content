@@ -1,5 +1,7 @@
 ## [Unreleased]
-
+- Updated the Docker image.
+- Improved cached DB initialization to support off-line deployments.
+- Fixed parsing incidents with missing fields.
 
 ## [20.5.0] - 2020-05-12
 - Improved handling of proxy and insecure parameters.

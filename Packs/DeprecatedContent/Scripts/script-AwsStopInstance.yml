@@ -19,7 +19,7 @@ script: |2
 type: python
 tags:
 - Amazon Web Services
-comment: stop ec2 aws instances
+comment: This script is deprecated. Use the AWS-EC2 integration instead.
 system: true
 args:
 - default: true

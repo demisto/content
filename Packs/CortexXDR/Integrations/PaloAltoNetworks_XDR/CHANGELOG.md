@@ -1,12 +1,20 @@
 ## [Unreleased]
--
+- Added 6 commands.
+  - ***xdr-blacklist-files***
+  - ***xdr-whitelist-files***
+  - ***xdr-quarantine-files***
+  - ***xdr-get-quarantine-status***
+  - ***xdr-restore-file***
+  - ***xdr-endpoint-scan***
+- Added get-quarantine-file-status playbook.
+- Fixed a bug in the ***xdr-get-endpoint*** command where only the last endpoint was displayed in context.
 
 ## [20.4.1] - 2020-04-29
 - Fixed an issue where the ***xdr-get-endpoints*** command failed when returning all the endpoints if no filters were given. 
 
 ## [20.4.0] - 2020-04-14
   - Fixed the issue where the ***xdr-isolate-endpoint*** command was failing when:  
-    - The endpoint was disconnected.  
+    - The endpoint was disconnected. 
     - The isolation was still pending.  
     - The isolation cancellation was still pending.
   - Fixed the issue where ***xdr-unisolate-endpoint*** was failing when: 
