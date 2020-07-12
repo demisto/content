@@ -608,6 +608,7 @@ def main():
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
     # download and extract index from public bucket
+    print_error(f"extract: {extract_destination_path}")
     index_folder_path, index_blob = download_and_extract_index(default_storage_bucket, extract_destination_path)
     print_error(index_folder_path)
 
