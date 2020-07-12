@@ -46,11 +46,11 @@ references:
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
       BACKWARD_COMPATIBILITY: << pipeline.parameters.backward_compatibility >>
       MEM_CHECK: << pipeline.parameters.mem_check >>
-      TIME_TO_LIVE: << pipeline.parameters.time_to_live >>
       CONTRIB_BRANCH: << pipeline.parameters.contrib_branch >>
       CONTRIB_PACK_NAME: << pipeline.parameters.contrib_pack_name >>
       # Giving different names to the following pipeline parameters to avoid collision, handling such collision case
       # is done in 'Prepare Environment' step.
+      TIME_TO_LIVE_PARAMETER: << pipeline.parameters.time_to_live >>
       NIGHTLY_PARAMETER: << pipeline.parameters.nightly >>
       INSTANCE_TESTS_PARAMETER: << pipeline.parameters.instance_tests >>
       DEMISTO_SDK_NIGHTLY_PARAMETER: << pipeline.parameters.demisto_sdk_nightly >>
@@ -96,6 +96,10 @@ references:
         if [ -n "${DEMISTO_SDK_NIGHTLY_PARAMETER}" ];
         then
             echo 'export DEMISTO_SDK_NIGHTLY=true' >> $BASH_ENV
+        fi
+        if [ -n "${TIME_TO_LIVE_PARAMETER}" ];
+        then
+            echo "export TIME_TO_LIVE=$TIME_TO_LIVE_PARAMETER" >> $BASH_ENV
         fi
         echo "=== sourcing $BASH_ENV ==="
         source $BASH_ENV
