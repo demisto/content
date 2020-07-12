@@ -944,5 +944,4 @@ script:
     description: Delete rule from firewall
   runonce: false
 tests:
-- blockip_test_playbook
 - CheckpointFW-test
