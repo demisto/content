@@ -94,4 +94,4 @@ dependson:
   - jira-delete-issue
 runonce: false
 tests:
-  - JiraCreateIssue-example-test
+  - No tests
