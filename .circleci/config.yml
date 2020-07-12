@@ -145,7 +145,7 @@ references:
         rm -r test_content_dir
   restore_cache: &restore_cache
     restore_cache:
-      key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
+      key: venv-{{ checksum "package-lock.json" }}
   destroy_instances: &destroy_instances
     run:
       name: Destroy Instances
@@ -185,7 +185,7 @@ references:
       name: Secrets
       when: always
       command: |
-        demisto-sdk secrets --post-commit --ignore-entropy
+        demisto-sdk secrets --post-commit --ignore-entropy --prev-ver 4.1_freeze
   validate_files_and_yaml: &validate_files_and_yaml
     run:
       name: Validate Files and Yaml
@@ -216,25 +216,15 @@ references:
         echo "bandit py3 version: $(python3 -m bandit --version 2>&1)"
         echo "vulture py2 version: $(python2 -m vulture --version) 2>&1"
         echo "vulture py3 version: $(python3 -m vulture --version) 2>&1"
-        SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
+        SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh 4.1_freeze)
         mkdir ./unit-tests
         if [ -n "$SHOULD_LINT_ALL" ]; then
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
           demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
         else
-          demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
+          demisto-sdk lint -p 8 -g --prev-ver '4.1_freeze' -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
         fi
-  infrastructure_testing: &infrastructure_testing
-    run:
-      name: Infrastructure testing
-      when: always
-      command: |
-        python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
-        python3 -m pytest ./Tests/Marketplace/Tests/ -v
 
-        if [ -n "${DEMISTO_SDK_NIGHTLY}" ] ; then
-          ./Tests/scripts/sdk_pylint_check.sh
-        fi
   create_id_set: &create_id_set
     run:
       name: Create ID Set
@@ -300,7 +290,7 @@ jobs:
           paths:
             - venv
             - node_modules
-          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
+          key: venv-{{ checksum "package-lock.json" }}
       - when:
           condition: << pipeline.parameters.contrib_branch >>
           steps:
@@ -332,7 +322,6 @@ jobs:
             - *restore_cache
             - *add_ssh_keys
             - *prepare_environment
-            - *infrastructure_testing
             - *run_unit_testing_and_lint
             - store_test_results:
                 path: ./unit-tests
@@ -838,7 +827,6 @@ jobs:
       - *Secrets
       - *validate_files_and_yaml
       - *run_unit_testing_and_lint
-      - *infrastructure_testing
       - *create_id_set
       - *build_content_descriptor
       - *common_server_documentation

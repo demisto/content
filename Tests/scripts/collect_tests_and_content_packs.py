@@ -352,7 +352,7 @@ class TestConf(object):
         tested_integrations = self.get_tested_integrations_for_collected_tests(collected_tests)
         for integration in tested_integrations:
             int_path = id_set__get_integration_file_path(id_set, integration)
-            pack = tools.get_pack_name(int_path)
+            pack = tools.get_pack_name(str(int_path))
             if pack:
                 packs.add(pack)
         return packs

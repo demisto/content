@@ -12,10 +12,11 @@ if [ -n "$DEMISTO_SDK_NIGHTLY" ]; then
     exit 0
 fi
 
+
 if [ -z "$CIRCLE_BRANCH" ]; then
     # simply compare against origin/master. Local testing case..
-    DIFF_COMPARE=origin/master
-elif [ "$CIRCLE_BRANCH" == "master" ]; then
+    DIFF_COMPARE=origin/$1
+elif [ "$CIRCLE_BRANCH" == $1 ]; then
     # on master we use the range obtained from CIRCLE_COMPARE_URL
     # example of comapre url: https://github.com/demisto/content/compare/62f0bd03be73...1451bf0f3c2a
     # if CIRCLE_COMPARE_URL is not set we use last commit
