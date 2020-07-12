@@ -571,6 +571,8 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
+      retry-count:
+        simple: "4"
       applicationId: {}
       contentId:
         complex:
