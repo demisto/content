@@ -949,10 +949,6 @@
             "playbookID": "McAfee DXL - Test"
         },
         {
-            "integrations": "activedir",
-            "playbookID": "calculate_severity_-_critical_assets_-_test"
-        },
-        {
             "playbookID": "TextFromHTML_test_playbook"
         },
         {
@@ -2124,10 +2120,6 @@
         },
         {
             "playbookID": "CheckDockerImageAvailableTest"
-        },
-        {
-            "playbookID": "Account Enrichment - Generic v2 - Test",
-            "integrations": "activedir"
         },
         {
             "playbookID": "Extract Indicators From File - Generic v2 - Test",
