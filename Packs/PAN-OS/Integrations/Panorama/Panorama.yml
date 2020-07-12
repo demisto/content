@@ -3683,6 +3683,25 @@ script:
     description: Reboots the Firewall device.
     execution: false
     name: panorama-device-reboot
+  - arguments:
+    - name: ip_address
+      required: true
+      description: The IP address to perform the lookup on.
+    outputs:
+    - contextPath: Panorama.Location.IP.country_code
+      description: The IP location country code.
+      type: String
+    - contextPath: Panorama.Location.IP.country_name
+      description: TThe IP location country name.
+      type: String
+    - contextPath: Panorama.Location.IP.ip_address
+      description: The IP address.
+      type: String
+    - contextPath: Panorama.Location.IP.Status
+      description: Whether the IP address was found or not.
+      type: String
+    description: Show the IP location information.
+    name: panorama-show-location-ip
   dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: false
