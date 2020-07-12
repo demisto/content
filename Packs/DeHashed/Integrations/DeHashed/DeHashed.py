@@ -9,6 +9,7 @@ INTEGRATION_CONTEXT_BRAND = "DeHashed"
 BASE_URL = "https://api.dehashed.com/"
 RESULTS_FROM = 1
 RESULTS_TO = 50
+DEFAULT_DBOT_SCORE_EMAIL = 2 if demisto.params().get('default_dbot_score_email') == 'SUSPICIOUS' else 3
 
 
 class Client(BaseClient):
@@ -162,6 +163,30 @@ def arg_to_int(arg_val: Optional[str], arg_name: Optional[str]) -> Optional[int]
             f'"{arg_name}" expected to be Integer. passed {arg_val} instead.'
         )
 
+def email_to_entry_context(email, api_email_res, api_paste_res):
+    dbot_score = 0
+    comp_email = dict()  # type: dict
+    comp_sites = sorted([item['Title'] for item in api_email_res])
+    comp_pastes = sorted(set(item['Source'] for item in api_paste_res))
+
+    if len(comp_sites) > 0:
+        dbot_score = DEFAULT_DBOT_SCORE_EMAIL
+        email_context = create_context_entry('email', email, comp_sites, comp_pastes, DEFAULT_DBOT_SCORE_EMAIL)
+        comp_email[outputPaths['email']] = email_context
+
+    comp_email['DBotScore'] = create_dbot_score_dictionary(email, 'email', dbot_score)
+
+    return comp_email
+
+
+def create_dbot_score_dictionary(indicator_value, indicator_type, dbot_score):
+    return {
+        'Indicator': indicator_value,
+        'Type': indicator_type,
+        'Vendor': INTEGRATION_CONTEXT_BRAND,
+        'Score': dbot_score
+    }
+
 
 def dehashed_search_command(client: Client, args: Dict[str, str]) -> tuple:
     """
@@ -225,6 +250,40 @@ def dehashed_search_command(client: Client, args: Dict[str, str]) -> tuple:
         )
 
 
+def email_command(client: Client, args: Dict[str, str]) -> tuple:
+    """
+    This command returns data regarding a compromised email address
+    :param client: Demisto client
+    :param args:
+    - email: the email address that should be checked
+    :return: Demisto outputs
+    """
+    email_address = argToList(args.get('email'))
+    result = client.dehashed_search('email', email_address, 'contains')
+    if not isinstance(result, dict):
+        raise DemistoException(f"Got unexpected output from api: {result}")
+
+    query_data = result.get("entries")
+    if not query_data:
+        return "No matching results found", None, None
+    else:
+        # todo: should the results be filtered or can all the results be returned?
+        # filtered_results, results_from, results_to = filter_results(query_data, results_from, results_to)
+        query_entries = createContext(query_data, keyTransform=underscoreToCamelCase)
+        sources = [entry.get('obtained_from') for entry in query_data if entry.get('obtained_from')]
+        headers = [key.replace("_", " ") for key in [*query_data[0].keys()]]
+
+        hr = tableToMarkdown(f'DeHashed Search - got total results: {result.get("total")}', query_data, headers=headers,
+                             headerTransform=pascalToSpace)
+        dbot_score = DEFAULT_DBOT_SCORE_EMAIL if len(sources) > 0 else 0
+        context = {
+            f'{INTEGRATION_CONTEXT_BRAND}.Search(val.Id==obj.Id)': query_entries,
+            'DBotScore': create_dbot_score_dictionary(email_address[0], 'email', dbot_score)
+        }
+        # todo: in case the dbot score is malicious, should a context path be added with the sources?
+        return hr, context, query_data
+
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -253,7 +312,10 @@ def main():
 
         elif demisto.command() == "dehashed-search":
             return_outputs(*dehashed_search_command(client, demisto.args()))
-
+        elif demisto.command() == "email":
+            return_outputs(*email_command(client, demisto.args()))
+        else:
+            return_error('Command not found.')
     # Log exceptions
     except Exception as e:
         return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")
