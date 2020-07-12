@@ -797,6 +797,7 @@ class Pack(object):
                     changelog = json.load(changelog_file)
 
                 release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
+                print_error(f"release notes dir is: {release_notes_dir}")
 
                 if os.path.exists(release_notes_dir):
                     found_versions = []
