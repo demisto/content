@@ -417,7 +417,7 @@ jobs:
                   fi
   Create Instances:
     <<: *container_config
-    resource_class: medium+
+    resource_class: medium
     <<: *environment
     steps:
       - checkout
@@ -518,7 +518,7 @@ jobs:
       - *persist_to_workspace
   Server 4_1:
     <<: *container_config
-    resource_class: medium+
+    resource_class: medium
     <<: *environment
     steps:
       - setup_remote_docker
@@ -566,7 +566,7 @@ jobs:
             - *store_artifacts
   Server 4_5:
     <<: *container_config
-    resource_class: medium+
+    resource_class: medium
     <<: *environment
     steps:
       - setup_remote_docker
@@ -613,7 +613,7 @@ jobs:
             - *store_artifacts
   Server 5_0:
     <<: *container_config
-    resource_class: medium+
+    resource_class: medium
     <<: *environment
     steps:
       - setup_remote_docker
@@ -665,7 +665,7 @@ jobs:
             - *store_artifacts
   Server 5_5:
     <<: *container_config
-    resource_class: medium+
+    resource_class: medium
     <<: *environment
     steps:
       - setup_remote_docker
@@ -715,7 +715,7 @@ jobs:
             - *store_artifacts
   Server 6_0:
     <<: *container_config
-    resource_class: medium+
+    resource_class: medium
     <<: *environment
     steps:
       - setup_remote_docker
@@ -786,7 +786,7 @@ jobs:
             - *store_artifacts
   Instance Test:
     <<: *container_config
-    resource_class: medium+
+    resource_class: medium
     <<: *environment
     steps:
       - setup_remote_docker
@@ -824,7 +824,7 @@ jobs:
 
   Demisto SDK Nightly:
     <<: *container_config
-    resource_class: medium+
+    resource_class: medium
     <<: *environment
     steps:
       - checkout
