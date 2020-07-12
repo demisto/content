@@ -65,6 +65,65 @@ script:
       type: String
   - deprecated: false
     execution: false
+  - arguments:
+    - default: false
+      description: Skips the specified number of records.
+      isArray: false
+      name: skip
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Maximum number of records returned by the request.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The severity of the aler.
+      isArray: false
+      name: severity
+      predefined:
+      - Law
+      - Medium
+      - High
+      - All
+      required: false
+      secret: false
+    - default: false
+      description: Filter alerts related to the specified service appId.
+      isArray: false
+      name: service
+      required: false
+      secret: false
+    - default: false
+      description: Filter alerts related to the specified instances.
+      isArray: false
+      name: instance
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter by alert resolution status.
+      isArray: false
+      name: resolutionStatus
+      predefined:
+      - Open
+      - Dismissed
+      - Resolved
+      required: false
+      secret: false
+    - default: false
+      description: Filter that the customer chooses for himself.
+      isArray: false
+      name: Customer filter
+      required: false
+      secret: false
+    deprecated: false
+    description: List alerts command - prints list alerts by id
+    execution: false
+    name: microsoft-cas-alerts-list-by-id
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: true
