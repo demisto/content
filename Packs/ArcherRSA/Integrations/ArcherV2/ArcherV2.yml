@@ -143,7 +143,7 @@ script:
     - default: false
       description: ID of the field.
       isArray: false
-      name: fieldId
+      name: fieldID
       required: true
       secret: false
     deprecated: false
