@@ -115,6 +115,7 @@ def get_modified_files_for_testing(files_string):
     is_indicator_json = False
 
     sample_tests = []
+    pack_sample_tests = []
     changed_common = []
     modified_files_list = []
     modified_tests_list = []
@@ -171,12 +172,15 @@ def get_modified_files_for_testing(files_string):
             elif re.match(DOCS_REGEX, file_path) or os.path.splitext(file_path)[-1] in ['.md', '.png']:
                 continue
 
-            elif all(file not in file_path for file in
-                     (SECRETS_WHITE_LIST, PACKS_PACK_META_FILE_NAME, PACKS_WHITELIST_FILE_NAME)):
+            elif (file in file_path for file in
+                  (PACKS_PACK_META_FILE_NAME, PACKS_WHITELIST_FILE_NAME)):
+                pack_sample_tests.append(file_path)
+
+            elif SECRETS_WHITE_LIST not in file_path:
                 sample_tests.append(file_path)
 
-    return (modified_files_list, modified_tests_list, changed_common, is_conf_json, sample_tests, is_reputations_json,
-            is_indicator_json)
+    return (modified_files_list, modified_tests_list, changed_common, is_conf_json, sample_tests, pack_sample_tests,
+            is_reputations_json, is_indicator_json)
 
 
 def get_name(file_path):
@@ -277,7 +281,8 @@ def collect_tests_and_content_packs(
                     f'Found test playbook {test_playbook_id} in pack {test_playbook_pack} - adding to packs to install')
                 packs_to_install.add(test_playbook_pack)
             else:
-                tools.print_warning(f'Found test playbook {test_playbook_id} without pack - not adding to packs to install')
+                tools.print_warning(f'Found test playbook {test_playbook_id} without pack - not adding to packs to '
+                                    f'install')
 
     return test_ids, missing_ids, caught_missing_test, packs_to_install
 
@@ -1065,6 +1070,14 @@ def get_random_tests(tests_num, rand, conf=None, id_set=None, server_version='0'
     return tests
 
 
+def get_tests_for_pack(file_path):
+    pack_path = os.path.dirname(file_path)
+    pack_yml_files = tools.get_files_in_dir(pack_path, ['yml'])
+    pack_test_playbooks = [tools.collect_ids(file) for file in pack_yml_files if
+                           checked_type(file, YML_TEST_PLAYBOOKS_REGEXES)]
+    return pack_test_playbooks
+
+
 def get_content_pack_name_of_test(tests: set, id_set: Dict = None) -> set:
     """Returns the content packs names in which given test playbooks are in.
 
@@ -1123,14 +1136,19 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     """Create a test list that should run"""
 
     (modified_files_with_relevant_tests, modified_tests_list, changed_common, is_conf_json, sample_tests,
-     is_reputations_json,
-     is_indicator_json) = get_modified_files_for_testing(files_string)
+     pack_sample_tests, is_reputations_json, is_indicator_json) = get_modified_files_for_testing(files_string)
 
     tests = set([])
     packs_to_install = set([])
     if modified_files_with_relevant_tests:
         tests, packs_to_install = find_tests_and_content_packs_for_modified_files(modified_files_with_relevant_tests,
                                                                                   conf, id_set)
+    for file_path in pack_sample_tests:
+        pack_tests = get_tests_for_pack(file_path)
+        packs_to_install.add(tools.get_pack_name(file_path))
+        for test in pack_tests:
+            tests.add(test)
+
     # Adding a unique test for a json file.
     if is_reputations_json:
         tests.add('FormattingPerformance - Test')
@@ -1222,7 +1240,6 @@ def create_test_file(is_nightly, skip_save=False):
             commit_string = commit_string.replace("'", "")
             last_commit, second_last_commit = commit_string.split()
             files_string = tools.run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
-
         with open('./Tests/ami_builds.json', 'r') as ami_builds:
             # get versions to check if tests are runnable on those envs
             ami_builds = json.load(ami_builds)
