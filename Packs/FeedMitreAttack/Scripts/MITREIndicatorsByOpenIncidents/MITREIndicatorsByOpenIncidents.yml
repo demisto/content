@@ -11,9 +11,8 @@ comment: "This is a widget script returning MITRE indicators information for top
 enabled: true
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
-dockerimage: demisto/python3:3.7.3.286
+dockerimage: demisto/python3:3.8.3.9324
 runas: DBotWeakRole
 tests:
   - No test.

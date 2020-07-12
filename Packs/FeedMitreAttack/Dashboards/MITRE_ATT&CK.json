@@ -19,6 +19,7 @@
 	},
 	"fromDateLicense": "0001-01-01T00:00:00Z",
 	"name": "MITRE ATT\u0026CK",
+	"description": "MITRE ATT&CK Dashboard",
 	"prevName": "MITRE ATT\u0026CK",
 	"layout": [
 		{
