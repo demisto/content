@@ -163,4 +163,4 @@ dockerimage: demisto/dl:1.1
 deprecated: true
 fromversion: 4.1.0
 tests:
-  - CreatePhishingClassifierMLTest
+  - No tests
