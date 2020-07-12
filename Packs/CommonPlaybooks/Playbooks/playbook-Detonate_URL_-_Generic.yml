@@ -363,7 +363,7 @@ tasks:
       iscommand: false
       brand: ""
       description: |-
-        'Detonate one or more files using the CrowdStrike Falcon Sandbox integration.'
+        'Detonate one or more URLs using the CrowdStrike Falcon Sandbox integration.'
     nexttasks:
       '#none#':
       - "3"

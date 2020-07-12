@@ -713,7 +713,7 @@ tasks:
         Scalable vector graphics: .svg
         Python: .py
         Linux ELF executables
-        Email files: MIME RFC 822 .eml, Outlook .msg.      name: Detonate File - CrowdStrike Falcon X
+        Email files: MIME RFC 822 .eml, Outlook .msg.
       playbookName: Detonate File - CrowdStrike Falcon X
       name: Detonate File - CrowdStrike Falcon X
       type: playbook
