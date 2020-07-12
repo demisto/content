@@ -457,7 +457,7 @@ class TestNoChange:
 
 
 def create_get_modified_files_ret(modified_files_list=[], modified_tests_list=[], changed_common=[], is_conf_json=False,
-                                  sample_tests=[], is_reputations_json=[], is_indicator_json=[]):
+                                  sample_tests=[], pack_sample_tests=[], is_reputations_json=[], is_indicator_json=[]):
     """
     Returns return value for get_modified_files() to be used with a mocker patch
     """
@@ -467,6 +467,7 @@ def create_get_modified_files_ret(modified_files_list=[], modified_tests_list=[]
         changed_common,
         is_conf_json,
         sample_tests,
+        pack_sample_tests,
         is_reputations_json,
         is_indicator_json
     )
