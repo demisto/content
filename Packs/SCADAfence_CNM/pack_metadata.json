@@ -1,10 +1,10 @@
 {
   "name": "SCADAfence CNM",
-  "description": "fetching data from CNM",
-  "support": "xsoar",
+  "description": "Fetching data from CNM",
+  "support": "partner",
   "currentVersion": "1.0.0",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
+  "author": "SCADAfence CNM",
+  "url": "",
   "email": "",
   "created": "2020-04-14T00:00:00Z",
   "categories": [

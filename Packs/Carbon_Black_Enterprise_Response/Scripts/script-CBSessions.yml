@@ -1,6 +1,6 @@
 commonfields:
   id: CBSessions
-  version: 1
+  version: -1
 name: CBSessions
 script: |-
   //Show a list of carbon black sessions.

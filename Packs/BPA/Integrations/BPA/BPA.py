@@ -177,6 +177,7 @@ def get_results_command(client: Client, args: Dict):
     raw: Dict = client.get_results_request(task_id)
     status = raw.get('status')
     results = raw.get('results', {})
+    exclude_passed_checks = args.get('exclude_passed_checks') == "true"
 
     if not status:
         raise Exception("Invalid response from BPA")
@@ -197,7 +198,10 @@ def get_results_command(client: Client, args: Dict):
                     # Empty list, no checks
                     continue
                 checks = get_checks_from_feature(feature_contents[0], feature_name, category_name)
-                job_checks.extend(checks)
+                if exclude_passed_checks:
+                    job_checks.extend([check for check in checks if not check.get('check_passed')])
+                else:
+                    job_checks.extend(checks)
 
     download_url = results.get('download_url')
 

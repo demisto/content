@@ -22,6 +22,8 @@ description: |-
    - GCP Firewall rule allows internet traffic to NetBIOS-SSN port (139)
    - GCP Firewall rule allows internet traffic to POP3 port (110)
    - GCP Firewall rule allows internet traffic to SMTP port (25)
+   - GCP Default Firewall rule should not have any rules (except http and https)
+   - GCP Firewall with Inbound rule overly permissive to All Traffic
 starttaskid: "0"
 tasks:
   "0":
@@ -124,7 +126,7 @@ tasks:
       {
         "position": {
           "x": 630,
-          "y": 1580
+          "y": 1510
         }
       }
     note: false
@@ -255,10 +257,10 @@ tasks:
       - "No"
   "7":
     id: "7"
-    taskid: 9d43895e-2a64-4e51-8598-324721a9b075
+    taskid: 5ed221c5-a729-4e5d-8b23-b970b2cf1d90
     type: condition
     task:
-      id: 9d43895e-2a64-4e51-8598-324721a9b075
+      id: 5ed221c5-a729-4e5d-8b23-b970b2cf1d90
       version: -1
       name: Execute playbook
       description: Execute the appropriate remediation sub-playbook based on the Prisma
@@ -414,6 +416,24 @@ tasks:
           right:
             value:
               simple: e35ce679-e427-4e00-a9d2-44d808c694bd
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 3b814978-44a0-4a5b-9736-492d67ee4994
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: ff6a9cca-8bc5-4a72-9235-ec7b65c547d5
     view: |-
       {
         "position": {
@@ -444,7 +464,7 @@ tasks:
       {
         "position": {
           "x": 350,
-          "y": 1060
+          "y": 990
         }
       }
     note: false
@@ -482,7 +502,7 @@ tasks:
       {
         "position": {
           "x": 350,
-          "y": 1410
+          "y": 1340
         }
       }
     note: false
@@ -543,7 +563,7 @@ tasks:
       {
         "position": {
           "x": 350,
-          "y": 1240
+          "y": 1160
         }
       }
     note: false
@@ -577,8 +597,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -290,
-          "y": 1060
+          "x": -370,
+          "y": 990
         }
       }
     note: false
@@ -612,7 +632,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -730,
+          "x": -850,
           "y": 990
         }
       }
@@ -630,15 +650,14 @@ view: |-
       "5_7_yes": 0.46,
       "6_7_Yes": 0.46,
       "6_8_#default#": 0.35,
-      "7_12_project": 0.52,
       "7_13_firewall": 0.57,
       "7_8_#default#": 0.24
     },
     "paper": {
       "dimensions": {
-        "height": 1645,
-        "width": 1740,
-        "x": -730,
+        "height": 1575,
+        "width": 1860,
+        "x": -850,
         "y": 0
       }
     }

@@ -1,6 +1,6 @@
 commonfields:
   id: VolConnscan
-  version: 1
+  version: -1
 name: VolConnscan
 script: |-
   var cmdline = 'connscan';

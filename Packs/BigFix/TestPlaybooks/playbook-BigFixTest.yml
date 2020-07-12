@@ -1,31 +1,40 @@
 id: BigFixTest
 version: -1
 name: BigFixTest
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
-    taskid: 2c9d96a0-f815-4c0c-8088-29eae39ef7c9
+  "0":
+    id: "0"
+    taskid: 67df1a23-4949-410d-8480-15cd8be6e6b5
     type: start
     task:
-      id: 2c9d96a0-f815-4c0c-8088-29eae39ef7c9
+      id: 67df1a23-4949-410d-8480-15cd8be6e6b5
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '7'
+      - "7"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 50\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
     note: false
-  '1':
-    id: '1'
-    taskid: fe4946dd-7be1-4cb8-8e7c-04d791c0e022
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 0d4dbaf8-58e2-490f-877f-c99f72591aa0
     type: regular
     task:
-      id: fe4946dd-7be1-4cb8-8e7c-04d791c0e022
+      id: 0d4dbaf8-58e2-490f-877f-c99f72591aa0
       version: -1
       name: bigfix-get-sites
       description: Retrieves all the sites
@@ -35,18 +44,28 @@ tasks:
       brand: BigFix
     nexttasks:
       '#none#':
-      - '8'
-      - '9'
-      - '10'
+      - "8"
+      - "9"
+      - "10"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 370\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
     note: false
-  '2':
-    id: '2'
-    taskid: 047cd2f3-3b2d-46dc-8be9-3622e1addc02
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: c678d099-ac20-41f0-8ec5-eaa8acce8bf2
     type: regular
     task:
-      id: 047cd2f3-3b2d-46dc-8be9-3622e1addc02
+      id: c678d099-ac20-41f0-8ec5-eaa8acce8bf2
       version: -1
       name: bigfix-get-site (default master)
       description: Retrieve single site by name and type
@@ -56,21 +75,31 @@ tasks:
       brand: BigFix
     nexttasks:
       '#none#':
-      - '12'
-      - '13'
-      - '14'
+      - "12"
+      - "13"
+      - "14"
     scriptarguments:
       site_name: {}
       site_type: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1420\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
     note: false
-  '3':
-    id: '3'
-    taskid: 8a932779-f2b1-487a-8fce-c71ff0fe5a82
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 4e2ea098-248d-46bf-8c96-6680ef0aa9de
     type: regular
     task:
-      id: 8a932779-f2b1-487a-8fce-c71ff0fe5a82
+      id: 4e2ea098-248d-46bf-8c96-6680ef0aa9de
       version: -1
       name: bigfix-get-site (external BES Support)
       description: Retrieve single site by name and type
@@ -80,23 +109,33 @@ tasks:
       brand: BigFix
     nexttasks:
       '#none#':
-      - '16'
-      - '17'
-      - '18'
+      - "16"
+      - "17"
+      - "18"
     scriptarguments:
       site_name:
         simple: BES Support
       site_type:
         simple: external
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 895\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
     note: false
-  '4':
-    id: '4'
-    taskid: f738eb65-123b-4635-899e-0e99363c98ee
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: ebf4a1a3-f3e1-4c1f-87f6-00c7ed4e07bf
     type: regular
     task:
-      id: f738eb65-123b-4635-899e-0e99363c98ee
+      id: ebf4a1a3-f3e1-4c1f-87f6-00c7ed4e07bf
       version: -1
       name: bigfix-get-patches
       description: Retrieve all the patches (fixlets) of site
@@ -106,21 +145,31 @@ tasks:
       brand: BigFix
     nexttasks:
       '#none#':
-      - '21'
-      - '22'
+      - "21"
+      - "22"
     scriptarguments:
       site_name: {}
       site_type:
         simple: master
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 2295\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2295
+        }
+      }
     note: false
-  '5':
-    id: '5'
-    taskid: 355ac42b-fc75-459e-8e96-2a21872c1fe0
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 25fde8e9-77f9-480d-8d1c-75ca6b555c52
     type: regular
     task:
-      id: 355ac42b-fc75-459e-8e96-2a21872c1fe0
+      id: 25fde8e9-77f9-480d-8d1c-75ca6b555c52
       version: -1
       name: bigfix-deploy-patch
       description: Deploy patch on site
@@ -130,465 +179,643 @@ tasks:
       brand: BigFix
     nexttasks:
       '#none#':
-      - '24'
+      - "24"
     scriptarguments:
       action_id:
         simple: Action2
       computer_ids:
-        simple: '3385267'
+        simple: "3385267"
       fixlet_id:
-        simple: '1759'
+        simple: "1759"
       site_name:
         simple: BES Support
       site_type:
         simple: master
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 2645\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2645
+        }
+      }
     note: false
-  '6':
-    id: '6'
-    taskid: 673663a6-79c0-4bd8-8695-643da5c57840
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 974a014a-b2b8-43fc-8b11-32b5877bf929
     type: regular
     task:
-      id: 673663a6-79c0-4bd8-8695-643da5c57840
+      id: 974a014a-b2b8-43fc-8b11-32b5877bf929
       version: -1
       name: bigfix-get-endpoints
       script: BigFix|||bigfix-get-endpoints
       type: regular
       iscommand: true
       brand: BigFix
-      description: ''
     nexttasks:
       '#none#':
-      - '23'
+      - "23"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1770\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1770
+        }
+      }
     note: false
-  '7':
-    id: '7'
-    taskid: 3d9ef20e-ae32-43a9-8084-5acedc2b1041
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 36465eb9-089c-46db-8427-b223072c8df0
     type: regular
     task:
-      id: 3d9ef20e-ae32-43a9-8084-5acedc2b1041
+      id: 36465eb9-089c-46db-8427-b223072c8df0
       version: -1
       name: DeleteContext
       description: Delete field from context
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     scriptarguments:
       all:
-        simple: yes
+        simple: "yes"
       key: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 195\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
     note: false
-  '8':
-    id: '8'
-    taskid: cb760a6b-80be-4a21-8bd9-5dd145aee5c5
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 58a142c0-72b6-4020-814d-7d2cbdaf4b06
     type: regular
     task:
-      id: cb760a6b-80be-4a21-8bd9-5dd145aee5c5
+      id: 58a142c0-72b6-4020-814d-7d2cbdaf4b06
       version: -1
       name: VerifyContext
-      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
-        \ object is an array: verify fields exists in each of the objects in the array\n\
-        - If matching object is not an array: verify fields exists in matching object\n\
-        - if 'expectedValue' is given: ensure that the given value is equal to the\
-        \ context path"
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '11'
+      - "11"
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: Bigfix.Site.Name
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
     note: false
-  '9':
-    id: '9'
-    taskid: 7b25a9e5-2290-4102-8765-14f68c31291b
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: f4e6e81d-3c60-48e1-8450-18cead4e751b
     type: regular
     task:
-      id: 7b25a9e5-2290-4102-8765-14f68c31291b
+      id: f4e6e81d-3c60-48e1-8450-18cead4e751b
       version: -1
       name: VerifyContext
-      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
-        \ object is an array: verify fields exists in each of the objects in the array\n\
-        - If matching object is not an array: verify fields exists in matching object\n\
-        - if 'expectedValue' is given: ensure that the given value is equal to the\
-        \ context path"
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '11'
+      - "11"
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: Bigfix.Site.Resource
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 545\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
     note: false
-  '10':
-    id: '10'
-    taskid: 1a1e91bf-e6f7-421a-8497-87f307824559
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: f78807ab-84f6-408b-8a3d-4d15ba7ac791
     type: regular
     task:
-      id: 1a1e91bf-e6f7-421a-8497-87f307824559
+      id: f78807ab-84f6-408b-8a3d-4d15ba7ac791
       version: -1
       name: VerifyContext
-      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
-        \ object is an array: verify fields exists in each of the objects in the array\n\
-        - If matching object is not an array: verify fields exists in matching object\n\
-        - if 'expectedValue' is given: ensure that the given value is equal to the\
-        \ context path"
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '11'
+      - "11"
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: Bigfix.Site.Type
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 545\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
     note: false
-  '11':
-    id: '11'
-    taskid: 54c5763c-c5a9-4619-8076-c6c0771bfe39
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 9bbf977e-cc7d-4534-845c-1c0f9398231c
     type: regular
     task:
-      id: 54c5763c-c5a9-4619-8076-c6c0771bfe39
+      id: 9bbf977e-cc7d-4534-845c-1c0f9398231c
       version: -1
       name: Delete Context
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       all:
-        simple: yes
+        simple: "yes"
       key: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 720\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
     note: false
-  '12':
-    id: '12'
-    taskid: 75be5e31-bc88-459c-83f4-76edf213ea58
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: f932b88b-7547-4054-8bf0-7049bc12ce0d
     type: regular
     task:
-      id: 75be5e31-bc88-459c-83f4-76edf213ea58
+      id: f932b88b-7547-4054-8bf0-7049bc12ce0d
       version: -1
       name: VerifyContext
-      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
-        \ object is an array: verify fields exists in each of the objects in the array\n\
-        - If matching object is not an array: verify fields exists in matching object\n\
-        - if 'expectedValue' is given: ensure that the given value is equal to the\
-        \ context path"
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '6'
+      - "6"
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: Bigfix.Site.Name
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1595\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
     note: false
-  '13':
-    id: '13'
-    taskid: ee4f72e4-8c06-4bd2-8cbc-4b14dcd257dc
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 7c221d99-daca-4c5c-848f-5cde42a83332
     type: regular
     task:
-      id: ee4f72e4-8c06-4bd2-8cbc-4b14dcd257dc
+      id: 7c221d99-daca-4c5c-848f-5cde42a83332
       version: -1
       name: VerifyContext
-      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
-        \ object is an array: verify fields exists in each of the objects in the array\n\
-        - If matching object is not an array: verify fields exists in matching object\n\
-        - if 'expectedValue' is given: ensure that the given value is equal to the\
-        \ context path"
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '6'
+      - "6"
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: Bigfix.Site.Resource
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1595\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
     note: false
-  '14':
-    id: '14'
-    taskid: 691fe7b7-448d-478a-88fe-2c54ee12326c
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 221e5ca2-1b40-41e6-87d5-ffc63888ad9e
     type: regular
     task:
-      id: 691fe7b7-448d-478a-88fe-2c54ee12326c
+      id: 221e5ca2-1b40-41e6-87d5-ffc63888ad9e
       version: -1
       name: VerifyContext
-      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
-        \ object is an array: verify fields exists in each of the objects in the array\n\
-        - If matching object is not an array: verify fields exists in matching object\n\
-        - if 'expectedValue' is given: ensure that the given value is equal to the\
-        \ context path"
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '6'
+      - "6"
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: Bigfix.Site.Type
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 1595\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1595
+        }
+      }
     note: false
-  '16':
-    id: '16'
-    taskid: 1eb56d17-07d5-464e-8d80-60cdfe905eab
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: b8b68950-8566-48f7-8aa1-21fbd7888df7
     type: regular
     task:
-      id: 1eb56d17-07d5-464e-8d80-60cdfe905eab
+      id: b8b68950-8566-48f7-8aa1-21fbd7888df7
       version: -1
       name: VerifyContext
-      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
-        \ object is an array: verify fields exists in each of the objects in the array\n\
-        - If matching object is not an array: verify fields exists in matching object\n\
-        - if 'expectedValue' is given: ensure that the given value is equal to the\
-        \ context path"
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '19'
+      - "19"
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: Bigfix.Site.Name
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
     note: false
-  '17':
-    id: '17'
-    taskid: a7825e03-6121-454d-89a4-6bc4fd2bba71
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: fcc0b6fa-dc54-4bc8-84e3-05e6804140d6
     type: regular
     task:
-      id: a7825e03-6121-454d-89a4-6bc4fd2bba71
+      id: fcc0b6fa-dc54-4bc8-84e3-05e6804140d6
       version: -1
       name: VerifyContext
-      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
-        \ object is an array: verify fields exists in each of the objects in the array\n\
-        - If matching object is not an array: verify fields exists in matching object\n\
-        - if 'expectedValue' is given: ensure that the given value is equal to the\
-        \ context path"
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '19'
+      - "19"
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: Bigfix.Site.Resource
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1070\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
     note: false
-  '18':
-    id: '18'
-    taskid: a9da70c1-243d-4ff5-8fd5-fa74981aea5f
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 7fd45f79-3e21-4e59-8342-5b01eaac954f
     type: regular
     task:
-      id: a9da70c1-243d-4ff5-8fd5-fa74981aea5f
+      id: 7fd45f79-3e21-4e59-8342-5b01eaac954f
       version: -1
       name: VerifyContext
-      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
-        \ object is an array: verify fields exists in each of the objects in the array\n\
-        - If matching object is not an array: verify fields exists in matching object\n\
-        - if 'expectedValue' is given: ensure that the given value is equal to the\
-        \ context path"
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '19'
+      - "19"
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: Bigfix.Site.Type
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 1070\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1070
+        }
+      }
     note: false
-  '19':
-    id: '19'
-    taskid: 57f4cde6-d8ec-4cde-8b7e-b45d34012c16
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 007103d1-f242-4fea-8528-d74625ddef2c
     type: regular
     task:
-      id: 57f4cde6-d8ec-4cde-8b7e-b45d34012c16
+      id: 007103d1-f242-4fea-8528-d74625ddef2c
       version: -1
       name: Delete Context
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     scriptarguments:
       all:
-        simple: yes
+        simple: "yes"
       key: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1245\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
     note: false
-  '20':
-    id: '20'
-    taskid: 6981e34d-806b-4768-8cbd-ee21be93b5de
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 268bdfcd-194f-4679-83c8-1b110e7c9bf8
     type: regular
     task:
-      id: 6981e34d-806b-4768-8cbd-ee21be93b5de
+      id: 268bdfcd-194f-4679-83c8-1b110e7c9bf8
       version: -1
       name: Fail test
-      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
-        \ object is an array: verify fields exists in each of the objects in the array\n\
-        - If matching object is not an array: verify fields exists in matching object\n\
-        - if 'expectedValue' is given: ensure that the given value is equal to the\
-        \ context path"
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '4'
+      - "4"
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: ThereIsNoSuchPath
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 367.5,\n    \"y\": 2120\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 2120
+        }
+      }
     note: false
-  '21':
-    id: '21'
-    taskid: 85e9f1bf-6dfd-43d7-8595-207b2002c0a5
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: cce78046-3f5a-456f-8e95-5662ef41553e
     type: regular
     task:
-      id: 85e9f1bf-6dfd-43d7-8595-207b2002c0a5
+      id: cce78046-3f5a-456f-8e95-5662ef41553e
       version: -1
       name: VerifyContext
-      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
-        \ object is an array: verify fields exists in each of the objects in the array\n\
-        - If matching object is not an array: verify fields exists in matching object\n\
-        - if 'expectedValue' is given: ensure that the given value is equal to the\
-        \ context path"
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '5'
+      - "5"
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: Bigfix.Patch.ID
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 2470\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2470
+        }
+      }
     note: false
-  '22':
-    id: '22'
-    taskid: b08f8a3c-0c73-44a8-846e-cb0da44d0f7b
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 15c98843-da79-462a-803a-b6bafa37db5f
     type: regular
     task:
-      id: b08f8a3c-0c73-44a8-846e-cb0da44d0f7b
+      id: 15c98843-da79-462a-803a-b6bafa37db5f
       version: -1
       name: VerifyContext
-      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
-        \ object is an array: verify fields exists in each of the objects in the array\n\
-        - If matching object is not an array: verify fields exists in matching object\n\
-        - if 'expectedValue' is given: ensure that the given value is equal to the\
-        \ context path"
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
       scriptName: VerifyContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '5'
+      - "5"
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: Bigfix.Patch.Name
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 2470\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2470
+        }
+      }
     note: false
-  '23':
-    id: '23'
-    taskid: bf6f1bac-3ccb-42c4-8554-d94227d2122a
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 4522953c-dc17-43a0-88a5-f6ee40c047ed
     type: condition
     task:
-      id: bf6f1bac-3ccb-42c4-8554-d94227d2122a
+      id: 4522953c-dc17-43a0-88a5-f6ee40c047ed
       version: -1
       name: Verify endpoint
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '20'
-      yes:
-      - '4'
+      - "20"
+      "yes":
+      - "4"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -597,76 +824,254 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '3385267'
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1945\n  }\n}"
+              simple: "3385267"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1945
+        }
+      }
     note: false
-  '24':
-    id: '24'
-    taskid: c2a4f754-6742-4844-8fe2-83eef7b3f392
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 7e627aea-9bfb-45a8-81de-09c0b5d84290
     type: regular
     task:
-      id: c2a4f754-6742-4844-8fe2-83eef7b3f392
+      id: 7e627aea-9bfb-45a8-81de-09c0b5d84290
       version: -1
       name: Stop action
       script: '|||bigfix-action-stop'
       type: regular
       iscommand: true
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '25'
+      - "25"
     scriptarguments:
       action_id:
         simple: ${Bigfix.Action.ID}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 2850\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2820
+        }
+      }
     note: false
-  '25':
-    id: '25'
-    taskid: 2bf85dd9-1ff3-4e4a-81dd-4dea22ad7620
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 33316be1-3176-4fd1-8a8d-9f12682c18a6
     type: regular
     task:
-      id: 2bf85dd9-1ff3-4e4a-81dd-4dea22ad7620
+      id: 33316be1-3176-4fd1-8a8d-9f12682c18a6
       version: -1
       name: Get action status
       script: '|||bigfix-action-status'
       type: regular
       iscommand: true
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '26'
+      - "26"
     scriptarguments:
       action_id:
         simple: ${Bigfix.Action.ID}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 3050\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2995
+        }
+      }
     note: false
-  '26':
-    id: '26'
-    taskid: 4fb123eb-7745-4130-8067-b22c09ba4c10
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 17435711-47c4-4e97-853c-d391854defb3
     type: regular
     task:
-      id: 4fb123eb-7745-4130-8067-b22c09ba4c10
+      id: 17435711-47c4-4e97-853c-d391854defb3
       version: -1
       name: Delete action
       script: '|||bigfix-action-delete'
       type: regular
       iscommand: true
-      brand: ''
-      description: ''
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
     scriptarguments:
       action_id:
         simple: ${Bigfix.Action.ID}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 3270\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3170
+        }
+      }
     note: false
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 3315,\n      \"width\": 1240,\n      \"x\": 50,\n      \"y\":\
-  \ 50\n    }\n  }\n}"
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 4303c0bf-08ac-4bb6-8bf8-3df2d24d5b49
+    type: regular
+    task:
+      id: 4303c0bf-08ac-4bb6-8bf8-3df2d24d5b49
+      version: -1
+      name: Get Endpoints without details
+      script: BigFix|||bigfix-get-endpoints
+      type: regular
+      iscommand: true
+      brand: BigFix
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      get_endpoint_details:
+        simple: "false"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: f4b23c6d-c0e2-410b-86ee-99bc03753628
+    type: regular
+    task:
+      id: f4b23c6d-c0e2-410b-86ee-99bc03753628
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 2fdf6266-de58-4335-8aec-34134d2e237e
+    type: condition
+    task:
+      id: 2fdf6266-de58-4335-8aec-34134d2e237e
+      version: -1
+      name: Verify endpoints with details outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Bigfix.Endpoint.ID
+            iscontext: true
+      - - operator: isEmpty
+          left:
+            value:
+              simple: Bigfix.Endpoint.OS
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 0085f81a-5a60-4dea-8cc8-bef087b50c9f
+    type: title
+    task:
+      id: 0085f81a-5a60-4dea-8cc8-bef087b50c9f
+      version: -1
+      name: Success
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3885,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
 inputs: []
 outputs: []
-fromversion: 5.0.0
-description: ''

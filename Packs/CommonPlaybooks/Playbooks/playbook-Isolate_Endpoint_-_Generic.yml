@@ -1,7 +1,6 @@
 id: Isolate Endpoint - Generic
 version: -1
 name: Isolate Endpoint - Generic
-fromversion: 4.5.0
 description: |-
   This playbook isolates a given endpoint using the following integrations:
   - Carbon Black Enterprise Response
@@ -10,15 +9,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c28a842f-4020-44b3-87be-61b3e4d321d5
+    taskid: 20f01f93-7b37-4f3f-8c17-a466dac351ef
     type: start
     task:
-      id: c28a842f-4020-44b3-87be-61b3e4d321d5
+      id: 20f01f93-7b37-4f3f-8c17-a466dac351ef
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -36,12 +35,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: d9b85b38-149f-4d94-87f5-2b988b4768b2
+    taskid: 04788a57-6aec-4937-815e-9e3d15884911
     type: playbook
     task:
-      id: d9b85b38-149f-4d94-87f5-2b988b4768b2
+      id: 04788a57-6aec-4937-815e-9e3d15884911
       version: -1
       name: Block Endpoint - Carbon Black Response
       description: Carbon Black Response - isolate an endpoint, given a hostname.
@@ -52,15 +53,12 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
-    scriptarguments:
-      Hostname:
-        complex:
-          root: inputs.Hostname
     separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -71,18 +69,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 5d7c932e-551c-4771-852a-3213db3e26aa
+    taskid: 050d36dd-0ec3-4490-827e-e210ac5e9a04
     type: title
     task:
-      id: 5d7c932e-551c-4771-852a-3213db3e26aa
+      id: 050d36dd-0ec3-4490-827e-e210ac5e9a04
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -94,31 +94,30 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: 5118e345-64b7-48a0-8fa8-29b13a7920de
+    taskid: 3bbb5acd-9a81-43ac-83aa-c44958724c89
     type: playbook
     task:
-      id: 5118e345-64b7-48a0-8fa8-29b13a7920de
+      id: 3bbb5acd-9a81-43ac-83aa-c44958724c89
       version: -1
       name: Traps Isolate Endpoint
       playbookName: Traps Isolate Endpoint
-      description: ""
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
-    scriptarguments:
-      EndpointId:
-        complex:
-          root: inputs.EndpointId
     separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -129,31 +128,30 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "4":
     id: "4"
-    taskid: 0d638e3d-9061-495e-835b-f64ce541f710
+    taskid: 1a99bbfd-5d0b-4f8f-8c14-292e77965358
     type: playbook
     task:
-      id: 0d638e3d-9061-495e-835b-f64ce541f710
+      id: 1a99bbfd-5d0b-4f8f-8c14-292e77965358
       version: -1
       name: Cortex XDR - Isolate Endpoint
       playbookName: Cortex XDR - Isolate Endpoint
-      description: ""
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
-    scriptarguments:
-      endpoint_id:
-        complex:
-          root: inputs.xdr_endpoint_id
     separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -164,31 +162,30 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "5":
     id: "5"
-    taskid: 6ff6aacf-a0b2-4c8a-8237-de2a0911b5d3
+    taskid: e0c2fa1f-4bfd-4ede-88cb-70615209b420
     type: playbook
     task:
-      id: 6ff6aacf-a0b2-4c8a-8237-de2a0911b5d3
+      id: e0c2fa1f-4bfd-4ede-88cb-70615209b420
       version: -1
       name: Isolate Endpoint - Cybereason
       playbookName: Isolate Endpoint - Cybereason
-      description: ""
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
-    scriptarguments:
-      Hostname:
-        complex:
-          root: inputs.Hostname
     separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -199,6 +196,9 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -216,10 +216,12 @@ inputs:
   value: {}
   required: false
   description: Hostname of the endpoint to block.
+  playbookInputQuery:
 - key: EndpointId
   value: {}
   required: false
   description: Endpoint ID to isolate using Traps.
+  playbookInputQuery:
 - key: xdr_endpoint_id
   value:
     complex:
@@ -228,6 +230,7 @@ inputs:
   required: false
   description: The endpoint ID (string) to isolate using Cortex XDR. You can retrieve
     the string from the xdr-get-endpoints command.
+  playbookInputQuery:
 outputs:
 - contextPath: CbResponse.Sensors.CbSensorID
   description: Carbon Black Response Sensors ids that has been isolated.
@@ -241,5 +244,6 @@ outputs:
 - contextPath: Traps.IsolateResult.Status
   description: The status of the isolation operation.
   type: string
+fromversion: 4.5.0
 tests:
-  - No Test
+- No Test

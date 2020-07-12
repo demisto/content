@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 
 import json
@@ -23,6 +24,7 @@ class Client:
         verify(bool): Enable certificate verification. Default: True
         proxy(bool): Enable proxy. Default: False
     """
+
     def __init__(self, service_account=None, project=None, verify=True):
         self.service_account = service_account
         self.project = project
@@ -47,11 +49,11 @@ class Client:
 
         return [
             dict(
-                language_code=l.language_code,
-                support_source=l.support_source,
-                support_target=l.support_target
+                language_code=language.language_code,
+                support_source=language.support_source,
+                support_target=language.support_target
             )
-            for l in result.languages
+            for language in result.languages
         ]
 
     def translate_text(self, text, target, source=None):
@@ -132,7 +134,7 @@ def supported_languages(client):
     result = client.get_supported_languages()
 
     # readable output will be in markdown format - https://www.markdownguide.org/basic-syntax/
-    readable_output = 'Languages: {}'.format(', '.join([l['language_code'] for l in result]))
+    readable_output = 'Languages: {}'.format(', '.join([language['language_code'] for language in result]))
     outputs = {
         'GoogleCloudTranslate': {
             'SupportedLanguages': result
@@ -208,7 +210,7 @@ def main():
     try:
         service_account = json.loads(service_account_json)
     except Exception:
-        return_error(f'Invalid JSON provided')
+        return_error('Invalid JSON provided')
 
     project = demisto.params().get('project', None)
 

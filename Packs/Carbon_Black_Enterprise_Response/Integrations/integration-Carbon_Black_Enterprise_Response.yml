@@ -386,7 +386,7 @@ script:
         let humanReadable = tableToMarkdown(title, processTranslatedData, headers, undefined, dotToSpace);
         let context = {
             'Process(val.CbID==obj.CbID)': createContext(processTranslatedData),
-            'File(val.Name==obj.Name)': createContext(fileTranslatedData),
+            'File(val.MD5==obj.MD5)': createContext(fileTranslatedData),
             'Endpoint(val.Hostname==obj.Hostname)': createContext(endpointTranslatedData)
         };
         return {

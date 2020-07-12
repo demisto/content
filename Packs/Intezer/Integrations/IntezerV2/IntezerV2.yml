@@ -120,7 +120,7 @@ script:
       description: Metadata returned from Intezer analysis (endpoint analysis id,
         endpoint analysis url, families,  verdict, host_name)
       type: Unknown
-  dockerimage: demisto/python3:3.7.3.286
+  dockerimage: demisto/python3:3.8.3.8715
   isfetch: false
   runonce: false
   script: '-'

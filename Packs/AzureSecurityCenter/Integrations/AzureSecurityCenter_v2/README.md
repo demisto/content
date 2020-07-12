@@ -1,11 +1,8 @@
-<p>
 Unified security management and advanced threat protection across hybrid cloud workloads.
 
-</p>
 <h2>Use Case</h2>
 With Security Center, you can apply security policies across your workloads, limit your exposure to threats, and detect and respond to attacks.
 <h2>Detailed Description</h2>
-<ul>
 <li>To allow us access to Azure Security Center, an admin has to approve our app using an admin consent flow, by clicking on the following [link](https://oproxy.demisto.ninja/ms-azure-sc).</li>
 <li>After authorizing the Demisto app, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields. After giving consent, the application has to have a role assigned so it can access the relevant resources per subscription. </li>
 <li>In order to assign a role to the application after consent was given: 
@@ -13,7 +10,7 @@ With Security Center, you can apply security policies across your workloads, lim
     <li>Go to the Azure Portal UI.</li>
     <li>Go to Subscriptions, and then Access Control (IAM).</li>
     <li>Click Add.</li>
-    <li>Select a role that includes the following permissions:</li>
+    <li>Select a role that includes the following permissions:
     <ul>
       <li>Microsoft.Security/locations/read</li>
       <li>Microsoft.Security/alerts/read</li>
@@ -24,7 +21,7 @@ With Security Center, you can apply security policies across your workloads, lim
       <li>Microsoft.Security/informationProtectionPolicies/read</li>
       <li>Microsoft.Security/locations/jitNetworkAccessPolicies/*</li>
       <li>Microsoft.Security/locations/jitNetworkAccessPolicies/initiate/action</li>
-    </ul>
+    </ul></li>
     <li>Select the Azure Secruity Center application.</li>
   </ul>
 </li>
@@ -50,6 +47,14 @@ With Security Center, you can apply security policies across your workloads, lim
     Click&nbsp;<strong>Test</strong>&nbsp;to validate the new instance.
   </li>
 </ol>
+
+<h2>Use a Self-Deployed Azure Application</h2>
+<p>To use a self-configured Azure application, a need to add a new Azure App Registration in the Azure Portal. To add the registration refer to the
+<a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app">Microsoft documentation</a></p>
+<p>The Tenant ID, Client ID, and Client secret are required for the integration. When you configure the integration in Demisto enter those parameters in the appropriate fields (instead of how you received them from the admin consent in the current doc).<p>ID - Client ID<br>
+Token - Tenant ID<br>
+Key - Client Secret</p>
+
 <h2>Commands</h2>
 <p>
   You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
@@ -231,7 +236,6 @@ With Security Center, you can apply security policies across your workloads, lim
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
  alt="image" width="749" height="412"></a>
  -->
-</p>
 
 <h3>2. azure-sc-update-atp</h3>
 <hr>
@@ -510,8 +514,8 @@ With Security Center, you can apply security policies across your workloads, lim
     ]
 }
 </pre>
+
 <h5>Human Readable Output</h5>
-<p>
 <h3>Azure Security Center - Update Auto Provisioning Setting</h3>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -533,7 +537,6 @@ With Security Center, you can apply security policies across your workloads, lim
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
  alt="image" width="749" height="412"></a>
  -->
-</p>
 
 <h3>5. azure-sc-get-aps</h3>
 <hr>
@@ -625,7 +628,6 @@ With Security Center, you can apply security policies across your workloads, lim
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p>
 <h3>Azure Security Center - Get Auto Provisioning Setting</h3>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -649,7 +651,6 @@ With Security Center, you can apply security policies across your workloads, lim
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
  alt="image" width="749" height="412"></a>
  -->
-</p>
 
 <h3>6. azure-sc-list-aps</h3>
 <hr>
@@ -736,7 +737,6 @@ With Security Center, you can apply security policies across your workloads, lim
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p>
 <h3>Azure Security Center - List Auto Provisioning Settings</h3>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -760,7 +760,6 @@ With Security Center, you can apply security policies across your workloads, lim
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
  alt="image" width="749" height="412"></a>
  -->
-</p>
 
 <h3>7. azure-sc-list-jit</h3>
 <hr>
@@ -854,7 +853,6 @@ With Security Center, you can apply security policies across your workloads, lim
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
  alt="image" width="749" height="412"></a>
  -->
-</p>
 
 <h3>8. azure-sc-list-storage</h3>
 <hr>
@@ -942,7 +940,6 @@ With Security Center, you can apply security policies across your workloads, lim
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p>
 <h3>Azure Security Center - List Storage Accounts</h3>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -976,7 +973,6 @@ With Security Center, you can apply security policies across your workloads, lim
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
  alt="image" width="749" height="412"></a>
  -->
-</p>
 
 <h3>9. azure-list-subscriptions</h3>
 <hr>
@@ -1041,7 +1037,6 @@ There are no input arguments for this command.
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p>
 <h3>Azure Security Center - Subscriptions</h3>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -1083,7 +1078,6 @@ There are no input arguments for this command.
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
  alt="image" width="749" height="412"></a>
  -->
-</p>
 
 <h3>10. azure-sc-list-location</h3>
 <hr>
@@ -1116,7 +1110,6 @@ There are no context output for this command.
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p>
 <h3>Azure Security Center - List Locations</h3>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -1140,6 +1133,5 @@ There are no context output for this command.
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
  alt="image" width="749" height="412"></a>
  -->
-</p>
 <h2>Additional Information</h2>
 <span>For more information regarding roles, see <a href="https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal">the microsoft documentation.</a></span>
