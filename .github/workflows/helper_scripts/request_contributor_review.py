@@ -96,13 +96,17 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True)
 
             if pack_metadata.get('support') != XSOAR_SUPPORT and PACK_METADATA_GITHUB_USER_FIELD in pack_metadata \
                     and pack_metadata[PACK_METADATA_GITHUB_USER_FIELD]:
-                github_user = pack_metadata[PACK_METADATA_GITHUB_USER_FIELD].lower()
-                user_exists = check_if_user_exists(github_user=github_user, github_token=github_token,
-                                                   verify_ssl=verify_ssl)
+                pack_reviewers = pack_metadata[PACK_METADATA_GITHUB_USER_FIELD]
+                pack_reviewers = pack_reviewers if isinstance(pack_reviewers, list) else pack_reviewers.split(",")
+                github_users = [u.lower() for u in pack_reviewers]
 
-                if user_exists and github_user != pr_author:
-                    reviewers.add(github_user)
-                    print(f"Found {github_user} default reviewer of pack {pack}")
+                for github_user in github_users:
+                    user_exists = check_if_user_exists(github_user=github_user, github_token=github_token,
+                                                       verify_ssl=verify_ssl)
+
+                    if user_exists and github_user != pr_author:
+                        reviewers.add(github_user)
+                        print(f"Found {github_user} default reviewer of pack {pack}")
 
             elif pack_metadata.get('support') == XSOAR_SUPPORT:
                 print(f"Skipping check of {pack} pack supported by {XSOAR_SUPPORT}")
