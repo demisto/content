@@ -27,13 +27,11 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: 'false'
-  display: Concurrent Session
-  hidden: false
-  name: concurrent_session
-  required: false
-  type: 8
 description: This is the Hello World integration for getting started.
+detaileddescription: |-
+  ## Hello World
+  - This text is markdown
+  - Here you should explain how to configure the instance in Demisto
 display: CyberArk
 name: CyberArk
 script:
@@ -831,10 +829,15 @@ script:
       name: new_credentials
       required: true
       secret: false
+    - default: false
+      isArray: false
+      name: change_creds_for_group
+      required: false
+      secret: false
     deprecated: false
     description: Enables users to set account credentials and change them in the Vault.
     execution: false
-    name: cyberark-pas-change-credentials-in-vault-only
+    name: cyberark-pas-change-credentials-in-vault
   - arguments:
     - default: false
       description: The unique account ID of the account.
@@ -869,12 +872,30 @@ script:
       a new random value.
     execution: false
     name: cyberark-pas-change-credentials-random-password
+  - arguments:
+    - default: false
+      description: The unique ID of the account.
+      isArray: false
+      name: AccountID
+      required: true
+      secret: false
+    - default: false
+      description: The new account credentials that will be allocated to the account
+        in the Vault.
+      isArray: false
+      name: new_credentials
+      required: true
+      secret: false
+    deprecated: false
+    description: Enables users to set the account's credentials to use for the next
+      CPM change.
+    execution: false
+    name: cyberark-pas-change-credentials-set-new-password
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
-  script: '-'
-  subtype: python3
-  type: python
+  script: |-
+    from typing import Dict, Tuple, List

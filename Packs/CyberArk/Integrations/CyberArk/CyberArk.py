@@ -146,9 +146,9 @@ class Client(BaseClient):
         return self._http_request("DELETE", url_suffix, resp_type='text')
 
     def get_users(self,
-                    filter: str,
-                    search: str,
-                    ):
+                  filter: str,
+                  search: str,
+                  ):
         url_suffix = "/PasswordVault/api/Users"
 
         body = {
@@ -163,14 +163,7 @@ class Client(BaseClient):
                       ):
         url_suffix = f"/PasswordVault/WebServices/PIMServices.svc/Users/{userID}"
 
-        return self._http_request("PUT", url_suffix)
-
-    def suspend_user(self,
-                      userID: str
-                      ):
-        url_suffix = f"/PasswordVault/WebServices/PIMServices.svc/Users/{userID}"
-
-        return self._http_request("PUT", url_suffix)
+        return self._http_request("PUT", url_suffix, resp_type='text')
 
     def list_safes(self):
         url_suffix = "/PasswordVault/api/Safes"
@@ -194,14 +187,14 @@ class Client(BaseClient):
         url_suffix = "/PasswordVault/api/Safes"
 
         body = {
-                "SafeName": safe_name,
-                "Description": description,
-                "OLACEnabled": OLAC_enabled == "true",
-                "ManagingCPM": managing_cmp,
-                "NumberOfVersionsRetention": number_of_versions_retention,
-                "NumberOfDaysRetention": number_of_days_retention,
-                "Location": location
-            }
+            "SafeName": safe_name,
+            "Description": description,
+            "OLACEnabled": OLAC_enabled == "true",
+            "ManagingCPM": managing_cmp,
+            "NumberOfVersionsRetention": number_of_versions_retention,
+            "NumberOfDaysRetention": number_of_days_retention,
+            "Location": location
+        }
         return self._http_request("POST", url_suffix, json_data=body)
 
     def update_safe(self,
@@ -218,13 +211,13 @@ class Client(BaseClient):
         if not safe_new_name:
             safe_new_name = safe_name
         body = {
-                "SafeName": safe_new_name,
-                "Description": description,
-                "OLACEnabled": OLAC_enabled == "true",
-                "ManagingCPM": managing_cmp,
-                "NumberOfVersionsRetention": number_of_versions_retention,
-                "NumberOfDaysRetention": number_of_days_retention,
-                "Location": location
+            "SafeName": safe_new_name,
+            "Description": description,
+            "OLACEnabled": OLAC_enabled == "true",
+            "ManagingCPM": managing_cmp,
+            "NumberOfVersionsRetention": number_of_versions_retention,
+            "NumberOfDaysRetention": number_of_days_retention,
+            "Location": location
         }
         return self._http_request("PUT", url_suffix, json_data=body)
 
@@ -254,37 +247,37 @@ class Client(BaseClient):
         url_suffix = f"/PasswordVault/WebServices/PIMServices.svc/Safes/{safe_name}/Members"
 
         body = {
-              "member": {
-                  "MemberName": member_name,
-                  "SearchIn": search_in,
-                  "MembershipExpirationDate": membership_expiration_date,
-                  "Permissions":
-                  [
-                      {"Key": "UseAccounts", "Value": "UseAccounts" in permissions},
-                      {"Key": "RetrieveAccounts", "Value": "RetrieveAccounts" in permissions},
-                      {"Key": "ListAccounts", "Value": "ListAccounts" in permissions},
-                      {"Key": "AddAccounts", "Value": "AddAccounts" in permissions},
-                      {"Key": "UpdateAccountContent", "Value": "UpdateAccountContent" in permissions},
-                      {"Key": "UpdateAccountProperties", "Value": "UpdateAccountProperties" in permissions},
-                      {"Key": "InitiateCPMAccountManagementOperations",
-                       "Value": "InitiateCPMAccountManagementOperations" in permissions},
-                      {"Key": "SpecifyNextAccountContent", "Value": "SpecifyNextAccountContent" in permissions},
-                      {"Key": "RenameAccounts", "Value": "RenameAccounts" in permissions},
-                      {"Key": "DeleteAccounts", "Value": "DeleteAccounts" in permissions},
-                      {"Key": "UnlockAccounts", "Value": "UnlockAccounts" in permissions},
-                      {"Key": "ManageSafe", "Value": "ManageSafe" in permissions},
-                      {"Key": "ManageSafeMembers", "Value": "xxx" in permissions},
-                      {"Key": "BackupSafe", "Value": "BackupSafe" in permissions},
-                      {"Key": "ViewAuditLog", "Value": "ViewAuditLog" in permissions},
-                      {"Key": "ViewSafeMembers", "Value": "ViewSafeMembers" in permissions},
-                      {"Key": "RequestsAuthorizationLevel", "Value": int(requests_authorization_level)},
-                      {"Key": "AccessWithoutConfirmation", "Value": "AccessWithoutConfirmation" in permissions},
-                      {"Key": "CreateFolders", "Value": "CreateFolders" in permissions},
-                      {"Key": "DeleteFolders", "Value": "DeleteFolders" in permissions},
-                      {"Key": "MoveAccountsAndFolders", "Value": "MoveAccountsAndFolders" in permissions},
-                  ]
+            "member": {
+                "MemberName": member_name,
+                "SearchIn": search_in,
+                "MembershipExpirationDate": membership_expiration_date,
+                "Permissions":
+                    [
+                        {"Key": "UseAccounts", "Value": "UseAccounts" in permissions},
+                        {"Key": "RetrieveAccounts", "Value": "RetrieveAccounts" in permissions},
+                        {"Key": "ListAccounts", "Value": "ListAccounts" in permissions},
+                        {"Key": "AddAccounts", "Value": "AddAccounts" in permissions},
+                        {"Key": "UpdateAccountContent", "Value": "UpdateAccountContent" in permissions},
+                        {"Key": "UpdateAccountProperties", "Value": "UpdateAccountProperties" in permissions},
+                        {"Key": "InitiateCPMAccountManagementOperations",
+                         "Value": "InitiateCPMAccountManagementOperations" in permissions},
+                        {"Key": "SpecifyNextAccountContent", "Value": "SpecifyNextAccountContent" in permissions},
+                        {"Key": "RenameAccounts", "Value": "RenameAccounts" in permissions},
+                        {"Key": "DeleteAccounts", "Value": "DeleteAccounts" in permissions},
+                        {"Key": "UnlockAccounts", "Value": "UnlockAccounts" in permissions},
+                        {"Key": "ManageSafe", "Value": "ManageSafe" in permissions},
+                        {"Key": "ManageSafeMembers", "Value": "xxx" in permissions},
+                        {"Key": "BackupSafe", "Value": "BackupSafe" in permissions},
+                        {"Key": "ViewAuditLog", "Value": "ViewAuditLog" in permissions},
+                        {"Key": "ViewSafeMembers", "Value": "ViewSafeMembers" in permissions},
+                        {"Key": "RequestsAuthorizationLevel", "Value": int(requests_authorization_level)},
+                        {"Key": "AccessWithoutConfirmation", "Value": "AccessWithoutConfirmation" in permissions},
+                        {"Key": "CreateFolders", "Value": "CreateFolders" in permissions},
+                        {"Key": "DeleteFolders", "Value": "DeleteFolders" in permissions},
+                        {"Key": "MoveAccountsAndFolders", "Value": "MoveAccountsAndFolders" in permissions},
+                    ]
 
-              }
+            }
         }
         return self._http_request("POST", url_suffix, json_data=body)
 
@@ -305,69 +298,70 @@ class Client(BaseClient):
         url_suffix = f"/PasswordVault/api/Accounts"
 
         body = {
-                  "name": account_name,
-                  "address": address,
-                  "userName": username,
-                  "platformId": platformID,
-                  "safeName": safe_name,
-                  "secretType": secret_type,
-                  "secret": password,
-                  "platformAccountProperties": properties,
-                  "secretManagement": {
-                    "automaticManagementEnabled": automatic_management_enabled == "true",
-                    "manualManagementReason": manual_management_reason
-                  },
-                  "remoteMachinesAccess": {
-                    "remoteMachines": remote_machines,
-                    "accessRestrictedToRemoteMachines": access_restricted_to_temote_machines == "true"
-                  }
-                }
+            "name": account_name,
+            "address": address,
+            "userName": username,
+            "platformId": platformID,
+            "safeName": safe_name,
+            "secretType": secret_type,
+            "secret": password,
+            "platformAccountProperties": properties,
+            "secretManagement": {
+                "automaticManagementEnabled": automatic_management_enabled == "true",
+                "manualManagementReason": manual_management_reason
+            },
+            "remoteMachinesAccess": {
+                "remoteMachines": remote_machines,
+                "accessRestrictedToRemoteMachines": access_restricted_to_temote_machines == "true"
+            }
+        }
         return self._http_request("POST", url_suffix, json_data=body)
 
     def update_safe_member(self,
-                        safe_name: str,
-                        member_name: str,
-                        requests_authorization_level: str,
-                        membership_expiration_date: str,
-                        permissions: list,
-                        ):
+                           safe_name: str,
+                           member_name: str,
+                           requests_authorization_level: str,
+                           membership_expiration_date: str,
+                           permissions: list,
+                           ):
         url_suffix = f"/PasswordVault/WebServices/PIMServices.svc/Safes/{safe_name}/Members/{member_name}"
 
         body = {
-              "member": {
-                  "MembershipExpirationDate": membership_expiration_date,
-                  "Permissions":
-                 [
-                   {"Key": "UseAccounts", "Value": "UseAccounts" in permissions},
-                   {"Key": "RetrieveAccounts", "Value": "RetrieveAccounts" in permissions},
-                   {"Key": "ListAccounts", "Value": "ListAccounts" in permissions},
-                   {"Key": "AddAccounts", "Value": "AddAccounts" in permissions},
-                   {"Key": "UpdateAccountContent", "Value": "UpdateAccountContent" in permissions},
-                   {"Key": "UpdateAccountProperties", "Value": "UpdateAccountProperties" in permissions},
-                   {"Key": "InitiateCPMAccountManagementOperations", "Value": "InitiateCPMAccountManagementOperations" in permissions},
-                   {"Key": "SpecifyNextAccountContent", "Value": "SpecifyNextAccountContent" in permissions},
-                   {"Key": "RenameAccounts", "Value": "RenameAccounts" in permissions},
-                   {"Key": "DeleteAccounts", "Value": "DeleteAccounts" in permissions},
-                   {"Key": "UnlockAccounts", "Value": "UnlockAccounts" in permissions},
-                   {"Key": "ManageSafe", "Value": "ManageSafe" in permissions},
-                   {"Key": "ManageSafeMembers", "Value": "xxx" in permissions},
-                   {"Key": "BackupSafe", "Value": "BackupSafe" in permissions},
-                   {"Key": "ViewAuditLog", "Value": "ViewAuditLog" in permissions},
-                   {"Key": "ViewSafeMembers", "Value": "ViewSafeMembers" in permissions},
-                   {"Key": "RequestsAuthorizationLevel", "Value": int(requests_authorization_level)},
-                   {"Key": "AccessWithoutConfirmation", "Value": "AccessWithoutConfirmation" in permissions},
-                   {"Key": "CreateFolders", "Value": "CreateFolders" in permissions},
-                   {"Key": "DeleteFolders", "Value": "DeleteFolders" in permissions},
-                   {"Key": "MoveAccountsAndFolders", "Value": "MoveAccountsAndFolders" in permissions},
-                 ]
-              }
+            "member": {
+                "MembershipExpirationDate": membership_expiration_date,
+                "Permissions":
+                    [
+                        {"Key": "UseAccounts", "Value": "UseAccounts" in permissions},
+                        {"Key": "RetrieveAccounts", "Value": "RetrieveAccounts" in permissions},
+                        {"Key": "ListAccounts", "Value": "ListAccounts" in permissions},
+                        {"Key": "AddAccounts", "Value": "AddAccounts" in permissions},
+                        {"Key": "UpdateAccountContent", "Value": "UpdateAccountContent" in permissions},
+                        {"Key": "UpdateAccountProperties", "Value": "UpdateAccountProperties" in permissions},
+                        {"Key": "InitiateCPMAccountManagementOperations",
+                         "Value": "InitiateCPMAccountManagementOperations" in permissions},
+                        {"Key": "SpecifyNextAccountContent", "Value": "SpecifyNextAccountContent" in permissions},
+                        {"Key": "RenameAccounts", "Value": "RenameAccounts" in permissions},
+                        {"Key": "DeleteAccounts", "Value": "DeleteAccounts" in permissions},
+                        {"Key": "UnlockAccounts", "Value": "UnlockAccounts" in permissions},
+                        {"Key": "ManageSafe", "Value": "ManageSafe" in permissions},
+                        {"Key": "ManageSafeMembers", "Value": "xxx" in permissions},
+                        {"Key": "BackupSafe", "Value": "BackupSafe" in permissions},
+                        {"Key": "ViewAuditLog", "Value": "ViewAuditLog" in permissions},
+                        {"Key": "ViewSafeMembers", "Value": "ViewSafeMembers" in permissions},
+                        {"Key": "RequestsAuthorizationLevel", "Value": int(requests_authorization_level)},
+                        {"Key": "AccessWithoutConfirmation", "Value": "AccessWithoutConfirmation" in permissions},
+                        {"Key": "CreateFolders", "Value": "CreateFolders" in permissions},
+                        {"Key": "DeleteFolders", "Value": "DeleteFolders" in permissions},
+                        {"Key": "MoveAccountsAndFolders", "Value": "MoveAccountsAndFolders" in permissions},
+                    ]
+            }
         }
         return self._http_request("PUT", url_suffix, json_data=body)
 
     def delete_safe_member(self,
-                        safe_name: str,
-                        member_name: str,
-                        ):
+                           safe_name: str,
+                           member_name: str,
+                           ):
         url_suffix = f"/PasswordVault/WebServices/PIMServices.svc/Safes/{safe_name}/Members/{member_name}"
 
         return self._http_request("DELETE", url_suffix, resp_type='text')
@@ -385,59 +379,59 @@ class Client(BaseClient):
                       offset: str,
                       limit: str,
                       filter: str,
-                       ):
+                      ):
         url_suffix = f"/PasswordVault/api/Accounts?search={search}&sort={sort}&offset={offset}&limit={limit}&filter={filter}"
         return self._http_request("GET", url_suffix)
 
     def list_account_activity(self,
                               accountID: str,
-                       ):
+                              ):
         url_suffix = f"/PasswordVault/api/Accounts/{accountID}/Activities"
         return self._http_request("GET", url_suffix)
 
     def change_credentials_random_password(self,
                                            accountID: str,
-                       ):
+                                           ):
         url_suffix = f"/PasswordVault/API/Accounts/{accountID}/Change"
         body = {
-                  "ChangeEntireGroup": "true"
-                }
-        return self._http_request("POST", url_suffix, json_data=body)
+            "ChangeEntireGroup": "true"
+        }
+        return self._http_request("POST", url_suffix, json_data=body, resp_type='text')
 
     def change_credentials_set_new_password(self,
                                             accountID: str,
                                             new_credentials: str,
-                       ):
+                                            ):
         url_suffix = f"/passwordvault/api/Accounts/{accountID}/SetNextPassword"
         body = {
-                "ChangeImmediately": "true" == "true",
-                "NewCredentials": new_credentials,
-                }
-        return self._http_request("POST", url_suffix, json_data=body)
+            "ChangeImmediately": "true" == "true",
+            "NewCredentials": new_credentials,
+        }
+        return self._http_request("POST", url_suffix, json_data=body, resp_type='text')
 
     def change_credentials_in_vault_only(self,
-                                            accountID: str,
-                                            new_credentials: str,
-                       ):
+                                         accountID: str,
+                                         new_credentials: str,
+                                         ):
         url_suffix = f"/passwordvault/api/Accounts/{accountID}/Password/Update"
         body = {
-                "NewCredentials": new_credentials,
-                }
-        return self._http_request("POST", url_suffix, json_data=body)
+            "NewCredentials": new_credentials,
+        }
+        return self._http_request("POST", url_suffix, json_data=body, resp_type='text')
 
     def verify_credentials(self,
                            accountID: str,
-                       ):
+                           ):
         url_suffix = f"/PasswordVault/WebServices/PIMServices.svc/Accounts/{accountID}/VerifyCredentials"
 
-        return self._http_request("POST", url_suffix)
+        return self._http_request("POST", url_suffix, resp_type='text')
 
     def reconcile_credentials(self,
-                           accountID: str,
-                       ):
+                              accountID: str,
+                              ):
         url_suffix = f"/PasswordVault/API/Accounts/{accountID}/Reconcile"
 
-        return self._http_request("POST", url_suffix)
+        return self._http_request("POST", url_suffix, resp_type='text')
 
     def update_account(self,
                        accountID: str,
@@ -538,9 +532,10 @@ def update_user_command(
     vault_authorization_list = argToList(vault_authorization)
 
     response = client.update_user(userID, username, user_type, non_authorized_interfaces_list, expiry_date,
-                               change_password_on_the_next_logon, password_never_expires, vault_authorization_list,
-                               description, email, first_name, last_name, enable_user, profession, distinguished_name,
-                               location)
+                                  change_password_on_the_next_logon, password_never_expires, vault_authorization_list,
+                                  description, email, first_name, last_name, enable_user, profession,
+                                  distinguished_name,
+                                  location)
     user_id = response.get("id")
     results = CommandResults(
         outputs_prefix=f'CyberArk.Users.{user_id}',
@@ -578,19 +573,16 @@ def get_users_command(
     )
     return_results(results)
 
+
 def activate_user_command(
         client: Client,
         userID: str,
 ):
     response = client.activate_user(userID)
-    return response, {}, []
-
-def suspend_user_command(
-        client: Client,
-        userID: str,
-):
-    response = client.suspend_user(userID)
-    return response, {}, []
+    if not response:
+        return_results(f"User {userID} was activated")
+    else:
+        return_results(response)
 
 
 def list_safes_command(
@@ -639,6 +631,7 @@ def add_safe_command(
     )
     return_results(results)
 
+
 def update_safe_command(
         client: Client,
         safe_name: str,
@@ -650,7 +643,8 @@ def update_safe_command(
         number_of_days_retention: str = "",
         location: str = ""
 ):
-    response = client.update_safe(safe_name, safe_new_name, description, OLAC_enabled, managing_cmp, number_of_versions_retention,
+    response = client.update_safe(safe_name, safe_new_name, description, OLAC_enabled, managing_cmp,
+                                  number_of_versions_retention,
                                   number_of_days_retention, location)
     results = CommandResults(
         outputs_prefix=f'CyberArk.{safe_name}',
@@ -698,7 +692,8 @@ def add_safe_member_command(
         search_in: str = ""
 ):
     permissions_list = argToList(permissions)
-    response = client.add_safe_member(safe_name, member_name, requests_authorization_level, membership_expiration_date, permissions_list, search_in)
+    response = client.add_safe_member(safe_name, member_name, requests_authorization_level, membership_expiration_date,
+                                      permissions_list, search_in)
     results = CommandResults(
         outputs_prefix=f'CyberArk.{member_name}',
         outputs_key_field='',
@@ -717,7 +712,8 @@ def update_safe_member_command(
         search_in: str = ""
 ):
     permissions_list = argToList(permissions)
-    response = client.update_safe_member(safe_name, member_name, requests_authorization_level, membership_expiration_date, permissions_list)
+    response = client.update_safe_member(safe_name, member_name, requests_authorization_level,
+                                         membership_expiration_date, permissions_list)
     results = CommandResults(
         outputs_prefix=f'CyberArk.{member_name}',
         outputs_key_field='',
@@ -782,6 +778,7 @@ def update_account_command(
     )
     return_results(results)
 
+
 def delete_account_command(
         client: Client,
         accountID: str = "",
@@ -793,6 +790,7 @@ def delete_account_command(
         return_results(f"Account {accountID} was deleted")
     else:
         return_results(response)
+
 
 def list_accounts_command(
         client: Client,
@@ -812,6 +810,7 @@ def list_accounts_command(
     )
     return_results(results)
 
+
 def list_account_activity_command(
         client: Client,
         accountID: str = "",
@@ -824,12 +823,16 @@ def list_account_activity_command(
     )
     return_results(results)
 
+
 def change_credentials_random_password_command(
         client: Client,
         accountID: str,
 ):
     response = client.change_credentials_random_password(accountID)
-    return response, {}, [] #fix - can't find a working command
+    if not response:
+        return_results(f"The password in the account {accountID} was changed")
+    else:
+        return_results(response)
 
 
 def change_credentials_set_new_password_command(
@@ -838,7 +841,10 @@ def change_credentials_set_new_password_command(
         new_credentials: str,
 ):
     response = client.change_credentials_set_new_password(accountID, new_credentials)
-    return response, {}, []
+    if not response:
+        return_results(f"The password in the account {accountID} was changed")
+    else:
+        return_results(response)
 
 
 def change_credentials_in_vault_only_command(
@@ -847,7 +853,10 @@ def change_credentials_in_vault_only_command(
         new_credentials: str,
 ):
     response = client.change_credentials_in_vault_only(accountID, new_credentials)
-    return response, {}, []
+    if not response:
+        return_results(f"The password in the account {accountID} was changed")
+    else:
+        return_results(response)
 
 
 def verify_credentials_command(
@@ -855,7 +864,10 @@ def verify_credentials_command(
         accountID: str,
 ):
     response = client.verify_credentials(accountID)
-    return response, {}, []
+    if not response:
+        return_results(f"The account {accountID} was marked for verification by the CPM")
+    else:
+        return_results(response)
 
 
 def reconcile_credentials_command(
@@ -863,17 +875,20 @@ def reconcile_credentials_command(
         accountID: str,
 ):
     response = client.reconcile_credentials(accountID)
-    return response, {}, []
+    if not response:
+        return_results(f"The account {accountID} was marked for automatic reconciliation by the CPM.")
+    else:
+        return_results(response)
 
 
 def main():
     params = demisto.params()
     username = params.get('credentials').get('identifier')
     password = params.get('credentials').get('password')
+    url = params.get('url')
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     concurrent_session = params.get('concurrent_session', False)
-    url = "https://services-uscentral.skytap.com:10303"
 
     command = demisto.command()
     LOG(f'Command being called in CyberArk is: {command}')
@@ -884,8 +899,8 @@ def main():
         'cyberark-pas-update-user': update_user_command,  # v
         'cyberark-pas-delete-user': delete_user_command,  # v
         'cyberark-pas-get-users': get_users_command,  # v
-        'cyberark-pas-activate-user': activate_user_command,  # api issues
-        'cyberark-pas-suspend-user': suspend_user_command,  # api issues
+        'cyberark-pas-activate-user': activate_user_command,
+        # 'cyberark-pas-suspend-user': suspend_user_command,  # api issues
 
         'cyberark-pas-list-safes': list_safes_command,  # v
         'cyberark-pas-get-safe-by-name': get_safe_by_name_command,  # v
