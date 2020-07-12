@@ -840,7 +840,7 @@ def test_integration(client, server_url, integrations, playbook_id, prints_manag
         integration_instance_name = integration.get('instance_name', '')
         integration_params = integration.get('params', None)
         is_byoi = integration.get('byoi', True)
-        validate_test = integration.get('validate_test', True)
+        validate_test = integration.get('validate_test', False)
 
         if is_mock_run:
             configure_proxy_unsecure(integration_params)
