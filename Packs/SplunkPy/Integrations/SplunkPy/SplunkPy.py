@@ -24,6 +24,7 @@ VERIFY_CERTIFICATE = not bool(params.get('unsecure'))
 FETCH_LIMIT = int(params.get('fetch_limit', 50))
 FETCH_LIMIT = max(min(200, FETCH_LIMIT), 1)
 PROBLEMATIC_CHARACTERS = ['.', '(', ')', '[', ']']
+PROXIES = handle_proxy()
 REPLACE_WITH = '_'
 REPLACE_FLAG = params.get('replaceKeys', False)
 FETCH_TIME = demisto.params().get('fetch_time')
@@ -160,7 +161,7 @@ def updateNotableEvents(sessionKey, baseurl, comment, status=None, urgency=None,
     args['output_mode'] = 'json'
 
     mod_notables = requests.post(baseurl + 'services/notable_update', data=args, headers=auth_header,
-                                 verify=VERIFY_CERTIFICATE)
+                                 verify=VERIFY_CERTIFICATE, proxies=PROXIES)
 
     return mod_notables.json()
 
@@ -545,7 +546,7 @@ def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, sour
     }
 
     response = requests.post(baseurl + '/services/collector/event', data=json.dumps(args), headers=headers,
-                             verify=VERIFY_CERTIFICATE)
+                             verify=VERIFY_CERTIFICATE, proxies=PROXIES)
     return response
 
 
@@ -572,18 +573,13 @@ def splunk_submit_event_hec_command():
         demisto.results('The event was sent successfully to Splunk.')
 
 
-def splunk_edit_notable_event_command(proxy):
-    if not proxy:
-        os.environ["HTTPS_PROXY"] = ""
-        os.environ["HTTP_PROXY"] = ""
-        os.environ["https_proxy"] = ""
-        os.environ["http_proxy"] = ""
+def splunk_edit_notable_event_command():
     baseurl = 'https://' + demisto.params()['host'] + ':' + demisto.params()['port'] + '/'
     username = demisto.params()['authentication']['identifier']
     password = demisto.params()['authentication']['password']
     auth_req = requests.post(baseurl + 'services/auth/login',
                              data={'username': username, 'password': password, 'output_mode': 'json'},
-                             verify=VERIFY_CERTIFICATE)
+                             verify=VERIFY_CERTIFICATE, proxies=PROXIES)
 
     sessionKey = auth_req.json()['sessionKey']
     eventIDs = None
@@ -710,7 +706,7 @@ def main():
     if demisto.command() == 'splunk-submit-event':
         splunk_submit_event_command(service)
     if demisto.command() == 'splunk-notable-event-edit':
-        splunk_edit_notable_event_command(proxy)
+        splunk_edit_notable_event_command()
     if demisto.command() == 'splunk-parse-raw':
         splunk_parse_raw_command()
     if demisto.command() == 'splunk-submit-event-hec':
