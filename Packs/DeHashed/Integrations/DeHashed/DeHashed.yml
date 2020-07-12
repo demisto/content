@@ -146,7 +146,7 @@ script:
         the last query.
       type: Number
   - arguments:
-    - default: false
+    - default: true
       description: The email address to check.
       isArray: false
       name: email

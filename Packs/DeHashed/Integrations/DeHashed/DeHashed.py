@@ -163,21 +163,6 @@ def arg_to_int(arg_val: Optional[str], arg_name: Optional[str]) -> Optional[int]
             f'"{arg_name}" expected to be Integer. passed {arg_val} instead.'
         )
 
-def email_to_entry_context(email, api_email_res, api_paste_res):
-    dbot_score = 0
-    comp_email = dict()  # type: dict
-    comp_sites = sorted([item['Title'] for item in api_email_res])
-    comp_pastes = sorted(set(item['Source'] for item in api_paste_res))
-
-    if len(comp_sites) > 0:
-        dbot_score = DEFAULT_DBOT_SCORE_EMAIL
-        email_context = create_context_entry('email', email, comp_sites, comp_pastes, DEFAULT_DBOT_SCORE_EMAIL)
-        comp_email[outputPaths['email']] = email_context
-
-    comp_email['DBotScore'] = create_dbot_score_dictionary(email, 'email', dbot_score)
-
-    return comp_email
-
 
 def create_dbot_score_dictionary(indicator_value, indicator_type, dbot_score):
     return {
