@@ -318,7 +318,7 @@ script:
       secret: false
     - default: false
       description: Fields for indexing that do not occur in the event payload itself.
-        Accepts multiple comma separated fields.
+        Accepts json string of key value pairs or comma seperated values.
       isArray: false
       name: fields
       required: false

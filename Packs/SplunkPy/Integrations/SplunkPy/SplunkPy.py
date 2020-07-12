@@ -528,11 +528,18 @@ def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, sour
 
     if hec_token is None:
         raise Exception('The HEC Token was not provided')
+    
+    parsed_fields = None
+    if fields:
+        try:
+            parsed_fields = json.loads(fields)
+        except:
+            parsed_fields = {'fields': fields}
 
     args = assign_params(
         event=event,
         host=host,
-        fields={'fields': fields} if fields else None,
+        fields=parsed_fields,
         index=index,
         sourcetype=source_type,
         source=source,
