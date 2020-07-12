@@ -17,11 +17,15 @@ args:
   name: list_name
   required: true
   secret: false
-- default: false
+- auto: PREDEFINED
+  default: false
   defaultValue: 'False'
   description: Parse all the list
   isArray: false
   name: parse_all
+  predefined:
+  - 'True'
+  - 'False'
   required: false
   secret: false
 comment: Parse list by header and value
