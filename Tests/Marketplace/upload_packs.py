@@ -590,6 +590,7 @@ def main():
     private_storage_bucket = storage_client.bucket(private_bucket_name)  # TODO : when is private_bucket_name None?
     default_storage_bucket = private_storage_bucket if is_private_build else storage_bucket
 
+    print_error(f"storage: {storage_bucket_name}, private: {private_bucket_name}, base path: {storage_base_path}")
     # content repo client initialized
     if not is_private_build:
         content_repo = get_content_git_client(CONTENT_ROOT_PATH)
