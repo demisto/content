@@ -98,7 +98,7 @@
         },
         "PAN-OS": {
             "mandatory": false,
-            "display_name": "Recorded Future"
+            "display_name": "Palo Alto Networks PAN-OS"
         },
         "Recorded_Future": {
             "mandatory": false,
