@@ -112,6 +112,10 @@
             "mandatory": false,
             "display_name": "Zscaler"
         },
+        "Zimperium": {
+            "mandatory": false,
+            "display_name": "TruSTAR"
+        },
         "Flashpoint": {
             "mandatory": false,
             "display_name": "Flashpoint"
