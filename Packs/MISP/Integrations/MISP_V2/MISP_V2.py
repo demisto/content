@@ -1039,8 +1039,7 @@ def add_object(event_id: str, obj: MISPObject):
         errors = extract_error(response["errors"])
         error_string = str()
         for err in errors:
-            error_string += '' \
-                            f'\n\tError code: {err["code"]} ' \
+            error_string += f'\n\tError code: {err["code"]} ' \
                             f'\n\tMessage: {err["message"]}' \
                             f'\n\tErrors: {err["errors"]}\n'
         return_error(f'Error in `{command}` command: {error_string}')
