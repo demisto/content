@@ -13,12 +13,11 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-USERNAME = demisto.params().get('credentials').get('identifier')
-PASSWORD = demisto.params().get('credentials').get('password')
-SERVER = (demisto.params()['url'][:-1]
-          if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url'])
-BASE_URL = SERVER + '/api/'
-USE_SSL = not demisto.params().get('insecure', False)
+USERNAME: str
+PASSWORD: str
+SERVER: str
+BASE_URL: str
+USE_SSL: bool
 HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
@@ -26,6 +25,7 @@ HEADERS = {
 URL_LIST_TYPE = 'URL_LIST'
 IP_LIST_TYPE = 'IP_LIST'
 CATEGORY_LIST_TYPE = 'CATEGORY_LIST'
+LOCAL_CATEGORY_DB_TYPE = 'LOCAL_CATEGORY_DB'
 
 ''' HELPER FUNCTIONS '''
 
@@ -776,8 +776,14 @@ def add_policy_content_command():
     elif content_type == CATEGORY_LIST_TYPE:
         add_policy_content_request(uuid, content_type, change_description, schema_version,
                                    categories=categories)
+    elif content_type == LOCAL_CATEGORY_DB_TYPE:
+        add_policy_content_request(uuid, content_type, change_description, schema_version,
+                                   urls=urls, categories=categories, ips=ips, description=description)
 
-    return_outputs('Successfully added content to the policy', {}, {})
+    # parsing input arguments as outputs to display the added content
+    output = demisto.args()
+    human_readable = tableToMarkdown('Successfully added content to the policy', output)
+    return_outputs(human_readable, {}, output)
 
 
 def add_policy_content_request(uuid, content_type, change_description, schema_version,
@@ -809,7 +815,35 @@ def add_policy_content_request(uuid, content_type, change_description, schema_ve
     if not content or 'content' not in content:
         return_error('Could not update policy content - failed retrieving the current content')
 
-    if ips:
+    if content_type == LOCAL_CATEGORY_DB_TYPE:
+        if 'categories' not in content['content']:
+            content['content']['categories'] = []
+        for category in categories:
+            content_entities = []
+            if ips:
+                content_entities.extend(ips)
+            if urls:
+                content_entities.extend(urls)
+            entries = []
+            for entity in content_entities:
+                entries.append({
+                    'type': 'url',
+                    'url': entity,
+                    'comment': description
+                })
+            found_existing_category = False
+            for existing_category in content['content']['categories']:
+                if existing_category.get('name') == category:
+                    existing_category['entries'].extend(entries)
+                    found_existing_category = True
+                    break
+            if not found_existing_category:
+                content['content']['categories'].append({
+                    'type': 'inline',
+                    'name': category,
+                    'entries': entries
+                })
+    elif ips:
         if 'ipAddresses' not in content['content']:
             content['content']['ipAddresses'] = []
         content['content']['ipAddresses'] += [{
@@ -856,14 +890,23 @@ def delete_policy_content_command():
 
     uuid = get_policy_uuid(uuid, name)
 
+    content_deleted = []
+
     if content_type == IP_LIST_TYPE:
         delete_policy_content_request(uuid, content_type, change_description, schema_version, ips=ips)
     elif content_type == URL_LIST_TYPE:
         delete_policy_content_request(uuid, content_type, change_description, schema_version, urls=urls)
     elif content_type == CATEGORY_LIST_TYPE:
         delete_policy_content_request(uuid, content_type, change_description, schema_version, categories=categories)
+    elif content_type == LOCAL_CATEGORY_DB_TYPE:
+        content_deleted = delete_policy_content_request(uuid, content_type, change_description, schema_version, ips=ips,
+                                                        urls=urls, categories=categories)
 
-    return_outputs('Successfully deleted content from the policy', {}, {})
+    if content_deleted:
+        human_readable = tableToMarkdown('Successfully deleted content from the policy', content_deleted)
+        return_outputs(human_readable, {}, content_deleted)
+    else:
+        return_outputs('Successfully deleted content from the policy', {}, {})
 
 
 def delete_policy_content_request(uuid, content_type, change_description, schema_version,
@@ -893,7 +936,48 @@ def delete_policy_content_request(uuid, content_type, change_description, schema
     if not content or 'content' not in content:
         return_error('Could not update policy content - failed retrieving the current content')
 
-    if ips:
+    content_deleted = []
+
+    if content_type == LOCAL_CATEGORY_DB_TYPE:
+        found_object_to_delete = False
+        content_entities = []
+        if ips:
+            content_entities.extend(ips)
+        if urls:
+            content_entities.extend(urls)
+        if 'categories' in content['content']:
+            if not categories:
+                categories = [category.get('name') for category in content['content']['categories']]
+            categories_to_keep = []
+            for category in content['content']['categories']:
+                if category.get('name') in categories:
+                    entries_to_keep = []
+                    for entry in category.get('entries'):
+                        if entry.get('url') in content_entities:
+                            content_deleted.append({
+                                'CategoryName': category.get('name'),
+                                'ObjectDeleted': entry.get('url')
+                            })
+                            found_object_to_delete = True
+                        else:
+                            entries_to_keep.append(entry)
+                    if entries_to_keep:
+                        categories_to_keep.append({
+                            'name': category.get('name'),
+                            'type': 'inline',
+                            'entries': entries_to_keep
+                        })
+                    else:
+                        content_deleted.append({
+                            'CategoryName': category.get('name'),
+                            'ObjectDeleted': 'The category was deleted. Category cannot be empty.'
+                        })
+                else:
+                    categories_to_keep.append(category)
+            content['content']['categories'] = categories_to_keep
+        if not found_object_to_delete:
+            raise Exception('Deletion failed - Could not find object to delete.')
+    elif ips:
         if 'ipAddresses' in content['content']:
             ips_to_keep = [ip for ip in content['content']['ipAddresses'] if ip['ipAddress'] not in ips]
             content['content']['ipAddresses'] = ips_to_keep
@@ -906,6 +990,125 @@ def delete_policy_content_request(uuid, content_type, change_description, schema
             categories_to_keep = [category for category in content['content']['categories']
                                   if category['categoryName'] not in categories]
             content['content']['categories'] = categories_to_keep
+
+    body['content'] = content['content']
+    http_request('POST', path, data=body)
+
+    return content_deleted
+
+
+def update_policy_content_command():
+    """
+        Command to update existing policy content in Symantec MC
+        :return: An entry indicating whether the update was successful
+    """
+    uuid = demisto.args().get('uuid')
+    name = demisto.args().get('name')
+    content_type = demisto.args()['content_type']
+    change_description = demisto.args()['change_description']
+    schema_version = demisto.args().get('schema_version')
+    ips = argToList(demisto.args().get('ip', []))
+    urls = argToList(demisto.args().get('url', []))
+    categories = argToList(demisto.args().get('category', []))
+    content_description = demisto.args().get('description')
+    content_enabled = demisto.args().get('enabled')
+
+    if not (content_description or content_enabled):
+        raise ValueError('No attributes to update were provided.')
+
+    verify_policy_content(content_type, ips, categories, urls)
+
+    uuid = get_policy_uuid(uuid, name)
+
+    if content_type == IP_LIST_TYPE:
+        update_policy_content_request(
+            uuid, content_type, change_description, schema_version, ips=ips,
+            content_description=content_description, content_enabled=content_enabled
+        )
+    elif content_type == URL_LIST_TYPE:
+        update_policy_content_request(
+            uuid, content_type, change_description, schema_version, urls=urls,
+            content_description=content_description, content_enabled=content_enabled
+        )
+    elif content_type == LOCAL_CATEGORY_DB_TYPE:
+        update_policy_content_request(
+            uuid, content_type, change_description, schema_version, ips=ips, urls=urls,
+            categories=categories, content_description=content_description, content_enabled=content_enabled
+        )
+
+    # parsing input arguments as outputs to display the updated content
+    output = demisto.args()
+    human_readable = tableToMarkdown('Successfully updated content in the policy', output)
+    return_outputs(human_readable, {}, output)
+
+
+def update_policy_content_request(uuid, content_type, change_description, schema_version,
+                                  ips=None, urls=None, categories=None, content_description=None, content_enabled=None):
+    """
+    Update content of a specified policy using the provided arguments
+    :param uuid: Policy UUID
+    :param content_type: Policy content type
+    :param change_description: Policy update change description
+    :param schema_version: Policy schema version
+    :param ips: IPs to update from the content
+    :param urls: URLs to update from the content
+    :param categories: Category names to update from the content
+    :param content_description: Content description to update.
+    :param content_enabled: Content enablement to update.
+    :return: Content update response
+    """
+    path = 'policies/' + uuid + '/content'
+
+    body = {
+        'contentType': content_type,
+        'changeDescription': change_description
+    }
+
+    if schema_version:
+        body['schemaVersion'] = schema_version
+
+    content = get_policy_content_request(uuid)
+
+    if not content or 'content' not in content:
+        return_error('Could not update policy content - failed retrieving the current content')
+
+    found_object_to_update = False
+
+    if content_type == LOCAL_CATEGORY_DB_TYPE:
+        if 'categories' in content['content']:
+            content_entities = []
+            if ips:
+                content_entities.extend(ips)
+            if urls:
+                content_entities.extend(urls)
+            for category in content['content']['categories']:
+                if category.get('name') in categories:
+                    for entry_index, entry in enumerate(category.get('entries')):
+                        if entry.get('url') in content_entities:
+                            found_object_to_update = True
+                            category['entries'][entry_index]['comment'] = content_description
+    elif ips:
+        if 'ipAddresses' in content['content']:
+            for ip in content['content']['ipAddresses']:
+                if ip['ipAddress'] in ips:
+                    found_object_to_update = True
+                    if content_description:
+                        ip['description'] = content_description
+                    if content_enabled:
+                        ip['enabled'] = bool(strtobool(content_enabled))
+    elif urls:
+        if 'urls' in content['content']:
+            for url in content['content']['urls']:
+                found_object_to_update = True
+                if url['url'] in urls:
+                    found_object_to_update = True
+                    if content_description:
+                        url['description'] = content_description
+                    if content_enabled:
+                        url['enabled'] = bool(strtobool(content_enabled))
+
+    if not found_object_to_update:
+        raise Exception('Update failed - Could not find object to update.')
 
     body['content'] = content['content']
     response = http_request('POST', path, data=body)
@@ -959,31 +1162,42 @@ def list_tenants_request():
     return response
 
 
-''' COMMANDS '''
-LOG('Command being called is ' + demisto.command())
-handle_proxy()
+def main():
+    global USERNAME, PASSWORD, SERVER, BASE_URL, USE_SSL
+    USERNAME = demisto.params().get('credentials').get('identifier')
+    PASSWORD = demisto.params().get('credentials').get('password')
+    SERVER = (demisto.params()['url'][:-1]
+              if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url'])
+    BASE_URL = SERVER + '/api/'
+    USE_SSL = not demisto.params().get('insecure', False)
 
-COMMAND_DICTIONARY = {
-    'test-module': test_module,
-    'symantec-mc-list-devices': list_devices_command,
-    'symantec-mc-get-device': get_device_command,
-    'symantec-mc-get-device-health': get_device_health_command,
-    'symantec-mc-get-device-license': get_device_license_command,
-    'symantec-mc-get-device-status': get_device_status_command,
-    'symantec-mc-list-policies': list_policies_command,
-    'symantec-mc-get-policy': get_policy_command,
-    'symantec-mc-create-policy': create_policy_command,
-    'symantec-mc-update-policy': update_policy_command,
-    'symantec-mc-delete-policy': delete_policy_command,
-    'symantec-mc-add-policy-content': add_policy_content_command,
-    'symantec-mc-delete-policy-content': delete_policy_content_command,
-    'symantec-mc-list-tenants': list_tenants_command
-}
+    LOG('Command being called is ' + demisto.command())
+    handle_proxy()
 
-try:
-    command_func = COMMAND_DICTIONARY[demisto.command()]
-    command_func()
-except Exception as e:
-    LOG(str(e))
-    LOG.print_log()
-    return_error(str(e))
+    command_dictionary = {
+        'test-module': test_module,
+        'symantec-mc-list-devices': list_devices_command,
+        'symantec-mc-get-device': get_device_command,
+        'symantec-mc-get-device-health': get_device_health_command,
+        'symantec-mc-get-device-license': get_device_license_command,
+        'symantec-mc-get-device-status': get_device_status_command,
+        'symantec-mc-list-policies': list_policies_command,
+        'symantec-mc-get-policy': get_policy_command,
+        'symantec-mc-create-policy': create_policy_command,
+        'symantec-mc-update-policy': update_policy_command,
+        'symantec-mc-delete-policy': delete_policy_command,
+        'symantec-mc-add-policy-content': add_policy_content_command,
+        'symantec-mc-delete-policy-content': delete_policy_content_command,
+        'symantec-mc-update-policy-content': update_policy_content_command,
+        'symantec-mc-list-tenants': list_tenants_command
+    }
+
+    try:
+        command_func = command_dictionary[demisto.command()]
+        command_func()
+    except Exception as e:
+        return_error(str(e))
+
+
+if __name__ in ['__main__', '__builtin__', 'builtins']:
+    main()
