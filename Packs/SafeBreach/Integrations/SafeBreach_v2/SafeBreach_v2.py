@@ -392,14 +392,13 @@ def get_indicators_command(client: Client, insight_category: list, insight_data_
             score_behavioral_reputation = DEMISTO_INDICATOR_REPUTATION.get(
                 demisto.params().get('behavioralReputation'))
             score_non_behavioral_reputation = DEMISTO_INDICATOR_REPUTATION.get(
-                demisto.params().get('feedReputation'))
-
+                demisto.params().get('nonBehavioralReputation'))
             indicator = {
                 'value': str(item["value"]),
                 'type': INDICATOR_TYPE_MAPPER.get(str(item["type"])),
                 'rawJSON': raw_json,
                 'fields': mapping,
-                'score': score_behavioral_reputation if is_behaveioral else score_non_behavioral_reputation
+                'score': int(score_behavioral_reputation) if is_behaveioral else int(score_non_behavioral_reputation)
             }
 
             if is_ip(item["value"]):
