@@ -1,4 +1,5 @@
-from ArcherV2 import Client, extract_from_xml, generate_field_contents, get_errors_from_res
+from ArcherV2 import Client, extract_from_xml, generate_field_contents, get_errors_from_res, generate_field_value
+import demistomock as demisto
 
 BASE_URL = 'https://test.com/'
 
@@ -30,8 +31,28 @@ FIELD_DEFINITION_RES = [
                                                "RelatedValuesListId": 8}}]
 
 GET_LEVELS_BY_APP = [{'level': 123, 'mapping':
-                     {'1': {'Type': 7, 'Name': 'External Links', 'IsRequired': False, 'RelatedValuesListId': None},
-                      '2': {'Type': 1, 'Name': 'Device Name', 'IsRequired': True, 'RelatedValuesListId': 8}}}]
+                     {'1': {'Type': 7, 'Name': 'External Links', 'FieldId': "1",
+                            'IsRequired': False, 'RelatedValuesListId': None},
+                      '2': {'Type': 1, 'Name': 'Device Name', 'FieldId': "2",
+                            'IsRequired': True, 'RelatedValuesListId': 8}}}]
+
+GET_FIElD_DEFINITION_RES = {"RequestedObject":
+                            {"RelatedValuesListId": 62},
+                            "IsSuccessful": True,
+                            "ValidationMessages": []}
+
+VALUE_LIST_RES = {"RequestedObject": {
+    "Children": [
+        {"Data": {"Id": 471, "Name": "Low", "IsSelectable": True}},
+        {"Data": {"Id": 472, "Name": "Medium", "IsSelectable": True}},
+        {"Data": {"Id": 473, "Name": "High", "IsSelectable": True}}]},
+    "IsSuccessful": True, "ValidationMessages": []}
+
+VALUE_LIST_FIELD_DATA = {
+    "FieldId": 304, "ValuesList": [
+        {"Id": 471, "Name": "Low", "IsSelectable": True},
+        {"Id": 472, "Name": "Medium", "IsSelectable": True},
+        {"Id": 473, "Name": "High", "IsSelectable": True}]}
 
 RES_WITH_ERRORS = {'ValidationMessages': [
     {'ResourcedMessage': 'The Type field is a required field.'},
@@ -130,7 +151,8 @@ def test_get_level_by_app_id(requests_mock):
 
 
 def test_generate_field_contents():
-    field = generate_field_contents('{"Device Name":"Macbook"}', GET_LEVELS_BY_APP[0]['mapping'])
+    client = Client(BASE_URL, '', '', '', '')
+    field = generate_field_contents(client, '{"Device Name":"Macbook"}', GET_LEVELS_BY_APP[0]['mapping'])
     assert field == {'2': {'Type': 1, 'Value': 'Macbook', 'FieldId': '2'}}
 
 
@@ -185,3 +207,71 @@ def test_search_records(requests_mock):
     assert len(records) == 1
     assert records[0]['record']['Id'] == '238756'
     assert records[0]['record']['Device Name'] == 'DEVICE NAME'
+
+
+def test_get_field_value_list(requests_mock):
+    cache = demisto.getIntegrationContext()
+    cache['fieldValueList'] = {}
+    demisto.setIntegrationContext(cache)
+
+    requests_mock.post(BASE_URL + 'rsaarcher/api/core/security/login',
+                       json={'RequestedObject': {'SessionToken': 'session-id'}})
+    requests_mock.get(BASE_URL + 'rsaarcher/api/core/system/fielddefinition/304', json=GET_FIElD_DEFINITION_RES)
+    requests_mock.get(BASE_URL + 'rsaarcher/api/core/system/valueslistvalue/valueslist/62', json=VALUE_LIST_RES)
+    client = Client(BASE_URL, '', '', '', '')
+    field_data = client.get_field_value_list(304)
+    assert VALUE_LIST_FIELD_DATA == field_data
+
+
+def test_generate_field_value_text_input():
+    client = Client(BASE_URL, '', '', '', '')
+    field_key, field_value = generate_field_value(client, "", {'Type': 1}, "Demisto")
+    assert field_key == 'Value'
+    assert field_value == 'Demisto'
+
+
+def test_generate_field_value_values_list_input(requests_mock):
+    cache = demisto.getIntegrationContext()
+    cache['fieldValueList'] = {}
+    demisto.setIntegrationContext(cache)
+
+    requests_mock.post(BASE_URL + 'rsaarcher/api/core/security/login',
+                       json={'RequestedObject': {'SessionToken': 'session-id'}})
+    requests_mock.get(BASE_URL + 'rsaarcher/api/core/system/fielddefinition/304', json=GET_FIElD_DEFINITION_RES)
+    requests_mock.get(BASE_URL + 'rsaarcher/api/core/system/valueslistvalue/valueslist/62', json=VALUE_LIST_RES)
+
+    client = Client(BASE_URL, '', '', '', '')
+    field_key, field_value = generate_field_value(client, "", {'Type': 4, 'FieldId': 304}, ["High"])
+    assert field_key == 'Value'
+    assert field_value == {'ValuesListIds': [473]}
+
+
+def test_generate_field_external_link_input():
+    client = Client(BASE_URL, '', '', '', '')
+    field_key, field_value = generate_field_value(client, "", {'Type': 7},
+                                                  [{"value": "github", "link": "https://github.com"},
+                                                   {"value": "google", "link": "https://google.com"}])
+    assert field_key == 'Value'
+    assert field_value == [{"Name": "github", "URL": "https://github.com"},
+                           {"Name": "google", "URL": "https://google.com"}]
+
+
+def test_generate_field_users_groups_input():
+    client = Client(BASE_URL, '', '', '', '')
+    field_key, field_value = generate_field_value(client, "", {'Type': 8}, {"users": [20], "groups": [30]})
+    assert field_key == 'Value'
+    assert field_value == {"UserList": [{"ID": 20}], "GroupList": [{"ID": 30}]}
+
+
+def test_generate_field_cross_reference_input():
+    client = Client(BASE_URL, '', '', '', '')
+    field_key, field_value = generate_field_value(client, "", {'Type': 9}, [1, 2])
+    assert field_key == 'Value'
+    assert field_value == [{"ContentID": 1}, {"ContentID": 2}]
+
+
+def test_generate_field_ip_address_input():
+    client = Client(BASE_URL, '', '', '', '')
+    field_key, field_value = generate_field_value(client, "", {'Type': 19}, '127.0.0.1')
+    assert field_key == 'IpAddressBytes'
+    assert field_value == '127.0.0.1'

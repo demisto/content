@@ -217,7 +217,7 @@ class Client(BaseClient):
             self.update_session()
             res = self._http_request(method, url_suffix, headers=REQUEST_HEADERS, json_data=data,
                                      resp_type='response', ok_codes=(200, 401))
-            return res
+            return res.json()
 
         return res.json()
 
@@ -277,6 +277,7 @@ class Client(BaseClient):
                         field_id = str(field_item.get('Id'))
                         fields[field_id] = {'Type': field_item.get('Type'),
                                             'Name': field_item.get('Name'),
+                                            'FieldId': field_id,
                                             'IsRequired': field_item.get('IsRequired', False),
                                             'RelatedValuesListId': field_item.get('RelatedValuesListId')}
 
@@ -312,8 +313,14 @@ class Client(BaseClient):
 
                 if field_type == 19:
                     field_value = field.get('IpAddressBytes')
+                elif field_type == 4 and field.get('Value') and field['Value'].get('ValuesListIds'):
+                    list_data = self.get_field_value_list(_id)
+                    list_ids = field['Value']['ValuesListIds']
+                    list_ids = list(filter(lambda x: x['Id'] in list_ids, list_data['ValuesList']))
+                    field_value = list(map(lambda x: x['Name'], list_ids))
                 else:
                     field_value = field.get('Value')
+
                 if field_value:
                     record[field_data.get('Name')] = field_value
 
@@ -415,6 +422,34 @@ class Client(BaseClient):
                 records.append({'record': record, 'raw': item})
         return records
 
+    def get_field_value_list(self, field_id):
+        cache = demisto.getIntegrationContext()
+
+        if cache['fieldValueList'].get(field_id):
+            return cache.get('fieldValueList').get(field_id)
+
+        res = self.do_request('GET', f'rsaarcher/api/core/system/fielddefinition/{field_id}')
+
+        errors = get_errors_from_res(res)
+        if errors:
+            return_error(errors)
+
+        if res.get('RequestedObject') and res.get('IsSuccessful'):
+            list_id = res['RequestedObject']['RelatedValuesListId']
+            values_list_res = self.do_request('GET', f'rsaarcher/api/core/system/valueslistvalue/valueslist/{list_id}')
+            if values_list_res.get('RequestedObject') and values_list_res.get('IsSuccessful'):
+                values_list = []
+                for value in values_list_res['RequestedObject'].get('Children'):
+                    values_list.append({'Id': value['Data']['Id'],
+                                        'Name': value['Data']['Name'],
+                                        'IsSelectable': value['Data']['IsSelectable']})
+                field_data = {'FieldId': field_id, 'ValuesList': values_list}
+
+                cache['fieldValueList'][field_id] = field_data
+                demisto.setIntegrationContext(cache)
+
+        return field_data
+
 
 def extract_from_xml(xml, path):
     xml = json.loads(xml2json(xml))
@@ -428,7 +463,7 @@ def extract_from_xml(xml, path):
     return xml
 
 
-def generate_field_contents(fields_values, level_fields):
+def generate_field_contents(client, fields_values, level_fields):
     try:
         fields_values = json.loads(fields_values)
     except Exception:
@@ -444,10 +479,65 @@ def generate_field_contents(fields_values, level_fields):
                 break
 
         if field_data:
+            field_key, field_value = generate_field_value(client, field_name, field_data, fields_values[field_name])
+
             field_content[_id] = {'Type': field_data['Type'],
-                                  'Value': fields_values[field_name],
+                                  field_key: field_value,
                                   'FieldId': _id}
     return field_content
+
+
+def generate_field_value(client, field_name, field_data, field_val):
+    field_type = field_data['Type']
+
+    # when field type is Values List, call get_field_value_list method to get the value ID
+    # for example: {"Type":["Switch"], fieldname:[value1, value2]}
+    if field_type == 4:
+        field_data = client.get_field_value_list(field_data['FieldId'])
+        list_ids = []
+        for item in field_val:
+            tmp_id = next(f for f in field_data['ValuesList'] if f['Name'] == item)
+            if tmp_id:
+                list_ids.append(tmp_id['Id'])
+            else:
+                raise Exception(f'Failed to create field {field_name} with the value {field_data}')
+        return 'Value', {'ValuesListIds': list_ids}
+
+    # when field type is External Links
+    # for example: {"Patch URL":[{"value":"github", "link": "https://github.com"}]}
+    elif field_type == 7:
+        list_urls = []
+        for item in field_val:
+            list_urls.append({'Name': item.get('value'), 'URL': item.get('link')})
+        return 'Value', list_urls
+
+    # when field type is Users/Groups List
+    # for example: {"Policy Owner":{"users":[20],"groups":[30]}}
+    elif field_type == 8:
+        users = field_val.get('users')
+        groups = field_val.get('groups')
+        field_val = {'UserList': [], 'GroupList': []}
+        if users:
+            for user in users:
+                field_val['UserList'].append({'ID': user})
+        if groups:
+            for group in groups:
+                field_val['GroupList'].append({'ID': group})
+        return 'Value', field_val
+
+    # when field type is Cross- Reference
+    # for example: {"Area Reference(s)":[20]}
+    elif field_type == 9:
+        list_cross_reference = []
+        for content in field_val:
+            list_cross_reference.append({'ContentID': content})
+        return 'Value', list_cross_reference
+
+    elif field_type == 19:
+        return 'IpAddressBytes', field_val
+
+    else:
+        return 'Value', field_val
 
 
 def get_errors_from_res(res):
@@ -533,7 +623,7 @@ def get_application_fields_command(client: Client, args: Dict[str, str]):
 
 
 def get_field_command(client: Client, args: Dict[str, str]):
-    field_id = args.get('fieldId')
+    field_id = args.get('fieldID')
 
     res = client.do_request('GET', f'rsaarcher/api/core/system/fielddefinition/{field_id}')
 
@@ -608,7 +698,7 @@ def create_record_command(client: Client, args: Dict[str, str]):
     fields_values = args.get('fieldsToValues')
 
     level_data = client.get_level_by_app_id(app_id)[0]
-    field_contents = generate_field_contents(fields_values, level_data['mapping'])
+    field_contents = generate_field_contents(client, fields_values, level_data['mapping'])
 
     body = {'Content': {'LevelId': level_data['level'], 'FieldContents': field_contents}}
 
@@ -638,7 +728,7 @@ def update_record_command(client: Client, args: Dict[str, str]):
     record_id = args.get('contentId')
     fields_values = args.get('fieldsToValues')
     level_data = client.get_level_by_app_id(app_id)[0]
-    field_contents = generate_field_contents(fields_values, level_data['mapping'])
+    field_contents = generate_field_contents(client, fields_values, level_data['mapping'])
 
     body = {'Content': {'Id': record_id, 'LevelId': level_data['level'], 'FieldContents': field_contents}}
     res = client.do_request('Put', 'rsaarcher/api/core/content', data=body)
@@ -689,30 +779,15 @@ def reset_cache_command(client: Client, args: Dict[str, str]):
 
 def get_value_list_command(client: Client, args: Dict[str, str]):
     field_id = args.get('fieldID')
-    res = client.do_request('GET', f'rsaarcher/api/core/system/fielddefinition/{field_id}')
+    field_data = client.get_field_value_list(field_id)
 
-    errors = get_errors_from_res(res)
-    if errors:
-        return_error(errors)
+    markdown = tableToMarkdown(f'Value list for field {field_id}', field_data['ValuesList'])
 
-    if res.get('RequestedObject') and res.get('IsSuccessful'):
-        list_id = res['RequestedObject']['RelatedValuesListId']
-        values_list_res = client.do_request('GET', f'rsaarcher/api/core/system/valueslistvalue/valueslist/{list_id}')
-        if values_list_res.get('RequestedObject') and values_list_res.get('IsSuccessful'):
-            values_list = []
-            for value in values_list_res['RequestedObject'].get('Children'):
-                values_list.append({'Id': value['Data']['Id'],
-                                    'Name': value['Data']['Name'],
-                                    'IsSelectable': value['Data']['IsSelectable']})
-
-            field_data = {'FieldId': field_id, 'ValuesList': values_list}
-            markdown = tableToMarkdown(f'Value list for field {field_id}', values_list)
-
-            context: dict = {
-                'Archer.ApplicationField(val.FieldId && val.FieldId == obj.FieldId)':
-                    field_data
-            }
-            return_outputs(markdown, context, values_list_res)
+    context: dict = {
+        'Archer.ApplicationField(val.FieldId && val.FieldId == obj.FieldId)':
+            field_data
+    }
+    return_outputs(markdown, context, {})
 
 
 def upload_file_command(client: Client, args: Dict[str, str]):
@@ -912,6 +987,12 @@ def main():
     credentials = params.get('credentials')
     base_url = params.get('url').strip('/')
     first_fetch_time = demisto.params().get('fetch_time', '3 days').strip()
+
+    cache = demisto.getIntegrationContext()
+    if not cache.get('fieldValueList'):
+        cache['fieldValueList'] = {}
+        demisto.setIntegrationContext(cache)
+
     client = Client(base_url,
                     credentials.get('identifier'), credentials.get('password'),
                     params.get('instanceName'),
