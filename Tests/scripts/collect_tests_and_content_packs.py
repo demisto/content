@@ -172,8 +172,7 @@ def get_modified_files_for_testing(files_string):
             elif re.match(DOCS_REGEX, file_path) or os.path.splitext(file_path)[-1] in ['.md', '.png']:
                 continue
 
-            elif (file in file_path for file in
-                  (PACKS_PACK_META_FILE_NAME, PACKS_WHITELIST_FILE_NAME)):
+            elif any(file in file_path for file in (PACKS_PACK_META_FILE_NAME, PACKS_WHITELIST_FILE_NAME)):
                 pack_sample_tests.append(file_path)
 
             elif SECRETS_WHITE_LIST not in file_path:
