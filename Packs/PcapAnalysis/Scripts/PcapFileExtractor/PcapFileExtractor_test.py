@@ -1,6 +1,10 @@
 import os
 
-from PcapFileExtractor import upload_files, main
+import pytest
+from magic import Magic
+
+from PcapFileExtractor import (InclusiveExclusive, filter_files, main,
+                               upload_files)
 
 OUTPUTS = [
     {
@@ -32,6 +36,49 @@ def test_extract_files(tmpdir):
     assert os.path.isfile(os.path.join(tmpdir, 'rfc1350.txt'))
 
 
+class TestFilter:
+    @pytest.mark.parametrize(
+        'files, types, type_from_magic, exclusive_or_inclusive, expected', [
+            (['./png_file.png'], ['image/png'], 'image/png', InclusiveExclusive.EXCLUSIVE, []),
+            (['./png_file.png'], ['image/png'], 'image/png', InclusiveExclusive.INCLUSIVE, ['./png_file.png']),
+            (['./png_file.mp3'], ['sound/mp3'], 'image/png', InclusiveExclusive.INCLUSIVE, [])
+        ])
+    def test_types(self, files, types, type_from_magic, exclusive_or_inclusive, expected, mocker):
+        """
+        Given:
+        - inputs to filter_files concentrating on the types branch, as well with excepted files output
+
+        When:
+        - filtering files
+
+        Then:
+        - Validate the file list that got back is the same as expected.
+        """
+        mocker.patch.object(Magic, 'from_file', return_value=type_from_magic)
+        assert expected == filter_files('/.', files, types=types, types_inclusive_or_exclusive=exclusive_or_inclusive)
+
+    @pytest.mark.parametrize(
+        'files, extensions, exclusive_or_inclusive, expected', [
+            (['./png_file.png'], ['.png'], InclusiveExclusive.EXCLUSIVE, []),
+            (['./png_file.png'], ['.png'], InclusiveExclusive.INCLUSIVE, ['./png_file.png']),
+            (['./png_file.mp3'], ['sound/mp3'], InclusiveExclusive.INCLUSIVE, [])
+        ])
+    def test_extensions(self, files, extensions, exclusive_or_inclusive, expected):
+        """
+        Given:
+        - inputs to filter_files concentrating on the extensions branch, as well with excepted files output
+
+        When:
+        - filtering files
+
+        Then:
+        - Validate the file list that got back is the same as expected.
+        """
+        assert expected == filter_files('/.', files, extensions=extensions,
+                                        extensions_inclusive_or_exclusive=exclusive_or_inclusive)
+
+
+@pytest.mark.skip('Problem with the docker')
 def test_decryption(mocker):
     file_path = './TestData/wpa-Induction.pcap'
     password = 'Induction'

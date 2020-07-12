@@ -1,7 +1,7 @@
 import hashlib
 import subprocess
 import tempfile
-from typing import Union, Set, Optional
+from typing import List, Optional, Set, Union
 
 import magic
 
@@ -41,6 +41,36 @@ def run_command(args: list, stdout=subprocess.PIPE, stderr=subprocess.PIPE):
     return stdout_data, stderr_data
 
 
+def filter_files(root: str, files: List[str], /,
+                 types: Optional[Set[str]] = None,
+                 extensions: Optional[Set[str]] = None,
+                 types_inclusive_or_exclusive: Optional[str] = None,
+                 extensions_inclusive_or_exclusive: Optional[str] = None):
+    magic_mime = magic.Magic(mime=True)
+    for file in files:
+        # types list supplied,
+        if types:
+            mime_type = magic_mime.from_file(os.path.join(root, file))
+            # Inclusive types, take only the types in the list.
+            if types_inclusive_or_exclusive == InclusiveExclusive.INCLUSIVE and mime_type not in types:
+                files.remove(file)
+            # Exclusive types, don't take those files.
+            elif types_inclusive_or_exclusive == InclusiveExclusive.EXCLUSIVE and mime_type in types:
+                files.remove(file)
+        if extensions:
+            # strip `.` from extension
+            extensions = set([extension.split(".")[-1] for extension in extensions])
+            # Get file extension without a leading point.
+            f_ext = os.path.splitext(file)[1].split('.')[-1]
+            # Inclusive extensions, take only the types in the list.
+            if extensions_inclusive_or_exclusive == InclusiveExclusive.INCLUSIVE and f_ext not in extensions:
+                files.remove(file)
+            # Exclude extensions, don't take those files.
+            elif extensions_inclusive_or_exclusive == InclusiveExclusive.EXCLUSIVE and f_ext in extensions:
+                files.remove(file)
+    return files
+
+
 def upload_files(
         file_path: str, dir_path: str, /,
         types: Optional[Set[str]] = None, extensions: Optional[Set[str]] = None,
@@ -68,39 +98,21 @@ def upload_files(
                  '--export-objects', f'tftp,{dir_path}', '--export-objects', f'dicom,{dir_path}'])
 
     context = []
-    magic_mime = magic.Magic(mime=True)
     md5 = hashlib.md5()
     sha1 = hashlib.sha1()
     sha256 = hashlib.sha256()
-    # strip `.` from extension
-    if extensions:
-        extensions = set([extension.split(".")[-1] for extension in extensions])
     for root, _, files in os.walk(dir_path):
         # Limit the files list to minimum
         files = files[: limit]
         if not files:
             return 'No files found.'
         # Filter files
+        files = filter_files(root, files,
+                             types=types,
+                             extensions=extensions,
+                             extensions_inclusive_or_exclusive=extensions_inclusive_or_exclusive,
+                             types_inclusive_or_exclusive=types_inclusive_or_exclusive)
         for file in files:
-            # types list supplied,
-            if types:
-                mime_type = magic_mime.from_file(os.path.join(root, file))
-                # Inclusive types, take only the types in the list.
-                if types_inclusive_or_exclusive == InclusiveExclusive.INCLUSIVE and mime_type not in types:
-                    continue
-                # Exclusive types, don't take those files.
-                elif types_inclusive_or_exclusive == InclusiveExclusive.EXCLUSIVE and mime_type not in types:
-                    continue
-            if extensions:
-                # Get file extension without a leading point.
-                f_ext = os.path.splitext(file)[1].split('.')[-1]
-                # Inclusive extensions, take only the types in the list.
-                if extensions_inclusive_or_exclusive == InclusiveExclusive.INCLUSIVE and f_ext in extensions:
-                    continue
-                # Exclude extensions, don't take those files.
-                elif extensions_inclusive_or_exclusive == InclusiveExclusive.EXCLUSIVE and f_ext not in extensions:
-                    continue
-
             file_path = os.path.join(root, file)
             file_name = os.path.join(file)
 
