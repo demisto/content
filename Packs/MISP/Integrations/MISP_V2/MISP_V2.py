@@ -1077,7 +1077,7 @@ def add_domain_object():
     """
     template = 'domain-ip'
     args = [
-        'text'
+        'text',
         'creation_date',
         'first_seen',
         'last_seen'
