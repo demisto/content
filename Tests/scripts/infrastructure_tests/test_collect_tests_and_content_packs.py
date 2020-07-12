@@ -440,10 +440,11 @@ A       Packs/Active_Directory_Query/Integrations/Active_Directory_Query/key.pem
 """
 
     def test_changed_runnable_test__unmocked_get_modified_files(self):
-        files_list, tests_list, all_tests, is_conf_json, sample_tests, pack_sample_tests, is_reputations_json, is_indicator_json = get_modified_files_for_testing(
-            self.GIT_DIFF_RET)
+        files_list, tests_list, all_tests, is_conf_json, sample_tests, pack_sample_tests, is_reputations_json, \
+        is_indicator_json = get_modified_files_for_testing(self.GIT_DIFF_RET)
         assert len(sample_tests) == 0
-        assert 'Packs/Active_Directory_Query/Integrations/Active_Directory_Query/Active_Directory_Query.yml' in files_list
+        assert 'Packs/Active_Directory_Query/Integrations/Active_Directory_Query/Active_Directory_Query.yml' in
+        files_list
 
 
 class TestNoChange:
