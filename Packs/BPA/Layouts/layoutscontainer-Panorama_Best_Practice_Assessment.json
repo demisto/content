@@ -1,10 +1,10 @@
 {
-    "id": "IllusionBLACK",
+    "id": "Panorama Best Practice Assessment",
     "group": "incident",
-    "name": "IllusionBLACK Incident Layout",
+    "name": "Panorama Best Practice Assessment Incident Layout",
     "version": -1,
     "fromVersion": "6.0.0",
-    "details": {
+    "detailsV2": {
         "tabs": [
             {
                 "id": "summary",

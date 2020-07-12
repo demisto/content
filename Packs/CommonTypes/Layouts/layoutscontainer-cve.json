@@ -4,7 +4,7 @@
 	"name": "CVE Indicator Layout",
 	"version": -1,
 	"fromVersion": "6.0.0",
-    "indicatorsDetails": {
+	"indicatorsDetails": {
         "tabs": [
 			{
 				"id": "default-main",
