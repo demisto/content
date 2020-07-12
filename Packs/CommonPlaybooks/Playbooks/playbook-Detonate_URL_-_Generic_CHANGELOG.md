@@ -1,5 +1,5 @@
 ## [Unreleased]
-Added **CrowdStrike Falcon X**.
+-
 
 ## [20.5.2] - 2020-05-26
 -
