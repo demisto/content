@@ -291,6 +291,10 @@
         "FortiGate": {
             "mandatory": false,
             "display_name": "FortiGate"
+        },
+        "CrowdStrike Falcon X": {
+            "mandatory": false,
+            "display_name": "CrowdStrike Falcon X"
         }
     }
 }
