@@ -2,7 +2,7 @@
     "name": "Brute Force",
     "description": "Investigates a \"Brute Force\" incident by gathering user and IP information, calculating the incident severity based on the gathered information and information received from the user, and performs remediation.",
     "support": "xsoar",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.1.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
