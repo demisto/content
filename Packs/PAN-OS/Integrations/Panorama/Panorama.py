@@ -19,6 +19,7 @@ if not demisto.params().get('port'):
 URL = demisto.params()['server'].rstrip('/:') + ':' + demisto.params().get('port') + '/api/'
 API_KEY = str(demisto.params().get('key'))
 USE_SSL = not demisto.params().get('insecure')
+USE_URL_FILTERING = demisto.params().get('use_url_filtering') == 'true'
 
 # determine a vsys or a device-group
 VSYS = demisto.params().get('vsys')
@@ -5494,7 +5495,12 @@ def main():
             panorama_edit_custom_url_category_command()
 
         # URL Filtering capabilities
-        elif demisto.command() in ['panorama-get-url-category', 'url']:
+        elif demisto.command() == 'url':
+            if USE_URL_FILTERING:  # default is false
+                panorama_get_url_category_command(url_cmd='url')
+            # do not error out
+
+        elif demisto.command() == 'panorama-get-url-category':
             panorama_get_url_category_command(url_cmd='url')
 
         elif demisto.command() == 'panorama-get-url-category-from-cloud':
