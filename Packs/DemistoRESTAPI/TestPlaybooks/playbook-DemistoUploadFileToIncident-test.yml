@@ -1,49 +1,36 @@
+description: ''
 id: DemistoUploadFileToIncident Test
-version: -1
+inputs: []
 name: DemistoUploadFileToIncident Test
-starttaskid: "0"
-description: ""
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 75b97996-ebf9-4315-8df6-46600829df39
-    type: start
-    task:
-      id: 75b97996-ebf9-4315-8df6-46600829df39
-      version: -1
-      name: ""
-      description: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: fcb02f8d-637b-4eee-88e7-85f8522bd8ce
-    type: regular
-    task:
-      id: fcb02f8d-637b-4eee-88e7-85f8522bd8ce
-      version: -1
-      name: Download Image and Add to Context
-      scriptName: http
-      type: regular
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - '4'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 75b97996-ebf9-4315-8df6-46600829df39
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 75b97996-ebf9-4315-8df6-46600829df39
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
     scriptarguments:
       body: {}
       filename:
@@ -55,82 +42,69 @@ tasks:
       password: {}
       proxy: {}
       saveAsFile:
-        simple: "yes"
+        simple: 'yes'
       unsecure:
-        simple: "true"
+        simple: 'true'
       url:
         simple: https://3xqz5p387rui1hjtdv1up7lw-wpengine.netdna-ssl.com/wp-content/uploads/2018/05/Demisto_Logo.png
       username: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: e71d35da-e49f-49b1-85d0-441b6c8b13c7
-    type: regular
     task:
-      id: e71d35da-e49f-49b1-85d0-441b6c8b13c7
-      version: -1
-      name: Upload Downloaded File to War Room
-      scriptName: DemistoUploadFileToIncident
-      type: regular
+      brand: ''
+      id: fcb02f8d-637b-4eee-88e7-85f8522bd8ce
       iscommand: false
-      brand: ""
+      name: Download Image and Add to Context
+      scriptName: http
+      type: regular
+      version: -1
+    taskid: fcb02f8d-637b-4eee-88e7-85f8522bd8ce
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
+    note: false
     scriptarguments:
       entryID:
         complex:
-          root: File
+          accessor: EntryID
           filters:
-          - - operator: isEqualString
-              left:
+          - - left:
+                iscontext: true
                 value:
                   simple: File.Name
-                iscontext: true
+              operator: isEqualString
               right:
                 value:
                   simple: image.png
-          accessor: EntryID
+          root: File
       incident_id:
         complex:
           root: CreatedIncidentID
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: 2a21679c-fb68-45b4-8884-ad85e7d79de8
-    type: regular
     task:
-      id: 2a21679c-fb68-45b4-8884-ad85e7d79de8
-      version: -1
-      name: createNewIncident
-      description: Create a new incident
-      script: Builtin|||createNewIncident
+      brand: ''
+      id: e71d35da-e49f-49b1-85d0-441b6c8b13c7
+      iscommand: false
+      name: Upload Downloaded File to War Room
+      scriptName: DemistoUploadFileToIncident
       type: regular
-      iscommand: true
-      brand: Builtin
+      version: -1
+    taskid: e71d35da-e49f-49b1-85d0-441b6c8b13c7
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
     scriptarguments:
       app: {}
       assetid: {}
@@ -195,69 +169,54 @@ tasks:
       vendorproduct: {}
       vulnerabilitycategory: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: dbc0c9fc-bf19-4007-89fd-e6b08502fd0e
-    type: regular
     task:
-      id: dbc0c9fc-bf19-4007-89fd-e6b08502fd0e
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
+      brand: Builtin
+      description: Create a new incident
+      id: 2a21679c-fb68-45b4-8884-ad85e7d79de8
+      iscommand: true
+      name: createNewIncident
+      script: Builtin|||createNewIncident
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 2a21679c-fb68-45b4-8884-ad85e7d79de8
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 1008cb1e-da9b-4902-8e5f-d4d378549ee3
-    type: regular
     task:
-      id: 1008cb1e-da9b-4902-8e5f-d4d378549ee3
-      version: -1
-      name: commentsToContext
-      description: "Takes the comments of a given entry ID and stores them in the
-        incident context, under a provided context key. \nFor accessing the last executed
-        task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
-        the entryId input parameter."
-      scriptName: commentsToContext
-      type: regular
+      brand: ''
+      description: Delete field from context
+      id: dbc0c9fc-bf19-4007-89fd-e6b08502fd0e
       iscommand: false
-      brand: ""
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: dbc0c9fc-bf19-4007-89fd-e6b08502fd0e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
+    note: false
     scriptarguments:
       contextKey:
         simple: DemistoUploadFileToIncident
@@ -265,116 +224,95 @@ tasks:
         simple: ${lastCompletedTaskEntries.[0]}
       listSeperator: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 94580394-d6f0-4510-8b90-84aa572bbeaa
-    type: condition
     task:
-      id: 94580394-d6f0-4510-8b90-84aa572bbeaa
-      version: -1
-      name: Verify upload was successful
-      type: condition
+      brand: ''
+      description: "Takes the comments of a given entry ID and stores them in the\
+        \ incident context, under a provided context key. \nFor accessing the last\
+        \ executed task's comments, provide ${lastCompletedTaskEntries.[0]} as the\
+        \ value for the entryId input parameter."
+      id: 1008cb1e-da9b-4902-8e5f-d4d378549ee3
       iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "7"
-    separatecontext: false
+      name: commentsToContext
+      scriptName: commentsToContext
+      type: regular
+      version: -1
+    taskid: 1008cb1e-da9b-4902-8e5f-d4d378549ee3
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+  '6':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: DemistoUploadFileToIncident
                 accessor: context.File
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
+                root: DemistoUploadFileToIncident
+          operator: isExists
+      label: 'yes'
+    id: '6'
     ignoreworker: false
-  "7":
-    id: "7"
-    taskid: f0308d67-aea4-4faf-853d-25dcdd5c4371
-    type: title
-    task:
-      id: f0308d67-aea4-4faf-853d-25dcdd5c4371
-      version: -1
-      name: Done
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
+    nexttasks:
+      'yes':
+      - '7'
+    note: false
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "8":
-    id: "8"
-    taskid: b7e2a1fc-9276-478b-856c-42f779412290
-    type: regular
     task:
-      id: b7e2a1fc-9276-478b-856c-42f779412290
+      brand: ''
+      id: 94580394-d6f0-4510-8b90-84aa572bbeaa
+      iscommand: false
+      name: Verify upload was successful
+      type: condition
       version: -1
-      name: getContext
-      description: Retrieve context of another incident to be used in this script
-      script: Builtin|||getContext
-      type: regular
-      iscommand: true
-      brand: Builtin
+    taskid: 94580394-d6f0-4510-8b90-84aa572bbeaa
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+  '7':
+    id: '7'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: f0308d67-aea4-4faf-853d-25dcdd5c4371
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: f0308d67-aea4-4faf-853d-25dcdd5c4371
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1420\n  }\n}"
+  '8':
+    id: '8'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
+    note: false
     scriptarguments:
       id:
         complex:
           root: CreatedIncidentID
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
+    task:
+      brand: Builtin
+      description: Retrieve context of another incident to be used in this script
+      id: b7e2a1fc-9276-478b-856c-42f779412290
+      iscommand: true
+      name: getContext
+      script: Builtin|||getContext
+      type: regular
+      version: -1
+    taskid: b7e2a1fc-9276-478b-856c-42f779412290
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1435,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1435,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

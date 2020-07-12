@@ -1,48 +1,33 @@
-id: remedy_sr_test_pb
-version: -1
-name: remedy_sr_test_pb
 description: Testing the Remedy SR 1.6 integration
-starttaskid: "0"
+id: remedy_sr_test_pb
+inputs: []
+name: remedy_sr_test_pb
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 87ba94f0-538c-4ca2-86de-6d6c93a6e53d
-    type: start
-    task:
-      id: 87ba94f0-538c-4ca2-86de-6d6c93a6e53d
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 20
-        }
-      }
+      - '1'
     note: false
-    timertriggers: []
-  "1":
-    id: "1"
-    taskid: 0d4782cd-2819-4e8a-8220-34986d91a7cc
-    type: regular
+    separatecontext: false
     task:
-      id: 0d4782cd-2819-4e8a-8220-34986d91a7cc
+      brand: ''
+      id: 87ba94f0-538c-4ca2-86de-6d6c93a6e53d
+      iscommand: false
+      name: ''
       version: -1
-      name: remedy-create-ticket
-      description: Create a ticket
-      script: '|||remedy-create-ticket'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: 87ba94f0-538c-4ca2-86de-6d6c93a6e53d
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 20\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
     scriptarguments:
       details:
         simple: lolo
@@ -51,9 +36,9 @@ tasks:
       requester_name:
         simple: bar
       requester_ntid:
-        simple: "12357894326"
+        simple: '12357894326'
       requester_phone:
-        simple: "0506757883"
+        simple: 0506757883
       requester_work_city:
         simple: TLV
       requester_work_location:
@@ -61,53 +46,42 @@ tasks:
       requester_work_street:
         simple: Wall st
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 230
-        }
-      }
-    note: false
-    timertriggers: []
-  "2":
-    id: "2"
-    taskid: acc52239-63fb-45cd-8f39-ea27e94891f3
-    type: regular
     task:
-      id: acc52239-63fb-45cd-8f39-ea27e94891f3
-      version: -1
-      name: remedy-get-ticket
-      script: '|||remedy-get-ticket'
-      type: regular
+      brand: ''
+      description: Create a ticket
+      id: 0d4782cd-2819-4e8a-8220-34986d91a7cc
       iscommand: true
-      brand: ""
+      name: remedy-create-ticket
+      script: '|||remedy-create-ticket'
+      type: regular
+      version: -1
+    taskid: 0d4782cd-2819-4e8a-8220-34986d91a7cc
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+  '2':
+    id: '2'
+    note: false
     scriptarguments:
       service_request_id:
         complex:
-          root: Remedy
           accessor: Ticket.ServiceRequestId
+          root: Remedy
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 430
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      id: acc52239-63fb-45cd-8f39-ea27e94891f3
+      iscommand: true
+      name: remedy-get-ticket
+      script: '|||remedy-get-ticket'
+      type: regular
+      version: -1
+    taskid: acc52239-63fb-45cd-8f39-ea27e94891f3
     timertriggers: []
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 505,
-        "width": 380,
-        "x": 450,
-        "y": 20
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 430\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 505,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 20\n\
+  \    }\n  }\n}"

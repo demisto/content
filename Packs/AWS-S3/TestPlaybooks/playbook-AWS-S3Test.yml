@@ -1,80 +1,60 @@
 id: 97393cfc-2fc4-4dfe-8b6e-af64067fc436
-version: -1
+inputs: []
 name: AWS - S3 Test Playbook
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: f5ea5ed0-c190-4dfc-8e07-eb2b9a3c9032
-    type: start
-    task:
-      id: f5ea5ed0-c190-4dfc-8e07-eb2b9a3c9032
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": -60
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: c3a6d97c-43a0-47fc-86ff-1010d041451a
-    type: regular
-    task:
-      id: c3a6d97c-43a0-47fc-86ff-1010d041451a
-      version: -1
-      name: aws-s3-list-buckets
-      description: List all S3 buckets in AWS account
-      script: AWS - S3|||aws-s3-list-buckets
-      type: regular
-      iscommand: true
-      brand: AWS - S3
     nexttasks:
       '#none#':
-      - "7"
+      - '8'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: f5ea5ed0-c190-4dfc-8e07-eb2b9a3c9032
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: f5ea5ed0-c190-4dfc-8e07-eb2b9a3c9032
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": -60\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
     scriptarguments:
       region: {}
       roleArn: {}
       roleSessionDuration: {}
       roleSessionName: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: 94f5f6c0-cfdc-4179-81dd-e449cb853e87
-    type: regular
     task:
-      id: 94f5f6c0-cfdc-4179-81dd-e449cb853e87
-      version: -1
-      name: aws-s3-upload-file
-      description: Upload file to S3 bucket
-      script: AWS - S3|||aws-s3-upload-file
-      type: regular
-      iscommand: true
       brand: AWS - S3
+      description: List all S3 buckets in AWS account
+      id: c3a6d97c-43a0-47fc-86ff-1010d041451a
+      iscommand: true
+      name: aws-s3-list-buckets
+      script: AWS - S3|||aws-s3-list-buckets
+      type: regular
+      version: -1
+    taskid: c3a6d97c-43a0-47fc-86ff-1010d041451a
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
+    note: false
     scriptarguments:
       bucket:
         simple: demisto-test1234
@@ -87,32 +67,26 @@ tasks:
       roleSessionDuration: {}
       roleSessionName: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: b1c7f24b-bc8c-45d5-8d84-2bdd6431d363
-    type: regular
     task:
-      id: b1c7f24b-bc8c-45d5-8d84-2bdd6431d363
-      version: -1
-      name: aws-s3-download-file
-      description: Download a file from S3 bucket to war room.
-      script: AWS - S3|||aws-s3-download-file
-      type: regular
-      iscommand: true
       brand: AWS - S3
+      description: Upload file to S3 bucket
+      id: 94f5f6c0-cfdc-4179-81dd-e449cb853e87
+      iscommand: true
+      name: aws-s3-upload-file
+      script: AWS - S3|||aws-s3-upload-file
+      type: regular
+      version: -1
+    taskid: 94f5f6c0-cfdc-4179-81dd-e449cb853e87
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
+    note: false
     scriptarguments:
       bucket:
         simple: demisto-test1234
@@ -123,29 +97,51 @@ tasks:
       roleSessionDuration: {}
       roleSessionName: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: ec4798c4-992d-450c-8e2d-e05880ffb394
-    type: regular
     task:
-      id: ec4798c4-992d-450c-8e2d-e05880ffb394
+      brand: AWS - S3
+      description: Download a file from S3 bucket to war room.
+      id: b1c7f24b-bc8c-45d5-8d84-2bdd6431d363
+      iscommand: true
+      name: aws-s3-download-file
+      script: AWS - S3|||aws-s3-download-file
+      type: regular
       version: -1
-      name: aws-s3-get-bucket-policy
+    taskid: b1c7f24b-bc8c-45d5-8d84-2bdd6431d363
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
+    note: false
+    scriptarguments:
+      bucket:
+        simple: demisto-test1234
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    task:
+      brand: AWS - S3
       description: Get AWS S3 Bucket Policy
+      id: ec4798c4-992d-450c-8e2d-e05880ffb394
+      iscommand: true
+      name: aws-s3-get-bucket-policy
       script: AWS - S3|||aws-s3-get-bucket-policy
       type: regular
-      iscommand: true
-      brand: AWS - S3
+      version: -1
+    taskid: ec4798c4-992d-450c-8e2d-e05880ffb394
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
     scriptarguments:
       bucket:
         simple: demisto-test1234
@@ -154,72 +150,32 @@ tasks:
       roleSessionDuration: {}
       roleSessionName: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 877f95f8-cfb5-4346-87f6-81af40c129cc
-    type: regular
     task:
-      id: 877f95f8-cfb5-4346-87f6-81af40c129cc
-      version: -1
-      name: aws-s3-list-bucket-objects
+      brand: AWS - S3
       description: List object in S3 bucket.
+      id: 877f95f8-cfb5-4346-87f6-81af40c129cc
+      iscommand: true
+      name: aws-s3-list-bucket-objects
       script: AWS - S3|||aws-s3-list-bucket-objects
       type: regular
-      iscommand: true
-      brand: AWS - S3
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      bucket:
-        simple: demisto-test1234
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "7":
-    id: "7"
-    taskid: 3d24876e-3af0-45e8-8663-3a0561d9997e
-    type: regular
-    task:
-      id: 3d24876e-3af0-45e8-8663-3a0561d9997e
       version: -1
-      name: http
-      description: Sends http request. Returns the response as json.
-      scriptName: http
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: 877f95f8-cfb5-4346-87f6-81af40c129cc
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '7':
+    id: '7'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
     scriptarguments:
       body: {}
       filename:
         complex:
-          root: incident
           accessor: id
+          root: incident
       headers: {}
       insecure: {}
       method:
@@ -227,67 +183,55 @@ tasks:
       password: {}
       proxy: {}
       saveAsFile:
-        simple: "yes"
+        simple: 'yes'
       unsecure: {}
       url:
-        simple: https://upload.wikimedia.org/wikipedia/en/4/4b/Jjportrait.jpg  # disable-secrets-detection
+        simple: https://upload.wikimedia.org/wikipedia/en/4/4b/Jjportrait.jpg
       username: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 350
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "8":
-    id: "8"
-    taskid: 3f0d0d52-94d6-4f71-87e4-3ed36137c98b
-    type: regular
     task:
-      id: 3f0d0d52-94d6-4f71-87e4-3ed36137c98b
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      description: Sends http request. Returns the response as json.
+      id: 3d24876e-3af0-45e8-8663-3a0561d9997e
       iscommand: false
-      brand: ""
+      name: http
+      scriptName: http
+      type: regular
+      version: -1
+    taskid: 3d24876e-3af0-45e8-8663-3a0561d9997e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 350\n  }\n}"
+  '8':
+    id: '8'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 45
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: 3f0d0d52-94d6-4f71-87e4-3ed36137c98b
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 3f0d0d52-94d6-4f71-87e4-3ed36137c98b
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1225,
-        "width": 380,
-        "x": 50,
-        "y": -60
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 45\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1225,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": -60\n\
+  \    }\n  }\n}"

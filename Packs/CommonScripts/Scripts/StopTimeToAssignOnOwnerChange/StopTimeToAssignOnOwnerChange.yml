@@ -1,23 +1,24 @@
-fromversion: 4.1.0
+args:
+- description: The old value of the changed field
+  name: old
+- description: The new value of the changed field
+  name: new
+comment: Stops the "Time To Assign" timer if the owner of the incident was changed.
 commonfields:
   id: StopTimeToAssignOnOwnerChange
   version: -1
+enabled: true
+fromversion: 4.1.0
 name: StopTimeToAssignOnOwnerChange
+runas: DBotWeakRole
+runonce: false
 script: ''
-type: python
+scripttarget: 0
 subtype: python2
 tags:
 - field-change-triggered
 - example
-comment: Stops the "Time To Assign" timer if the owner of the incident was changed.
-enabled: true
-args:
-- name: old
-  description: The old value of the changed field
-- name: new
-  description: The new value of the changed field
-scripttarget: 0
-runonce: false
-runas: DBotWeakRole
 tests:
 - SLA Scripts - Test
+toversion: 4.1.9
+type: python

@@ -12,7 +12,8 @@ args:
   required: true
   secret: false
 - default: false
-  description: 'The incidents query on which to apply the copy process. For example, to apply this to all incidents of type "Phishing", use the query: "type:Phishing".'
+  description: 'The incidents query on which to apply the copy process. For example,
+    to apply this to all incidents of type "Phishing", use the query: "type:Phishing".'
   isArray: false
   name: incidentsQuery
   required: true
@@ -31,19 +32,20 @@ args:
   name: listSeparator
   required: false
   secret: false
-comment: Copy a context key to an incident field of multiple incidents,
-  based on an incident query.
+comment: Copy a context key to an incident field of multiple incidents, based on an
+  incident query.
 commonfields:
   id: CopyContextToField
   version: -1
 enabled: true
 name: CopyContextToField
+runas: DBotWeakRole
+runonce: false
 script: '-'
+subtype: python2
 system: false
 tags:
 - Utility
 timeout: '0'
+toversion: 4.1.9
 type: python
-runas: DBotWeakRole
-runonce: false
-subtype: python2

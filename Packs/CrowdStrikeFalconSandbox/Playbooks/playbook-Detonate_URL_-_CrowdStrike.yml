@@ -1,296 +1,33 @@
-id: detonate_url_-_crowdstrike
-version: -1
-name: Detonate URL - CrowdStrike
+description: Detonate one or more files using the CrowdStrike Falcon Sandbox integration.
+  This playbook returns relevant reports to the War Room and file reputations to the
+  context data.
 fromversion: 4.0.0
-description: Detonate one or more files using the CrowdStrike Falcon Sandbox integration. This playbook
-  returns relevant reports to the War Room and file reputations to the context data.
-starttaskid: "0"
-tasks:
-  "0":
-    id: "0"
-    taskid: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
-    type: start
-    task:
-      id: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-      description: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 50
-        }
-      }
-    note: false
-  "5":
-    id: "5"
-    taskid: 3e2a6ea9-7f88-4d10-8d29-3ed2d10eba4f
-    type: condition
-    task:
-      id: 3e2a6ea9-7f88-4d10-8d29-3ed2d10eba4f
-      version: -1
-      name: Is CrowdStrike enabled?
-      description: |
-        Verify that there is a valid instance of CrowdStrike enabled.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "6"
-      "yes":
-      - "14"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: VxStream
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-                accessor: brand
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 195
-        }
-      }
-    note: false
-  "6":
-    id: "6"
-    taskid: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
-    type: title
-    task:
-      id: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-      description: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 1140
-        }
-      }
-    note: false
-  "8":
-    id: "8"
-    taskid: 7226fb9e-9b1c-4e40-8823-428a6ef19aaa
-    type: regular
-    task:
-      id: 7226fb9e-9b1c-4e40-8823-428a6ef19aaa
-      version: -1
-      name: CrowdStrike Scan
-      description: Download the pdf report to the War Room.
-      script: VxStream|||crowdstrike-scan
-      type: regular
-      iscommand: true
-      brand: VxStream
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      file:
-        complex:
-          root: File
-          accessor: SHA256
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 925
-        }
-      }
-    note: false
-  "13":
-    id: "13"
-    taskid: b34f751c-44b6-4bd9-8e69-dbcb9ea04e46
-    type: regular
-    task:
-      id: b34f751c-44b6-4bd9-8e69-dbcb9ea04e46
-      version: -1
-      name: CrowdStrike Upload Sample
-      description: Upload samle to crowdstrike.
-      script: VxStream|||crowdstrike-submit-url
-      type: regular
-      iscommand: true
-      brand: VxStream
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      environmentID:
-        complex:
-          root: inputs.EnvironmentID
-      url:
-        complex:
-          root: inputs.URL
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 550
-        }
-      }
-    note: false
-  "14":
-    id: "14"
-    taskid: 6ffba508-37e1-4647-88ea-265cd5475d61
-    type: condition
-    task:
-      id: 6ffba508-37e1-4647-88ea-265cd5475d61
-      version: -1
-      name: Is there a URL to detonate?
-      description: Checks whether there's a file to detonate.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "6"
-      "yes":
-      - "13"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: inputs.URL
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 370
-        }
-      }
-    note: false
-  "16":
-    id: "16"
-    taskid: e34dd0a0-2806-4f3e-8c17-f4a05504222d
-    type: playbook
-    task:
-      id: e34dd0a0-2806-4f3e-8c17-f4a05504222d
-      version: -1
-      name: GenericPolling
-      description: |-
-        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continually running the command in Step #2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
-      playbookName: GenericPolling
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      Ids:
-        complex:
-          root: File
-          accessor: SHA256
-      Interval:
-        complex:
-          root: inputs.Interval
-      PollingCommandArgName:
-        simple: file
-      PollingCommandName:
-        simple: crowdstrike-scan
-      Timeout:
-        complex:
-          root: inputs.Timeout
-      dt:
-        simple: File(val.state === 'NO_CONTENT').hash
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 740
-        }
-      }
-    note: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1155,
-        "width": 677.5,
-        "x": 162.5,
-        "y": 50
-      }
-    }
-  }
+id: detonate_url_-_crowdstrike
 inputs:
-- key: URL
+- description: URL to detonate.
+  key: URL
+  required: false
   value:
     complex:
-      root: URL
       accessor: Data
-  required: false
-  description: URL to detonate.
-- key: EnvironmentID
-  value:
-    simple: "100"
-  required: false
-  description: Environment ID to submit the file to. To get all IDs run the crowdstrike-get-environments
+      root: URL
+- description: Environment ID to submit the file to. To get all IDs run the crowdstrike-get-environments
     command.
-- key: Interval
-  value:
-    simple: "5"
+  key: EnvironmentID
   required: false
-  description: Polling frequency - how often the polling command should run (minutes)
-- key: Timeout
   value:
-    simple: "30"
+    simple: '100'
+- description: Polling frequency - how often the polling command should run (minutes)
+  key: Interval
   required: false
-  description: How much time to wait before a timeout occurs  (minutes)
+  value:
+    simple: '5'
+- description: How much time to wait before a timeout occurs  (minutes)
+  key: Timeout
+  required: false
+  value:
+    simple: '30'
+name: Detonate URL - CrowdStrike
 outputs:
 - contextPath: File.SHA256
   description: SHA256 hash of the file
@@ -334,5 +71,226 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score
   type: number
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 50\n  }\n}"
+  '13':
+    id: '13'
+    nexttasks:
+      '#none#':
+      - '16'
+    note: false
+    scriptarguments:
+      environmentID:
+        complex:
+          root: inputs.EnvironmentID
+      url:
+        complex:
+          root: inputs.URL
+    separatecontext: false
+    task:
+      brand: VxStream
+      description: Upload samle to crowdstrike.
+      id: b34f751c-44b6-4bd9-8e69-dbcb9ea04e46
+      iscommand: true
+      name: CrowdStrike Upload Sample
+      script: VxStream|||crowdstrike-submit-url
+      type: regular
+      version: -1
+    taskid: b34f751c-44b6-4bd9-8e69-dbcb9ea04e46
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 550\n  }\n}"
+  '14':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.URL
+          operator: isExists
+      label: 'yes'
+    id: '14'
+    nexttasks:
+      '#default#':
+      - '6'
+      'yes':
+      - '13'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Checks whether there's a file to detonate.
+      id: 6ffba508-37e1-4647-88ea-265cd5475d61
+      iscommand: false
+      name: Is there a URL to detonate?
+      type: condition
+      version: -1
+    taskid: 6ffba508-37e1-4647-88ea-265cd5475d61
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 370\n  }\n}"
+  '16':
+    id: '16'
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    scriptarguments:
+      Ids:
+        complex:
+          accessor: SHA256
+          root: File
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: file
+      PollingCommandName:
+        simple: crowdstrike-scan
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: File(val.state === 'NO_CONTENT').hash
+    separatecontext: true
+    task:
+      brand: ''
+      description: 'Use as a sub-playbook to block execution of the master playbook
+        until a remote action is complete.
+
+        This playbook implements polling by continually running the command in Step
+        #2 until the operation completes.
+
+        The remote action should have the following structure:
+
+
+        1. Initiate the operation.
+
+        2. Poll to check if the operation completed.
+
+        3. (optional) Get the results of the operation.'
+      id: e34dd0a0-2806-4f3e-8c17-f4a05504222d
+      iscommand: false
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      version: -1
+    taskid: e34dd0a0-2806-4f3e-8c17-f4a05504222d
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 740\n  }\n}"
+  '5':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: VxStream
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: 'yes'
+    id: '5'
+    nexttasks:
+      '#default#':
+      - '6'
+      'yes':
+      - '14'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: 'Verify that there is a valid instance of CrowdStrike enabled.
+
+        '
+      id: 3e2a6ea9-7f88-4d10-8d29-3ed2d10eba4f
+      iscommand: false
+      name: Is CrowdStrike enabled?
+      type: condition
+      version: -1
+    taskid: 3e2a6ea9-7f88-4d10-8d29-3ed2d10eba4f
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 195\n  }\n}"
+  '6':
+    id: '6'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 1140\n  }\n}"
+  '8':
+    id: '8'
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    scriptarguments:
+      file:
+        complex:
+          accessor: SHA256
+          root: File
+    separatecontext: false
+    task:
+      brand: VxStream
+      description: Download the pdf report to the War Room.
+      id: 7226fb9e-9b1c-4e40-8823-428a6ef19aaa
+      iscommand: true
+      name: CrowdStrike Scan
+      script: VxStream|||crowdstrike-scan
+      type: regular
+      version: -1
+    taskid: 7226fb9e-9b1c-4e40-8823-428a6ef19aaa
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 925\n  }\n}"
 tests:
-  - Test-Detonate URL - Crowdstrike
+- Test-Detonate URL - Crowdstrike
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1155,\n      \"width\": 677.5,\n      \"x\": 162.5,\n      \"\
+  y\": 50\n    }\n  }\n}"

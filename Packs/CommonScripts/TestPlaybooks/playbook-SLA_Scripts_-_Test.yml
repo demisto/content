@@ -1,303 +1,418 @@
 id: SLA Scripts - Test
-version: -1
+inputs: []
 name: SLA Scripts - Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 809ca330-f7be-4239-8b97-6ac5fa5ca98d
-    type: start
+  '0':
+    id: '0'
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    separatecontext: false
     task:
+      brand: ''
       id: 809ca330-f7be-4239-8b97-6ac5fa5ca98d
-      version: -1
-      name: ""
       iscommand: false
-      brand: ""
+      name: ''
+      version: -1
+    taskid: 809ca330-f7be-4239-8b97-6ac5fa5ca98d
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 430,\n    \"y\": -90\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "8"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 430,
-          "y": -90
-        }
-      }
+      - '7'
     note: false
-    timertriggers: []
-  "1":
-    id: "1"
-    taskid: cc737177-04cc-4c7f-8e30-c46494ba1989
-    type: title
+    separatecontext: false
     task:
+      brand: ''
+      description: ''
       id: cc737177-04cc-4c7f-8e30-c46494ba1989
-      version: -1
+      iscommand: false
       name: Change Remediation SLA On Severity Change
-      description: ""
       type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -10,
-          "y": 410
-        }
-      }
-    note: false
-    timertriggers: []
-  "2":
-    id: "2"
-    taskid: d8750391-b43c-4a77-8d09-d48ecc4ec7f3
-    type: regular
-    task:
-      id: d8750391-b43c-4a77-8d09-d48ecc4ec7f3
       version: -1
-      name: Run script to update dueDate
-      description: Runs a script that should change the Remediation SLA because of
-        a severity change. This also injects input to the script, that will make it
-        believe the severity was changed.
-      scriptName: ChangeRemediationSLAOnSevChange
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: cc737177-04cc-4c7f-8e30-c46494ba1989
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": -10,\n    \"y\": 410\n  }\n}"
+  '11':
+    id: '11'
     nexttasks:
       '#none#':
-      - "4"
+      - '1'
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      all: {}
+      incidentId: {}
+      timerField:
+        simple: remediationsla
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: Resets the Remediation SLA timer to allow re-running the playbook
+        if needed.
+      id: cd2b5ffa-490f-4949-8a45-7680c78197f5
+      iscommand: true
+      name: Reset Remediation SLA
+      script: Builtin|||resetTimer
+      type: regular
+      version: -1
+    taskid: cd2b5ffa-490f-4949-8a45-7680c78197f5
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -10,\n    \"y\": 270\n  }\n}"
+  '12':
+    id: '12'
+    nexttasks:
+      '#none#':
+      - '13'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: cf0b91a9-88d1-4bdd-8dba-b9b4ff862a48
+      iscommand: false
+      name: Stop Time to Assignment On Owner Change
+      type: title
+      version: -1
+    taskid: cf0b91a9-88d1-4bdd-8dba-b9b4ff862a48
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 840,\n    \"y\": 410\n  }\n}"
+  '13':
+    id: '13'
+    nexttasks:
+      '#none#':
+      - '14'
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      incidentId: {}
+      timerField:
+        simple: timetoassignment
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: Starts the Time to Assignment timer.
+      id: a079e54b-0859-4c64-826d-1c3ce3760dd5
+      iscommand: true
+      name: Start Time to Assignment timer
+      script: Builtin|||startTimer
+      type: regular
+      version: -1
+    taskid: a079e54b-0859-4c64-826d-1c3ce3760dd5
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 840,\n    \"y\": 715\n  }\n}"
+  '14':
+    id: '14'
+    nexttasks:
+      '#none#':
+      - '20'
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      new:
+        simple: gever
+      old: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Runs StopTimeToAssignOnOwnerChange script, with a new owner as
+        an argument. This should stop the Time to Assignment timer.
+      id: 5a133461-2514-4e13-81af-c9f3f0fe3f5a
+      iscommand: false
+      name: Run script with new owner
+      scriptName: StopTimeToAssignOnOwnerChange
+      type: regular
+      version: -1
+    taskid: 5a133461-2514-4e13-81af-c9f3f0fe3f5a
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 840,\n    \"y\": 1050\n  }\n}"
+  '18':
+    id: '18'
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      message:
+        complex:
+          accessor: remediationsla.dueDate
+          root: incident
+    separatecontext: false
+    task:
+      brand: ''
+      description: Raises an error in case the timer hasn't stopped.
+      id: e4e242c6-ac8b-4acf-89b1-be36dc144fe3
+      iscommand: false
+      name: Raise error
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: e4e242c6-ac8b-4acf-89b1-be36dc144fe3
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 1600\n  }\n}"
+  '19':
+    id: '19'
+    nexttasks:
+      '#none#':
+      - '12'
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      all: {}
+      incidentId: {}
+      timerField:
+        simple: timetoassignment
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: Resets the Time to Assignment timer to allow re-running the playbook
+        if needed.
+      id: 9d39054a-2531-43f6-88bf-9905679d82ad
+      iscommand: true
+      name: Reset Time to Assignment
+      script: Builtin|||resetTimer
+      type: regular
+      version: -1
+    taskid: 9d39054a-2531-43f6-88bf-9905679d82ad
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 840,\n    \"y\": 270\n  }\n}"
+  '2':
+    id: '2'
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    reputationcalc: 1
     scriptarguments:
       new:
         simple: Critical
       old: {}
-    reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -10,
-          "y": 1050
-        }
-      }
-    note: false
-    timertriggers: []
-  "3":
-    id: "3"
-    taskid: 7a9560eb-92e0-4918-8ceb-8c3b1e7d4a83
-    type: regular
     task:
-      id: 7a9560eb-92e0-4918-8ceb-8c3b1e7d4a83
-      version: -1
-      name: Store old dueDate
-      description: Stores the old dueDate to later compare it with the new one and
-        see if there were any changes.
-      scriptName: Set
-      type: regular
+      brand: ''
+      description: Runs a script that should change the Remediation SLA because of
+        a severity change. This also injects input to the script, that will make it
+        believe the severity was changed.
+      id: d8750391-b43c-4a77-8d09-d48ecc4ec7f3
       iscommand: false
-      brand: ""
+      name: Run script to update dueDate
+      scriptName: ChangeRemediationSLAOnSevChange
+      type: regular
+      version: -1
+    taskid: d8750391-b43c-4a77-8d09-d48ecc4ec7f3
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -10,\n    \"y\": 1050\n  }\n}"
+  '20':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: timetoassignment.runStatus
+                root: incident
+          operator: isEqualString
+          right:
+            value:
+              simple: ended
+      label: 'yes'
+    id: '20'
+    nexttasks:
+      '#default#':
+      - '18'
+      'yes':
+      - '5'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Checks whether Time to Assignment timer was stopped by our script.
+      id: 07d0aefa-728b-4ac4-8136-89a8ed6c4c5f
+      iscommand: false
+      name: Has Time to Assignment timer been stopped?
+      type: condition
+      version: -1
+    taskid: 07d0aefa-728b-4ac4-8136-89a8ed6c4c5f
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 840,\n    \"y\": 1290\n  }\n}"
+  '3':
+    id: '3'
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
+    reputationcalc: 1
     scriptarguments:
       append: {}
       key:
         simple: temp.remediationsla.dueDate
       value:
         complex:
-          root: incident
           accessor: remediationsla.dueDate
-    reputationcalc: 1
+          root: incident
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -10,
-          "y": 890
-        }
-      }
-    note: false
-    timertriggers: []
-  "4":
-    id: "4"
-    taskid: acc48387-b242-44c3-8d52-6104832da674
-    type: condition
     task:
-      id: acc48387-b242-44c3-8d52-6104832da674
-      version: -1
-      name: Is dueDate still the same?
-      description: Checks if the dueDate is the same as it was before running the
-        script that was supposed to change it.
-      type: condition
+      brand: ''
+      description: Stores the old dueDate to later compare it with the new one and
+        see if there were any changes.
+      id: 7a9560eb-92e0-4918-8ceb-8c3b1e7d4a83
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      Same:
-      - "6"
-    separatecontext: false
+      name: Store old dueDate
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 7a9560eb-92e0-4918-8ceb-8c3b1e7d4a83
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -10,\n    \"y\": 890\n  }\n}"
+  '4':
     conditions:
-    - label: Same
-      condition:
-      - - operator: isSame
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: temp
                 accessor: remediationsla.dueDate
-            iscontext: true
+                root: temp
+          operator: isSame
           right:
+            iscontext: true
             value:
               simple: incident.remediationsla.dueDate
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": -10,
-          "y": 1290
-        }
-      }
+      label: Same
+    id: '4'
+    nexttasks:
+      '#default#':
+      - '5'
+      Same:
+      - '6'
     note: false
-    timertriggers: []
-  "5":
-    id: "5"
-    taskid: d167197d-ed08-4be5-85fe-18d658e4ae0d
-    type: title
-    task:
-      id: d167197d-ed08-4be5-85fe-18d658e4ae0d
-      version: -1
-      name: Done
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 420,
-          "y": 1630
-        }
-      }
-    note: false
-    timertriggers: []
-  "6":
-    id: "6"
-    taskid: c8281c3f-6602-4f60-82d3-41902c7c5068
-    type: regular
     task:
-      id: c8281c3f-6602-4f60-82d3-41902c7c5068
-      version: -1
-      name: Raise error
-      description: Raises an error in case the timer hasn't stopped.
-      scriptName: PrintErrorEntry
-      type: regular
+      brand: ''
+      description: Checks if the dueDate is the same as it was before running the
+        script that was supposed to change it.
+      id: acc48387-b242-44c3-8d52-6104832da674
       iscommand: false
-      brand: ""
+      name: Is dueDate still the same?
+      type: condition
+      version: -1
+    taskid: acc48387-b242-44c3-8d52-6104832da674
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": -10,\n    \"y\": 1290\n  }\n}"
+  '5':
+    id: '5'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: d167197d-ed08-4be5-85fe-18d658e4ae0d
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: d167197d-ed08-4be5-85fe-18d658e4ae0d
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 420,\n    \"y\": 1630\n  }\n}"
+  '6':
+    id: '6'
+    note: false
+    reputationcalc: 1
     scriptarguments:
       message:
         complex:
-          root: incident
           accessor: remediationsla.dueDate
-    reputationcalc: 1
+          root: incident
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -90,
-          "y": 1600
-        }
-      }
-    note: false
-    timertriggers: []
-  "7":
-    id: "7"
-    taskid: 16bab12b-0653-488e-8fca-ad7b871e1b05
-    type: regular
     task:
-      id: 16bab12b-0653-488e-8fca-ad7b871e1b05
-      version: -1
-      name: Start Remediation SLA timer
-      description: Starts the Remediation SLA timer.
-      script: Builtin|||startTimer
+      brand: ''
+      description: Raises an error in case the timer hasn't stopped.
+      id: c8281c3f-6602-4f60-82d3-41902c7c5068
+      iscommand: false
+      name: Raise error
+      scriptName: PrintErrorEntry
       type: regular
-      iscommand: true
-      brand: Builtin
+      version: -1
+    taskid: c8281c3f-6602-4f60-82d3-41902c7c5068
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -90,\n    \"y\": 1600\n  }\n}"
+  '7':
+    id: '7'
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
+    note: false
+    reputationcalc: 1
     scriptarguments:
       incidentId: {}
       timerField:
         simple: remediationsla
-    reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -10,
-          "y": 530
-        }
-      }
-    note: false
-    timertriggers: []
-  "8":
-    id: "8"
-    taskid: 78b27df7-2596-4237-8836-acd49b9e8e89
-    type: regular
     task:
-      id: 78b27df7-2596-4237-8836-acd49b9e8e89
-      version: -1
-      name: Delete context
-      description: "Deletes the current context,"
-      scriptName: DeleteContext
+      brand: Builtin
+      description: Starts the Remediation SLA timer.
+      id: 16bab12b-0653-488e-8fca-ad7b871e1b05
+      iscommand: true
+      name: Start Remediation SLA timer
+      script: Builtin|||startTimer
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 16bab12b-0653-488e-8fca-ad7b871e1b05
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -10,\n    \"y\": 530\n  }\n}"
+  '8':
+    id: '8'
     nexttasks:
       '#none#':
-      - "19"
-      - "11"
+      - '19'
+      - '11'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 430,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-  "9":
-    id: "9"
-    taskid: 8668d05c-4309-47b7-8204-2865a43f6f08
-    type: regular
     task:
-      id: 8668d05c-4309-47b7-8204-2865a43f6f08
-      version: -1
-      name: Set remediation SLA to 444
-      description: Sets the remediation SLA to 444 (dueDate should be in 444 minutes
-        from now), so that the field becomes SLA and not a timer. Making remediation
-        SLA an SLA field, means that the dueDate won't be changing every second. By
-        making dueDate static, we can isolate changes to our script only, and check
-        if our script caused the dueDate to change (and not something else).
-      script: Builtin|||setIncident
+      brand: ''
+      description: Deletes the current context,
+      id: 78b27df7-2596-4237-8836-acd49b9e8e89
+      iscommand: false
+      name: Delete context
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: Builtin
+      version: -1
+    taskid: 78b27df7-2596-4237-8836-acd49b9e8e89
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 430,\n    \"y\": 50\n  }\n}"
+  '9':
+    id: '9'
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
+    reputationcalc: 1
     scriptarguments:
       addLabels: {}
       customFields: {}
@@ -313,256 +428,31 @@ tasks:
       roles: {}
       severity: {}
       sla:
-        simple: "444"
+        simple: '444'
       slaField:
         simple: remediationsla
       systems: {}
       type: {}
-    reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -10,
-          "y": 715
-        }
-      }
-    note: false
-    timertriggers: []
-  "11":
-    id: "11"
-    taskid: cd2b5ffa-490f-4949-8a45-7680c78197f5
-    type: regular
     task:
-      id: cd2b5ffa-490f-4949-8a45-7680c78197f5
-      version: -1
-      name: Reset Remediation SLA
-      description: Resets the Remediation SLA timer to allow re-running the playbook
-        if needed.
-      script: Builtin|||resetTimer
-      type: regular
-      iscommand: true
       brand: Builtin
-    nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      all: {}
-      incidentId: {}
-      timerField:
-        simple: remediationsla
-    reputationcalc: 1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -10,
-          "y": 270
-        }
-      }
-    note: false
-    timertriggers: []
-  "12":
-    id: "12"
-    taskid: cf0b91a9-88d1-4bdd-8dba-b9b4ff862a48
-    type: title
-    task:
-      id: cf0b91a9-88d1-4bdd-8dba-b9b4ff862a48
-      version: -1
-      name: Stop Time to Assignment On Owner Change
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "13"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 840,
-          "y": 410
-        }
-      }
-    note: false
-    timertriggers: []
-  "13":
-    id: "13"
-    taskid: a079e54b-0859-4c64-826d-1c3ce3760dd5
-    type: regular
-    task:
-      id: a079e54b-0859-4c64-826d-1c3ce3760dd5
-      version: -1
-      name: Start Time to Assignment timer
-      description: Starts the Time to Assignment timer.
-      script: Builtin|||startTimer
-      type: regular
+      description: Sets the remediation SLA to 444 (dueDate should be in 444 minutes
+        from now), so that the field becomes SLA and not a timer. Making remediation
+        SLA an SLA field, means that the dueDate won't be changing every second. By
+        making dueDate static, we can isolate changes to our script only, and check
+        if our script caused the dueDate to change (and not something else).
+      id: 8668d05c-4309-47b7-8204-2865a43f6f08
       iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      incidentId: {}
-      timerField:
-        simple: timetoassignment
-    reputationcalc: 1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 840,
-          "y": 715
-        }
-      }
-    note: false
-    timertriggers: []
-  "14":
-    id: "14"
-    taskid: 5a133461-2514-4e13-81af-c9f3f0fe3f5a
-    type: regular
-    task:
-      id: 5a133461-2514-4e13-81af-c9f3f0fe3f5a
-      version: -1
-      name: Run script with new owner
-      description: Runs StopTimeToAssignOnOwnerChange script, with a new owner as
-        an argument. This should stop the Time to Assignment timer.
-      scriptName: StopTimeToAssignOnOwnerChange
+      name: Set remediation SLA to 444
+      script: Builtin|||setIncident
       type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "20"
-    scriptarguments:
-      new:
-        simple: gever
-      old: {}
-    reputationcalc: 1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 840,
-          "y": 1050
-        }
-      }
-    note: false
+      version: -1
+    taskid: 8668d05c-4309-47b7-8204-2865a43f6f08
     timertriggers: []
-  "18":
-    id: "18"
-    taskid: e4e242c6-ac8b-4acf-89b1-be36dc144fe3
     type: regular
-    task:
-      id: e4e242c6-ac8b-4acf-89b1-be36dc144fe3
-      version: -1
-      name: Raise error
-      description: Raises an error in case the timer hasn't stopped.
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        complex:
-          root: incident
-          accessor: remediationsla.dueDate
-    reputationcalc: 1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1600
-        }
-      }
-    note: false
-    timertriggers: []
-  "19":
-    id: "19"
-    taskid: 9d39054a-2531-43f6-88bf-9905679d82ad
-    type: regular
-    task:
-      id: 9d39054a-2531-43f6-88bf-9905679d82ad
-      version: -1
-      name: Reset Time to Assignment
-      description: Resets the Time to Assignment timer to allow re-running the playbook
-        if needed.
-      script: Builtin|||resetTimer
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      all: {}
-      incidentId: {}
-      timerField:
-        simple: timetoassignment
-    reputationcalc: 1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 840,
-          "y": 270
-        }
-      }
-    note: false
-    timertriggers: []
-  "20":
-    id: "20"
-    taskid: 07d0aefa-728b-4ac4-8136-89a8ed6c4c5f
-    type: condition
-    task:
-      id: 07d0aefa-728b-4ac4-8136-89a8ed6c4c5f
-      version: -1
-      name: Has Time to Assignment timer been stopped?
-      description: Checks whether Time to Assignment timer was stopped by our script.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "18"
-      "yes":
-      - "5"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: incident
-                accessor: timetoassignment.runStatus
-            iscontext: true
-          right:
-            value:
-              simple: ended
-    view: |-
-      {
-        "position": {
-          "x": 840,
-          "y": 1290
-        }
-      }
-    note: false
-    timertriggers: []
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1785,
-        "width": 1380,
-        "x": -90,
-        "y": -90
-      }
-    }
-  }
-inputs: []
-outputs: []
+    view: "{\n  \"position\": {\n    \"x\": -10,\n    \"y\": 715\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1785,\n      \"width\": 1380,\n      \"x\": -90,\n      \"y\"\
+  : -90\n    }\n  }\n}"

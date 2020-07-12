@@ -1,57 +1,37 @@
 id: Test CommonServer
-version: -1
+inputs: []
 name: Test CommonServer
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 87e494a5-6a2b-4144-8f00-17cd45aa1708
-    type: start
-    task:
-      id: 87e494a5-6a2b-4144-8f00-17cd45aa1708
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "1"
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
-  "1":
-    id: "1"
-    taskid: 85edc5ad-2fe5-467a-87fc-1987ce538931
-    type: regular
+      - '1'
     task:
-      id: 85edc5ad-2fe5-467a-87fc-1987ce538931
+      brand: ''
+      id: 87e494a5-6a2b-4144-8f00-17cd45aa1708
+      iscommand: false
+      name: ''
       version: -1
+    taskid: 87e494a5-6a2b-4144-8f00-17cd45aa1708
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    task:
+      brand: ''
+      id: 85edc5ad-2fe5-467a-87fc-1987ce538931
+      iscommand: false
       name: Test FormatTableValues function
       scriptName: TestFormatTableValues
       type: regular
-      iscommand: false
-      brand: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 230
-        }
-      }
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 275,
-        "width": 380,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
-inputs: []
+      version: -1
+    taskid: 85edc5ad-2fe5-467a-87fc-1987ce538931
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 275,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n\
+  \    }\n  }\n}"

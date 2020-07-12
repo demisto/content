@@ -1,50 +1,36 @@
+args:
+- description: The id of the incident
+  name: id
+  required: true
+- description: Type of manual task. Can be regular or condition.
+  name: type
+- description: Relevant only for conditional tasks.
+  name: closing_option
+- description: Name of manual task.
+  name: name
+comment: Script that will allow to close Manual task on the current investigation
 commonfields:
   id: CompleteManualTask
   version: -1
-name: CompleteManualTask
-script: |
-  args = demisto.args()
-  task_type = args.get('type', 'regular')
-  task_name = args.get('name')
-
-  search_args =  {
-              "incidentId": args['id'],
-              "states": "Waiting",
-              "raw-response": "true"
-          }
-
-  resCmdName = demisto.executeCommand("DemistoGetIncidentTasksByState", search_args)
-  contents = resCmdName[0].get("Contents", {})
-  demisto.debug('found the following waiting commands on investigation {}:\n{}'.format(args['id'], contents))
-  tasks = [i.get('id', 0) for i in contents if i.get('type', '') == task_type]
-  if task_name:
-      tasks = [i.get('id', 0) for i in contents if i.get('name') == task_name]
-
-  if tasks:
-      closing_args = { "id": tasks[0] }
-      if task_type == 'condition':
-          closing_args['input'] = demisto.args().get('closing_option')
-
-      demisto.debug('closing command: {}'.format(closing_args))
-      demisto.executeCommand("taskComplete", closing_args)
-  else:
-      demisto.debug('not closing anything...')
-type: python
-tags: []
-comment: Script that will allow to close Manual task on the current investigation
 enabled: true
-args:
-- name: id
-  required: true
-  description: The id of the incident
-- name: type
-  description: Type of manual task. Can be regular or condition.
-- name: closing_option
-  description: Relevant only for conditional tasks.
-- name: name
-  description: Name of manual task.
+name: CompleteManualTask
+runonce: false
+script: "args = demisto.args()\ntask_type = args.get('type', 'regular')\ntask_name\
+  \ = args.get('name')\n\nsearch_args =  {\n            \"incidentId\": args['id'],\n\
+  \            \"states\": \"Waiting\",\n            \"raw-response\": \"true\"\n\
+  \        }\n\nresCmdName = demisto.executeCommand(\"DemistoGetIncidentTasksByState\"\
+  , search_args)\ncontents = resCmdName[0].get(\"Contents\", {})\ndemisto.debug('found\
+  \ the following waiting commands on investigation {}:\\n{}'.format(args['id'], contents))\n\
+  tasks = [i.get('id', 0) for i in contents if i.get('type', '') == task_type]\nif\
+  \ task_name:\n    tasks = [i.get('id', 0) for i in contents if i.get('name') ==\
+  \ task_name]\n\nif tasks:\n    closing_args = { \"id\": tasks[0] }\n    if task_type\
+  \ == 'condition':\n        closing_args['input'] = demisto.args().get('closing_option')\n\
+  \n    demisto.debug('closing command: {}'.format(closing_args))\n    demisto.executeCommand(\"\
+  taskComplete\", closing_args)\nelse:\n    demisto.debug('not closing anything...')\n"
 scripttarget: 0
 subtype: python3
-runonce: false
+tags: []
 tests:
-  - No test
+- No test
+toversion: 4.1.9
+type: python

@@ -1,32 +1,17 @@
+comment: ''
 commonfields:
   id: VerifyTreeToFlatObject
   version: -1
-name: VerifyTreeToFlatObject
-script: |+
-  var dataWithNestedObject = {
-      x: {
-          y: 1
-      }
-  }
-  var nestedObjectAfterFlat = '{"x.y":1}';
-
-  var simpleString = 'abc';
-
-  var flat = JSON.stringify(treeToFlattenObject(dataWithNestedObject));
-  if(flat !== nestedObjectAfterFlat){
-      throw "Flattened object is incorrect: " + flat;
-  }
-
-  var simpleStringFlat = treeToFlattenObject(simpleString);
-  if(simpleStringFlat != simpleString){
-      throw "Flattened string is incorrect: " + simpleStringFlat;
-  }
-
-  return true;
-
-type: javascript
-tags: []
 enabled: true
-scripttarget: 0
+name: VerifyTreeToFlatObject
 runonce: false
-comment: ''
+script: "var dataWithNestedObject = {\n    x: {\n        y: 1\n    }\n}\nvar nestedObjectAfterFlat\
+  \ = '{\"x.y\":1}';\n\nvar simpleString = 'abc';\n\nvar flat = JSON.stringify(treeToFlattenObject(dataWithNestedObject));\n\
+  if(flat !== nestedObjectAfterFlat){\n    throw \"Flattened object is incorrect:\
+  \ \" + flat;\n}\n\nvar simpleStringFlat = treeToFlattenObject(simpleString);\nif(simpleStringFlat\
+  \ != simpleString){\n    throw \"Flattened string is incorrect: \" + simpleStringFlat;\n\
+  }\n\nreturn true;\n\n"
+scripttarget: 0
+tags: []
+toversion: 4.1.9
+type: javascript

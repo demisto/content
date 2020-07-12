@@ -1,49 +1,36 @@
-id: UnzipFile-Test
-version: -1
 contentitemfields:
   propagationLabels: []
+id: UnzipFile-Test
+inputs: []
 name: UnzipFile-Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: f48f0e2c-020d-49dd-804d-e3ad32f7ec2f
-    type: start
-    task:
-      id: f48f0e2c-020d-49dd-804d-e3ad32f7ec2f
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -110
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: 2ece6aff-a1c5-4e4a-860d-c942b3b6870f
-    type: regular
-    task:
-      id: 2ece6aff-a1c5-4e4a-860d-c942b3b6870f
-      version: -1
-      name: download_file
-      description: Sends http request. Returns the response as json.
-      scriptName: http
-      type: regular
-      iscommand: false
     nexttasks:
       '#none#':
-      - "5"
+      - '4'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: f48f0e2c-020d-49dd-804d-e3ad32f7ec2f
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: f48f0e2c-020d-49dd-804d-e3ad32f7ec2f
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -110\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
     scriptarguments:
       body: {}
       filename:
@@ -55,191 +42,154 @@ tasks:
       password: {}
       proxy: {}
       saveAsFile:
-        simple: "yes"
+        simple: 'yes'
       unsecure: {}
       url:
         simple: https://github.com/demisto/content/raw/master/Packs/CommonScripts/Scripts/UnzipFile/data_test/fix_unzip.png.zip
       username: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 170
-        }
-      }
-    note: false
+    task:
+      description: Sends http request. Returns the response as json.
+      id: 2ece6aff-a1c5-4e4a-860d-c942b3b6870f
+      iscommand: false
+      name: download_file
+      scriptName: http
+      type: regular
+      version: -1
+    taskid: 2ece6aff-a1c5-4e4a-860d-c942b3b6870f
     timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 170\n  }\n}"
+  '2':
+    id: '2'
     ignoreworker: false
-  "2":
-    id: "2"
-    taskid: b0569f3f-e68d-4427-8227-58cd8e24c38c
-    type: title
+    note: false
+    separatecontext: false
     task:
       id: b0569f3f-e68d-4427-8227-58cd8e24c38c
-      version: -1
+      iscommand: false
       name: done
       type: title
-      iscommand: false
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 810
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: dad812ae-8465-43e4-821c-4b29f4529338
-    type: condition
-    task:
-      id: dad812ae-8465-43e4-821c-4b29f4529338
       version: -1
-      name: hash_compare
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
-      type: condition
-      iscommand: false
-    nexttasks:
-      '#default#':
-      - "6"
-      "yes":
-      - "2"
-    separatecontext: false
+    taskid: b0569f3f-e68d-4427-8227-58cd8e24c38c
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 810\n  }\n}"
+  '3':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: ${File.[1].SHA256}
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: eed3afa17b849775eede2fbb34df6d12e76c1f33e732924077bdc909ad9409f6
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 460
-        }
-      }
-    note: false
-    timertriggers: []
+      label: 'yes'
+    id: '3'
     ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 5ebd0868-c6e3-4ac4-8a5d-cdf814f90d35
-    type: regular
+    nexttasks:
+      '#default#':
+      - '6'
+      'yes':
+      - '2'
+    note: false
+    separatecontext: false
     task:
-      id: 5ebd0868-c6e3-4ac4-8a5d-cdf814f90d35
-      version: -1
-      name: delete_context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      id: dad812ae-8465-43e4-821c-4b29f4529338
       iscommand: false
+      name: hash_compare
+      type: condition
+      version: -1
+    taskid: dad812ae-8465-43e4-821c-4b29f4529338
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 460\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 20
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 9b4cd1df-a9c5-4ac2-8262-5c2fb4bc344d
-    type: regular
     task:
-      id: 9b4cd1df-a9c5-4ac2-8262-5c2fb4bc344d
-      version: -1
-      name: unzip_file
-      description: Unzip a file using fileName or entryID to specify a file. Unzipped
-        files will be loaded to the War Room and names will be put into the context.
-      scriptName: UnzipFile
-      type: regular
+      description: Delete field from context
+      id: 5ebd0868-c6e3-4ac4-8a5d-cdf814f90d35
       iscommand: false
+      name: delete_context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 5ebd0868-c6e3-4ac4-8a5d-cdf814f90d35
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 20\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
     scriptarguments:
       entryID: {}
       fileName:
         simple: fix_unzip.png.zip
       lastZipFileInWarroom:
-        simple: "yes"
+        simple: 'yes'
       password:
-        simple: 'demisto'
+        simple: demisto
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 315
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 7526ad65-4065-44a6-8414-412564aca96a
-    type: regular
     task:
-      id: 7526ad65-4065-44a6-8414-412564aca96a
-      version: -1
-      name: print_error
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
+      description: Unzip a file using fileName or entryID to specify a file. Unzipped
+        files will be loaded to the War Room and names will be put into the context.
+      id: 9b4cd1df-a9c5-4ac2-8262-5c2fb4bc344d
       iscommand: false
+      name: unzip_file
+      scriptName: UnzipFile
+      type: regular
+      version: -1
+    taskid: 9b4cd1df-a9c5-4ac2-8262-5c2fb4bc344d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 315\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
     scriptarguments:
       message:
         simple: error
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 790,
-          "y": 620
-        }
-      }
-    note: false
+    task:
+      description: Prints an error entry with a given message
+      id: 7526ad65-4065-44a6-8414-412564aca96a
+      iscommand: false
+      name: print_error
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 7526ad65-4065-44a6-8414-412564aca96a
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 985,
-        "width": 720,
-        "x": 450,
-        "y": -110
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 790,\n    \"y\": 620\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 985,\n      \"width\": 720,\n      \"x\": 450,\n      \"y\": -110\n\
+  \    }\n  }\n}"

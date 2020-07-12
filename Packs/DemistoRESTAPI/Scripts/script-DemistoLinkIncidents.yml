@@ -1,50 +1,35 @@
+args:
+- default: true
+  description: Incident ID used for linking to other incidents
+  name: masterID
+  required: true
+- description: Incidet IDs to link
+  name: otherIDs
+  required: true
+- auto: PREDEFINED
+  defaultValue: 'no'
+  description: Unlink incidents (default 'no')
+  name: unlink
+  predefined:
+  - 'yes'
+  - 'no'
+comment: Link two or more incidents
 commonfields:
   id: DemistoLinkIncidents
   version: -1
-name: DemistoLinkIncidents
-script: |-
-  var body = {
-      id: args.masterID,
-      otherIncidentsIDs: args.otherIDs.split(','),
-      removeLink: (args.unlink === 'yes')
-  };
-
-  var res = executeCommand('demisto-api-post', {uri: '/incident/links', body: body});
-
-  if (isError(res[0])) {
-      throw res[0].Contents;
-  }
-
-  var response = res[0].Contents.response;
-  var md = tableToMarkdown('Demisto link incidents', response);
-
-  return {
-      ContentsFormat: formats.json,
-      Type: entryTypes.note,
-      Contents: response,
-      HumanReadable: md
-  };
-type: javascript
-tags:
-- DemistoAPI
-comment: Link two or more incidents
-enabled: true
-args:
-- name: masterID
-  required: true
-  default: true
-  description: Incident ID used for linking to other incidents
-- name: otherIDs
-  required: true
-  description: Incidet IDs to link
-- name: unlink
-  auto: PREDEFINED
-  predefined:
-  - "yes"
-  - "no"
-  description: Unlink incidents (default 'no')
-  defaultValue: "no"
-scripttarget: 0
 dependson:
   must:
   - demisto-api-post
+enabled: true
+name: DemistoLinkIncidents
+script: "var body = {\n    id: args.masterID,\n    otherIncidentsIDs: args.otherIDs.split(','),\n\
+  \    removeLink: (args.unlink === 'yes')\n};\n\nvar res = executeCommand('demisto-api-post',\
+  \ {uri: '/incident/links', body: body});\n\nif (isError(res[0])) {\n    throw res[0].Contents;\n\
+  }\n\nvar response = res[0].Contents.response;\nvar md = tableToMarkdown('Demisto\
+  \ link incidents', response);\n\nreturn {\n    ContentsFormat: formats.json,\n \
+  \   Type: entryTypes.note,\n    Contents: response,\n    HumanReadable: md\n};"
+scripttarget: 0
+tags:
+- DemistoAPI
+toversion: 4.1.9
+type: javascript

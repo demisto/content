@@ -1,183 +1,145 @@
 elasticcommonfields: {}
 id: Elasticsearch_Fetch_Demisto_Indicators_Test
-version: -1
+inputs: []
 name: Elasticsearch_Fetch_Demisto_Indicators_Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 9aa22a36-973d-4c51-8881-89c0e4d8f649
-    type: start
+  '0':
+    id: '0'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
+      brand: ''
       elasticcommonfields: {}
       id: 9aa22a36-973d-4c51-8881-89c0e4d8f649
-      version: -1
-      name: ""
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "1":
-    id: "1"
-    taskid: 13beb241-ef42-49a5-8b1e-0b0f7dcb87f9
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: 13beb241-ef42-49a5-8b1e-0b0f7dcb87f9
+      name: ''
       version: -1
-      name: Get Shared Indicators
-      description: Get indicators shared with this tenant (MT only).
-      script: '|||es-get-indicators'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: 9aa22a36-973d-4c51-8881-89c0e4d8f649
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
+    quietmode: 0
     scriptarguments:
       extend-context:
         simple: value=value
       limit: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "2":
-    id: "2"
-    taskid: 6a0d6cff-d5a5-4267-80d8-2a17c66ba72a
-    type: condition
     task:
+      brand: ''
+      description: Get indicators shared with this tenant (MT only).
       elasticcommonfields: {}
-      id: 6a0d6cff-d5a5-4267-80d8-2a17c66ba72a
+      id: 13beb241-ef42-49a5-8b1e-0b0f7dcb87f9
+      iscommand: true
+      name: Get Shared Indicators
+      script: '|||es-get-indicators'
+      type: regular
       version: -1
-      name: Assert Indicators was fetched
-      description: Assert results
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "3"
-    separatecontext: false
+    taskid: 13beb241-ef42-49a5-8b1e-0b0f7dcb87f9
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '2':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: value
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: 1.1.1.1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
+      label: 'yes'
+    id: '2'
     ignoreworker: false
-    skipunavailable: false
+    nexttasks:
+      'yes':
+      - '3'
+    note: false
     quietmode: 0
-  "3":
-    id: "3"
-    taskid: 70f4d0a6-3059-4f8a-83bb-479777174a92
-    type: title
+    separatecontext: false
+    skipunavailable: false
     task:
+      brand: ''
+      description: Assert results
+      elasticcommonfields: {}
+      id: 6a0d6cff-d5a5-4267-80d8-2a17c66ba72a
+      iscommand: false
+      name: Assert Indicators was fetched
+      type: condition
+      version: -1
+    taskid: 6a0d6cff-d5a5-4267-80d8-2a17c66ba72a
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
       elasticcommonfields: {}
       id: 70f4d0a6-3059-4f8a-83bb-479777174a92
-      version: -1
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "4":
-    id: "4"
-    taskid: dbc5d997-49be-4ad7-80c1-b22babd530b2
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: dbc5d997-49be-4ad7-80c1-b22babd530b2
       version: -1
-      name: Clear Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: 70f4d0a6-3059-4f8a-83bb-479777174a92
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 735,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    task:
+      brand: ''
+      description: Delete field from context
+      elasticcommonfields: {}
+      id: dbc5d997-49be-4ad7-80c1-b22babd530b2
+      iscommand: false
+      name: Clear Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: dbc5d997-49be-4ad7-80c1-b22babd530b2
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 735,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

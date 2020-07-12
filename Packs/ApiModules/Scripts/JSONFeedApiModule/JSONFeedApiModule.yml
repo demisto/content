@@ -3,6 +3,8 @@ comment: Common code that will be appended into each JSON Feed integration when 
 commonfields:
   id: JSONFeedApiModule
   version: -1
+dependson: {}
+dockerimage: demisto/jmespath:1.0.0.6980
 enabled: false
 name: JSONFeedApiModule
 script: '-'
@@ -12,7 +14,5 @@ tags:
 - infra
 - server
 timeout: 0s
+toversion: 4.1.9
 type: python
-dockerimage: demisto/jmespath:1.0.0.6980
-dependson: {
-  }

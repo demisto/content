@@ -22,6 +22,10 @@ comment: This script is an example script of how to retrieve an incident from Ch
 commonfields:
   id: CherwellGetIncident
   version: -1
+dependson:
+  must:
+  - Cherwell|||cherwell-get-business-object
+dockerimage: demisto/python3:3.7.2.214
 enabled: false
 name: CherwellGetIncident
 outputs:
@@ -53,14 +57,12 @@ outputs:
   description: Total tasks for this incident
   type: Number
 script: '-'
-system: false
-timeout: '0'
-type: python
-tags: [Cherwell]
-dependson:
-  must:
-  - Cherwell|||cherwell-get-business-object
-dockerimage: demisto/python3:3.7.2.214
 subtype: python3
+system: false
+tags:
+- Cherwell
 tests:
-  - Cherwell Example Scripts - test
+- Cherwell Example Scripts - test
+timeout: '0'
+toversion: 4.1.9
+type: python

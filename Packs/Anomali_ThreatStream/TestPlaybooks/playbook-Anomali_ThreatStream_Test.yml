@@ -1,50 +1,35 @@
-id: Anomali_ThreatStream_Test
-version: -1
 fromversion: 3.5.0
+id: Anomali_ThreatStream_Test
+inputs: []
 name: Anomali ThreatStream Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: ae766bfc-8fd2-4c6d-855e-67b0d1593f94
-    type: start
-    task:
-      id: ae766bfc-8fd2-4c6d-855e-67b0d1593f94
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "6"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 50
-        }
-      }
+      - '6'
     note: false
-    timertriggers: []
-  "1":
-    id: "1"
-    taskid: 099d108e-14f9-4fc6-8306-8daab8122d91
-    type: regular
+    separatecontext: false
     task:
-      id: 099d108e-14f9-4fc6-8306-8daab8122d91
+      brand: ''
+      id: ae766bfc-8fd2-4c6d-855e-67b0d1593f94
+      iscommand: false
+      name: ''
       version: -1
-      name: threatstream-intelligence (type=ip, value=218.227.212.90)
-      description: To retrieve threat intelligence from the ThreatStream cloud
-      script: Anomali ThreatStream|||threatstream-intelligence
-      type: regular
-      iscommand: true
-      brand: Anomali ThreatStream
+    taskid: ae766bfc-8fd2-4c6d-855e-67b0d1593f94
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "2"
-      - "4"
-      - "5"
+      - '2'
+      - '4'
+      - '5'
+    note: false
     scriptarguments:
       asn: {}
       confidence: {}
@@ -79,422 +64,236 @@ tasks:
       value:
         simple: 218.227.212.90
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-  "2":
-    id: "2"
-    taskid: 979be6e4-e77b-44ab-8f17-5316865fa6f0
-    type: regular
     task:
-      id: 979be6e4-e77b-44ab-8f17-5316865fa6f0
-      version: -1
-      name: ip (176.228.66.70)
-      description: Checks the reputation of the given IP
-      script: Anomali ThreatStream|||ip
-      type: regular
-      iscommand: true
       brand: Anomali ThreatStream
-    nexttasks:
-      '#none#':
-      - "13"
-    scriptarguments:
-      ip:
-        simple: 176.228.66.70
-      threshold: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-  "3":
-    id: "3"
-    taskid: e44986eb-d0f6-4f30-84c3-e7b5ec610c98
-    type: regular
-    task:
-      id: e44986eb-d0f6-4f30-84c3-e7b5ec610c98
-      version: -1
-      name: domain (kpanels.in)
-      description: Checks the reputation of the given IP or domain name
-      script: Anomali ThreatStream|||domain
-      type: regular
+      description: To retrieve threat intelligence from the ThreatStream cloud
+      id: 099d108e-14f9-4fc6-8306-8daab8122d91
       iscommand: true
-      brand: Anomali ThreatStream
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      domain:
-        simple: kpanels.in
-      threshold: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 900
-        }
-      }
-    note: false
-    timertriggers: []
-  "4":
-    id: "4"
-    taskid: a8ac6522-5e50-46f8-8dc9-e5d365d4ec60
-    type: regular
-    task:
-      id: a8ac6522-5e50-46f8-8dc9-e5d365d4ec60
-      version: -1
-      name: file (3e5d63b93a68d715f7559f42285223f4)
-      description: Checks the reputation of the given checksum
-      script: Anomali ThreatStream|||file
+      name: threatstream-intelligence (type=ip, value=218.227.212.90)
+      script: Anomali ThreatStream|||threatstream-intelligence
       type: regular
-      iscommand: true
-      brand: Anomali ThreatStream
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      file:
-        simple: 3e5d63b93a68d715f7559f42285223f4
-      threshold: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
+      version: -1
+    taskid: 099d108e-14f9-4fc6-8306-8daab8122d91
     timertriggers: []
-  "5":
-    id: "5"
-    taskid: d4d50859-5601-40df-8f0c-9c9193aaf4a8
     type: regular
-    task:
-      id: d4d50859-5601-40df-8f0c-9c9193aaf4a8
-      version: -1
-      name: threatstream-email-reputation (mailonline_16@filposcv.com)
-      description: Checks the reputation of the given email
-      script: Anomali ThreatStream|||threatstream-email-reputation
-      type: regular
-      iscommand: true
-      brand: Anomali ThreatStream
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      email:
-        simple: mailonline_16@filposcv.com
-      threshold: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-  "6":
-    id: "6"
-    taskid: c1cac6b8-4e6f-4c3c-8b42-32367cb1ab72
-    type: regular
-    task:
-      id: c1cac6b8-4e6f-4c3c-8b42-32367cb1ab72
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-  "12":
-    id: "12"
-    taskid: a247a5b5-4a65-4b0c-8fd9-96b680c9b47f
-    type: condition
-    task:
-      id: a247a5b5-4a65-4b0c-8fd9-96b680c9b47f
-      version: -1
-      name: CheckContext
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "20"
-    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 370\n  }\n}"
+  '12':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: File.MD5
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: File.Score
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-  "13":
-    id: "13"
-    taskid: 14836e07-2481-4e3b-8826-6cb93932b2d8
-    type: condition
-    task:
-      id: 14836e07-2481-4e3b-8826-6cb93932b2d8
-      version: -1
-      name: CheckContext (IP)
-      type: condition
-      iscommand: false
-      brand: ""
+          operator: isExists
+      label: 'yes'
+    id: '12'
     nexttasks:
-      "yes":
-      - "3"
+      'yes':
+      - '20'
+    note: false
     separatecontext: false
+    task:
+      brand: ''
+      id: a247a5b5-4a65-4b0c-8fd9-96b680c9b47f
+      iscommand: false
+      name: CheckContext
+      type: condition
+      version: -1
+    taskid: a247a5b5-4a65-4b0c-8fd9-96b680c9b47f
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '13':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: IP.ASN
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: IP.Address
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: IP.Score
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: IP.Geo
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: IP.Malicious
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-  "14":
-    id: "14"
-    taskid: be58204e-0ee0-4b95-8e36-e560195fb17e
-    type: condition
-    task:
-      id: be58204e-0ee0-4b95-8e36-e560195fb17e
-      version: -1
-      name: CheckContext (Email)
-      type: condition
-      iscommand: false
-      brand: ""
+          operator: isExists
+      label: 'yes'
+    id: '13'
     nexttasks:
-      "yes":
-      - "20"
+      'yes':
+      - '3'
+    note: false
     separatecontext: false
+    task:
+      brand: ''
+      id: 14836e07-2481-4e3b-8826-6cb93932b2d8
+      iscommand: false
+      name: CheckContext (IP)
+      type: condition
+      version: -1
+    taskid: 14836e07-2481-4e3b-8826-6cb93932b2d8
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 720\n  }\n}"
+  '14':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: ThreatStream.EmailReputation.Itype
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: ThreatStream.EmailReputation.Created
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: ThreatStream.EmailReputation.Modified
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: ThreatStream.EmailReputation.Confidence
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: ThreatStream.EmailReputation.Details1
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: ThreatStream.EmailReputation.Details2
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: ThreatStream.EmailReputation.Status
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: ThreatStream.EmailReputation.ThreatScore
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: ThreatStream.EmailReputation.Email
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: ThreatStream.EmailReputation.Severity
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-  "15":
-    id: "15"
-    taskid: b91fce12-d594-4d14-8873-1e69ccab9f39
-    type: condition
-    task:
-      id: b91fce12-d594-4d14-8873-1e69ccab9f39
-      version: -1
-      name: CheckContext (Domain)
-      type: condition
-      iscommand: false
-      brand: ""
+          operator: isExists
+      label: 'yes'
+    id: '14'
     nexttasks:
-      "yes":
-      - "19"
+      'yes':
+      - '20'
+    note: false
     separatecontext: false
+    task:
+      brand: ''
+      id: be58204e-0ee0-4b95-8e36-e560195fb17e
+      iscommand: false
+      name: CheckContext (Email)
+      type: condition
+      version: -1
+    taskid: be58204e-0ee0-4b95-8e36-e560195fb17e
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 720\n  }\n}"
+  '15':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: Domain.DNS
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: Domain.Name
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: Domain.Score
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1070
-        }
-      }
+          operator: isExists
+      label: 'yes'
+    id: '15'
+    nexttasks:
+      'yes':
+      - '19'
     note: false
-    timertriggers: []
-  "16":
-    id: "16"
-    taskid: 4e722dfa-53d6-4abc-8a31-0ada4bd7ecdd
-    type: regular
+    separatecontext: false
     task:
-      id: 4e722dfa-53d6-4abc-8a31-0ada4bd7ecdd
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      id: b91fce12-d594-4d14-8873-1e69ccab9f39
       iscommand: false
-      brand: ""
+      name: CheckContext (Domain)
+      type: condition
+      version: -1
+    taskid: b91fce12-d594-4d14-8873-1e69ccab9f39
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1070\n  }\n}"
+  '16':
+    id: '16'
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1250
-        }
-      }
-    note: false
-    timertriggers: []
-  "17":
-    id: "17"
-    taskid: 0abc94d7-8baf-41e7-8ed5-1584f4a0a9a9
-    type: regular
     task:
-      id: 0abc94d7-8baf-41e7-8ed5-1584f4a0a9a9
-      version: -1
-      name: ip
-      description: Checks the reputation of the given IP
-      script: Anomali ThreatStream|||ip
+      brand: ''
+      description: Delete field from context
+      id: 4e722dfa-53d6-4abc-8a31-0ada4bd7ecdd
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: Anomali ThreatStream
+      version: -1
+    taskid: 4e722dfa-53d6-4abc-8a31-0ada4bd7ecdd
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1250\n  }\n}"
+  '17':
+    id: '17'
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
+    note: false
     scriptarguments:
       detailed: {}
       fullResponse: {}
@@ -506,120 +305,217 @@ tasks:
       threshold: {}
       wait: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1430
-        }
-      }
-    note: false
-    timertriggers: []
-  "18":
-    id: "18"
-    taskid: 6b3b153d-b891-401d-8a0e-dada8bbd5428
-    type: condition
     task:
-      id: 6b3b153d-b891-401d-8a0e-dada8bbd5428
+      brand: Anomali ThreatStream
+      description: Checks the reputation of the given IP
+      id: 0abc94d7-8baf-41e7-8ed5-1584f4a0a9a9
+      iscommand: true
+      name: ip
+      script: Anomali ThreatStream|||ip
+      type: regular
       version: -1
-      name: Check Known False Positive
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "20"
-    separatecontext: false
+    taskid: 0abc94d7-8baf-41e7-8ed5-1584f4a0a9a9
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1430\n  }\n}"
+  '18':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: DBotScore.Score
-            iscontext: true
+          operator: isEqualString
           right:
             value:
-              simple: "1"
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1610
-        }
-      }
+              simple: '1'
+      label: 'yes'
+    id: '18'
+    nexttasks:
+      'yes':
+      - '20'
     note: false
-    timertriggers: []
-  "19":
-    id: "19"
-    taskid: e0e8033e-ddb5-4117-891e-08ed5cf3ad27
-    type: regular
+    separatecontext: false
     task:
-      id: e0e8033e-ddb5-4117-891e-08ed5cf3ad27
-      version: -1
-      name: Sleep
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
+      brand: ''
+      id: 6b3b153d-b891-401d-8a0e-dada8bbd5428
       iscommand: false
-      brand: ""
+      name: Check Known False Positive
+      type: condition
+      version: -1
+    taskid: 6b3b153d-b891-401d-8a0e-dada8bbd5428
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1610\n  }\n}"
+  '19':
+    id: '19'
     nexttasks:
       '#none#':
-      - "16"
+      - '16'
+    note: false
     scriptarguments:
       seconds:
-        simple: "15"
+        simple: '15'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 950,
-          "y": 1165
-        }
-      }
-    note: false
-    timertriggers: []
-  "20":
-    id: "20"
-    taskid: 61e05b4e-7ea4-49a2-82c9-377f36291e8d
-    type: regular
     task:
-      id: 61e05b4e-7ea4-49a2-82c9-377f36291e8d
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      description: Sleep for X seconds
+      id: e0e8033e-ddb5-4117-891e-08ed5cf3ad27
       iscommand: false
-      brand: ""
+      name: Sleep
+      scriptName: Sleep
+      type: regular
+      version: -1
+    taskid: e0e8033e-ddb5-4117-891e-08ed5cf3ad27
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 950,\n    \"y\": 1165\n  }\n}"
+  '2':
+    id: '2'
+    nexttasks:
+      '#none#':
+      - '13'
+    note: false
+    scriptarguments:
+      ip:
+        simple: 176.228.66.70
+      threshold: {}
+    separatecontext: false
+    task:
+      brand: Anomali ThreatStream
+      description: Checks the reputation of the given IP
+      id: 979be6e4-e77b-44ab-8f17-5316865fa6f0
+      iscommand: true
+      name: ip (176.228.66.70)
+      script: Anomali ThreatStream|||ip
+      type: regular
+      version: -1
+    taskid: 979be6e4-e77b-44ab-8f17-5316865fa6f0
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 545\n  }\n}"
+  '20':
+    id: '20'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1865
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: 61e05b4e-7ea4-49a2-82c9-377f36291e8d
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 61e05b4e-7ea4-49a2-82c9-377f36291e8d
     timertriggers: []
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1910,
-        "width": 1280,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1865\n  }\n}"
+  '3':
+    id: '3'
+    nexttasks:
+      '#none#':
+      - '15'
+    note: false
+    scriptarguments:
+      domain:
+        simple: kpanels.in
+      threshold: {}
+    separatecontext: false
+    task:
+      brand: Anomali ThreatStream
+      description: Checks the reputation of the given IP or domain name
+      id: e44986eb-d0f6-4f30-84c3-e7b5ec610c98
+      iscommand: true
+      name: domain (kpanels.in)
+      script: Anomali ThreatStream|||domain
+      type: regular
+      version: -1
+    taskid: e44986eb-d0f6-4f30-84c3-e7b5ec610c98
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 900\n  }\n}"
+  '4':
+    id: '4'
+    nexttasks:
+      '#none#':
+      - '12'
+    note: false
+    scriptarguments:
+      file:
+        simple: 3e5d63b93a68d715f7559f42285223f4
+      threshold: {}
+    separatecontext: false
+    task:
+      brand: Anomali ThreatStream
+      description: Checks the reputation of the given checksum
+      id: a8ac6522-5e50-46f8-8dc9-e5d365d4ec60
+      iscommand: true
+      name: file (3e5d63b93a68d715f7559f42285223f4)
+      script: Anomali ThreatStream|||file
+      type: regular
+      version: -1
+    taskid: a8ac6522-5e50-46f8-8dc9-e5d365d4ec60
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '5':
+    id: '5'
+    nexttasks:
+      '#none#':
+      - '14'
+    note: false
+    scriptarguments:
+      email:
+        simple: mailonline_16@filposcv.com
+      threshold: {}
+    separatecontext: false
+    task:
+      brand: Anomali ThreatStream
+      description: Checks the reputation of the given email
+      id: d4d50859-5601-40df-8f0c-9c9193aaf4a8
+      iscommand: true
+      name: threatstream-email-reputation (mailonline_16@filposcv.com)
+      script: Anomali ThreatStream|||threatstream-email-reputation
+      type: regular
+      version: -1
+    taskid: d4d50859-5601-40df-8f0c-9c9193aaf4a8
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 545\n  }\n}"
+  '6':
+    id: '6'
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    scriptarguments:
+      all:
+        simple: 'yes'
+      key: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: c1cac6b8-4e6f-4c3c-8b42-32367cb1ab72
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: c1cac6b8-4e6f-4c3c-8b42-32367cb1ab72
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 195\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1910,\n      \"width\": 1280,\n      \"x\": 50,\n      \"y\":\
+  \ 50\n    }\n  }\n}"

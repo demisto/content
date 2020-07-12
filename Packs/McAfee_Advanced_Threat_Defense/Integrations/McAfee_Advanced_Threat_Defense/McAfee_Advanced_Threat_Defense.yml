@@ -16,7 +16,7 @@ configuration:
   required: true
   type: 4
 - defaultvalue: ''
-  display: 'Trust any certificate (not secure)'
+  display: Trust any certificate (not secure)
   name: unsecure
   required: false
   type: 8
@@ -27,6 +27,7 @@ configuration:
 description: 'Integrated advanced threat detection: Enhancing protection from network
   edge to endpoint'
 display: McAfee Advanced Threat Defense
+fromversion: 3.5.0
 name: McAfee Advanced Threat Defense
 script:
   commands:
@@ -41,10 +42,11 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: This parameter accepts four values — '0', '1', '2' and '3'. • 0
-        — Regular file upload • 1 — URL submission — URL link is processed inside
-        analyzer VM • 2 — Submit file with URL • 3 — URL Download — File from URL
-        is firstly downloaded and then analyzed
+      description: "This parameter accepts four values \u2014 '0', '1', '2' and '3'.\
+        \ \u2022 0 \u2014 Regular file upload \u2022 1 \u2014 URL submission \u2014\
+        \ URL link is processed inside analyzer VM \u2022 2 \u2014 Submit file with\
+        \ URL \u2022 3 \u2014 URL Download \u2014 File from URL is firstly downloaded\
+        \ and then analyzed"
       isArray: false
       name: submitType
       predefined:
@@ -211,13 +213,14 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: pdf
-      description: 'Type can be one of the following types: • html — HTML report •
-        txt — Text report • xml — XML report • zip — All files packaged in a single
-        zip file • json — Same as xml but in the JSON format • ioc - Indicators of
-        Compromise format • stix - Structured Threat Information expression. Stix
-        generation is disabled, by default. Use set stixreportstatus enable to enable
-        it. • pdf - Portable Document Format • sample - Download sample from McAfee
-        Advanced Threat Defense'
+      description: "Type can be one of the following types: \u2022 html \u2014 HTML\
+        \ report \u2022 txt \u2014 Text report \u2022 xml \u2014 XML report \u2022\
+        \ zip \u2014 All files packaged in a single zip file \u2022 json \u2014 Same\
+        \ as xml but in the JSON format \u2022 ioc - Indicators of Compromise format\
+        \ \u2022 stix - Structured Threat Information expression. Stix generation\
+        \ is disabled, by default. Use set stixreportstatus enable to enable it. \u2022\
+        \ pdf - Portable Document Format \u2022 sample - Download sample from McAfee\
+        \ Advanced Threat Defense"
       isArray: false
       name: type
       predefined:
@@ -301,7 +304,9 @@ script:
       description: The extension of the report file
       type: string
     - contextPath: InfoFile.Name
-      description: The name of the report file, which you can use later, for example, to send the report in an email as part of a playbook task. The report name is the the taskId, for example, 7173.pdf.
+      description: The name of the report file, which you can use later, for example,
+        to send the report in an email as part of a playbook task. The report name
+        is the the taskId, for example, 7173.pdf.
       type: string
     - contextPath: InfoFile.Info
       description: The info of the report file
@@ -676,8 +681,8 @@ script:
   isfetch: false
   runonce: false
   script: '-'
-  type: python
   subtype: python2
+  type: python
 tests:
 - Test Playbook McAfee ATD
-fromversion: 3.5.0
+toversion: 4.1.9

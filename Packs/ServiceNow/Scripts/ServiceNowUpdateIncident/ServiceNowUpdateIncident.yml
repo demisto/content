@@ -46,13 +46,19 @@ args:
   name: query
   required: false
   secret: false
-comment: |-
-  This script is used to wrap the generic update-record command in ServiceNow.
-  You can add fields that you want to update the record with as script arguments or in the
-  code and work with the records easily.
+comment: 'This script is used to wrap the generic update-record command in ServiceNow.
+
+  You can add fields that you want to update the record with as script arguments or
+  in the
+
+  code and work with the records easily.'
 commonfields:
   id: ServiceNowUpdateIncident
   version: -1
+dependson:
+  must:
+  - servicenow-update-record
+  - servicenow-query-table
 enabled: true
 name: ServiceNowUpdateIncident
 outputs:
@@ -62,18 +68,15 @@ outputs:
 - contextPath: ServiceNow.Incident.Number
   description: Incident number
   type: string
+runonce: false
 script: '-'
+subtype: python2
 system: false
 tags:
 - servicenow
 - servicenow v2
-timeout: '0'
-type: python
-subtype: python2
-runonce: false
-dependson:
-  must:
-  - servicenow-update-record
-  - servicenow-query-table
 tests:
 - No test - Hibernating instance
+timeout: '0'
+toversion: 4.1.9
+type: python

@@ -1,64 +1,17 @@
+args:
+- defaultValue: '20'
+  description: Number of incidents to create for each label
+  name: numberOfIncidents
+- defaultValue: test_phishing_historic_data
+  description: ''
+  name: historicListName
+comment: ''
 commonfields:
   id: TestCreateIncidentsForPhishingClassifier
   version: -1
-name: TestCreateIncidentsForPhishingClassifier
-script: |+
-  import random, base64, pickle
-  NUMBER_OF_INCIDENTS = int(demisto.args()['numberOfIncidents'])
-  words_tag1 = ["closed", "church", "squeamish", "friction", "moaning", "gratis", "angle", "smash", "kiss", "desk", "icky", "aunt"]
-  words_tag2 = ["ntidy","boy","substance","faulty","friction","waves","type","boat","argument","metal","legal","marked"]
-  words_tag3 = ["suspend","trucks","aboriginal","thread","succeed","gray","collar","fall","last","volatile","exotic","chief"]
-
-  incident1_template = {
-      'type': 'Simulation',
-      'name': 'Tag1',
-  }
-
-  incident2_template = {
-      'type': 'Simulation',
-      'name': 'Tag2',
-  }
-
-  for i in range(0, NUMBER_OF_INCIDENTS):
-      incident1_template["details"] = " ".join([words_tag1[i] for i in [random.randint(0, len(words_tag1)-1) for i in range(30)]]),
-      demisto.executeCommand("createNewIncident", incident1_template)
-  for i in range(0, NUMBER_OF_INCIDENTS):
-      incident2_template["details"] = " ".join([words_tag2[i] for i in [random.randint(0, len(words_tag2)-1) for i in range(30)]]),
-      demisto.executeCommand("createNewIncident", incident2_template)
-
-  incidents = []
-  for i in range(0, NUMBER_OF_INCIDENTS):
-      incidents.append({
-          'type': 'Simulation',
-          'name': 'Tag3',
-          'dbot_processed_text': " ".join([words_tag3[i] for i in [random.randint(0, len(words_tag3)-1) for i in range(30)]])
-      })
-
-  encoded_data = base64.b64encode(pickle.dumps(incidents))
-  res = demisto.executeCommand("createList", {"listName": demisto.args()['historicListName'], "listData": encoded_data})
-  demisto.results(res)
-
-  demisto.results({
-      'Contents': 'Done crete incidents',
-      'ContentsFormat': formats['text'],
-      'EntryContext': {
-          'EmailSujbectKey': 'name',
-          'EmailBodyKey': 'details',
-          'EmailTagKey': 'name',
-          'IncidentsQuery': 'type:Simulation'
-      }
-  })
-
-type: python
-tags: []
+dockerimage: demisto/python:2.7.18.9326
 enabled: true
-args:
-- name: numberOfIncidents
-  description: Number of incidents to create for each label
-  defaultValue: "20"
-- name: historicListName
-  defaultValue: test_phishing_historic_data
-  description: ''
+name: TestCreateIncidentsForPhishingClassifier
 outputs:
 - contextPath: EmailSujbectKey
   description: EmailSujbectKey
@@ -68,9 +21,34 @@ outputs:
   description: EmailTagKey
 - contextPath: IncidentsQuery
   description: IncidentsQuery
+runas: DBotWeakRole
+runonce: false
+script: "import random, base64, pickle\nNUMBER_OF_INCIDENTS = int(demisto.args()['numberOfIncidents'])\n\
+  words_tag1 = [\"closed\", \"church\", \"squeamish\", \"friction\", \"moaning\",\
+  \ \"gratis\", \"angle\", \"smash\", \"kiss\", \"desk\", \"icky\", \"aunt\"]\nwords_tag2\
+  \ = [\"ntidy\",\"boy\",\"substance\",\"faulty\",\"friction\",\"waves\",\"type\"\
+  ,\"boat\",\"argument\",\"metal\",\"legal\",\"marked\"]\nwords_tag3 = [\"suspend\"\
+  ,\"trucks\",\"aboriginal\",\"thread\",\"succeed\",\"gray\",\"collar\",\"fall\",\"\
+  last\",\"volatile\",\"exotic\",\"chief\"]\n\nincident1_template = {\n    'type':\
+  \ 'Simulation',\n    'name': 'Tag1',\n}\n\nincident2_template = {\n    'type': 'Simulation',\n\
+  \    'name': 'Tag2',\n}\n\nfor i in range(0, NUMBER_OF_INCIDENTS):\n    incident1_template[\"\
+  details\"] = \" \".join([words_tag1[i] for i in [random.randint(0, len(words_tag1)-1)\
+  \ for i in range(30)]]),\n    demisto.executeCommand(\"createNewIncident\", incident1_template)\n\
+  for i in range(0, NUMBER_OF_INCIDENTS):\n    incident2_template[\"details\"] = \"\
+  \ \".join([words_tag2[i] for i in [random.randint(0, len(words_tag2)-1) for i in\
+  \ range(30)]]),\n    demisto.executeCommand(\"createNewIncident\", incident2_template)\n\
+  \nincidents = []\nfor i in range(0, NUMBER_OF_INCIDENTS):\n    incidents.append({\n\
+  \        'type': 'Simulation',\n        'name': 'Tag3',\n        'dbot_processed_text':\
+  \ \" \".join([words_tag3[i] for i in [random.randint(0, len(words_tag3)-1) for i\
+  \ in range(30)]])\n    })\n\nencoded_data = base64.b64encode(pickle.dumps(incidents))\n\
+  res = demisto.executeCommand(\"createList\", {\"listName\": demisto.args()['historicListName'],\
+  \ \"listData\": encoded_data})\ndemisto.results(res)\n\ndemisto.results({\n    'Contents':\
+  \ 'Done crete incidents',\n    'ContentsFormat': formats['text'],\n    'EntryContext':\
+  \ {\n        'EmailSujbectKey': 'name',\n        'EmailBodyKey': 'details',\n  \
+  \      'EmailTagKey': 'name',\n        'IncidentsQuery': 'type:Simulation'\n   \
+  \ }\n})\n\n"
 scripttarget: 0
 subtype: python2
-runonce: false
-dockerimage: demisto/python:2.7.18.9326
-runas: DBotWeakRole
-comment: ''
+tags: []
+toversion: 4.1.9
+type: python

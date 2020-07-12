@@ -1,167 +1,100 @@
+args:
+- description: Force Tanium to respond after x seconds (even if data was not collected
+    fully by Tanium)
+  name: timeout
+comment: TaniumAskQuestionComplex - same as the AskQuestion command with additional
+  filtering prepared by the script (an XML subsection added to the request).
 commonfields:
   id: TaniumAskQuestionComplex
   version: -1
-name: TaniumAskQuestionComplex
-script: |-
-  // An example script for asking a complex question with filter and select-filter
-  /* This script represents the following question:
-     "Get Computer Name and IP Address starts with 172 from machines where Operating System contains 2012"
-     Explanation:
-     There are two selects in this question: Computer Name and IP Address, but IP Address has what is called a select filter on it.
-     When a Tanium Client evaluates these selects, it will provide its computer name in response to the Computer Name select,
-     and it will respond with any IP Addresses that it has that start with the substring "172".
-     So, if a machine doesn't have any IP addresses that start with "172", it will actually return its computer name and "[no results]".
-     If it did have a valid IP address, it would return its computer name and the valid IP address(es).
-     The latter half of the question, "where Operating System contains 2012", is called a filter, which limits which machines respond.
-     For instance, when Tanium Clients see this Question, they will only evaluate the selects of the Question if their calculated Operating System value contains the substring "2012".
-     If you have no 2012 machines, then no machines will respond to your Question. This filter is similar to the select filter described in the previous paragraph,
-     but the is a very important distinction:
-     If a Tanium Client doesn't meet a filter, it doesn't respond.
-     If a Tanium Client doesn't meet a select filter, it will respond with the string "[no results]".
-  */
-  var table = {
-      Type: 1,
-      ContentsFormat: 'table',
-      Contents: []
-  };
-  // "Get Computer Name and IP Address starts with 172"
-  var selects = '\
-  <selects>\
-   <select>\
-    <sensor>\
-     <name>IP Address</name>\
-    </sensor>\
-    <filter>\
-     <operator>RegexMatch</operator>\
-     <value_type>String</value_type>\
-     <value>172.*</value>\
-     <not_flag>0</not_flag>\
-    </filter>\
-   </select>\
-   <select>\
-    <sensor>\
-     <name>Computer Name</name>\
-    </sensor>\
-   </select>\
-  </selects>';
-  // "where Operating System contains 2012"
-  var group = '\
-  <group>\
-   <and_flag>1</and_flag>\
-   <not_flag>0</not_flag>\
-   <sub_groups>\
-    <group>\
-     <and_flag>1</and_flag>\
-     <not_flag>0</not_flag>\
-     <filters>\
-      <filter>\
-       <sensor>\
-        <name>Operating System</name>\
-       </sensor>\
-       <operator>RegexMatch</operator>\
-       <value_type>String</value_type>\
-       <value>.*2012.*</value>\
-       <not_flag>0</not_flag>\
-       <ignore_case_flag>1</ignore_case_flag>\
-      </filter>\
-     </filters>\
-     <sub_groups/>\
-     <deleted_flag>0</deleted_flag>\
-    </group>\
-   </sub_groups>\
-  </group>';
-  var taniumArgs = {
-        'selects': selects,
-        'group': group,
-        'timeout': args.timeout
-      };
-  var res = executeCommand('tn-add-question-complex', taniumArgs);
-  if (res[0].Type !== entryTypes.error) {
-      var result = res[0].Contents.Envelope.Body.return;
-      if (result.command !== 'AddObject') {
-          return result.command;
-      }
-      if (result.result_object.question.id) {
-          var qid = result.result_object.question.id;
-          // check the status of the new question, based on the returned ID
-          var infoRes = executeCommand('tn-result-info', {'id': qid, 'question-type': 'question'});
-          if (infoRes[0].Type !== entryTypes.error) {
-              if (!infoRes[0].Contents.result_infos) {
-                  return infoRes[0].Contents.Envelope.Body.return.command;
-              }
-              // Need to compare 'mr_passed' and 'estimated_total' values,
-              // to confirm that all machines have answered
-              var answers = infoRes[0].Contents.result_infos.result_info.mr_passed;
-              var expectedAnswers = infoRes[0].Contents.result_infos.result_info.estimated_total;
-              // Check the status 10 times, and wait 'timeout' seconds between each iteration
-              var iterToWait = 10;
-              var sec = 1;
-              if (taniumArgs.timeout) {
-                  sec = parseInt(taniumArgs.timeout) || 1;
-              }
-              while (answers !== expectedAnswers && iterToWait-- > 0) {
-                  wait(sec);
-                  infoRes = executeCommand('tn-result-info', {'id': qid, 'question-type': 'question'});
-                  if (infoRes[0].Type === entryTypes.error) {
-                      return infoRes[0];
-                  }
-                  answers = infoRes[0].Contents.result_infos.result_info.mr_passed;
-                  expectedAnswers = infoRes[0].Contents.result_infos.result_info.estimated_total;
-              }
-              // Get question data (i.e. question result)
-              var qDataRes = executeCommand('tn-result-data', {'id': qid, 'question-type': 'question'});
-              if (!qDataRes[0].Contents.result_sets) {
-                  return qDataRes[0].Contents.Envelope.Body.return.command;
-              }
-              // Extract the relevant fields from the data
-              itemCount = parseInt(qDataRes[0].Contents.result_sets.result_set.item_count);
-              if (itemCount === 0) {
-                  return 'No results';
-              }
-              var output = "";
-              var cs = qDataRes[0].Contents.result_sets.result_set.cs;
-              var rs = qDataRes[0].Contents.result_sets.result_set.rs;
-              // When a single item is returned, rs.r is a single object. Otherwise, it is an array...
-              if (itemCount === 1) {
-                  var row = {};
-                  for (var i=0; i < cs.c.length; i++) {
-                      //output += cs.c[i].dn + ': ' + rs.r.c[i].v + '\n';
-                      row[cs.c[i].dn] = rs.r.c[i].v;
-                  }
-                  table.Contents.push(row);
-              } else {
-                  for (var item=0; item < itemCount; item++) {
-                      var row = {};
-                      for (var j=0; j < cs.c.length; j++) {
-                          // output += cs.c[j].dn + ': ' + rs.r[item].c[j].v + '\n';
-                          row[cs.c[j].dn] = rs.r[item].c[j].v;
-                      }
-                      table.Contents.push(row);
-                  }
-              }
-              if (table.Contents.length === 0) {
-                 return 'No Results';
-              }
-              return table;
-          }
-      }
-  }
-  return res
-type: javascript
-tags:
-- tanium
-comment: TaniumAskQuestionComplex - same as the AskQuestion command with additional
-  filtering prepared by the script (an XML subsection added to the request).
-system: true
-args:
-- name: timeout
-  description: Force Tanium to respond after x seconds (even if data was not collected
-    fully by Tanium)
-scripttarget: 0
-deprecated: true
 dependson:
   must:
   - tn-result-data
   - tn-result-info
   - tn-add-question-complex
+deprecated: true
+name: TaniumAskQuestionComplex
+script: "// An example script for asking a complex question with filter and select-filter\n\
+  /* This script represents the following question:\n   \"Get Computer Name and IP\
+  \ Address starts with 172 from machines where Operating System contains 2012\"\n\
+  \   Explanation:\n   There are two selects in this question: Computer Name and IP\
+  \ Address, but IP Address has what is called a select filter on it.\n   When a Tanium\
+  \ Client evaluates these selects, it will provide its computer name in response\
+  \ to the Computer Name select,\n   and it will respond with any IP Addresses that\
+  \ it has that start with the substring \"172\".\n   So, if a machine doesn't have\
+  \ any IP addresses that start with \"172\", it will actually return its computer\
+  \ name and \"[no results]\".\n   If it did have a valid IP address, it would return\
+  \ its computer name and the valid IP address(es).\n   The latter half of the question,\
+  \ \"where Operating System contains 2012\", is called a filter, which limits which\
+  \ machines respond.\n   For instance, when Tanium Clients see this Question, they\
+  \ will only evaluate the selects of the Question if their calculated Operating System\
+  \ value contains the substring \"2012\".\n   If you have no 2012 machines, then\
+  \ no machines will respond to your Question. This filter is similar to the select\
+  \ filter described in the previous paragraph,\n   but the is a very important distinction:\n\
+  \   If a Tanium Client doesn't meet a filter, it doesn't respond.\n   If a Tanium\
+  \ Client doesn't meet a select filter, it will respond with the string \"[no results]\"\
+  .\n*/\nvar table = {\n    Type: 1,\n    ContentsFormat: 'table',\n    Contents:\
+  \ []\n};\n// \"Get Computer Name and IP Address starts with 172\"\nvar selects =\
+  \ '\\\n<selects>\\\n <select>\\\n  <sensor>\\\n   <name>IP Address</name>\\\n  </sensor>\\\
+  \n  <filter>\\\n   <operator>RegexMatch</operator>\\\n   <value_type>String</value_type>\\\
+  \n   <value>172.*</value>\\\n   <not_flag>0</not_flag>\\\n  </filter>\\\n </select>\\\
+  \n <select>\\\n  <sensor>\\\n   <name>Computer Name</name>\\\n  </sensor>\\\n </select>\\\
+  \n</selects>';\n// \"where Operating System contains 2012\"\nvar group = '\\\n<group>\\\
+  \n <and_flag>1</and_flag>\\\n <not_flag>0</not_flag>\\\n <sub_groups>\\\n  <group>\\\
+  \n   <and_flag>1</and_flag>\\\n   <not_flag>0</not_flag>\\\n   <filters>\\\n   \
+  \ <filter>\\\n     <sensor>\\\n      <name>Operating System</name>\\\n     </sensor>\\\
+  \n     <operator>RegexMatch</operator>\\\n     <value_type>String</value_type>\\\
+  \n     <value>.*2012.*</value>\\\n     <not_flag>0</not_flag>\\\n     <ignore_case_flag>1</ignore_case_flag>\\\
+  \n    </filter>\\\n   </filters>\\\n   <sub_groups/>\\\n   <deleted_flag>0</deleted_flag>\\\
+  \n  </group>\\\n </sub_groups>\\\n</group>';\nvar taniumArgs = {\n      'selects':\
+  \ selects,\n      'group': group,\n      'timeout': args.timeout\n    };\nvar res\
+  \ = executeCommand('tn-add-question-complex', taniumArgs);\nif (res[0].Type !==\
+  \ entryTypes.error) {\n    var result = res[0].Contents.Envelope.Body.return;\n\
+  \    if (result.command !== 'AddObject') {\n        return result.command;\n   \
+  \ }\n    if (result.result_object.question.id) {\n        var qid = result.result_object.question.id;\n\
+  \        // check the status of the new question, based on the returned ID\n   \
+  \     var infoRes = executeCommand('tn-result-info', {'id': qid, 'question-type':\
+  \ 'question'});\n        if (infoRes[0].Type !== entryTypes.error) {\n         \
+  \   if (!infoRes[0].Contents.result_infos) {\n                return infoRes[0].Contents.Envelope.Body.return.command;\n\
+  \            }\n            // Need to compare 'mr_passed' and 'estimated_total'\
+  \ values,\n            // to confirm that all machines have answered\n         \
+  \   var answers = infoRes[0].Contents.result_infos.result_info.mr_passed;\n    \
+  \        var expectedAnswers = infoRes[0].Contents.result_infos.result_info.estimated_total;\n\
+  \            // Check the status 10 times, and wait 'timeout' seconds between each\
+  \ iteration\n            var iterToWait = 10;\n            var sec = 1;\n      \
+  \      if (taniumArgs.timeout) {\n                sec = parseInt(taniumArgs.timeout)\
+  \ || 1;\n            }\n            while (answers !== expectedAnswers && iterToWait--\
+  \ > 0) {\n                wait(sec);\n                infoRes = executeCommand('tn-result-info',\
+  \ {'id': qid, 'question-type': 'question'});\n                if (infoRes[0].Type\
+  \ === entryTypes.error) {\n                    return infoRes[0];\n            \
+  \    }\n                answers = infoRes[0].Contents.result_infos.result_info.mr_passed;\n\
+  \                expectedAnswers = infoRes[0].Contents.result_infos.result_info.estimated_total;\n\
+  \            }\n            // Get question data (i.e. question result)\n      \
+  \      var qDataRes = executeCommand('tn-result-data', {'id': qid, 'question-type':\
+  \ 'question'});\n            if (!qDataRes[0].Contents.result_sets) {\n        \
+  \        return qDataRes[0].Contents.Envelope.Body.return.command;\n           \
+  \ }\n            // Extract the relevant fields from the data\n            itemCount\
+  \ = parseInt(qDataRes[0].Contents.result_sets.result_set.item_count);\n        \
+  \    if (itemCount === 0) {\n                return 'No results';\n            }\n\
+  \            var output = \"\";\n            var cs = qDataRes[0].Contents.result_sets.result_set.cs;\n\
+  \            var rs = qDataRes[0].Contents.result_sets.result_set.rs;\n        \
+  \    // When a single item is returned, rs.r is a single object. Otherwise, it is\
+  \ an array...\n            if (itemCount === 1) {\n                var row = {};\n\
+  \                for (var i=0; i < cs.c.length; i++) {\n                    //output\
+  \ += cs.c[i].dn + ': ' + rs.r.c[i].v + '\\n';\n                    row[cs.c[i].dn]\
+  \ = rs.r.c[i].v;\n                }\n                table.Contents.push(row);\n\
+  \            } else {\n                for (var item=0; item < itemCount; item++)\
+  \ {\n                    var row = {};\n                    for (var j=0; j < cs.c.length;\
+  \ j++) {\n                        // output += cs.c[j].dn + ': ' + rs.r[item].c[j].v\
+  \ + '\\n';\n                        row[cs.c[j].dn] = rs.r[item].c[j].v;\n     \
+  \               }\n                    table.Contents.push(row);\n             \
+  \   }\n            }\n            if (table.Contents.length === 0) {\n         \
+  \      return 'No Results';\n            }\n            return table;\n        }\n\
+  \    }\n}\nreturn res"
+scripttarget: 0
+system: true
+tags:
+- tanium
 timeout: 0s
+toversion: 4.1.9
+type: javascript

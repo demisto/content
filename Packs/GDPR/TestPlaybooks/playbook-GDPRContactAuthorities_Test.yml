@@ -1,146 +1,113 @@
 id: GDPRContactAuthorities Test
-version: -1
+inputs: []
 name: GDPRContactAuthorities Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 4cc4191b-7074-4f65-8eba-094b73b9f582
-    type: start
-    task:
-      id: 4cc4191b-7074-4f65-8eba-094b73b9f582
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: a14ff0ec-6227-4d46-8d60-252283559e98
-    type: regular
-    task:
-      id: a14ff0ec-6227-4d46-8d60-252283559e98
-      version: -1
-      name: GDPRContactAuthorities
-      description: |-
-        GDPR Data Protection Supervisory Authority Listing.
-
-        "‘supervisory authority’ means an independent public authority which is established by a Member State pursuant to Article 51;
-
-        ‘supervisory authority concerned’ means a supervisory authority which is concerned by the processing of personal data because:
-        (a) the controller or processor is established on the territory of the Member State of that supervisory authority;
-        (b) data subjects residing in the Member State of that supervisory authority are substantially affected or likely to be substantially affected by the processing; or
-        (c) a complaint has been lodged with that supervisory authority;"
-
-        GDPR - Art. 4 - https://gdpr-info.eu/art-4-gdpr/
-      scriptName: GDPRContactAuthorities
-      type: regular
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 4cc4191b-7074-4f65-8eba-094b73b9f582
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 4cc4191b-7074-4f65-8eba-094b73b9f582
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
     scriptarguments:
       country:
         simple: Croatia
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 523d411d-c510-4a78-8579-fe6a176ecbff
-    type: condition
     task:
-      id: 523d411d-c510-4a78-8579-fe6a176ecbff
-      version: -1
-      name: Check authority name
-      type: condition
+      brand: ''
+      description: "GDPR Data Protection Supervisory Authority Listing.\n\n\"\u2018\
+        supervisory authority\u2019 means an independent public authority which is\
+        \ established by a Member State pursuant to Article 51;\n\n\u2018supervisory\
+        \ authority concerned\u2019 means a supervisory authority which is concerned\
+        \ by the processing of personal data because:\n(a) the controller or processor\
+        \ is established on the territory of the Member State of that supervisory\
+        \ authority;\n(b) data subjects residing in the Member State of that supervisory\
+        \ authority are substantially affected or likely to be substantially affected\
+        \ by the processing; or\n(c) a complaint has been lodged with that supervisory\
+        \ authority;\"\n\nGDPR - Art. 4 - https://gdpr-info.eu/art-4-gdpr/"
+      id: a14ff0ec-6227-4d46-8d60-252283559e98
       iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "3"
-    separatecontext: false
+      name: GDPRContactAuthorities
+      scriptName: GDPRContactAuthorities
+      type: regular
+      version: -1
+    taskid: a14ff0ec-6227-4d46-8d60-252283559e98
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '2':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: GDPR.Authority.Name
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: Croatian Personal Data Protection Agency
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
+      label: 'yes'
+    id: '2'
     ignoreworker: false
-  "3":
-    id: "3"
-    taskid: ffdfcd82-debe-4d60-8641-39c17a7fe93d
-    type: regular
+    nexttasks:
+      'yes':
+      - '3'
+    note: false
+    separatecontext: false
     task:
-      id: ffdfcd82-debe-4d60-8641-39c17a7fe93d
-      version: -1
-      name: Untitled Task
-      description: Prints text to war room (Markdown supported)
-      scriptName: Print
-      type: regular
+      brand: ''
+      id: 523d411d-c510-4a78-8579-fe6a176ecbff
       iscommand: false
-      brand: ""
+      name: Check authority name
+      type: condition
+      version: -1
+    taskid: 523d411d-c510-4a78-8579-fe6a176ecbff
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
+    note: false
     scriptarguments:
       value:
         simple: ${GDPR.Authority.Country} - ${GDPR.Authority.Name}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      description: Prints text to war room (Markdown supported)
+      id: ffdfcd82-debe-4d60-8641-39c17a7fe93d
+      iscommand: false
+      name: Untitled Task
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: ffdfcd82-debe-4d60-8641-39c17a7fe93d
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 590,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 590,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

@@ -1,45 +1,46 @@
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: illuminate
   version: -1
-name: illuminate
-display: illuminate
-category: Data Enrichment & Threat Intelligence
+configuration:
+- defaultvalue: ''
+  display: illuminate API Credentials (username/password)
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: illuminate.analystplatform.com
+  display: Domain of illuminate server to use (format - server.that_you_use.com -
+    No http/https)
+  name: server
+  required: true
+  type: 0
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: This integration utilizes AnalystPlatform's illuminate system to enrich
   Demisto indicators with data provided by the illuminate REST API, such as actor
   and malware information, activity and reported dates, evidence and hit counts, and
   more.
-configuration:
-- display: illuminate API Credentials (username/password)
-  name: credentials
-  defaultvalue: ''
-  type: 9
-  required: true
-- display: Domain of illuminate server to use (format - server.that_you_use.com - No http/https)
-  name: server
-  defaultvalue: illuminate.analystplatform.com
-  type: 0
-  required: true
-- display: Trust any certificate (not secure)
-  name: insecure
-  defaultvalue: 'false'
-  type: 8
-  required: false
-- display: Use system proxy settings
-  name: proxy
-  defaultvalue: 'false'
-  type: 8
-  required: false
+display: illuminate
+name: illuminate
 script:
-  script: '-'
-  type: python
   commands:
-  - name: domain
-    arguments:
-    - name: domain
-      required: true
+  - arguments:
+    - default: true
       description: The domain for which to return information.
-      default: true
       isArray: true
+      name: domain
+      required: true
+    description: Queries the illuminate REST API and enriches the given domain with
+      illuminate Indicator data
+    name: domain
     outputs:
     - contextPath: Domain.Name
       description: The domain name, for example, "google.com".
@@ -103,15 +104,15 @@ script:
     - contextPath: DBotScore.Vendor
       description: The AlienVault OTX vendor.
       type: String
-    description: Queries the illuminate REST API and enriches the given domain with
-      illuminate Indicator data
-  - name: email
-    arguments:
-    - name: email
-      required: true
+  - arguments:
+    - default: true
       description: The email for which to return information.
-      default: true
       isArray: true
+      name: email
+      required: true
+    description: Queries the illuminate REST API and enriches the given email with
+      illuminate indicator data.
+    name: email
     outputs:
     - contextPath: Email.From
       description: The sender of the email.
@@ -172,15 +173,15 @@ script:
     - contextPath: DBotScore.Vendor
       description: The AlienVault OTX vendor.
       type: String
-    description: Queries the illuminate REST API and enriches the given email with
-      illuminate indicator data.
-  - name: ip
-    arguments:
-    - name: ip
-      required: true
+  - arguments:
+    - default: true
       description: The IP address for which to return information.
-      default: true
       isArray: true
+      name: ip
+      required: true
+    description: Queries the illuminate REST API and enriches the given IP address
+      with illuminate indicator data.
+    name: ip
     outputs:
     - contextPath: IP.Address
       description: The IP address.
@@ -242,15 +243,15 @@ script:
     - contextPath: DBotScore.Vendor
       description: The AlienVault OTX vendor.
       type: String
-    description: Queries the illuminate REST API and enriches the given IP address
-      with illuminate indicator data.
-  - name: file
-    arguments:
-    - name: file
-      required: true
+  - arguments:
+    - default: true
       description: The file for which to return information.
-      default: true
       isArray: true
+      name: file
+      required: true
+    description: Queries the illuminate REST API and enriches the given file with
+      illuminate indicator data.
+    name: file
     outputs:
     - contextPath: File.MD5
       description: The MD5 hash of the file.
@@ -318,14 +319,14 @@ script:
     - contextPath: DBotScore.Vendor
       description: The AlienVault OTX vendor.
       type: String
-    description: Queries the illuminate REST API and enriches the given file with
-      illuminate indicator data.
-  - name: illuminate-enrich-string
-    arguments:
-    - name: string
-      required: true
-      description: The string for which to return information.
+  - arguments:
+    - description: The string for which to return information.
       isArray: true
+      name: string
+      required: true
+    description: Queries the illuminate REST API and enriches the given string with
+      illuminate indicator data
+    name: illuminate-enrich-string
     outputs:
     - contextPath: Illuminate.String.ID
       description: The unique identifier of the given Indicator in illuminate
@@ -371,14 +372,14 @@ script:
     - contextPath: Illuminate.String.IlluminateLink
       description: The URL of the matched indicator in illuminate.
       type: string
-    description: Queries the illuminate REST API and enriches the given string with
-      illuminate indicator data
-  - name: illuminate-enrich-ipv6
-    arguments:
-    - name: ip
-      required: true
-      description: The IP address for which to return information.
+  - arguments:
+    - description: The IP address for which to return information.
       isArray: true
+      name: ip
+      required: true
+    description: Queries the illuminate REST API and enriches the given IP address
+      with illuminate indicator data.
+    name: illuminate-enrich-ipv6
     outputs:
     - contextPath: Illuminate.Ipv6.ID
       description: The unique identifier of the given Indicator in illuminate
@@ -424,14 +425,14 @@ script:
     - contextPath: Illuminate.Ipv6.IlluminateLink
       description: The URL of the matched indicator in illuminate.
       type: string
-    description: Queries the illuminate REST API and enriches the given IP address
-      with illuminate indicator data.
-  - name: illuminate-enrich-mutex
-    arguments:
-    - name: mutex
-      required: true
-      description: The mutex to query information for
+  - arguments:
+    - description: The mutex to query information for
       isArray: true
+      name: mutex
+      required: true
+    description: Queries the illuminate REST API and enriches the given mutex with
+      illuminate indicator data.
+    name: illuminate-enrich-mutex
     outputs:
     - contextPath: Illuminate.Mutex.ID
       description: The unique identifier of the given Indicator in illuminate
@@ -477,14 +478,14 @@ script:
     - contextPath: Illuminate.Mutex.IlluminateLink
       description: The URL of the matched indicator in illuminate.
       type: string
-    description: Queries the illuminate REST API and enriches the given mutex with
-      illuminate indicator data.
-  - name: illuminate-enrich-http-request
-    arguments:
-    - name: http-request
-      required: true
-      description: The HTTP request for which to return information.
+  - arguments:
+    - description: The HTTP request for which to return information.
       isArray: true
+      name: http-request
+      required: true
+    description: Queries the illuminate REST API and enriches the given HTTP request
+      with illuminate indicator data.
+    name: illuminate-enrich-http-request
     outputs:
     - contextPath: Illuminate.Httprequest.ID
       description: The unique identifier of the given Indicator in illuminate
@@ -530,15 +531,15 @@ script:
     - contextPath: Illuminate.Httprequest.IlluminateLink
       description: The URL of the matched indicator in illuminate.
       type: string
-    description: Queries the illuminate REST API and enriches the given HTTP request
-      with illuminate indicator data.
-  - name: url
-    arguments:
-    - name: url
-      required: true
+  - arguments:
+    - default: true
       description: The URL for which to return information.
-      default: true
       isArray: true
+      name: url
+      required: true
+    description: Queries the illuminate REST API and enriches the given URL with illuminate
+      indicator data.
+    name: url
     outputs:
     - contextPath: URL.Data
       description: The URL.
@@ -599,8 +600,9 @@ script:
     - contextPath: DBotScore.Vendor
       description: The AlienVault OTX vendor.
       type: String
-    description: Queries the illuminate REST API and enriches the given URL with illuminate
-      indicator data.
   dockerimage: demisto/python3:3.7.5.5420
   runonce: false
+  script: '-'
   subtype: python3
+  type: python
+toversion: 4.1.9

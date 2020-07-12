@@ -1,225 +1,15 @@
-id: process_email_-_ews
-version: -1
-name: Process Email - EWS
-fromversion: 3.6.0
 description: Process an EWS email
-starttaskid: "0"
-tasks:
-  "0":
-    id: "0"
-    taskid: d2585d98-8b18-443c-8f9d-fab76927940f
-    type: start
-    task:
-      id: d2585d98-8b18-443c-8f9d-fab76927940f
-      version: -1
-      name: ""
-      description: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 50
-        }
-      }
-  "1":
-    id: "1"
-    taskid: 4c421b2d-b73c-42a3-8e74-c9fa804196b9
-    type: regular
-    task:
-      id: 4c421b2d-b73c-42a3-8e74-c9fa804196b9
-      version: -1
-      name: Get attachments
-      description: Get EWS email all attachments - file attachments and item attachments
-        (other email, calendar item, etc..)
-      script: EWS v2|||ews-get-attachment
-      type: regular
-      iscommand: true
-      brand: EWS v2
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      attachment-ids: {}
-      item-id:
-        complex:
-          root: incident
-          accessor: labels.Email/ID
-      target-mailbox: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-  "2":
-    id: "2"
-    taskid: 4e29788b-f10f-4afd-843d-954dc75bcd00
-    type: condition
-    task:
-      id: 4e29788b-f10f-4afd-843d-954dc75bcd00
-      version: -1
-      name: Does the item "attachments" exist?
-      description: Check if any item attachments exist.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "14"
-      "yes":
-      - "3"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: general.isExists
-          left:
-            value:
-              simple: EWS.Items.ItemAttachments
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-  "3":
-    id: "3"
-    taskid: 86c8a1a4-96d2-4d5b-8d24-7710318ac280
-    type: regular
-    task:
-      id: 86c8a1a4-96d2-4d5b-8d24-7710318ac280
-      version: -1
-      name: Set email context key
-      description: If email attachments exist - set Email context key with the item
-        values.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      append:
-        simple: "true"
-      extend-context: {}
-      key:
-        simple: Email
-      value:
-        simple: '${EWS.Items.ItemAttachments={To: val[''toRecipients''], CC: val[''ccRecipients''],
-          From: val[''sender''], Subject: val[''subject''], Text: val[''text_body''],
-          HTML: val[''body''], Headers: val[''headers'']}}'
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 720
-        }
-      }
-  "5":
-    id: "5"
-    taskid: 16491843-3256-4f45-8615-a8ea30e68228
-    type: condition
-    task:
-      id: 16491843-3256-4f45-8615-a8ea30e68228
-      version: -1
-      name: Is this an EWSv2 incident?
-      description: Check if EWSv2 exist
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "14"
-      "yes":
-      - "1"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: general.isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: string.isEqual
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: EWS v2
-                - - operator: string.isEqual
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-                accessor: brand
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 195
-        }
-      }
-  "14":
-    id: "14"
-    taskid: 18a0ed04-37fb-4af0-8b23-ef5468460755
-    type: title
-    task:
-      id: 18a0ed04-37fb-4af0-8b23-ef5468460755
-      version: -1
-      name: Done
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 895
-        }
-      }
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 910,
-        "width": 492.5,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
+fromversion: 3.6.0
+id: process_email_-_ews
 inputs:
-- key: EmailID
+- description: The EWS Email ID
+  key: EmailID
+  required: false
   value:
     complex:
-      root: incident
       accessor: labels.Email/ID
-  required: false
-  description: The EWS Email ID
+      root: incident
+name: Process Email - EWS
 outputs:
 - contextPath: Email
   description: The email object
@@ -254,5 +44,171 @@ outputs:
 - contextPath: File
   description: Email's Attachment
   type: unknown
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    nexttasks:
+      '#none#':
+      - '5'
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: d2585d98-8b18-443c-8f9d-fab76927940f
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: d2585d98-8b18-443c-8f9d-fab76927940f
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      attachment-ids: {}
+      item-id:
+        complex:
+          accessor: labels.Email/ID
+          root: incident
+      target-mailbox: {}
+    separatecontext: false
+    task:
+      brand: EWS v2
+      description: Get EWS email all attachments - file attachments and item attachments
+        (other email, calendar item, etc..)
+      id: 4c421b2d-b73c-42a3-8e74-c9fa804196b9
+      iscommand: true
+      name: Get attachments
+      script: EWS v2|||ews-get-attachment
+      type: regular
+      version: -1
+    taskid: 4c421b2d-b73c-42a3-8e74-c9fa804196b9
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '14':
+    id: '14'
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 18a0ed04-37fb-4af0-8b23-ef5468460755
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 18a0ed04-37fb-4af0-8b23-ef5468460755
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 895\n  }\n}"
+  '2':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: EWS.Items.ItemAttachments
+          operator: general.isExists
+      label: 'yes'
+    id: '2'
+    nexttasks:
+      '#default#':
+      - '14'
+      'yes':
+      - '3'
+    separatecontext: false
+    task:
+      brand: ''
+      description: Check if any item attachments exist.
+      id: 4e29788b-f10f-4afd-843d-954dc75bcd00
+      iscommand: false
+      name: Does the item "attachments" exist?
+      type: condition
+      version: -1
+    taskid: 4e29788b-f10f-4afd-843d-954dc75bcd00
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '3':
+    id: '3'
+    nexttasks:
+      '#none#':
+      - '14'
+    scriptarguments:
+      append:
+        simple: 'true'
+      extend-context: {}
+      key:
+        simple: Email
+      value:
+        simple: '${EWS.Items.ItemAttachments={To: val[''toRecipients''], CC: val[''ccRecipients''],
+          From: val[''sender''], Subject: val[''subject''], Text: val[''text_body''],
+          HTML: val[''body''], Headers: val[''headers'']}}'
+    separatecontext: false
+    task:
+      brand: ''
+      description: If email attachments exist - set Email context key with the item
+        values.
+      id: 86c8a1a4-96d2-4d5b-8d24-7710318ac280
+      iscommand: false
+      name: Set email context key
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 86c8a1a4-96d2-4d5b-8d24-7710318ac280
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 720\n  }\n}"
+  '5':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: string.isEqual
+                    right:
+                      value:
+                        simple: EWS v2
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: string.isEqual
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: general.isExists
+      label: 'yes'
+    id: '5'
+    nexttasks:
+      '#default#':
+      - '14'
+      'yes':
+      - '1'
+    separatecontext: false
+    task:
+      brand: ''
+      description: Check if EWSv2 exist
+      id: 16491843-3256-4f45-8615-a8ea30e68228
+      iscommand: false
+      name: Is this an EWSv2 incident?
+      type: condition
+      version: -1
+    taskid: 16491843-3256-4f45-8615-a8ea30e68228
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 195\n  }\n}"
 tests:
 - No test
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 910,\n      \"width\": 492.5,\n      \"x\": 50,\n      \"y\":\
+  \ 50\n    }\n  }\n}"

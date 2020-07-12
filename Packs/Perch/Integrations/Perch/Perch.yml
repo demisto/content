@@ -17,9 +17,9 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: Use system proxy settings
+- defaultvalue: ''
+  display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
   required: false
   type: 8
 - defaultvalue: '7'
@@ -415,10 +415,11 @@ script:
       description: ID of user that created the incident.
       type: Number
   dockerimage: demisto/python3:3.7.2.214
-  subtype: python3
   isfetch: true
   runonce: false
   script: ''
+  subtype: python3
   type: python
 tests:
 - Perch-Test
+toversion: 4.1.9

@@ -1,47 +1,35 @@
-id: Test - CrowdStrike Falcon
-version: -1
-name: Test - CrowdStrike Falcon
 fromversion: 4.1.0
-starttaskid: "0"
+id: Test - CrowdStrike Falcon
+inputs: []
+name: Test - CrowdStrike Falcon
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 3e20bf2e-cb18-4178-8efe-caa9e28b41b2
-    type: start
-    task:
-      id: 3e20bf2e-cb18-4178-8efe-caa9e28b41b2
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "9"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 50
-        }
-      }
+      - '9'
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
-    taskid: 554d6588-213b-4d3e-8f8c-d942c38a6703
-    type: regular
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 554d6588-213b-4d3e-8f8c-d942c38a6703
-      version: -1
-      name: Fetch from instance
-      scriptName: FetchFromInstance
-      type: regular
+      brand: ''
+      id: 3e20bf2e-cb18-4178-8efe-caa9e28b41b2
       iscommand: false
-      brand: ""
+      name: ''
+      version: -1
+    taskid: 3e20bf2e-cb18-4178-8efe-caa9e28b41b2
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    note: false
+    quietmode: 0
     scriptarguments:
       add_to_context: {}
       brand_name:
@@ -49,178 +37,148 @@ tasks:
       expect_data: {}
       instance_name: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "2":
-    id: "2"
-    taskid: 470a8a05-50c8-47e6-8d36-ce973abdc94d
-    type: regular
     task:
-      id: 470a8a05-50c8-47e6-8d36-ce973abdc94d
-      version: -1
-      name: Get detections by filter
-      script: '|||cs-falcon-search-detection'
+      brand: ''
+      id: 554d6588-213b-4d3e-8f8c-d942c38a6703
+      iscommand: false
+      name: Fetch from instance
+      scriptName: FetchFromInstance
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: 554d6588-213b-4d3e-8f8c-d942c38a6703
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
+    quietmode: 0
     scriptarguments:
       filter:
         simple: created_timestamp:>'2020-03-05T15:25:00Z'
       ids: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "3":
-    id: "3"
-    taskid: 2bb78f10-176c-4ace-859c-2862b513a442
-    type: condition
     task:
-      id: 2bb78f10-176c-4ace-859c-2862b513a442
+      brand: ''
+      id: 470a8a05-50c8-47e6-8d36-ce973abdc94d
+      iscommand: true
+      name: Get detections by filter
+      script: '|||cs-falcon-search-detection'
+      type: regular
       version: -1
-      name: Assert detections were fetched
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "4"
-    separatecontext: false
+    taskid: 470a8a05-50c8-47e6-8d36-ce973abdc94d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 370\n  }\n}"
+  '3':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: greaterThanOrEqual
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: CrowdStrike
                 accessor: Detection
+                root: CrowdStrike
                 transformers:
                 - operator: count
-            iscontext: true
+          operator: greaterThanOrEqual
           right:
             value:
-              simple: "1"
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
+              simple: '1'
+      label: 'yes'
+    id: '3'
     ignoreworker: false
-    skipunavailable: false
+    nexttasks:
+      'yes':
+      - '4'
+    note: false
     quietmode: 0
-  "4":
-    id: "4"
-    taskid: 9526ce2e-9a6b-4216-845d-b7d803051e39
-    type: regular
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 9526ce2e-9a6b-4216-845d-b7d803051e39
+      brand: ''
+      id: 2bb78f10-176c-4ace-859c-2862b513a442
+      iscommand: false
+      name: Assert detections were fetched
+      type: condition
       version: -1
+    taskid: 2bb78f10-176c-4ace-859c-2862b513a442
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 545\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      behavior_id:
+        simple: '10197'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 9526ce2e-9a6b-4216-845d-b7d803051e39
+      iscommand: true
       name: Get behavior
       script: '|||cs-falcon-get-behavior'
       type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      behavior_id:
-        simple: "10197"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "5":
-    id: "5"
-    taskid: 0c5b6fff-a2e8-4fea-819b-4bc2cd8e6434
-    type: condition
-    task:
-      id: 0c5b6fff-a2e8-4fea-819b-4bc2cd8e6434
       version: -1
-      name: Assert 'suspicious_activity' scenario
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "6"
-    separatecontext: false
+    taskid: 9526ce2e-9a6b-4216-845d-b7d803051e39
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 720\n  }\n}"
+  '5':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: CrowdStrike
                 accessor: Behavior.Scenario
-            iscontext: true
+                root: CrowdStrike
+          operator: isEqualString
           right:
             value:
               simple: suspicious_activity
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
+      label: 'yes'
+    id: '5'
     ignoreworker: false
-    skipunavailable: false
+    nexttasks:
+      'yes':
+      - '6'
+    note: false
     quietmode: 0
-  "6":
-    id: "6"
-    taskid: b36b37a0-434b-48ca-8683-6243354bdf4e
-    type: regular
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: b36b37a0-434b-48ca-8683-6243354bdf4e
+      brand: ''
+      id: 0c5b6fff-a2e8-4fea-819b-4bc2cd8e6434
+      iscommand: false
+      name: Assert 'suspicious_activity' scenario
+      type: condition
       version: -1
-      name: Get multiple devices
-      script: '|||cs-falcon-search-device'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: 0c5b6fff-a2e8-4fea-819b-4bc2cd8e6434
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 895\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
+    note: false
+    quietmode: 0
     scriptarguments:
       filter: {}
       hostname: {}
@@ -231,131 +189,105 @@ tasks:
       site_name: {}
       status: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "7":
-    id: "7"
-    taskid: 8b89d67a-947a-4e31-8f45-e9308846af86
-    type: condition
     task:
-      id: 8b89d67a-947a-4e31-8f45-e9308846af86
+      brand: ''
+      id: b36b37a0-434b-48ca-8683-6243354bdf4e
+      iscommand: true
+      name: Get multiple devices
+      script: '|||cs-falcon-search-device'
+      type: regular
       version: -1
-      name: Assert devices were fetched
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "8"
-    separatecontext: false
+    taskid: b36b37a0-434b-48ca-8683-6243354bdf4e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1070\n  }\n}"
+  '7':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: greaterThanOrEqual
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: CrowdStrike
                 accessor: Device
+                root: CrowdStrike
                 transformers:
                 - operator: count
-            iscontext: true
+          operator: greaterThanOrEqual
           right:
             value:
-              simple: "1"
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
+              simple: '1'
+      label: 'yes'
+    id: '7'
     ignoreworker: false
-    skipunavailable: false
+    nexttasks:
+      'yes':
+      - '8'
+    note: false
     quietmode: 0
-  "8":
-    id: "8"
-    taskid: dabf9864-0516-41de-8b0b-bfc4c58fe1cc
-    type: title
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: dabf9864-0516-41de-8b0b-bfc4c58fe1cc
+      brand: ''
+      id: 8b89d67a-947a-4e31-8f45-e9308846af86
+      iscommand: false
+      name: Assert devices were fetched
+      type: condition
       version: -1
+    taskid: 8b89d67a-947a-4e31-8f45-e9308846af86
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1245\n  }\n}"
+  '8':
+    id: '8'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: dabf9864-0516-41de-8b0b-bfc4c58fe1cc
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "9":
-    id: "9"
-    taskid: c0d9e042-0146-4d7e-863f-c00c6f62dad2
-    type: regular
-    task:
-      id: c0d9e042-0146-4d7e-863f-c00c6f62dad2
       version: -1
-      name: Clear context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: dabf9864-0516-41de-8b0b-bfc4c58fe1cc
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1420\n  }\n}"
+  '9':
+    id: '9'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
-      - "2"
+      - '1'
+      - '2'
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1435,
-        "width": 810,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    task:
+      brand: ''
+      id: c0d9e042-0146-4d7e-863f-c00c6f62dad2
+      iscommand: false
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: c0d9e042-0146-4d7e-863f-c00c6f62dad2
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 195\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1435,\n      \"width\": 810,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

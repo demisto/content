@@ -27,15 +27,11 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: |-
-  Endpoint protection and response stops threats on endpoints and coordinates enforcement with network and cloud security to prevent successful cyberattacks.
-  The integration enables the following abilities:
-    - Initiate scans.
-    - Retrieve files from events.
-    - Isolate endpoints.
-    - Quarantine files.
-    - Add and remove hashes from blacklist.
-    - Getting endpoints info.
+description: "Endpoint protection and response stops threats on endpoints and coordinates\
+  \ enforcement with network and cloud security to prevent successful cyberattacks.\n\
+  The integration enables the following abilities:\n  - Initiate scans.\n  - Retrieve\
+  \ files from events.\n  - Isolate endpoints.\n  - Quarantine files.\n  - Add and\
+  \ remove hashes from blacklist.\n  - Getting endpoints info."
 display: Palo Alto Networks Traps
 name: Traps
 script:
@@ -391,3 +387,4 @@ script:
   type: python
 tests:
 - Traps test
+toversion: 4.1.9

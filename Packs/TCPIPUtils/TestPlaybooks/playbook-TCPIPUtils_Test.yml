@@ -1,79 +1,61 @@
 id: TCPUtils-Test
-version: -1
+inputs: []
 name: Tcpiputlis Test Playbook
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 79784982-3d32-4ed9-8906-cd8da7a7dfb8
-    type: start
-    task:
-      id: 79784982-3d32-4ed9-8906-cd8da7a7dfb8
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 447,
-          "y": -140
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "1":
-    id: "1"
-    taskid: e0a74686-e777-42ef-8233-d24b739a2afa
-    type: regular
-    task:
-      id: e0a74686-e777-42ef-8233-d24b739a2afa
-      version: -1
-      name: ip
-      description: get information for ip
-      script: TCPIPUtils|||ip
-      type: regular
-      iscommand: true
-      brand: TCPIPUtils
     nexttasks:
       '#none#':
-      - "2"
-      - "4"
+      - '5'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 79784982-3d32-4ed9-8906-cd8da7a7dfb8
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 79784982-3d32-4ed9-8906-cd8da7a7dfb8
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 447,\n    \"y\": -140\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+      - '4'
+    note: false
+    quietmode: 0
     scriptarguments:
       ip:
         simple: tcpiputils.com
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 230
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "2":
-    id: "2"
-    taskid: c1402d0a-75cd-458e-895e-5f8f71dfa863
-    type: regular
     task:
-      id: c1402d0a-75cd-458e-895e-5f8f71dfa863
-      version: -1
-      name: VerifyIPOutput
-      script: VerifyContextFields
+      brand: TCPIPUtils
+      description: get information for ip
+      id: e0a74686-e777-42ef-8233-d24b739a2afa
+      iscommand: true
+      name: ip
+      script: TCPIPUtils|||ip
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: e0a74686-e777-42ef-8233-d24b739a2afa
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
+    note: false
+    quietmode: 0
     scriptarguments:
       expectedValue:
         simple: '"AS13335"'
@@ -98,30 +80,24 @@ tasks:
         simple: ${IP.Address}
       value4: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 120,
-          "y": 477
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "4":
-    id: "4"
-    taskid: 04c5abc5-d6e2-4270-841d-9b933c325064
-    type: regular
     task:
-      id: 04c5abc5-d6e2-4270-841d-9b933c325064
-      version: -1
-      name: VerifyContext
-      script: VerifyContext
-      type: regular
+      brand: ''
+      id: c1402d0a-75cd-458e-895e-5f8f71dfa863
       iscommand: false
-      brand: ""
+      name: VerifyIPOutput
+      script: VerifyContextFields
+      type: regular
+      version: -1
+    taskid: c1402d0a-75cd-458e-895e-5f8f71dfa863
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 120,\n    \"y\": 477\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
+    note: false
+    quietmode: 0
     scriptarguments:
       expectedValue: {}
       fields:
@@ -129,61 +105,47 @@ tasks:
       path:
         simple: IP
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1130,
-          "y": 477
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "5":
-    id: "5"
-    taskid: 0bfe087f-2db5-4fe5-8558-026bec69711c
-    type: regular
     task:
-      id: 0bfe087f-2db5-4fe5-8558-026bec69711c
+      brand: ''
+      id: 04c5abc5-d6e2-4270-841d-9b933c325064
+      iscommand: false
+      name: VerifyContext
+      script: VerifyContext
+      type: regular
       version: -1
+    taskid: 04c5abc5-d6e2-4270-841d-9b933c325064
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1130,\n    \"y\": 477\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: 'yes'
+      key: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 0bfe087f-2db5-4fe5-8558-026bec69711c
+      iscommand: false
       name: DeleteContext
       script: DeleteContext
       type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 447,
-          "y": 27
-        }
-      }
-    note: false
+      version: -1
+    taskid: 0bfe087f-2db5-4fe5-8558-026bec69711c
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 712,
-        "width": 1390,
-        "x": 120,
-        "y": -140
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 447,\n    \"y\": 27\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 712,\n      \"width\": 1390,\n      \"x\": 120,\n      \"y\":\
+  \ -140\n    }\n  }\n}"

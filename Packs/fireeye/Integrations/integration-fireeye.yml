@@ -1,469 +1,118 @@
+category: Forensics & Malware Analysis
 commonfields:
   id: fireeye
   version: -1
-name: fireeye
-fromversion: 3.5.0
-display: FireEye (AX Series)
-category: Forensics & Malware Analysis
-image: data:image/png;base64,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
-description: Perform malware dynamic analysis
 configuration:
-- display: Server URL (e.g. https://192.168.0.1)
+- defaultvalue: ''
+  display: Server URL (e.g. https://192.168.0.1)
   name: server
-  defaultvalue: ""
-  type: 0
   required: true
-- display: Username
-  name: credentials
-  defaultvalue: ""
-  type: 9
-  required: false
-- display: Client token
-  name: clientToken
-  defaultvalue: ""
-  type: 4
-  required: false
-- display: Version
-  name: version
-  defaultvalue: 1.1.0
   type: 0
+- defaultvalue: ''
+  display: Username
+  name: credentials
   required: false
-- display: Trust any certificate (not secure)
+  type: 9
+- defaultvalue: ''
+  display: Client token
+  name: clientToken
+  required: false
+  type: 4
+- defaultvalue: 1.1.0
+  display: Version
+  name: version
+  required: false
+  type: 0
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
-  type: 8
   required: false
-- display: Use system proxy settings
+  type: 8
+- defaultvalue: ''
+  display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
+description: Perform malware dynamic analysis
+display: FireEye (AX Series)
+fromversion: 3.5.0
+image: data:image/png;base64,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
+name: fireeye
 script:
-  script: |-
-    server = params.server.replace(/[\/]+$/, '') + '/wsapis/v' + params.version + '/';
-    commandDictionary = {
-        login: {
-            url: 'auth/login',
-            method: 'POST',
-        },
-        logout: {
-            url: 'auth/logout',
-            method: 'POST',
-        },
-        'fe-report': {
-            url: 'reports/report',
-            method: 'GET',
-        },
-        'fe-submit-status': {
-            url: 'submissions/status/%submission_Key%',
-            method: 'GET',
-            setContentType: true,
-            extended: true,
-            translator: [
-                {
-                    contextPath: 'FireEyeAX.Submissions(val.Key==obj.Key)',
-                    title: 'FireEye Submission',
-                    data: [
-                        {to: 'Key', from: 'submission_Key'},
-                        {to: 'Status', from: 'submissionStatus'},
-                    ]
-                }
-            ],
-        },
-        'fe-submit-url-status': {
-            url: 'submissions/status/%submission_Key%',
-            method: 'GET',
-            setContentType: true,
-            extended: true,
-            translator: [
-                {
-                    contextPath: 'FireEyeAX.Submissions.URL(val.Key==obj.Key)',
-                    title: 'FireEye Submission',
-                    data: [
-                        {to: 'Key', from: 'submission_Key'},
-                        {to: 'Status', from: 'status'},
-                        {to: 'ID', from: 'response.id'},
-                    ]
-                }
-            ],
-        },
-        'fe-alert': {
-            url: 'alerts',
-            method: 'GET',
-            setContentType: true,
-        },
-        'fe-submit-result': {
-            url: 'submissions/results/%submission_Key%',
-            method: 'GET',
-            setContentType: true,
-            extended: true,
-            translator: [
-                {
-                    contextPath: 'FireEyeAX.Submissions(val.Key==obj.Key)',
-                    title: 'FireEye Submission Result',
-                    data: [
-                        {to: 'Key', from: 'submission_Key'},
-                        {to: 'Severity', from: 'alerts.alert.-severity'},
-                    ]
-                }
-            ],
-        },
-        'fe-submit-url-result': {
-            url: 'submissions/results/%submissionID%',
-            method: 'GET',
-            setContentType: true,
-            extended: true,
-            translator: [
-                {
-                    contextPath: 'FireEyeAX.Submissions.URL(val.Key==obj.Key)',
-                    title: 'FireEye Submission Result',
-                    data: [
-                        {to: 'ID', from: 'alerts.alert.-id'},
-                        {to: 'Severity', from: 'alerts.alert.-severity'},
-                    ]
-                }
-            ],
-        },
-        'fe-config': {
-            url: 'config',
-            method: 'GET',
-            extended: true,
-            translator: [
-                {
-                    contextPath: 'FireEyeAX.Sensors(val.ID==obj.ID)',
-                    title: 'FireEye Configuration',
-                    data: [
-                        {to: 'Address', from: 'sysconfig.sensors.sensor.-address'},
-                        {to: 'ID', from: 'sysconfig.sensors.sensor.-id'},
-                        {to: 'SensorName', from: 'sysconfig.sensors.sensor.-sensor_name'},
-                        {to: 'Profiles-ID', from: 'sysconfig.sensors.sensor.profiles.profile.-id'},
-                        {to: 'Profiles-Name', from: 'sysconfig.sensors.sensor.profiles.profile.-name'},
-                        {to: 'Profile-Applications', from: 'sysconfig.sensors.sensor.profiles.profile.applications.application'}
-                    ]
-                }
-            ],
-        },
-        'fe-submit': {
-            extended: true,
-            translator: [
-                {
-                    contextPath: 'FireEyeAX.Submissions(val.Key==obj.Key)',
-                    title: 'FireEye Submission',
-                    data: [
-                        {to: 'Key', from: 'ID'},
-                    ]
-                }
-            ],
-        },
-        'fe-submit-url': {
-            extended: true,
-            translator: [
-                {
-                    contextPath: 'FireEyeAX.Submissions.URL(val.Key==obj.Key)',
-                    title: 'FireEye Submission',
-                    data: [
-                        {to: 'Key', from: 'id'},
-                    ]
-                }
-            ],
-        }
-    };
-
-    function createContext(data, id) {
-        var createContextSingle = function(obj) {
-            var res = {};
-            var keys = Object.keys(obj);
-            keys.forEach(function(k) {
-                var values = k.split('-');
-                var current = res;
-                for (var j = 0; j<values.length - 1; j++) {
-                    if (!current[values[j]]) {
-                        current[values[j]] = {};
-                    }
-                    current = current[values[j]];
-                }
-                current[values[j]] = obj[k];
-            });
-            if (!res.ID && id) {
-                res.ID = id;
-            }
-            return res;
-        };
-        if (data instanceof Array) {
-            var res = [];
-            for (var j=0; j < data.length; j++) {
-                res.push(createContextSingle(data[j]));
-            }
-            return res;
-        }
-        return createContextSingle(data);
-    }
-
-    function mapObjFunction(mapFields, filter) {
-        var transformSingleObj= function(obj) {
-            var res = {};
-            mapFields.forEach(function(f) {
-                res[f.to] = dq(obj, f.from);
-            });
-            if (filter && !filter(res)) {
-                return undefined;
-            }
-            return res;
-        };
-        return function(obj) {
-            if (obj instanceof Array) {
-                var res = [];
-                for (var j=0; j < obj.length; j++) {
-                    var current = transformSingleObj(obj[j]);
-                    if (current) {
-                        res.push(current);
-                    }
-                }
-                return res;
-            }
-            return transformSingleObj(obj);
-        };
-    }
-
-    var submissionKey = args['submission_Key'];
-
-    var getFileName = function(args) {
-        var reportType = args['report_type'] || 'unknown';
-        var startTime = args['start_time'] ||  'unknown';
-        var endTime = args['end_time'] || 'unknown';
-        var type = args['type'] || 'unknown';
-        return reportType + '_from_' + startTime + '_to_' + endTime + '.' + type;
-    }
-
-    var sendRequest = function(url, method, token, setContentType, args) {
-        var headers = {};
-        if (setContentType) {
-          headers['Content-Type'] = ['application/json'];
-        }
-        var httpParams = {
-           Method: method,
-           Body: (method === ('POST' && args) ? encodeToURLQuery(args).replace(/^\?/, '') : undefined)
-        };
-        if (params.clientToken) {
-            headers['X-FeClient-Token'] = [params.clientToken];
-        }
-        if (token) {
-           headers['X-FeApi-Token'] = token;
-        } else {
-           httpParams.Username = params.credentials.identifier;
-           httpParams.Password = params.credentials.password;
-        }
-        httpParams.Headers = headers;
-        var res = http(
-                server + url + (method === 'GET' && method ? encodeToURLQuery(args) : ''),
-                httpParams,
-                params.insecure,
-                params.proxy
-            );
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            if (url !== commandDictionary.login.url && url !== commandDictionary.logout.url) {
-              sendRequest(commandDictionary.logout.url, commandDictionary.logout.method, token);
-            }
-            throw 'Request submissions failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
-        }
-        return res;
-    }
-
-    var token = sendRequest(commandDictionary.login.url, commandDictionary.login.method).Headers['X-Feapi-Token'];
-    var result;
-    switch (command) {
-        case 'test-module':
-            sendRequest(commandDictionary.logout.url, commandDictionary.logout.method, token);
-            return 'ok';
-        case 'fe-report':
-            var response = sendRequest(commandDictionary[command].url, commandDictionary[command].method, token, commandDictionary[command].setContentType, args);
-            var filename = getFileName(args);
-            result = {Type: 9, FileID: saveFile(response.Bytes), File: filename, Contents: filename};
-            break;
-        case 'fe-submit':
-            if (args.profiles) {
-                args.profiles = args.profiles.split(',');
-                for (var k in args.profiles) {
-                  args.profiles[k] = args.profiles[k].trim();
-                }
-            }
-            id = args.upload || args.uploadFile;
-            delete(args.upload)
-            delete(args.uploadFile)
-            res = httpMultipart(
-                 server + 'submissions',
-                 id,
-                 {
-                     Headers: {
-                        'X-FeClient-Token': params.clientToken ? [params.clientToken] : undefined,
-                        'X-FeApi-Token': token,
-                        'Accept': ['*/*']
-                     },
-                 },
-                 {
-                    'options': JSON.stringify(args)
-                 },
-                 params.insecure,
-                 params.proxy,
-                 undefined,
-                 'filename'
-             );
-             if (res.StatusCode < 200 || res.StatusCode >= 300) {
-               sendRequest(commandDictionary.logout.url, commandDictionary.logout.method, token);
-               throw 'Request submissions failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
-              }
-              result = JSON.parse(res.Body);
-              break;
-        case 'fe-submit-url':
-            var profiles = args.profiles.split(',');
-            var urls = args.urls.split(',');
-            var res = http(
-                server + 'submissions/url',
-                {
-                    Method: 'POST',
-                    Headers: {'Content-Type': ['application/json'],'X-FeApi-Token': token},
-                    Body: JSON.stringify({"timeout":args.timeout, "priority":args.priority, "profiles":profiles, "application":args.application, "force":args.force, "analysistype":args.analysistype, "prefetch":args.prefetch, "urls":urls})
-                },
-                params.insecure,
-                params.proxy
-             );
-            if (res.StatusCode < 200 || res.StatusCode >= 300 || res.success === false) {
-                throw 'FireEye URL Submission Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + res.Body + '.';
-            }
-            result = JSON.parse(res.Body);
-            break;
-        default:
-            respoonse = sendRequest(replaceInTemplatesAndRemove(commandDictionary[command].url, args), commandDictionary[command].method, token, commandDictionary[command].setContentType, args);
-            result = respoonse.Body;
-            contentType = respoonse.Headers && respoonse.Headers['Content-Type'] && respoonse.Headers['Content-Type'][0];
-            if (contentType && contentType.indexOf('application/json') !== -1) {
-              result = JSON.parse(respoonse.Body);
-            }
-            if (contentType && contentType.indexOf('application/xml') !== -1) {
-              result = JSON.parse(x2j(respoonse.Body));
-            }
-    }
-    sendRequest(commandDictionary.logout.url, commandDictionary.logout.method, token);
-
-    if (typeof result === 'object' && !result['submission_Key']) {
-      result['submission_Key'] = submissionKey;
-    }
-
-    currentCommand = commandDictionary[command];
-    var entries = [];
-    if (currentCommand.extended) {
-        if(command === 'fe-submit-url'){
-            result = result.response
-        }
-        for (var j in currentCommand.translator) {
-            var current = currentCommand.translator[j];
-            var entry = {
-                Type: entryTypes.note,
-                Contents: result,
-                ContentsFormat: formats.json,
-            };
-            var currentContent = current.innerPath ? dq(result, current.innerPath) : result;
-            var translated = mapObjFunction(current.data) (current.countingDict ? toArray(currentContent) : currentContent);
-            entry.ReadableContentsFormat = formats.markdown;
-            entry.HumanReadable = tableToMarkdown(current.title,translated);
-            entry.EntryContext = {};
-            var context = createContext(translated);
-            entry.EntryContext[current.contextPath] = context;
-
-            if(command === 'fe-submit-result' || command === 'fe-submit-url-result'){
-                var md5 = result.alerts.alert.explanation['malware-detected'].malware.md5sum;
-                if(context.Severity === 'majr'){
-                    entry.EntryContext.DBotScore = [{'Indicator': md5, 'Type': 'hash', 'Vendor': 'Fireeye', 'Score': 3}];
-                    var malFile = {};
-                    addMalicious(malFile, outputPaths.file, {
-                            MD5: md5,
-                            Malicious: {Vendor: 'Fireeye'}
-                    });
-                    entry.EntryContext[outputPaths.file] =[malFile[outputPaths.file]];
-                }
-                else{
-                    entry.EntryContext.DBotScore = [{'Indicator': md5, 'Type': 'hash', 'Vendor': 'Fireeye', 'Score': 0}];
-                }
-            }
-            entries.push(entry);
-        }
-    }
-    else {return result};
-    return entries;
-  type: javascript
   commands:
-  - name: fe-report
-    arguments:
-    - name: report_type
+  - arguments:
+    - description: commands.server.feReport.arguments.reportType.description
+      name: report_type
       required: true
-      description: commands.server.feReport.arguments.reportType.description
-    - name: type
+    - description: commands.server.feReport.arguments.type.description
+      name: type
       required: true
-      description: commands.server.feReport.arguments.type.description
-    - name: start_time
+    - description: Report start time
+      name: start_time
       required: true
-      description: Report start time
-    - name: end_time
+    - description: Report end time
+      name: end_time
       required: true
-      description: Report end time
-    - name: command
-      description: Report command
-    - name: module
-      description: Report module
-    - name: frame
-      description: commands.server.feReport.arguments.frame.description
+    - description: Report command
+      name: command
+    - description: Report module
+      name: module
+    - description: commands.server.feReport.arguments.frame.description
+      name: frame
     description: commands.server.feReport.description
-  - name: fe-submit-status
-    arguments:
-    - name: submission_Key
+    name: fe-report
+  - arguments:
+    - description: commands.server.feSubmit.arguments.submissionKey.description
+      name: submission_Key
       required: true
-      description: commands.server.feSubmit.arguments.submissionKey.description
+    description: commands.server.feSubmitStatus.description
+    name: fe-submit-status
     outputs:
     - contextPath: FireEyeAX.Submissions.Key
       description: The file submission key
     - contextPath: FireEyeAX.Submissions.Status
       description: The file submission status
-    description: commands.server.feSubmitStatus.description
-  - name: fe-alert
-    arguments:
-    - name: duration
-      description: commands.server.feAlert.arguments.duration.description
-    - name: start_time
-      description: commands.server.feAlert.arguments.startTime.description
-    - name: end_time
-      description: commands.server.feAlert.arguments.endTime.description
-    - name: src_ip
-      description: commands.server.feAlert.arguments.srcIP.description
-    - name: dst_ip
-      description: commands.server.feAlert.arguments.dstIP.description
-    - name: malware_name
-      description: commands.server.feAlert.arguments.malwareName.description
-    - name: malware_type
-      description: commands.server.feAlert.arguments.malwareType.description
-    - name: sender_email
-      description: commands.server.feAlert.arguments.senderMail.description
-    - name: recipient_email
-      description: commands.server.feAlert.arguments.recipientEMail.description
-    - name: file_name
-      description: commands.server.feAlert.arguments.fileName.description
-    - name: file_type
-      description: commands.server.feAlert.arguments.fileType.description
-    - name: url
-      description: commands.server.feAlert.arguments.url.description
-    - name: md5
-      description: commands.server.feAlert.arguments.md5.description
-    - name: info_level
-      description: commands.server.feAlert.arguments.infoLevel.description
-    - name: callback_domain
-      description: commands.server.feAlert.arguments.callbackDomain.description
+  - arguments:
+    - description: commands.server.feAlert.arguments.duration.description
+      name: duration
+    - description: commands.server.feAlert.arguments.startTime.description
+      name: start_time
+    - description: commands.server.feAlert.arguments.endTime.description
+      name: end_time
+    - description: commands.server.feAlert.arguments.srcIP.description
+      name: src_ip
+    - description: commands.server.feAlert.arguments.dstIP.description
+      name: dst_ip
+    - description: commands.server.feAlert.arguments.malwareName.description
+      name: malware_name
+    - description: commands.server.feAlert.arguments.malwareType.description
+      name: malware_type
+    - description: commands.server.feAlert.arguments.senderMail.description
+      name: sender_email
+    - description: commands.server.feAlert.arguments.recipientEMail.description
+      name: recipient_email
+    - description: commands.server.feAlert.arguments.fileName.description
+      name: file_name
+    - description: commands.server.feAlert.arguments.fileType.description
+      name: file_type
+    - description: commands.server.feAlert.arguments.url.description
+      name: url
+    - description: commands.server.feAlert.arguments.md5.description
+      name: md5
+    - description: commands.server.feAlert.arguments.infoLevel.description
+      name: info_level
+    - description: commands.server.feAlert.arguments.callbackDomain.description
+      name: callback_domain
     description: commands.server.feAlert.description
-  - name: fe-submit-result
-    arguments:
-    - name: submission_Key
+    name: fe-alert
+  - arguments:
+    - description: commands.server.feSubmit.arguments.submissionKey.description
+      name: submission_Key
       required: true
-      description: commands.server.feSubmit.arguments.submissionKey.description
-    - name: info_level
-      description: commands.server.feAlert.arguments.infoLevel.description
+    - description: commands.server.feAlert.arguments.infoLevel.description
+      name: info_level
+    description: Results of the file submission
+    name: fe-submit-result
     outputs:
     - contextPath: FireEyeAX.Submissions.Key
       description: The submission key
@@ -481,45 +130,45 @@ script:
       description: Bad hash found
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision
-    description: Results of the file submission
-  - name: fe-submit
-    arguments:
-    - name: upload
+  - arguments:
+    - deprecated: true
       description: commands.server.feSubmit.arguments.upload.description
-      deprecated: true
-    - name: uploadFile
-      description: commands.server.feSubmit.arguments.uploadFile.description
-    - name: analysistype
+      name: upload
+    - description: commands.server.feSubmit.arguments.uploadFile.description
+      name: uploadFile
+    - description: commands.server.feSubmit.arguments.analysisType.description
+      name: analysistype
       required: true
-      description: commands.server.feSubmit.arguments.analysisType.description
-    - name: profiles
+    - description: commands.server.feSubmit.arguments.profile.description
+      name: profiles
       required: true
-      description: commands.server.feSubmit.arguments.profile.description
-    - name: application
+    - description: commands.server.feSubmit.arguments.application.description
+      name: application
       required: true
-      description: commands.server.feSubmit.arguments.application.description
-    - name: priority
+    - description: commands.server.feSubmit.arguments.priority.description
+      name: priority
       required: true
-      description: commands.server.feSubmit.arguments.priority.description
-    - name: force
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+    - auto: PREDEFINED
       description: commands.server.feSubmit.arguments.force.description
-    - name: prefetch
+      name: force
+      predefined:
+      - 'true'
+      - 'false'
       required: true
-      description: commands.server.feSubmit.arguments.prefetch.description
-    - name: timeout
+    - description: commands.server.feSubmit.arguments.prefetch.description
+      name: prefetch
       required: true
-      description: commands.server.feSubmit.arguments.timeout.description
+    - description: commands.server.feSubmit.arguments.timeout.description
+      name: timeout
+      required: true
+    description: commands.server.feSubmit.description
+    name: fe-submit
     outputs:
     - contextPath: FireEyeAX.Submissions.Key
       description: The file submission key
-    description: commands.server.feSubmit.description
-  - name: fe-config
-    arguments: []
+  - arguments: []
+    description: commands.server.feConfig.description
+    name: fe-config
     outputs:
     - contextPath: FireEyeAX.Sensors.Address
       description: Sensor IP address
@@ -535,73 +184,74 @@ script:
       description: FireEye application ID
     - contextPath: FFireEyeAX.Sensors.Profiles.Applications.-name
       description: FireEye application name
-    description: commands.server.feConfig.description
-  - name: fe-submit-url
-    arguments:
-    - name: analysistype
-      required: true
-      auto: PREDEFINED
+  - arguments:
+    - auto: PREDEFINED
+      description: "Specify live or sandbox analysis mode. 1\u2014Live, analyze suspected\
+        \ malware objects live within the MAS Multivector Virtual Execution (MVX)\
+        \ analysis engine. 2\u2014Sandbox, analyze suspected malware objects in a\
+        \ closed, protected environment. Example: analysisType=1"
+      name: analysistype
       predefined:
-      - "1"
-      - "2"
-      description: 'Specify live or sandbox analysis mode. 1—Live, analyze suspected
-        malware objects live within the MAS Multivector Virtual Execution (MVX) analysis
-        engine. 2—Sandbox, analyze suspected malware objects in a closed, protected
-        environment. Example: analysisType=1'
-    - name: profiles
+      - '1'
+      - '2'
       required: true
-      description: Select the MAS profile to use for analysis. To determine the available
+    - description: Select the MAS profile to use for analysis. To determine the available
         profiles, use the configuration command.  To submit profiles, add them as
         a parameter using a comma to separate them.  For example, profiles="win7-sp1,winxp-sp3"
-    - name: application
+      name: profiles
       required: true
-      description: 'Specifies the application to be used for the analysis. To determine
+    - description: 'Specifies the application to be used for the analysis. To determine
         the available applications  for a specific profile, use the configuration
         command. Note: Setting the application value to 0, allows the MAS to determine
         the file type for you'
-    - name: priority
+      name: application
       required: true
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: "Sets the analysis priority: 0\u2014Normal, adds analysis to the\
+        \ bottom of queue. 1\u2014Urgent, places the analysis at the top of the queue"
+      name: priority
       predefined:
-      - "0"
-      - "1"
-      description: 'Sets the analysis priority: 0—Normal, adds analysis to the bottom
-        of queue. 1—Urgent, places the analysis at the top of the queue'
-    - name: force
+      - '0'
+      - '1'
       required: true
-      auto: PREDEFINED
-      predefined:
-      - "false"
-      - "true"
+    - auto: PREDEFINED
       description: 'Specify whether to perform an analysis on the malware object even
         if the object exactly matches an analysis that has already been performed.
         In most cases, it is not necessary to reanalyze malware. (default: false)
         False, Do not analyze duplicate objects. True, Force analysis'
-    - name: prefetch
-      required: true
-      auto: PREDEFINED
+      name: force
       predefined:
-      - "0"
-      - "1"
-      description: Specifies whether to determine the file target based on an internal
-        determination rather than browsing to the target location. 0—No 1—Yes. If
-        analysistype is set to 0 for sandbox analysis, prefetch must be set to 1.
-    - name: timeout
+      - 'false'
+      - 'true'
       required: true
-      description: Sets the analysis timeout (in seconds)
-    - name: urls
+    - auto: PREDEFINED
+      description: "Specifies whether to determine the file target based on an internal\
+        \ determination rather than browsing to the target location. 0\u2014No 1\u2014\
+        Yes. If analysistype is set to 0 for sandbox analysis, prefetch must be set\
+        \ to 1."
+      name: prefetch
+      predefined:
+      - '0'
+      - '1'
       required: true
-      description: URLs to be analyzed. To submit URLs, add them as a parameter using
+    - description: Sets the analysis timeout (in seconds)
+      name: timeout
+      required: true
+    - description: URLs to be analyzed. To submit URLs, add them as a parameter using
         a comma to separate them.  For example, urls="www.demisto.com,www.google.com"
+      name: urls
+      required: true
+    description: Submit a url for analysis by FireEye
+    name: fe-submit-url
     outputs:
     - contextPath: FireEyeAX.Submissions.Key
       description: The file submission key
-    description: Submit a url for analysis by FireEye
-  - name: fe-submit-url-status
-    arguments:
-    - name: submission_Key
+  - arguments:
+    - description: Submission key of the submission
+      name: submission_Key
       required: true
-      description: Submission key of the submission
+    description: Get a status for a url submitted to FireEye analysis
+    name: fe-submit-url-status
     outputs:
     - contextPath: FireEyeAX.Submissions.Key
       description: The url submission key
@@ -609,16 +259,16 @@ script:
       description: The url submission status
     - contextPath: FireEyeAX.Submissions.ID
       description: The ID of URL submission results
-    description: Get a status for a url submitted to FireEye analysis
-  - name: fe-submit-url-result
-    arguments:
-    - name: submissionID
+  - arguments:
+    - description: Submission ID of the submission
+      name: submissionID
       required: true
-      description: Submission ID of the submission
-    - name: info_level
-      description: 'Specifies the level of information to be returned. Unless otherwise
+    - description: 'Specifies the level of information to be returned. Unless otherwise
         specified, the info_level is set to concise. You can select the following
         information levels concise: (default), normal, extended'
+      name: info_level
+    description: Results of the URL submission
+    name: fe-submit-url-result
     outputs:
     - contextPath: FireEyeAX.Submissions.Key
       description: The submission key
@@ -634,7 +284,164 @@ script:
       description: Bad hash found
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision
-    description: Results of the URL submission
   runonce: false
+  script: "server = params.server.replace(/[\\/]+$/, '') + '/wsapis/v' + params.version\
+    \ + '/';\ncommandDictionary = {\n    login: {\n        url: 'auth/login',\n  \
+    \      method: 'POST',\n    },\n    logout: {\n        url: 'auth/logout',\n \
+    \       method: 'POST',\n    },\n    'fe-report': {\n        url: 'reports/report',\n\
+    \        method: 'GET',\n    },\n    'fe-submit-status': {\n        url: 'submissions/status/%submission_Key%',\n\
+    \        method: 'GET',\n        setContentType: true,\n        extended: true,\n\
+    \        translator: [\n            {\n                contextPath: 'FireEyeAX.Submissions(val.Key==obj.Key)',\n\
+    \                title: 'FireEye Submission',\n                data: [\n     \
+    \               {to: 'Key', from: 'submission_Key'},\n                    {to:\
+    \ 'Status', from: 'submissionStatus'},\n                ]\n            }\n   \
+    \     ],\n    },\n    'fe-submit-url-status': {\n        url: 'submissions/status/%submission_Key%',\n\
+    \        method: 'GET',\n        setContentType: true,\n        extended: true,\n\
+    \        translator: [\n            {\n                contextPath: 'FireEyeAX.Submissions.URL(val.Key==obj.Key)',\n\
+    \                title: 'FireEye Submission',\n                data: [\n     \
+    \               {to: 'Key', from: 'submission_Key'},\n                    {to:\
+    \ 'Status', from: 'status'},\n                    {to: 'ID', from: 'response.id'},\n\
+    \                ]\n            }\n        ],\n    },\n    'fe-alert': {\n   \
+    \     url: 'alerts',\n        method: 'GET',\n        setContentType: true,\n\
+    \    },\n    'fe-submit-result': {\n        url: 'submissions/results/%submission_Key%',\n\
+    \        method: 'GET',\n        setContentType: true,\n        extended: true,\n\
+    \        translator: [\n            {\n                contextPath: 'FireEyeAX.Submissions(val.Key==obj.Key)',\n\
+    \                title: 'FireEye Submission Result',\n                data: [\n\
+    \                    {to: 'Key', from: 'submission_Key'},\n                  \
+    \  {to: 'Severity', from: 'alerts.alert.-severity'},\n                ]\n    \
+    \        }\n        ],\n    },\n    'fe-submit-url-result': {\n        url: 'submissions/results/%submissionID%',\n\
+    \        method: 'GET',\n        setContentType: true,\n        extended: true,\n\
+    \        translator: [\n            {\n                contextPath: 'FireEyeAX.Submissions.URL(val.Key==obj.Key)',\n\
+    \                title: 'FireEye Submission Result',\n                data: [\n\
+    \                    {to: 'ID', from: 'alerts.alert.-id'},\n                 \
+    \   {to: 'Severity', from: 'alerts.alert.-severity'},\n                ]\n   \
+    \         }\n        ],\n    },\n    'fe-config': {\n        url: 'config',\n\
+    \        method: 'GET',\n        extended: true,\n        translator: [\n    \
+    \        {\n                contextPath: 'FireEyeAX.Sensors(val.ID==obj.ID)',\n\
+    \                title: 'FireEye Configuration',\n                data: [\n  \
+    \                  {to: 'Address', from: 'sysconfig.sensors.sensor.-address'},\n\
+    \                    {to: 'ID', from: 'sysconfig.sensors.sensor.-id'},\n     \
+    \               {to: 'SensorName', from: 'sysconfig.sensors.sensor.-sensor_name'},\n\
+    \                    {to: 'Profiles-ID', from: 'sysconfig.sensors.sensor.profiles.profile.-id'},\n\
+    \                    {to: 'Profiles-Name', from: 'sysconfig.sensors.sensor.profiles.profile.-name'},\n\
+    \                    {to: 'Profile-Applications', from: 'sysconfig.sensors.sensor.profiles.profile.applications.application'}\n\
+    \                ]\n            }\n        ],\n    },\n    'fe-submit': {\n  \
+    \      extended: true,\n        translator: [\n            {\n               \
+    \ contextPath: 'FireEyeAX.Submissions(val.Key==obj.Key)',\n                title:\
+    \ 'FireEye Submission',\n                data: [\n                    {to: 'Key',\
+    \ from: 'ID'},\n                ]\n            }\n        ],\n    },\n    'fe-submit-url':\
+    \ {\n        extended: true,\n        translator: [\n            {\n         \
+    \       contextPath: 'FireEyeAX.Submissions.URL(val.Key==obj.Key)',\n        \
+    \        title: 'FireEye Submission',\n                data: [\n             \
+    \       {to: 'Key', from: 'id'},\n                ]\n            }\n        ],\n\
+    \    }\n};\n\nfunction createContext(data, id) {\n    var createContextSingle\
+    \ = function(obj) {\n        var res = {};\n        var keys = Object.keys(obj);\n\
+    \        keys.forEach(function(k) {\n            var values = k.split('-');\n\
+    \            var current = res;\n            for (var j = 0; j<values.length -\
+    \ 1; j++) {\n                if (!current[values[j]]) {\n                    current[values[j]]\
+    \ = {};\n                }\n                current = current[values[j]];\n  \
+    \          }\n            current[values[j]] = obj[k];\n        });\n        if\
+    \ (!res.ID && id) {\n            res.ID = id;\n        }\n        return res;\n\
+    \    };\n    if (data instanceof Array) {\n        var res = [];\n        for\
+    \ (var j=0; j < data.length; j++) {\n            res.push(createContextSingle(data[j]));\n\
+    \        }\n        return res;\n    }\n    return createContextSingle(data);\n\
+    }\n\nfunction mapObjFunction(mapFields, filter) {\n    var transformSingleObj=\
+    \ function(obj) {\n        var res = {};\n        mapFields.forEach(function(f)\
+    \ {\n            res[f.to] = dq(obj, f.from);\n        });\n        if (filter\
+    \ && !filter(res)) {\n            return undefined;\n        }\n        return\
+    \ res;\n    };\n    return function(obj) {\n        if (obj instanceof Array)\
+    \ {\n            var res = [];\n            for (var j=0; j < obj.length; j++)\
+    \ {\n                var current = transformSingleObj(obj[j]);\n             \
+    \   if (current) {\n                    res.push(current);\n                }\n\
+    \            }\n            return res;\n        }\n        return transformSingleObj(obj);\n\
+    \    };\n}\n\nvar submissionKey = args['submission_Key'];\n\nvar getFileName =\
+    \ function(args) {\n    var reportType = args['report_type'] || 'unknown';\n \
+    \   var startTime = args['start_time'] ||  'unknown';\n    var endTime = args['end_time']\
+    \ || 'unknown';\n    var type = args['type'] || 'unknown';\n    return reportType\
+    \ + '_from_' + startTime + '_to_' + endTime + '.' + type;\n}\n\nvar sendRequest\
+    \ = function(url, method, token, setContentType, args) {\n    var headers = {};\n\
+    \    if (setContentType) {\n      headers['Content-Type'] = ['application/json'];\n\
+    \    }\n    var httpParams = {\n       Method: method,\n       Body: (method ===\
+    \ ('POST' && args) ? encodeToURLQuery(args).replace(/^\\?/, '') : undefined)\n\
+    \    };\n    if (params.clientToken) {\n        headers['X-FeClient-Token'] =\
+    \ [params.clientToken];\n    }\n    if (token) {\n       headers['X-FeApi-Token']\
+    \ = token;\n    } else {\n       httpParams.Username = params.credentials.identifier;\n\
+    \       httpParams.Password = params.credentials.password;\n    }\n    httpParams.Headers\
+    \ = headers;\n    var res = http(\n            server + url + (method === 'GET'\
+    \ && method ? encodeToURLQuery(args) : ''),\n            httpParams,\n       \
+    \     params.insecure,\n            params.proxy\n        );\n    if (res.StatusCode\
+    \ < 200 || res.StatusCode >= 300) {\n        if (url !== commandDictionary.login.url\
+    \ && url !== commandDictionary.logout.url) {\n          sendRequest(commandDictionary.logout.url,\
+    \ commandDictionary.logout.method, token);\n        }\n        throw 'Request\
+    \ submissions failed, request status code: ' + res.StatusCode + ' and Body: '\
+    \ + res.Body + '.';\n    }\n    return res;\n}\n\nvar token = sendRequest(commandDictionary.login.url,\
+    \ commandDictionary.login.method).Headers['X-Feapi-Token'];\nvar result;\nswitch\
+    \ (command) {\n    case 'test-module':\n        sendRequest(commandDictionary.logout.url,\
+    \ commandDictionary.logout.method, token);\n        return 'ok';\n    case 'fe-report':\n\
+    \        var response = sendRequest(commandDictionary[command].url, commandDictionary[command].method,\
+    \ token, commandDictionary[command].setContentType, args);\n        var filename\
+    \ = getFileName(args);\n        result = {Type: 9, FileID: saveFile(response.Bytes),\
+    \ File: filename, Contents: filename};\n        break;\n    case 'fe-submit':\n\
+    \        if (args.profiles) {\n            args.profiles = args.profiles.split(',');\n\
+    \            for (var k in args.profiles) {\n              args.profiles[k] =\
+    \ args.profiles[k].trim();\n            }\n        }\n        id = args.upload\
+    \ || args.uploadFile;\n        delete(args.upload)\n        delete(args.uploadFile)\n\
+    \        res = httpMultipart(\n             server + 'submissions',\n        \
+    \     id,\n             {\n                 Headers: {\n                    'X-FeClient-Token':\
+    \ params.clientToken ? [params.clientToken] : undefined,\n                   \
+    \ 'X-FeApi-Token': token,\n                    'Accept': ['*/*']\n           \
+    \      },\n             },\n             {\n                'options': JSON.stringify(args)\n\
+    \             },\n             params.insecure,\n             params.proxy,\n\
+    \             undefined,\n             'filename'\n         );\n         if (res.StatusCode\
+    \ < 200 || res.StatusCode >= 300) {\n           sendRequest(commandDictionary.logout.url,\
+    \ commandDictionary.logout.method, token);\n           throw 'Request submissions\
+    \ failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body +\
+    \ '.';\n          }\n          result = JSON.parse(res.Body);\n          break;\n\
+    \    case 'fe-submit-url':\n        var profiles = args.profiles.split(',');\n\
+    \        var urls = args.urls.split(',');\n        var res = http(\n         \
+    \   server + 'submissions/url',\n            {\n                Method: 'POST',\n\
+    \                Headers: {'Content-Type': ['application/json'],'X-FeApi-Token':\
+    \ token},\n                Body: JSON.stringify({\"timeout\":args.timeout, \"\
+    priority\":args.priority, \"profiles\":profiles, \"application\":args.application,\
+    \ \"force\":args.force, \"analysistype\":args.analysistype, \"prefetch\":args.prefetch,\
+    \ \"urls\":urls})\n            },\n            params.insecure,\n            params.proxy\n\
+    \         );\n        if (res.StatusCode < 200 || res.StatusCode >= 300 || res.success\
+    \ === false) {\n            throw 'FireEye URL Submission Request Failed.\\nStatus\
+    \ code: ' + res.StatusCode + '.\\nBody: ' + res.Body + '.';\n        }\n     \
+    \   result = JSON.parse(res.Body);\n        break;\n    default:\n        respoonse\
+    \ = sendRequest(replaceInTemplatesAndRemove(commandDictionary[command].url, args),\
+    \ commandDictionary[command].method, token, commandDictionary[command].setContentType,\
+    \ args);\n        result = respoonse.Body;\n        contentType = respoonse.Headers\
+    \ && respoonse.Headers['Content-Type'] && respoonse.Headers['Content-Type'][0];\n\
+    \        if (contentType && contentType.indexOf('application/json') !== -1) {\n\
+    \          result = JSON.parse(respoonse.Body);\n        }\n        if (contentType\
+    \ && contentType.indexOf('application/xml') !== -1) {\n          result = JSON.parse(x2j(respoonse.Body));\n\
+    \        }\n}\nsendRequest(commandDictionary.logout.url, commandDictionary.logout.method,\
+    \ token);\n\nif (typeof result === 'object' && !result['submission_Key']) {\n\
+    \  result['submission_Key'] = submissionKey;\n}\n\ncurrentCommand = commandDictionary[command];\n\
+    var entries = [];\nif (currentCommand.extended) {\n    if(command === 'fe-submit-url'){\n\
+    \        result = result.response\n    }\n    for (var j in currentCommand.translator)\
+    \ {\n        var current = currentCommand.translator[j];\n        var entry =\
+    \ {\n            Type: entryTypes.note,\n            Contents: result,\n     \
+    \       ContentsFormat: formats.json,\n        };\n        var currentContent\
+    \ = current.innerPath ? dq(result, current.innerPath) : result;\n        var translated\
+    \ = mapObjFunction(current.data) (current.countingDict ? toArray(currentContent)\
+    \ : currentContent);\n        entry.ReadableContentsFormat = formats.markdown;\n\
+    \        entry.HumanReadable = tableToMarkdown(current.title,translated);\n  \
+    \      entry.EntryContext = {};\n        var context = createContext(translated);\n\
+    \        entry.EntryContext[current.contextPath] = context;\n\n        if(command\
+    \ === 'fe-submit-result' || command === 'fe-submit-url-result'){\n           \
+    \ var md5 = result.alerts.alert.explanation['malware-detected'].malware.md5sum;\n\
+    \            if(context.Severity === 'majr'){\n                entry.EntryContext.DBotScore\
+    \ = [{'Indicator': md5, 'Type': 'hash', 'Vendor': 'Fireeye', 'Score': 3}];\n \
+    \               var malFile = {};\n                addMalicious(malFile, outputPaths.file,\
+    \ {\n                        MD5: md5,\n                        Malicious: {Vendor:\
+    \ 'Fireeye'}\n                });\n                entry.EntryContext[outputPaths.file]\
+    \ =[malFile[outputPaths.file]];\n            }\n            else{\n          \
+    \      entry.EntryContext.DBotScore = [{'Indicator': md5, 'Type': 'hash', 'Vendor':\
+    \ 'Fireeye', 'Score': 0}];\n            }\n        }\n        entries.push(entry);\n\
+    \    }\n}\nelse {return result};\nreturn entries;"
+  type: javascript
 tests:
-  - No test - no instance
+- No test - no instance
+toversion: 4.1.9

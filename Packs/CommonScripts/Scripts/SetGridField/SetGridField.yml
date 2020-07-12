@@ -31,7 +31,9 @@ args:
   secret: false
 - default: false
   defaultValue: '*'
-  description: "Keys to retrieve from items. Keys will not be columns correlated. Default is all keys. **Note**: when the amount of values exceeds the amount columns, it truncates the last values that are outside the range for table"
+  description: 'Keys to retrieve from items. Keys will not be columns correlated.
+    Default is all keys. **Note**: when the amount of values exceeds the amount columns,
+    it truncates the last values that are outside the range for table'
   isArray: true
   name: keys
   required: false
@@ -57,6 +59,7 @@ comment: Creates a Grid table from items or key-value pairs.
 commonfields:
   id: SetGridField
   version: -1
+dockerimage: demisto/pandas:1.0.0.9364
 enabled: false
 name: SetGridField
 script: '-'
@@ -64,5 +67,5 @@ subtype: python3
 system: false
 tags: []
 timeout: '0'
+toversion: 4.1.9
 type: python
-dockerimage: demisto/pandas:1.0.0.9364

@@ -1,28 +1,29 @@
+args:
+- default: true
+  description: Value to convert.
+  name: value
+  required: true
+- description: String to convert to.
+  name: convertTo
+  required: true
+- description: Comma separated list of exceptions.
+  isArray: true
+  name: except
+comment: Convert all chosen values but exceptions.
 commonfields:
   id: ConvertAllExcept
   version: -1
-name: ConvertAllExcept
-script: ''
-type: python
-tags:
-- transformer
-comment: Convert all chosen values but exceptions.
+dockerimage: demisto/python3:3.7.5.4328
 enabled: true
-args:
-- name: value
-  required: true
-  default: true
-  description: Value to convert.
-- name: convertTo
-  required: true
-  description: String to convert to.
-- name: except
-  description: Comma separated list of exceptions.
-  isArray: true
+name: ConvertAllExcept
+runas: DBotWeakRole
+runonce: false
+script: ''
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.7.5.4328
-runas: DBotWeakRole
+tags:
+- transformer
 tests:
-  - No test - used in Prisma Cloud classifier.
+- No test - used in Prisma Cloud classifier.
+toversion: 4.1.9
+type: python

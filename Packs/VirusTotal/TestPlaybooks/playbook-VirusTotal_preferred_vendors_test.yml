@@ -1,87 +1,72 @@
-id: virusTotaI-test-preferred-vendors
-version: -1
-name: virusTotaI-test-preferred-vendors
-description: |
-  Test playbook for vt.
+description: 'Test playbook for vt.
+
 
   vt has a quota of requests per minute that we exceed in the test playbook.
 
+
   Sleep for 60 seconds.
 
+
   https://support.virustotal.com/hc/en-us/articles/115002118525-The-4-requests-minute-limitation-of-the-Public-API-is-too-low-for-me-how-can-I-have-access-to-a-higher-quota-
-starttaskid: "0"
+
+  '
+id: virusTotaI-test-preferred-vendors
+inputs: []
+name: virusTotaI-test-preferred-vendors
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 670ab5aa-9cfa-4560-8426-b47a77f9d91e
-    type: start
-    task:
-      id: 670ab5aa-9cfa-4560-8426-b47a77f9d91e
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "86"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": -720
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: c03d811d-7323-434c-82ea-cf7a8432d11e
-    type: regular
-    task:
-      id: c03d811d-7323-434c-82ea-cf7a8432d11e
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
-      - "87"
+      - '86'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 670ab5aa-9cfa-4560-8426-b47a77f9d91e
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 670ab5aa-9cfa-4560-8426-b47a77f9d91e
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": -720\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '87'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       key: {}
       keysToKeep: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "83":
-    id: "83"
-    taskid: 0ac3086e-e8b5-4333-8ebb-b09345664a61
-    type: regular
     task:
-      id: 0ac3086e-e8b5-4333-8ebb-b09345664a61
-      version: -1
-      name: get info on file
-      script: VirusTotal|||file
+      brand: ''
+      description: Delete field from context
+      id: c03d811d-7323-434c-82ea-cf7a8432d11e
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: VirusTotal
+      version: -1
+    taskid: c03d811d-7323-434c-82ea-cf7a8432d11e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 195\n  }\n}"
+  '83':
+    id: '83'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "84"
+      - '84'
+    note: false
     scriptarguments:
       file:
         simple: 8de4b0e8bab8fc35375e20650eae4230
@@ -90,165 +75,134 @@ tasks:
       threshold: {}
       wait: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": -195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "84":
-    id: "84"
-    taskid: 71f4f3c6-61b8-48f1-84fc-cc65bfc23059
-    type: condition
     task:
-      id: 71f4f3c6-61b8-48f1-84fc-cc65bfc23059
+      brand: VirusTotal
+      id: 0ac3086e-e8b5-4333-8ebb-b09345664a61
+      iscommand: true
+      name: get info on file
+      script: VirusTotal|||file
+      type: regular
       version: -1
-      name: Verify malicious was added to file
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "1"
-    separatecontext: false
+    taskid: 0ac3086e-e8b5-4333-8ebb-b09345664a61
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": -195\n  }\n}"
+  '84':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualNumber
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
                 root: DBotScore
                 transformers:
-                - operator: atIndex
-                  args:
+                - args:
                     index:
                       value:
-                        simple: "0"
-                - operator: getField
-                  args:
+                        simple: '0'
+                  operator: atIndex
+                - args:
                     field:
                       value:
                         simple: Score
-            iscontext: true
+                  operator: getField
+          operator: isEqualNumber
           right:
             value:
-              simple: "3"
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 0
-        }
-      }
-    note: false
-    timertriggers: []
+              simple: '3'
+      label: 'yes'
+    id: '84'
     ignoreworker: false
-  "85":
-    id: "85"
-    taskid: ef38c421-8604-4a2d-86fc-8b7eb5f3c960
-    type: regular
+    nexttasks:
+      'yes':
+      - '1'
+    note: false
+    separatecontext: false
     task:
-      id: ef38c421-8604-4a2d-86fc-8b7eb5f3c960
-      version: -1
-      name: Delete Context
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      id: 71f4f3c6-61b8-48f1-84fc-cc65bfc23059
       iscommand: false
-      brand: ""
+      name: Verify malicious was added to file
+      type: condition
+      version: -1
+    taskid: 71f4f3c6-61b8-48f1-84fc-cc65bfc23059
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 0\n  }\n}"
+  '85':
+    id: '85'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "83"
+      - '83'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": -360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "86":
-    id: "86"
-    taskid: 85fa1dd8-58dc-480b-81b6-8ae9fecb7b6f
-    type: regular
     task:
-      id: 85fa1dd8-58dc-480b-81b6-8ae9fecb7b6f
-      version: -1
-      name: Sleep
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
+      brand: ''
+      id: ef38c421-8604-4a2d-86fc-8b7eb5f3c960
       iscommand: false
-      brand: ""
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: ef38c421-8604-4a2d-86fc-8b7eb5f3c960
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": -360\n  }\n}"
+  '86':
+    id: '86'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "85"
+      - '85'
+    note: false
     scriptarguments:
       seconds:
-        simple: "60"
+        simple: '60'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": -550
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "87":
-    id: "87"
-    taskid: d4aab463-ba1c-4fb1-8545-871c76ce62da
-    type: regular
     task:
-      id: d4aab463-ba1c-4fb1-8545-871c76ce62da
-      version: -1
-      name: Sleep
+      brand: ''
       description: Sleep for X seconds
+      id: 85fa1dd8-58dc-480b-81b6-8ae9fecb7b6f
+      iscommand: false
+      name: Sleep
       scriptName: Sleep
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 85fa1dd8-58dc-480b-81b6-8ae9fecb7b6f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": -550\n  }\n}"
+  '87':
+    id: '87'
+    ignoreworker: false
+    note: false
     scriptarguments:
       seconds:
-        simple: "60"
+        simple: '60'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 380
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      description: Sleep for X seconds
+      id: d4aab463-ba1c-4fb1-8545-871c76ce62da
+      iscommand: false
+      name: Sleep
+      scriptName: Sleep
+      type: regular
+      version: -1
+    taskid: d4aab463-ba1c-4fb1-8545-871c76ce62da
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1195,
-        "width": 380,
-        "x": 265,
-        "y": -720
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 380\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1195,\n      \"width\": 380,\n      \"x\": 265,\n      \"y\":\
+  \ -720\n    }\n  }\n}"

@@ -1,23 +1,26 @@
+args:
+- description: Hunt runner arguments
+  name: hunt_runner_args
+- description: Hunt arguments
+  name: hunt_args
+comment: Handles hunt creation request
 commonfields:
   id: GrrSetHunts
   version: -1
-name: GrrSetHunts
-script: |2
-
-  demisto.results(demisto.executeCommand("grr_set_hunts", demisto.args()))
-type: python
-subtype: python2
-tags:
-- GRR
-comment: Handles hunt creation request
-system: true
-args:
-- name: hunt_runner_args
-  description: Hunt runner arguments
-- name: hunt_args
-  description: Hunt arguments
-scripttarget: 0
-timeout: 0s
 dependson:
   must:
   - grr_set_hunts
+name: GrrSetHunts
+script: '
+
+  demisto.results(demisto.executeCommand("grr_set_hunts", demisto.args()))
+
+  '
+scripttarget: 0
+subtype: python2
+system: true
+tags:
+- GRR
+timeout: 0s
+toversion: 4.1.9
+type: python

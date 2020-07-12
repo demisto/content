@@ -1,163 +1,137 @@
 id: block_indicators_-_generic_-_test
-version: -1
+inputs: []
 name: Block Indicators - Generic - Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: ec5abe2a-eb2a-4850-8e89-510de411d17b
+      iscommand: false
+      name: ''
+      version: -1
     taskid: ec5abe2a-eb2a-4850-8e89-510de411d17b
     type: start
-    task:
-      id: ec5abe2a-eb2a-4850-8e89-510de411d17b
-      version: -1
-      name: ""
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    loop:
+      exitCondition: ''
       iscommand: false
-      brand: ""
+      wait: 1
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
+      - '2'
     note: false
-  "1":
-    id: "1"
-    taskid: f06511eb-a128-4be7-8354-fdc7921307a6
-    type: playbook
-    task:
-      id: f06511eb-a128-4be7-8354-fdc7921307a6
-      version: -1
-      name: Block Indicators - Generic
-      playbookName: Block Indicators - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
     scriptarguments:
       IP:
         complex:
-          root: DBotScore
+          accessor: Indicator
           filters:
-          - - operator: isEqualString
+          - - ignorecase: true
               left:
+                iscontext: true
                 value:
                   simple: DBotScore.Type
-                iscontext: true
+              operator: isEqualString
               right:
                 value:
                   simple: ip
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
+          - - left:
+                iscontext: true
                 value:
                   simple: DBotScore.Score
-                iscontext: true
+              operator: greaterThanOrEqual
               right:
                 value:
-                  simple: "3"
-          accessor: Indicator
+                  simple: '3'
+          root: DBotScore
           transformers:
           - operator: uniq
       IPBlacklistMiner:
         simple: IPv4_blacklist
       URL:
         complex:
-          root: DBotScore
+          accessor: Indicator
           filters:
-          - - operator: isEqualString
+          - - ignorecase: true
               left:
+                iscontext: true
                 value:
                   simple: DBotScore.Type
-                iscontext: true
+              operator: isEqualString
               right:
                 value:
                   simple: url
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
+          - - left:
+                iscontext: true
                 value:
                   simple: DBotScore.Score
-                iscontext: true
+              operator: greaterThanOrEqual
               right:
                 value:
-                  simple: "3"
-          accessor: Indicator
+                  simple: '3'
+          root: DBotScore
           transformers:
           - operator: uniq
       URLBlacklistMiner: {}
       Username:
         complex:
-          root: DBotScore
+          accessor: Indicator
           filters:
-          - - operator: isEqualString
+          - - ignorecase: true
               left:
+                iscontext: true
                 value:
                   simple: DBotScore.Type
-                iscontext: true
+              operator: isEqualString
               right:
                 value:
                   simple: username
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
+          - - left:
+                iscontext: true
                 value:
                   simple: DBotScore.Score
-                iscontext: true
+              operator: greaterThanOrEqual
               right:
                 value:
-                  simple: "3"
-          accessor: Indicator
+                  simple: '3'
+          root: DBotScore
     separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 230
-        }
-      }
-    note: false
-  "2":
-    id: "2"
-    taskid: 9a35b725-4860-4576-8318-b97438c2d2e6
-    type: title
     task:
-      id: 9a35b725-4860-4576-8318-b97438c2d2e6
+      brand: ''
+      id: f06511eb-a128-4be7-8354-fdc7921307a6
+      iscommand: false
+      name: Block Indicators - Generic
+      playbookName: Block Indicators - Generic
+      type: playbook
       version: -1
+    taskid: f06511eb-a128-4be7-8354-fdc7921307a6
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+  '2':
+    id: '2'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 9a35b725-4860-4576-8318-b97438c2d2e6
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 400
-        }
-      }
-    note: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 415,
-        "width": 380,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+      version: -1
+    taskid: 9a35b725-4860-4576-8318-b97438c2d2e6
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 400\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 415,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n\
+  \    }\n  }\n}"

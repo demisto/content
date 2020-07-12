@@ -1,987 +1,89 @@
-id: Block IP - Generic v2
-version: -1
-name: Block IP - Generic v2
-description: |-
-  This playbook blocks malicious IPs using all integrations that are enabled.
+description: 'This playbook blocks malicious IPs using all integrations that are enabled.
+
 
   Supported integrations for this playbook:
+
   * Check Point Firewall
+
   * Palo Alto Networks Minemeld
+
   * Palo Alto Networks PAN-OS
+
   * Zscaler
-  * FortiGate
-starttaskid: "0"
-tasks:
-  "0":
-    id: "0"
-    taskid: 650804b8-1cd4-4c33-8d83-8f72c789f860
-    type: start
-    task:
-      id: 650804b8-1cd4-4c33-8d83-8f72c789f860
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "8"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 500,
-          "y": 10
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "2":
-    id: "2"
-    taskid: cbdf2261-0bd1-4856-86f8-c5082a16f3ee
-    type: title
-    task:
-      id: cbdf2261-0bd1-4856-86f8-c5082a16f3ee
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 500,
-          "y": 1020
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "5":
-    id: "5"
-    taskid: 47c2b776-5038-453b-8115-48141dbad596
-    type: title
-    task:
-      id: 47c2b776-5038-453b-8115-48141dbad596
-      version: -1
-      name: Block IPs
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "17"
-      - "18"
-      - "19"
-      - "20"
-      - "26"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 500,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "6":
-    id: "6"
-    taskid: 9dd50dac-37af-45ff-8c50-d02eadc60b93
-    type: regular
-    task:
-      id: 9dd50dac-37af-45ff-8c50-d02eadc60b93
-      version: -1
-      name: Block IP with Check Point Firewall
-      description: Block the IPs using Check Point Firewall
-      script: '|||checkpoint-block-ip'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      direction:
-        simple: both
-      ip:
-        complex:
-          root: inputs.IP
-      ipname:
-        simple: IP-${inputs.IP}
-      rulename:
-        simple: Block-${inputs.IP}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 980,
-          "y": 850
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "7":
-    id: "7"
-    taskid: f74fb6b5-f7c9-42ed-808a-d227355f1e9d
-    type: condition
-    task:
-      id: f74fb6b5-f7c9-42ed-808a-d227355f1e9d
-      version: -1
-      name: Is Check Point Firewall enabled?
-      description: Verify that there is a valid instance of Check Point Firewall enabled.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "2"
-      "yes":
-      - "6"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Check Point
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Active
-                    ignorecase: true
-                accessor: brand
-            iscontext: true
-          ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 980,
-          "y": 650
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "8":
-    id: "8"
-    taskid: 39db44de-9bb1-460e-8b42-023c12aa4778
-    type: condition
-    task:
-      id: 39db44de-9bb1-460e-8b42-023c12aa4778
-      version: -1
-      name: Is there an IP to block?
-      description: Verify that the playbook input includes at least one IP to block.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "2"
-      "yes":
-      - "5"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: inputs.IP
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 500,
-          "y": 155
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "11":
-    id: "11"
-    taskid: d8d7576b-c4e9-48a6-8046-68f589b27e2e
-    type: playbook
-    task:
-      id: d8d7576b-c4e9-48a6-8046-68f589b27e2e
-      version: -1
-      name: Add Indicator to Miner - Palo Alto MineMeld
-      playbookName: Add Indicator to Miner - Palo Alto MineMeld
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "2"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 500,
-          "y": 650
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-  "12":
-    id: "12"
-    taskid: e8c51174-7d85-4248-86b4-6d14eba20ca6
-    type: condition
-    task:
-      id: e8c51174-7d85-4248-86b4-6d14eba20ca6
-      version: -1
-      name: Is Zscaler enabled?
-      description: Verify that there is a valid instance of Zscaler enabled.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "2"
-      "yes":
-      - "13"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Zscaler
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-                accessor: brand
-            iscontext: true
-          ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 1470,
-          "y": 650
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "13":
-    id: "13"
-    taskid: 5e4a94dc-b93a-43e9-8a81-176b36b3fc57
-    type: regular
-    task:
-      id: 5e4a94dc-b93a-43e9-8a81-176b36b3fc57
-      version: -1
-      name: Block IP with Zscaler
-      description: Block the IPs using Zscaler.
-      script: Zscaler|||zscaler-blacklist-ip
-      type: regular
-      iscommand: true
-      brand: Zscaler
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      ip:
-        complex:
-          root: inputs.IP
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1470,
-          "y": 850
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "14":
-    id: "14"
-    taskid: b8398534-32b9-4455-84d6-2dd09bd2a592
-    type: playbook
-    task:
-      id: b8398534-32b9-4455-84d6-2dd09bd2a592
-      version: -1
-      name: PAN-OS - Block IP - Custom Block Rule
-      playbookName: PAN-OS - Block IP - Custom Block Rule
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "2"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 80,
-          "y": 850
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-  "15":
-    id: "15"
-    taskid: 9828866a-b42c-4155-8681-d7b183b80fe2
-    type: playbook
-    task:
-      id: 9828866a-b42c-4155-8681-d7b183b80fe2
-      version: -1
-      name: PAN-OS - Block IP - Static Address Group
-      playbookName: PAN-OS - Block IP - Static Address Group
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "2"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": -330,
-          "y": 850
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-  "16":
-    id: "16"
-    taskid: 9620e528-42f8-4c0d-8706-b46a73d188be
-    type: playbook
-    task:
-      id: 9620e528-42f8-4c0d-8706-b46a73d188be
-      version: -1
-      name: PAN-OS - Block IP and URL - External Dynamic List
-      playbookName: PAN-OS - Block IP and URL - External Dynamic List
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "2"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": -760,
-          "y": 850
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-  "17":
-    id: "17"
-    taskid: 9d73fbe9-6b72-4cd3-8a23-235fb61bc197
-    type: title
-    task:
-      id: 9d73fbe9-6b72-4cd3-8a23-235fb61bc197
-      version: -1
-      name: PAN-OS
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "22"
-      - "23"
-      - "24"
-      - "25"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -550,
-          "y": 510
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "18":
-    id: "18"
-    taskid: fa041b26-6524-4e1f-8aeb-6d6e77e75c5c
-    type: title
-    task:
-      id: fa041b26-6524-4e1f-8aeb-6d6e77e75c5c
-      version: -1
-      name: CheckPoint FW
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "7"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 980,
-          "y": 515
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "19":
-    id: "19"
-    taskid: 3c8ee2b0-16ec-4e9e-8e66-b86781a7144e
-    type: title
-    task:
-      id: 3c8ee2b0-16ec-4e9e-8e66-b86781a7144e
-      version: -1
-      name: MineMeld
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "11"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 500,
-          "y": 515
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "20":
-    id: "20"
-    taskid: ffef1804-3251-47ce-83d5-f398b82b8fa6
-    type: title
-    task:
-      id: ffef1804-3251-47ce-83d5-f398b82b8fa6
-      version: -1
-      name: Zscaler
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "12"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1470,
-          "y": 515
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "21":
-    id: "21"
-    taskid: 6c3dfdb9-9ac3-4a32-831b-67fc7bec6fd1
-    type: playbook
-    task:
-      id: 6c3dfdb9-9ac3-4a32-831b-67fc7bec6fd1
-      version: -1
-      name: PAN-OS DAG Configuration
-      playbookName: PAN-OS DAG Configuration
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "2"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": -1180,
-          "y": 850
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-  "22":
-    id: "22"
-    taskid: 621b09ab-5f15-4893-8b6d-eb6d241d8f98
-    type: condition
-    task:
-      id: 621b09ab-5f15-4893-8b6d-eb6d241d8f98
-      version: -1
-      name: Use Custom Block Rules?
-      description: Verify if custom block rule playbook input is set to true or not.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "2"
-      "yes":
-      - "14"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.CustomBlockRule
-                transformers:
-                - operator: toLowerCase
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-    view: |-
-      {
-        "position": {
-          "x": 90,
-          "y": 650
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "23":
-    id: "23"
-    taskid: 8d1ccb6b-eade-48db-8c34-904dbcbf644c
-    type: condition
-    task:
-      id: 8d1ccb6b-eade-48db-8c34-904dbcbf644c
-      version: -1
-      name: Use Static Address Group?
-      description: Verify if there is a static address group name set as a playbook
-        input.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "2"
-      "yes":
-      - "15"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.StaticAddressGroup
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": -330,
-          "y": 650
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "24":
-    id: "24"
-    taskid: 156aee26-31e3-4cba-8846-767ee8a2dc6a
-    type: condition
-    task:
-      id: 156aee26-31e3-4cba-8846-767ee8a2dc6a
-      version: -1
-      name: Use External Dynamic List?
-      description: Verify if there is an EDL Server IP as a playbook input.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "2"
-      "yes":
-      - "16"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.IPListName
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.EDLServerIP
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": -760,
-          "y": 650
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "25":
-    id: "25"
-    taskid: 181b1519-8b3e-4296-8cb2-d0f91984b16b
-    type: condition
-    task:
-      id: 181b1519-8b3e-4296-8cb2-d0f91984b16b
-      version: -1
-      name: Use Dynamic Address Group?
-      description: Verify if there is a dynamic address group name set as a playbook
-        input.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "2"
-      "yes":
-      - "21"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.DAG
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": -1180,
-          "y": 650
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "26":
-    id: "26"
-    taskid: 65dca814-c04b-40ff-8e32-766432ee9f13
-    type: title
-    task:
-      id: 65dca814-c04b-40ff-8e32-766432ee9f13
-      version: -1
-      name: Fortinet
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "27"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1920,
-          "y": 510
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "27":
-    id: "27"
-    taskid: 5ec7ae21-1c50-4a72-8a86-daa39ac43f18
-    type: condition
-    task:
-      id: 5ec7ae21-1c50-4a72-8a86-daa39ac43f18
-      version: -1
-      name: Is FortiGate enabled?
-      description: Verify that there is a valid instance of FortiGate enabled.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "2"
-      "yes":
-      - "28"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: FortiGate
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1920,
-          "y": 650
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "28":
-    id: "28"
-    taskid: f3b16aab-fe0c-4c4f-8791-55cbd589405f
-    type: regular
-    task:
-      id: f3b16aab-fe0c-4c4f-8791-55cbd589405f
-      version: -1
-      name: 'FortiGate Ban IP '
-      description: Adds IP addresses to the banned list.
-      script: '|||fortigate-ban-ip'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      expiry: {}
-      ip_address:
-        complex:
-          root: inputs.IP
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1920,
-          "y": 850
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-view: |-
-  {
-    "linkLabelsPosition": {
-      "12_2_#default#": 0.18,
-      "22_2_#default#": 0.22,
-      "23_2_#default#": 0.11,
-      "24_2_#default#": 0.1,
-      "25_2_#default#": 0.1,
-      "27_2_#default#": 0.16,
-      "7_2_#default#": 0.39,
-      "8_2_#default#": 0.48
-    },
-    "paper": {
-      "dimensions": {
-        "height": 1075,
-        "width": 3480,
-        "x": -1180,
-        "y": 10
-      }
-    }
-  }
+
+  * FortiGate'
+fromversion: 4.0.0
+id: Block IP - Generic v2
 inputs:
-- key: IPBlacklistMiner
-  value: {}
+- description: The name of the IP blacklist Miner in  Minemeld.
+  key: IPBlacklistMiner
+  playbookInputQuery: null
   required: false
-  description: The name of the IP blacklist Miner in  Minemeld.
-  playbookInputQuery:
-- key: IP
   value: {}
+- description: Array of malicious IPs to block.
+  key: IP
+  playbookInputQuery: null
   required: false
-  description: Array of malicious IPs to block.
-  playbookInputQuery:
-- key: CustomBlockRule
+  value: {}
+- description: 'This input determines whether Palo Alto Networks Panorama or Firewall
+    Custom Block Rules are used.
+
+    Specify True to use Custom Block Rules.'
+  key: CustomBlockRule
+  playbookInputQuery: null
+  required: false
   value:
-    simple: "True"
+    simple: 'True'
+- description: Panorama log forwarding object name.
+  key: LogForwarding
+  playbookInputQuery: null
   required: false
-  description: |-
-    This input determines whether Palo Alto Networks Panorama or Firewall Custom Block Rules are used.
-    Specify True to use Custom Block Rules.
-  playbookInputQuery:
-- key: LogForwarding
   value: {}
-  required: false
-  description: Panorama log forwarding object name.
-  playbookInputQuery:
-- key: AutoCommit
-  value:
-    simple: "No"
-  required: false
-  description: |-
-    This input determines whether to commit the configuration automatically.
+- description: 'This input determines whether to commit the configuration automatically.
+
     Yes - Commit automatically.
-    No - Commit manually.
-  playbookInputQuery:
-- key: StaticAddressGroup
-  value: {}
+
+    No - Commit manually.'
+  key: AutoCommit
+  playbookInputQuery: null
   required: false
-  description: |-
-    This input determines whether Palo Alto Networks Panorama or Firewall Static Address Groups are used.
-    Specify the Static Address Group name for IP handling.
-  playbookInputQuery:
-- key: IPListName
-  value: {}
+  value:
+    simple: 'No'
+- description: 'This input determines whether Palo Alto Networks Panorama or Firewall
+    Static Address Groups are used.
+
+    Specify the Static Address Group name for IP handling.'
+  key: StaticAddressGroup
+  playbookInputQuery: null
   required: false
-  description: |-
-    This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used for blocking IPs.
-    Specify the EDL name for IP handling.
-  playbookInputQuery:
-- key: EDLServerIP
   value: {}
+- description: 'This input determines whether Palo Alto Networks Panorama or Firewall
+    External Dynamic Lists are used for blocking IPs.
+
+    Specify the EDL name for IP handling.'
+  key: IPListName
+  playbookInputQuery: null
   required: false
-  description: |-
-    This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used:
+  value: {}
+- description: 'This input determines whether Palo Alto Networks Panorama or Firewall
+    External Dynamic Lists are used:
+
     * The IP address of the web server on which the files are stored.
-    * The web server IP address is configured in the integration instance.
-  playbookInputQuery:
-- key: DAG
-  value: {}
+
+    * The web server IP address is configured in the integration instance.'
+  key: EDLServerIP
+  playbookInputQuery: null
   required: false
-  description: |-
-    This input determines whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups are used.
-    Specify the Dynamic Address Group tag name for IP handling.
-  playbookInputQuery:
+  value: {}
+- description: 'This input determines whether Palo Alto Networks Panorama or Firewall
+    Dynamic Address Groups are used.
+
+    Specify the Dynamic Address Group tag name for IP handling.'
+  key: DAG
+  playbookInputQuery: null
+  required: false
+  value: {}
+name: Block IP - Generic v2
 outputs:
 - contextPath: CheckpointFWRule.Destination
   description: Rule Destination.
@@ -1042,6 +144,757 @@ outputs:
   description: Percentage of rule hits.
 - contextPath: CheckpointFWRule.Hits.Value
   description: Value of rule hits.
-fromversion: 4.0.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 650804b8-1cd4-4c33-8d83-8f72c789f860
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 650804b8-1cd4-4c33-8d83-8f72c789f860
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 500,\n    \"y\": 10\n  }\n}"
+  '11':
+    id: '11'
+    ignoreworker: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ''
+      description: ''
+      id: d8d7576b-c4e9-48a6-8046-68f589b27e2e
+      iscommand: false
+      name: Add Indicator to Miner - Palo Alto MineMeld
+      playbookName: Add Indicator to Miner - Palo Alto MineMeld
+      type: playbook
+      version: -1
+    taskid: d8d7576b-c4e9-48a6-8046-68f589b27e2e
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 500,\n    \"y\": 650\n  }\n}"
+  '12':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Zscaler
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: 'yes'
+    id: '12'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '2'
+      'yes':
+      - '13'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Verify that there is a valid instance of Zscaler enabled.
+      id: e8c51174-7d85-4248-86b4-6d14eba20ca6
+      iscommand: false
+      name: Is Zscaler enabled?
+      type: condition
+      version: -1
+    taskid: e8c51174-7d85-4248-86b4-6d14eba20ca6
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 1470,\n    \"y\": 650\n  }\n}"
+  '13':
+    id: '13'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.IP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Zscaler
+      description: Block the IPs using Zscaler.
+      id: 5e4a94dc-b93a-43e9-8a81-176b36b3fc57
+      iscommand: true
+      name: Block IP with Zscaler
+      script: Zscaler|||zscaler-blacklist-ip
+      type: regular
+      version: -1
+    taskid: 5e4a94dc-b93a-43e9-8a81-176b36b3fc57
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1470,\n    \"y\": 850\n  }\n}"
+  '14':
+    id: '14'
+    ignoreworker: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ''
+      description: ''
+      id: b8398534-32b9-4455-84d6-2dd09bd2a592
+      iscommand: false
+      name: PAN-OS - Block IP - Custom Block Rule
+      playbookName: PAN-OS - Block IP - Custom Block Rule
+      type: playbook
+      version: -1
+    taskid: b8398534-32b9-4455-84d6-2dd09bd2a592
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 80,\n    \"y\": 850\n  }\n}"
+  '15':
+    id: '15'
+    ignoreworker: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ''
+      description: ''
+      id: 9828866a-b42c-4155-8681-d7b183b80fe2
+      iscommand: false
+      name: PAN-OS - Block IP - Static Address Group
+      playbookName: PAN-OS - Block IP - Static Address Group
+      type: playbook
+      version: -1
+    taskid: 9828866a-b42c-4155-8681-d7b183b80fe2
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": -330,\n    \"y\": 850\n  }\n}"
+  '16':
+    id: '16'
+    ignoreworker: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ''
+      description: ''
+      id: 9620e528-42f8-4c0d-8706-b46a73d188be
+      iscommand: false
+      name: PAN-OS - Block IP and URL - External Dynamic List
+      playbookName: PAN-OS - Block IP and URL - External Dynamic List
+      type: playbook
+      version: -1
+    taskid: 9620e528-42f8-4c0d-8706-b46a73d188be
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": -760,\n    \"y\": 850\n  }\n}"
+  '17':
+    id: '17'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '22'
+      - '23'
+      - '24'
+      - '25'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 9d73fbe9-6b72-4cd3-8a23-235fb61bc197
+      iscommand: false
+      name: PAN-OS
+      type: title
+      version: -1
+    taskid: 9d73fbe9-6b72-4cd3-8a23-235fb61bc197
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": -550,\n    \"y\": 510\n  }\n}"
+  '18':
+    id: '18'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: fa041b26-6524-4e1f-8aeb-6d6e77e75c5c
+      iscommand: false
+      name: CheckPoint FW
+      type: title
+      version: -1
+    taskid: fa041b26-6524-4e1f-8aeb-6d6e77e75c5c
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 980,\n    \"y\": 515\n  }\n}"
+  '19':
+    id: '19'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '11'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 3c8ee2b0-16ec-4e9e-8e66-b86781a7144e
+      iscommand: false
+      name: MineMeld
+      type: title
+      version: -1
+    taskid: 3c8ee2b0-16ec-4e9e-8e66-b86781a7144e
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 500,\n    \"y\": 515\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: cbdf2261-0bd1-4856-86f8-c5082a16f3ee
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: cbdf2261-0bd1-4856-86f8-c5082a16f3ee
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 500,\n    \"y\": 1020\n  }\n}"
+  '20':
+    id: '20'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '12'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: ffef1804-3251-47ce-83d5-f398b82b8fa6
+      iscommand: false
+      name: Zscaler
+      type: title
+      version: -1
+    taskid: ffef1804-3251-47ce-83d5-f398b82b8fa6
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 1470,\n    \"y\": 515\n  }\n}"
+  '21':
+    id: '21'
+    ignoreworker: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ''
+      description: ''
+      id: 6c3dfdb9-9ac3-4a32-831b-67fc7bec6fd1
+      iscommand: false
+      name: PAN-OS DAG Configuration
+      playbookName: PAN-OS DAG Configuration
+      type: playbook
+      version: -1
+    taskid: 6c3dfdb9-9ac3-4a32-831b-67fc7bec6fd1
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": -1180,\n    \"y\": 850\n  }\n}"
+  '22':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.CustomBlockRule
+                transformers:
+                - operator: toLowerCase
+          operator: isEqualString
+          right:
+            value:
+              simple: 'true'
+      label: 'yes'
+    id: '22'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '2'
+      'yes':
+      - '14'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Verify if custom block rule playbook input is set to true or not.
+      id: 621b09ab-5f15-4893-8b6d-eb6d241d8f98
+      iscommand: false
+      name: Use Custom Block Rules?
+      type: condition
+      version: -1
+    taskid: 621b09ab-5f15-4893-8b6d-eb6d241d8f98
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 90,\n    \"y\": 650\n  }\n}"
+  '23':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.StaticAddressGroup
+          operator: isNotEmpty
+      label: 'yes'
+    id: '23'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '2'
+      'yes':
+      - '15'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Verify if there is a static address group name set as a playbook
+        input.
+      id: 8d1ccb6b-eade-48db-8c34-904dbcbf644c
+      iscommand: false
+      name: Use Static Address Group?
+      type: condition
+      version: -1
+    taskid: 8d1ccb6b-eade-48db-8c34-904dbcbf644c
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": -330,\n    \"y\": 650\n  }\n}"
+  '24':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.IPListName
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.EDLServerIP
+          operator: isNotEmpty
+      label: 'yes'
+    id: '24'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '2'
+      'yes':
+      - '16'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Verify if there is an EDL Server IP as a playbook input.
+      id: 156aee26-31e3-4cba-8846-767ee8a2dc6a
+      iscommand: false
+      name: Use External Dynamic List?
+      type: condition
+      version: -1
+    taskid: 156aee26-31e3-4cba-8846-767ee8a2dc6a
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": -760,\n    \"y\": 650\n  }\n}"
+  '25':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.DAG
+          operator: isNotEmpty
+      label: 'yes'
+    id: '25'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '2'
+      'yes':
+      - '21'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Verify if there is a dynamic address group name set as a playbook
+        input.
+      id: 181b1519-8b3e-4296-8cb2-d0f91984b16b
+      iscommand: false
+      name: Use Dynamic Address Group?
+      type: condition
+      version: -1
+    taskid: 181b1519-8b3e-4296-8cb2-d0f91984b16b
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": -1180,\n    \"y\": 650\n  }\n}"
+  '26':
+    id: '26'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '27'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 65dca814-c04b-40ff-8e32-766432ee9f13
+      iscommand: false
+      name: Fortinet
+      type: title
+      version: -1
+    taskid: 65dca814-c04b-40ff-8e32-766432ee9f13
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 1920,\n    \"y\": 510\n  }\n}"
+  '27':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: FortiGate
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: 'yes'
+    id: '27'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '2'
+      'yes':
+      - '28'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Verify that there is a valid instance of FortiGate enabled.
+      id: 5ec7ae21-1c50-4a72-8a86-daa39ac43f18
+      iscommand: false
+      name: Is FortiGate enabled?
+      type: condition
+      version: -1
+    taskid: 5ec7ae21-1c50-4a72-8a86-daa39ac43f18
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 1920,\n    \"y\": 650\n  }\n}"
+  '28':
+    id: '28'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      expiry: {}
+      ip_address:
+        complex:
+          root: inputs.IP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Adds IP addresses to the banned list.
+      id: f3b16aab-fe0c-4c4f-8791-55cbd589405f
+      iscommand: true
+      name: 'FortiGate Ban IP '
+      script: '|||fortigate-ban-ip'
+      type: regular
+      version: -1
+    taskid: f3b16aab-fe0c-4c4f-8791-55cbd589405f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1920,\n    \"y\": 850\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '17'
+      - '18'
+      - '19'
+      - '20'
+      - '26'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 47c2b776-5038-453b-8115-48141dbad596
+      iscommand: false
+      name: Block IPs
+      type: title
+      version: -1
+    taskid: 47c2b776-5038-453b-8115-48141dbad596
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 500,\n    \"y\": 370\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      direction:
+        simple: both
+      ip:
+        complex:
+          root: inputs.IP
+      ipname:
+        simple: IP-${inputs.IP}
+      rulename:
+        simple: Block-${inputs.IP}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Block the IPs using Check Point Firewall
+      id: 9dd50dac-37af-45ff-8c50-d02eadc60b93
+      iscommand: true
+      name: Block IP with Check Point Firewall
+      script: '|||checkpoint-block-ip'
+      type: regular
+      version: -1
+    taskid: 9dd50dac-37af-45ff-8c50-d02eadc60b93
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 980,\n    \"y\": 850\n  }\n}"
+  '7':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Check Point
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Active
+                root: modules
+          operator: isExists
+      label: 'yes'
+    id: '7'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '2'
+      'yes':
+      - '6'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Verify that there is a valid instance of Check Point Firewall enabled.
+      id: f74fb6b5-f7c9-42ed-808a-d227355f1e9d
+      iscommand: false
+      name: Is Check Point Firewall enabled?
+      type: condition
+      version: -1
+    taskid: f74fb6b5-f7c9-42ed-808a-d227355f1e9d
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 980,\n    \"y\": 650\n  }\n}"
+  '8':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.IP
+          operator: isExists
+      label: 'yes'
+    id: '8'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '2'
+      'yes':
+      - '5'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Verify that the playbook input includes at least one IP to block.
+      id: 39db44de-9bb1-460e-8b42-023c12aa4778
+      iscommand: false
+      name: Is there an IP to block?
+      type: condition
+      version: -1
+    taskid: 39db44de-9bb1-460e-8b42-023c12aa4778
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 500,\n    \"y\": 155\n  }\n}"
 tests:
 - block_indicators_-_generic_-_test
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"12_2_#default#\": 0.18,\n    \"22_2_#default#\"\
+  : 0.22,\n    \"23_2_#default#\": 0.11,\n    \"24_2_#default#\": 0.1,\n    \"25_2_#default#\"\
+  : 0.1,\n    \"27_2_#default#\": 0.16,\n    \"7_2_#default#\": 0.39,\n    \"8_2_#default#\"\
+  : 0.48\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1075,\n \
+  \     \"width\": 3480,\n      \"x\": -1180,\n      \"y\": 10\n    }\n  }\n}"

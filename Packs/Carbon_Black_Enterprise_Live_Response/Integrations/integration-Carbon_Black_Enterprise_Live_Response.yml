@@ -1,1702 +1,71 @@
+category: Endpoint
 commonfields:
   id: carbonblackliveresponse
   version: -1
-name: carbonblackliveresponse
-display: Carbon Black Enterprise Live Response
-category: Endpoint
-image: data:image/png;base64,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
+configuration:
+- defaultvalue: ''
+  display: Server URL
+  name: serverurl
+  required: true
+  type: 0
+- defaultvalue: ''
+  display: API Token (CB Response)
+  name: apitoken
+  required: false
+  type: 4
+- defaultvalue: ''
+  display: API Key (CB Defense)
+  name: apikey
+  required: false
+  type: 4
+- defaultvalue: ''
+  display: Connector ID (CB Defense)
+  name: connector
+  required: false
+  type: 0
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ''
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Collect information and take action on remote endpoints in real time
   with Carbon Black Enterprise Live Response.
-detaileddescription: "Use Live Response for Cb Defense or Cb Response.\n\nFor Cb Defense:\nProvide
-  server URL,  'Live Response' API key and connector. \n\nFor Cb Response:\nProvide
-  server URL and API Token.\n\n\nWhen running Live Response commands (e.g. 'cb-process-kill'),
-  it is possible to pass 'wait-timeout' argument to determine the number of seconds
-  to wait for the command to be executed on Live Response side. Once the command has
-  been executed or wait-time has expired - the command information will be returned
-  to the war room. \nDefault 'wait-time' is 20 seconds.\n"
-configuration:
-- display: Server URL
-  name: serverurl
-  defaultvalue: ""
-  type: 0
-  required: true
-- display: API Token (CB Response)
-  name: apitoken
-  defaultvalue: ""
-  type: 4
-  required: false
-- display: API Key (CB Defense)
-  name: apikey
-  defaultvalue: ""
-  type: 4
-  required: false
-- display: Connector ID (CB Defense)
-  name: connector
-  defaultvalue: ""
-  type: 0
-  required: false
-- display: Trust any certificate (not secure)
-  name: insecure
-  defaultvalue: ""
-  type: 8
-  required: false
-- display: Use system proxy settings
-  name: proxy
-  defaultvalue: ""
-  type: 8
-  required: false
+detaileddescription: "Use Live Response for Cb Defense or Cb Response.\n\nFor Cb Defense:\n\
+  Provide server URL,  'Live Response' API key and connector. \n\nFor Cb Response:\n\
+  Provide server URL and API Token.\n\n\nWhen running Live Response commands (e.g.\
+  \ 'cb-process-kill'), it is possible to pass 'wait-timeout' argument to determine\
+  \ the number of seconds to wait for the command to be executed on Live Response\
+  \ side. Once the command has been executed or wait-time has expired - the command\
+  \ information will be returned to the war room. \nDefault 'wait-time' is 20 seconds.\n"
+display: Carbon Black Enterprise Live Response
+fromversion: 3.6.1
+image: data:image/png;base64,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
+name: carbonblackliveresponse
 script:
-  script: |-
-    "use strict";
-
-    /// Global Vars
-    let CB_PRODUCT;
-    let BASE_URL;
-    let AUTH;
-    let COMMAND_DATA;
-    let SLEEP_BETWEEN_RETRIES = 1000 * 5;
-    let DEFAULT_WAIT_TIMEOUT = 1000 * 60 * 2;
-    let ERROR_MESSAGE = 'Use Live Response for Cb Defense or Cb Response.\nFor Cb Defense: Provide \'Live Response\' API key and connector.\nFor Cb Response: Provide API Token.';
-    //validate the credentials are provided to match only one of the products
-    if (params.apitoken && (params.apikey || params.connector) ) {
-        throw ERROR_MESSAGE;
-    }
-    //determain Cb product
-    if (params.apitoken) {
-        CB_PRODUCT = 'Response';
-        BASE_URL = `${params.serverurl}/api/v1/cblr`;
-        AUTH = params.apitoken;
-        COMMAND_DATA = [
-            {to: 'CbSensorID', from: 'sensor_id'},
-            {to: 'CbSessionID', from: 'session_id'},
-            {to: 'CbCommandID', from: 'id'},
-            {to: 'CommandName', from: 'name'},
-            {to: 'Status', from: 'status'},
-            {to: 'CreateTime', from: 'create_time'},
-            {to: 'CommandCompletionTime', from: 'completion'},
-            {to: 'OperandObject', from: 'object'},
-            {to: 'Result.Desc', from: 'result_desc'},
-            {to: 'Result.Type', from: 'result_type'},
-            {to: 'Result.Code', from: 'result_code'}
-        ];
-    } else if (params.apikey && params.connector){
-        CB_PRODUCT = 'Defense';
-        BASE_URL = `${params.serverurl}/integrationServices/v3/cblr`
-        AUTH = params.apikey + '/' + params.connector;
-        COMMAND_DATA = [
-            {to: 'CbSensorID', from: 'sensor_id'},
-            {to: 'CbSessionID', from: 'session_id'},
-            {to: 'CbCommandID', from: 'id'},
-            {to: 'CommandName', from: 'name'},
-            {to: 'Status', from: 'status'},
-            {to: 'CreateTime', from: 'create_time'},
-            {to: 'CommandCompletionTime', from: 'completion_time'},
-            {to: 'OperandObject', from: 'obj.object'},
-            {to: 'Result.Desc', from: 'result_desc'},
-            {to: 'Result.Type', from: 'result_type'},
-            {to: 'Result.Code', from: 'result_code'}
-        ];
-    } else {
-        throw ERROR_MESSAGE;
-    }
-
-    /// Base Functions
-
-    function splitCamelCase(str) {
-        return str
-        .replace(/([a-z])([A-Z])/g, '$1 $2')
-        .replace('.', ' ');
-    }
-
-    function sendRequest(path, method, requestParams, headers, ignoredStatusCodes) {
-
-        if (!headers) {
-            headers = {};
-        }
-        if (!headers['X-Auth-Token']) {
-            headers['X-Auth-Token'] = [AUTH];
-        }
-        if (!headers['Accept']) {
-            headers['Accept'] = ['application/json'];
-        }
-        if (!headers['Content-Type']) {
-            headers['Content-Type'] = ['application/json'];
-        }
-
-        let request = {
-            Method: method,
-            Headers: headers
-        };
-        let querystring = '';
-        if (requestParams) {
-            if (typeof requestParams === 'string') {
-                querystring = requestParams;
-            } else {
-                request.Body = JSON.stringify(requestParams);
-            }
-        }
-        let result = http(BASE_URL + path + querystring, request, params.insecure, params.proxy);
-        if (!ignoredStatusCodes || ignoredStatusCodes.indexOf(result.StatusCode) === -1) {
-            if (result.StatusCode < 200 || result.StatusCode >= 300) {
-                if (result.StatusCode === 404) {
-                    throw `Cannot find the requested resource\nError message: ${result.Body}\nStatus Code: 404`;
-                }
-                throw `Request Failed.\nStatus code: ${result.StatusCode}.\nMessage: ${result.Body}.`;
-            }
-        }
-        return result;
-    }
-
-    function sendFileRequest(path, fileId, requestParams, headers, ignoredStatusCodes) {
-
-        if (!headers) {
-            headers = {};
-        }
-        if (!headers['X-Auth-Token']) {
-            headers['X-Auth-Token'] = [AUTH];
-        }
-        if (!headers['Accept']) {
-            headers['Accept'] = ['application/json'];
-        }
-        if (!headers['Content-Type']) {
-            headers['Content-Type'] = ['application/json'];
-        }
-
-        let request = {
-            Method: 'POST',
-            Headers: headers
-        };
-
-        let result = httpMultipart(BASE_URL + path, fileId, request, requestParams, params.insecure, params.proxy);
-
-        if (result.StatusCode < 200 || result.StatusCode >= 300) {
-            if (result.StatusCode === 404) {
-                throw `${result.Body} (Status Code: 404)`;
-            }
-            throw `Request Failed.\nStatus code: ${result.StatusCode}.\nMessage: ${JSON.stringify(result.Body)}`;
-        }
-        return result;
-    }
-
-    function createEntry(title, data, dataMap, contextKeys, headerTransformer) {
-        let headers = dataMap.map(cn => cn.to);
-        let translatedData = mapObjFunction(dataMap)(data);
-        let humanReadable = tableToMarkdown(title, translatedData, headers, undefined, headerTransformer);
-        let contextData = createContext(translatedData);
-        let context = {};
-        for (let i = 0 ; i < contextKeys.length; i++) {
-            let key = contextKeys[i];
-            context[key] = contextData;
-        }
-        return {
-            Type: entryTypes.note,
-            Contents: data,
-            ContentsType: formats.json,
-            ReadableContentsFormat: formats.markdown,
-            HumanReadable: humanReadable,
-            EntryContext: context,
-        };
-    }
-
-    /// Cb Live Response Session
-
-    function testModule() {
-        let res = sendRequest('/session', 'GET');
-        if (res.StatusCode === 200) {
-            return 'ok';
-        }
-        // 405 - Method Not Allowed.
-        // This error can raise when using CB Defence; This URL (which is used to list sessions) is theoretically not available for CB Defence. In practice it works for some cases.
-        // 401 is the status code used for 'UNAUTHORIZED' error
-        if (CB_PRODUCT === 'Defense' && res.StatusCode === 405) {
-            return 'ok';
-        }
-        return `Test failed. Status Code: ${res.StatusCode}`
-    }
-
-    const sessionData = [
-        {to: 'CbSensorID', from: 'sensor_id'},
-        {to: 'CbSessionID', from: 'id'},
-        {to: 'Hostname', from: 'hostname'},
-        {to: 'Status', from: 'status'},
-        {to: 'WaitTimeout', from: 'sensor_wait_timeout'},
-        {to: 'SessionTimeout', from: 'session_timeout'},
-        {to: 'SupportedCommands', from: 'supported_commands'}
-    ];
-
-    function getSessionsRequest(sessionId, sensorId, status) {
-        let path = `/session`;
-        if (sessionId) {
-            path += '/' + sessionId;
-        }
-
-        let response = sendRequest(path, 'GET').Body;
-        let result;
-        try {
-            result = JSON.parse(response);
-        } catch (err) {
-            throw `Could not parse response.\nError: ${err}.\nResponse: ${response}`;
-        }
-
-        // If optional sensor argument is given, filter the results by it.
-        if (!sessionId && sensorId) {
-            sensorId = parseInt(sensorId);
-            result = result.filter(session => (parseInt(session.sensor_id) === sensorId));
-        }
-        if (!sessionId && status) {
-            result = result.filter(session => (status.indexOf(session.status) > -1));
-        }
-
-        return result;
-    }
-
-    function getSessions() {
-        let result = getSessionsRequest(args.session, args.sensor, args.status);
-
-        let title = `Cb ${CB_PRODUCT} - Get Sessions`;
-        let dataMap = sessionData;
-            //keep CbResponse context for backward competability
-        let contextKeys = [
-            'CbResponse.Sessions(val.CbSessionID==obj.CbSessionID)',
-            'CbLiveResponse.Sessions(val.CbSessionID==obj.CbSessionID)'
-        ];
-        return createEntry(title, result, dataMap, contextKeys, splitCamelCase);
-    }
-
-    function createSessionRequest(sensorId, commandTimeout, keepaliveTimeout) {
-        let queryParams = {
-            sensor_id: parseInt(sensorId)
-        };
-        if (commandTimeout) {
-            queryParams.session_timeout = keepaliveTimeout;
-        }
-        if (keepaliveTimeout) {
-            queryParams.sensor_wait_timeout = commandTimeout;
-        }
-        let path = CB_PRODUCT === 'Response' ?  '/session' : `/session/${sensorId}`;
-        let response = sendRequest(path, 'POST', queryParams).Body;
-        try {
-            return JSON.parse(response);
-        } catch (err) {
-            throw `Could not parse response.\nError: ${err}.\nResponse: ${response}`;
-        }
-    }
-
-    function createSession() {
-        let result = createSessionRequest(args.sensor, args['command-timeout'], args['keepalive-timeout']);
-
-        let title = `CB ${CB_PRODUCT} - Create Session`;
-        let dataMap = sessionData;
-        //keep CbResponse context for backward competability
-        let contextKeys = [
-            'CbResponse.Sessions(val.CbSessionID==obj.CbSessionID)',
-            'CbLiveResponse.Sessions(val.CbSessionID==obj.CbSessionID)'
-        ];
-        return createEntry(title, result, dataMap, contextKeys, splitCamelCase);
-    }
-
-    function createSessionAndWait() {
-        let result = createSessionRequest(args.sensor, args['command-timeout'], args['keepalive-timeout']);
-        sleep(1000);
-        let sessionId = result.id;
-        let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout']) * 1000 : DEFAULT_WAIT_TIMEOUT ;
-        let retries = Math.ceil(timeout / SLEEP_BETWEEN_RETRIES);
-
-        let curTry = 0;
-        while (curTry < retries) {
-            let result = getSessionsRequest(sessionId, args.sensor);
-            let status = result.status.toLowerCase()
-            if (status === 'active' ) {
-                let title = `CB ${CB_PRODUCT} - Create Session And Wait`;
-                let dataMap = sessionData;
-                //keep CbResponse context for backward competability
-                let contextKeys = [
-                    'CbResponse.Sessions(val.CbSessionID==obj.CbSessionID)',
-                    'CbLiveResponse.Sessions(val.CbSessionID==obj.CbSessionID)'
-                ];
-                return createEntry(title, result, dataMap, contextKeys, splitCamelCase);
-            } else if (status !== 'pending') {
-                throw `Executing session ${sessionId} failed, status: ${result.status}`;
-            }
-            sleep(SLEEP_BETWEEN_RETRIES);
-            curTry++;
-        }
-        throw `Exceeded timeout.\nNew session for sensor ${args.sensor} was created with ID: ${sessionId}.\nSession status remains '${result.status}'. Wait for session to become active (you may query for session staus with 'cb-session-info').\nIt is recomended to increase wait-timeout for this command.`;
-    }
-
-    function closeSessionRequest(sessionId) {
-        let queryParams = {
-            session_id: sessionId
-        };
-        queryParams.status = CB_PRODUCT === 'Response' ? 'close' : 'CLOSE';
-        let path = CB_PRODUCT === 'Response' ? `/session/${sessionId}` : '/session';
-        let response = sendRequest(path, 'PUT', queryParams).Body;
-        try {
-            return JSON.parse(response);
-        } catch (err) {
-            throw `Could not parse response.\nError: ${err}.\nResponse: ${response}`;
-        }
-    }
-
-    function closeSession() {
-        let result = closeSessionRequest(args.session);
-        let title = `CB ${CB_PRODUCT} - Session Closed`;
-        let dataMap = sessionData;
-        //keep CbResponse context for backward competability
-        let contextKeys = [
-            'CbResponse.Sessions(val.CbSessionID==obj.CbSessionID)',
-            'CbLiveResponse.Sessions(val.CbSessionID==obj.CbSessionID)'
-        ];
-        // cb response - session will have 'active' value for 'status' field although status is 'closed'
-        if (CB_PRODUCT === 'Response') {
-            // retrieving closed session info returns inconsistent results (expected to return the updated info with correct status, but in practice this may return an error)
-            // do not try to retrieve updated session info, simply change the session status in the result to avoid confusion
-            // see https://developer.carbonblack.com/reference/enterprise-response/6.1/live-response-api/#close-sessions
-            result.status = 'close'
-        }
-        return createEntry(title, result, dataMap, contextKeys, splitCamelCase);
-    }
-
-    function sessionKeepaliveRequest(sessionId) {
-        let response = sendRequest(`/session/${sessionId}/keepalive`, 'GET', undefined, undefined, [404]);
-
-        if (response.StatusCode === 404) {
-            throw `Session ${sessionId} has expired and is now closed. Create a new session to continue working.`;
-        }
-
-        try {
-            return JSON.parse(response.Body);
-        } catch (err) {
-            throw `Could not parse response.\nError: ${err}.\nResponse: ${response.Body}`;
-        }
-    }
-
-    function sessionKeepAlive() {
-        let result = sessionKeepaliveRequest(args.session);
-
-        let translatedData = mapObjFunction(sessionData)(result);
-        let contextData = createContext(translatedData);
-        //keep CbResponse context for backward competability
-        let context = {
-            'CbResponse.Sessions(val.CbSessionID==obj.CbSessionID)': contextData,
-            'CbLiveResponse.Sessions(val.CbSessionID==obj.CbSessionID)': contextData
-        };
-
-        return {
-            Type: entryTypes.note,
-            Contents: result,
-            ContentsType: formats.json,
-            ReadableContentsFormat: formats.text,
-            HumanReadable: `Keepalive successful for session ${args.session}`,
-            EntryContext: context,
-        };
-    }
-
-    function archiveSessionRequest(sessionId) {
-        let response = sendRequest(`/session/${sessionId}/archive`, 'GET', undefined, undefined, [500]);
-        if (response.StatusCode === 500) {  // Current bug in CBResponse returns 500 for empty sessions
-            throw `Session ${sessionId} is empty and so it has no archive.`;
-        }
-        return response;
-    }
-
-    function archiveSession() {
-        let response = archiveSessionRequest(args.session);
-        let fileEntryId = saveFile(response.Bytes);
-        let fileName = `session-${args.session}-archive.zip`;
-        return {
-            Type: entryTypes.file,
-            FileID: fileEntryId,
-            File: fileName,
-            Contents: fileName
-        };
-    }
-    /// Cb Live Response file operations
-
-    const fileData = [
-        {to: 'CbFileID', from: 'id'},
-        {to: 'Filename', from: 'file_name'},
-        {to: 'Size', from: 'size'},
-        {to: 'SizeUploaded', from: 'size_uploaded'},
-        {to: 'Status', from: 'status'},
-        {to: 'Delete', from: 'delete'}
-    ];
-
-    function listFilesRequest(sessionId, fileId) {
-        if (!sessionId) {
-            throw 'Session ID is required';
-        }
-        let path = `/session/${sessionId}/file`;
-        if (fileId) {
-            path += '/' + fileId;
-        }
-
-        let response = sendRequest(path, 'GET').Body;
-        try {
-            return JSON.parse(response);
-        } catch (err) {
-            throw `Could not parse response.\nError: ${err}.\nResponse: ${response}`;
-        }
-    }
-
-    function listFiles() {
-        let result = listFilesRequest(args.session, args['file-id']);
-
-        let title = `CB ${CB_PRODUCT} - List Files`;
-        let dataMap = fileData;
-        //keep CbResponse context for backward competability
-         let contextKeys = [
-            'CbResponse.Files(val.CbFileID==obj.CbFileID)',
-            'CbLiveResponse.Files(val.CbFileID==obj.CbFileID)'
-        ];
-        return createEntry(title, result, dataMap, contextKeys, splitCamelCase);
-    }
-
-    function downloadFileRequest(sessionId, fileId) {
-        var headers = {Accept: ['*/*']};
-        if (!sessionId) {
-            throw 'Session ID is required';
-        }
-        if (!fileId) {
-            throw 'File ID is required';
-        }
-        let path = `/session/${sessionId}/file/${fileId}/content`;
-        return sendRequest(path, 'GET', null, headers);
-    }
-
-    function downloadFileEntry(sessionId, fileId) {
-        let fileInfo = listFilesRequest(sessionId, fileId);
-        let fileContentResponse = downloadFileRequest(sessionId, fileId);
-        let fileEntryId = saveFile(fileContentResponse.Bytes);
-        let fileName = fileInfo.file_name.split('\\').pop();
-        return {
-            Type: entryTypes.file,
-            FileID: fileEntryId,
-            File: fileName,
-            Contents: fileInfo.file_name
-        };
-    }
-
-    function downloadFile() {
-        return downloadFileEntry(args['session'], args['file-id']);
-    }
-
-    function uploadFileRequest(sessionId, fileId) {
-        if (!sessionId) {
-            throw 'Session ID is required';
-        }
-        if (!fileId) {
-            throw 'File ID is required';
-        }
-        let response = sendFileRequest(`/session/${sessionId}/file`, fileId);
-        try {
-            return JSON.parse(response.Body);
-        } catch (err) {
-            throw `Could not parse response.\nError: ${err}.\nResponse: ${response}`;
-        }
-    }
-
-    function uploadFile() {
-        let result = uploadFileRequest(args.session, args['file-id']);
-
-        let title = `CB ${CB_PRODUCT} - Upload File`;
-        let dataMap = fileData;
-        //keep CbResponse context for backward competability
-        let contextKeys = [
-            'CbResponse.Files(val.CbFileID==obj.CbFileID)',
-            'CbLiveResponse.Files(val.CbFileID==obj.CbFileID)'
-        ];
-        return createEntry(title, result, dataMap, contextKeys, splitCamelCase);
-    }
-
-    function deleteFileRequest(sessionId, fileId) {
-        if (!sessionId) {
-            throw 'Session ID is required';
-        }
-        if (!fileId) {
-            throw 'File ID is required';
-        }
-        let path = `/session/${sessionId}/file/${fileId}`;
-        let response = sendRequest(path, 'DELETE').Body;
-    }
-
-    function deleteFile() {
-        deleteFileRequest(args.session, args['file-id']);
-        return {
-            Type: entryTypes.note,
-            Contents: `File ${args['file-id']} deleted successfully`,
-            ContentsType: formats.text
-        };
-    }
-
-    /// Cb Live Response Commands
-
-    //generic  function to create a new command
-    function createCommandRequest(sessionId, name, timeout, object, compress, wait, workingDir, outputFile, valueData,
-                                  valueType, overwrite, offset, getCount) {
-        let queryParams = {
-            name: name.split('-').join(' ')
-        };
-        if (timeout) {
-            queryParams.timeout = timeout;
-        }
-        if (object) {
-            queryParams.object = object;
-        }
-        if (compress) {
-            queryParams.compress = compress;
-        }
-        queryParams.wait = true;
-        if (wait !== undefined && wait === false) {
-            queryParams = wait;
-        }
-        if (workingDir) {
-            queryParams.working_directory = workingDir;
-        }
-        if (outputFile) {
-            queryParams.output_file = outputFile;
-        }
-        if (valueData) {
-            queryParams.value_data = valueData;
-        }
-        if (valueType) {
-            queryParams.value_type = valueType;
-        }
-        if (overwrite) {
-            queryParams.overwrite = overwrite;
-        }
-        if (offset) {
-            queryParams.offset = offset;
-        }
-        if (getCount) {
-            queryParams.get_count = getCount;
-        }
-
-        let response = sendRequest(`/session/${sessionId}/command`, 'POST', queryParams).Body;
-        try {
-            return JSON.parse(response);
-        } catch (err) {
-            throw `Could not parse response.\nError: ${err}.\nResponse: ${response}`;
-        }
-    }
-
-    //TODO: Spec for commands interface
-    function createCommand() {
-        let result = createCommandRequest(args.session, args.name, args.timeout, args.object, args.compress, args.wait,
-            args['working-dir'], args['output-file'], args['value-data'], args['value-type'], args.overwrite, args.offset,
-            args['get-count']);
-
-        let title = `CB Response - Run Command ${args.name}`;
-        let dataMap = COMMAND_DATA;
-        let contextKeys = [
-            'CbResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)',
-            'CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'
-        ];
-        return createEntry(title, command, dataMap, contextKeys, splitCamelCase);
-    }
-
-    function getCommandRequest(sessionId, commandId) {
-        let path = `/session/${sessionId}/command/${commandId}`;
-        let response = sendRequest(path, 'GET').Body;
-        try {
-            return JSON.parse(response);
-        } catch (err) {
-            throw `Could not parse response.\nError: ${err}.\nResponse: ${response}`;
-        }
-    }
-
-    function getCommandsRequest(sessionId) {
-        let path = `/session/${sessionId}/command`;
-        let response = sendRequest(path, 'GET').Body;
-        try {
-            return JSON.parse(response);
-        } catch (err) {
-            throw `Could not parse response.\nError: ${err}.\nResponse: ${response}`;
-        }
-    }
-
-    function getCommands() {
-        let result = getCommandsRequest(args.session);
-        let title = `CB ${CB_PRODUCT} - Get Commands`;
-        let dataMap = COMMAND_DATA;
-        //keep CbResponse context for backward competability
-        let contextKeys = [
-            'CbResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)',
-            'CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'
-        ];
-        return createEntry(title, result, dataMap, contextKeys, splitCamelCase);
-    }
-
-    function createCommandAndWait() {
-        let result = createCommandRequest(args.session, args.name, args.timeout, args.object, args.compress, args.wait,
-            args['working-dir'], args['output-file'], args['value-data'], args['value-type'], args.overwrite, args.offset,
-            args['get-count']);
-        sleep(1000);
-        let commandId = result.id;
-        let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout']) * 1000 : DEFAULT_WAIT_TIMEOUT;
-        let retries = Math.ceil(timeout / SLEEP_BETWEEN_RETRIES);
-
-        let curTry = 0;
-        while (curTry < retries) {
-            let result = getCommandRequest(args.session, commandId);
-
-            if (result.status === 'complete') {
-                let entries = [];
-                let title = 'CB Response - Execute Command And Wait';
-                let dataMap = COMMAND_DATA;
-                let headers = dataMap.map(cn => cn.to);
-                let translatedData = mapObjFunction(dataMap)(result);
-                let humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
-                let context = {
-                    'CbResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)': createContext(translatedData)
-                };
-                entries.push({
-                    Type: entryTypes.note,
-                    Contents: result,
-                    ContentsType: formats.json,
-                    ReadableContentsFormat: formats.markdown,
-                    HumanReadable: humanReadable,
-                    EntryContext: context
-                });
-
-                // If we have the command in args then we get info for the command,
-                // in this case we want to parse the result:
-                let contents = result;
-                switch (result.name) {
-                    case "directory list":
-                        contents = result.files;
-                        break;
-                    case "process list":
-                        contents = result.processes;
-                        break;
-                }
-                logInfo("Here2");
-                entries.push({
-                    Type: entryTypes.note,
-                    Contents: contents,
-                    ContentsType: formats.json,
-                    // TODO: Add human readable and context for specific commands
-                });
-
-                return entries;
-
-            } else if (result.status !== 'pending') {
-                throw `Executing command ${commandId} failed, status: ${result.status}`;
-            }
-            sleep(SLEEP_BETWEEN_RETRIES);
-            curTry++;
-        }
-        throw `Executing command ${commandId} timedout (${timeout / 1000} seconds), increase wait-timeout and try again`;
-    }
-
-    function cancelCommandRequest(sessionId, commandId) {
-        let queryParams = {cmdid: commandId};
-        let response = sendRequest(`/session/${sessionId}/command/${commandId}`, 'PUT', queryParams).Body;
-        try {
-            return JSON.parse(response);
-        } catch (err) {
-            throw `Could not parse response.\nError: ${err}.\nResponse: ${response}`;
-        }
-    }
-
-    function cancelCommand() {
-        let result = cancelCommandRequest(args.session, args.command);
-
-        let title = `CB ${CB_PRODUCT} - Cancel Command`;
-        let dataMap = COMMAND_DATA;
-        //keep CbResponse context for backward competability
-        let contextKeys = [
-            'CbResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)',
-            'CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'
-        ];
-        return createEntry(title, result, dataMap, contextKeys, splitCamelCase);
-    }
-
-    /// Explicit Commands
-
-    const directoryData = [
-        {to: 'FileAttributes', from: 'attributes'},
-        {to: 'CreateTime', from: 'create_time'},
-        {to: 'LastAccessTime', from: 'last_access_time'},
-        {to: 'LastWriteTime', from: 'last_write_time'},
-        {to: 'FileSize', from: 'size'},
-        {to: 'FileName', from: 'filename'},
-        {to: 'AlternativeName', from:'alt_name'}
-    ];
-
-    const processesData = [
-        {to: 'ProcessID', from: 'pid'},
-        {to: 'CreateTime', from: 'create_time'},
-        {to: 'ProcessGuid', from: 'proc_guid'},
-        {to: 'Path', from: 'path'},
-        {to: 'CommandLine', from: 'command_line'},
-        {to: 'SecurityIdentifier', from: 'sid'},
-        {to: 'Username', from: 'username'},
-        {to: 'Parent', from: 'parent'},
-        {to: 'ParentGuid', from: 'parent_guid'}
-    ];
-
-    const processData = [
-        {to: 'ProcessID', from: 'pid'},
-        {to: 'ReturnCode', from: 'return_code'}
-    ];
-
-    const memdumpData = [
-        {to: 'ReturnCode', from: 'return_code'},
-        {to: 'CompressingEnabled', from: 'compressing'},
-        {to: 'Complete', from: 'complete'},
-        {to: 'PercentDone', from: 'percentdone'},
-        {to: 'DumpingInProgress', from: 'dumping'}
-    ];
-
-    const regKeysData = [
-        {to: 'RegKeyType', from: 'value_type'},
-        {to: 'RegKeyName', from: 'value_name'},
-        {to: 'RegKeyData', from: 'value_data'}
-    ];
-
-    const regKeyData = [
-        {to: 'RegKeyType', from: 'value.value_type'},
-        {to: 'RegKeyName', from: 'value.value_name'},
-        {to: 'RegKeyData', from: 'value.value_data'}
-    ];
-
-    function collectRegistryDataToGeneralContext(data) {
-        let regKey = CB_PRODUCT === 'Response' ?  data.object : data.obj.object;
-        let RegistryKeys = [];
-        for (let value of data.values) {
-            let entry = {
-                Path: regKey,
-                Name: value.value_name,
-                Value: value.value_data
-            };
-            RegistryKeys.push(entry);
-        }
-        return RegistryKeys;
-    };
-
-    const commandEntries = {
-        'directory list' : function(data) {
-            let dataMap = COMMAND_DATA;
-            let title = `CB ${CB_PRODUCT} - Directory Listing: Command Status`;
-            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'];
-            let commandInfoEntry = createEntry(
-                title,
-                data,
-                dataMap,
-                contextKeys,
-                splitCamelCase
-            );
-            if (data.status !== 'complete') {
-                return commandInfoEntry;
-            }
-            //create entry to hold directory data
-            dataMap = directoryData;
-            title = `CB ${CB_PRODUCT} - Directory Listing`;
-            contextKeys = ['CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID).Files'];
-            let directoryListEntry = createEntry(
-                title,
-                data.files,
-                dataMap,
-                contextKeys,
-                splitCamelCase
-            );
-            return [commandInfoEntry, directoryListEntry];
-        },
-        'put file': function(data) {
-            let dataMap = COMMAND_DATA;
-            let title = `CB ${CB_PRODUCT} - Push File: Command Status`;
-            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'];
-            let commandInfoEntry = createEntry(
-                title,
-                data,
-                dataMap,
-                contextKeys,
-                splitCamelCase
-            );
-            return commandInfoEntry;
-        },
-        'get file': function(data) {
-            let dataMap = COMMAND_DATA;
-            let title = `CB ${CB_PRODUCT} - Get File From Path ${args.path}: Command Status`;
-            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID&&val.CbSessionID==obj.CbSessionID)'];
-            if (data.status === 'complete') {
-                dataMap.push({to: 'FileID', from: 'file_id'});
-            }
-            let commandInfoEntry = createEntry(
-                title,
-                data,
-                dataMap,
-                contextKeys,
-                splitCamelCase
-            );
-            return commandInfoEntry;
-        },
-        'kill': function(data) {
-            let dataMap = COMMAND_DATA;
-            let title = `CB ${CB_PRODUCT} - Kill Process ${args.pid}: Command Status`;
-            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'];
-            let commandInfoEntry = createEntry(
-                title,
-                data,
-                dataMap,
-                contextKeys,
-                splitCamelCase
-            );
-            return commandInfoEntry;
-        },
-        'create process' : function(data) {
-            let dataMap = COMMAND_DATA;
-            if (data.status === 'complete') {
-                dataMap = dataMap.concat(processData);
-            }
-            let title = `CB ${CB_PRODUCT} - Execute Process: Command Status`;
-            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'];
-            let commandInfoEntry = createEntry(
-                title,
-                data,
-                dataMap,
-                contextKeys,
-                splitCamelCase
-            );
-            return commandInfoEntry;
-        },
-         'memdump': function(data) {
-            let dataMap = COMMAND_DATA;
-            if (data.status === 'complete') {
-                dataMap = dataMap.concat(memdumpData);
-            }
-            let title = `CB ${CB_PRODUCT} - Memdump: Command Status`;
-            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'];
-            let commandInfoEntry = createEntry(
-                title,
-                data,
-                dataMap,
-                contextKeys,
-                splitCamelCase
-            );
-            return commandInfoEntry;
-        },
-         'delete file': function(data) {
-            let dataMap = COMMAND_DATA;
-            let title = `CB ${CB_PRODUCT} - Delete File From Endpoint: Command Status`;
-            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'];
-            let commandInfoEntry = createEntry(
-                title,
-                data,
-                dataMap,
-                contextKeys,
-                splitCamelCase
-            );
-            return commandInfoEntry;
-        },
-         'reg enum key': function(data) {
-            let dataMap =  COMMAND_DATA;
-            if (data.status === 'complete'){
-                dataMap.push({to: 'SubKeys', from: 'sub_keys'});
-            }
-            let commandData = mapObjFunction(dataMap)(data);
-            let commandMD = tableToMarkdown(
-                `CB ${CB_PRODUCT} - Registry Keys: Command Status`,
-                commandData,
-                dataMap.map(cn => cn.to),
-                undefined,
-                splitCamelCase
-            );
-
-            if (data.status !== 'complete' || !data.values) {
-                return {
-                    Type: entryTypes.note,
-                    Contents: data,
-                    ContentsType: formats.json,
-                    ReadableContentsFormat: formats.markdown,
-                    HumanReadable: commandMD,
-                    EntryContext: {
-                        'CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)': commandData
-                    }
-                };
-            }
-
-            let registryEntry = mapObjFunction(regKeysData)(data.values);
-            let registryMD = tableToMarkdown(
-                `Registry Values`,
-                registryEntry,
-                regKeysData.map(cn => cn.to),
-                undefined,
-                splitCamelCase
-            );
-
-            //collect registry data for general context
-            let generalConetxt = collectRegistryDataToGeneralContext(data);
-
-            return {
-                Type: entryTypes.note,
-                Contents: data,
-                ContentsType: formats.json,
-                ReadableContentsFormat: formats.markdown,
-                HumanReadable: commandMD + '\n\n' + registryMD,
-                EntryContext: {
-                    'CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)': commandEntry,
-                    'CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID).Values': registryEntry,
-                    'RegistryKey': generalConetxt
-                }
-            };
-        },
-         'reg query value': function(data) {
-            let dataMap = COMMAND_DATA;
-            if (data.status === 'complete') {
-                dataMap = dataMap.concat(regKeyData);
-            }
-            let commandData = mapObjFunction(dataMap)(data);
-            let commandMD = tableToMarkdown(
-                `CB ${CB_PRODUCT} - Query Registry Value: Command Status`,
-                commandData,
-                dataMap.map(cn => cn.to),
-                undefined,
-                splitCamelCase
-            );
-
-            let context = {
-                'CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)': commandData
-            };
-            if (data.status !== 'complete') {
-                context.RegistryKey = collectRegistryDataToGeneralContext(data);
-            }
-            return {
-                Type: entryTypes.note,
-                Contents: data,
-                ContentsType: formats.json,
-                ReadableContentsFormat: formats.markdown,
-                HumanReadable: commandMD,
-                EntryContext: context
-            };
-        },
-         'reg create key': function(data) {
-            let dataMap = COMMAND_DATA;
-            let title = `CB ${CB_PRODUCT} - Create Registry Key: Command Status`;;
-            let contextKeys = ['CbLiveResponse(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'];
-            let commandInfoEntry = createEntry(
-                title,
-                data,
-                dataMap,
-                contextKeys,
-                splitCamelCase
-            );
-            return commandInfoEntry;
-        },
-         'reg delete key': function(data) {
-            let dataMap = COMMAND_DATA;
-            let title = `CB ${CB_PRODUCT} - Create Registry Key: Command Status`;;
-            let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'];
-            let commandInfoEntry = createEntry(
-                title,
-                data,
-                dataMap,
-                contextKeys,
-                splitCamelCase
-            );
-            return commandInfoEntry;
-        },
-         'reg delete values': function(data) {
-            let dataMap = COMMAND_DATA;
-            let title = `CB ${CB_PRODUCT} - Delete Registry Value: Command Status`;;
-            let contextKeys =  ['CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'];
-            let commandInfoEntry = createEntry(
-                title,
-                data,
-                dataMap,
-                contextKeys,
-                splitCamelCase
-            );
-            return commandInfoEntry;
-        },
-         'reg set values': function(data) {
-            let dataMap = COMMAND_DATA;
-            let title = `CB ${CB_PRODUCT} - Delete Registry Value: Command Status`;;
-            let contextKeys =  ['CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'];
-            let commandInfoEntry = createEntry(
-                title,
-                data,
-                dataMap,
-                contextKeys,
-                splitCamelCase
-            );
-            return commandInfoEntry;
-        },
-        'process list' : function(data) {
-            let commandData = mapObjFunction(COMMAND_DATA)(data);
-            let commandMD = tableToMarkdown(
-                `CB ${CB_PRODUCT} - List Processes: Command Status`,
-                commandData,
-                COMMAND_DATA.map(cn => cn.to),
-                undefined,
-                splitCamelCase
-            );
-            if (data.status !== 'complete') {
-                return {
-                    Type: entryTypes.note,
-                    Contents: data,
-                    ContentsType: formats.json,
-                    ReadableContentsFormat: formats.markdown,
-                    HumanReadable: commandMD,
-                    EntryContext: {
-                       'CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)': commandData
-                    }
-                };
-            }
-            let processes = mapObjFunction(processesData)(data.processes);
-            let processesMD = tableToMarkdown(
-                `CB ${CB_PRODUCT} - Processes`,
-                processes,
-                processesData.map(cn => cn.to),
-                undefined,
-                splitCamelCase
-            );
-
-            // collect processes data for general context
-            let processesCollection = [];
-            for (let process of data.processes) {
-                processesCollection.push({
-                    'PID': process.pid,
-                    'CommandLine': process.command_line,
-                    'Path': process.path,
-                    'Start Time': process.create_time,
-                    'Parent': process.parent
-                });
-            }
-
-            return {
-                Type: entryTypes.note,
-                Contents: data,
-                ContentsType: formats.json,
-                ReadableContentsFormat: formats.markdown,
-                HumanReadable: commandMD + '\n\n' + processesMD,
-                EntryContext: {
-                    'CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)': commandData,
-                    'CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID).Process': processes,
-                    'Process': processesCollection
-                }
-            };
-        }
-    };
-
-    function getCommand() {
-        let command = getCommandRequest(args.session, args.command);
-        if (commandEntries[command.name]){
-            return commandEntries[command.name](command);
-        }
-        //create generic entry
-        let title = `CB ${CB_PRODUCT} - Get Command`;
-        let dataMap = COMMAND_DATA;
-        //keep CbResponse context for backward competability
-        let contextKeys = [
-            'CbResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)',
-            'CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'
-        ];
-        return createEntry(
-            title,
-            result,
-            dataMap,
-            contextKeys,
-            splitCamelCase
-        );
-    }
-
-    function getCommandInfo(sessionId, commandId, timeout, timeInterval, cancelOnPending) {
-        let retries = timeout ? Math.ceil(timeout / timeInterval) : 1;
-        //loop to get command info. Stop when command status is no longer 'pending' or when exeeded wait-time.
-        let result;
-        let curTry = 0;
-        while (curTry < retries) {
-            result = getCommandRequest(sessionId, commandId);
-            if (result.status !== 'pending') {
-                return result;
-            }
-            curTry++;
-            sleep(timeInterval);
-        }
-        if (cancelOnPending && cancelOnPending === 'yes') {
-            cancelCommandRequest(sessionId, commandId);
-            throw 'Wait-time expired. Canceled command';
-        }
-        return result;
-    }
-
-    function terminateProcess() {
-        let result = createCommandRequest(args.session, 'kill', undefined, args.pid, undefined, args.wait);
-        sleep(1000);
-        let commandId = result.id;
-        let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout']) * 1000 : DEFAULT_WAIT_TIMEOUT;
-        let retries = Math.ceil(timeout / SLEEP_BETWEEN_RETRIES);
-
-        let curTry = 0;
-        while (curTry < retries) {
-            let result = getCommandRequest(args.session, commandId);
-            if (result.status === 'complete') {
-                let title = `CB Response - Terminate Process ${args.pid}`;
-                let dataMap = COMMAND_DATA;
-                let headers = dataMap.map(cn => cn.to);
-                let translatedData = mapObjFunction(dataMap)(result);
-                let humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
-                let context = {
-                    'CbResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)': createContext(translatedData)
-                };
-                return {
-                    Type: entryTypes.note,
-                    Contents: result,
-                    ContentsType: formats.json,
-                    ReadableContentsFormat: formats.markdown,
-                    HumanReadable: humanReadable,
-                    EntryContext: context,
-                };
-            } else if (result.status !== 'pending') {
-                throw `Terminating process failed, status: ${result.status}`;
-            }
-            sleep(SLEEP_BETWEEN_RETRIES);
-            curTry++;
-        }
-        throw `Terminating process timedout (${timeout / 1000} seconds), increase wait-timeout and try again`;
-    }
-
-    function putFileRequest(sessionId, fileId, path) {
-        let queryParams = {
-            name: 'put file',
-            object: path,
-            file_id: fileId
-        };
-
-        let response = sendRequest(`/session/${sessionId}/command`, 'POST', queryParams).Body;
-        try {
-            return JSON.parse(response);
-        } catch (err) {
-            throw `Could not parse response.\nError: ${err}.\nResponse: ${response}`;
-        }
-    }
-
-    function putFile() {
-        let fileInfo = uploadFileRequest(args['session'], args['entry-id']);
-        let result = putFileRequest(args['session'], fileInfo.id, args.path);
-        //wait for 1 second before trying to get command information
-        sleep(1000);
-        let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout']) * 1000 : DEFAULT_WAIT_TIMEOUT;
-
-        let command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES);
-        let commandEntry = commandEntries['put file'](command);
-        //add entry to hold gile information
-        let title = `CB ${CB_PRODUCT} - File Info`;
-        let dataMap = fileData;
-        let contextKeys = ['CbLiveResponse.Files(val.CbFileID==obj.CbFileID)'];
-        let fileInfoEntry = createEntry(
-            title,
-            fileInfo,
-            dataMap,
-            contextKeys,
-            splitCamelCase
-        );
-        return [commandEntry, fileInfoEntry];
-    }
-
-    function getFileRequest(sessionId, path, offset, bytes)   {
-        let queryParams = {
-            name: 'get file',
-            object: path,
-            offset: offset,
-            get_count: bytes
-        };
-
-        let response = sendRequest(`/session/${sessionId}/command`, 'POST', queryParams).Body;
-        try {
-            return JSON.parse(response);
-        } catch (err) {
-            throw `Could not parse response.\nError: ${err}.\nResponse: ${response}`;
-        }
-    }
-
-    function getFile() {
-        let command = directoryListRequest(args.session, args.path);
-        let commandId = command.id;
-        try {
-            command = getCommandInfo(args.session, commandId, DEFAULT_WAIT_TIMEOUT, SLEEP_BETWEEN_RETRIES);
-        }
-        catch(err) {
-            throw "Failed to get information on the file";
-        }
-        if (command.status === 'error') {
-            throw 'File not found on the endpoint';
-        }
-        let file = command.files[0];
-        let result = getFileRequest(args.session, args.path, 0, file.size);
-        //wait for 1 second before trying to get command information
-        sleep(1000);
-        let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout']) * 1000 : DEFAULT_WAIT_TIMEOUT;
-
-        command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
-        let commandEntry = commandEntries['get file'](command);
-
-        if (command.status !== 'complete') {
-            return commandEntry;
-        }
-        //download the file from Cb server and add file entry to the war room
-        let fileEntry = downloadFileEntry(args['session'], command['file_id']);
-        return [commandEntry, fileEntry];
-    }
-
-    function directoryListRequest(sessionId, path)   {
-        let queryParams = {
-            name: 'directory list',
-            object: path
-        };
-
-        let response = sendRequest(`/session/${sessionId}/command`, 'POST', queryParams).Body;
-        try {
-            return JSON.parse(response);
-        } catch (err) {
-            throw `Could not parse response.\nError: ${err}.\nResponse: ${response}`;
-        }
-    }
-
-    function directoryList() {
-        let result = directoryListRequest(args['session'], args.path);
-        //wait for 1 second before trying to get command information
-        sleep(1000);
-        let timeout = args['wait-timeout'] ? parseInt(args['wait-timeout']) * 1000 : DEFAULT_WAIT_TIMEOUT;
-        let command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
-        return commandEntries['directory list'](command);
-    }
-
-    function processKillRequest(sessionId, pid) {
-        let queryParams = {
-            name: 'kill',
-            object: pid
-        };
-        let response = sendRequest(`/session/${sessionId}/command`, 'POST', queryParams).Body;
-        try {
-            return JSON.parse(response);
-        } catch (err) {
-            throw `Could not parse response.\nError: ${err}.\nResponse: ${response}`;
-        }
-    }
-
-    //equivalent to 'terminateProcess' function
-    function processKill() {
-        let result = processKillRequest(args['session'], args.pid);
-        //wait for 1 second before trying to get command information
-        sleep(1000);
-        let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout']) * 1000 : DEFAULT_WAIT_TIMEOUT;
-
-        let command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
-        return commandEntries['kill'](command);
-    }
-
-    function processExecRequeste(sessionId, path, wait, workingDirectory, outputFile) {
-        let queryParams = {
-            name: 'create process',
-            object: path
-        };
-        if (wait !== undefined) {
-            queryParams.wait = wait;
-        }
-        if (workingDirectory) {
-            queryParams.working_directory = workingDirectory;
-        }
-        if (outputFile) {
-            queryParams.output_file = outputFile;
-        }
-
-        let response = sendRequest(`/session/${sessionId}/command`, 'POST', queryParams).Body;
-        try {
-            return JSON.parse(response);
-        } catch (err) {
-            throw `Could not parse response.\nError: ${err}.\nResponse: ${response}`;
-        }
-    }
-
-    function processExec() {
-        if (args.wait) {
-            args.wait = args.wait === 'yes';
-        }
-        let result = processExecRequeste(args['session'], args.path, args['working-directory'], args['output-file']);
-        //wait for 1 second before trying to get command information
-        sleep(1000);
-        let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout']) * 1000 : DEFAULT_WAIT_TIMEOUT;
-
-        let command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
-        return commandEntries['create process'](command);
-    }
-
-    function memdumpRequest(sessionId, path, compress) {
-        let queryParams = {
-            name: 'memdump',
-            object: path,
-            compress: false //in the API there is a typo that says this field is spelled 'commpress'
-        };
-        if (compress === 'true') {
-            queryParams.compress = true;
-        }
-        let response = sendRequest(`/session/${sessionId}/command`, 'POST', queryParams).Body;
-        try {
-            return JSON.parse(response);
-        } catch (err) {
-            throw `Could not parse response.\nError: ${err}.\nResponse: ${response}`;
-        }
-    }
-
-    function memdump() {
-        let result = memdumpRequest(args['session'], args.path, args.compress);
-        //wait for 1 second before trying to get command information
-        sleep(1000);
-        let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout']) * 1000 : DEFAULT_WAIT_TIMEOUT;
-
-        let command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
-        return commandEntries['memdump'](command);
-    }
-
-    function deleteFileFromEndpointRequest(sessionId, path){
-        let queryParams = {
-            name: 'delete file',
-            object: path
-        };
-        let response = sendRequest(`/session/${sessionId}/command`, 'POST', queryParams).Body;
-        try {
-            return JSON.parse(response);
-        } catch (err) {
-            throw `Could not parse response.\nError: ${err}.\nResponse: ${response}`;
-        }
-    }
-
-    function deleteFileFromEndpoint() {
-        let result = deleteFileFromEndpointRequest(args['session'], args.path);
-        //wait for 1 second before trying to get command information
-        sleep(1000);
-        let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout']) * 1000 : DEFAULT_WAIT_TIMEOUT;
-
-        let command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
-        return commandEntries['delete file'](command);
-    }
-
-    function regEnumKeyRequest(sessionId, path){
-        let queryParams = {
-            name: 'reg enum key',
-            object: path
-        };
-        let response = sendRequest(`/session/${sessionId}/command`, 'POST', queryParams).Body;
-        try {
-            return JSON.parse(response);
-        } catch (err) {
-            throw `Could not parse response.\nError: ${err}.\nResponse: ${response}`;
-        }
-    }
-
-    function regEnumKey() {
-        let result = regEnumKeyRequest(args.session, args.path);
-        //wait for 1 second before trying to get command information
-        sleep(1000);
-        let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout']) * 1000 : DEFAULT_WAIT_TIMEOUT;
-
-        let command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
-        return commandEntries['reg enum key'](command);
-    }
-
-    function regQueryValueRequest(sessionId, path){
-        let queryParams = {
-            name: 'reg query value',
-            object: path
-        };
-        let response = sendRequest(`/session/${sessionId}/command`, 'POST', queryParams).Body;
-        try {
-            return JSON.parse(response);
-        } catch (err) {
-            throw `Could not parse response.\nError: ${err}.\nResponse: ${response}`;
-        }
-    }
-
-    function regQueryValue() {
-        let result = regQueryValueRequest(args.session, args.path);
-        //wait for 1 second before trying to get command information
-        sleep(1000);
-        let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout']) * 1000 : DEFAULT_WAIT_TIMEOUT;
-
-        let command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
-        return commandEntries['reg query value'](command);
-    }
-
-    function regCreateRequest(sessionId, path){
-        let queryParams = {
-            name: 'reg create key',
-            object: path
-        };
-        let response = sendRequest(`/session/${sessionId}/command`, 'POST', queryParams).Body;
-        try {
-            return JSON.parse(response);
-        } catch (err) {
-            throw `Could not parse response.\nError: ${err}.\nResponse: ${response}`;
-        }
-    }
-
-    function regCreate() {
-        let result = regCreateRequest(args.session, args.path, args.timeout);
-        //wait for 1 second before trying to get command information
-        sleep(1000);
-        let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout']) * 1000 : DEFAULT_WAIT_TIMEOUT;
-
-        let command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
-        return commandEntries['reg create key'](command);
-    }
-
-    function regDeleteKeyRequest(sessionId, path){
-        let queryParams = {
-            name: 'reg delete key',
-            object: path
-        };
-        let response = sendRequest(`/session/${sessionId}/command`, 'POST', queryParams).Body;
-        try {
-            return JSON.parse(response);
-        } catch (err) {
-            throw `Could not parse response.\nError: ${err}.\nResponse: ${response}`;
-        }
-    }
-
-    function regDeleteKey() {
-        let result = regDeleteKeyRequest(args.session, args.path);
-        //wait for 1 second before trying to get command information
-        sleep(1000);
-        let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout']) * 1000 : DEFAULT_WAIT_TIMEOUT;
-
-        let command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
-        return commandEntries['reg delete key'](command);
-    }
-
-    function regDeleteValueRequest(sessionId, path){
-        let queryParams = {
-            name: 'reg delete value',
-            object: path
-        };
-        let response = sendRequest(`/session/${sessionId}/command`, 'POST', queryParams).Body;
-        try {
-            return JSON.parse(response);
-        } catch (err) {
-            throw `Could not parse response.\nError: ${err}.\nResponse: ${response}`;
-        }
-    }
-
-    function regDeleteValue() {
-        let result = regDeleteValueRequest(args.session, args.path);
-        //wait for 1 second before trying to get command information
-        sleep(1000);
-        let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout']) * 1000 : DEFAULT_WAIT_TIMEOUT;
-
-        let command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
-        return commandEntries['reg delete value'](command);
-    }
-
-    function regSetValueRequest(sessionId, path, data, type, overwrite){
-        let queryParams = {
-            name: 'reg set value',
-            object: path,
-            value_data: data,
-            value_type: type
-        }
-        if (overwrite) {
-            queryParams.overwrite = true;
-        }
-        let response = sendRequest(`/session/${sessionId}/command`, 'POST', queryParams).Body;
-        try {
-            return JSON.parse(response);
-        } catch (err) {
-            throw `Could not parse response.\nError: ${err}.\nResponse: ${response}`;
-        }
-    }
-
-    function regSetValue() {
-        if (args.type = 'REG_MULTI_SZ') {
-            args.data = args.data.split(',');
-        }
-        if (args.overwrite) {
-            args.overwrite = args.overwrite === 'yes';
-        }
-        let result = regSetValueRequest(args.session, args.path, args.data, args.type, args.overwrite);
-        //wait for 1 second before trying to get command information
-        sleep(1000);
-        let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout']) * 1000 : DEFAULT_WAIT_TIMEOUT;
-
-        let command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
-        return commandEntries['reg set value'](command);
-    }
-
-    function listProcessesRequest(sessionId, path){
-        let queryParams = {
-            name: 'process list'
-        }
-        let response = sendRequest(`/session/${sessionId}/command`, 'POST', queryParams).Body;
-        try {
-            return JSON.parse(response);
-        } catch (err) {
-            throw `Could not parse response.\nError: ${err}.\nResponse: ${response}`;
-        }
-    }
-
-    function listProcesses() {
-        let result = listProcessesRequest(args['session'], args.path);
-        //wait for 1 second before trying to get command information
-        sleep(1000);
-        let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout']) * 1000 : DEFAULT_WAIT_TIMEOUT;
-        let command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
-        return commandEntries['process list'](command);
-    }
-
-    /// Execution
-
-    try {
-        switch (command) {
-            case 'test-module':
-                return testModule();
-            case 'cb-list-sessions':
-                if (CB_PRODUCT == 'Defense') {
-                    throw '\'cb-list-sessions\' is not available for Cb Defense.';
-                }
-                return getSessions();
-            case 'cb-session-info':
-                return getSessions();
-            case 'cb-session-create':
-                return createSession();
-            case 'cb-session-create-and-wait':
-                return createSessionAndWait();
-            case 'cb-session-close':
-                return closeSession();
-            case 'cb-keepalive':
-                return sessionKeepAlive();
-            case 'cb-archive':
-                if (CB_PRODUCT == 'Defense') {
-                    throw '\'cb-archive\' is not available for Cb Defense.';
-                }
-                return archiveSession();
-            case 'cb-list-commands':
-                return getCommands();
-            case 'cb-command-info':
-                return getCommand();
-            case 'cb-terminate-process':
-                return terminateProcess();
-            case 'cb-command-create':
-                return createCommand();
-            case 'cb-command-create-and-wait':
-                return createCommandAndWait();
-            case 'cb-command-cancel':
-                return cancelCommand();
-            case 'cb-file-get':
-                return downloadFile();
-            case 'cb-list-files':
-            case 'cb-file-info':
-                return listFiles();
-            case 'cb-file-upload':
-                return uploadFile();
-            case 'cb-file-delete':
-                return deleteFile();
-        }
-    } catch (err) {
-        return {
-            Type: entryTypes.error,
-            Contents: err,
-            ContentsType: formats.json,
-            ReadableContentsFormat: formats.text,
-            HumanReadable: err.message
-        };
-    }
-
-    // execute Cb commands
-    let closeSessionAfterExecution = false;
-    try {
-        //validate either sensor or session was passed
-        if ((!args.session && !args.sensor) || (args.session && args.sensor)) {
-            throw 'Provide either the session ID or the sensor ID';
-        }
-        if (args.sensor) {
-            let session = createSessionRequest(args.sensor);
-            let wait = 3 * 1000;
-            while (session.status === 'pending' || session.status === 'PENDING') {
-                sleep(wait);
-                session = getSessionsRequest(session.id);
-            }
-            if (session.status !== 'active' && session.status !== 'ACTIVE') {
-                throw 'Failed to start a new session';
-            }
-            closeSessionAfterExecution = true;
-            args.session = session.id;
-        }
-        switch (command) {
-            case 'cb-process-kill':
-                return processKill();
-            case 'cb-directory-listing':
-                return directoryList();
-            case 'cb-process-execute':
-                return processExec();
-            case 'cb-memdeump':
-                return memdump();
-            case 'cb-memdump':
-                return memdump();
-            case 'cb-file-delete-from-endpoint':
-                return deleteFileFromEndpoint();
-            case 'cb-registry-get-values':
-                return regEnumKey();
-            case 'cb-registry-query-value':
-                return regQueryValue();
-            case 'cb-registry-create-key':
-                return regCreate();
-            case 'cb-registry-delete-key':
-                return regDeleteKey();
-            case 'cb-registry-delete-value':
-                return regDeleteValue();
-            case 'cb-registry-set-value':
-                return regSetValue();
-            case 'cb-process-list':
-                return listProcesses();
-            case 'cb-get-file-from-endpoint':
-                return getFile();
-            case 'cb-push-file-to-endpoint':
-                return putFile();
-        }
-    } catch (err) {
-        return {
-            Type: entryTypes.error,
-            Contents: err,
-            ContentsType: formats.json,
-            ReadableContentsFormat: formats.text,
-            HumanReadable: err.message
-        };
-    } finally {
-        if (closeSessionAfterExecution) {
-            closeSessionRequest(args.session);
-        }
-    }
-
-    /// Util methods
-
-    function sleep(ms) {
-        var start = new Date().getTime();
-        var expire = start + ms;
-        while (new Date().getTime() < expire) {
-            /*Do nothing*/
-        }
-        return;
-    }
-  type: javascript
   commands:
-  - name: cb-archive
-    arguments:
-    - name: session
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: Session ID to return the archive of
+      name: session
+      required: true
     description: Archive the given session (If the session has no content it will
       fail)
-  - name: cb-command-cancel
+    name: cb-archive
+  - arguments:
+    - description: Session ID of command to cancel
+      name: session
+      required: true
+    - description: Command ID to cancel
+      name: command
+      required: true
     deprecated: true
-    arguments:
-    - name: session
-      required: true
-      description: Session ID of command to cancel
-    - name: command
-      required: true
-      description: Command ID to cancel
+    description: Cancel the given command. Only pending commands can be canceled.
+    name: cb-command-cancel
     outputs:
     - contextPath: CbLiveResponse.Commands.Status
       description: The Command Status
@@ -1723,25 +92,25 @@ script:
       description: Result type
     - contextPath: CbLiveResponse.Commands.Result.Code
       description: Result code
-    description: Cancel the given command. Only pending commands can be canceled.
-  - name: cb-command-info
-    arguments:
-    - name: session
+  - arguments:
+    - description: Session ID of the command
+      name: session
       required: true
-      description: Session ID of the command
-    - name: command
+    - description: Command ID
+      name: command
       required: true
-      description: Command ID
     description: Display information on command
-  - name: cb-file-delete
-    arguments:
-    - name: session
-      required: true
-      default: true
+    name: cb-command-info
+  - arguments:
+    - default: true
       description: Session ID
-    - name: file-id
+      name: session
       required: true
-      description: File ID
+    - description: File ID
+      name: file-id
+      required: true
+    description: Delete a given file in the session from Cb server.
+    name: cb-file-delete
     outputs:
     - contextPath: CbLiveResponse.Files.Filename
       description: The Filename
@@ -1753,79 +122,47 @@ script:
       description: File status (0 if no error, another number otherwise)
     - contextPath: CbLiveResponse.Files.Delete
       description: Whether the file was deleted or not
-    description: Delete a given file in the session from Cb server.
-  - name: cb-file-get
+  - arguments:
+    - description: Session ID
+      name: session
+      required: true
+    - description: File ID
+      name: file-id
+      required: true
     deprecated: true
-    arguments:
-    - name: session
-      required: true
-      description: Session ID
-    - name: file-id
-      required: true
-      description: File ID
     description: Download a file from Cb server in a given session. Use cb-get-file-from-endpoint
       instead.
-  - name: cb-file-info
-    arguments:
-    - name: session
-      required: true
-      default: true
+    name: cb-file-get
+  - arguments:
+    - default: true
       description: Session ID
-    - name: file-id
-      description: File ID
-    outputs:
-    - contextPath: CbLiveResponse.Files.Filename
-      description: The Filename
-    - contextPath: CbLiveResponse.Files.Size
-      description: The File size
-    - contextPath: CbLiveResponse.Files.CbFileID
-      description: ID of the file within the Cb Session Storage - use with cb-get-file-from-endpoint.
-    - contextPath: CbLiveResponse.Files.Status
-      description: File status (0 if no error, another number otherwise)
-    - contextPath: CbLiveResponse.Files.Delete
-      description: Whether the file was deleted or not
+      name: session
+      required: true
+    - description: File ID
+      name: file-id
     description: Get file info for a given file in a session
-  - name: cb-file-upload
+    name: cb-file-info
+    outputs:
+    - contextPath: CbLiveResponse.Files.Filename
+      description: The Filename
+    - contextPath: CbLiveResponse.Files.Size
+      description: The File size
+    - contextPath: CbLiveResponse.Files.CbFileID
+      description: ID of the file within the Cb Session Storage - use with cb-get-file-from-endpoint.
+    - contextPath: CbLiveResponse.Files.Status
+      description: File status (0 if no error, another number otherwise)
+    - contextPath: CbLiveResponse.Files.Delete
+      description: Whether the file was deleted or not
+  - arguments:
+    - description: Session ID to upload the file through
+      name: session
+      required: true
+    - description: File entry id of an attachment to upload.
+      name: file-id
+      required: true
     deprecated: true
-    arguments:
-    - name: session
-      required: true
-      description: Session ID to upload the file through
-    - name: file-id
-      required: true
-      description: File entry id of an attachment to upload.
-    outputs:
-    - contextPath: CbLiveResponse.Files.Filename
-      description: The Filename
-    - contextPath: CbLiveResponse.Files.Size
-      description: The File size
-    - contextPath: CbLiveResponse.Files.CbFileID
-      description: ID of the file within the Cb Session Storage - use with cb-get-file-from-endpoint.
-    - contextPath: CbLiveResponse.Files.Status
-      description: File status (0 if no error, another number otherwise)
-    - contextPath: CbLiveResponse.Files.Delete
-      description: Whether the file was deleted or not
     description: Uploads the file to the Cb server. Use cb-push-file-to-endpoint instead.
-  - name: cb-keepalive
-    arguments:
-    - name: session
-      required: true
-      default: true
-      description: The session ID to keepalive
-    description: Keep the session alive to avoid closing due to timeout
-  - name: cb-list-commands
-    arguments:
-    - name: session
-      required: true
-      default: true
-      description: Session ID
-    description: List the CarbonBlack existing commands for a given session
-  - name: cb-list-files
-    arguments:
-    - name: session
-      required: true
-      default: true
-      description: Session ID
+    name: cb-file-upload
     outputs:
     - contextPath: CbLiveResponse.Files.Filename
       description: The Filename
@@ -1837,96 +174,99 @@ script:
       description: File status (0 if no error, another number otherwise)
     - contextPath: CbLiveResponse.Files.Delete
       description: Whether the file was deleted or not
+  - arguments:
+    - default: true
+      description: The session ID to keepalive
+      name: session
+      required: true
+    description: Keep the session alive to avoid closing due to timeout
+    name: cb-keepalive
+  - arguments:
+    - default: true
+      description: Session ID
+      name: session
+      required: true
+    description: List the CarbonBlack existing commands for a given session
+    name: cb-list-commands
+  - arguments:
+    - default: true
+      description: Session ID
+      name: session
+      required: true
     description: List files in a given session
-  - name: cb-list-sessions
-    arguments:
-    - name: sensor
-      description: Sensor ID to filter sessions by
-    - name: status
-      auto: PREDEFINED
+    name: cb-list-files
+    outputs:
+    - contextPath: CbLiveResponse.Files.Filename
+      description: The Filename
+    - contextPath: CbLiveResponse.Files.Size
+      description: The File size
+    - contextPath: CbLiveResponse.Files.CbFileID
+      description: ID of the file within the Cb Session Storage - use with cb-get-file-from-endpoint.
+    - contextPath: CbLiveResponse.Files.Status
+      description: File status (0 if no error, another number otherwise)
+    - contextPath: CbLiveResponse.Files.Delete
+      description: Whether the file was deleted or not
+  - arguments:
+    - description: Sensor ID to filter sessions by
+      name: sensor
+    - auto: PREDEFINED
+      description: 'Status to filter by (One of: active, pending, timeout, inactive,
+        close)'
+      isArray: true
+      name: status
       predefined:
       - active
       - pending
       - timeout
       - inactive
       - close
-      description: 'Status to filter by (One of: active, pending, timeout, inactive,
-        close)'
-      isArray: true
-    outputs:
-    - contextPath: CbLiveResponse.Sessions.CbSensorID
-      description: Sensor ID
-    - contextPath: CbLiveResponse.Sessions.CbSessionID
-      description: Session ID
-    - contextPath: CbLiveResponse.Sessions.Hostname
-      description: Hostname
-    - contextPath: CbLiveResponse.Sessions.Status
-      description: Session Status
-    - contextPath: CbLiveResponse.Sessions.WaitTimeout
-      description: Sensor wait timeout
-    - contextPath: CbLiveResponse.Sessions.SessionTimeout
-      description: Session Timeout
     description: List the CarbonBlack sessions
-  - name: cb-session-close
-    arguments:
-    - name: session
-      required: true
-      description: The session ID to close
+    name: cb-list-sessions
     outputs:
-    - contextPath: CbLiveResponse.Sessions.Status
-      description: Session Status
-    - contextPath: CbLiveResponse.Sessions.Hostname
-      description: Hostname
     - contextPath: CbLiveResponse.Sessions.CbSensorID
       description: Sensor ID
     - contextPath: CbLiveResponse.Sessions.CbSessionID
       description: Session ID
-    - contextPath: CbLiveResponse.Sessions.SessionTimeout
-      description: Session Timeout
+    - contextPath: CbLiveResponse.Sessions.Hostname
+      description: Hostname
+    - contextPath: CbLiveResponse.Sessions.Status
+      description: Session Status
     - contextPath: CbLiveResponse.Sessions.WaitTimeout
       description: Sensor wait timeout
+    - contextPath: CbLiveResponse.Sessions.SessionTimeout
+      description: Session Timeout
+  - arguments:
+    - description: The session ID to close
+      name: session
+      required: true
     description: Close the given session
-  - name: cb-session-create
-    arguments:
-    - name: sensor
-      required: true
-      default: true
+    name: cb-session-close
+    outputs:
+    - contextPath: CbLiveResponse.Sessions.Status
+      description: Session Status
+    - contextPath: CbLiveResponse.Sessions.Hostname
+      description: Hostname
+    - contextPath: CbLiveResponse.Sessions.CbSensorID
+      description: Sensor ID
+    - contextPath: CbLiveResponse.Sessions.CbSessionID
+      description: Session ID
+    - contextPath: CbLiveResponse.Sessions.SessionTimeout
+      description: Session Timeout
+    - contextPath: CbLiveResponse.Sessions.WaitTimeout
+      description: Sensor wait timeout
+  - arguments:
+    - default: true
       description: Sensor ID to create session for
-    - name: command-timeout
-      description: Session timeout (If a command will not be issued after this time
+      name: sensor
+      required: true
+    - description: Session timeout (If a command will not be issued after this time
         the session will be closed)
-    - name: keepalive-timeout
-      description: ' the timeout (in seconds) that a device should wait between commands.
+      name: command-timeout
+    - description: ' the timeout (in seconds) that a device should wait between commands.
         If no command is issued over this timeout the device will quit.'
-    outputs:
-    - contextPath: CbLiveResponse.Sessions.Status
-      description: Session Status
-    - contextPath: CbLiveResponse.Sessions.Hostname
-      description: Hostname
-    - contextPath: CbLiveResponse.Sessions.CbSensorID
-      description: Sensor ID
-    - contextPath: CbLiveResponse.Sessions.CbSessionID
-      description: Session ID
-    - contextPath: CbLiveResponse.Sessions.SessionTimeout
-      description: Session Timeout
-    - contextPath: CbLiveResponse.Sessions.WaitTimeout
-      description: Sensor wait timeout
+      name: keepalive-timeout
     description: Create a new CarbonBlack session for a given sensor
-  - name: cb-session-create-and-wait
-    arguments:
-    - name: sensor
-      required: true
-      default: true
-      description: Sensor ID to create session for
-    - name: command-timeout
-      description: Session timeout (If a command will not be issued after this time
-        the session will be closed)
-    - name: keepalive-timeout
-      description: Session keepalive timeout (If a keepalive is not issued after this
-        time, the session will close)
-    - name: wait-timeout
-      description: Time in seconds to wait for session to be active
-      defaultValue: "20"
+    name: cb-session-create
     outputs:
     - contextPath: CbLiveResponse.Sessions.Status
       description: Session Status
@@ -1940,14 +280,23 @@ script:
       description: Session Timeout
     - contextPath: CbLiveResponse.Sessions.WaitTimeout
       description: Sensor wait timeout
+  - arguments:
+    - default: true
+      description: Sensor ID to create session for
+      name: sensor
+      required: true
+    - description: Session timeout (If a command will not be issued after this time
+        the session will be closed)
+      name: command-timeout
+    - description: Session keepalive timeout (If a keepalive is not issued after this
+        time, the session will close)
+      name: keepalive-timeout
+    - defaultValue: '20'
+      description: Time in seconds to wait for session to be active
+      name: wait-timeout
     description: Create a new CarbonBlack session for a given sensor and wait for
       it to be active
-  - name: cb-session-info
-    arguments:
-    - name: session
-      required: true
-      default: true
-      description: Session ID to get info for
+    name: cb-session-create-and-wait
     outputs:
     - contextPath: CbLiveResponse.Sessions.Status
       description: Session Status
@@ -1961,28 +310,48 @@ script:
       description: Session Timeout
     - contextPath: CbLiveResponse.Sessions.WaitTimeout
       description: Sensor wait timeout
-    description: Display session info
-  - name: cb-process-kill
-    arguments:
-    - name: session
-      description: 'Session ID. Provide the session ID to run the command with an
-        existing session. '
-    - name: pid
+  - arguments:
+    - default: true
+      description: Session ID to get info for
+      name: session
       required: true
-      description: Process ID to terminate
-    - name: wait-timeout
+    description: Display session info
+    name: cb-session-info
+    outputs:
+    - contextPath: CbLiveResponse.Sessions.Status
+      description: Session Status
+    - contextPath: CbLiveResponse.Sessions.Hostname
+      description: Hostname
+    - contextPath: CbLiveResponse.Sessions.CbSensorID
+      description: Sensor ID
+    - contextPath: CbLiveResponse.Sessions.CbSessionID
+      description: Session ID
+    - contextPath: CbLiveResponse.Sessions.SessionTimeout
+      description: Session Timeout
+    - contextPath: CbLiveResponse.Sessions.WaitTimeout
+      description: Sensor wait timeout
+  - arguments:
+    - description: 'Session ID. Provide the session ID to run the command with an
+        existing session. '
+      name: session
+    - description: Process ID to terminate
+      name: pid
+      required: true
+    - defaultValue: '20'
       description: Time to wait (in seconds) for Cb command to be executed (change
         status from 'pending' to 'in progress'/'complete').
-      defaultValue: "20"
-    - name: cancel-on-timeout
-      auto: PREDEFINED
-      predefined:
-      - "yes"
-      - "no"
+      name: wait-timeout
+    - auto: PREDEFINED
       description: Cancel the command if still 'pending' after timeout.
-    - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
+      name: cancel-on-timeout
+      predefined:
+      - 'yes'
+      - 'no'
+    - description: The sensor ID.  Provided the sensor ID to run the command with
         a new session. The session will be created and closed automatically.
+      name: sensor
+    description: Terminates a process at the sensor/endpoint
+    name: cb-process-kill
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
@@ -1995,27 +364,27 @@ script:
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
       description: The process ID.
-    description: Terminates a process at the sensor/endpoint
-  - name: cb-directory-listing
-    arguments:
-    - name: session
-      description: The session ID.
-    - name: path
-      required: true
-      description: Path for the directory (e.g. "c:\\Users\\"). Note to end with double
+  - arguments:
+    - description: The session ID.
+      name: session
+    - description: Path for the directory (e.g. "c:\\Users\\"). Note to end with double
         backslash.
-    - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
+      name: path
+      required: true
+    - description: Time to wait (in seconds) for Cb command to be executed (change
         status from 'pending' to 'in-progress'/'complete').
-    - name: cancel-on-timeout
-      auto: PREDEFINED
-      predefined:
-      - "yes"
-      - "no"
+      name: wait-timeout
+    - auto: PREDEFINED
       description: Cancel the command if still 'pending' after timeout.
-    - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
+      name: cancel-on-timeout
+      predefined:
+      - 'yes'
+      - 'no'
+    - description: The sensor ID.  Provided the sensor ID to run the command with
         a new session. The session will be created and closed automatically.
+      name: sensor
+    description: List directories on the endpoint.
+    name: cb-directory-listing
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
@@ -2040,37 +409,37 @@ script:
       description: The file size.
     - contextPath: CbLiveResponse.Commands.Files.FileName
       description: The file name.
-    description: List directories on the endpoint.
-  - name: cb-process-execute
-    arguments:
-    - name: session
-      description: The session ID.
-    - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
+  - arguments:
+    - description: The session ID.
+      name: session
+    - description: The sensor ID.  Provided the sensor ID to run the command with
         a new session. The session will be created and closed automatically.
-    - name: path
+      name: sensor
+    - description: the path and command line of the executable
+      name: path
       required: true
-      description: the path and command line of the executable
-    - name: wait
-      auto: PREDEFINED
-      predefined:
-      - "yes"
-      - "no"
+    - auto: PREDEFINED
       description: An optional parameter to specify whether to wait for the process
         to complete execution before reporting the result.
-    - name: working-directory
-      description: An optional parameter to specify the working directory of the executable.
-    - name: output-file
-      description: An option file that STDERR and STDOUT will be redirected to.
-    - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
-    - name: cancel-on-timeout
-      auto: PREDEFINED
+      name: wait
       predefined:
-      - "yes"
-      - "no"
+      - 'yes'
+      - 'no'
+    - description: An optional parameter to specify the working directory of the executable.
+      name: working-directory
+    - description: An option file that STDERR and STDOUT will be redirected to.
+      name: output-file
+    - description: Time to wait (in seconds) for Cb command to be executed (change
+        status from 'pending' to 'in-progress'/'complete').
+      name: wait-timeout
+    - auto: PREDEFINED
       description: Cancel the command if still 'pending' after timeout.
+      name: cancel-on-timeout
+      predefined:
+      - 'yes'
+      - 'no'
+    description: Run executable on the endpoint.
+    name: cb-process-execute
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
@@ -2084,34 +453,35 @@ script:
     - contextPath: CbLiveResponse.Commands.OperandObject
       description: The path and command line of the executable.
     - contextPath: CbLiveResponse.Commands.ReturnCode
-      description: the return code of the process (if wait was set to “true”).
+      description: "the return code of the process (if wait was set to \u201Ctrue\u201D\
+        )."
     - contextPath: CbLiveResponse.Commands.ProcessID
       description: The pid of the executed process.
-    description: Run executable on the endpoint.
-  - name: cb-memdeump
-    deprecated: true
-    arguments:
-    - name: session
-      description: The session ID.
-    - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
+  - arguments:
+    - description: The session ID.
+      name: session
+    - description: The sensor ID.  Provided the sensor ID to run the command with
         a new session. The session will be created and closed automatically.
-    - name: path
-      required: true
-      description: The full path, including file name, to save the resulting memory
+      name: sensor
+    - description: The full path, including file name, to save the resulting memory
         dump on the endpoint (example - c:\\temp\\dump_file.dmp).
-    - name: compress
-      description: An optional parameter to specify whether to compress resulting
+      name: path
+      required: true
+    - description: An optional parameter to specify whether to compress resulting
         memory dump.
-    - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
+      name: compress
+    - description: Time to wait (in seconds) for Cb command to be executed (change
         status from 'pending' to 'in-progress'/'complete').
-    - name: cancel-on-timeout
-      auto: PREDEFINED
-      predefined:
-      - "yes"
-      - "no"
+      name: wait-timeout
+    - auto: PREDEFINED
       description: Cancel the command if still 'pending' after timeout.
+      name: cancel-on-timeout
+      predefined:
+      - 'yes'
+      - 'no'
+    deprecated: true
+    description: Deprecated - use cb-memdump instead.
+    name: cb-memdeump
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
@@ -2134,14 +504,11 @@ script:
       description: Percent of the process completed
     - contextPath: CbLiveResponse.Commands.DumpingInProgress
       description: Boolean flag indicating if memory dump is in progress.
-    description: Deprecated - use cb-memdump instead.
-  - name: cb-command-create
-    deprecated: true
-    arguments:
-    - name: name
-      required: true
+  - arguments:
+    - auto: PREDEFINED
       default: true
-      auto: PREDEFINED
+      description: Command name
+      name: name
       predefined:
       - put-file
       - get-file
@@ -2157,34 +524,38 @@ script:
       - kill
       - create-process
       - memdump
-      description: Command name
-    - name: timeout
-      description: Command timeout
-    - name: object
-      description: the object the command operates on. This is specific to the command
-        but has meaning in a generic way for logging, and display purposes
-    - name: compress
-      description: '"true" or "false" - an optional parameter to specify whether to
-        compress resulting memory dump'
-    - name: working-dir
-      description: An optional parameter to specify the working directory of the executable
-    - name: output-file
-      description: An option file that STDERR and STDOUT will be redirected to.
-    - name: value-data
-      description: the data associated with the registry value
-    - name: value-type
-      description: the string representation of the registry value type (ie REG_DWORD,
-        REG_QWORD, ….)
-    - name: overwrite
-      description: “true” or “false”. An optional parameter to specify whether to
-        overwrite the value if it already exists (default value is “false”)
-    - name: offset
-      description: a byte offset to start getting the file. Supports a partial get.
-    - name: get-count
-      description: the number of bytes to grab
-    - name: session
       required: true
-      description: Session ID to create command for
+    - description: Command timeout
+      name: timeout
+    - description: the object the command operates on. This is specific to the command
+        but has meaning in a generic way for logging, and display purposes
+      name: object
+    - description: '"true" or "false" - an optional parameter to specify whether to
+        compress resulting memory dump'
+      name: compress
+    - description: An optional parameter to specify the working directory of the executable
+      name: working-dir
+    - description: An option file that STDERR and STDOUT will be redirected to.
+      name: output-file
+    - description: the data associated with the registry value
+      name: value-data
+    - description: "the string representation of the registry value type (ie REG_DWORD,\
+        \ REG_QWORD, \u2026.)"
+      name: value-type
+    - description: "\u201Ctrue\u201D or \u201Cfalse\u201D. An optional parameter to\
+        \ specify whether to overwrite the value if it already exists (default value\
+        \ is \u201Cfalse\u201D)"
+      name: overwrite
+    - description: a byte offset to start getting the file. Supports a partial get.
+      name: offset
+    - description: the number of bytes to grab
+      name: get-count
+    - description: Session ID to create command for
+      name: session
+      required: true
+    deprecated: true
+    description: Create a live response command. Use cb-session-create instead.
+    name: cb-command-create
     outputs:
     - contextPath: CbLiveResponse.Commands.Status
       description: The Command Status
@@ -2211,14 +582,11 @@ script:
       description: Result type
     - contextPath: CbLiveResponse.Commands.Result.Code
       description: Result code
-    description: Create a live response command. Use cb-session-create instead.
-  - name: cb-command-create-and-wait
-    deprecated: true
-    arguments:
-    - name: name
-      required: true
+  - arguments:
+    - auto: PREDEFINED
       default: true
-      auto: PREDEFINED
+      description: Command name
+      name: name
       predefined:
       - put-file
       - get-file
@@ -2234,71 +602,75 @@ script:
       - kill
       - create-process
       - memdump
-      description: Command name
-    - name: timeout
-      description: Command timeout
-    - name: object
-      description: the object the command operates on. This is specific to the command
+      required: true
+    - description: Command timeout
+      name: timeout
+    - description: the object the command operates on. This is specific to the command
         but has meaning in a generic way for logging, and display purposes
-    - name: compress
-      description: '"true" or "false" - an optional parameter to specify whether to
+      name: object
+    - description: '"true" or "false" - an optional parameter to specify whether to
         compress resulting memory dump'
-    - name: working-dir
-      description: An optional parameter to specify the working directory of the executable
-    - name: output-file
-      description: An option file that STDERR and STDOUT will be redirected to.
-    - name: value-data
-      description: the data associated with the registry value
-    - name: value-type
-      description: the string representation of the registry value type (ie REG_DWORD,
-        REG_QWORD, ….)
-    - name: overwrite
-      description: “true” or “false”. An optional parameter to specify whether to
-        overwrite the value if it already exists (default value is “false”)
-    - name: offset
-      description: a byte offset to start getting the file. Supports a partial get.
-    - name: get-count
-      description: the number of bytes to grab
-    - name: session
+      name: compress
+    - description: An optional parameter to specify the working directory of the executable
+      name: working-dir
+    - description: An option file that STDERR and STDOUT will be redirected to.
+      name: output-file
+    - description: the data associated with the registry value
+      name: value-data
+    - description: "the string representation of the registry value type (ie REG_DWORD,\
+        \ REG_QWORD, \u2026.)"
+      name: value-type
+    - description: "\u201Ctrue\u201D or \u201Cfalse\u201D. An optional parameter to\
+        \ specify whether to overwrite the value if it already exists (default value\
+        \ is \u201Cfalse\u201D)"
+      name: overwrite
+    - description: a byte offset to start getting the file. Supports a partial get.
+      name: offset
+    - description: the number of bytes to grab
+      name: get-count
+    - description: Session ID to create command for
+      name: session
       required: true
-      description: Session ID to create command for
-    - name: wait-timeout
+    - defaultValue: '20'
       description: Time to wait in seconds to wait for command to finish executing
-      defaultValue: "20"
-    description: Create a live response command and wait for it to finish executing
-  - name: cb-terminate-process
+      name: wait-timeout
     deprecated: true
-    arguments:
-    - name: session
+    description: Create a live response command and wait for it to finish executing
+    name: cb-command-create-and-wait
+  - arguments:
+    - description: Session ID
+      name: session
       required: true
-      description: Session ID
-    - name: pid
+    - description: Process ID to terminate
+      name: pid
       required: true
-      description: Process ID to terminate
-    - name: wait-timeout
+    - defaultValue: '20'
       description: Time to wait in seconds for process to complete termination
-      defaultValue: "20"
+      name: wait-timeout
+    deprecated: true
     description: Terminates a process at the sensor/endpoint
-  - name: cb-file-delete-from-endpoint
-    arguments:
-    - name: session
-      description: The session ID.
-    - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
+    name: cb-terminate-process
+  - arguments:
+    - description: The session ID.
+      name: session
+    - description: The sensor ID.  Provided the sensor ID to run the command with
         a new session. The session will be created and closed automatically.
-    - name: path
+      name: sensor
+    - description: The source path of the object to delete.
+      name: path
       required: true
-      description: The source path of the object to delete.
-    - name: wait-timeout
+    - defaultValue: '20'
       description: Time to wait (in seconds) for Cb command to be executed (change
         status from 'pending' to 'in-progress'/'complete').
-      defaultValue: "20"
-    - name: cancel-on-timeout
-      auto: PREDEFINED
-      predefined:
-      - "yes"
-      - "no"
+      name: wait-timeout
+    - auto: PREDEFINED
       description: Cancel the command if still 'pending' after timeout.
+      name: cancel-on-timeout
+      predefined:
+      - 'yes'
+      - 'no'
+    description: Delete a file from the endpoint.
+    name: cb-file-delete-from-endpoint
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
@@ -2311,27 +683,27 @@ script:
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
       description: The source path of the object to delete.
-    description: Delete a file from the endpoint.
-  - name: cb-registry-get-values
-    arguments:
-    - name: session
-      description: The session ID.
-    - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
+  - arguments:
+    - description: The session ID.
+      name: session
+    - description: The sensor ID.  Provided the sensor ID to run the command with
         a new session. The session will be created and closed automatically.
-    - name: path
+      name: sensor
+    - description: The path of the key to query
+      name: path
       required: true
-      description: The path of the key to query
-    - name: wait-timeout
+    - defaultValue: '20'
       description: Time to wait (in seconds) for Cb command to be executed (change
         status from 'pending' to 'in-progress'/'complete').
-      defaultValue: "20"
-    - name: cancel-on-timeout
-      auto: PREDEFINED
-      predefined:
-      - "yes"
-      - "no"
+      name: wait-timeout
+    - auto: PREDEFINED
       description: Cancel the command if still 'pending' after timeout.
+      name: cancel-on-timeout
+      predefined:
+      - 'yes'
+      - 'no'
+    description: Enumerate registry values
+    name: cb-registry-get-values
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
@@ -2352,27 +724,27 @@ script:
       description: The data associated with the registry value.
     - contextPath: CbLiveResponse.Commands.SubKeys
       description: List of subkey names.
-    description: Enumerate registry values
-  - name: cb-registry-query-value
-    arguments:
-    - name: session
-      description: The session ID.
-    - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
+  - arguments:
+    - description: The session ID.
+      name: session
+    - description: The sensor ID.  Provided the sensor ID to run the command with
         a new session. The session will be created and closed automatically.
-    - name: path
+      name: sensor
+    - description: The path of the key + the path of the value (e.g. HKEY_LOCAL_MACHINE\blah\key\value).
+      name: path
       required: true
-      description: The path of the key + the path of the value (e.g. HKEY_LOCAL_MACHINE\blah\key\value).
-    - name: wait-timeout
+    - defaultValue: '20'
       description: Time to wait (in seconds) for Cb command to be executed (change
         status from 'pending' to 'in-progress'/'complete').
-      defaultValue: "20"
-    - name: cancel-on-timeout
-      auto: PREDEFINED
-      predefined:
-      - "yes"
-      - "no"
+      name: wait-timeout
+    - auto: PREDEFINED
       description: Cancel the command if still 'pending' after timeout.
+      name: cancel-on-timeout
+      predefined:
+      - 'yes'
+      - 'no'
+    description: Query for registry value.
+    name: cb-registry-query-value
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
@@ -2393,27 +765,27 @@ script:
       description: The data associated with the registry value.
     - contextPath: CbLiveResponse.Commands.SubKeys
       description: List of subkey names.
-    description: Query for registry value.
-  - name: cb-registry-create-key
-    arguments:
-    - name: session
-      description: The session ID.
-    - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
+  - arguments:
+    - description: The session ID.
+      name: session
+    - description: The sensor ID.  Provided the sensor ID to run the command with
         a new session. The session will be created and closed automatically.
-    - name: path
+      name: sensor
+    - description: The key path to create.
+      name: path
       required: true
-      description: The key path to create.
-    - name: wait-timeout
+    - defaultValue: '20'
       description: Time to wait (in seconds) for Cb command to be executed (change
         status from 'pending' to 'in-progress'/'complete').
-      defaultValue: "20"
-    - name: cancel-on-timeout
-      auto: PREDEFINED
-      predefined:
-      - "yes"
-      - "no"
+      name: wait-timeout
+    - auto: PREDEFINED
       description: Cancel the command if still 'pending' after timeout.
+      name: cancel-on-timeout
+      predefined:
+      - 'yes'
+      - 'no'
+    description: Create a new registry key.
+    name: cb-registry-create-key
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
@@ -2426,27 +798,27 @@ script:
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
       description: The key path.
-    description: Create a new registry key.
-  - name: cb-registry-delete-key
-    arguments:
-    - name: session
-      description: The session ID.
-    - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
+  - arguments:
+    - description: The session ID.
+      name: session
+    - description: The sensor ID.  Provided the sensor ID to run the command with
         a new session. The session will be created and closed automatically.
-    - name: path
+      name: sensor
+    - description: The key path to delete.
+      name: path
       required: true
-      description: The key path to delete.
-    - name: wait-timeout
+    - defaultValue: '20'
       description: Time to wait (in seconds) for Cb command to be executed (change
         status from 'pending' to 'in-progress'/'complete').
-      defaultValue: "20"
-    - name: cancel-on-timeout
-      auto: PREDEFINED
-      predefined:
-      - "yes"
-      - "no"
+      name: wait-timeout
+    - auto: PREDEFINED
       description: Cancel the command if still 'pending' after timeout.
+      name: cancel-on-timeout
+      predefined:
+      - 'yes'
+      - 'no'
+    description: Delete registry key.
+    name: cb-registry-delete-key
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
@@ -2459,76 +831,27 @@ script:
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
       description: the key path.
-    description: Delete registry key.
-  - name: cb-registry-delete-value
-    arguments:
-    - name: session
-      description: The session ID.
-    - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
+  - arguments:
+    - description: The session ID.
+      name: session
+    - description: The sensor ID.  Provided the sensor ID to run the command with
         a new session. The session will be created and closed automatically.
-    - name: path
+      name: sensor
+    - description: The path of the key + the path of the value.
+      name: path
       required: true
-      description: The path of the key + the path of the value.
-    - name: wait-timeout
+    - defaultValue: '20'
       description: Time to wait (in seconds) for Cb command to be executed (change
         status from 'pending' to 'in-progress'/'complete').
-      defaultValue: "20"
-    - name: cancel-on-timeout
-      auto: PREDEFINED
-      predefined:
-      - "yes"
-      - "no"
+      name: wait-timeout
+    - auto: PREDEFINED
       description: Cancel the command if still 'pending' after timeout.
-    outputs:
-    - contextPath: CbLiveResponse.Commands.CbCommandID
-      description: Unique command identifier.
-    - contextPath: CbLiveResponse.Commands.CommandName
-      description: The command name.
-    - contextPath: CbLiveResponse.Commands.Status
-      description: The command Status ('pending', 'in progress', 'complete', 'error',
-        'canceled').
-    - contextPath: CbLiveResponse.Commands.CommandCompletionTime
-      description: The command completion time (0 if not complete).
-    - contextPath: CbLiveResponse.Commands.OperandObject
-      description: The key path.
+      name: cancel-on-timeout
+      predefined:
+      - 'yes'
+      - 'no'
     description: Delete registry value.
-  - name: cb-registry-set-value
-    arguments:
-    - name: session
-      description: The session ID.
-    - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
-    - name: path
-      required: true
-      description: The path of the key + the path of the value.
-    - name: data
-      required: true
-      description: The data to set for the value. Note if the value type ‘REG_MULTI_SZ’
-        then multiple values should be separated by a comma (e.g. value1, value2,
-        value3).
-    - name: type
-      required: true
-      description: One of common registry value types (REG_DWORD, REG_QWORD, REG_SZ
-        etc).
-    - name: overwrite
-      auto: PREDEFINED
-      predefined:
-      - "yes"
-      - "no"
-      description: An optional parameter to specify whether to overwrite the value
-        if it already exists (default value is ’no’).
-    - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
-      defaultValue: "20"
-    - name: cancel-on-timeout
-      auto: PREDEFINED
-      predefined:
-      - "yes"
-      - "no"
-      description: Cancel the command if still 'pending' after timeout.
+    name: cb-registry-delete-value
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
@@ -2541,24 +864,73 @@ script:
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
       description: The key path.
-    description: Set registry value.
-  - name: cb-process-list
-    arguments:
-    - name: session
-      description: The session ID.
-    - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
+  - arguments:
+    - description: The session ID.
+      name: session
+    - description: The sensor ID.  Provided the sensor ID to run the command with
         a new session. The session will be created and closed automatically.
-    - name: wait-timeout
+      name: sensor
+    - description: The path of the key + the path of the value.
+      name: path
+      required: true
+    - description: "The data to set for the value. Note if the value type \u2018REG_MULTI_SZ\u2019\
+        \ then multiple values should be separated by a comma (e.g. value1, value2,\
+        \ value3)."
+      name: data
+      required: true
+    - description: One of common registry value types (REG_DWORD, REG_QWORD, REG_SZ
+        etc).
+      name: type
+      required: true
+    - auto: PREDEFINED
+      description: "An optional parameter to specify whether to overwrite the value\
+        \ if it already exists (default value is \u2019no\u2019)."
+      name: overwrite
+      predefined:
+      - 'yes'
+      - 'no'
+    - defaultValue: '20'
       description: Time to wait (in seconds) for Cb command to be executed (change
         status from 'pending' to 'in-progress'/'complete').
-      defaultValue: "20"
-    - name: cancel-on-timeout
-      auto: PREDEFINED
-      predefined:
-      - "yes"
-      - "no"
+      name: wait-timeout
+    - auto: PREDEFINED
       description: Cancel the command if still 'pending' after timeout.
+      name: cancel-on-timeout
+      predefined:
+      - 'yes'
+      - 'no'
+    description: Set registry value.
+    name: cb-registry-set-value
+    outputs:
+    - contextPath: CbLiveResponse.Commands.CbCommandID
+      description: Unique command identifier.
+    - contextPath: CbLiveResponse.Commands.CommandName
+      description: The command name.
+    - contextPath: CbLiveResponse.Commands.Status
+      description: The command Status ('pending', 'in progress', 'complete', 'error',
+        'canceled').
+    - contextPath: CbLiveResponse.Commands.CommandCompletionTime
+      description: The command completion time (0 if not complete).
+    - contextPath: CbLiveResponse.Commands.OperandObject
+      description: The key path.
+  - arguments:
+    - description: The session ID.
+      name: session
+    - description: The sensor ID.  Provided the sensor ID to run the command with
+        a new session. The session will be created and closed automatically.
+      name: sensor
+    - defaultValue: '20'
+      description: Time to wait (in seconds) for Cb command to be executed (change
+        status from 'pending' to 'in-progress'/'complete').
+      name: wait-timeout
+    - auto: PREDEFINED
+      description: Cancel the command if still 'pending' after timeout.
+      name: cancel-on-timeout
+      predefined:
+      - 'yes'
+      - 'no'
+    description: 'List processes running on the endpoint. '
+    name: cb-process-list
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
@@ -2585,21 +957,21 @@ script:
       description: The pid (process id ) of the parent.
     - contextPath: CbLiveResponse.Commands.Processes.ParentGuid
       description: The process guid of the parent process.
-    description: 'List processes running on the endpoint. '
-  - name: cb-get-file-from-endpoint
-    arguments:
-    - name: session
-      description: The session ID.
-    - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
+  - arguments:
+    - description: The session ID.
+      name: session
+    - description: The sensor ID.  Provided the sensor ID to run the command with
         a new session. The session will be created and closed automatically.
-    - name: path
+      name: sensor
+    - description: The source path of the file.
+      name: path
       required: true
-      description: The source path of the file.
-    - name: wait-timeout
+    - defaultValue: '20'
       description: Time to wait (in seconds) for Cb command to be executed (change
         status from 'pending' to 'in-progress'/'complete').
-      defaultValue: "20"
+      name: wait-timeout
+    description: Retrieve a file from a path on the endpoint.
+    name: cb-get-file-from-endpoint
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
@@ -2634,25 +1006,25 @@ script:
       description: File MD5.
     - contextPath: CbLiveResponse.File.Extension
       description: File extension.
-    description: Retrieve a file from a path on the endpoint.
-  - name: cb-push-file-to-endpoint
-    arguments:
-    - name: session
-      description: The session ID.
-    - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
+  - arguments:
+    - description: The session ID.
+      name: session
+    - description: The sensor ID.  Provided the sensor ID to run the command with
         a new session. The session will be created and closed automatically.
-    - name: entry-id
+      name: sensor
+    - description: The file entry ID.
+      name: entry-id
       required: true
-      description: The file entry ID.
-    - name: wait-timeout
+    - defaultValue: '20'
       description: Time to wait (in seconds) for Cb command to be executed (change
         status from 'pending' to 'in-progress'/'complete').
-      defaultValue: "20"
-    - name: path
-      required: true
-      description: The destination path of the file. Include file name and type (e.g.
+      name: wait-timeout
+    - description: The destination path of the file. Include file name and type (e.g.
         "c:\\Users\\USER\\Desktop\\log.txt").
+      name: path
+      required: true
+    description: Save a file to a specific path on the endpoint.
+    name: cb-push-file-to-endpoint
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
@@ -2665,34 +1037,34 @@ script:
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
       description: The destination path of the file.
-    description: Save a file to a specific path on the endpoint.
-  - name: cb-memdump
-    arguments:
-    - name: session
-      description: The session ID.
-    - name: sensor
-      description: The sensor ID.  Provide the sensor ID to run the command with a
+  - arguments:
+    - description: The session ID.
+      name: session
+    - description: The sensor ID.  Provide the sensor ID to run the command with a
         new session. The session will be created and closed automatically.
-    - name: path
-      required: true
-      description: The full path, including file name, to save the resulting memory
+      name: sensor
+    - description: The full path, including file name, to save the resulting memory
         dump on the endpoint, for example, c:\\temp\\dump_file.dmp).
-    - name: compress
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      name: path
+      required: true
+    - auto: PREDEFINED
       description: Whether to compress resulting memory dump. Can be "rue" or "false".
-    - name: wait-timeout
-      description: Time to wait (in seconds) for Cb command to be executed (change
-        status from "pending" to "in-progress" or "complete").
-    - name: cancel-on-timeout
-      auto: PREDEFINED
+      name: compress
       predefined:
-      - "yes"
-      - "no"
+      - 'true'
+      - 'false'
+    - description: Time to wait (in seconds) for Cb command to be executed (change
+        status from "pending" to "in-progress" or "complete").
+      name: wait-timeout
+    - auto: PREDEFINED
       description: Whether to cancel the command if still in "pending" status after
         timeout. Can be "yes" or "no".
+      name: cancel-on-timeout
+      predefined:
+      - 'yes'
+      - 'no'
+    description: Executes an endpoint memory dump.
+    name: cb-memdump
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
@@ -2717,8 +1089,728 @@ script:
     - contextPath: CbLiveResponse.Commands.DumpingInProgress
       description: Whether the memory dump is in progress.
       type: boolean
-    description: Executes an endpoint memory dump.
   runonce: false
+  script: "\"use strict\";\n\n/// Global Vars\nlet CB_PRODUCT;\nlet BASE_URL;\nlet\
+    \ AUTH;\nlet COMMAND_DATA;\nlet SLEEP_BETWEEN_RETRIES = 1000 * 5;\nlet DEFAULT_WAIT_TIMEOUT\
+    \ = 1000 * 60 * 2;\nlet ERROR_MESSAGE = 'Use Live Response for Cb Defense or Cb\
+    \ Response.\\nFor Cb Defense: Provide \\'Live Response\\' API key and connector.\\\
+    nFor Cb Response: Provide API Token.';\n//validate the credentials are provided\
+    \ to match only one of the products\nif (params.apitoken && (params.apikey ||\
+    \ params.connector) ) {\n    throw ERROR_MESSAGE;\n}\n//determain Cb product\n\
+    if (params.apitoken) {\n    CB_PRODUCT = 'Response';\n    BASE_URL = `${params.serverurl}/api/v1/cblr`;\n\
+    \    AUTH = params.apitoken;\n    COMMAND_DATA = [\n        {to: 'CbSensorID',\
+    \ from: 'sensor_id'},\n        {to: 'CbSessionID', from: 'session_id'},\n    \
+    \    {to: 'CbCommandID', from: 'id'},\n        {to: 'CommandName', from: 'name'},\n\
+    \        {to: 'Status', from: 'status'},\n        {to: 'CreateTime', from: 'create_time'},\n\
+    \        {to: 'CommandCompletionTime', from: 'completion'},\n        {to: 'OperandObject',\
+    \ from: 'object'},\n        {to: 'Result.Desc', from: 'result_desc'},\n      \
+    \  {to: 'Result.Type', from: 'result_type'},\n        {to: 'Result.Code', from:\
+    \ 'result_code'}\n    ];\n} else if (params.apikey && params.connector){\n   \
+    \ CB_PRODUCT = 'Defense';\n    BASE_URL = `${params.serverurl}/integrationServices/v3/cblr`\n\
+    \    AUTH = params.apikey + '/' + params.connector;\n    COMMAND_DATA = [\n  \
+    \      {to: 'CbSensorID', from: 'sensor_id'},\n        {to: 'CbSessionID', from:\
+    \ 'session_id'},\n        {to: 'CbCommandID', from: 'id'},\n        {to: 'CommandName',\
+    \ from: 'name'},\n        {to: 'Status', from: 'status'},\n        {to: 'CreateTime',\
+    \ from: 'create_time'},\n        {to: 'CommandCompletionTime', from: 'completion_time'},\n\
+    \        {to: 'OperandObject', from: 'obj.object'},\n        {to: 'Result.Desc',\
+    \ from: 'result_desc'},\n        {to: 'Result.Type', from: 'result_type'},\n \
+    \       {to: 'Result.Code', from: 'result_code'}\n    ];\n} else {\n    throw\
+    \ ERROR_MESSAGE;\n}\n\n/// Base Functions\n\nfunction splitCamelCase(str) {\n\
+    \    return str\n    .replace(/([a-z])([A-Z])/g, '$1 $2')\n    .replace('.', '\
+    \ ');\n}\n\nfunction sendRequest(path, method, requestParams, headers, ignoredStatusCodes)\
+    \ {\n\n    if (!headers) {\n        headers = {};\n    }\n    if (!headers['X-Auth-Token'])\
+    \ {\n        headers['X-Auth-Token'] = [AUTH];\n    }\n    if (!headers['Accept'])\
+    \ {\n        headers['Accept'] = ['application/json'];\n    }\n    if (!headers['Content-Type'])\
+    \ {\n        headers['Content-Type'] = ['application/json'];\n    }\n\n    let\
+    \ request = {\n        Method: method,\n        Headers: headers\n    };\n   \
+    \ let querystring = '';\n    if (requestParams) {\n        if (typeof requestParams\
+    \ === 'string') {\n            querystring = requestParams;\n        } else {\n\
+    \            request.Body = JSON.stringify(requestParams);\n        }\n    }\n\
+    \    let result = http(BASE_URL + path + querystring, request, params.insecure,\
+    \ params.proxy);\n    if (!ignoredStatusCodes || ignoredStatusCodes.indexOf(result.StatusCode)\
+    \ === -1) {\n        if (result.StatusCode < 200 || result.StatusCode >= 300)\
+    \ {\n            if (result.StatusCode === 404) {\n                throw `Cannot\
+    \ find the requested resource\\nError message: ${result.Body}\\nStatus Code: 404`;\n\
+    \            }\n            throw `Request Failed.\\nStatus code: ${result.StatusCode}.\\\
+    nMessage: ${result.Body}.`;\n        }\n    }\n    return result;\n}\n\nfunction\
+    \ sendFileRequest(path, fileId, requestParams, headers, ignoredStatusCodes) {\n\
+    \n    if (!headers) {\n        headers = {};\n    }\n    if (!headers['X-Auth-Token'])\
+    \ {\n        headers['X-Auth-Token'] = [AUTH];\n    }\n    if (!headers['Accept'])\
+    \ {\n        headers['Accept'] = ['application/json'];\n    }\n    if (!headers['Content-Type'])\
+    \ {\n        headers['Content-Type'] = ['application/json'];\n    }\n\n    let\
+    \ request = {\n        Method: 'POST',\n        Headers: headers\n    };\n\n \
+    \   let result = httpMultipart(BASE_URL + path, fileId, request, requestParams,\
+    \ params.insecure, params.proxy);\n\n    if (result.StatusCode < 200 || result.StatusCode\
+    \ >= 300) {\n        if (result.StatusCode === 404) {\n            throw `${result.Body}\
+    \ (Status Code: 404)`;\n        }\n        throw `Request Failed.\\nStatus code:\
+    \ ${result.StatusCode}.\\nMessage: ${JSON.stringify(result.Body)}`;\n    }\n \
+    \   return result;\n}\n\nfunction createEntry(title, data, dataMap, contextKeys,\
+    \ headerTransformer) {\n    let headers = dataMap.map(cn => cn.to);\n    let translatedData\
+    \ = mapObjFunction(dataMap)(data);\n    let humanReadable = tableToMarkdown(title,\
+    \ translatedData, headers, undefined, headerTransformer);\n    let contextData\
+    \ = createContext(translatedData);\n    let context = {};\n    for (let i = 0\
+    \ ; i < contextKeys.length; i++) {\n        let key = contextKeys[i];\n      \
+    \  context[key] = contextData;\n    }\n    return {\n        Type: entryTypes.note,\n\
+    \        Contents: data,\n        ContentsType: formats.json,\n        ReadableContentsFormat:\
+    \ formats.markdown,\n        HumanReadable: humanReadable,\n        EntryContext:\
+    \ context,\n    };\n}\n\n/// Cb Live Response Session\n\nfunction testModule()\
+    \ {\n    let res = sendRequest('/session', 'GET');\n    if (res.StatusCode ===\
+    \ 200) {\n        return 'ok';\n    }\n    // 405 - Method Not Allowed.\n    //\
+    \ This error can raise when using CB Defence; This URL (which is used to list\
+    \ sessions) is theoretically not available for CB Defence. In practice it works\
+    \ for some cases.\n    // 401 is the status code used for 'UNAUTHORIZED' error\n\
+    \    if (CB_PRODUCT === 'Defense' && res.StatusCode === 405) {\n        return\
+    \ 'ok';\n    }\n    return `Test failed. Status Code: ${res.StatusCode}`\n}\n\n\
+    const sessionData = [\n    {to: 'CbSensorID', from: 'sensor_id'},\n    {to: 'CbSessionID',\
+    \ from: 'id'},\n    {to: 'Hostname', from: 'hostname'},\n    {to: 'Status', from:\
+    \ 'status'},\n    {to: 'WaitTimeout', from: 'sensor_wait_timeout'},\n    {to:\
+    \ 'SessionTimeout', from: 'session_timeout'},\n    {to: 'SupportedCommands', from:\
+    \ 'supported_commands'}\n];\n\nfunction getSessionsRequest(sessionId, sensorId,\
+    \ status) {\n    let path = `/session`;\n    if (sessionId) {\n        path +=\
+    \ '/' + sessionId;\n    }\n\n    let response = sendRequest(path, 'GET').Body;\n\
+    \    let result;\n    try {\n        result = JSON.parse(response);\n    } catch\
+    \ (err) {\n        throw `Could not parse response.\\nError: ${err}.\\nResponse:\
+    \ ${response}`;\n    }\n\n    // If optional sensor argument is given, filter\
+    \ the results by it.\n    if (!sessionId && sensorId) {\n        sensorId = parseInt(sensorId);\n\
+    \        result = result.filter(session => (parseInt(session.sensor_id) === sensorId));\n\
+    \    }\n    if (!sessionId && status) {\n        result = result.filter(session\
+    \ => (status.indexOf(session.status) > -1));\n    }\n\n    return result;\n}\n\
+    \nfunction getSessions() {\n    let result = getSessionsRequest(args.session,\
+    \ args.sensor, args.status);\n\n    let title = `Cb ${CB_PRODUCT} - Get Sessions`;\n\
+    \    let dataMap = sessionData;\n        //keep CbResponse context for backward\
+    \ competability\n    let contextKeys = [\n        'CbResponse.Sessions(val.CbSessionID==obj.CbSessionID)',\n\
+    \        'CbLiveResponse.Sessions(val.CbSessionID==obj.CbSessionID)'\n    ];\n\
+    \    return createEntry(title, result, dataMap, contextKeys, splitCamelCase);\n\
+    }\n\nfunction createSessionRequest(sensorId, commandTimeout, keepaliveTimeout)\
+    \ {\n    let queryParams = {\n        sensor_id: parseInt(sensorId)\n    };\n\
+    \    if (commandTimeout) {\n        queryParams.session_timeout = keepaliveTimeout;\n\
+    \    }\n    if (keepaliveTimeout) {\n        queryParams.sensor_wait_timeout =\
+    \ commandTimeout;\n    }\n    let path = CB_PRODUCT === 'Response' ?  '/session'\
+    \ : `/session/${sensorId}`;\n    let response = sendRequest(path, 'POST', queryParams).Body;\n\
+    \    try {\n        return JSON.parse(response);\n    } catch (err) {\n      \
+    \  throw `Could not parse response.\\nError: ${err}.\\nResponse: ${response}`;\n\
+    \    }\n}\n\nfunction createSession() {\n    let result = createSessionRequest(args.sensor,\
+    \ args['command-timeout'], args['keepalive-timeout']);\n\n    let title = `CB\
+    \ ${CB_PRODUCT} - Create Session`;\n    let dataMap = sessionData;\n    //keep\
+    \ CbResponse context for backward competability\n    let contextKeys = [\n   \
+    \     'CbResponse.Sessions(val.CbSessionID==obj.CbSessionID)',\n        'CbLiveResponse.Sessions(val.CbSessionID==obj.CbSessionID)'\n\
+    \    ];\n    return createEntry(title, result, dataMap, contextKeys, splitCamelCase);\n\
+    }\n\nfunction createSessionAndWait() {\n    let result = createSessionRequest(args.sensor,\
+    \ args['command-timeout'], args['keepalive-timeout']);\n    sleep(1000);\n   \
+    \ let sessionId = result.id;\n    let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout'])\
+    \ * 1000 : DEFAULT_WAIT_TIMEOUT ;\n    let retries = Math.ceil(timeout / SLEEP_BETWEEN_RETRIES);\n\
+    \n    let curTry = 0;\n    while (curTry < retries) {\n        let result = getSessionsRequest(sessionId,\
+    \ args.sensor);\n        let status = result.status.toLowerCase()\n        if\
+    \ (status === 'active' ) {\n            let title = `CB ${CB_PRODUCT} - Create\
+    \ Session And Wait`;\n            let dataMap = sessionData;\n            //keep\
+    \ CbResponse context for backward competability\n            let contextKeys =\
+    \ [\n                'CbResponse.Sessions(val.CbSessionID==obj.CbSessionID)',\n\
+    \                'CbLiveResponse.Sessions(val.CbSessionID==obj.CbSessionID)'\n\
+    \            ];\n            return createEntry(title, result, dataMap, contextKeys,\
+    \ splitCamelCase);\n        } else if (status !== 'pending') {\n            throw\
+    \ `Executing session ${sessionId} failed, status: ${result.status}`;\n       \
+    \ }\n        sleep(SLEEP_BETWEEN_RETRIES);\n        curTry++;\n    }\n    throw\
+    \ `Exceeded timeout.\\nNew session for sensor ${args.sensor} was created with\
+    \ ID: ${sessionId}.\\nSession status remains '${result.status}'. Wait for session\
+    \ to become active (you may query for session staus with 'cb-session-info').\\\
+    nIt is recomended to increase wait-timeout for this command.`;\n}\n\nfunction\
+    \ closeSessionRequest(sessionId) {\n    let queryParams = {\n        session_id:\
+    \ sessionId\n    };\n    queryParams.status = CB_PRODUCT === 'Response' ? 'close'\
+    \ : 'CLOSE';\n    let path = CB_PRODUCT === 'Response' ? `/session/${sessionId}`\
+    \ : '/session';\n    let response = sendRequest(path, 'PUT', queryParams).Body;\n\
+    \    try {\n        return JSON.parse(response);\n    } catch (err) {\n      \
+    \  throw `Could not parse response.\\nError: ${err}.\\nResponse: ${response}`;\n\
+    \    }\n}\n\nfunction closeSession() {\n    let result = closeSessionRequest(args.session);\n\
+    \    let title = `CB ${CB_PRODUCT} - Session Closed`;\n    let dataMap = sessionData;\n\
+    \    //keep CbResponse context for backward competability\n    let contextKeys\
+    \ = [\n        'CbResponse.Sessions(val.CbSessionID==obj.CbSessionID)',\n    \
+    \    'CbLiveResponse.Sessions(val.CbSessionID==obj.CbSessionID)'\n    ];\n   \
+    \ // cb response - session will have 'active' value for 'status' field although\
+    \ status is 'closed'\n    if (CB_PRODUCT === 'Response') {\n        // retrieving\
+    \ closed session info returns inconsistent results (expected to return the updated\
+    \ info with correct status, but in practice this may return an error)\n      \
+    \  // do not try to retrieve updated session info, simply change the session status\
+    \ in the result to avoid confusion\n        // see https://developer.carbonblack.com/reference/enterprise-response/6.1/live-response-api/#close-sessions\n\
+    \        result.status = 'close'\n    }\n    return createEntry(title, result,\
+    \ dataMap, contextKeys, splitCamelCase);\n}\n\nfunction sessionKeepaliveRequest(sessionId)\
+    \ {\n    let response = sendRequest(`/session/${sessionId}/keepalive`, 'GET',\
+    \ undefined, undefined, [404]);\n\n    if (response.StatusCode === 404) {\n  \
+    \      throw `Session ${sessionId} has expired and is now closed. Create a new\
+    \ session to continue working.`;\n    }\n\n    try {\n        return JSON.parse(response.Body);\n\
+    \    } catch (err) {\n        throw `Could not parse response.\\nError: ${err}.\\\
+    nResponse: ${response.Body}`;\n    }\n}\n\nfunction sessionKeepAlive() {\n   \
+    \ let result = sessionKeepaliveRequest(args.session);\n\n    let translatedData\
+    \ = mapObjFunction(sessionData)(result);\n    let contextData = createContext(translatedData);\n\
+    \    //keep CbResponse context for backward competability\n    let context = {\n\
+    \        'CbResponse.Sessions(val.CbSessionID==obj.CbSessionID)': contextData,\n\
+    \        'CbLiveResponse.Sessions(val.CbSessionID==obj.CbSessionID)': contextData\n\
+    \    };\n\n    return {\n        Type: entryTypes.note,\n        Contents: result,\n\
+    \        ContentsType: formats.json,\n        ReadableContentsFormat: formats.text,\n\
+    \        HumanReadable: `Keepalive successful for session ${args.session}`,\n\
+    \        EntryContext: context,\n    };\n}\n\nfunction archiveSessionRequest(sessionId)\
+    \ {\n    let response = sendRequest(`/session/${sessionId}/archive`, 'GET', undefined,\
+    \ undefined, [500]);\n    if (response.StatusCode === 500) {  // Current bug in\
+    \ CBResponse returns 500 for empty sessions\n        throw `Session ${sessionId}\
+    \ is empty and so it has no archive.`;\n    }\n    return response;\n}\n\nfunction\
+    \ archiveSession() {\n    let response = archiveSessionRequest(args.session);\n\
+    \    let fileEntryId = saveFile(response.Bytes);\n    let fileName = `session-${args.session}-archive.zip`;\n\
+    \    return {\n        Type: entryTypes.file,\n        FileID: fileEntryId,\n\
+    \        File: fileName,\n        Contents: fileName\n    };\n}\n/// Cb Live Response\
+    \ file operations\n\nconst fileData = [\n    {to: 'CbFileID', from: 'id'},\n \
+    \   {to: 'Filename', from: 'file_name'},\n    {to: 'Size', from: 'size'},\n  \
+    \  {to: 'SizeUploaded', from: 'size_uploaded'},\n    {to: 'Status', from: 'status'},\n\
+    \    {to: 'Delete', from: 'delete'}\n];\n\nfunction listFilesRequest(sessionId,\
+    \ fileId) {\n    if (!sessionId) {\n        throw 'Session ID is required';\n\
+    \    }\n    let path = `/session/${sessionId}/file`;\n    if (fileId) {\n    \
+    \    path += '/' + fileId;\n    }\n\n    let response = sendRequest(path, 'GET').Body;\n\
+    \    try {\n        return JSON.parse(response);\n    } catch (err) {\n      \
+    \  throw `Could not parse response.\\nError: ${err}.\\nResponse: ${response}`;\n\
+    \    }\n}\n\nfunction listFiles() {\n    let result = listFilesRequest(args.session,\
+    \ args['file-id']);\n\n    let title = `CB ${CB_PRODUCT} - List Files`;\n    let\
+    \ dataMap = fileData;\n    //keep CbResponse context for backward competability\n\
+    \     let contextKeys = [\n        'CbResponse.Files(val.CbFileID==obj.CbFileID)',\n\
+    \        'CbLiveResponse.Files(val.CbFileID==obj.CbFileID)'\n    ];\n    return\
+    \ createEntry(title, result, dataMap, contextKeys, splitCamelCase);\n}\n\nfunction\
+    \ downloadFileRequest(sessionId, fileId) {\n    var headers = {Accept: ['*/*']};\n\
+    \    if (!sessionId) {\n        throw 'Session ID is required';\n    }\n    if\
+    \ (!fileId) {\n        throw 'File ID is required';\n    }\n    let path = `/session/${sessionId}/file/${fileId}/content`;\n\
+    \    return sendRequest(path, 'GET', null, headers);\n}\n\nfunction downloadFileEntry(sessionId,\
+    \ fileId) {\n    let fileInfo = listFilesRequest(sessionId, fileId);\n    let\
+    \ fileContentResponse = downloadFileRequest(sessionId, fileId);\n    let fileEntryId\
+    \ = saveFile(fileContentResponse.Bytes);\n    let fileName = fileInfo.file_name.split('\\\
+    \\').pop();\n    return {\n        Type: entryTypes.file,\n        FileID: fileEntryId,\n\
+    \        File: fileName,\n        Contents: fileInfo.file_name\n    };\n}\n\n\
+    function downloadFile() {\n    return downloadFileEntry(args['session'], args['file-id']);\n\
+    }\n\nfunction uploadFileRequest(sessionId, fileId) {\n    if (!sessionId) {\n\
+    \        throw 'Session ID is required';\n    }\n    if (!fileId) {\n        throw\
+    \ 'File ID is required';\n    }\n    let response = sendFileRequest(`/session/${sessionId}/file`,\
+    \ fileId);\n    try {\n        return JSON.parse(response.Body);\n    } catch\
+    \ (err) {\n        throw `Could not parse response.\\nError: ${err}.\\nResponse:\
+    \ ${response}`;\n    }\n}\n\nfunction uploadFile() {\n    let result = uploadFileRequest(args.session,\
+    \ args['file-id']);\n\n    let title = `CB ${CB_PRODUCT} - Upload File`;\n   \
+    \ let dataMap = fileData;\n    //keep CbResponse context for backward competability\n\
+    \    let contextKeys = [\n        'CbResponse.Files(val.CbFileID==obj.CbFileID)',\n\
+    \        'CbLiveResponse.Files(val.CbFileID==obj.CbFileID)'\n    ];\n    return\
+    \ createEntry(title, result, dataMap, contextKeys, splitCamelCase);\n}\n\nfunction\
+    \ deleteFileRequest(sessionId, fileId) {\n    if (!sessionId) {\n        throw\
+    \ 'Session ID is required';\n    }\n    if (!fileId) {\n        throw 'File ID\
+    \ is required';\n    }\n    let path = `/session/${sessionId}/file/${fileId}`;\n\
+    \    let response = sendRequest(path, 'DELETE').Body;\n}\n\nfunction deleteFile()\
+    \ {\n    deleteFileRequest(args.session, args['file-id']);\n    return {\n   \
+    \     Type: entryTypes.note,\n        Contents: `File ${args['file-id']} deleted\
+    \ successfully`,\n        ContentsType: formats.text\n    };\n}\n\n/// Cb Live\
+    \ Response Commands\n\n//generic  function to create a new command\nfunction createCommandRequest(sessionId,\
+    \ name, timeout, object, compress, wait, workingDir, outputFile, valueData,\n\
+    \                              valueType, overwrite, offset, getCount) {\n   \
+    \ let queryParams = {\n        name: name.split('-').join(' ')\n    };\n    if\
+    \ (timeout) {\n        queryParams.timeout = timeout;\n    }\n    if (object)\
+    \ {\n        queryParams.object = object;\n    }\n    if (compress) {\n      \
+    \  queryParams.compress = compress;\n    }\n    queryParams.wait = true;\n   \
+    \ if (wait !== undefined && wait === false) {\n        queryParams = wait;\n \
+    \   }\n    if (workingDir) {\n        queryParams.working_directory = workingDir;\n\
+    \    }\n    if (outputFile) {\n        queryParams.output_file = outputFile;\n\
+    \    }\n    if (valueData) {\n        queryParams.value_data = valueData;\n  \
+    \  }\n    if (valueType) {\n        queryParams.value_type = valueType;\n    }\n\
+    \    if (overwrite) {\n        queryParams.overwrite = overwrite;\n    }\n   \
+    \ if (offset) {\n        queryParams.offset = offset;\n    }\n    if (getCount)\
+    \ {\n        queryParams.get_count = getCount;\n    }\n\n    let response = sendRequest(`/session/${sessionId}/command`,\
+    \ 'POST', queryParams).Body;\n    try {\n        return JSON.parse(response);\n\
+    \    } catch (err) {\n        throw `Could not parse response.\\nError: ${err}.\\\
+    nResponse: ${response}`;\n    }\n}\n\n//TODO: Spec for commands interface\nfunction\
+    \ createCommand() {\n    let result = createCommandRequest(args.session, args.name,\
+    \ args.timeout, args.object, args.compress, args.wait,\n        args['working-dir'],\
+    \ args['output-file'], args['value-data'], args['value-type'], args.overwrite,\
+    \ args.offset,\n        args['get-count']);\n\n    let title = `CB Response -\
+    \ Run Command ${args.name}`;\n    let dataMap = COMMAND_DATA;\n    let contextKeys\
+    \ = [\n        'CbResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID\
+    \ == obj.CbSessionID)',\n        'CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID\
+    \ && val.CbSessionID == obj.CbSessionID)'\n    ];\n    return createEntry(title,\
+    \ command, dataMap, contextKeys, splitCamelCase);\n}\n\nfunction getCommandRequest(sessionId,\
+    \ commandId) {\n    let path = `/session/${sessionId}/command/${commandId}`;\n\
+    \    let response = sendRequest(path, 'GET').Body;\n    try {\n        return\
+    \ JSON.parse(response);\n    } catch (err) {\n        throw `Could not parse response.\\\
+    nError: ${err}.\\nResponse: ${response}`;\n    }\n}\n\nfunction getCommandsRequest(sessionId)\
+    \ {\n    let path = `/session/${sessionId}/command`;\n    let response = sendRequest(path,\
+    \ 'GET').Body;\n    try {\n        return JSON.parse(response);\n    } catch (err)\
+    \ {\n        throw `Could not parse response.\\nError: ${err}.\\nResponse: ${response}`;\n\
+    \    }\n}\n\nfunction getCommands() {\n    let result = getCommandsRequest(args.session);\n\
+    \    let title = `CB ${CB_PRODUCT} - Get Commands`;\n    let dataMap = COMMAND_DATA;\n\
+    \    //keep CbResponse context for backward competability\n    let contextKeys\
+    \ = [\n        'CbResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID\
+    \ == obj.CbSessionID)',\n        'CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID\
+    \ && val.CbSessionID == obj.CbSessionID)'\n    ];\n    return createEntry(title,\
+    \ result, dataMap, contextKeys, splitCamelCase);\n}\n\nfunction createCommandAndWait()\
+    \ {\n    let result = createCommandRequest(args.session, args.name, args.timeout,\
+    \ args.object, args.compress, args.wait,\n        args['working-dir'], args['output-file'],\
+    \ args['value-data'], args['value-type'], args.overwrite, args.offset,\n     \
+    \   args['get-count']);\n    sleep(1000);\n    let commandId = result.id;\n  \
+    \  let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout']) * 1000\
+    \ : DEFAULT_WAIT_TIMEOUT;\n    let retries = Math.ceil(timeout / SLEEP_BETWEEN_RETRIES);\n\
+    \n    let curTry = 0;\n    while (curTry < retries) {\n        let result = getCommandRequest(args.session,\
+    \ commandId);\n\n        if (result.status === 'complete') {\n            let\
+    \ entries = [];\n            let title = 'CB Response - Execute Command And Wait';\n\
+    \            let dataMap = COMMAND_DATA;\n            let headers = dataMap.map(cn\
+    \ => cn.to);\n            let translatedData = mapObjFunction(dataMap)(result);\n\
+    \            let humanReadable = tableToMarkdown(title, translatedData, headers,\
+    \ undefined, dotToSpace);\n            let context = {\n                'CbResponse.Commands(val.CbCommandID\
+    \ == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)': createContext(translatedData)\n\
+    \            };\n            entries.push({\n                Type: entryTypes.note,\n\
+    \                Contents: result,\n                ContentsType: formats.json,\n\
+    \                ReadableContentsFormat: formats.markdown,\n                HumanReadable:\
+    \ humanReadable,\n                EntryContext: context\n            });\n\n \
+    \           // If we have the command in args then we get info for the command,\n\
+    \            // in this case we want to parse the result:\n            let contents\
+    \ = result;\n            switch (result.name) {\n                case \"directory\
+    \ list\":\n                    contents = result.files;\n                    break;\n\
+    \                case \"process list\":\n                    contents = result.processes;\n\
+    \                    break;\n            }\n            logInfo(\"Here2\");\n\
+    \            entries.push({\n                Type: entryTypes.note,\n        \
+    \        Contents: contents,\n                ContentsType: formats.json,\n  \
+    \              // TODO: Add human readable and context for specific commands\n\
+    \            });\n\n            return entries;\n\n        } else if (result.status\
+    \ !== 'pending') {\n            throw `Executing command ${commandId} failed,\
+    \ status: ${result.status}`;\n        }\n        sleep(SLEEP_BETWEEN_RETRIES);\n\
+    \        curTry++;\n    }\n    throw `Executing command ${commandId} timedout\
+    \ (${timeout / 1000} seconds), increase wait-timeout and try again`;\n}\n\nfunction\
+    \ cancelCommandRequest(sessionId, commandId) {\n    let queryParams = {cmdid:\
+    \ commandId};\n    let response = sendRequest(`/session/${sessionId}/command/${commandId}`,\
+    \ 'PUT', queryParams).Body;\n    try {\n        return JSON.parse(response);\n\
+    \    } catch (err) {\n        throw `Could not parse response.\\nError: ${err}.\\\
+    nResponse: ${response}`;\n    }\n}\n\nfunction cancelCommand() {\n    let result\
+    \ = cancelCommandRequest(args.session, args.command);\n\n    let title = `CB ${CB_PRODUCT}\
+    \ - Cancel Command`;\n    let dataMap = COMMAND_DATA;\n    //keep CbResponse context\
+    \ for backward competability\n    let contextKeys = [\n        'CbResponse.Commands(val.CbCommandID\
+    \ == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)',\n        'CbLiveResponse.Commands(val.CbCommandID\
+    \ == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'\n    ];\n    return\
+    \ createEntry(title, result, dataMap, contextKeys, splitCamelCase);\n}\n\n///\
+    \ Explicit Commands\n\nconst directoryData = [\n    {to: 'FileAttributes', from:\
+    \ 'attributes'},\n    {to: 'CreateTime', from: 'create_time'},\n    {to: 'LastAccessTime',\
+    \ from: 'last_access_time'},\n    {to: 'LastWriteTime', from: 'last_write_time'},\n\
+    \    {to: 'FileSize', from: 'size'},\n    {to: 'FileName', from: 'filename'},\n\
+    \    {to: 'AlternativeName', from:'alt_name'}\n];\n\nconst processesData = [\n\
+    \    {to: 'ProcessID', from: 'pid'},\n    {to: 'CreateTime', from: 'create_time'},\n\
+    \    {to: 'ProcessGuid', from: 'proc_guid'},\n    {to: 'Path', from: 'path'},\n\
+    \    {to: 'CommandLine', from: 'command_line'},\n    {to: 'SecurityIdentifier',\
+    \ from: 'sid'},\n    {to: 'Username', from: 'username'},\n    {to: 'Parent', from:\
+    \ 'parent'},\n    {to: 'ParentGuid', from: 'parent_guid'}\n];\n\nconst processData\
+    \ = [\n    {to: 'ProcessID', from: 'pid'},\n    {to: 'ReturnCode', from: 'return_code'}\n\
+    ];\n\nconst memdumpData = [\n    {to: 'ReturnCode', from: 'return_code'},\n  \
+    \  {to: 'CompressingEnabled', from: 'compressing'},\n    {to: 'Complete', from:\
+    \ 'complete'},\n    {to: 'PercentDone', from: 'percentdone'},\n    {to: 'DumpingInProgress',\
+    \ from: 'dumping'}\n];\n\nconst regKeysData = [\n    {to: 'RegKeyType', from:\
+    \ 'value_type'},\n    {to: 'RegKeyName', from: 'value_name'},\n    {to: 'RegKeyData',\
+    \ from: 'value_data'}\n];\n\nconst regKeyData = [\n    {to: 'RegKeyType', from:\
+    \ 'value.value_type'},\n    {to: 'RegKeyName', from: 'value.value_name'},\n  \
+    \  {to: 'RegKeyData', from: 'value.value_data'}\n];\n\nfunction collectRegistryDataToGeneralContext(data)\
+    \ {\n    let regKey = CB_PRODUCT === 'Response' ?  data.object : data.obj.object;\n\
+    \    let RegistryKeys = [];\n    for (let value of data.values) {\n        let\
+    \ entry = {\n            Path: regKey,\n            Name: value.value_name,\n\
+    \            Value: value.value_data\n        };\n        RegistryKeys.push(entry);\n\
+    \    }\n    return RegistryKeys;\n};\n\nconst commandEntries = {\n    'directory\
+    \ list' : function(data) {\n        let dataMap = COMMAND_DATA;\n        let title\
+    \ = `CB ${CB_PRODUCT} - Directory Listing: Command Status`;\n        let contextKeys\
+    \ = ['CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID\
+    \ == obj.CbSessionID)'];\n        let commandInfoEntry = createEntry(\n      \
+    \      title,\n            data,\n            dataMap,\n            contextKeys,\n\
+    \            splitCamelCase\n        );\n        if (data.status !== 'complete')\
+    \ {\n            return commandInfoEntry;\n        }\n        //create entry to\
+    \ hold directory data\n        dataMap = directoryData;\n        title = `CB ${CB_PRODUCT}\
+    \ - Directory Listing`;\n        contextKeys = ['CbLiveResponse.Commands(val.CbCommandID\
+    \ == obj.CbCommandID && val.CbSessionID == obj.CbSessionID).Files'];\n       \
+    \ let directoryListEntry = createEntry(\n            title,\n            data.files,\n\
+    \            dataMap,\n            contextKeys,\n            splitCamelCase\n\
+    \        );\n        return [commandInfoEntry, directoryListEntry];\n    },\n\
+    \    'put file': function(data) {\n        let dataMap = COMMAND_DATA;\n     \
+    \   let title = `CB ${CB_PRODUCT} - Push File: Command Status`;\n        let contextKeys\
+    \ = ['CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID && val.CbSessionID\
+    \ == obj.CbSessionID)'];\n        let commandInfoEntry = createEntry(\n      \
+    \      title,\n            data,\n            dataMap,\n            contextKeys,\n\
+    \            splitCamelCase\n        );\n        return commandInfoEntry;\n  \
+    \  },\n    'get file': function(data) {\n        let dataMap = COMMAND_DATA;\n\
+    \        let title = `CB ${CB_PRODUCT} - Get File From Path ${args.path}: Command\
+    \ Status`;\n        let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID&&val.CbSessionID==obj.CbSessionID)'];\n\
+    \        if (data.status === 'complete') {\n            dataMap.push({to: 'FileID',\
+    \ from: 'file_id'});\n        }\n        let commandInfoEntry = createEntry(\n\
+    \            title,\n            data,\n            dataMap,\n            contextKeys,\n\
+    \            splitCamelCase\n        );\n        return commandInfoEntry;\n  \
+    \  },\n    'kill': function(data) {\n        let dataMap = COMMAND_DATA;\n   \
+    \     let title = `CB ${CB_PRODUCT} - Kill Process ${args.pid}: Command Status`;\n\
+    \        let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID\
+    \ && val.CbSessionID == obj.CbSessionID)'];\n        let commandInfoEntry = createEntry(\n\
+    \            title,\n            data,\n            dataMap,\n            contextKeys,\n\
+    \            splitCamelCase\n        );\n        return commandInfoEntry;\n  \
+    \  },\n    'create process' : function(data) {\n        let dataMap = COMMAND_DATA;\n\
+    \        if (data.status === 'complete') {\n            dataMap = dataMap.concat(processData);\n\
+    \        }\n        let title = `CB ${CB_PRODUCT} - Execute Process: Command Status`;\n\
+    \        let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID\
+    \ && val.CbSessionID == obj.CbSessionID)'];\n        let commandInfoEntry = createEntry(\n\
+    \            title,\n            data,\n            dataMap,\n            contextKeys,\n\
+    \            splitCamelCase\n        );\n        return commandInfoEntry;\n  \
+    \  },\n     'memdump': function(data) {\n        let dataMap = COMMAND_DATA;\n\
+    \        if (data.status === 'complete') {\n            dataMap = dataMap.concat(memdumpData);\n\
+    \        }\n        let title = `CB ${CB_PRODUCT} - Memdump: Command Status`;\n\
+    \        let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID\
+    \ && val.CbSessionID == obj.CbSessionID)'];\n        let commandInfoEntry = createEntry(\n\
+    \            title,\n            data,\n            dataMap,\n            contextKeys,\n\
+    \            splitCamelCase\n        );\n        return commandInfoEntry;\n  \
+    \  },\n     'delete file': function(data) {\n        let dataMap = COMMAND_DATA;\n\
+    \        let title = `CB ${CB_PRODUCT} - Delete File From Endpoint: Command Status`;\n\
+    \        let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID\
+    \ && val.CbSessionID == obj.CbSessionID)'];\n        let commandInfoEntry = createEntry(\n\
+    \            title,\n            data,\n            dataMap,\n            contextKeys,\n\
+    \            splitCamelCase\n        );\n        return commandInfoEntry;\n  \
+    \  },\n     'reg enum key': function(data) {\n        let dataMap =  COMMAND_DATA;\n\
+    \        if (data.status === 'complete'){\n            dataMap.push({to: 'SubKeys',\
+    \ from: 'sub_keys'});\n        }\n        let commandData = mapObjFunction(dataMap)(data);\n\
+    \        let commandMD = tableToMarkdown(\n            `CB ${CB_PRODUCT} - Registry\
+    \ Keys: Command Status`,\n            commandData,\n            dataMap.map(cn\
+    \ => cn.to),\n            undefined,\n            splitCamelCase\n        );\n\
+    \n        if (data.status !== 'complete' || !data.values) {\n            return\
+    \ {\n                Type: entryTypes.note,\n                Contents: data,\n\
+    \                ContentsType: formats.json,\n                ReadableContentsFormat:\
+    \ formats.markdown,\n                HumanReadable: commandMD,\n             \
+    \   EntryContext: {\n                    'CbLiveResponse.Commands(val.CbCommandID\
+    \ == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)': commandData\n  \
+    \              }\n            };\n        }\n\n        let registryEntry = mapObjFunction(regKeysData)(data.values);\n\
+    \        let registryMD = tableToMarkdown(\n            `Registry Values`,\n \
+    \           registryEntry,\n            regKeysData.map(cn => cn.to),\n      \
+    \      undefined,\n            splitCamelCase\n        );\n\n        //collect\
+    \ registry data for general context\n        let generalConetxt = collectRegistryDataToGeneralContext(data);\n\
+    \n        return {\n            Type: entryTypes.note,\n            Contents:\
+    \ data,\n            ContentsType: formats.json,\n            ReadableContentsFormat:\
+    \ formats.markdown,\n            HumanReadable: commandMD + '\\n\\n' + registryMD,\n\
+    \            EntryContext: {\n                'CbLiveResponse.Commands(val.CbCommandID\
+    \ == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)': commandEntry,\n\
+    \                'CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID &&\
+    \ val.CbSessionID == obj.CbSessionID).Values': registryEntry,\n              \
+    \  'RegistryKey': generalConetxt\n            }\n        };\n    },\n     'reg\
+    \ query value': function(data) {\n        let dataMap = COMMAND_DATA;\n      \
+    \  if (data.status === 'complete') {\n            dataMap = dataMap.concat(regKeyData);\n\
+    \        }\n        let commandData = mapObjFunction(dataMap)(data);\n       \
+    \ let commandMD = tableToMarkdown(\n            `CB ${CB_PRODUCT} - Query Registry\
+    \ Value: Command Status`,\n            commandData,\n            dataMap.map(cn\
+    \ => cn.to),\n            undefined,\n            splitCamelCase\n        );\n\
+    \n        let context = {\n            'CbLiveResponse.Commands(val.CbCommandID\
+    \ == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)': commandData\n  \
+    \      };\n        if (data.status !== 'complete') {\n            context.RegistryKey\
+    \ = collectRegistryDataToGeneralContext(data);\n        }\n        return {\n\
+    \            Type: entryTypes.note,\n            Contents: data,\n           \
+    \ ContentsType: formats.json,\n            ReadableContentsFormat: formats.markdown,\n\
+    \            HumanReadable: commandMD,\n            EntryContext: context\n  \
+    \      };\n    },\n     'reg create key': function(data) {\n        let dataMap\
+    \ = COMMAND_DATA;\n        let title = `CB ${CB_PRODUCT} - Create Registry Key:\
+    \ Command Status`;;\n        let contextKeys = ['CbLiveResponse(val.CbCommandID\
+    \ == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'];\n        let commandInfoEntry\
+    \ = createEntry(\n            title,\n            data,\n            dataMap,\n\
+    \            contextKeys,\n            splitCamelCase\n        );\n        return\
+    \ commandInfoEntry;\n    },\n     'reg delete key': function(data) {\n       \
+    \ let dataMap = COMMAND_DATA;\n        let title = `CB ${CB_PRODUCT} - Create\
+    \ Registry Key: Command Status`;;\n        let contextKeys = ['CbLiveResponse.Commands(val.CbCommandID\
+    \ == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'];\n        let commandInfoEntry\
+    \ = createEntry(\n            title,\n            data,\n            dataMap,\n\
+    \            contextKeys,\n            splitCamelCase\n        );\n        return\
+    \ commandInfoEntry;\n    },\n     'reg delete values': function(data) {\n    \
+    \    let dataMap = COMMAND_DATA;\n        let title = `CB ${CB_PRODUCT} - Delete\
+    \ Registry Value: Command Status`;;\n        let contextKeys =  ['CbLiveResponse.Commands(val.CbCommandID\
+    \ == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'];\n        let commandInfoEntry\
+    \ = createEntry(\n            title,\n            data,\n            dataMap,\n\
+    \            contextKeys,\n            splitCamelCase\n        );\n        return\
+    \ commandInfoEntry;\n    },\n     'reg set values': function(data) {\n       \
+    \ let dataMap = COMMAND_DATA;\n        let title = `CB ${CB_PRODUCT} - Delete\
+    \ Registry Value: Command Status`;;\n        let contextKeys =  ['CbLiveResponse.Commands(val.CbCommandID\
+    \ == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'];\n        let commandInfoEntry\
+    \ = createEntry(\n            title,\n            data,\n            dataMap,\n\
+    \            contextKeys,\n            splitCamelCase\n        );\n        return\
+    \ commandInfoEntry;\n    },\n    'process list' : function(data) {\n        let\
+    \ commandData = mapObjFunction(COMMAND_DATA)(data);\n        let commandMD = tableToMarkdown(\n\
+    \            `CB ${CB_PRODUCT} - List Processes: Command Status`,\n          \
+    \  commandData,\n            COMMAND_DATA.map(cn => cn.to),\n            undefined,\n\
+    \            splitCamelCase\n        );\n        if (data.status !== 'complete')\
+    \ {\n            return {\n                Type: entryTypes.note,\n          \
+    \      Contents: data,\n                ContentsType: formats.json,\n        \
+    \        ReadableContentsFormat: formats.markdown,\n                HumanReadable:\
+    \ commandMD,\n                EntryContext: {\n                   'CbLiveResponse.Commands(val.CbCommandID\
+    \ == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)': commandData\n  \
+    \              }\n            };\n        }\n        let processes = mapObjFunction(processesData)(data.processes);\n\
+    \        let processesMD = tableToMarkdown(\n            `CB ${CB_PRODUCT} - Processes`,\n\
+    \            processes,\n            processesData.map(cn => cn.to),\n       \
+    \     undefined,\n            splitCamelCase\n        );\n\n        // collect\
+    \ processes data for general context\n        let processesCollection = [];\n\
+    \        for (let process of data.processes) {\n            processesCollection.push({\n\
+    \                'PID': process.pid,\n                'CommandLine': process.command_line,\n\
+    \                'Path': process.path,\n                'Start Time': process.create_time,\n\
+    \                'Parent': process.parent\n            });\n        }\n\n    \
+    \    return {\n            Type: entryTypes.note,\n            Contents: data,\n\
+    \            ContentsType: formats.json,\n            ReadableContentsFormat:\
+    \ formats.markdown,\n            HumanReadable: commandMD + '\\n\\n' + processesMD,\n\
+    \            EntryContext: {\n                'CbLiveResponse.Commands(val.CbCommandID\
+    \ == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)': commandData,\n \
+    \               'CbLiveResponse.Commands(val.CbCommandID == obj.CbCommandID &&\
+    \ val.CbSessionID == obj.CbSessionID).Process': processes,\n                'Process':\
+    \ processesCollection\n            }\n        };\n    }\n};\n\nfunction getCommand()\
+    \ {\n    let command = getCommandRequest(args.session, args.command);\n    if\
+    \ (commandEntries[command.name]){\n        return commandEntries[command.name](command);\n\
+    \    }\n    //create generic entry\n    let title = `CB ${CB_PRODUCT} - Get Command`;\n\
+    \    let dataMap = COMMAND_DATA;\n    //keep CbResponse context for backward competability\n\
+    \    let contextKeys = [\n        'CbResponse.Commands(val.CbCommandID == obj.CbCommandID\
+    \ && val.CbSessionID == obj.CbSessionID)',\n        'CbLiveResponse.Commands(val.CbCommandID\
+    \ == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)'\n    ];\n    return\
+    \ createEntry(\n        title,\n        result,\n        dataMap,\n        contextKeys,\n\
+    \        splitCamelCase\n    );\n}\n\nfunction getCommandInfo(sessionId, commandId,\
+    \ timeout, timeInterval, cancelOnPending) {\n    let retries = timeout ? Math.ceil(timeout\
+    \ / timeInterval) : 1;\n    //loop to get command info. Stop when command status\
+    \ is no longer 'pending' or when exeeded wait-time.\n    let result;\n    let\
+    \ curTry = 0;\n    while (curTry < retries) {\n        result = getCommandRequest(sessionId,\
+    \ commandId);\n        if (result.status !== 'pending') {\n            return\
+    \ result;\n        }\n        curTry++;\n        sleep(timeInterval);\n    }\n\
+    \    if (cancelOnPending && cancelOnPending === 'yes') {\n        cancelCommandRequest(sessionId,\
+    \ commandId);\n        throw 'Wait-time expired. Canceled command';\n    }\n \
+    \   return result;\n}\n\nfunction terminateProcess() {\n    let result = createCommandRequest(args.session,\
+    \ 'kill', undefined, args.pid, undefined, args.wait);\n    sleep(1000);\n    let\
+    \ commandId = result.id;\n    let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout'])\
+    \ * 1000 : DEFAULT_WAIT_TIMEOUT;\n    let retries = Math.ceil(timeout / SLEEP_BETWEEN_RETRIES);\n\
+    \n    let curTry = 0;\n    while (curTry < retries) {\n        let result = getCommandRequest(args.session,\
+    \ commandId);\n        if (result.status === 'complete') {\n            let title\
+    \ = `CB Response - Terminate Process ${args.pid}`;\n            let dataMap =\
+    \ COMMAND_DATA;\n            let headers = dataMap.map(cn => cn.to);\n       \
+    \     let translatedData = mapObjFunction(dataMap)(result);\n            let humanReadable\
+    \ = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);\n\
+    \            let context = {\n                'CbResponse.Commands(val.CbCommandID\
+    \ == obj.CbCommandID && val.CbSessionID == obj.CbSessionID)': createContext(translatedData)\n\
+    \            };\n            return {\n                Type: entryTypes.note,\n\
+    \                Contents: result,\n                ContentsType: formats.json,\n\
+    \                ReadableContentsFormat: formats.markdown,\n                HumanReadable:\
+    \ humanReadable,\n                EntryContext: context,\n            };\n   \
+    \     } else if (result.status !== 'pending') {\n            throw `Terminating\
+    \ process failed, status: ${result.status}`;\n        }\n        sleep(SLEEP_BETWEEN_RETRIES);\n\
+    \        curTry++;\n    }\n    throw `Terminating process timedout (${timeout\
+    \ / 1000} seconds), increase wait-timeout and try again`;\n}\n\nfunction putFileRequest(sessionId,\
+    \ fileId, path) {\n    let queryParams = {\n        name: 'put file',\n      \
+    \  object: path,\n        file_id: fileId\n    };\n\n    let response = sendRequest(`/session/${sessionId}/command`,\
+    \ 'POST', queryParams).Body;\n    try {\n        return JSON.parse(response);\n\
+    \    } catch (err) {\n        throw `Could not parse response.\\nError: ${err}.\\\
+    nResponse: ${response}`;\n    }\n}\n\nfunction putFile() {\n    let fileInfo =\
+    \ uploadFileRequest(args['session'], args['entry-id']);\n    let result = putFileRequest(args['session'],\
+    \ fileInfo.id, args.path);\n    //wait for 1 second before trying to get command\
+    \ information\n    sleep(1000);\n    let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout'])\
+    \ * 1000 : DEFAULT_WAIT_TIMEOUT;\n\n    let command = getCommandInfo(args['session'],\
+    \ result.id, timeout, SLEEP_BETWEEN_RETRIES);\n    let commandEntry = commandEntries['put\
+    \ file'](command);\n    //add entry to hold gile information\n    let title =\
+    \ `CB ${CB_PRODUCT} - File Info`;\n    let dataMap = fileData;\n    let contextKeys\
+    \ = ['CbLiveResponse.Files(val.CbFileID==obj.CbFileID)'];\n    let fileInfoEntry\
+    \ = createEntry(\n        title,\n        fileInfo,\n        dataMap,\n      \
+    \  contextKeys,\n        splitCamelCase\n    );\n    return [commandEntry, fileInfoEntry];\n\
+    }\n\nfunction getFileRequest(sessionId, path, offset, bytes)   {\n    let queryParams\
+    \ = {\n        name: 'get file',\n        object: path,\n        offset: offset,\n\
+    \        get_count: bytes\n    };\n\n    let response = sendRequest(`/session/${sessionId}/command`,\
+    \ 'POST', queryParams).Body;\n    try {\n        return JSON.parse(response);\n\
+    \    } catch (err) {\n        throw `Could not parse response.\\nError: ${err}.\\\
+    nResponse: ${response}`;\n    }\n}\n\nfunction getFile() {\n    let command =\
+    \ directoryListRequest(args.session, args.path);\n    let commandId = command.id;\n\
+    \    try {\n        command = getCommandInfo(args.session, commandId, DEFAULT_WAIT_TIMEOUT,\
+    \ SLEEP_BETWEEN_RETRIES);\n    }\n    catch(err) {\n        throw \"Failed to\
+    \ get information on the file\";\n    }\n    if (command.status === 'error') {\n\
+    \        throw 'File not found on the endpoint';\n    }\n    let file = command.files[0];\n\
+    \    let result = getFileRequest(args.session, args.path, 0, file.size);\n   \
+    \ //wait for 1 second before trying to get command information\n    sleep(1000);\n\
+    \    let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout']) * 1000\
+    \ : DEFAULT_WAIT_TIMEOUT;\n\n    command = getCommandInfo(args['session'], result.id,\
+    \ timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);\n    let commandEntry\
+    \ = commandEntries['get file'](command);\n\n    if (command.status !== 'complete')\
+    \ {\n        return commandEntry;\n    }\n    //download the file from Cb server\
+    \ and add file entry to the war room\n    let fileEntry = downloadFileEntry(args['session'],\
+    \ command['file_id']);\n    return [commandEntry, fileEntry];\n}\n\nfunction directoryListRequest(sessionId,\
+    \ path)   {\n    let queryParams = {\n        name: 'directory list',\n      \
+    \  object: path\n    };\n\n    let response = sendRequest(`/session/${sessionId}/command`,\
+    \ 'POST', queryParams).Body;\n    try {\n        return JSON.parse(response);\n\
+    \    } catch (err) {\n        throw `Could not parse response.\\nError: ${err}.\\\
+    nResponse: ${response}`;\n    }\n}\n\nfunction directoryList() {\n    let result\
+    \ = directoryListRequest(args['session'], args.path);\n    //wait for 1 second\
+    \ before trying to get command information\n    sleep(1000);\n    let timeout\
+    \ = args['wait-timeout'] ? parseInt(args['wait-timeout']) * 1000 : DEFAULT_WAIT_TIMEOUT;\n\
+    \    let command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES,\
+    \ args['cancel-on-timeout']);\n    return commandEntries['directory list'](command);\n\
+    }\n\nfunction processKillRequest(sessionId, pid) {\n    let queryParams = {\n\
+    \        name: 'kill',\n        object: pid\n    };\n    let response = sendRequest(`/session/${sessionId}/command`,\
+    \ 'POST', queryParams).Body;\n    try {\n        return JSON.parse(response);\n\
+    \    } catch (err) {\n        throw `Could not parse response.\\nError: ${err}.\\\
+    nResponse: ${response}`;\n    }\n}\n\n//equivalent to 'terminateProcess' function\n\
+    function processKill() {\n    let result = processKillRequest(args['session'],\
+    \ args.pid);\n    //wait for 1 second before trying to get command information\n\
+    \    sleep(1000);\n    let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout'])\
+    \ * 1000 : DEFAULT_WAIT_TIMEOUT;\n\n    let command = getCommandInfo(args['session'],\
+    \ result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);\n   \
+    \ return commandEntries['kill'](command);\n}\n\nfunction processExecRequeste(sessionId,\
+    \ path, wait, workingDirectory, outputFile) {\n    let queryParams = {\n     \
+    \   name: 'create process',\n        object: path\n    };\n    if (wait !== undefined)\
+    \ {\n        queryParams.wait = wait;\n    }\n    if (workingDirectory) {\n  \
+    \      queryParams.working_directory = workingDirectory;\n    }\n    if (outputFile)\
+    \ {\n        queryParams.output_file = outputFile;\n    }\n\n    let response\
+    \ = sendRequest(`/session/${sessionId}/command`, 'POST', queryParams).Body;\n\
+    \    try {\n        return JSON.parse(response);\n    } catch (err) {\n      \
+    \  throw `Could not parse response.\\nError: ${err}.\\nResponse: ${response}`;\n\
+    \    }\n}\n\nfunction processExec() {\n    if (args.wait) {\n        args.wait\
+    \ = args.wait === 'yes';\n    }\n    let result = processExecRequeste(args['session'],\
+    \ args.path, args['working-directory'], args['output-file']);\n    //wait for\
+    \ 1 second before trying to get command information\n    sleep(1000);\n    let\
+    \ timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout']) * 1000 : DEFAULT_WAIT_TIMEOUT;\n\
+    \n    let command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES,\
+    \ args['cancel-on-timeout']);\n    return commandEntries['create process'](command);\n\
+    }\n\nfunction memdumpRequest(sessionId, path, compress) {\n    let queryParams\
+    \ = {\n        name: 'memdump',\n        object: path,\n        compress: false\
+    \ //in the API there is a typo that says this field is spelled 'commpress'\n \
+    \   };\n    if (compress === 'true') {\n        queryParams.compress = true;\n\
+    \    }\n    let response = sendRequest(`/session/${sessionId}/command`, 'POST',\
+    \ queryParams).Body;\n    try {\n        return JSON.parse(response);\n    } catch\
+    \ (err) {\n        throw `Could not parse response.\\nError: ${err}.\\nResponse:\
+    \ ${response}`;\n    }\n}\n\nfunction memdump() {\n    let result = memdumpRequest(args['session'],\
+    \ args.path, args.compress);\n    //wait for 1 second before trying to get command\
+    \ information\n    sleep(1000);\n    let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout'])\
+    \ * 1000 : DEFAULT_WAIT_TIMEOUT;\n\n    let command = getCommandInfo(args['session'],\
+    \ result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);\n   \
+    \ return commandEntries['memdump'](command);\n}\n\nfunction deleteFileFromEndpointRequest(sessionId,\
+    \ path){\n    let queryParams = {\n        name: 'delete file',\n        object:\
+    \ path\n    };\n    let response = sendRequest(`/session/${sessionId}/command`,\
+    \ 'POST', queryParams).Body;\n    try {\n        return JSON.parse(response);\n\
+    \    } catch (err) {\n        throw `Could not parse response.\\nError: ${err}.\\\
+    nResponse: ${response}`;\n    }\n}\n\nfunction deleteFileFromEndpoint() {\n  \
+    \  let result = deleteFileFromEndpointRequest(args['session'], args.path);\n \
+    \   //wait for 1 second before trying to get command information\n    sleep(1000);\n\
+    \    let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout']) * 1000\
+    \ : DEFAULT_WAIT_TIMEOUT;\n\n    let command = getCommandInfo(args['session'],\
+    \ result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);\n   \
+    \ return commandEntries['delete file'](command);\n}\n\nfunction regEnumKeyRequest(sessionId,\
+    \ path){\n    let queryParams = {\n        name: 'reg enum key',\n        object:\
+    \ path\n    };\n    let response = sendRequest(`/session/${sessionId}/command`,\
+    \ 'POST', queryParams).Body;\n    try {\n        return JSON.parse(response);\n\
+    \    } catch (err) {\n        throw `Could not parse response.\\nError: ${err}.\\\
+    nResponse: ${response}`;\n    }\n}\n\nfunction regEnumKey() {\n    let result\
+    \ = regEnumKeyRequest(args.session, args.path);\n    //wait for 1 second before\
+    \ trying to get command information\n    sleep(1000);\n    let timeout = (args['wait-timeout'])\
+    \ ? parseInt(args['wait-timeout']) * 1000 : DEFAULT_WAIT_TIMEOUT;\n\n    let command\
+    \ = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES,\
+    \ args['cancel-on-timeout']);\n    return commandEntries['reg enum key'](command);\n\
+    }\n\nfunction regQueryValueRequest(sessionId, path){\n    let queryParams = {\n\
+    \        name: 'reg query value',\n        object: path\n    };\n    let response\
+    \ = sendRequest(`/session/${sessionId}/command`, 'POST', queryParams).Body;\n\
+    \    try {\n        return JSON.parse(response);\n    } catch (err) {\n      \
+    \  throw `Could not parse response.\\nError: ${err}.\\nResponse: ${response}`;\n\
+    \    }\n}\n\nfunction regQueryValue() {\n    let result = regQueryValueRequest(args.session,\
+    \ args.path);\n    //wait for 1 second before trying to get command information\n\
+    \    sleep(1000);\n    let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout'])\
+    \ * 1000 : DEFAULT_WAIT_TIMEOUT;\n\n    let command = getCommandInfo(args['session'],\
+    \ result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);\n   \
+    \ return commandEntries['reg query value'](command);\n}\n\nfunction regCreateRequest(sessionId,\
+    \ path){\n    let queryParams = {\n        name: 'reg create key',\n        object:\
+    \ path\n    };\n    let response = sendRequest(`/session/${sessionId}/command`,\
+    \ 'POST', queryParams).Body;\n    try {\n        return JSON.parse(response);\n\
+    \    } catch (err) {\n        throw `Could not parse response.\\nError: ${err}.\\\
+    nResponse: ${response}`;\n    }\n}\n\nfunction regCreate() {\n    let result =\
+    \ regCreateRequest(args.session, args.path, args.timeout);\n    //wait for 1 second\
+    \ before trying to get command information\n    sleep(1000);\n    let timeout\
+    \ = (args['wait-timeout']) ? parseInt(args['wait-timeout']) * 1000 : DEFAULT_WAIT_TIMEOUT;\n\
+    \n    let command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES,\
+    \ args['cancel-on-timeout']);\n    return commandEntries['reg create key'](command);\n\
+    }\n\nfunction regDeleteKeyRequest(sessionId, path){\n    let queryParams = {\n\
+    \        name: 'reg delete key',\n        object: path\n    };\n    let response\
+    \ = sendRequest(`/session/${sessionId}/command`, 'POST', queryParams).Body;\n\
+    \    try {\n        return JSON.parse(response);\n    } catch (err) {\n      \
+    \  throw `Could not parse response.\\nError: ${err}.\\nResponse: ${response}`;\n\
+    \    }\n}\n\nfunction regDeleteKey() {\n    let result = regDeleteKeyRequest(args.session,\
+    \ args.path);\n    //wait for 1 second before trying to get command information\n\
+    \    sleep(1000);\n    let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout'])\
+    \ * 1000 : DEFAULT_WAIT_TIMEOUT;\n\n    let command = getCommandInfo(args['session'],\
+    \ result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);\n   \
+    \ return commandEntries['reg delete key'](command);\n}\n\nfunction regDeleteValueRequest(sessionId,\
+    \ path){\n    let queryParams = {\n        name: 'reg delete value',\n       \
+    \ object: path\n    };\n    let response = sendRequest(`/session/${sessionId}/command`,\
+    \ 'POST', queryParams).Body;\n    try {\n        return JSON.parse(response);\n\
+    \    } catch (err) {\n        throw `Could not parse response.\\nError: ${err}.\\\
+    nResponse: ${response}`;\n    }\n}\n\nfunction regDeleteValue() {\n    let result\
+    \ = regDeleteValueRequest(args.session, args.path);\n    //wait for 1 second before\
+    \ trying to get command information\n    sleep(1000);\n    let timeout = (args['wait-timeout'])\
+    \ ? parseInt(args['wait-timeout']) * 1000 : DEFAULT_WAIT_TIMEOUT;\n\n    let command\
+    \ = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES,\
+    \ args['cancel-on-timeout']);\n    return commandEntries['reg delete value'](command);\n\
+    }\n\nfunction regSetValueRequest(sessionId, path, data, type, overwrite){\n  \
+    \  let queryParams = {\n        name: 'reg set value',\n        object: path,\n\
+    \        value_data: data,\n        value_type: type\n    }\n    if (overwrite)\
+    \ {\n        queryParams.overwrite = true;\n    }\n    let response = sendRequest(`/session/${sessionId}/command`,\
+    \ 'POST', queryParams).Body;\n    try {\n        return JSON.parse(response);\n\
+    \    } catch (err) {\n        throw `Could not parse response.\\nError: ${err}.\\\
+    nResponse: ${response}`;\n    }\n}\n\nfunction regSetValue() {\n    if (args.type\
+    \ = 'REG_MULTI_SZ') {\n        args.data = args.data.split(',');\n    }\n    if\
+    \ (args.overwrite) {\n        args.overwrite = args.overwrite === 'yes';\n   \
+    \ }\n    let result = regSetValueRequest(args.session, args.path, args.data, args.type,\
+    \ args.overwrite);\n    //wait for 1 second before trying to get command information\n\
+    \    sleep(1000);\n    let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout'])\
+    \ * 1000 : DEFAULT_WAIT_TIMEOUT;\n\n    let command = getCommandInfo(args['session'],\
+    \ result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);\n   \
+    \ return commandEntries['reg set value'](command);\n}\n\nfunction listProcessesRequest(sessionId,\
+    \ path){\n    let queryParams = {\n        name: 'process list'\n    }\n    let\
+    \ response = sendRequest(`/session/${sessionId}/command`, 'POST', queryParams).Body;\n\
+    \    try {\n        return JSON.parse(response);\n    } catch (err) {\n      \
+    \  throw `Could not parse response.\\nError: ${err}.\\nResponse: ${response}`;\n\
+    \    }\n}\n\nfunction listProcesses() {\n    let result = listProcessesRequest(args['session'],\
+    \ args.path);\n    //wait for 1 second before trying to get command information\n\
+    \    sleep(1000);\n    let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout'])\
+    \ * 1000 : DEFAULT_WAIT_TIMEOUT;\n    let command = getCommandInfo(args['session'],\
+    \ result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);\n   \
+    \ return commandEntries['process list'](command);\n}\n\n/// Execution\n\ntry {\n\
+    \    switch (command) {\n        case 'test-module':\n            return testModule();\n\
+    \        case 'cb-list-sessions':\n            if (CB_PRODUCT == 'Defense') {\n\
+    \                throw '\\'cb-list-sessions\\' is not available for Cb Defense.';\n\
+    \            }\n            return getSessions();\n        case 'cb-session-info':\n\
+    \            return getSessions();\n        case 'cb-session-create':\n      \
+    \      return createSession();\n        case 'cb-session-create-and-wait':\n \
+    \           return createSessionAndWait();\n        case 'cb-session-close':\n\
+    \            return closeSession();\n        case 'cb-keepalive':\n          \
+    \  return sessionKeepAlive();\n        case 'cb-archive':\n            if (CB_PRODUCT\
+    \ == 'Defense') {\n                throw '\\'cb-archive\\' is not available for\
+    \ Cb Defense.';\n            }\n            return archiveSession();\n       \
+    \ case 'cb-list-commands':\n            return getCommands();\n        case 'cb-command-info':\n\
+    \            return getCommand();\n        case 'cb-terminate-process':\n    \
+    \        return terminateProcess();\n        case 'cb-command-create':\n     \
+    \       return createCommand();\n        case 'cb-command-create-and-wait':\n\
+    \            return createCommandAndWait();\n        case 'cb-command-cancel':\n\
+    \            return cancelCommand();\n        case 'cb-file-get':\n          \
+    \  return downloadFile();\n        case 'cb-list-files':\n        case 'cb-file-info':\n\
+    \            return listFiles();\n        case 'cb-file-upload':\n           \
+    \ return uploadFile();\n        case 'cb-file-delete':\n            return deleteFile();\n\
+    \    }\n} catch (err) {\n    return {\n        Type: entryTypes.error,\n     \
+    \   Contents: err,\n        ContentsType: formats.json,\n        ReadableContentsFormat:\
+    \ formats.text,\n        HumanReadable: err.message\n    };\n}\n\n// execute Cb\
+    \ commands\nlet closeSessionAfterExecution = false;\ntry {\n    //validate either\
+    \ sensor or session was passed\n    if ((!args.session && !args.sensor) || (args.session\
+    \ && args.sensor)) {\n        throw 'Provide either the session ID or the sensor\
+    \ ID';\n    }\n    if (args.sensor) {\n        let session = createSessionRequest(args.sensor);\n\
+    \        let wait = 3 * 1000;\n        while (session.status === 'pending' ||\
+    \ session.status === 'PENDING') {\n            sleep(wait);\n            session\
+    \ = getSessionsRequest(session.id);\n        }\n        if (session.status !==\
+    \ 'active' && session.status !== 'ACTIVE') {\n            throw 'Failed to start\
+    \ a new session';\n        }\n        closeSessionAfterExecution = true;\n   \
+    \     args.session = session.id;\n    }\n    switch (command) {\n        case\
+    \ 'cb-process-kill':\n            return processKill();\n        case 'cb-directory-listing':\n\
+    \            return directoryList();\n        case 'cb-process-execute':\n   \
+    \         return processExec();\n        case 'cb-memdeump':\n            return\
+    \ memdump();\n        case 'cb-memdump':\n            return memdump();\n    \
+    \    case 'cb-file-delete-from-endpoint':\n            return deleteFileFromEndpoint();\n\
+    \        case 'cb-registry-get-values':\n            return regEnumKey();\n  \
+    \      case 'cb-registry-query-value':\n            return regQueryValue();\n\
+    \        case 'cb-registry-create-key':\n            return regCreate();\n   \
+    \     case 'cb-registry-delete-key':\n            return regDeleteKey();\n   \
+    \     case 'cb-registry-delete-value':\n            return regDeleteValue();\n\
+    \        case 'cb-registry-set-value':\n            return regSetValue();\n  \
+    \      case 'cb-process-list':\n            return listProcesses();\n        case\
+    \ 'cb-get-file-from-endpoint':\n            return getFile();\n        case 'cb-push-file-to-endpoint':\n\
+    \            return putFile();\n    }\n} catch (err) {\n    return {\n       \
+    \ Type: entryTypes.error,\n        Contents: err,\n        ContentsType: formats.json,\n\
+    \        ReadableContentsFormat: formats.text,\n        HumanReadable: err.message\n\
+    \    };\n} finally {\n    if (closeSessionAfterExecution) {\n        closeSessionRequest(args.session);\n\
+    \    }\n}\n\n/// Util methods\n\nfunction sleep(ms) {\n    var start = new Date().getTime();\n\
+    \    var expire = start + ms;\n    while (new Date().getTime() < expire) {\n \
+    \       /*Do nothing*/\n    }\n    return;\n}"
+  type: javascript
 tests:
-  - Carbon Black Live Response Test
-fromversion: 3.6.1
+- Carbon Black Live Response Test
+toversion: 4.1.9

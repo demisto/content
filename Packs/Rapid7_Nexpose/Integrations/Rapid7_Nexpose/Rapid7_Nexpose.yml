@@ -28,6 +28,7 @@ description: Rapid7's on-premise vulnerability management solution, Nexpose, hel
   in your environment real time and prioritizing risk across vulnerabilities, configurations,
   and controls.
 display: Rapid7 Nexpose
+fromversion: 3.6.0
 name: Rapid7 Nexpose
 script:
   commands:
@@ -129,9 +130,9 @@ script:
       description: The CVSS exploit score.
       type: string
     - contextPath: Nexpose.Asset.Vulnerability.Risk
-      description: The risk score of the vulnerability, rounded to a maximum of to
-        digits of precision. If using the default Rapid7 Real Risk™ model, this value
-        ranges from 0-1000.
+      description: "The risk score of the vulnerability, rounded to a maximum of to\
+        \ digits of precision. If using the default Rapid7 Real Risk\u2122 model,\
+        \ this value ranges from 0-1000."
       type: number
     - contextPath: Nexpose.Asset.Vulnerability.PublishedOn
       description: The date the vulnerability was first published or announced. The
@@ -427,9 +428,9 @@ script:
         "Critical".'
       type: string
     - contextPath: Nexpose.Asset.Vulnerability.RiskScore
-      description: The risk score of the vulnerability, rounded to a maximum of to
-        digits of precision. If using the default Rapid7 Real Risk™ model, this value
-        ranges from 0-1000.
+      description: "The risk score of the vulnerability, rounded to a maximum of to\
+        \ digits of precision. If using the default Rapid7 Real Risk\u2122 model,\
+        \ this value ranges from 0-1000."
       type: number
     - contextPath: Nexpose.Asset.Vulnerability.CVSS
       description: The CVSS vector(s) for the vulnerability.
@@ -1004,8 +1005,8 @@ script:
   isfetch: false
   runonce: false
   script: '-'
-  type: python
   subtype: python2
-fromversion: 3.6.0
+  type: python
 tests:
-  - nexpose_test
+- nexpose_test
+toversion: 4.1.9

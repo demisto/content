@@ -1,847 +1,56 @@
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Digital Shadows
   version: -1
-name: Digital Shadows
-display: Digital Shadows
-category: Data Enrichment & Threat Intelligence
-image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAASCAYAAACQCxruAAAFW0lEQVR4Ae2Zc7AkzxKFF/Ozba1t27Zt27Zt27Zt27Ztq9/ZiG8iMnpxZ/v5vfvHF3cyqyorq05Xds3cEI7jBPM/zP/rwoMFbtq0aTKxSXTE/lWcxvdhUIEZU5kxXbFDivdfEmiCjBsmNorI+CDg8XXJOwc+r9iY2YhZ/79V4FzCEXOwfxY7xWLxQYCbUFrsEq2wvxWnxF7xUaBJMq8jEngUYxDjK/4DBS5HzKH/PQJzyvibjgVMC2CxoQLclE/EU3HlXeJwUhwRz0su8vVlfDG7Ri9rMftTmJgD3tTHbXvC5uQBG+QLMVwcE9vFcL/AtP8gtomF4n18ccRScVIsEAM4bVlpL4LdFLureCYeiLEiBWW7FCX4nDgiRopfAxWYPsXFZnFBHCJGWCswa1ohjovJ4nvaQ4sKjD8njorR4jcT/zcxibEbxVgrMH3+EBPECXFAdBDvw3z2IhJ9o2JXNeNHiN0iKXYzqt0F/F3Fl+8s8MvSJ/oIB27w1wr8G/Yl4RMfiCP4HiGaA6UYUwd7GPZW7BfivigpQokN+A+YuXeI94MUmPch7feY4yKfY1uB4Zb5PJH2j8VOk8N14SCkjz7zzbib5vMA2j9jrH+OZ3weQvtE7ErYzbH38ZB/JR6KJ8RqSPtV1nSH/f7Oi8DteDIdSs+HYohL4F8pr6exo5nFRKQC7MdXnD41sQf7Y7CIy+Jr4TOl+1c+v49AjogSgMD2HVvW+D52l2gxirWlF8+Z5xMj0C/mRJ9lzB/iU3GbMRmJMc0lcF7sjcSKwpgn4nORw/VQbREORBVJ+Tzf1Z7QXFB9nko0peEOJ/EHfDnfJrBJaKstMUEI/C0CX7I3cWJXEz1Ed3GNcbEDEdhUirtszGRRVISyApvK8qm4CV+b8lqd+buJK1SasOJH4eD7mP7lXQLXx25j8trgXwei3+cVGEs8NVWjkRlf2XXirxJnuEjvVeBRlLT75r2UNUCBt5kFjQxC4O+NwB+bjb1CvzNUksfYsQIU+EOEOcIaHGjiErgc9leIe4PyHMaU3bMmh2e0/UTbRfERMUq5BG6M3dzktRpfYuzFxJyGP504TGnfTIWIQN+feJ+f8u8HZPEicD9xmQki46sWhMBRab8torBph4IQ+AeSvWS/K9Onq/EddQlMuQrse7CpPhuw+7xF4JCiBu3tTIwD+MKKr8n7gfiR9jYugStijzIxjtu8qRAOnGTu3sa33X3jNq+MFvTp60XgomKZcDgtncT1NwlsLlkHhYOfp+ytAn9K+X0meooo/ncTIpbgJL5wlegl2BNFdvdXEOY5ItqKyuaETAjgBIcWRc3aS4gu5PCc+0Uoc6Fczm32nkvgiPR/gmjTad8r3jd9nuLvb35QcqCduYcMEbuoDFVNua/lReCPmeiacOAEf+e4btGXxQfmFM/ivTLR3DRL0F4Xe4QRpCYCOyTu8z9c8MhsXlzGpDYP3Cz3d0QeCsfFVvGXuYTZG+zXvCoecAH6VKw1Yx+bHKIypqDxOeZ0DnP9+HHf1Seu62HcTVtaczoP40tqLnzz8FlmtGjY+FPPP3TwjswsEnMrTiIimqcqkYjzlh8kZpNIHuyfiBHG1S8Mc/zgF4l+GSnjkWn/xIz5jvnDvWHu37kdZxfxbY4vhSb+99g+ER98xpeUHH4UkcjhI9dlMIuIK756w9p+YQ9T2/xNezji+owvvNuHPxKxsoqoti3JrpklkuycOVwMc4O/ml9gT/A0VqOs1RKDEfe6X7hg/nlIwKnCeQvr/l6BQ3P7dgynvFzlg/EkcHJRQZR3gz+Dd4GB0tdAjOAmnuNfuMhggv8fHMzfANJW8ic6hCc6AAAAAElFTkSuQmCC
-description: Digital Shadows monitors and manages an organization's digital risk across
-  the widest range of data sources within the open, deep, and dark web.
 configuration:
-- display: Server URL
+- defaultvalue: https://portal-digitalshadows.com
+  display: Server URL
   name: server
-  defaultvalue: https://portal-digitalshadows.com
-  type: 0
   required: true
-- display: API Key
+  type: 0
+- defaultvalue: ''
+  display: API Key
   name: apikey
-  defaultvalue: ""
+  required: true
   type: 0
-  required: true
-- display: Secret
+- defaultvalue: ''
+  display: Secret
   name: secret
-  defaultvalue: ""
-  type: 4
   required: true
-- display: Trust any certificate (not secure)
+  type: 4
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
-  type: 8
   required: false
-- display: Use system proxy settings
+  type: 8
+- defaultvalue: ''
+  display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 - display: Fetch incidents
   name: isFetch
-  type: 8
   required: false
+  type: 8
 - display: Incident type
   name: incidentType
-  type: 13
   required: false
+  type: 13
+description: Digital Shadows monitors and manages an organization's digital risk across
+  the widest range of data sources within the open, deep, and dark web.
+display: Digital Shadows
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAASCAYAAACQCxruAAAFW0lEQVR4Ae2Zc7AkzxKFF/Ozba1t27Zt27Zt27Zt27Ztq9/ZiG8iMnpxZ/v5vfvHF3cyqyorq05Xds3cEI7jBPM/zP/rwoMFbtq0aTKxSXTE/lWcxvdhUIEZU5kxXbFDivdfEmiCjBsmNorI+CDg8XXJOwc+r9iY2YhZ/79V4FzCEXOwfxY7xWLxQYCbUFrsEq2wvxWnxF7xUaBJMq8jEngUYxDjK/4DBS5HzKH/PQJzyvibjgVMC2CxoQLclE/EU3HlXeJwUhwRz0su8vVlfDG7Ri9rMftTmJgD3tTHbXvC5uQBG+QLMVwcE9vFcL/AtP8gtomF4n18ccRScVIsEAM4bVlpL4LdFLureCYeiLEiBWW7FCX4nDgiRopfAxWYPsXFZnFBHCJGWCswa1ohjovJ4nvaQ4sKjD8njorR4jcT/zcxibEbxVgrMH3+EBPECXFAdBDvw3z2IhJ9o2JXNeNHiN0iKXYzqt0F/F3Fl+8s8MvSJ/oIB27w1wr8G/Yl4RMfiCP4HiGaA6UYUwd7GPZW7BfivigpQokN+A+YuXeI94MUmPch7feY4yKfY1uB4Zb5PJH2j8VOk8N14SCkjz7zzbib5vMA2j9jrH+OZ3weQvtE7ErYzbH38ZB/JR6KJ8RqSPtV1nSH/f7Oi8DteDIdSs+HYohL4F8pr6exo5nFRKQC7MdXnD41sQf7Y7CIy+Jr4TOl+1c+v49AjogSgMD2HVvW+D52l2gxirWlF8+Z5xMj0C/mRJ9lzB/iU3GbMRmJMc0lcF7sjcSKwpgn4nORw/VQbREORBVJ+Tzf1Z7QXFB9nko0peEOJ/EHfDnfJrBJaKstMUEI/C0CX7I3cWJXEz1Ed3GNcbEDEdhUirtszGRRVISyApvK8qm4CV+b8lqd+buJK1SasOJH4eD7mP7lXQLXx25j8trgXwei3+cVGEs8NVWjkRlf2XXirxJnuEjvVeBRlLT75r2UNUCBt5kFjQxC4O+NwB+bjb1CvzNUksfYsQIU+EOEOcIaHGjiErgc9leIe4PyHMaU3bMmh2e0/UTbRfERMUq5BG6M3dzktRpfYuzFxJyGP504TGnfTIWIQN+feJ+f8u8HZPEicD9xmQki46sWhMBRab8torBph4IQ+AeSvWS/K9Onq/EddQlMuQrse7CpPhuw+7xF4JCiBu3tTIwD+MKKr8n7gfiR9jYugStijzIxjtu8qRAOnGTu3sa33X3jNq+MFvTp60XgomKZcDgtncT1NwlsLlkHhYOfp+ytAn9K+X0meooo/ncTIpbgJL5wlegl2BNFdvdXEOY5ItqKyuaETAjgBIcWRc3aS4gu5PCc+0Uoc6Fczm32nkvgiPR/gmjTad8r3jd9nuLvb35QcqCduYcMEbuoDFVNua/lReCPmeiacOAEf+e4btGXxQfmFM/ivTLR3DRL0F4Xe4QRpCYCOyTu8z9c8MhsXlzGpDYP3Cz3d0QeCsfFVvGXuYTZG+zXvCoecAH6VKw1Yx+bHKIypqDxOeZ0DnP9+HHf1Seu62HcTVtaczoP40tqLnzz8FlmtGjY+FPPP3TwjswsEnMrTiIimqcqkYjzlh8kZpNIHuyfiBHG1S8Mc/zgF4l+GSnjkWn/xIz5jvnDvWHu37kdZxfxbY4vhSb+99g+ER98xpeUHH4UkcjhI9dlMIuIK756w9p+YQ9T2/xNezji+owvvNuHPxKxsoqoti3JrpklkuycOVwMc4O/ml9gT/A0VqOs1RKDEfe6X7hg/nlIwKnCeQvr/l6BQ3P7dgynvFzlg/EkcHJRQZR3gz+Dd4GB0tdAjOAmnuNfuMhggv8fHMzfANJW8ic6hCc6AAAAAElFTkSuQmCC
+name: Digital Shadows
 script:
-  script: |-
-    var url = params.server.replace(/[\/]+$/, '') +'/api';
-
-    commandDictionary = {
-        //breaches
-        'ds-get-breach-reviews': {
-            url: '/data-breach-record/%breach_id%/reviews',
-            method: 'GET',
-            extended: true,
-            translator: [
-                {
-                    contextPath: 'DigitalShadows.BreachReviews',
-                    title: 'Digital Shadows Breach Reviews',
-                    data: [
-                        {to: 'Note', from: 'note'},
-                        {to: 'Version', from: 'version'},
-                        {to: 'Status', from: 'status'},
-                        {to: 'UserID', from: 'user.id'},
-                        {to: 'UserRole', from: 'user.role'},
-                        {to: 'UserPermissions', from: 'user.permissions'},
-                        {to: 'UserEmail', from: 'user.emailAddress'},
-                        {to: 'CreatedAt', from: 'created'}
-                    ]
-                }
-            ],
-        },
-        'ds-snapshot-breach-status': {
-            url: '/data-breach-record/%breach_id%/reviews',
-            method: 'POST',
-            customMD: function(res){return 'Request successful';}
-        },
-        'ds-find-breach-records': {
-            url: '/data-breach-record/find',
-            method: 'POST',
-            extended: true,
-            translator: [
-                {
-                    contextPath: 'DigitalShadows.BreachRecords(val.Id && val.Id==obj.Id)',
-                    innerPath: 'content',
-                    title: 'Digital Shadows Breach Records',
-                    data: [
-                        {to: 'Content', from: 'content'},
-                        {to: 'Id', from: 'id'},
-                        {to: 'Password', from: 'password'},
-                        {to: 'DomainNames', from: 'domainNames'},
-                        {to: 'PriorRowTextBreachCount', from: 'priorRowTextBreachCount'},
-                        {to: 'PriorUsernameBreachCount', from: 'priorUsernameBreachCount'},
-                        {to: 'PriorUsernamePasswordBreachCount', from: 'priorUsernamePasswordBreachCount'},
-                        {to: 'Published', from: 'published'},
-                        {to: 'Review.Created', from: 'review.created'},
-                        {to: 'Review.Status', from: 'review.status'},
-                        {to: 'Review.User', from: 'review.user'},
-                        {to: 'Username', from: 'username'},
-                        {to: 'DataBreachId', from: 'dataBreach.id'}
-                    ]
-                }
-            ]
-        },
-        'ds-get-breach-summary': {
-            url: '/data-breach-summary',
-            method: 'GET',
-            urlQueryArgs: ['published']
-        },
-        'ds-find-breach-usernames': {
-            url: '/data-breach-usernames/find',
-            method: 'POST',
-            extended: true,
-            translator: [
-                {
-                    contextPath: 'DigitalShadows.Users(val.Username && val.Username==obj.Username)',
-                    title: 'Digital SHadows Breach Reviews',
-                    innerPath: 'content',
-                    data: [
-                        {to: 'BreachCount', from: 'breachCount'},
-                        {to: 'DistinctPasswordCount', from: 'distinctPasswordCount'},
-                        {to: 'Username', from: 'username'}
-                    ]
-                }
-            ],
-        },
-        'ds-get-breach': {
-            url: '/data-breach/%breach_id%',
-            method: 'GET',
-            extended: true,
-            translator: [
-                {
-                    contextPath: 'DigitalShadows.Breaches(val.Id && val.Id==obj.Id)',
-                    title: 'Digital Shadows Breaches',
-                    data: [
-                        {to: 'DomainCount', from: 'domainCount'},
-                        {to: 'DomainName', from: 'domainName'},
-                        {to: 'DataClasses', from: 'dataClasses'},
-                        {to: 'Id', from: 'id'},
-                        {to: 'IncidentId', from: 'incident.id'},
-                        {to: 'IncidentScope', from: 'incident.scope'},
-                        {to: 'IncidentSeverity', from: 'incident.severity'},
-                        {to: 'IncidentTitle', from: 'incident.title'},
-                        {to: 'IncidentType', from: 'incident.type'},
-                        {to: 'Occurred', from: 'occurred'},
-                        {to: 'RecordCount', from: 'recordCount'},
-                        {to: 'SourceUrl', from: 'sourceUrl'},
-                        {to: 'Title', from: 'title'}
-                    ]
-                }
-            ]
-        },
-        //done
-        'ds-get-breach-records': {
-            url: '/data-breach/%breach_id%/records',
-            method: 'POST',
-            extended: true,
-            translator: [
-                {
-                    contextPath: 'DigitalShadows.BreachRecords(val.Id && val.Id==obj.Id)',
-                    innerPath: 'content',
-                    title: 'Digital Shadows Breach Records',
-                    data: [
-                        {to: 'Id', from: 'id'},
-                        {to: 'Password', from: 'password'},
-                        {to: 'PriorRowTextBreachCount', from: 'priorRowTextBreachCount'},
-                        {to: 'PriorUsernameBreachCount', from: 'priorUsernameBreachCount'},
-                        {to: 'PriorUsernamePasswordBreachCount', from: 'priorUsernamePasswordBreachCount'},
-                        {to: 'Published', from: 'published'},
-                        {to: 'Review.Created', from: 'review.created'},
-                        {to: 'Review.Status', from: 'review.status'},
-                        {to: 'Review.User', from: 'review.user'},
-                        {to: 'Username', from: 'username'}
-                    ]
-                }
-            ]
-        },
-        'ds-find-data-breaches': {
-            url: '/data-breach/find',
-            method: 'POST',
-            extended: true,
-            translator: [
-                {
-                    contextPath: 'DigitalShadows.Breaches(val.Id && val.Id==obj.Id)',
-                    title: 'Digital Shadows Breaches',
-                    innerPath: 'content',
-                    data: [
-                        {to: 'DomainCount', from: 'domainCount'},
-                        {to: 'DomainName', from: 'domainName'},
-                        {to: 'DataClasses', from: 'dataClasses'},
-                        {to: 'Id', from: 'id'},
-                        {to: 'IncidentId', from: 'incident.id'},
-                        {to: 'IncidentScope', from: 'incident.scope'},
-                        {to: 'IncidentSeverity', from: 'incident.severity'},
-                        {to: 'IncidentTitle', from: 'incident.title'},
-                        {to: 'IncidentType', from: 'incident.type'},
-                        {to: 'Occurred', from: 'occurred'},
-                        {to: 'Modified', from: 'modified'},
-                        {to: 'RecordCount', from: 'recordCount'},
-                        {to: 'SourceUrl', from: 'sourceUrl'},
-                        {to: 'Title', from: 'title'},
-                        {to: 'OrganisationUsernameCount', from: 'organisationUsernameCount'}
-                    ]
-                }
-            ]
-        },
-        //incidents
-        'ds-get-incident': {
-            url: '/incidents/%incident_id%',
-            method: 'GET',
-            extended: true,
-            translator: [
-                {
-                    contextPath: 'DigitalShadows.Incidents(val.Id && val.Id==obj.Id)',
-                    title: 'Digital Shadows Incidents',
-                    data: [
-                        {to: 'Alerted', from: 'alerted'},
-                        {to: 'Description', from: 'description'},
-                        {to: 'ImpactDescription', from: 'impactDescription'},
-                        {to: 'Id', from: 'id'},
-                        {to: 'Internal', from: 'internal'},
-                        {to: 'Mitigation', from: 'mitigation'},
-                        {to: 'Occurred', from: 'occurred'},
-                        {to: 'Modified', from: 'modified'},
-                        {to: 'Scope', from: 'scope'},
-                        {to: 'Type', from: 'type'},
-                        {to: 'Title', from: 'title'},
-                        {to: 'Review.Created', from: 'review.created'},
-                        {to: 'Review.Status', from: 'review.status'},
-                        {to: 'Review.User', from: 'review.user'},
-                        {to: 'SubType', from: 'subType'},
-                        {to: 'Severity', from: 'severity'}
-                    ]
-                }
-            ],
-            urlQueryArgs: ['fulltext']
-        },
-        'ds-get-incident-reviews': {
-            url: '/incidents/%incident_id%/reviews',
-            method: 'GET',
-            extended: true,
-            translator: [
-                {
-                    contextPath: 'DigitalShadows.IncidentReviews(val.Id && val.Id==obj.Id)',
-                    title: 'Digital Shadows Incident Reviews',
-                    data: [
-                        {to: 'Note', from: 'note'},
-                        {to: 'Created', from: 'created'},
-                        {to: 'Status', from: 'status'},
-                        {to: 'User.Id', from: 'user.id'},
-                        {to: 'Version', from: 'version'},
-                        {to: 'User.EmailAddress', from: 'user.emailAddress'},
-                        {to: 'User.FullName', from: 'user.fullName'},
-                        {to: 'User.Role', from: 'user.role'},
-                        {to: 'User.Status', from: 'user.status'}
-                    ]
-                }
-            ]
-        },
-        'ds-snapshot-incident-review': {
-            url: '/incidents/%incident_id%/reviews',
-            method: 'POST',
-            extended: true,
-            customMD: function(res){return 'Snapshot successful';}
-        },
-        'ds-find-incidents-filtered': {
-            url: '/incidents/find',
-            method: 'POST',
-            extended: true,
-            translator: [
-                {
-                    contextPath: 'DigitalShadows.Incidents(val.Id && val.Id==obj.Id)',
-                    title: 'Digital Shadows Incidents',
-                    innerPath: 'content',
-                    data: [
-                        {to: 'Alerted', from: 'alerted'},
-                        {to: 'Description', from: 'description'},
-                        {to: 'Id', from: 'id'},
-                        {to: 'Internal', from: 'internal'},
-                        {to: 'Mitigation', from: 'mitigation'},
-                        {to: 'Occurred', from: 'occurred'},
-                        {to: 'Modified', from: 'modified'},
-                        {to: 'Occurred', from: 'occurred'},
-                        {to: 'Published', from: 'published'},
-                        {to: 'RestrictedContent', from:'restrictedContent'},
-                        {to: 'RecordCount', from: 'recordCount'},
-                        {to: 'Scope', from: 'scope'},
-                        {to: 'Severity', from: 'severity'},
-                        {to: 'Type', from: 'type'},
-                        {to: 'SubType', frm: 'subType'},
-                        {to: 'Verified', frm: 'verified'},
-                        {to: 'Version', frm: 'version'},
-                        {to: 'Title', from: 'title'},
-                        {to: 'Score', from: 'score'},
-                        {to: 'Review.Created', from: 'review.created'},
-                        {to: 'Review.Status', from: 'review.status'},
-                        {to: 'Review.User', from: 'review.user'}
-                    ]
-                }
-            ]
-        },
-        //command not exposed
-        'ds-get-incidents-pipeline': {
-            url: '/incidents/pipeline',
-            method: 'POST'
-        },
-        'ds-get-incidents-summary':{
-            url: '/incidents/summary',
-            method: 'POST'
-        },
-        //intelligence-apt reports
-        'ds-get-apt-report': {
-            url: '/apt-report/%report_id%',
-            method: 'GET',
-            extended: true,
-            translator: [
-                {
-                    contextPath: 'DigitalShadows.APTReports(val.Id && val.Id==obj.Id)',
-                    title: 'APT Report',
-                    data: [
-                        {to: 'Id', from: 'id'},
-                        {to: 'Name', from: 'name'},
-                        {to: 'Published', from: 'published'},
-                        {to: 'Report.Id', from: 'report.id'},
-                        {to: 'Report.Link', from: 'report.link'},
-                        {to: 'Preview.Id', from: 'preview.id'},
-                        {to: 'Preview.Link', from: 'preview.link'}
-                    ]
-                }
-            ]
-        },
-        //intelligence-incidents
-        'ds-get-intelligence-incident':{
-            url: '/intel-incidents/%incident_id%',
-            method: 'GET',
-            extended: true,
-            translator: [
-                {
-                    contextPath: 'DigitalShadows.IntelligenceIncidents(val.Id && val.Id==obj.Id)',
-                    title: 'Digital Shadows Intelligence Incident',
-                    data: [
-                        {to: 'Description', from: 'description'},
-                        {to: 'Id', from: 'id'},
-                        {to: 'IndicatorOfCompromiseCount', from: 'indicatorOfCompromiseCount'},
-                        {to: 'Internal', from: 'internal'},
-                        {to: 'LinkedContentIncidents', from: 'linkedContentIncidents.id'},
-                        {to: 'RelatedIncidentId', from: 'relatedIncident.id'},
-                        {to: 'Occurred', from: 'occurred'},
-                        {to: 'Modified', from: 'modified'},
-                        {to: 'Published', from: 'published'},
-                        {to: 'Scope', from: 'scope'},
-                        {to: 'Severity', from: 'severity'},
-                        {to: 'RestrictedContent', from: 'restrictedContent'},
-                        {to: 'SubType', from: 'subType'},
-                        {to: 'Title', from: 'title'},
-                        {to: 'Type', from: 'type'},
-                        {to: 'Verified', from: 'verified'},
-                        {to: 'Version', from: 'version'}
-                    ]
-                }
-            ]
-        },
-        'ds-get-intelligence-incident-iocs':{
-            url: '/intel-incidents/%incident_id%/iocs',
-            method: 'POST',
-            extended: true,
-            translator: [
-                {
-                    contextPath: 'DigitalShadows.IntelligenceIncidentsIOCs(val.Id && val.Id==obj.Id)',
-                    title: 'Intelligence Incident IOCs',
-                    innerPath: 'content',
-                    data: [
-                        {to: 'Id', from: 'id'},
-                        {to: 'IntelIncident.Id', from: 'intelIncident.id'},
-                        {to: 'IntelIncident.Scope', from: 'intelIncident.scope'},
-                        {to: 'Type', from: 'type'},
-                        {to: 'Value', from: 'value'},
-                        {to: 'Source', from: 'source'},
-                        {to: 'LastUpdated', from: 'lastUpdated'},
-                        {to: 'AptReport.Id', from: 'aptReport.id'}
-                    ]
-                }
-            ]
-        },
-        'ds-find-intelligence-incidents':{
-            url: '/intel-incidents/find',
-            method: 'POST',
-            extended: true,
-            translator: [
-                {
-                    contextPath: 'DigitalShadows.IntelligenceIncidents(val.Id && val.Id==obj.Id)',
-                    title: 'Digital Shadows Intelligence Incidents',
-                    innerPath: 'content',
-                    data: [
-                        {to: 'Description', from: 'description'},
-                        {to: 'Id', from: 'id'},
-                        {to: 'IndicatorOfCompromiseCount', from: 'indicatorOfCompromiseCount'},
-                        {to: 'Internal', from: 'internal'},
-                        {to: 'LinkedContentIncidents', from: 'linkedContentIncidents.id'},
-                        {to: 'RelatedIncidentId', from: 'relatedIncident.id'},
-                        {to: 'Occurred', from: 'occurred'},
-                        {to: 'Modified', from: 'modified'},
-                        {to: 'Published', from: 'published'},
-                        {to: 'Scope', from: 'scope'},
-                        {to: 'Severity', from: 'severity'},
-                        {to: 'RestrictedContent', from: 'restrictedContent'},
-                        {to: 'SubType', from: 'subType'},
-                        {to: 'Title', from: 'title'},
-                        {to: 'Type', from: 'type'},
-                        {to: 'Verified', from: 'verified'},
-                        {to: 'Version', from: 'version'}
-                    ]
-                }
-            ]
-        },
-        'ds-find-intelligence-incidents-regional':{
-            url: '/intel-incidents/regional',
-            method: 'POST',
-            extended: true,
-            translator: [
-                {
-                    contextPath: 'DigitalShadows.IntelligenceIncidentsRegional(val.CountryTag.Id && val.CountryTag.Id==obj.CountryTag.Id)',
-                    title: 'Digital Shadows Intelligence Incidents',
-                    innerPath: 'incidentsByCountry',
-                    data: [
-                        {to: 'CountryTag.Id', from: 'countryTag.id'},
-                        {to: 'CountryTag.Name', from: 'countryTag.name'},
-                        {to: 'CountryTag.ParentId', from: 'countryTag.parent.id'},
-                        {to: 'CountryTag.ThreatId', from: 'countryTag.threat.id'},
-                        {to: 'CountryTag.Type', from: 'countryTag.type'},
-                        {to: 'IncidentIds', from: 'incidents.id'}
-                    ]
-                }
-            ]
-        },
-        'ds-get-intelligence-threat':{
-            url: '/intel-threats/%threat_id%',
-            method: 'GET',
-            extended: true,
-            translator: [
-                {
-                    contextPath: 'DigitalShadows.IntelligenceThreats(val.Id && val.Id==obj.Id)',
-                    title: 'Digital Shadows Intelligence Threat',
-                    data: [
-                        {to: 'ActivityLevel', from: 'activityLevel'},
-                        {to: 'Id', from: 'id'},
-                        {to: 'ImageId', from: 'imageId'},
-                        {to: 'LastActive', from: 'lastActive'},
-                        {to: 'Type', from: 'type'},
-                        {to: 'EndDate', from: 'endDate'},
-                        {to: 'LatestIncident', from: 'latestIncident'},
-                        {to: 'Tags.PrimaryTag', from: 'primaryTag', humanReadable: false},
-                        {to: 'Recurring', from: 'recurring'},
-                        {to: 'Tags.SourceGeographyTags', from: 'sourceGeographyTags', humanReadable: false},
-                        {to: 'AptReportIDs', from: 'aptReports.id'},
-                        {to: 'EndDate', from: 'endDate'},
-                        {to: 'ImageThumbnailId', from: 'imageThumbnailId'},
-                        {to: 'IndicatorOfCompromiseCount', from: 'indicatorOfCompromiseCount'},
-                        {to: 'StartDate', from: 'startDate'},
-                        {to: 'Tags.ActorTypeTags', from: 'actorTypeTags', humanReadable: false},
-                        {to: 'AnnouncementIncidentIDs', from: 'announcementIncidentIDs'},
-                        {to: 'Tags.AssociatedActorTags', from: 'associatedActorTags', humanReadable: false},
-                        {to: 'Tags.AssociatedCampaignTags', from: 'associatedCampaignTags', humanReadable: false},
-                        {to: 'AssociatedEventIDs', from: 'associatedEvents.id'},
-                        {to: 'AttackEvidenceIncidentIDs', from: 'attackEvidenceIncidents.id'},
-                        {to: 'Tags.ImpactEffectTags', from: 'impactEffectTags', humanReadable: false},
-                        {to: 'Tags.IntendedEffectTags', from: 'intendedEffectTags', humanReadable: false},
-                        {to: 'LatestIncidentID', from: 'latestIncident.id'},
-                        {to: 'Tags.MotivationTags', from: 'motivationTags', humanReadable: false},
-                        {to: 'Tags.OverviewTags', from: 'overviewTags', humanReadable: false},
-                        {to: 'Tags.PrimaryLanguageTags', from: 'primaryLanguageTags', humanReadable: false},
-                        {to: 'ThreatLevel', from: 'threatLevel.type'}
-                    ]
-                }
-            ],
-            urlQueryArgs: ['opt']
-        },
-        'ds-get-intelligence-threat-iocs':{
-            url: '/intel-threats/%threat_id%/iocs',
-            method: 'POST',
-            extended: true,
-            translator: [
-                {
-                    innerPath: 'content',
-                    contextPath: 'DigitalShadows.IntelligenceThreatIOCs',
-                    title: 'Digital Shadows Intelligence Threat IOCs',
-                    data: [
-                        {to: 'APTReportId', from: 'aptReport.id'},
-                        {to: 'Id', from: 'id'},
-                        {to: 'IntelIncidentId', from: 'intelIncident.id'},
-                        {to: 'LastUpdated', from: 'lastUpdated'},
-                        {to: 'Source', from: 'source'},
-                        {to: 'Type', from: 'type'},
-                        {to: 'Value', from: 'value'}
-                    ]
-                }
-            ]
-        },
-        'ds-get-intelligence-threat-activity':{
-            url: '/intel-threats/activity',
-            method: 'POST'
-        },
-        'ds-find-intelligence-threats':{
-            url: '/intel-threats/find',
-            method: 'POST',
-            extended: true,
-            translator: [
-                {
-                    contextPath: 'DigitalShadows.IntelligenceThreats(val.Id && val.Id==obj.Id)',
-                    title: 'Digital Shadows Intelligence Threats',
-                    innerPath: 'content',
-                    data: [
-                        {to: 'ActivityLevel', from: 'activityLevel'},
-                        {to: 'Id', from: 'id'},
-                        {to: 'ImageId', from: 'imageId'},
-                        {to: 'LastActive', from: 'lastActive'},
-                        {to: 'Type', from: 'type'},
-                        {to: 'ThreatLevelType', from: 'threatLevel.type'},
-                        {to: 'Event', from: 'event'}
-                    ]
-                }
-            ]
-        },
-        'ds-find-intelligence-threats-regional':{
-            url: '/intel-threats/regional',
-            method: 'POST',
-            extended: true,
-            translator: [
-                {
-                    contextPath: 'DigitalShadows.IntelligenceThreatsRegional(val.Id && val.Id==obj.Id)',
-                    title: 'Digital Shadows Regional Intelligence Threats',
-                    data: [
-                        {to: 'ActivityLevel', from: 'activityLevel'},
-                        {to: 'Id', from: 'id'},
-                        {to: 'ImageId', from: 'imageId'},
-                        {to: 'LastActive', from: 'lastActive'},
-                        {to: 'Type', from: 'type'},
-                        {to: 'ThreatLevelType', from: 'threatLevel.type'},
-                        {to: 'Event', from: 'event'},
-                        {to: 'OverviewTags', from: 'overviewTags', humanReadable: false}
-                    ]
-                }
-            ]
-        },
-        'ds-get-port-reviews':{
-            url: '/ip-ports/%port%/reviews',
-            method: 'GET',
-            extended: true,
-            translator: [
-                {
-                    contextPath: 'DigitalShadows.IpPortReviews(val.Id && val.Id==obj.Id)',
-                    title: 'Digital Shadows Port Review',
-                    data: [
-                        {to: 'Created', from: 'created'},
-                        {to: 'Status', from: 'status'},
-                        {to: 'Version', from: 'version'},
-                        {to: 'Incident.Id', from: 'incident.id'},
-                        {to: 'Incident.Scope', from: 'incident.scope'},
-                        {to: 'User.Id', from: 'user.id'},
-                        {to: 'User.FullName', from: 'user.fullName'}
-                    ]
-                }
-            ],
-            urlQueryArgs: ['incidentId']
-        },
-        'ds-snapshot-port-review':{
-            url: '/ip-ports/%port%/reviews',
-            method: 'POST',
-            customMD: function(res){return 'Success';}
-        },
-        'ds-find-ports':{
-            url: '/ip-ports/find',
-            method: 'POST',
-            extended: true,
-            translator: [
-                {
-                    innerPath: 'content',
-                    contextPath: 'DigitalShadows.IpPorts(val.Id && val.Id==obj.Id)',
-                    title: 'Digital Shadows Ports',
-                    data: [
-                        {to: 'DiscoveredOpen', from: 'discoveredOpen'},
-                        {to: 'Id', from: 'id'},
-                        {to: 'IpAddress', from: 'ipAddress'},
-                        {to: 'PortNumber', from: 'portNumber'},
-                        {to: 'Transport', from: 'transport'},
-                        {to: 'Incident.Id', from: 'incident.id'},
-                        {to: 'Incident.Scope', from: 'incident.scope'},
-                        {to: 'Incident.Severity', from: 'incident.severity'},
-                        {to: 'Incident.SubType', from: 'incident.subType'},
-                        {to: 'Incident.Type', from: 'incident.type'},
-                        {to: 'Incident.Title', from: 'incident.title'},
-                        {to: 'Incident.Published', from: 'incident.published'},
-                        {to: 'Review.Status', from: 'review.status'},
-                        {to: 'Review.UserId', from: 'review.user.id'},
-                        {to: 'Review.UserName', from: 'review.user.fullName'},
-                        {to: 'Review.Version', from: 'review.version'}
-                    ]
-
-                }
-            ]
-        },
-        'ds-find-secure-sockets':{
-            url: '/secure-socket/find',
-            method: 'POST',
-            extended: true,
-            translator: [
-                {
-                    innerPath: 'content',
-                    contextPath: 'DigitalShadows.SecureSockets(val.Id && val.Id==obj.Id)',
-                    title: 'Digital Shadows Secure Sockets',
-                    data: [
-                        {to: 'Id', from: 'id'},
-                        {to: 'Discovered', from: 'discovered'},
-                        {to: 'DomainName', from: 'domainName'},
-                        {to: 'Grade', from: 'grade'},
-                        {to: 'IpAddress', from: 'ipAddress'},
-                        {to: 'PortNumber', from: 'portNumber'},
-                        {to: 'Transport', from: 'transport'},
-                        {to: 'Issues', from: 'issues'},
-                        {to: 'Review.Status', from: 'review.status'},
-                        {to: 'Review.UserId', from: 'review.user.id'},
-                        {to: 'Review.UserName', from: 'review.user.fullName'},
-                        {to: 'Review.Version', from: 'review.version'},
-                        {to: 'Incident.Id', from: 'incident.id'},
-                        {to: 'Incident.Scope', from: 'incident.scope'},
-                        {to: 'Incident.Severity', from: 'incident.severity'},
-                        {to: 'Incident.SubType', from: 'incident.subType'},
-                        {to: 'Incident.Type', from: 'incident.type'},
-                        {to: 'Incident.Title', from: 'incident.title'},
-                        {to: 'Incident.Published', from: 'incident.published'},
-                        {to: 'CertificateCommonName', from: 'certificateCommonName'},
-                        {to: 'ReverseDomainName', from: 'reverseDomainName'}
-                    ]
-                }
-            ]
-        },
-        'ds-find-vulnerabilities':{
-            url: '/vulnerability/find',
-            method: 'POST',
-            extended: true,
-            translator: [
-                {
-                    innerPath: 'content',
-                    contextPath: 'DigitalShadows.Vulnerabilities(val.Id && val.Id==obj.Id)',
-                    title: 'Digital Shadows Vulnerabilities',
-                    data: [
-                        {to: 'CveId', from: 'cveId'},
-                        {to: 'Id', from: 'id'},
-                        {to: 'Discovered', from: 'discovered'},
-                        {to: 'IpAddress', from: 'ipAddress'},
-                        {to: 'Review.Status', from: 'review.status'},
-                        {to: 'Review.UserId', from: 'review.user.id'},
-                        {to: 'Review.UserName', from: 'review.user.fullName'},
-                        {to: 'Review.Version', from: 'review.version'},
-                        {to: 'Incident.Id', from: 'incident.id'},
-                        {to: 'Incident.Scope', from: 'incident.scope'},
-                        {to: 'Incident.Severity', from: 'incident.severity'},
-                        {to: 'Incident.SubType', from: 'incident.subType'},
-                        {to: 'Incident.Type', from: 'incident.type'},
-                        {to: 'Incident.Title', from: 'incident.title'},
-                        {to: 'Incident.Published', from: 'incident.published'},
-                    ]
-                }
-            ]
-        },
-        'ds-search':{
-            url: '/search/find',
-            method: 'POST'
-        },
-        'ds-get-tags':{
-            url: '/tags/batch',
-            method: 'GET',
-            urlQueryArgs: ['detailed', 'id']
-        }
-    };
-
-    arrayArgs = {
-        domainNames : true,
-        reviewStatuses: true,
-        statuses: true,
-        domainNamesOnRecords: true,
-        repostedCredentials: true,
-        severities: true,
-        types: true,
-        subTypes: true
-    };
-
-    var createBody = function(args, arrayArgs) {
-        var Body = {};
-        var cur = Body;
-        keys = Object.keys(args);
-        keys.forEach(function(key){
-            sub_keys = key.split('_');
-            for(var i=0; i<sub_keys.length - 1; i++){
-                if (!cur[sub_keys[i]]){
-                    cur[sub_keys[i]] = {};
-                    if(arrayArgs[sub_keys[i]]){
-                        cur[sub_keys[i]] = [{}];
-                    }
-                }
-                cur = cur[sub_keys[i]];
-                if(Array.isArray(cur)){
-                    cur = cur[0];
-                }
-            }
-            last_sub_key = sub_keys[sub_keys.length - 1];
-            cur[last_sub_key] = arrayArgs[last_sub_key] && !Array.isArray(args[key]) ? args[key].split(',') : args[key];
-            cur = Body;
-        });
-        return Body;
-    };
-
-
-    var encodeToURLQueryByFilter = function(filter, args){
-        if (!filter){
-            return '';
-        }
-        var filtered = {};
-        filter.forEach(function(key){
-            if(args[key]){
-                filtered[key] = args[key];
-                delete args[key];
-            }
-        });
-        return encodeToURLQuery(filtered);
-    };
-
-    var sendRequest = function(url, method, body) {
-        var res = http(
-            url,
-            {
-                Method: method,
-                Headers: {
-                    'Content-Type': ['application/json']
-                },
-                Username: params.apikey,
-                Password: params.secret,
-                Body: JSON.stringify(body)
-            },
-            params.insecure,
-            params.proxy
-        );
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
-        }
-        return res.Body;
-    };
-
-    var fetchCommandIncidents = function(comnd, bodyArgs, name){
-        incidents = [];
-        cmd = commandDictionary[comnd];
-        res = sendRequest(url+cmd.url, cmd.method, createBody(bodyArgs, arrayArgs));
-        parsed_res = JSON.parse(res);
-        if (parsed_res && parsed_res.content){
-            parsed_res.content.forEach(function(inc){
-                inc['origin'] = name;
-                incidents.push({
-                  name: name,
-                  rawJSON: JSON.stringify(inc)
-                });
-            });
-        }
-        return incidents;
-    };
-
-    var getIncidentsIds = function(incidents) {
-        var ids = [];
-        incidents.forEach(function(inc) {
-            ids.push(JSON.parse(inc.rawJSON).id);
-        });
-
-        return ids;
-    };
-
-    var fetchIncidents = function(){
-        var lastRun = getLastRun();
-        nowDate = new Date();
-        var now = nowDate.toISOString();
-        if (!lastRun || !lastRun.value) {
-            lastRun = {value: (new Date(nowDate.getTime() - 1*60*1000)).toISOString()};
-        }
-
-        // first API call - fetch PHISHING_ATTEMPT incidents only (within the date range)
-        bodyArgs = {filter_types_type:'BRAND_PROTECTION', filter_types_subTypes:'PHISHING_ATTEMPT', filter_dateRange: lastRun.value + '/' + now};
-        var incidents = fetchCommandIncidents('ds-find-incidents-filtered', bodyArgs, 'PHISHING_ATTEMPT');
-
-        var ids = getIncidentsIds(incidents);
-
-        // second API call - fetch all incidents (within the date range)
-        bodyArgs = {filter_dateRange: lastRun.value + '/' + now};
-        temp = fetchCommandIncidents('ds-find-incidents-filtered', bodyArgs, 'Client Incident');
-
-        if (incidents) {
-            // concatenate only new incident to list (filter the duplicates)
-            filteredIncidents = temp.filter(function(inc) {
-               incidentId = JSON.parse(inc.rawJSON).id;
-               notDuplicatedIncident = (ids.indexOf(incidentId) == -1);
-               return notDuplicatedIncident;
-            });
-            incidents = incidents.concat(filteredIncidents);
-        }
-        else {
-            incidents = temp;
-        }
-
-        // third API call - fetch intelligence incidents (within the date range)
-        incidents = incidents.concat(fetchCommandIncidents('ds-find-intelligence-incidents', bodyArgs, 'Intelligence Incident'));
-
-        // fourth API call - fetch data breaches (within the date range)
-        bodyArgs = {filter_published: lastRun.value + '/' + now};
-        incidents = incidents.concat(fetchCommandIncidents('ds-find-data-breaches', bodyArgs, 'Data Breach'));
-
-        setLastRun({value: now});
-        return JSON.stringify(incidents);
-    };
-
-    switch (command) {
-        case 'test-module':
-            cmd = commandDictionary['ds-get-breach-summary'];
-            sendRequest(url+cmd.url, cmd.method);
-            return 'ok';
-        case 'fetch-incidents':
-            return fetchIncidents();
-        default:
-            cmd = commandDictionary[command];
-            res = sendRequest(url+replaceInTemplatesAndRemove(cmd.url, args)+encodeToURLQueryByFilter(cmd.urlQueryArgs, args), cmd.method, createBody(args, arrayArgs));
-            if (cmd.customMD){
-                return cmd.customMD(res);
-            }
-            if(cmd.extended === true)
-                return createEntry(JSON.parse(res), cmd.translator[0]);
-            try{
-                return JSON.parse(res);
-            } catch(err) {
-                return res;
-            }
-    }
-  type: javascript
   commands:
-  - name: ds-get-breach-reviews
-    arguments:
-    - name: breach_id
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: Unique id of the data breach record to retrieve the status history
         for
+      name: breach_id
+      required: true
+    description: Retrieve all review updates for a given data breach record
+    name: ds-get-breach-reviews
     outputs:
     - contextPath: DigitalShadows.BreachReviews.Note
       description: The note at this version (max length 500 characters)
@@ -861,77 +70,77 @@ script:
       description: Email address of user that changed the status/set the note
     - contextPath: DigitalShadows.BreachReviews.CreatedAt
       description: The moment in time the review was created
-    description: Retrieve all review updates for a given data breach record
-  - name: ds-snapshot-breach-status
-    arguments:
-    - name: note
-      description: The note at this version (max length 500 characters).
-    - name: status
-      required: true
-      auto: PREDEFINED
+  - arguments:
+    - description: The note at this version (max length 500 characters).
+      name: note
+    - auto: PREDEFINED
+      description: Review status.
+      name: status
       predefined:
       - OPEN
       - CLOSED
       - IGNORED
-      description: Review status.
-    - name: version
-      description: When submitting, this value can be optionally set to the version
-        of the most recently read review
-    - name: breach_id
       required: true
-      default: true
+    - description: When submitting, this value can be optionally set to the version
+        of the most recently read review
+      name: version
+    - default: true
       description: Unique id of the data breach record to submit a status update for
+      name: breach_id
+      required: true
     description: Snapshot the review status of a data breach record
-  - name: ds-find-breach-records
-    arguments:
-    - name: pagination_containingId
-      description: Select the page containing the record with this id, if supported.
+    name: ds-snapshot-breach-status
+  - arguments:
+    - description: Select the page containing the record with this id, if supported.
         Mutually exclusive with offset.
-    - name: pagination_offset
-      description: Include results at this offset within the full resultset, where
+      name: pagination_containingId
+    - description: Include results at this offset within the full resultset, where
         the first result is at position 0
-    - name: pagination_size
-      description: Maximum number of results to return per page, can be initially
+      name: pagination_offset
+    - description: Maximum number of results to return per page, can be initially
         null to be replaced by default later
-    - name: sort_direction
-      auto: PREDEFINED
+      name: pagination_size
+    - auto: PREDEFINED
+      description: The direction of sorting. If not specified, ASCENDING is assumed
+      name: sort_direction
       predefined:
       - ASCENDING
       - DESCENDING
-      description: The direction of sorting. If not specified, ASCENDING is assumed
-    - name: sort_property
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The name of the property being sorted on. This normally corresponds
+        to the property name of the result type, but could be a 'virtual property'.
+      name: sort_property
       predefined:
       - username
       - password
       - reviewStatus
       - published
       - breachCount
-      description: The name of the property being sorted on. This normally corresponds
-        to the property name of the result type, but could be a 'virtual property'.
-    - name: filter_distinction
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: Narrow down to records based on how unique their username and/or
+        password are.
+      name: filter_distinction
       predefined:
       - NEW_USERNAME
       - EXISTING_USERNAME
       - DIFFERENT_PASSWORD
       - SAME_PASSWORD
       - DUPLICATED_ROW
-      description: Narrow down to records based on how unique their username and/or
-        password are.
-    - name: filter_domainNames
-      description: Only records that are related to these domain names
+    - description: Only records that are related to these domain names
       isArray: true
-    - name: filter_password
-      description: Records that match this password, use '' for wildcard matching,
+      name: filter_domainNames
+    - description: Records that match this password, use '' for wildcard matching,
         '\' to find an actual asterisk.
-    - name: filter_published
-      description: Narrow down to records based on when they were published
-    - name: filter_reviewStatuses
-      description: List of statuses to include. Possible values are OPEN CLOSED IGNORED
+      name: filter_password
+    - description: Narrow down to records based on when they were published
+      name: filter_published
+    - description: List of statuses to include. Possible values are OPEN CLOSED IGNORED
       isArray: true
-    - name: filter_username
-      description: Records that match this username, use '*' for wildcard matching.
+      name: filter_reviewStatuses
+    - description: Records that match this username, use '*' for wildcard matching.
+      name: filter_username
+    description: Find data breach records
+    name: ds-find-breach-records
     outputs:
     - contextPath: DigitalShadows.BreachRecords.Content
       description: The row content of this data breach record (a line from a csv file,
@@ -968,45 +177,45 @@ script:
         breach record
     - contextPath: DigitalShadows.BreachRecords.DataBreachId
       description: The data breach this record belongs to
-    description: Find data breach records
-  - name: ds-get-breach-summary
-    arguments: []
+  - arguments: []
     description: Summary of all data breaches for the current client
-  - name: ds-find-breach-usernames
-    arguments:
-    - name: pagination_containingId
-      description: Select the page containing the record with this id, if supported.
+    name: ds-get-breach-summary
+  - arguments:
+    - description: Select the page containing the record with this id, if supported.
         Mutually exclusive with offset.
-    - name: pagination_offset
-      description: Include results at this offset within the full resultset, where
+      name: pagination_containingId
+    - description: Include results at this offset within the full resultset, where
         the first result is at position 0
-    - name: pagination_size
-      description: Maximum number of results to return per page, can be initially
+      name: pagination_offset
+    - description: Maximum number of results to return per page, can be initially
         null to be replaced by default later
-    - name: sort_direction
-      auto: PREDEFINED
+      name: pagination_size
+    - auto: PREDEFINED
+      description: The direction of sorting. If not specified, ASCENDING is assumed
+      name: sort_direction
       predefined:
       - ASCENDING
       - DESCENDING
-      description: The direction of sorting. If not specified, ASCENDING is assumed
-    - name: sort_property
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The name of the property being sorted on. This normally corresponds
+        to the property name of the result type, but could be a 'virtual property'.
+      name: sort_property
       predefined:
       - username
       - password
       - reviewStatus
       - published
       - breachCount
-      description: The name of the property being sorted on. This normally corresponds
-        to the property name of the result type, but could be a 'virtual property'.
-    - name: filter_domainNames
-      description: Only records that are related to these domain names
-    - name: filter_published
-      description: Narrow down to records based on when they were published
-    - name: filter_reviewStatuses
-      description: List of statuses to include. Possible values are OPEN CLOSED IGNORED
-    - name: filter_username
-      description: Records that match this username, use '*' for wildcard matching.
+    - description: Only records that are related to these domain names
+      name: filter_domainNames
+    - description: Narrow down to records based on when they were published
+      name: filter_published
+    - description: List of statuses to include. Possible values are OPEN CLOSED IGNORED
+      name: filter_reviewStatuses
+    - description: Records that match this username, use '*' for wildcard matching.
+      name: filter_username
+    description: Find unique usernames found across all data breaches
+    name: ds-find-breach-usernames
     outputs:
     - contextPath: DigitalShadows.Users.BreachCount
       description: The number of data breaches this username has appeared on
@@ -1014,13 +223,13 @@ script:
       description: The number of distict passwords encountered for this user
     - contextPath: DigitalShadows.Users.Username
       description: The username that this summary is for
-    description: Find unique usernames found across all data breaches
-  - name: ds-get-breach
-    arguments:
-    - name: breach_id
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: Id of the data breach to retrieve
+      name: breach_id
+      required: true
+    description: Retrieve a data breach by its id
+    name: ds-get-breach
     outputs:
     - contextPath: DigitalShadows.Breaches.DomainCount
       description: Number of unique domains contained in the breach.
@@ -1053,59 +262,59 @@ script:
       description: The url the data breach was found on
     - contextPath: DigitalShadows.Breaches.Title
       description: The title assigned to this data breach
-    description: Retrieve a data breach by its id
-  - name: ds-get-breach-records
-    arguments:
-    - name: breach_id
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: Unique id of the data breach to retrieve records for
-    - name: pagination_containingId
-      description: Select the page containing the record with this id, if supported.
+      name: breach_id
+      required: true
+    - description: Select the page containing the record with this id, if supported.
         Mutually exclusive with offset.
-    - name: pagination_offset
-      description: Include results at this offset within the full resultset, where
+      name: pagination_containingId
+    - description: Include results at this offset within the full resultset, where
         the first result is at position 0
-    - name: pagination_size
-      description: Maximum number of results to return per page, can be initially
+      name: pagination_offset
+    - description: Maximum number of results to return per page, can be initially
         null to be replaced by default later
-    - name: sort_direction
-      auto: PREDEFINED
+      name: pagination_size
+    - auto: PREDEFINED
+      description: The direction of sorting. If not specified, ASCENDING is assumed
+      name: sort_direction
       predefined:
       - ASCENDING
       - DESCENDING
-      description: The direction of sorting. If not specified, ASCENDING is assumed
-    - name: sort_property
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The name of the property being sorted on. This normally corresponds
+        to the property name of the result type, but could be a 'virtual property'.
+      name: sort_property
       predefined:
       - username
       - password
       - reviewStatus
       - published
       - breachCount
-      description: The name of the property being sorted on. This normally corresponds
-        to the property name of the result type, but could be a 'virtual property'.
-    - name: filter_distinction
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: Narrow down to records based on how unique their username and/or
+        password are.
+      name: filter_distinction
       predefined:
       - NEW_USERNAME
       - EXISTING_USERNAME
       - DIFFERENT_PASSWORD
       - SAME_PASSWORD
       - DUPLICATED_ROW
-      description: Narrow down to records based on how unique their username and/or
-        password are.
-    - name: filter_domainNames
-      description: Only records that are related to these domain names
-    - name: filter_password
-      description: Records that match this password, use '' for wildcard matching,
+    - description: Only records that are related to these domain names
+      name: filter_domainNames
+    - description: Records that match this password, use '' for wildcard matching,
         '\' to find an actual asterisk.
-    - name: filter_published
-      description: Narrow down to records based on when they were published
-    - name: filter_reviewStatuses
-      description: List of statuses to include. Possible values are OPEN CLOSED IGNORED
-    - name: filter_username
-      description: Records that match this username, use '*' for wildcard matching.
+      name: filter_password
+    - description: Narrow down to records based on when they were published
+      name: filter_published
+    - description: List of statuses to include. Possible values are OPEN CLOSED IGNORED
+      name: filter_reviewStatuses
+    - description: Records that match this username, use '*' for wildcard matching.
+      name: filter_username
+    description: Find data breach records
+    name: ds-get-breach-records
     outputs:
     - contextPath: DigitalShadows.BreachRecords.Id
       description: Identifier for this data breach record
@@ -1131,58 +340,58 @@ script:
     - contextPath: DigitalShadows.BreachRecords.Username
       description: A best effort to identify a username within the content of the
         breach record
-    description: Find data breach records
-  - name: ds-find-data-breaches
-    arguments:
-    - name: pagination_containingId
-      description: Select the page containing the record with this id, if supported.
+  - arguments:
+    - description: Select the page containing the record with this id, if supported.
         Mutually exclusive with offset.
-    - name: pagination_offset
-      description: Include results at this offset within the full resultset, where
+      name: pagination_containingId
+    - description: Include results at this offset within the full resultset, where
         the first result is at position 0
-    - name: pagination_size
-      description: Maximum number of results to return per page, can be initially
+      name: pagination_offset
+    - description: Maximum number of results to return per page, can be initially
         null to be replaced by default later
-    - name: sort_direction
-      auto: PREDEFINED
+      name: pagination_size
+    - auto: PREDEFINED
+      description: The direction of sorting. If not specified, ASCENDING is assumed
+      name: sort_direction
       predefined:
       - ASCENDING
       - DESCENDING
-      description: The direction of sorting. If not specified, ASCENDING is assumed
-    - name: sort_property
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The name of the property being sorted on. This normally corresponds
+        to the property name of the result type, but could be a 'virtual property'.
+      name: sort_property
       predefined:
       - title
       - domainName
       - occurred
       - published
-      description: The name of the property being sorted on. This normally corresponds
-        to the property name of the result type, but could be a 'virtual property'.
-    - name: filter_alerted
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+    - auto: PREDEFINED
       description: Only include data breaches with associated incidents that have
         been alerted
-    - name: filter_domainNamesOnRecords
-      description: List of domain names to filter by. Only data breaches that have
+      name: filter_alerted
+      predefined:
+      - 'true'
+      - 'false'
+    - description: List of domain names to filter by. Only data breaches that have
         one or more records attributed to this domain name
-    - name: filter_minimumTotalRecords
-      description: Only include data breaches that have at least this many total records
+      name: filter_domainNamesOnRecords
+    - description: Only include data breaches that have at least this many total records
         (inclusive)
-    - name: filter_published
-      description: Narrow down to records based on when they were published
-    - name: filter_repostedCredentials
-      description: Filter out breaches depending on whether they consist entirely
+      name: filter_minimumTotalRecords
+    - description: Narrow down to records based on when they were published
+      name: filter_published
+    - description: Filter out breaches depending on whether they consist entirely
         of reposted credentials or not. ORIGINAL or REPOST
-    - name: filter_severities
-      description: Only include data breaches with associated incidents having one
+      name: filter_repostedCredentials
+    - description: Only include data breaches with associated incidents having one
         of these severities, if not specified, all are considered
-    - name: filter_statuses
-      description: List of statuses to filter by. Pssible values:UNREAD, READ, CLOSED.
-    - name: filter_username
-      description: Only show breaches that include this username
+      name: filter_severities
+    - description: List of statuses to filter by. Pssible values:UNREAD, READ, CLOSED.
+      name: filter_statuses
+    - description: Only show breaches that include this username
+      name: filter_username
+    description: Find data breaches
+    name: ds-find-data-breaches
     outputs:
     - contextPath: DigitalShadows.Breaches.DomainCount
       description: Number of unique domains contained in the breach
@@ -1220,19 +429,19 @@ script:
     - contextPath: DigitalShadows.Breaches.OrganisationUsernameCount
       description: The number of distict usernames found that belong to the current
         organisation
-    description: Find data breaches
-  - name: ds-get-incident
-    arguments:
-    - name: incident_id
+  - arguments:
+    - default: true
       description: Identifier of the incident
+      name: incident_id
       required: true
-      default: true
-    - name: fulltext
+    - auto: PREDEFINED
       description: Show full text results
-      auto: PREDEFINED
+      name: fulltext
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+    description: Retrieve an incident by its id
+    name: ds-get-incident
     outputs:
     - contextPath: DigitalShadows.Incidents.Alerted
       description: The moment this incident was brought to the attention of the client
@@ -1269,13 +478,13 @@ script:
       description: The sub-category of incident that has been raised, if available
     - contextPath: DigitalShadows.Incidents.Severity
       description: Analyst defined severity based on potential risk to the client
-    description: Retrieve an incident by its id
-  - name: ds-get-incident-reviews
-    arguments:
-    - name: incident_id
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: Id of the incident to retrieve the review history for.
+      name: incident_id
+      required: true
+    description: Retrieve all review updates for a given incident
+    name: ds-get-incident-reviews
     outputs:
     - contextPath: DigitalShadows.IncidentReviews.Note
       description: The note at this version (max length 500 characters)
@@ -1293,60 +502,60 @@ script:
       description: The role of the user that changed the status/set the note.
     - contextPath: DigitalShadows.IncidentReviews.User.Status
       description: The status of the user that changed the status/set the note.
-    description: Retrieve all review updates for a given incident
-  - name: ds-snapshot-incident-review
-    arguments:
-    - name: incident_id
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: Id of the incident to apply a review update to.
-    - name: note
-      description: The note at this version (max length 500 characters).
-    - name: status
-      auto: PREDEFINED
+      name: incident_id
+      required: true
+    - description: The note at this version (max length 500 characters).
+      name: note
+    - auto: PREDEFINED
+      description: Review status
+      name: status
       predefined:
       - UNREAD
       - READ
       - CLOSED
-      description: Review status
-    - name: version
-      description: When submitting, this value can be optionally set to the version
+    - description: When submitting, this value can be optionally set to the version
         of the most recently read review. If the version on the server does not match
         this value, a 409 conflict will be returned.
+      name: version
     description: Snapshot the review status of an incident
-  - name: ds-find-incidents-filtered
-    arguments:
-    - name: subscribed
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+    name: ds-snapshot-incident-review
+  - arguments:
+    - auto: PREDEFINED
       description: If true, the results will also include any subscribed intelligence
         incidents.
-    - name: subscribedOnly
-      auto: PREDEFINED
+      name: subscribed
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
       description: If true, the only results returned will be subscribed intelligence
         incidents. Must not be set to true with subscribed set to false
-    - name: pagination_containingId
-      description: Select the page containing the record with this id, if supported.
+      name: subscribedOnly
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Select the page containing the record with this id, if supported.
         Mutually exclusive with offset.
-    - name: pagination_offset
-      description: Include results at this offset within the full resultset, where
+      name: pagination_containingId
+    - description: Include results at this offset within the full resultset, where
         the first result is at position 0
-    - name: pagination_size
-      description: Maximum number of results to return per page, can be initially
+      name: pagination_offset
+    - description: Maximum number of results to return per page, can be initially
         null to be replaced by default later
-    - name: sort_direction
-      auto: PREDEFINED
+      name: pagination_size
+    - auto: PREDEFINED
+      description: The direction of sorting. If not specified, ASCENDING is assumed
+      name: sort_direction
       predefined:
       - ASCENDING
       - DESCENDING
-      description: The direction of sorting. If not specified, ASCENDING is assumed
-    - name: sort_property
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The name of the property being sorted on. This normally corresponds
+        to the property name of the result type, but could be a 'virtual property'.
+      name: sort_property
       predefined:
       - sevirity
       - verified
@@ -1354,89 +563,89 @@ script:
       - published
       - modified
       - date
-      description: The name of the property being sorted on. This normally corresponds
-        to the property name of the result type, but could be a 'virtual property'.
-    - name: filter_alerted
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+    - auto: PREDEFINED
       description: Only incidents that have been alerted to the client.
-    - name: filter_dateRange
-      description: Only return results that were verified/occurred/modified within
+      name: filter_alerted
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Only return results that were verified/occurred/modified within
         this date range (inclusive). The field this applies to is controlled by dateRangeField.
         Supports ISO Periods (eg P1D), intervals (eg 2015-01-01T00:00:00Z/2015-01-31T00:00:00Z)
         and any one of the constants {TODAY, YESTERDAY, WEEK, LAST_WEEK, MONTH, LAST_MONTH,
         YEAR, LAST_YEAR}.
-    - name: filter_dateRangeField
-      auto: PREDEFINED
+      name: filter_dateRange
+    - auto: PREDEFINED
+      description: Determines which date/time field the dateRange will apply to.
+      name: filter_dateRangeField
       predefined:
       - verified
       - occurred
       - modified
       - published
-      description: Determines which date/time field the dateRange will apply to.
-    - name: filter_domainName
-      description: Only incidents that have this domain, applied if domainSelection
+    - description: Only incidents that have this domain, applied if domainSelection
         is null or CUSTOM
-    - name: filter_domainSelection
-      auto: PREDEFINED
+      name: filter_domainName
+    - auto: PREDEFINED
+      description: Determine how domain filtering will be applied.
+      name: filter_domainSelection
       predefined:
       - NONE
       - CUSTOM
       - INTERNAL
       - EXTERNAL
-      description: Determine how domain filtering will be applied.
-    - name: filter_identifier
-      description: Only return the incident that has this identifier.
-    - name: filter_repostedCredentials
-      description: Option specific to data breach based incidents to filter out new
+    - description: Only return the incident that has this identifier.
+      name: filter_identifier
+    - description: Option specific to data breach based incidents to filter out new
         and reposted breach credentials. ORIGINAL, REPOST
-    - name: filter_severities
-      description: Only include incidents with these severities, if not specified,
+      name: filter_repostedCredentials
+    - description: Only include incidents with these severities, if not specified,
         all are considered. VERY_HIGH, HIGH, MEDIUM, LOW, VERY_LOW, NONE
-    - name: filter_statuses
-      description: UNREAD, READ, CLOSED
-    - name: filter_types_type
-      description: The category of incident that has been raised.
-    - name: filter_types_subTypes
-      description: The sub-category of incident that has been raised, if available.
-    - name: filter_types_content_severity
-      description: Analyst defined severity based on potential risk to the client.
-    - name: filter_tagOperator
-      auto: PREDEFINED
+      name: filter_severities
+    - description: UNREAD, READ, CLOSED
+      name: filter_statuses
+    - description: The category of incident that has been raised.
+      name: filter_types_type
+    - description: The sub-category of incident that has been raised, if available.
+      name: filter_types_subTypes
+    - description: Analyst defined severity based on potential risk to the client.
+      name: filter_types_content_severity
+    - auto: PREDEFINED
+      description: Whether multiple tags should be logically applied as AND/OR with
+        the resultset
+      name: filter_tagOperator
       predefined:
       - OR
       - AND
-      description: Whether multiple tags should be logically applied as AND/OR with
-        the resultset
-    - name: filter_withContentRemoved
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+    - auto: PREDEFINED
       description: Include incidents for which the content of the incident has been
         removed form the source.
-    - name: filter_withTakedown
-      auto: PREDEFINED
+      name: filter_withContentRemoved
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
       description: Include incidents on which one or more takedown requests have been
         generated.
-    - name: filter_withoutContentRemoved
-      auto: PREDEFINED
+      name: filter_withTakedown
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
       description: Include incidents for which the content of the incident has not
         been removed form the source.
-    - name: filter_withoutTakedown
-      auto: PREDEFINED
+      name: filter_withoutContentRemoved
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
       description: Include incidents on which a takedown request has not been generated.
+      name: filter_withoutTakedown
+      predefined:
+      - 'true'
+      - 'false'
+    description: Find incidents with filtering options
+    name: ds-find-incidents-filtered
     outputs:
     - contextPath: DigitalShadows.Incidents.Alerted
       description: The moment this incident was brought to the attention of the client
@@ -1480,46 +689,46 @@ script:
       description: The user that create the review state for this incident
     - contextPath: DigitalShadows.Incidents.Review.User.fullName
       description: The full name of the user that created review state for this incident
-    description: Find incidents with filtering options
-  - name: ds-get-incidents-summary
-    arguments:
-    - name: filter_domainName
-      description: Only incidents that have this domain, applied if domainSelection
+  - arguments:
+    - description: Only incidents that have this domain, applied if domainSelection
         is null or CUSTOM
-    - name: filter_dateRangeField
-      auto: PREDEFINED
+      name: filter_domainName
+    - auto: PREDEFINED
+      description: Determines which date/time field the dateRange will apply to.
+      name: filter_dateRangeField
       predefined:
       - verified
       - occurred
       - modified
       - published
-      description: Determines which date/time field the dateRange will apply to.
-    - name: filter_identifier
-      description: Only return the incident that has this identifier.
-    - name: filter_dateRange
-      description: Only return results that were verified/occurred/modified within
+    - description: Only return the incident that has this identifier.
+      name: filter_identifier
+    - description: Only return results that were verified/occurred/modified within
         this date range (inclusive). The field this applies to is controlled by dateRangeField.
         Supports ISO Periods (eg P1D), intervals (eg 2015-01-01T00:00:00Z/2015-01-31T00:00:00Z)
         and any one of the constants {TODAY, YESTERDAY, WEEK, LAST_WEEK, MONTH, LAST_MONTH,
         YEAR, LAST_YEAR}.
-    - name: groupByKey
-      auto: PREDEFINED
+      name: filter_dateRange
+    - auto: PREDEFINED
+      description: Determines which incident property will be grouped on. Mutually
+        exclusive with groupByKeys
+      name: groupByKey
       predefined:
       - severity
       - domainName
       - type
       - subType
       - reviewStatus
-      description: Determines which incident property will be grouped on. Mutually
-        exclusive with groupByKeys
-    - name: sort_direction
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The direction of sorting. If not specified, ASCENDING is assumed
+      name: sort_direction
       predefined:
       - ASCENDING
       - DESCENDING
-      description: The direction of sorting. If not specified, ASCENDING is assumed
-    - name: sort_property
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The name of the property being sorted on. This normally corresponds
+        to the property name of the result type, but could be a 'virtual property'.
+      name: sort_property
       predefined:
       - severity
       - verified
@@ -1527,24 +736,24 @@ script:
       - modified
       - published
       - date
-      description: The name of the property being sorted on. This normally corresponds
-        to the property name of the result type, but could be a 'virtual property'.
-    - name: pagination_containingId
-      description: Select the page containing the record with this id, if supported.
+    - description: Select the page containing the record with this id, if supported.
         Mutually exclusive with offset.
-    - name: pagination_offset
-      description: Include results at this offset within the full resultset, where
+      name: pagination_containingId
+    - description: Include results at this offset within the full resultset, where
         the first result is at position 0
-    - name: pagination_size
-      description: Maximum number of results to return per page, can be initially
+      name: pagination_offset
+    - description: Maximum number of results to return per page, can be initially
         null to be replaced by default later
+      name: pagination_size
     description: Aggregated summary of incident information used to generate reports/statistics
-  - name: ds-get-apt-report
-    arguments:
-    - name: report_id
-      required: true
-      default: true
+    name: ds-get-incidents-summary
+  - arguments:
+    - default: true
       description: The unique identifier assigned to a given APT report (UUID based).
+      name: report_id
+      required: true
+    description: Retrieve details of the specified APT report
+    name: ds-get-apt-report
     outputs:
     - contextPath: DigitalShadows.APTReports.Id
       description: Internal identifier for uniquely identifying this report
@@ -1561,13 +770,13 @@ script:
     - contextPath: DigitalShadows.APTReports.Preview.Link
       description: A fully qualified link URI for preview image of the frontpage of
         the report, if available
-    description: Retrieve details of the specified APT report
-  - name: ds-get-intelligence-incident
-    arguments:
-    - name: incident_id
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: The id of the intelligence incident to retrieve
+      name: incident_id
+      required: true
+    description: Retrieve an intelligence incident by its id
+    name: ds-get-intelligence-incident
     outputs:
     - contextPath: DigitalShadows.IntelligenceIncidents.Description
       description: Plain text description of this incident.
@@ -1611,44 +820,44 @@ script:
       description: The moment when the incident was verified.
     - contextPath: DigitalShadows.IntelligenceIncidents.Version
       description: Each time an update occurs, this version number is incremented
-    description: Retrieve an intelligence incident by its id
-  - name: ds-get-intelligence-incident-iocs
-    arguments:
-    - name: incident_id
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: The intelligence incident identifier
-    - name: visible
-      description: List of values to control the visibility of elements. If a value
+      name: incident_id
+      required: true
+    - description: List of values to control the visibility of elements. If a value
         is present then the correspinding element should be displayed
-    - name: sort_direction
-      auto: PREDEFINED
+      name: visible
+    - auto: PREDEFINED
+      description: The direction of sorting. If not specified, ASCENDING is assumed
+      name: sort_direction
       predefined:
       - ASCENDING
       - DESCENDING
-      description: The direction of sorting. If not specified, ASCENDING is assumed
-    - name: sort_property
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The name of the property being sorted on. This normally corresponds
+        to the property name of the result type, but could be a 'virtual property'.
+      name: sort_property
       predefined:
       - value
       - type
       - updated
       - source
-      description: The name of the property being sorted on. This normally corresponds
-        to the property name of the result type, but could be a 'virtual property'.
-    - name: pagination_containingId
-      description: Select the page containing the record with this id, if supported.
+    - description: Select the page containing the record with this id, if supported.
         Mutually exclusive with offset.
-    - name: pagination_offset
-      description: Include results at this offset within the full resultset, where
+      name: pagination_containingId
+    - description: Include results at this offset within the full resultset, where
         the first result is at position 0
-    - name: pagination_size
-      description: Maximum number of results to return per page, can be initially
+      name: pagination_offset
+    - description: Maximum number of results to return per page, can be initially
         null to be replaced by default later
-    - name: filter_value
-      description: The filter that will narrow the results based on one or more criteria
-    - name: filter_types
-      description: List of types to filter by. Possible values are IP,MD5,SHA1,SHA256,URL,CVE,EMAIL,HOST,REGISTRY,FILEPATH,FILENAME
+      name: pagination_size
+    - description: The filter that will narrow the results based on one or more criteria
+      name: filter_value
+    - description: List of types to filter by. Possible values are IP,MD5,SHA1,SHA256,URL,CVE,EMAIL,HOST,REGISTRY,FILEPATH,FILENAME
+      name: filter_types
+    description: Retrieve the indicatorsOfCompromise for this intel incident
+    name: ds-get-intelligence-incident-iocs
     outputs:
     - contextPath: DigitalShadows.IntelligenceIncidentsIOCs.Id
       description: Internal identifier for uniquely identifying this IOC
@@ -1668,56 +877,57 @@ script:
       description: When this record last changed
     - contextPath: DigitalShadows.IntelligenceIncidentsIOCs.AptReport.Id
       description: If this IOC is associated with an APT report
-    description: Retrieve the indicatorsOfCompromise for this intel incident
-  - name: ds-find-intelligence-incidents
-    arguments:
-    - name: filter_dateRange
-      description: Only return results that were verified/occurred/modified within
+  - arguments:
+    - description: Only return results that were verified/occurred/modified within
         this date range (inclusive). The field this applies to is controlled by dateRangeField.
         Supports ISO Periods (eg P1D), intervals (eg 2015-01-01T00:00:00Z/2015-01-31T00:00:00Z)
         and any one of the constants {TODAY, YESTERDAY, WEEK, LAST_WEEK, MONTH, LAST_MONTH,
         YEAR, LAST_YEAR}.
-    - name: filter_dateRangeField
-      auto: PREDEFINED
+      name: filter_dateRange
+    - auto: PREDEFINED
+      description: Determines which date/time field the dateRange will apply to.
+      name: filter_dateRangeField
       predefined:
       - verified
       - occurred
       - modified
       - published
-      description: Determines which date/time field the dateRange will apply to.
-    - name: filter_domainName
-      description: Only incidents that have this domain, applied if domainSelection
+    - description: Only incidents that have this domain, applied if domainSelection
         is null or CUSTOM
-    - name: filter_domainSelection
-      auto: PREDEFINED
+      name: filter_domainName
+    - auto: PREDEFINED
+      description: Determine how domain filtering will be applied.
+      name: filter_domainSelection
       predefined:
       - NONE
       - CUSTOM
       - INTERNAL
       - EXTERNAL
-      description: Determine how domain filtering will be applied.
-    - name: filter_identifier
-      description: Only return the incident that has this identifier.
-    - name: filter_severities
-      description: Only include SSL/certificate infrastructure incidents with these
+    - description: Only return the incident that has this identifier.
+      name: filter_identifier
+    - description: Only include SSL/certificate infrastructure incidents with these
         severities. String values from VERY_HIGH, HIGH, MEDIUM, LOW, VERY_LOW, NONE
-    - name: filter_tagOperator
-      auto: PREDEFINED
+      name: filter_severities
+    - auto: PREDEFINED
+      description: Whether multiple tags should be logically applied as AND/OR with
+        the resultset
+      name: filter_tagOperator
       predefined:
       - OR
       - AND
-      description: Whether multiple tags should be logically applied as AND/OR with
-        the resultset
-    - name: filter_tags_id
-      description: Limit to incidents that have these tags ids only.
-    - name: filter_threatRecordIds
-      description: Restrict intel incidents to those tagged with one or more of these
+    - description: Limit to incidents that have these tags ids only.
+      name: filter_tags_id
+    - description: Restrict intel incidents to those tagged with one or more of these
         threat records.
-    - name: filter_threatTypes_type
-      description: Restrict intel incidents to those associated with threats of these
+      name: filter_threatRecordIds
+    - description: Restrict intel incidents to those associated with threats of these
         types:ACTOR,CAMPAIGN,EVENT,TOOL,SPECIFIC_TTP,LOCATION
-    - name: filter_threatTypes
-      auto: PREDEFINED
+      name: filter_threatTypes_type
+    - auto: PREDEFINED
+      description: The type to match to. Will match to any incident with this type
+        unless subTypes is not empty, in which case only incident matches based on
+        the sub-type will be considered.
+      name: filter_threatTypes
       predefined:
       - DATA_LEAKAGE
       - CYBER_THREAT
@@ -1725,34 +935,33 @@ script:
       - SOCIAL_MEDIA_COMPLIANCE
       - BRAND_PROTECTION
       - INFRASTRUCTURE
-      description: The type to match to. Will match to any incident with this type
-        unless subTypes is not empty, in which case only incident matches based on
-        the sub-type will be considered.
-    - name: filter_threatSubTypes
-      description: List of pecific sub type(s) to match to. String values from BRAND_MISUSE,
+    - description: List of pecific sub type(s) to match to. String values from BRAND_MISUSE,
         COMPANY_THREAT, CORPORATE_INFORMATION, CREDENTIAL_COMPROMISE, CUSTOMER_DETAILS,
         CVE, DEFAMATION, DOMAIN_CERTIFICATE_ISSUE, EMPLOYEE_THREAT, EXPOSED_PORT,
         INTELLECTUAL_PROPERTY, INTERNALLY_MARKED_DOCUMENT, LEGACY_MARKED_DOCUMENT,
         MOBILE_APPLICATION, NEGATIVE_PUBLICITY, PERSONAL_INFORMATION, PHISHING_ATTEMPT,
         PROTECTIVELY_MARKED_DOCUMENT, SPOOF_PROFILE, TECHNICAL_INFORMATION,TECHNICAL_LEAKAGE,
         UNMARKED_DOCUMENT
-    - name: pagination_containingId
-      description: Select the page containing the record with this id, if supported.
+      name: filter_threatSubTypes
+    - description: Select the page containing the record with this id, if supported.
         Mutually exclusive with offset.
-    - name: pagination_offset
-      description: Include results at this offset within the full resultset, where
+      name: pagination_containingId
+    - description: Include results at this offset within the full resultset, where
         the first result is at position 0
-    - name: pagination_size
-      description: Maximum number of results to return per page, can be initially
+      name: pagination_offset
+    - description: Maximum number of results to return per page, can be initially
         null to be replaced by default later
-    - name: sort_direction
-      auto: PREDEFINED
+      name: pagination_size
+    - auto: PREDEFINED
+      description: The direction of sorting. If not specified, ASCENDING is assumed
+      name: sort_direction
       predefined:
       - ASCENDING
       - DESCENDING
-      description: The direction of sorting. If not specified, ASCENDING is assumed
-    - name: sort_property
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The name of the property being sorted on. This normally corresponds
+        to the property name of the result type, but could be a 'virtual property'.
+      name: sort_property
       predefined:
       - severity
       - verified
@@ -1760,8 +969,8 @@ script:
       - modified
       - published
       - date
-      description: The name of the property being sorted on. This normally corresponds
-        to the property name of the result type, but could be a 'virtual property'.
+    description: Find intelligence incidents
+    name: ds-find-intelligence-incidents
     outputs:
     - contextPath: DigitalShadows.IntelligenceIncidents.Description
       description: Plain text description of this incident.
@@ -1805,25 +1014,24 @@ script:
       description: The moment when the incident was verified.
     - contextPath: DigitalShadows.IntelligenceIncidents.Version
       description: Each time an update occurs, this version number is incremented
-    description: Find intelligence incidents
-  - name: ds-find-intelligence-incidents-regional
-    arguments:
-    - name: threat_id
-      description: Threat ID
-    - name: countryTag_created
-      description: When was this tag created.
-    - name: countryTag_description
-      description: Description text for this tag.
-    - name: countryTag_id
-      description: Unique integer identifier for this tag
-    - name: countryTag_name
-      description: The name of this tag. Is unique in combination with the type
-    - name: countryTag_parent_id
-      description: Parent id of the tag
-    - name: countryTag_threat_id
-      description: Unique integer identifier (among threats).
-    - name: countryTag_threat_type
-      auto: PREDEFINED
+  - arguments:
+    - description: Threat ID
+      name: threat_id
+    - description: When was this tag created.
+      name: countryTag_created
+    - description: Description text for this tag.
+      name: countryTag_description
+    - description: Unique integer identifier for this tag
+      name: countryTag_id
+    - description: The name of this tag. Is unique in combination with the type
+      name: countryTag_name
+    - description: Parent id of the tag
+      name: countryTag_parent_id
+    - description: Unique integer identifier (among threats).
+      name: countryTag_threat_id
+    - auto: PREDEFINED
+      description: The type of profile being represented.
+      name: countryTag_threat_type
       predefined:
       - ACTOR
       - CAMPAIGN
@@ -1831,9 +1039,10 @@ script:
       - TOOL
       - SPECIFIC_TTP
       - LOCATION
-      description: The type of profile being represented.
-    - name: countryTag_type
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The type of this tag. The name of tags with the same type must
+        be unique.
+      name: countryTag_type
       predefined:
       - ACTOR
       - ACTOR_TYPE
@@ -1870,19 +1079,19 @@ script:
       - SPECIFIC_TTP
       - CVE_NUMBER
       - APP_STORE
-      description: The type of this tag. The name of tags with the same type must
-        be unique.
-    - name: filter_dateRange
-      description: Determines the interval the incidents must have occurred within
+    - description: Determines the interval the incidents must have occurred within
         to be included. Supports ISO Periods (eg P1D), intervals (eg 2015-01-01T00:00:00Z/2015-01-31T00:00:00Z)
         and any one of the constants {TODAY, YESTERDAY, WEEK, LAST_WEEK, MONTH, LAST_MONTH,
         YEAR, LAST_YEAR}.
-    - name: filter_periodRelativeTo
-      description: Optional timestamp that will be used as the end date for a period
+      name: filter_dateRange
+    - description: Optional timestamp that will be used as the end date for a period
         based dateRange. If not specified, then the end of the current day (based
         on the requesting user's timezone) will be used.
-    - name: filter_tagType
-      auto: PREDEFINED
+      name: filter_periodRelativeTo
+    - auto: PREDEFINED
+      description: What types of tags should be considered. Should be one of SOURCE_GEOGRAPHY
+        or TARGET_GEOGRAPHY (the default)
+      name: filter_tagType
       predefined:
       - ACTOR
       - ACTOR_TYPE
@@ -1919,22 +1128,21 @@ script:
       - SPECIFIC_TTP
       - CVE_NUMBER
       - APP_STORE
-      description: What types of tags should be considered. Should be one of SOURCE_GEOGRAPHY
-        or TARGET_GEOGRAPHY (the default)
-    - name: regionTag_created
-      description: When was this tag created.
-    - name: regionTag_description
-      description: Description text for this tag.
-    - name: regionTag_id
-      description: Unique integer identifier for this tag
-    - name: regionTag_name
-      description: The name of this tag. Is unique in combination with the type
-    - name: regionTag_parent_id
-      description: Parent id of the tag
-    - name: regionTag_threat_id
-      description: Unique integer identifier (among threats).
-    - name: regionTag_threat_type
-      auto: PREDEFINED
+    - description: When was this tag created.
+      name: regionTag_created
+    - description: Description text for this tag.
+      name: regionTag_description
+    - description: Unique integer identifier for this tag
+      name: regionTag_id
+    - description: The name of this tag. Is unique in combination with the type
+      name: regionTag_name
+    - description: Parent id of the tag
+      name: regionTag_parent_id
+    - description: Unique integer identifier (among threats).
+      name: regionTag_threat_id
+    - auto: PREDEFINED
+      description: The type of profile being represented.
+      name: regionTag_threat_type
       predefined:
       - ACTOR
       - CAMPAIGN
@@ -1942,9 +1150,10 @@ script:
       - TOOL
       - SPECIFIC_TTP
       - LOCATION
-      description: The type of profile being represented.
-    - name: regionTag_type
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The type of this tag. The name of tags with the same type must
+        be unique.
+      name: regionTag_type
       predefined:
       - ACTOR
       - ACTOR_TYPE
@@ -1981,8 +1190,8 @@ script:
       - SPECIFIC_TTP
       - CVE_NUMBER
       - APP_STORE
-      description: The type of this tag. The name of tags with the same type must
-        be unique.
+    description: Incidents grouped by the target country over a given time range
+    name: ds-find-intelligence-incidents-regional
     outputs:
     - contextPath: DigitalShadows.IntelligenceIncidentsRegional.CountryTag.Id
       description: The ID of the country these incidents are attributed to
@@ -1997,18 +1206,18 @@ script:
       description: The country tag type these incidents are attributed to
     - contextPath: DigitalShadows.IntelligenceIncidentsRegional.IncidentIds
       description: The list of intelligence incidents
-    description: Incidents grouped by the target country over a given time range
-  - name: ds-get-intelligence-threat
-    arguments:
-    - name: threat_id
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: The id of the intelligence threat to retrieve.
-    - name: opt
-      auto: PREDEFINED
+      name: threat_id
+      required: true
+    - auto: PREDEFINED
+      description: Options to include additional relevant data with the request
+      name: opt
       predefined:
       - LATEST_INCIDENT
-      description: Options to include additional relevant data with the request
+    description: Retrieve a specific item of intelligence by its id
+    name: ds-get-intelligence-threat
     outputs:
     - contextPath: DigitalShadows.IntelligenceThreats.ActivityLevel
       description: Level of activity, based on last active
@@ -2065,44 +1274,44 @@ script:
       description: Tags that identify the primary languages used
     - contextPath: DigitalShadows.IntelligenceThreats.ThreatLevel
       description: Information about the level of threat, for example low or high
-    description: Retrieve a specific item of intelligence by its id
-  - name: ds-get-intelligence-threat-iocs
-    arguments:
-    - name: threat_id
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: The intelligence threat identifier
-    - name: filter_types
-      description: List of types to filter by. Possible values are IP,MD5,SHA1,SHA256,URL,CVE,EMAIL,HOST,REGISTRY,FILEPATH,FILENAME
-    - name: filter_value
-      description: Value to filter by
-    - name: visible
-      description: List of values to control the visibility of elements. If a value
+      name: threat_id
+      required: true
+    - description: List of types to filter by. Possible values are IP,MD5,SHA1,SHA256,URL,CVE,EMAIL,HOST,REGISTRY,FILEPATH,FILENAME
+      name: filter_types
+    - description: Value to filter by
+      name: filter_value
+    - description: List of values to control the visibility of elements. If a value
         is present then the correspinding element should be displayed
-    - name: sort_direction
-      auto: PREDEFINED
+      name: visible
+    - auto: PREDEFINED
+      description: The direction of sorting. If not specified, ASCENDING is assumed
+      name: sort_direction
       predefined:
       - ASCENDING
       - DESCENDING
-      description: The direction of sorting. If not specified, ASCENDING is assumed
-    - name: sort_property
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The name of the property being sorted on. This normally corresponds
+        to the property name of the result type, but could be a 'virtual property'.
+      name: sort_property
       predefined:
       - value
       - type
       - updated
       - source
-      description: The name of the property being sorted on. This normally corresponds
-        to the property name of the result type, but could be a 'virtual property'.
-    - name: pagination_containingId
-      description: Select the page containing the record with this id, if supported.
+    - description: Select the page containing the record with this id, if supported.
         Mutually exclusive with offset.
-    - name: pagination_offset
-      description: Include results at this offset within the full resultset, where
+      name: pagination_containingId
+    - description: Include results at this offset within the full resultset, where
         the first result is at position 0
-    - name: pagination_size
-      description: Maximum number of results to return per page, can be initially
+      name: pagination_offset
+    - description: Maximum number of results to return per page, can be initially
         null to be replaced by default later
+      name: pagination_size
+    description: Retrieve the indicatorsOfCompromise for a threat record
+    name: ds-get-intelligence-threat-iocs
     outputs:
     - contextPath: DigitalShadows.IntelligenceThreatIOCs.AptReportId
       description: If this IOC is associated with an APT report
@@ -2120,70 +1329,70 @@ script:
     - contextPath: DigitalShadows.IntelligenceThreatIOCs.Value
       description: The value of this indicator, encoded according to its type. For
         example hashes are base16 encoded.
-    description: Retrieve the indicatorsOfCompromise for a threat record
-  - name: ds-get-intelligence-threat-activity
-    arguments:
-    - name: customPrimaryTags_id
-      description: Instead of most active, specify the ids of threat primary tags
+  - arguments:
+    - description: Instead of most active, specify the ids of threat primary tags
         to retrieve activity for
-    - name: includeIncidents
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      name: customPrimaryTags_id
+    - auto: PREDEFINED
       description: Should basic incident information be included with the activity
         for each tag.
-    - name: maximumIncidentsPerTag
-      description: Upper limit on the number of incidents to include for each threat.
-    - name: mostActiveForTypes
-      description: Fetch the top presetPerTypeCount most active threats for each type.
+      name: includeIncidents
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Upper limit on the number of incidents to include for each threat.
+      name: maximumIncidentsPerTag
+    - description: Fetch the top presetPerTypeCount most active threats for each type.
         Possible values:ACTOR,CAMPAIGN,EVENT,TOOL,SPECIFIC_TTP,LOCATION
-    - name: mostActiveLimit
-      description: How many threats to retrieve activity for per threat type. Only
+      name: mostActiveForTypes
+    - description: How many threats to retrieve activity for per threat type. Only
         applies when mostActiveForTypes is not null. If not specified, 10 is assumed.
-    - name: segmentCount
-      description: Number of time segments to aggregrate the incidents into.
-    - name: filter_dateRange
-      required: true
-      description: Return activity that occurred in this date range. Supports ISO
+      name: mostActiveLimit
+    - description: Number of time segments to aggregrate the incidents into.
+      name: segmentCount
+    - description: Return activity that occurred in this date range. Supports ISO
         Periods (eg P1D), intervals (eg 2015-01-01T00:00:00Z/2015-01-31T00:00:00Z)
         and any one of the constants {TODAY, YESTERDAY, WEEK, LAST_WEEK, MONTH, LAST_MONTH,
         YEAR, LAST_YEAR}.
+      name: filter_dateRange
+      required: true
     description: Threat activity based on the number of intelligence incidents over
       a given period of time.
-  - name: ds-find-intelligence-threats
-    arguments:
-    - name: filter_dateRange
-      description: Only return results that were last active within this date range
+    name: ds-get-intelligence-threat-activity
+  - arguments:
+    - description: Only return results that were last active within this date range
         (inclusive). Supports ISO Periods (eg P1D), intervals (eg 2015-01-01T00:00:00Z/2015-01-31T00:00:00Z)
         and any one of the constants {TODAY, YESTERDAY, WEEK, LAST_WEEK, MONTH, LAST_MONTH,
         YEAR, LAST_YEAR}.
-    - name: filter_dateRangeField
-      auto: PREDEFINED
+      name: filter_dateRange
+    - auto: PREDEFINED
+      description: Determines which date/time field the dateRange will apply to.
+      name: filter_dateRangeField
       predefined:
       - lastActive
       - modified
-      description: Determines which date/time field the dateRange will apply to.
-    - name: filter_identifiers
-      description: List of identifiers. Only return threat profiles with these identifiers
-    - name: filter_relevantTo
-      auto: PREDEFINED
+    - description: List of identifiers. Only return threat profiles with these identifiers
+      name: filter_identifiers
+    - auto: PREDEFINED
+      description: Narrow to threats that have a specific relevance to my organization
+      name: filter_relevantTo
       predefined:
       - ANY
       - ORGANIZATION
       - INDUSTRY_SECTOR
-      description: Narrow to threats that have a specific relevance to my organization
-    - name: filter_tagOperator
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+    - auto: PREDEFINED
       description: Whether multiple tags should be logically applied as AND/OR with
         the resultset
-    - name: filter_tags
-      description: Limit to threats related to these tags only
-    - name: filter_threatLevels
-      description: Only include threats with one of these threat levels
+      name: filter_tagOperator
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Limit to threats related to these tags only
+      name: filter_tags
+    - description: Only include threats with one of these threat levels
+      name: filter_threatLevels
+    description: Find intelligence threat records
+    name: ds-find-intelligence-threats
     outputs:
     - contextPath: DigitalShadows.IntelligenceThreatsRegional.ActivityLevel
       description: Level of activity, based on last active
@@ -2202,23 +1411,22 @@ script:
     - contextPath: DigitalShadows.IntelligenceThreatsRegional.Event
       description: For an EVENT or CAMPAIGN threat this will contain a summary of
         when it occurred and possibly when it will re-occur
-    description: Find intelligence threat records
-  - name: ds-find-intelligence-threats-regional
-    arguments:
-    - name: countryTag_created
-      description: When was this tag created.
-    - name: countryTag_description
-      description: Description text for this tag.
-    - name: countryTag_id
-      description: Unique integer identifier for this tag
-    - name: countryTag_name
-      description: The name of this tag. Is unique in combination with the type
-    - name: countryTag_parent_id
-      description: Parent id of the tag
-    - name: countryTag_threat_id
-      description: Unique integer identifier (among threats).
-    - name: countryTag_threat_type
-      auto: PREDEFINED
+  - arguments:
+    - description: When was this tag created.
+      name: countryTag_created
+    - description: Description text for this tag.
+      name: countryTag_description
+    - description: Unique integer identifier for this tag
+      name: countryTag_id
+    - description: The name of this tag. Is unique in combination with the type
+      name: countryTag_name
+    - description: Parent id of the tag
+      name: countryTag_parent_id
+    - description: Unique integer identifier (among threats).
+      name: countryTag_threat_id
+    - auto: PREDEFINED
+      description: The type of profile being represented.
+      name: countryTag_threat_type
       predefined:
       - ACTOR
       - CAMPAIGN
@@ -2226,9 +1434,10 @@ script:
       - TOOL
       - SPECIFIC_TTP
       - LOCATION
-      description: The type of profile being represented.
-    - name: countryTag_type
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The type of this tag. The name of tags with the same type must
+        be unique.
+      name: countryTag_type
       predefined:
       - ACTOR
       - ACTOR_TYPE
@@ -2265,19 +1474,19 @@ script:
       - SPECIFIC_TTP
       - CVE_NUMBER
       - APP_STORE
-      description: The type of this tag. The name of tags with the same type must
-        be unique.
-    - name: filter_dateRange
-      description: Determines the interval the incidents must have occurred within
+    - description: Determines the interval the incidents must have occurred within
         to be included. Supports ISO Periods (eg P1D), intervals (eg 2015-01-01T00:00:00Z/2015-01-31T00:00:00Z)
         and any one of the constants {TODAY, YESTERDAY, WEEK, LAST_WEEK, MONTH, LAST_MONTH,
         YEAR, LAST_YEAR}.
-    - name: filter_periodRelativeTo
-      description: Optional timestamp that will be used as the end date for a period
+      name: filter_dateRange
+    - description: Optional timestamp that will be used as the end date for a period
         based dateRange. If not specified, then the end of the current day (based
         on the requesting user's timezone) will be used.
-    - name: filter_tagType
-      auto: PREDEFINED
+      name: filter_periodRelativeTo
+    - auto: PREDEFINED
+      description: What types of tags should be considered. Should be one of SOURCE_GEOGRAPHY
+        or TARGET_GEOGRAPHY (the default)
+      name: filter_tagType
       predefined:
       - ACTOR
       - ACTOR_TYPE
@@ -2314,22 +1523,21 @@ script:
       - SPECIFIC_TTP
       - CVE_NUMBER
       - APP_STORE
-      description: What types of tags should be considered. Should be one of SOURCE_GEOGRAPHY
-        or TARGET_GEOGRAPHY (the default)
-    - name: regionTag_created
-      description: When was this tag created.
-    - name: regionTag_description
-      description: Description text for this tag.
-    - name: regionTag_id
-      description: Unique integer identifier for this tag
-    - name: regionTag_name
-      description: The name of this tag. Is unique in combination with the type
-    - name: regionTag_parent_id
-      description: Parent id of the tag
-    - name: regionTag_threat_id
-      description: Unique integer identifier (among threats).
-    - name: regionTag_threat_type
-      auto: PREDEFINED
+    - description: When was this tag created.
+      name: regionTag_created
+    - description: Description text for this tag.
+      name: regionTag_description
+    - description: Unique integer identifier for this tag
+      name: regionTag_id
+    - description: The name of this tag. Is unique in combination with the type
+      name: regionTag_name
+    - description: Parent id of the tag
+      name: regionTag_parent_id
+    - description: Unique integer identifier (among threats).
+      name: regionTag_threat_id
+    - auto: PREDEFINED
+      description: The type of profile being represented.
+      name: regionTag_threat_type
       predefined:
       - ACTOR
       - CAMPAIGN
@@ -2337,9 +1545,10 @@ script:
       - TOOL
       - SPECIFIC_TTP
       - LOCATION
-      description: The type of profile being represented.
-    - name: regionTag_type
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The type of this tag. The name of tags with the same type must
+        be unique.
+      name: regionTag_type
       predefined:
       - ACTOR
       - ACTOR_TYPE
@@ -2376,10 +1585,10 @@ script:
       - SPECIFIC_TTP
       - CVE_NUMBER
       - APP_STORE
-      description: The type of this tag. The name of tags with the same type must
-        be unique.
-    - name: threat_id
-      description: Id of the threat
+    - description: Id of the threat
+      name: threat_id
+    description: Threat profiles associated with incidents over a given time range
+    name: ds-find-intelligence-threats-regional
     outputs:
     - contextPath: DigitalShadows.IntelligenceThreatsRegional.ActivityLevel
       description: Level of activity, based on last active
@@ -2400,15 +1609,15 @@ script:
         when it occurred and possibly when it will re-occur
     - contextPath: DigitalShadows.IntelligenceThreatsRegional.OverviewTags
       description: Tags that will appear in the overview. Only one per primary type.
-    description: Threat profiles associated with incidents over a given time range
-  - name: ds-get-port-reviews
-    arguments:
-    - name: port
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: Port inspection id
-    - name: incidentId
-      description: ID of incident to query
+      name: port
+      required: true
+    - description: ID of incident to query
+      name: incidentId
+    description: Retrieve all review updates for a given port inspection
+    name: ds-get-port-reviews
     outputs:
     - contextPath: DigitalShadows.IpPortReviews.Created
       description: The moment in time the review was created
@@ -2426,56 +1635,57 @@ script:
       description: ID of the user that changed the status/set the note.
     - contextPath: DigitalShadows.IpPortReviews.User.FullName
       description: Full name of the user that changed the status/set the note.
-    description: Retrieve all review updates for a given port inspection
-  - name: ds-snapshot-port-review
-    arguments:
-    - name: port
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: Port inspection id
-    - name: version
-      description: When submitting, this value can be optionally set to the version
+      name: port
+      required: true
+    - description: When submitting, this value can be optionally set to the version
         of the most recently read review
-    - name: status
-      auto: PREDEFINED
+      name: version
+    - auto: PREDEFINED
+      description: Review status
+      name: status
       predefined:
       - OPEN
       - CLOSED
-      description: Review status
-    - name: incident_id
-      description: Identifier for this incident, unique in combination with the scope.
-    - name: incident_scope
-      auto: PREDEFINED
+    - description: Identifier for this incident, unique in combination with the scope.
+      name: incident_id
+    - auto: PREDEFINED
+      description: Identifies whether this incident applies globally (intelligence)
+        or just to your organization.
+      name: incident_scope
       predefined:
       - GLOBAL
       - ORGANIZATION
-      description: Identifies whether this incident applies globally (intelligence)
-        or just to your organization.
     description: Snapshot the review status of a port inspection
-  - name: ds-find-ports
-    arguments:
-    - name: filter_alerted
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+    name: ds-snapshot-port-review
+  - arguments:
+    - auto: PREDEFINED
       description: Only include SSL/certificates with associated incidents that have
         been alerted
-    - name: filter_detectedClosed
-      description: Only return IP ports that were detected closed
-      auto: PREDEFINED
+      name: filter_alerted
       predefined:
-      - "true"
-      - "false"
-    - name: filter_detectedOpen
-      description: Only return IP ports that were detected open within this date range
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Only return IP ports that were detected closed
+      name: filter_detectedClosed
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Only return IP ports that were detected open within this date range
         (inclusive). Supports ISO Periods (eg P1D), intervals (eg 2015-01-01T00:00:00Z/2015-01-31T00:00:00Z)
         and any one of the constants {TODAY, YESTERDAY, WEEK, LAST_WEEK, MONTH, LAST_MONTH,
         YEAR, LAST_YEAR}.
-    - name: filter_domainName
-      description: Name of domain to filter by
-    - name: filter_incidentTypes
-      auto: PREDEFINED
+      name: filter_detectedOpen
+    - description: Name of domain to filter by
+      name: filter_domainName
+    - auto: PREDEFINED
+      description: The type to match to. Will match to any incident with this type
+        unless subTypes is not empty, in which case only incident matches based on
+        the sub-type will be considered.
+      name: filter_incidentTypes
       predefined:
       - DATA_LEAKAGE
       - CYBER_THREAT
@@ -2483,47 +1693,46 @@ script:
       - SOCIAL_MEDIA_COMPLIANCE
       - BRAND_PROTECTION
       - INFRASTRUCTURE
-      description: The type to match to. Will match to any incident with this type
-        unless subTypes is not empty, in which case only incident matches based on
-        the sub-type will be considered.
-    - name: filter_incidentSubTypes
-      description: List of pecific sub type(s) to match to. String values from BRAND_MISUSE,
+    - description: List of pecific sub type(s) to match to. String values from BRAND_MISUSE,
         COMPANY_THREAT, CORPORATE_INFORMATION, CREDENTIAL_COMPROMISE, CUSTOMER_DETAILS,
         CVE, DEFAMATION, DOMAIN_CERTIFICATE_ISSUE, EMPLOYEE_THREAT, EXPOSED_PORT,
         INTELLECTUAL_PROPERTY, INTERNALLY_MARKED_DOCUMENT, LEGACY_MARKED_DOCUMENT,
         MOBILE_APPLICATION, NEGATIVE_PUBLICITY, PERSONAL_INFORMATION, PHISHING_ATTEMPT,
         PROTECTIVELY_MARKED_DOCUMENT, SPOOF_PROFILE, TECHNICAL_INFORMATION,TECHNICAL_LEAKAGE,
         UNMARKED_DOCUMENT
-    - name: filter_ipAddress
-      description: IP address to filter by
-    - name: filter_ipRange_lowerAddress
-      description: Lower address for ip range
-    - name: filter_ipRange_maskBits
-      description: Int value for mask bits
-    - name: filter_ipRange_upperAddress
-      description: Upper address for ip range
-    - name: filter_markedClosed
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      name: filter_incidentSubTypes
+    - description: IP address to filter by
+      name: filter_ipAddress
+    - description: Lower address for ip range
+      name: filter_ipRange_lowerAddress
+    - description: Int value for mask bits
+      name: filter_ipRange_maskBits
+    - description: Upper address for ip range
+      name: filter_ipRange_upperAddress
+    - auto: PREDEFINED
       description: Is incident closed
-    - name: filter_published
-      description: Only return IP ports that were published within this date range
+      name: filter_markedClosed
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Only return IP ports that were published within this date range
         (inclusive). Supports ISO Periods (eg P1D), intervals (eg 2015-01-01T00:00:00Z/2015-01-31T00:00:00Z)
         and any one of the constants {TODAY, YESTERDAY, WEEK, LAST_WEEK, MONTH, LAST_MONTH,
         YEAR, LAST_YEAR}.
-    - name: filter_severities
-      description: Only include SSL/certificate infrastructure incidents with these
+      name: filter_published
+    - description: Only include SSL/certificate infrastructure incidents with these
         severities. String values from VERY_HIGH, HIGH, MEDIUM, LOW, VERY_LOW, NONE
-    - name: sort_direction
-      auto: PREDEFINED
+      name: filter_severities
+    - auto: PREDEFINED
+      description: The direction of sorting. If not specified, ASCENDING is assumed
+      name: sort_direction
       predefined:
       - ASCENDING
       - DESCENDING
-      description: The direction of sorting. If not specified, ASCENDING is assumed
-    - name: sort_property
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The name of the property being sorted on. This normally corresponds
+        to the property name of the result type, but could be a 'virtual property'.
+      name: sort_property
       predefined:
       - published
       - detected
@@ -2531,17 +1740,17 @@ script:
       - grade
       - expiryDate
       - severity
-      description: The name of the property being sorted on. This normally corresponds
-        to the property name of the result type, but could be a 'virtual property'.
-    - name: pagination_offset
-      description: Include results at this offset within the full resultset, where
+    - description: Include results at this offset within the full resultset, where
         the first result is at position 0
-    - name: pagination_size
-      description: Maximum number of results to return per page, can be initially
+      name: pagination_offset
+    - description: Maximum number of results to return per page, can be initially
         null to be replaced by default later
-    - name: pagination_containingId
-      description: Select the page containing the record with this id, if supported.
+      name: pagination_size
+    - description: Select the page containing the record with this id, if supported.
         Mutually exclusive with offset.
+      name: pagination_containingId
+    description: Find ports
+    name: ds-find-ports
     outputs:
     - contextPath: DigitalShadows.IpPorts.DiscoveredOpen
       description: When was the port found to be open
@@ -2575,28 +1784,29 @@ script:
       description: Name of user who created last review
     - contextPath: DigitalShadows.IpPorts.Review.Version
       description: Version of last port review
-    description: Find ports
-  - name: ds-find-secure-sockets
-    arguments:
-    - name: filter_alerted
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+  - arguments:
+    - auto: PREDEFINED
       description: Only include SSL/certificates with associated incidents that have
         been alerted
-    - name: filter_detected
-      description: Only include detected sockets
-    - name: filter_determinedResolved
-      description: Only include determined resolved sockets
-    - name: filter_domain
-      description: Filter by domain
-    - name: filter_expiry
-      description: Filter by expiry date
-    - name: filter_grades
-      description: List of grades (A,B,C,D,E,F,T)
-    - name: filter_incidentTypes
-      auto: PREDEFINED
+      name: filter_alerted
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Only include detected sockets
+      name: filter_detected
+    - description: Only include determined resolved sockets
+      name: filter_determinedResolved
+    - description: Filter by domain
+      name: filter_domain
+    - description: Filter by expiry date
+      name: filter_expiry
+    - description: List of grades (A,B,C,D,E,F,T)
+      name: filter_grades
+    - auto: PREDEFINED
+      description: The type to match to. Will match to any incident with this type
+        unless subTypes is not empty, in which case only incident matches based on
+        the sub-type will be considered.
+      name: filter_incidentTypes
       predefined:
       - DATA_LEAKAGE
       - CYBER_THREAT
@@ -2604,51 +1814,50 @@ script:
       - SOCIAL_MEDIA_COMPLIANCE
       - BRAND_PROTECTION
       - INFRASTRUCTURE
-      description: The type to match to. Will match to any incident with this type
-        unless subTypes is not empty, in which case only incident matches based on
-        the sub-type will be considered.
-    - name: filter_incidentSubTypes
-      description: List of pecific sub type(s) to match to. String values from BRAND_MISUSE,
+    - description: List of pecific sub type(s) to match to. String values from BRAND_MISUSE,
         COMPANY_THREAT, CORPORATE_INFORMATION, CREDENTIAL_COMPROMISE, CUSTOMER_DETAILS,
         CVE, DEFAMATION, DOMAIN_CERTIFICATE_ISSUE, EMPLOYEE_THREAT, EXPOSED_PORT,
         INTELLECTUAL_PROPERTY, INTERNALLY_MARKED_DOCUMENT, LEGACY_MARKED_DOCUMENT,
         MOBILE_APPLICATION, NEGATIVE_PUBLICITY, PERSONAL_INFORMATION, PHISHING_ATTEMPT,
         PROTECTIVELY_MARKED_DOCUMENT, SPOOF_PROFILE, TECHNICAL_INFORMATION,TECHNICAL_LEAKAGE,
         UNMARKED_DOCUMENT
-    - name: filter_ipAddress
-      description: IP address to filter by
-    - name: filter_issues
-      description: List of string values from POODLE, POODLE_TLS, FREAK, DROWN, LOGJAM,
+      name: filter_incidentSubTypes
+    - description: IP address to filter by
+      name: filter_ipAddress
+    - description: List of string values from POODLE, POODLE_TLS, FREAK, DROWN, LOGJAM,
         RC4_AVAILABLE, SELF_SIGNED, MD5_OR_SHA1_SIGNED, REVOKED, EXPIRING_LOW, EXPIRING_MEDIUM,
         EXPIRING_HIGH, EXPIRED, HOSTNAME_MISMATCH, TLS_1_2_NOT_FOUND
-    - name: filter_markedClosed
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      name: filter_issues
+    - auto: PREDEFINED
       description: Is incident closed
-    - name: filter_published
-      description: Filter by publish time
-    - name: filter_revoked
-      description: Only include revoked sockets
-      auto: PREDEFINED
+      name: filter_markedClosed
       predefined:
-      - "true"
-      - "false"
-    - name: filter_severities
-      description: Only include SSL/certificate infrastructure incidents with these
+      - 'true'
+      - 'false'
+    - description: Filter by publish time
+      name: filter_published
+    - auto: PREDEFINED
+      description: Only include revoked sockets
+      name: filter_revoked
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Only include SSL/certificate infrastructure incidents with these
         severities. String values from VERY_HIGH, HIGH, MEDIUM, LOW, VERY_LOW, NONE
-    - name: filter_statuses
-      description: Only include SSL/certificates with associated incidents having
+      name: filter_severities
+    - description: Only include SSL/certificates with associated incidents having
         these statuses, (or with any status if none are supplied). UNREAD, READ, CLOSED
-    - name: sort_direction
-      auto: PREDEFINED
+      name: filter_statuses
+    - auto: PREDEFINED
+      description: The direction of sorting. If not specified, ASCENDING is assumed
+      name: sort_direction
       predefined:
       - ASCENDING
       - DESCENDING
-      description: The direction of sorting. If not specified, ASCENDING is assumed
-    - name: sort_property
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The name of the property being sorted on. This normally corresponds
+        to the property name of the result type, but could be a 'virtual property'.
+      name: sort_property
       predefined:
       - published
       - detected
@@ -2656,17 +1865,17 @@ script:
       - grade
       - expiryDate
       - severity
-      description: The name of the property being sorted on. This normally corresponds
-        to the property name of the result type, but could be a 'virtual property'.
-    - name: pagination_offset
-      description: Include results at this offset within the full resultset, where
+    - description: Include results at this offset within the full resultset, where
         the first result is at position 0
-    - name: pagination_size
-      description: Maximum number of results to return per page, can be initially
+      name: pagination_offset
+    - description: Maximum number of results to return per page, can be initially
         null to be replaced by default later
-    - name: pagination_containingId
-      description: Select the page containing the record with this id, if supported.
+      name: pagination_size
+    - description: Select the page containing the record with this id, if supported.
         Mutually exclusive with offset.
+      name: pagination_containingId
+    description: Find secure sockets
+    name: ds-find-secure-sockets
     outputs:
     - contextPath: DigitalShadows.SecureSockets.Id
       description: Unique identifier for this inspection
@@ -2715,29 +1924,30 @@ script:
     - contextPath: DigitalShadows.SecureSockets.Incident.Published
       description: Published time of incident corresponding for this secure socket
         issues occurence
-    description: Find secure sockets
-  - name: ds-find-vulnerabilities
-    arguments:
-    - name: filter_alerted
-      description: Only include SSL/certificates with associated incidents that have
+  - arguments:
+    - description: Only include SSL/certificates with associated incidents that have
         been alerted
-    - name: filter_cveIdentifiers
-      description: Filter by CVE identifiers
-    - name: filter_detected
-      description: Only return vulnerabilities that were detected within this date
+      name: filter_alerted
+    - description: Filter by CVE identifiers
+      name: filter_cveIdentifiers
+    - description: Only return vulnerabilities that were detected within this date
         range (inclusive). Supports ISO Periods (eg P1D), intervals (eg 2015-01-01T00:00:00Z/2015-01-31T00:00:00Z)
         and any one of the constants {TODAY, YESTERDAY, WEEK, LAST_WEEK, MONTH, LAST_MONTH,
         YEAR, LAST_YEAR}.
-    - name: filter_detectedClosed
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      name: filter_detected
+    - auto: PREDEFINED
       description: True or false
-    - name: filter_domainName
-      description: Name of domain to filter by
-    - name: filter_incidentTypes
-      auto: PREDEFINED
+      name: filter_detectedClosed
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Name of domain to filter by
+      name: filter_domainName
+    - auto: PREDEFINED
+      description: The type to match to. Will match to any incident with this type
+        unless subTypes is not empty, in which case only incident matches based on
+        the sub-type will be considered.
+      name: filter_incidentTypes
       predefined:
       - DATA_LEAKAGE
       - CYBER_THREAT
@@ -2745,57 +1955,56 @@ script:
       - SOCIAL_MEDIA_COMPLIANCE
       - BRAND_PROTECTION
       - INFRASTRUCTURE
-      description: The type to match to. Will match to any incident with this type
-        unless subTypes is not empty, in which case only incident matches based on
-        the sub-type will be considered.
-    - name: filter_incidentSubTypes
-      description: List of pecific sub type(s) to match to. String values from BRAND_MISUSE,
+    - description: List of pecific sub type(s) to match to. String values from BRAND_MISUSE,
         COMPANY_THREAT, CORPORATE_INFORMATION, CREDENTIAL_COMPROMISE, CUSTOMER_DETAILS,
         CVE, DEFAMATION, DOMAIN_CERTIFICATE_ISSUE, EMPLOYEE_THREAT, EXPOSED_PORT,
         INTELLECTUAL_PROPERTY, INTERNALLY_MARKED_DOCUMENT, LEGACY_MARKED_DOCUMENT,
         MOBILE_APPLICATION, NEGATIVE_PUBLICITY, PERSONAL_INFORMATION, PHISHING_ATTEMPT,
         PROTECTIVELY_MARKED_DOCUMENT, SPOOF_PROFILE, TECHNICAL_INFORMATION,TECHNICAL_LEAKAGE,
         UNMARKED_DOCUMENT
-    - name: filter_ipAddress
-      description: IP address to filter by
-    - name: filter_markedClosed
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      name: filter_incidentSubTypes
+    - description: IP address to filter by
+      name: filter_ipAddress
+    - auto: PREDEFINED
       description: Filter by incidents that are marked as CLOSED
-    - name: filter_published
-      description: Only return vulnerabilities that were published within this date
+      name: filter_markedClosed
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Only return vulnerabilities that were published within this date
         range (inclusive). Supports ISO Periods (eg P1D), intervals (eg 2015-01-01T00:00:00Z/2015-01-31T00:00:00Z)
         and any one of the constants {TODAY, YESTERDAY, WEEK, LAST_WEEK, MONTH, LAST_MONTH,
         YEAR, LAST_YEAR}.
-    - name: filter_severities
-      description: List of sevirity values to filter by. Can be VERY_HIGH, HIGH, MEDIUM,
+      name: filter_published
+    - description: List of sevirity values to filter by. Can be VERY_HIGH, HIGH, MEDIUM,
         LOW, VERY_LOW, NONE
-    - name: sort_direction
-      auto: PREDEFINED
+      name: filter_severities
+    - auto: PREDEFINED
+      description: The direction of sorting. If not specified, ASCENDING is assumed
+      name: sort_direction
       predefined:
       - ASCENDING
       - DESCENDING
-      description: The direction of sorting. If not specified, ASCENDING is assumed
-    - name: sort_property
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The name of the property being sorted on. This normally corresponds
+        to the property name of the result type, but could be a 'virtual property'.
+      name: sort_property
       predefined:
       - ipAddress
       - detected
       - published
       - severity
-      description: The name of the property being sorted on. This normally corresponds
-        to the property name of the result type, but could be a 'virtual property'.
-    - name: pagination_offset
-      description: Include results at this offset within the full resultset, where
+    - description: Include results at this offset within the full resultset, where
         the first result is at position 0
-    - name: pagination_size
-      description: Maximum number of results to return per page, can be initially
+      name: pagination_offset
+    - description: Maximum number of results to return per page, can be initially
         null to be replaced by default later
-    - name: pagination_containingId
-      description: Select the page containing the record with this id, if supported.
+      name: pagination_size
+    - description: Select the page containing the record with this id, if supported.
         Mutually exclusive with offset.
+      name: pagination_containingId
+    description: Find vulnerabilities
+    name: ds-find-vulnerabilities
     outputs:
     - contextPath: DigitalShadows.Vulnerabilities.CveId
       description: The CVE id
@@ -2827,26 +2036,26 @@ script:
       description: Title of incident corresponding for this vulnerability occurence
     - contextPath: DigitalShadows.Vulnerabilities.Incident.Published
       description: Published of incident corresponding for this vulnerability occurence
-    description: Find vulnerabilities
-  - name: ds-search
-    arguments:
-    - name: filter_datePeriod
-      description: Only return results that occurred during the given period prior
+  - arguments:
+    - description: Only return results that occurred during the given period prior
         to the current time. For absolute dates, use from and until
-    - name: filter_dateRange
-      description: Only return results that were verified/occurred/modified within
+      name: filter_datePeriod
+    - description: Only return results that were verified/occurred/modified within
         this date range (inclusive). The field this applies to is controlled by dateRangeField.
         Supports ISO Periods (eg P1D), intervals (eg 2015-01-01T00:00:00Z/2015-01-31T00:00:00Z)
         and any one of the constants {TODAY, YESTERDAY, WEEK, LAST_WEEK, MONTH, LAST_MONTH,
         YEAR, LAST_YEAR}.
-    - name: filter_from
-      description: Only return results that were last active after this date/time
+      name: filter_dateRange
+    - description: Only return results that were last active after this date/time
         (inclusive)
-    - name: filter_tags
-      description: Only return results that have the following tags associated with
+      name: filter_from
+    - description: Only return results that have the following tags associated with
         them.
-    - name: filter_types
-      auto: PREDEFINED
+      name: filter_tags
+    - auto: PREDEFINED
+      description: Restrict the result types to only those listed here. At least one
+        value is required.
+      name: filter_types
       predefined:
       - ACTORS
       - CAMPAIGNS
@@ -2856,45 +2065,453 @@ script:
       - LOCATION
       - DATA_BREACH
       - CLOSED_SOURCES
-      description: Restrict the result types to only those listed here. At least one
-        value is required.
-    - name: filter_until
-      description: Only return results that were last active before this date/time
+    - description: Only return results that were last active before this date/time
         (inclusive)
-    - name: query
-      description: The query text to search for.
-    - name: sort_direction
-      auto: PREDEFINED
+      name: filter_until
+    - description: The query text to search for.
+      name: query
+    - auto: PREDEFINED
+      description: The direction of sorting. If not specified, ASCENDING is assumed
+      name: sort_direction
       predefined:
       - ASCENDING
       - DESCENDING
-      description: The direction of sorting. If not specified, ASCENDING is assumed
-    - name: sort_property
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The name of the property being sorted on. This normally corresponds
+        to the property name of the result type, but could be a 'virtual property'.
+      name: sort_property
       predefined:
       - relevance
       - sortDate
-      description: The name of the property being sorted on. This normally corresponds
-        to the property name of the result type, but could be a 'virtual property'.
-    - name: pagination_offset
-      description: Include results at this offset within the full resultset, where
+    - description: Include results at this offset within the full resultset, where
         the first result is at position 0
-    - name: pagination_size
-      description: Maximum number of results to return per page, can be initially
+      name: pagination_offset
+    - description: Maximum number of results to return per page, can be initially
         null to be replaced by default later
-    - name: pagination_containingId
-      description: Select the page containing the record with this id, if supported.
+      name: pagination_size
+    - description: Select the page containing the record with this id, if supported.
         Mutually exclusive with offset.
+      name: pagination_containingId
     description: Perform a textual search against the available record types
-  - name: ds-get-tags
-    arguments:
-    - name: ids
-      description: One or more tag identifiers
-    - name: detailed
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+    name: ds-search
+  - arguments:
+    - description: One or more tag identifiers
+      name: ids
+    - auto: PREDEFINED
       description: Determines whether the tag descriptions will be included.
+      name: detailed
+      predefined:
+      - 'true'
+      - 'false'
     description: Batch retrieve specic tags by their ids
+    name: ds-get-tags
   isfetch: true
+  script: "var url = params.server.replace(/[\\/]+$/, '') +'/api';\n\ncommandDictionary\
+    \ = {\n    //breaches\n    'ds-get-breach-reviews': {\n        url: '/data-breach-record/%breach_id%/reviews',\n\
+    \        method: 'GET',\n        extended: true,\n        translator: [\n    \
+    \        {\n                contextPath: 'DigitalShadows.BreachReviews',\n   \
+    \             title: 'Digital Shadows Breach Reviews',\n                data:\
+    \ [\n                    {to: 'Note', from: 'note'},\n                    {to:\
+    \ 'Version', from: 'version'},\n                    {to: 'Status', from: 'status'},\n\
+    \                    {to: 'UserID', from: 'user.id'},\n                    {to:\
+    \ 'UserRole', from: 'user.role'},\n                    {to: 'UserPermissions',\
+    \ from: 'user.permissions'},\n                    {to: 'UserEmail', from: 'user.emailAddress'},\n\
+    \                    {to: 'CreatedAt', from: 'created'}\n                ]\n \
+    \           }\n        ],\n    },\n    'ds-snapshot-breach-status': {\n      \
+    \  url: '/data-breach-record/%breach_id%/reviews',\n        method: 'POST',\n\
+    \        customMD: function(res){return 'Request successful';}\n    },\n    'ds-find-breach-records':\
+    \ {\n        url: '/data-breach-record/find',\n        method: 'POST',\n     \
+    \   extended: true,\n        translator: [\n            {\n                contextPath:\
+    \ 'DigitalShadows.BreachRecords(val.Id && val.Id==obj.Id)',\n                innerPath:\
+    \ 'content',\n                title: 'Digital Shadows Breach Records',\n     \
+    \           data: [\n                    {to: 'Content', from: 'content'},\n \
+    \                   {to: 'Id', from: 'id'},\n                    {to: 'Password',\
+    \ from: 'password'},\n                    {to: 'DomainNames', from: 'domainNames'},\n\
+    \                    {to: 'PriorRowTextBreachCount', from: 'priorRowTextBreachCount'},\n\
+    \                    {to: 'PriorUsernameBreachCount', from: 'priorUsernameBreachCount'},\n\
+    \                    {to: 'PriorUsernamePasswordBreachCount', from: 'priorUsernamePasswordBreachCount'},\n\
+    \                    {to: 'Published', from: 'published'},\n                 \
+    \   {to: 'Review.Created', from: 'review.created'},\n                    {to:\
+    \ 'Review.Status', from: 'review.status'},\n                    {to: 'Review.User',\
+    \ from: 'review.user'},\n                    {to: 'Username', from: 'username'},\n\
+    \                    {to: 'DataBreachId', from: 'dataBreach.id'}\n           \
+    \     ]\n            }\n        ]\n    },\n    'ds-get-breach-summary': {\n  \
+    \      url: '/data-breach-summary',\n        method: 'GET',\n        urlQueryArgs:\
+    \ ['published']\n    },\n    'ds-find-breach-usernames': {\n        url: '/data-breach-usernames/find',\n\
+    \        method: 'POST',\n        extended: true,\n        translator: [\n   \
+    \         {\n                contextPath: 'DigitalShadows.Users(val.Username &&\
+    \ val.Username==obj.Username)',\n                title: 'Digital SHadows Breach\
+    \ Reviews',\n                innerPath: 'content',\n                data: [\n\
+    \                    {to: 'BreachCount', from: 'breachCount'},\n             \
+    \       {to: 'DistinctPasswordCount', from: 'distinctPasswordCount'},\n      \
+    \              {to: 'Username', from: 'username'}\n                ]\n       \
+    \     }\n        ],\n    },\n    'ds-get-breach': {\n        url: '/data-breach/%breach_id%',\n\
+    \        method: 'GET',\n        extended: true,\n        translator: [\n    \
+    \        {\n                contextPath: 'DigitalShadows.Breaches(val.Id && val.Id==obj.Id)',\n\
+    \                title: 'Digital Shadows Breaches',\n                data: [\n\
+    \                    {to: 'DomainCount', from: 'domainCount'},\n             \
+    \       {to: 'DomainName', from: 'domainName'},\n                    {to: 'DataClasses',\
+    \ from: 'dataClasses'},\n                    {to: 'Id', from: 'id'},\n       \
+    \             {to: 'IncidentId', from: 'incident.id'},\n                    {to:\
+    \ 'IncidentScope', from: 'incident.scope'},\n                    {to: 'IncidentSeverity',\
+    \ from: 'incident.severity'},\n                    {to: 'IncidentTitle', from:\
+    \ 'incident.title'},\n                    {to: 'IncidentType', from: 'incident.type'},\n\
+    \                    {to: 'Occurred', from: 'occurred'},\n                   \
+    \ {to: 'RecordCount', from: 'recordCount'},\n                    {to: 'SourceUrl',\
+    \ from: 'sourceUrl'},\n                    {to: 'Title', from: 'title'}\n    \
+    \            ]\n            }\n        ]\n    },\n    //done\n    'ds-get-breach-records':\
+    \ {\n        url: '/data-breach/%breach_id%/records',\n        method: 'POST',\n\
+    \        extended: true,\n        translator: [\n            {\n             \
+    \   contextPath: 'DigitalShadows.BreachRecords(val.Id && val.Id==obj.Id)',\n \
+    \               innerPath: 'content',\n                title: 'Digital Shadows\
+    \ Breach Records',\n                data: [\n                    {to: 'Id', from:\
+    \ 'id'},\n                    {to: 'Password', from: 'password'},\n          \
+    \          {to: 'PriorRowTextBreachCount', from: 'priorRowTextBreachCount'},\n\
+    \                    {to: 'PriorUsernameBreachCount', from: 'priorUsernameBreachCount'},\n\
+    \                    {to: 'PriorUsernamePasswordBreachCount', from: 'priorUsernamePasswordBreachCount'},\n\
+    \                    {to: 'Published', from: 'published'},\n                 \
+    \   {to: 'Review.Created', from: 'review.created'},\n                    {to:\
+    \ 'Review.Status', from: 'review.status'},\n                    {to: 'Review.User',\
+    \ from: 'review.user'},\n                    {to: 'Username', from: 'username'}\n\
+    \                ]\n            }\n        ]\n    },\n    'ds-find-data-breaches':\
+    \ {\n        url: '/data-breach/find',\n        method: 'POST',\n        extended:\
+    \ true,\n        translator: [\n            {\n                contextPath: 'DigitalShadows.Breaches(val.Id\
+    \ && val.Id==obj.Id)',\n                title: 'Digital Shadows Breaches',\n \
+    \               innerPath: 'content',\n                data: [\n             \
+    \       {to: 'DomainCount', from: 'domainCount'},\n                    {to: 'DomainName',\
+    \ from: 'domainName'},\n                    {to: 'DataClasses', from: 'dataClasses'},\n\
+    \                    {to: 'Id', from: 'id'},\n                    {to: 'IncidentId',\
+    \ from: 'incident.id'},\n                    {to: 'IncidentScope', from: 'incident.scope'},\n\
+    \                    {to: 'IncidentSeverity', from: 'incident.severity'},\n  \
+    \                  {to: 'IncidentTitle', from: 'incident.title'},\n          \
+    \          {to: 'IncidentType', from: 'incident.type'},\n                    {to:\
+    \ 'Occurred', from: 'occurred'},\n                    {to: 'Modified', from: 'modified'},\n\
+    \                    {to: 'RecordCount', from: 'recordCount'},\n             \
+    \       {to: 'SourceUrl', from: 'sourceUrl'},\n                    {to: 'Title',\
+    \ from: 'title'},\n                    {to: 'OrganisationUsernameCount', from:\
+    \ 'organisationUsernameCount'}\n                ]\n            }\n        ]\n\
+    \    },\n    //incidents\n    'ds-get-incident': {\n        url: '/incidents/%incident_id%',\n\
+    \        method: 'GET',\n        extended: true,\n        translator: [\n    \
+    \        {\n                contextPath: 'DigitalShadows.Incidents(val.Id && val.Id==obj.Id)',\n\
+    \                title: 'Digital Shadows Incidents',\n                data: [\n\
+    \                    {to: 'Alerted', from: 'alerted'},\n                    {to:\
+    \ 'Description', from: 'description'},\n                    {to: 'ImpactDescription',\
+    \ from: 'impactDescription'},\n                    {to: 'Id', from: 'id'},\n \
+    \                   {to: 'Internal', from: 'internal'},\n                    {to:\
+    \ 'Mitigation', from: 'mitigation'},\n                    {to: 'Occurred', from:\
+    \ 'occurred'},\n                    {to: 'Modified', from: 'modified'},\n    \
+    \                {to: 'Scope', from: 'scope'},\n                    {to: 'Type',\
+    \ from: 'type'},\n                    {to: 'Title', from: 'title'},\n        \
+    \            {to: 'Review.Created', from: 'review.created'},\n               \
+    \     {to: 'Review.Status', from: 'review.status'},\n                    {to:\
+    \ 'Review.User', from: 'review.user'},\n                    {to: 'SubType', from:\
+    \ 'subType'},\n                    {to: 'Severity', from: 'severity'}\n      \
+    \          ]\n            }\n        ],\n        urlQueryArgs: ['fulltext']\n\
+    \    },\n    'ds-get-incident-reviews': {\n        url: '/incidents/%incident_id%/reviews',\n\
+    \        method: 'GET',\n        extended: true,\n        translator: [\n    \
+    \        {\n                contextPath: 'DigitalShadows.IncidentReviews(val.Id\
+    \ && val.Id==obj.Id)',\n                title: 'Digital Shadows Incident Reviews',\n\
+    \                data: [\n                    {to: 'Note', from: 'note'},\n  \
+    \                  {to: 'Created', from: 'created'},\n                    {to:\
+    \ 'Status', from: 'status'},\n                    {to: 'User.Id', from: 'user.id'},\n\
+    \                    {to: 'Version', from: 'version'},\n                    {to:\
+    \ 'User.EmailAddress', from: 'user.emailAddress'},\n                    {to: 'User.FullName',\
+    \ from: 'user.fullName'},\n                    {to: 'User.Role', from: 'user.role'},\n\
+    \                    {to: 'User.Status', from: 'user.status'}\n              \
+    \  ]\n            }\n        ]\n    },\n    'ds-snapshot-incident-review': {\n\
+    \        url: '/incidents/%incident_id%/reviews',\n        method: 'POST',\n \
+    \       extended: true,\n        customMD: function(res){return 'Snapshot successful';}\n\
+    \    },\n    'ds-find-incidents-filtered': {\n        url: '/incidents/find',\n\
+    \        method: 'POST',\n        extended: true,\n        translator: [\n   \
+    \         {\n                contextPath: 'DigitalShadows.Incidents(val.Id &&\
+    \ val.Id==obj.Id)',\n                title: 'Digital Shadows Incidents',\n   \
+    \             innerPath: 'content',\n                data: [\n               \
+    \     {to: 'Alerted', from: 'alerted'},\n                    {to: 'Description',\
+    \ from: 'description'},\n                    {to: 'Id', from: 'id'},\n       \
+    \             {to: 'Internal', from: 'internal'},\n                    {to: 'Mitigation',\
+    \ from: 'mitigation'},\n                    {to: 'Occurred', from: 'occurred'},\n\
+    \                    {to: 'Modified', from: 'modified'},\n                   \
+    \ {to: 'Occurred', from: 'occurred'},\n                    {to: 'Published', from:\
+    \ 'published'},\n                    {to: 'RestrictedContent', from:'restrictedContent'},\n\
+    \                    {to: 'RecordCount', from: 'recordCount'},\n             \
+    \       {to: 'Scope', from: 'scope'},\n                    {to: 'Severity', from:\
+    \ 'severity'},\n                    {to: 'Type', from: 'type'},\n            \
+    \        {to: 'SubType', frm: 'subType'},\n                    {to: 'Verified',\
+    \ frm: 'verified'},\n                    {to: 'Version', frm: 'version'},\n  \
+    \                  {to: 'Title', from: 'title'},\n                    {to: 'Score',\
+    \ from: 'score'},\n                    {to: 'Review.Created', from: 'review.created'},\n\
+    \                    {to: 'Review.Status', from: 'review.status'},\n         \
+    \           {to: 'Review.User', from: 'review.user'}\n                ]\n    \
+    \        }\n        ]\n    },\n    //command not exposed\n    'ds-get-incidents-pipeline':\
+    \ {\n        url: '/incidents/pipeline',\n        method: 'POST'\n    },\n   \
+    \ 'ds-get-incidents-summary':{\n        url: '/incidents/summary',\n        method:\
+    \ 'POST'\n    },\n    //intelligence-apt reports\n    'ds-get-apt-report': {\n\
+    \        url: '/apt-report/%report_id%',\n        method: 'GET',\n        extended:\
+    \ true,\n        translator: [\n            {\n                contextPath: 'DigitalShadows.APTReports(val.Id\
+    \ && val.Id==obj.Id)',\n                title: 'APT Report',\n               \
+    \ data: [\n                    {to: 'Id', from: 'id'},\n                    {to:\
+    \ 'Name', from: 'name'},\n                    {to: 'Published', from: 'published'},\n\
+    \                    {to: 'Report.Id', from: 'report.id'},\n                 \
+    \   {to: 'Report.Link', from: 'report.link'},\n                    {to: 'Preview.Id',\
+    \ from: 'preview.id'},\n                    {to: 'Preview.Link', from: 'preview.link'}\n\
+    \                ]\n            }\n        ]\n    },\n    //intelligence-incidents\n\
+    \    'ds-get-intelligence-incident':{\n        url: '/intel-incidents/%incident_id%',\n\
+    \        method: 'GET',\n        extended: true,\n        translator: [\n    \
+    \        {\n                contextPath: 'DigitalShadows.IntelligenceIncidents(val.Id\
+    \ && val.Id==obj.Id)',\n                title: 'Digital Shadows Intelligence Incident',\n\
+    \                data: [\n                    {to: 'Description', from: 'description'},\n\
+    \                    {to: 'Id', from: 'id'},\n                    {to: 'IndicatorOfCompromiseCount',\
+    \ from: 'indicatorOfCompromiseCount'},\n                    {to: 'Internal', from:\
+    \ 'internal'},\n                    {to: 'LinkedContentIncidents', from: 'linkedContentIncidents.id'},\n\
+    \                    {to: 'RelatedIncidentId', from: 'relatedIncident.id'},\n\
+    \                    {to: 'Occurred', from: 'occurred'},\n                   \
+    \ {to: 'Modified', from: 'modified'},\n                    {to: 'Published', from:\
+    \ 'published'},\n                    {to: 'Scope', from: 'scope'},\n         \
+    \           {to: 'Severity', from: 'severity'},\n                    {to: 'RestrictedContent',\
+    \ from: 'restrictedContent'},\n                    {to: 'SubType', from: 'subType'},\n\
+    \                    {to: 'Title', from: 'title'},\n                    {to: 'Type',\
+    \ from: 'type'},\n                    {to: 'Verified', from: 'verified'},\n  \
+    \                  {to: 'Version', from: 'version'}\n                ]\n     \
+    \       }\n        ]\n    },\n    'ds-get-intelligence-incident-iocs':{\n    \
+    \    url: '/intel-incidents/%incident_id%/iocs',\n        method: 'POST',\n  \
+    \      extended: true,\n        translator: [\n            {\n               \
+    \ contextPath: 'DigitalShadows.IntelligenceIncidentsIOCs(val.Id && val.Id==obj.Id)',\n\
+    \                title: 'Intelligence Incident IOCs',\n                innerPath:\
+    \ 'content',\n                data: [\n                    {to: 'Id', from: 'id'},\n\
+    \                    {to: 'IntelIncident.Id', from: 'intelIncident.id'},\n   \
+    \                 {to: 'IntelIncident.Scope', from: 'intelIncident.scope'},\n\
+    \                    {to: 'Type', from: 'type'},\n                    {to: 'Value',\
+    \ from: 'value'},\n                    {to: 'Source', from: 'source'},\n     \
+    \               {to: 'LastUpdated', from: 'lastUpdated'},\n                  \
+    \  {to: 'AptReport.Id', from: 'aptReport.id'}\n                ]\n           \
+    \ }\n        ]\n    },\n    'ds-find-intelligence-incidents':{\n        url: '/intel-incidents/find',\n\
+    \        method: 'POST',\n        extended: true,\n        translator: [\n   \
+    \         {\n                contextPath: 'DigitalShadows.IntelligenceIncidents(val.Id\
+    \ && val.Id==obj.Id)',\n                title: 'Digital Shadows Intelligence Incidents',\n\
+    \                innerPath: 'content',\n                data: [\n            \
+    \        {to: 'Description', from: 'description'},\n                    {to: 'Id',\
+    \ from: 'id'},\n                    {to: 'IndicatorOfCompromiseCount', from: 'indicatorOfCompromiseCount'},\n\
+    \                    {to: 'Internal', from: 'internal'},\n                   \
+    \ {to: 'LinkedContentIncidents', from: 'linkedContentIncidents.id'},\n       \
+    \             {to: 'RelatedIncidentId', from: 'relatedIncident.id'},\n       \
+    \             {to: 'Occurred', from: 'occurred'},\n                    {to: 'Modified',\
+    \ from: 'modified'},\n                    {to: 'Published', from: 'published'},\n\
+    \                    {to: 'Scope', from: 'scope'},\n                    {to: 'Severity',\
+    \ from: 'severity'},\n                    {to: 'RestrictedContent', from: 'restrictedContent'},\n\
+    \                    {to: 'SubType', from: 'subType'},\n                    {to:\
+    \ 'Title', from: 'title'},\n                    {to: 'Type', from: 'type'},\n\
+    \                    {to: 'Verified', from: 'verified'},\n                   \
+    \ {to: 'Version', from: 'version'}\n                ]\n            }\n       \
+    \ ]\n    },\n    'ds-find-intelligence-incidents-regional':{\n        url: '/intel-incidents/regional',\n\
+    \        method: 'POST',\n        extended: true,\n        translator: [\n   \
+    \         {\n                contextPath: 'DigitalShadows.IntelligenceIncidentsRegional(val.CountryTag.Id\
+    \ && val.CountryTag.Id==obj.CountryTag.Id)',\n                title: 'Digital\
+    \ Shadows Intelligence Incidents',\n                innerPath: 'incidentsByCountry',\n\
+    \                data: [\n                    {to: 'CountryTag.Id', from: 'countryTag.id'},\n\
+    \                    {to: 'CountryTag.Name', from: 'countryTag.name'},\n     \
+    \               {to: 'CountryTag.ParentId', from: 'countryTag.parent.id'},\n \
+    \                   {to: 'CountryTag.ThreatId', from: 'countryTag.threat.id'},\n\
+    \                    {to: 'CountryTag.Type', from: 'countryTag.type'},\n     \
+    \               {to: 'IncidentIds', from: 'incidents.id'}\n                ]\n\
+    \            }\n        ]\n    },\n    'ds-get-intelligence-threat':{\n      \
+    \  url: '/intel-threats/%threat_id%',\n        method: 'GET',\n        extended:\
+    \ true,\n        translator: [\n            {\n                contextPath: 'DigitalShadows.IntelligenceThreats(val.Id\
+    \ && val.Id==obj.Id)',\n                title: 'Digital Shadows Intelligence Threat',\n\
+    \                data: [\n                    {to: 'ActivityLevel', from: 'activityLevel'},\n\
+    \                    {to: 'Id', from: 'id'},\n                    {to: 'ImageId',\
+    \ from: 'imageId'},\n                    {to: 'LastActive', from: 'lastActive'},\n\
+    \                    {to: 'Type', from: 'type'},\n                    {to: 'EndDate',\
+    \ from: 'endDate'},\n                    {to: 'LatestIncident', from: 'latestIncident'},\n\
+    \                    {to: 'Tags.PrimaryTag', from: 'primaryTag', humanReadable:\
+    \ false},\n                    {to: 'Recurring', from: 'recurring'},\n       \
+    \             {to: 'Tags.SourceGeographyTags', from: 'sourceGeographyTags', humanReadable:\
+    \ false},\n                    {to: 'AptReportIDs', from: 'aptReports.id'},\n\
+    \                    {to: 'EndDate', from: 'endDate'},\n                    {to:\
+    \ 'ImageThumbnailId', from: 'imageThumbnailId'},\n                    {to: 'IndicatorOfCompromiseCount',\
+    \ from: 'indicatorOfCompromiseCount'},\n                    {to: 'StartDate',\
+    \ from: 'startDate'},\n                    {to: 'Tags.ActorTypeTags', from: 'actorTypeTags',\
+    \ humanReadable: false},\n                    {to: 'AnnouncementIncidentIDs',\
+    \ from: 'announcementIncidentIDs'},\n                    {to: 'Tags.AssociatedActorTags',\
+    \ from: 'associatedActorTags', humanReadable: false},\n                    {to:\
+    \ 'Tags.AssociatedCampaignTags', from: 'associatedCampaignTags', humanReadable:\
+    \ false},\n                    {to: 'AssociatedEventIDs', from: 'associatedEvents.id'},\n\
+    \                    {to: 'AttackEvidenceIncidentIDs', from: 'attackEvidenceIncidents.id'},\n\
+    \                    {to: 'Tags.ImpactEffectTags', from: 'impactEffectTags', humanReadable:\
+    \ false},\n                    {to: 'Tags.IntendedEffectTags', from: 'intendedEffectTags',\
+    \ humanReadable: false},\n                    {to: 'LatestIncidentID', from: 'latestIncident.id'},\n\
+    \                    {to: 'Tags.MotivationTags', from: 'motivationTags', humanReadable:\
+    \ false},\n                    {to: 'Tags.OverviewTags', from: 'overviewTags',\
+    \ humanReadable: false},\n                    {to: 'Tags.PrimaryLanguageTags',\
+    \ from: 'primaryLanguageTags', humanReadable: false},\n                    {to:\
+    \ 'ThreatLevel', from: 'threatLevel.type'}\n                ]\n            }\n\
+    \        ],\n        urlQueryArgs: ['opt']\n    },\n    'ds-get-intelligence-threat-iocs':{\n\
+    \        url: '/intel-threats/%threat_id%/iocs',\n        method: 'POST',\n  \
+    \      extended: true,\n        translator: [\n            {\n               \
+    \ innerPath: 'content',\n                contextPath: 'DigitalShadows.IntelligenceThreatIOCs',\n\
+    \                title: 'Digital Shadows Intelligence Threat IOCs',\n        \
+    \        data: [\n                    {to: 'APTReportId', from: 'aptReport.id'},\n\
+    \                    {to: 'Id', from: 'id'},\n                    {to: 'IntelIncidentId',\
+    \ from: 'intelIncident.id'},\n                    {to: 'LastUpdated', from: 'lastUpdated'},\n\
+    \                    {to: 'Source', from: 'source'},\n                    {to:\
+    \ 'Type', from: 'type'},\n                    {to: 'Value', from: 'value'}\n \
+    \               ]\n            }\n        ]\n    },\n    'ds-get-intelligence-threat-activity':{\n\
+    \        url: '/intel-threats/activity',\n        method: 'POST'\n    },\n   \
+    \ 'ds-find-intelligence-threats':{\n        url: '/intel-threats/find',\n    \
+    \    method: 'POST',\n        extended: true,\n        translator: [\n       \
+    \     {\n                contextPath: 'DigitalShadows.IntelligenceThreats(val.Id\
+    \ && val.Id==obj.Id)',\n                title: 'Digital Shadows Intelligence Threats',\n\
+    \                innerPath: 'content',\n                data: [\n            \
+    \        {to: 'ActivityLevel', from: 'activityLevel'},\n                    {to:\
+    \ 'Id', from: 'id'},\n                    {to: 'ImageId', from: 'imageId'},\n\
+    \                    {to: 'LastActive', from: 'lastActive'},\n               \
+    \     {to: 'Type', from: 'type'},\n                    {to: 'ThreatLevelType',\
+    \ from: 'threatLevel.type'},\n                    {to: 'Event', from: 'event'}\n\
+    \                ]\n            }\n        ]\n    },\n    'ds-find-intelligence-threats-regional':{\n\
+    \        url: '/intel-threats/regional',\n        method: 'POST',\n        extended:\
+    \ true,\n        translator: [\n            {\n                contextPath: 'DigitalShadows.IntelligenceThreatsRegional(val.Id\
+    \ && val.Id==obj.Id)',\n                title: 'Digital Shadows Regional Intelligence\
+    \ Threats',\n                data: [\n                    {to: 'ActivityLevel',\
+    \ from: 'activityLevel'},\n                    {to: 'Id', from: 'id'},\n     \
+    \               {to: 'ImageId', from: 'imageId'},\n                    {to: 'LastActive',\
+    \ from: 'lastActive'},\n                    {to: 'Type', from: 'type'},\n    \
+    \                {to: 'ThreatLevelType', from: 'threatLevel.type'},\n        \
+    \            {to: 'Event', from: 'event'},\n                    {to: 'OverviewTags',\
+    \ from: 'overviewTags', humanReadable: false}\n                ]\n           \
+    \ }\n        ]\n    },\n    'ds-get-port-reviews':{\n        url: '/ip-ports/%port%/reviews',\n\
+    \        method: 'GET',\n        extended: true,\n        translator: [\n    \
+    \        {\n                contextPath: 'DigitalShadows.IpPortReviews(val.Id\
+    \ && val.Id==obj.Id)',\n                title: 'Digital Shadows Port Review',\n\
+    \                data: [\n                    {to: 'Created', from: 'created'},\n\
+    \                    {to: 'Status', from: 'status'},\n                    {to:\
+    \ 'Version', from: 'version'},\n                    {to: 'Incident.Id', from:\
+    \ 'incident.id'},\n                    {to: 'Incident.Scope', from: 'incident.scope'},\n\
+    \                    {to: 'User.Id', from: 'user.id'},\n                    {to:\
+    \ 'User.FullName', from: 'user.fullName'}\n                ]\n            }\n\
+    \        ],\n        urlQueryArgs: ['incidentId']\n    },\n    'ds-snapshot-port-review':{\n\
+    \        url: '/ip-ports/%port%/reviews',\n        method: 'POST',\n        customMD:\
+    \ function(res){return 'Success';}\n    },\n    'ds-find-ports':{\n        url:\
+    \ '/ip-ports/find',\n        method: 'POST',\n        extended: true,\n      \
+    \  translator: [\n            {\n                innerPath: 'content',\n     \
+    \           contextPath: 'DigitalShadows.IpPorts(val.Id && val.Id==obj.Id)',\n\
+    \                title: 'Digital Shadows Ports',\n                data: [\n  \
+    \                  {to: 'DiscoveredOpen', from: 'discoveredOpen'},\n         \
+    \           {to: 'Id', from: 'id'},\n                    {to: 'IpAddress', from:\
+    \ 'ipAddress'},\n                    {to: 'PortNumber', from: 'portNumber'},\n\
+    \                    {to: 'Transport', from: 'transport'},\n                 \
+    \   {to: 'Incident.Id', from: 'incident.id'},\n                    {to: 'Incident.Scope',\
+    \ from: 'incident.scope'},\n                    {to: 'Incident.Severity', from:\
+    \ 'incident.severity'},\n                    {to: 'Incident.SubType', from: 'incident.subType'},\n\
+    \                    {to: 'Incident.Type', from: 'incident.type'},\n         \
+    \           {to: 'Incident.Title', from: 'incident.title'},\n                \
+    \    {to: 'Incident.Published', from: 'incident.published'},\n               \
+    \     {to: 'Review.Status', from: 'review.status'},\n                    {to:\
+    \ 'Review.UserId', from: 'review.user.id'},\n                    {to: 'Review.UserName',\
+    \ from: 'review.user.fullName'},\n                    {to: 'Review.Version', from:\
+    \ 'review.version'}\n                ]\n\n            }\n        ]\n    },\n \
+    \   'ds-find-secure-sockets':{\n        url: '/secure-socket/find',\n        method:\
+    \ 'POST',\n        extended: true,\n        translator: [\n            {\n   \
+    \             innerPath: 'content',\n                contextPath: 'DigitalShadows.SecureSockets(val.Id\
+    \ && val.Id==obj.Id)',\n                title: 'Digital Shadows Secure Sockets',\n\
+    \                data: [\n                    {to: 'Id', from: 'id'},\n      \
+    \              {to: 'Discovered', from: 'discovered'},\n                    {to:\
+    \ 'DomainName', from: 'domainName'},\n                    {to: 'Grade', from:\
+    \ 'grade'},\n                    {to: 'IpAddress', from: 'ipAddress'},\n     \
+    \               {to: 'PortNumber', from: 'portNumber'},\n                    {to:\
+    \ 'Transport', from: 'transport'},\n                    {to: 'Issues', from: 'issues'},\n\
+    \                    {to: 'Review.Status', from: 'review.status'},\n         \
+    \           {to: 'Review.UserId', from: 'review.user.id'},\n                 \
+    \   {to: 'Review.UserName', from: 'review.user.fullName'},\n                 \
+    \   {to: 'Review.Version', from: 'review.version'},\n                    {to:\
+    \ 'Incident.Id', from: 'incident.id'},\n                    {to: 'Incident.Scope',\
+    \ from: 'incident.scope'},\n                    {to: 'Incident.Severity', from:\
+    \ 'incident.severity'},\n                    {to: 'Incident.SubType', from: 'incident.subType'},\n\
+    \                    {to: 'Incident.Type', from: 'incident.type'},\n         \
+    \           {to: 'Incident.Title', from: 'incident.title'},\n                \
+    \    {to: 'Incident.Published', from: 'incident.published'},\n               \
+    \     {to: 'CertificateCommonName', from: 'certificateCommonName'},\n        \
+    \            {to: 'ReverseDomainName', from: 'reverseDomainName'}\n          \
+    \      ]\n            }\n        ]\n    },\n    'ds-find-vulnerabilities':{\n\
+    \        url: '/vulnerability/find',\n        method: 'POST',\n        extended:\
+    \ true,\n        translator: [\n            {\n                innerPath: 'content',\n\
+    \                contextPath: 'DigitalShadows.Vulnerabilities(val.Id && val.Id==obj.Id)',\n\
+    \                title: 'Digital Shadows Vulnerabilities',\n                data:\
+    \ [\n                    {to: 'CveId', from: 'cveId'},\n                    {to:\
+    \ 'Id', from: 'id'},\n                    {to: 'Discovered', from: 'discovered'},\n\
+    \                    {to: 'IpAddress', from: 'ipAddress'},\n                 \
+    \   {to: 'Review.Status', from: 'review.status'},\n                    {to: 'Review.UserId',\
+    \ from: 'review.user.id'},\n                    {to: 'Review.UserName', from:\
+    \ 'review.user.fullName'},\n                    {to: 'Review.Version', from: 'review.version'},\n\
+    \                    {to: 'Incident.Id', from: 'incident.id'},\n             \
+    \       {to: 'Incident.Scope', from: 'incident.scope'},\n                    {to:\
+    \ 'Incident.Severity', from: 'incident.severity'},\n                    {to: 'Incident.SubType',\
+    \ from: 'incident.subType'},\n                    {to: 'Incident.Type', from:\
+    \ 'incident.type'},\n                    {to: 'Incident.Title', from: 'incident.title'},\n\
+    \                    {to: 'Incident.Published', from: 'incident.published'},\n\
+    \                ]\n            }\n        ]\n    },\n    'ds-search':{\n    \
+    \    url: '/search/find',\n        method: 'POST'\n    },\n    'ds-get-tags':{\n\
+    \        url: '/tags/batch',\n        method: 'GET',\n        urlQueryArgs: ['detailed',\
+    \ 'id']\n    }\n};\n\narrayArgs = {\n    domainNames : true,\n    reviewStatuses:\
+    \ true,\n    statuses: true,\n    domainNamesOnRecords: true,\n    repostedCredentials:\
+    \ true,\n    severities: true,\n    types: true,\n    subTypes: true\n};\n\nvar\
+    \ createBody = function(args, arrayArgs) {\n    var Body = {};\n    var cur =\
+    \ Body;\n    keys = Object.keys(args);\n    keys.forEach(function(key){\n    \
+    \    sub_keys = key.split('_');\n        for(var i=0; i<sub_keys.length - 1; i++){\n\
+    \            if (!cur[sub_keys[i]]){\n                cur[sub_keys[i]] = {};\n\
+    \                if(arrayArgs[sub_keys[i]]){\n                    cur[sub_keys[i]]\
+    \ = [{}];\n                }\n            }\n            cur = cur[sub_keys[i]];\n\
+    \            if(Array.isArray(cur)){\n                cur = cur[0];\n        \
+    \    }\n        }\n        last_sub_key = sub_keys[sub_keys.length - 1];\n   \
+    \     cur[last_sub_key] = arrayArgs[last_sub_key] && !Array.isArray(args[key])\
+    \ ? args[key].split(',') : args[key];\n        cur = Body;\n    });\n    return\
+    \ Body;\n};\n\n\nvar encodeToURLQueryByFilter = function(filter, args){\n    if\
+    \ (!filter){\n        return '';\n    }\n    var filtered = {};\n    filter.forEach(function(key){\n\
+    \        if(args[key]){\n            filtered[key] = args[key];\n            delete\
+    \ args[key];\n        }\n    });\n    return encodeToURLQuery(filtered);\n};\n\
+    \nvar sendRequest = function(url, method, body) {\n    var res = http(\n     \
+    \   url,\n        {\n            Method: method,\n            Headers: {\n   \
+    \             'Content-Type': ['application/json']\n            },\n         \
+    \   Username: params.apikey,\n            Password: params.secret,\n         \
+    \   Body: JSON.stringify(body)\n        },\n        params.insecure,\n       \
+    \ params.proxy\n    );\n    if (res.StatusCode < 200 || res.StatusCode >= 300)\
+    \ {\n        throw 'Request Failed.\\nStatus code: ' + res.StatusCode + '.\\nBody:\
+    \ ' + JSON.stringify(res) + '.';\n    }\n    return res.Body;\n};\n\nvar fetchCommandIncidents\
+    \ = function(comnd, bodyArgs, name){\n    incidents = [];\n    cmd = commandDictionary[comnd];\n\
+    \    res = sendRequest(url+cmd.url, cmd.method, createBody(bodyArgs, arrayArgs));\n\
+    \    parsed_res = JSON.parse(res);\n    if (parsed_res && parsed_res.content){\n\
+    \        parsed_res.content.forEach(function(inc){\n            inc['origin']\
+    \ = name;\n            incidents.push({\n              name: name,\n         \
+    \     rawJSON: JSON.stringify(inc)\n            });\n        });\n    }\n    return\
+    \ incidents;\n};\n\nvar getIncidentsIds = function(incidents) {\n    var ids =\
+    \ [];\n    incidents.forEach(function(inc) {\n        ids.push(JSON.parse(inc.rawJSON).id);\n\
+    \    });\n\n    return ids;\n};\n\nvar fetchIncidents = function(){\n    var lastRun\
+    \ = getLastRun();\n    nowDate = new Date();\n    var now = nowDate.toISOString();\n\
+    \    if (!lastRun || !lastRun.value) {\n        lastRun = {value: (new Date(nowDate.getTime()\
+    \ - 1*60*1000)).toISOString()};\n    }\n\n    // first API call - fetch PHISHING_ATTEMPT\
+    \ incidents only (within the date range)\n    bodyArgs = {filter_types_type:'BRAND_PROTECTION',\
+    \ filter_types_subTypes:'PHISHING_ATTEMPT', filter_dateRange: lastRun.value +\
+    \ '/' + now};\n    var incidents = fetchCommandIncidents('ds-find-incidents-filtered',\
+    \ bodyArgs, 'PHISHING_ATTEMPT');\n\n    var ids = getIncidentsIds(incidents);\n\
+    \n    // second API call - fetch all incidents (within the date range)\n    bodyArgs\
+    \ = {filter_dateRange: lastRun.value + '/' + now};\n    temp = fetchCommandIncidents('ds-find-incidents-filtered',\
+    \ bodyArgs, 'Client Incident');\n\n    if (incidents) {\n        // concatenate\
+    \ only new incident to list (filter the duplicates)\n        filteredIncidents\
+    \ = temp.filter(function(inc) {\n           incidentId = JSON.parse(inc.rawJSON).id;\n\
+    \           notDuplicatedIncident = (ids.indexOf(incidentId) == -1);\n       \
+    \    return notDuplicatedIncident;\n        });\n        incidents = incidents.concat(filteredIncidents);\n\
+    \    }\n    else {\n        incidents = temp;\n    }\n\n    // third API call\
+    \ - fetch intelligence incidents (within the date range)\n    incidents = incidents.concat(fetchCommandIncidents('ds-find-intelligence-incidents',\
+    \ bodyArgs, 'Intelligence Incident'));\n\n    // fourth API call - fetch data\
+    \ breaches (within the date range)\n    bodyArgs = {filter_published: lastRun.value\
+    \ + '/' + now};\n    incidents = incidents.concat(fetchCommandIncidents('ds-find-data-breaches',\
+    \ bodyArgs, 'Data Breach'));\n\n    setLastRun({value: now});\n    return JSON.stringify(incidents);\n\
+    };\n\nswitch (command) {\n    case 'test-module':\n        cmd = commandDictionary['ds-get-breach-summary'];\n\
+    \        sendRequest(url+cmd.url, cmd.method);\n        return 'ok';\n    case\
+    \ 'fetch-incidents':\n        return fetchIncidents();\n    default:\n       \
+    \ cmd = commandDictionary[command];\n        res = sendRequest(url+replaceInTemplatesAndRemove(cmd.url,\
+    \ args)+encodeToURLQueryByFilter(cmd.urlQueryArgs, args), cmd.method, createBody(args,\
+    \ arrayArgs));\n        if (cmd.customMD){\n            return cmd.customMD(res);\n\
+    \        }\n        if(cmd.extended === true)\n            return createEntry(JSON.parse(res),\
+    \ cmd.translator[0]);\n        try{\n            return JSON.parse(res);\n   \
+    \     } catch(err) {\n            return res;\n        }\n}"
+  type: javascript
+toversion: 4.1.9

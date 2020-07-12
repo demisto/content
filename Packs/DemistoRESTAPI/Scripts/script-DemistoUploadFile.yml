@@ -1,44 +1,34 @@
+args:
+- description: File entry ID
+  name: entryID
+  required: true
+- description: Incident ID to upload the file to
+  name: incidentID
+  required: true
+- description: Request body
+  name: body
+comment: "Copies a file from this incident to the specified incident. The file is\
+  \ recorded as an entry in the specified incident\u2019s War Room."
 commonfields:
   id: DemistoUploadFile
   version: -1
-name: DemistoUploadFile
-script: |
-  var res = executeCommand("demisto-api-multipart", {"uri":'entry/upload/' + args.incidentID,"entryID":args.entryID, "body":args.body});
-  if (isError(res[0])) {
-      return res;
-  }
-  var entryId = dq(res,'Contents.response.entries.id');
-
-  var md = 'File uploaded successfully. Entry ID is ' + entryId;
-  if (args.body){
-      md +=  '. Comment is:' + args.body;
-  }
-
-  return {
-      ContentsFormat: formats.json,
-      Type: entryTypes.note,
-      Contents: res,
-      HumanReadable: md
-  };
-type: javascript
-tags:
-- DemistoAPI
-comment: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
-enabled: true
-args:
-- name: entryID
-  required: true
-  description: File entry ID
-- name: incidentID
-  required: true
-  description: Incident ID to upload the file to
-- name: body
-  description: Request body
-scripttarget: 0
 dependson:
   must:
   - demisto-api-multipart
-runonce: false
+enabled: true
+name: DemistoUploadFile
 runas: DBotWeakRole
+runonce: false
+script: "var res = executeCommand(\"demisto-api-multipart\", {\"uri\":'entry/upload/'\
+  \ + args.incidentID,\"entryID\":args.entryID, \"body\":args.body});\nif (isError(res[0]))\
+  \ {\n    return res;\n}\nvar entryId = dq(res,'Contents.response.entries.id');\n\
+  \nvar md = 'File uploaded successfully. Entry ID is ' + entryId;\nif (args.body){\n\
+  \    md +=  '. Comment is:' + args.body;\n}\n\nreturn {\n    ContentsFormat: formats.json,\n\
+  \    Type: entryTypes.note,\n    Contents: res,\n    HumanReadable: md\n};\n"
+scripttarget: 0
+tags:
+- DemistoAPI
 tests:
 - DemistoUploadFileToIncident Test
+toversion: 4.1.9
+type: javascript

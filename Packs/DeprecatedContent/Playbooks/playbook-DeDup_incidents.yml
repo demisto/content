@@ -1,54 +1,70 @@
+description: 'Check for duplicate incidents for the current incident, and close it
+  if any duplicate has found.
+
+  '
+fromversion: 3.5.0
 id: close_incident_if_duplicate_found
-version: -1
+inputs:
+- description: Identical incident keys
+  key: similarIncidentKeys
+  required: false
+  value: {}
+- description: "Identical\\Similar labels keys.\nYou allow difference in X words between\
+    \ labels. For example, the input:\nEmail\\subject:2,Email\\from\nWill demand:\n\
+    1. Email\\from to be identical \n2. Email\\subject to be similar with 2 max words\
+    \ difference\n"
+  key: similarLabels
+  required: false
+  value: {}
+- description: 'Identical\Similar context keys.
+
+    You allow difference in X words between values. '
+  key: similarContextKeys
+  required: false
+  value: {}
+- description: 'Identical\Similar custom fields.
+
+    You allow difference in X words between values.'
+  key: similarCustomFields
+  required: false
+  value: {}
+- description: Check incidents within X hours back.
+  key: hoursBack
+  required: false
+  value:
+    simple: '24'
 name: DeDup incidents
-fromversion: "3.5.0"
-description: |
-  Check for duplicate incidents for the current incident, and close it if any duplicate has found.
-starttaskid: "0"
+outputs:
+- contextPath: isSimilarIncidentFound
+  description: Is similar incident found? (true\false)
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
+    nexttasks:
+      '#none#':
+      - '2'
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 0c9fa614-e05a-4144-8e40-6b736392a16a
+      iscommand: false
+      name: ''
+      version: -1
     taskid: 0c9fa614-e05a-4144-8e40-6b736392a16a
     type: start
-    task:
-      id: 0c9fa614-e05a-4144-8e40-6b736392a16a
-      version: -1
-      name: ""
-      description: ""
-      iscommand: false
-      brand: ""
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 51\n  }\n}"
+  '2':
+    id: '2'
     nexttasks:
       '#none#':
-      - "2"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 51
-        }
-      }
-  "2":
-    id: "2"
-    taskid: 6c68450d-d32f-4a07-8978-8df36190ada6
-    type: regular
-    task:
-      id: 6c68450d-d32f-4a07-8978-8df36190ada6
-      version: -1
-      name: Find duplicate incidents
-      description: Find duplicate incidents for the current incident.
-      scriptName: FindSimilarIncidents
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       hoursBack:
         simple: ${inputs.hoursBack}
       ignoreClosedIncidents:
-        simple: "no"
+        simple: 'no'
       ignoreMissingKeys: {}
       maxNumberOfIncidents: {}
       minimumContextKeysToCompare: {}
@@ -64,136 +80,85 @@ tasks:
       similarLabelsKeys:
         simple: ${inputs.similarLabels}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 194
-        }
-      }
-  "3":
-    id: "3"
-    taskid: bced6173-64c6-457c-85bd-2adf6be16c4c
-    type: regular
     task:
-      id: bced6173-64c6-457c-85bd-2adf6be16c4c
-      version: -1
-      name: Close as duplicate
-      description: Close the current investigation as duplicate.
-      scriptName: CloseInvestigationAsDuplicate
-      type: regular
+      brand: ''
+      description: Find duplicate incidents for the current incident.
+      id: 6c68450d-d32f-4a07-8978-8df36190ada6
       iscommand: false
-      brand: ""
+      name: Find duplicate incidents
+      scriptName: FindSimilarIncidents
+      type: regular
+      version: -1
+    taskid: 6c68450d-d32f-4a07-8978-8df36190ada6
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 194\n  }\n}"
+  '3':
+    id: '3'
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     scriptarguments:
       duplicateId:
         simple: ${similarIncident.rawId}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-  "4":
-    id: "4"
-    taskid: e1952276-e1b2-4748-8198-9bc500d5c504
-    type: condition
     task:
-      id: e1952276-e1b2-4748-8198-9bc500d5c504
-      version: -1
-      name: Is duplicate incident found?
-      description: Check if there is any duplicate incident found.
-      type: condition
+      brand: ''
+      description: Close the current investigation as duplicate.
+      id: bced6173-64c6-457c-85bd-2adf6be16c4c
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "3"
-    separatecontext: false
+      name: Close as duplicate
+      scriptName: CloseInvestigationAsDuplicate
+      type: regular
+      version: -1
+    taskid: bced6173-64c6-457c-85bd-2adf6be16c4c
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '4':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isTrue
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: isSimilarIncidentFound
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 369
-        }
-      }
+          operator: isTrue
+      label: 'yes'
+    id: '4'
+    nexttasks:
+      '#default#':
+      - '5'
+      'yes':
+      - '3'
     note: false
-  "5":
-    id: "5"
+    separatecontext: false
+    task:
+      brand: ''
+      description: Check if there is any duplicate incident found.
+      id: e1952276-e1b2-4748-8198-9bc500d5c504
+      iscommand: false
+      name: Is duplicate incident found?
+      type: condition
+      version: -1
+    taskid: e1952276-e1b2-4748-8198-9bc500d5c504
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 369\n  }\n}"
+  '5':
+    id: '5'
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 813eba13-6ed9-4050-8d77-f9c3e0a3d07c
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
     taskid: 813eba13-6ed9-4050-8d77-f9c3e0a3d07c
     type: title
-    task:
-      id: 813eba13-6ed9-4050-8d77-f9c3e0a3d07c
-      version: -1
-      name: Done
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 720
-        }
-      }
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 734,
-        "width": 492.5,
-        "x": 50,
-        "y": 51
-      }
-    }
-  }
-inputs:
-- key: similarIncidentKeys
-  value: {}
-  required: false
-  description: Identical incident keys
-- key: similarLabels
-  value: {}
-  required: false
-  description: "Identical\\Similar labels keys.\nYou allow difference in X words between
-    labels. For example, the input:\nEmail\\subject:2,Email\\from\nWill demand:\n1.
-    Email\\from to be identical \n2. Email\\subject to be similar with 2 max words
-    difference\n"
-- key: similarContextKeys
-  value: {}
-  required: false
-  description: "Identical\\Similar context keys.\nYou allow difference in X words
-    between values. "
-- key: similarCustomFields
-  value: {}
-  required: false
-  description: |-
-    Identical\Similar custom fields.
-    You allow difference in X words between values.
-- key: hoursBack
-  value:
-    simple: "24"
-  required: false
-  description: Check incidents within X hours back.
-outputs:
-- contextPath: isSimilarIncidentFound
-  description: Is similar incident found? (true\false)
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 720\n  }\n}"
 tests:
-  - No tests
+- No tests
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 734,\n      \"width\": 492.5,\n      \"x\": 50,\n      \"y\":\
+  \ 51\n    }\n  }\n}"

@@ -1,42 +1,29 @@
+args:
+- description: The string to search in, e.g., "string1"
+  name: left
+- description: The array of substrings to search in the string, e.g., ["string1","string2"]
+  name: right
+comment: 'Checks whether a substring or an array of substrings is within a string
+  array(each item will be checked). Supports single strings as well. For example,
+  for substrings [''a'',''b'',''c''] in a string ''a'' the script will return true.
+
+  '
 commonfields:
   id: StringContainsArray
   version: -1
+enabled: true
 name: StringContainsArray
-script: |
-  var str = args.left;
-  var substring = args.right;
-
-  if(!str || !substring){
-      return false;
-  }
-
-  if (Array.isArray(substring)) {
-      var arr = substring;
-      for (var i = 0; i < arr.length; ++i) {
-          if (arr[i] && str.indexOf(arr[i]) > -1) {
-                  return true;
-          }
-      }
-  } else {
-      if (str.indexOf(substring) > -1) {
-          return true;
-      }
-  }
-
-  return false;
-type: javascript
+runonce: false
+script: "var str = args.left;\nvar substring = args.right;\n\nif(!str || !substring){\n\
+  \    return false;\n}\n\nif (Array.isArray(substring)) {\n    var arr = substring;\n\
+  \    for (var i = 0; i < arr.length; ++i) {\n        if (arr[i] && str.indexOf(arr[i])\
+  \ > -1) {\n                return true;\n        }\n    }\n} else {\n    if (str.indexOf(substring)\
+  \ > -1) {\n        return true;\n    }\n}\n\nreturn false;\n"
+scripttarget: 0
 tags:
 - filter
 - string
-comment: |
-  Checks whether a substring or an array of substrings is within a string array(each item will be checked). Supports single strings as well. For example, for substrings ['a','b','c'] in a string 'a' the script will return true.
-enabled: true
-args:
-- name: left
-  description: The string to search in, e.g., "string1"
-- name: right
-  description: The array of substrings to search in the string, e.g., ["string1","string2"]
-scripttarget: 0
-runonce: false
 tests:
-  - StringContainsArray_test
+- StringContainsArray_test
+toversion: 4.1.9
+type: javascript

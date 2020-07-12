@@ -10,7 +10,9 @@
     "query": "engine.cpu",
     "isPredefined": true,
     "params": {
-        "groupBy": ["engine"],
+        "groupBy": [
+            "engine"
+        ],
         "timeFrame": "minutes"
     },
     "size": 1440,
@@ -22,5 +24,6 @@
             "fromValue": 60,
             "field": ""
         }
-    }
+    },
+    "toVersion": "4.1.9"
 }

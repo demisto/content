@@ -1,42 +1,35 @@
+args:
+- default: true
+  description: first percentage
+  name: firstPercentage
+  required: true
+- description: second percentage
+  name: secondPercentage
+  required: true
+comment: 'Checks if one percentage is less than another
+
+  Returns less: if firstPercentage < secondPercentage
+
+  Returns more: if firstPercentage >= secondPercentage
+
+  Returns exception if one of the inputs is not a float'
 commonfields:
   id: LessThanPercentage
   version: -1
-name: LessThanPercentage
-script: |-
-  first = parseFloat(args.firstPercentage);
-  if (!first) {
-      throw 'firstPercentage is not valid: '+args.firstPercentage;
-  }
-  second = parseFloat(args.secondPercentage);
-  if (!second) {
-      throw 'firstPercentage is not valid: '+args.secondPercentage;
-  }
-  if (first < second) {
-      return 'less';
-  } else {
-      return 'more';
-  }
-type: javascript
-tags:
-- Utility
-- Condition
-comment: |-
-  Checks if one percentage is less than another
-  Returns less: if firstPercentage < secondPercentage
-  Returns more: if firstPercentage >= secondPercentage
-  Returns exception if one of the inputs is not a float
 enabled: true
+name: LessThanPercentage
 outputs:
 - contextPath: less
   description: if firstPercentage < secondPercentage
 - contextPath: more
-  description: if firstPercentage >= secondPercentage 
-args:
-- name: firstPercentage
-  description: first percentage
-  required: true
-  default: true
-- name: secondPercentage
-  description: second percentage
-  required: true
+  description: if firstPercentage >= secondPercentage
+script: "first = parseFloat(args.firstPercentage);\nif (!first) {\n    throw 'firstPercentage\
+  \ is not valid: '+args.firstPercentage;\n}\nsecond = parseFloat(args.secondPercentage);\n\
+  if (!second) {\n    throw 'firstPercentage is not valid: '+args.secondPercentage;\n\
+  }\nif (first < second) {\n    return 'less';\n} else {\n    return 'more';\n}"
 scripttarget: 0
+tags:
+- Utility
+- Condition
+toversion: 4.1.9
+type: javascript

@@ -1,69 +1,47 @@
+args:
+- default: true
+  description: The key to set
+  name: key
+  required: true
+- description: The value to set to the key. Can be an array. Usually, a dq expression.
+  isArray: true
+  name: value
+  required: true
+- auto: PREDEFINED
+  description: If false then then the context key will be overwritten. If set to true
+    then the script will append to existing context key
+  name: append
+  predefined:
+  - 'true'
+  - 'false'
+- auto: PREDEFINED
+  defaultValue: 'false'
+  description: Whether the argument should be saved as a string.
+  name: stringify
+  predefined:
+  - 'true'
+  - 'false'
+comment: Sets a value into the context with the given context key
 commonfields:
   id: Set
   version: -1
+enabled: true
 name: Set
-script: |-
-  var ec = {};
-  var value;
-  try {
-      if (args.stringify === 'true') {
-          if (typeof args.value === 'string') {
-              value = args.value
-          } else {
-              value = JSON.stringify(args.value)
-          }
-      } else {
-          value = JSON.parse(args.value);
-      }
-  } catch(err) {
-      value = args.value;
-  }
-
-  ec[args.key] = value;
-  var result = {
-      Type: entryTypes.note,
-      Contents: ec,
-      ContentsFormat: formats.json,
-      HumanReadable: 'Key ' + args.key + ' set'
-  };
-
-  if (!args.append || args.append === 'false') {
-      setContext(args.key, value);
-  } else {
-      result.EntryContext = ec;
-  }
-
-  return result;
-type: javascript
+runas: DBotWeakRole
+runonce: false
+script: "var ec = {};\nvar value;\ntry {\n    if (args.stringify === 'true') {\n \
+  \       if (typeof args.value === 'string') {\n            value = args.value\n\
+  \        } else {\n            value = JSON.stringify(args.value)\n        }\n \
+  \   } else {\n        value = JSON.parse(args.value);\n    }\n} catch(err) {\n \
+  \   value = args.value;\n}\n\nec[args.key] = value;\nvar result = {\n    Type: entryTypes.note,\n\
+  \    Contents: ec,\n    ContentsFormat: formats.json,\n    HumanReadable: 'Key '\
+  \ + args.key + ' set'\n};\n\nif (!args.append || args.append === 'false') {\n  \
+  \  setContext(args.key, value);\n} else {\n    result.EntryContext = ec;\n}\n\n\
+  return result;"
+scripttarget: 0
 tags:
 - Utility
-comment: Sets a value into the context with the given context key
-enabled: true
-args:
-- name: key
-  required: true
-  default: true
-  description: The key to set
-- name: value
-  required: true
-  description: The value to set to the key. Can be an array. Usually, a dq expression.
-  isArray: true
-- name: append
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  description: If false then then the context key will be overwritten. If set to true
-    then the script will append to existing context key
-- name: stringify
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  description: Whether the argument should be saved as a string.
-  defaultValue: "false"
-scripttarget: 0
-runonce: false
-runas: DBotWeakRole
 tests:
-  - Set - Test
+- Set - Test
+toversion: 4.1.9
+type: javascript

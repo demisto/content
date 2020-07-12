@@ -47,9 +47,9 @@ configuration:
   name: use_pool
   required: false
   type: 8
-- display: Connection Pool Time to Live (seconds)
-  additionalinfo: After this time the connection pool will be refreshed
+- additionalinfo: After this time the connection pool will be refreshed
   defaultvalue: 600
+  display: Connection Pool Time to Live (seconds)
   hidden: false
   name: pool_ttl
   required: false
@@ -134,8 +134,8 @@ script:
     description: Running a sql query
     execution: false
     name: sql-command
-  dockerimage45: demisto/genericsql:1.0.0.6768
   dockerimage: demisto/genericsql:1.1.0.9726
+  dockerimage45: demisto/genericsql:1.0.0.6768
   feed: false
   isfetch: false
   longRunning: false
@@ -146,4 +146,4 @@ script:
   type: python
 tests:
 - generic-sql
-
+toversion: 4.1.9

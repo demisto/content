@@ -6,10 +6,14 @@
     "query": "type:investigation* or type:newContentAvailable or type:mention*",
     "name": "My Messages",
     "dateRange": {
-        "period": { "byFrom": "days", "fromValue": null }
+        "period": {
+            "byFrom": "days",
+            "fromValue": null
+        }
     },
     "isPredefined": true,
     "version": -1,
     "widgetType": "list",
-    "description": ""
+    "description": "",
+    "toVersion": "4.1.9"
 }

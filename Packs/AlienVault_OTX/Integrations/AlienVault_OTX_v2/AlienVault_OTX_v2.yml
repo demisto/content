@@ -347,8 +347,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The indicator type. Can be: "IPv4", "IPv6", "domain", or
-        "hostname".'
+      description: 'The indicator type. Can be: "IPv4", "IPv6", "domain", or "hostname".'
       isArray: false
       name: indicator_type
       predefined:
@@ -369,8 +368,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The indicator type. Can be: "IPv4", "IPv6", "domain", or
-        "hostname".'
+      description: 'The indicator type. Can be: "IPv4", "IPv6", "domain", or "hostname".'
       isArray: false
       name: indicator_type
       predefined:
@@ -540,7 +538,8 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 tests:
 - Alienvault_OTX_v2 - Test
+toversion: 4.1.9

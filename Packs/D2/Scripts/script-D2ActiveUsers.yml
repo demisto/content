@@ -1,22 +1,15 @@
+comment: Show local accounts
 commonfields:
   id: D2ActiveUsers
   version: -1
 name: D2ActiveUsers
-script: |-
-  function usersWindows() {
-      pack(wmi_query('select * from Win32_LoggedOnUser'),'table');
-  }
-  try {
-    if (env.OS === 'windows') {
-      usersWindows();
-    }
-  } catch (ex) {
-    pack('Error: ' + ex);
-  }
-type: javascript
+script: "function usersWindows() {\n    pack(wmi_query('select * from Win32_LoggedOnUser'),'table');\n\
+  }\ntry {\n  if (env.OS === 'windows') {\n    usersWindows();\n  }\n} catch (ex)\
+  \ {\n  pack('Error: ' + ex);\n}"
+scripttarget: 1
+system: true
 tags:
 - agent
 - endpoint
-comment: Show local accounts
-system: true
-scripttarget: 1
+toversion: 4.1.9
+type: javascript

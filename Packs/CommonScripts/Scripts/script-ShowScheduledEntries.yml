@@ -1,69 +1,13 @@
+args:
+- default: true
+  description: Incident ID to get tasks from
+  name: incidentId
+comment: Show all scheduled entries for specific incident.
 commonfields:
   id: ShowScheduledEntries
   version: -1
-name: ShowScheduledEntries
-script: |
-  var incidentId = args.incidentId;
-
-  var entries = executeCommand("getEntries", { id: incidentId });
-
-  var header = 'Scheduled entries for current incident:';
-  if (incidentId) {
-      header = 'Scheduled entries for incident #' + incidentId + ':';
-  }
-
-  var warRoomUrl = demistoUrls().warRoom;
-  var md = '### ' + header + '\n';
-  md += 'Entry ID|Command\n';
-  md += '-|-\n';
-
-  var scheduledEntries = [];
-  entries.forEach(function (entry) {
-      if (entry.Metadata.Recurrent && entry.Metadata.Schedule.Scheduled) {
-          md += '['+ entry.ID + '](' + warRoomUrl + '/' + entry.ID + ')' + '|' + entry.Contents + '\n';
-          scheduledEntries.push({
-              id: entry.ID,
-              brand: entry.Brand,
-              type: entry.Type,
-              contents: entry.Contents,
-              contentsFormat: entry.ContentsFormat,
-              note: entry.Note,
-              evidence: entry.Evidence,
-              tags: entry.Tags,
-              investigationID: entry.Metadata.InvestigationID,
-              schedule: entry.Metadata.Schedule
-          });
-      }
-  });
-
-  if (!scheduledEntries || scheduledEntries.length === 0) {
-      if (incidentId) {
-          return 'There are no scheduled entries for incident #' + incidentId + '.';
-      }
-      return 'There are no scheduled entries for current incident.';
-  }
-
-  entryResult = {
-      Type: entryTypes.note,
-      Contents: scheduledEntries,
-      ContentsFormat: formats.json,
-      ReadableContentsFormat: formats.markdown,
-      HumanReadable: md,
-      EntryContext: {
-          ScheduledEntries: scheduledEntries
-      }
-  };
-
-  return entryResult;
-type: javascript
-tags:
-- Utility
-comment: Show all scheduled entries for specific incident.
 enabled: true
-args:
-- name: incidentId
-  default: true
-  description: Incident ID to get tasks from
+name: ShowScheduledEntries
 outputs:
 - contextPath: ScheduledEntries
   description: Entire scheduled entry object
@@ -93,6 +37,30 @@ outputs:
   type: string
 - contextPath: ScheduledEntries.schedule.HumanCron
   description: Entry schedule settings
-scripttarget: 0
 runonce: false
+script: "var incidentId = args.incidentId;\n\nvar entries = executeCommand(\"getEntries\"\
+  , { id: incidentId });\n\nvar header = 'Scheduled entries for current incident:';\n\
+  if (incidentId) {\n    header = 'Scheduled entries for incident #' + incidentId\
+  \ + ':';\n}\n\nvar warRoomUrl = demistoUrls().warRoom;\nvar md = '### ' + header\
+  \ + '\\n';\nmd += 'Entry ID|Command\\n';\nmd += '-|-\\n';\n\nvar scheduledEntries\
+  \ = [];\nentries.forEach(function (entry) {\n    if (entry.Metadata.Recurrent &&\
+  \ entry.Metadata.Schedule.Scheduled) {\n        md += '['+ entry.ID + '](' + warRoomUrl\
+  \ + '/' + entry.ID + ')' + '|' + entry.Contents + '\\n';\n        scheduledEntries.push({\n\
+  \            id: entry.ID,\n            brand: entry.Brand,\n            type: entry.Type,\n\
+  \            contents: entry.Contents,\n            contentsFormat: entry.ContentsFormat,\n\
+  \            note: entry.Note,\n            evidence: entry.Evidence,\n        \
+  \    tags: entry.Tags,\n            investigationID: entry.Metadata.InvestigationID,\n\
+  \            schedule: entry.Metadata.Schedule\n        });\n    }\n});\n\nif (!scheduledEntries\
+  \ || scheduledEntries.length === 0) {\n    if (incidentId) {\n        return 'There\
+  \ are no scheduled entries for incident #' + incidentId + '.';\n    }\n    return\
+  \ 'There are no scheduled entries for current incident.';\n}\n\nentryResult = {\n\
+  \    Type: entryTypes.note,\n    Contents: scheduledEntries,\n    ContentsFormat:\
+  \ formats.json,\n    ReadableContentsFormat: formats.markdown,\n    HumanReadable:\
+  \ md,\n    EntryContext: {\n        ScheduledEntries: scheduledEntries\n    }\n\
+  };\n\nreturn entryResult;\n"
+scripttarget: 0
 sensitive: true
+tags:
+- Utility
+toversion: 4.1.9
+type: javascript

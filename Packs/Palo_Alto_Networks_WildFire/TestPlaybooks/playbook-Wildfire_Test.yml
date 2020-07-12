@@ -1,363 +1,210 @@
+description: 'A test playbook for Wild Fire.
+
+  Does not test the deprecated detonate commands.'
 id: Wildfire Test
-version: -1
+inputs: []
 name: Wildfire Test
-description: |-
-  A test playbook for Wild Fire.
-  Does not test the deprecated detonate commands.
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
+system: true
 tasks:
-  "0":
-    id: "0"
-    taskid: 53895f5a-6686-4bc6-8de6-9fcf25dca51d
-    type: start
+  '0':
+    id: '0'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '10'
+    note: false
+    separatecontext: false
     task:
+      brand: ''
       id: 53895f5a-6686-4bc6-8de6-9fcf25dca51d
-      version: -1
-      name: ""
       iscommand: false
-      brand: ""
+      name: ''
+      version: -1
+    taskid: 53895f5a-6686-4bc6-8de6-9fcf25dca51d
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 50\n  }\n}"
+  '10':
+    id: '10'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "10"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 50
-        }
-      }
+      - '6'
     note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 9816f0d5-e554-43d7-8726-ffa5e0f6523d
-    type: regular
-    task:
-      id: 9816f0d5-e554-43d7-8726-ffa5e0f6523d
-      version: -1
-      name: wildfire-upload-file-url
-      description: Upload a URL of remote file to WildFire for analysis
-      script: '|||wildfire-upload-file-url'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      upload:
-        simple: http://www.pdf995.com/samples/pdf.pdf
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "7":
-    id: "7"
-    taskid: a67047ef-9070-4a13-8f32-a24a7ba2ac5a
-    type: regular
-    task:
-      id: a67047ef-9070-4a13-8f32-a24a7ba2ac5a
-      version: -1
-      name: wildfire-report
-      description: Retrieve results for a file hash using WildFire
-      script: '|||wildfire-report'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      format: {}
-      hash:
-        simple: ebb031c3945e884e695dbc63c52a5efcd075375046c49729980073585ee13c52
-      md5: {}
-      sha256: {}
-      verbose:
-        simple: "true"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "9":
-    id: "9"
-    taskid: 5d4100c8-f6a4-4513-8eed-9190dfbe6ee9
-    type: condition
-    task:
-      id: 5d4100c8-f6a4-4513-8eed-9190dfbe6ee9
-      version: -1
-      name: test wildfire-report
-      description: Verifies context
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "13"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualNumber
-          left:
-            value:
-              complex:
-                root: DBotScore
-                accessor: Score
-            iscontext: true
-          right:
-            value:
-              simple: "1"
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "10":
-    id: "10"
-    taskid: 95ea07d3-bac7-46ba-8ee8-cba8942d6612
-    type: regular
-    task:
-      id: 95ea07d3-bac7-46ba-8ee8-cba8942d6612
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "13":
-    id: "13"
-    taskid: 8b95c716-9987-42fd-8363-68c62f4b26bb
-    type: regular
     task:
-      id: 8b95c716-9987-42fd-8363-68c62f4b26bb
-      version: -1
-      name: wildfire-upload
-      description: Upload file to WildFire for analysis.
-      script: '|||wildfire-upload'
+      brand: ''
+      description: Delete field from context
+      id: 95ea07d3-bac7-46ba-8ee8-cba8942d6612
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: 95ea07d3-bac7-46ba-8ee8-cba8942d6612
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 195\n  }\n}"
+  '13':
+    id: '13'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
+    note: false
     scriptarguments:
       upload:
         simple: ${InfoFile.EntryID}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "15":
-    id: "15"
-    taskid: efe01132-e8e7-4d85-8320-80ddde1f73fc
-    type: regular
     task:
-      id: efe01132-e8e7-4d85-8320-80ddde1f73fc
-      version: -1
-      name: wildfire-report
-      description: Retrieve results for a file hash using WildFire
-      script: '|||wildfire-report'
-      type: regular
+      brand: ''
+      description: Upload file to WildFire for analysis.
+      id: 8b95c716-9987-42fd-8363-68c62f4b26bb
       iscommand: true
-      brand: ""
+      name: wildfire-upload
+      script: '|||wildfire-upload'
+      type: regular
+      version: -1
+    taskid: 8b95c716-9987-42fd-8363-68c62f4b26bb
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 895\n  }\n}"
+  '15':
+    id: '15'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "20"
+      - '20'
+    note: false
     scriptarguments:
       format:
         simple: xml
       hash:
         complex:
-          root: WildFire
           accessor: Report.SHA256
+          root: WildFire
       md5: {}
       sha256: {}
       verbose:
-        simple: "true"
+        simple: 'true'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "17":
-    id: "17"
-    taskid: 718b0bc8-beff-417d-80cd-b872401c587e
-    type: title
     task:
-      id: 718b0bc8-beff-417d-80cd-b872401c587e
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 6145
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "18":
-    id: "18"
-    taskid: 71fcd5bf-c8f5-4958-88ac-7c7e45ed7d10
-    type: condition
-    task:
-      id: 71fcd5bf-c8f5-4958-88ac-7c7e45ed7d10
-      version: -1
-      name: Search for hashes for report download
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "15"
-      "yes":
-      - "19"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: WildFire
-                accessor: Report.SHA256
-                transformers:
-                - operator: atIndex
-                  args:
-                    index:
-                      value:
-                        simple: "0"
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "19":
-    id: "19"
-    taskid: 8af34dd8-2862-4967-8526-9c9bdd4a6d42
-    type: regular
-    task:
-      id: 8af34dd8-2862-4967-8526-9c9bdd4a6d42
-      version: -1
-      name: wildfire-report
+      brand: ''
       description: Retrieve results for a file hash using WildFire
+      id: efe01132-e8e7-4d85-8320-80ddde1f73fc
+      iscommand: true
+      name: wildfire-report
       script: '|||wildfire-report'
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: efe01132-e8e7-4d85-8320-80ddde1f73fc
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+  '17':
+    id: '17'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 718b0bc8-beff-417d-80cd-b872401c587e
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 718b0bc8-beff-417d-80cd-b872401c587e
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 6145\n  }\n}"
+  '18':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Report.SHA256
+                root: WildFire
+                transformers:
+                - args:
+                    index:
+                      value:
+                        simple: '0'
+                  operator: atIndex
+          operator: isExists
+      label: 'yes'
+    id: '18'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '15'
+      'yes':
+      - '19'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 71fcd5bf-c8f5-4958-88ac-7c7e45ed7d10
+      iscommand: false
+      name: Search for hashes for report download
+      type: condition
+      version: -1
+    taskid: 71fcd5bf-c8f5-4958-88ac-7c7e45ed7d10
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1070\n  }\n}"
+  '19':
+    id: '19'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "20"
+      - '20'
+    note: false
     scriptarguments:
       format: {}
       hash:
         complex:
-          root: WildFire
           accessor: Report.SHA256
+          root: WildFire
           transformers:
-          - operator: atIndex
-            args:
+          - args:
               index:
                 value:
-                  simple: "0"
+                  simple: '0'
+            operator: atIndex
       md5: {}
       verbose: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "20":
-    id: "20"
-    taskid: a19d90a6-2fc8-4d8c-8588-cdc688dee615
-    type: regular
     task:
-      id: a19d90a6-2fc8-4d8c-8588-cdc688dee615
-      version: -1
-      name: wildfire-report - no network data
+      brand: ''
       description: Retrieve results for a file hash using WildFire
+      id: 8af34dd8-2862-4967-8526-9c9bdd4a6d42
+      iscommand: true
+      name: wildfire-report
       script: '|||wildfire-report'
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: 8af34dd8-2862-4967-8526-9c9bdd4a6d42
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1245\n  }\n}"
+  '20':
+    id: '20'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "41"
+      - '41'
+    note: false
     scriptarguments:
       format:
         simple: xml
@@ -367,32 +214,26 @@ tasks:
       sha256: {}
       verbose: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "21":
-    id: "21"
-    taskid: bb23219f-380d-48a2-8907-9fb12dbf8f35
-    type: regular
     task:
-      id: bb23219f-380d-48a2-8907-9fb12dbf8f35
-      version: -1
-      name: http download test data file
-      description: Sends http request. Returns the response as json.
-      scriptName: http
+      brand: ''
+      description: Retrieve results for a file hash using WildFire
+      id: a19d90a6-2fc8-4d8c-8588-cdc688dee615
+      iscommand: true
+      name: wildfire-report - no network data
+      script: '|||wildfire-report'
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: a19d90a6-2fc8-4d8c-8588-cdc688dee615
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1420\n  }\n}"
+  '21':
+    id: '21'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "22"
+      - '22'
+    note: false
     scriptarguments:
       body: {}
       filename:
@@ -404,239 +245,197 @@ tasks:
       password: {}
       proxy: {}
       saveAsFile:
-        simple: "yes"
+        simple: 'yes'
       unsecure: {}
       url:
         simple: https://raw.githubusercontent.com/demisto/content/master/TestData/verdicts_for_wildfire_test_pb.txt
       username: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 2470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "22":
-    id: "22"
-    taskid: 6ea4d576-e7ad-4c7c-8300-e10fd19ddca4
-    type: regular
     task:
-      id: 6ea4d576-e7ad-4c7c-8300-e10fd19ddca4
-      version: -1
-      name: wildfire-get-verdicts
-      description: Get a verdict regarding multiple hashes
-      script: '|||wildfire-get-verdicts'
+      brand: ''
+      description: Sends http request. Returns the response as json.
+      id: bb23219f-380d-48a2-8907-9fb12dbf8f35
+      iscommand: false
+      name: http download test data file
+      scriptName: http
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: bb23219f-380d-48a2-8907-9fb12dbf8f35
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 2470\n  }\n}"
+  '22':
+    id: '22'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "24"
+      - '24'
+    note: false
     scriptarguments:
       EntryID:
         simple: ${File.EntryID}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 2645
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "23":
-    id: "23"
-    taskid: 76be44c3-7496-40c0-89f4-eddbb2343115
-    type: regular
     task:
-      id: 76be44c3-7496-40c0-89f4-eddbb2343115
-      version: -1
-      name: Delete Context
-      description: Delete field from context
-      scriptName: DeleteContext
+      brand: ''
+      description: Get a verdict regarding multiple hashes
+      id: 6ea4d576-e7ad-4c7c-8300-e10fd19ddca4
+      iscommand: true
+      name: wildfire-get-verdicts
+      script: '|||wildfire-get-verdicts'
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 6ea4d576-e7ad-4c7c-8300-e10fd19ddca4
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 2645\n  }\n}"
+  '23':
+    id: '23'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "21"
+      - '21'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 2295
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "24":
-    id: "24"
-    taskid: 59f4106a-63cd-4065-8461-ec05f4a8a3b6
-    type: condition
     task:
-      id: 59f4106a-63cd-4065-8461-ec05f4a8a3b6
-      version: -1
-      name: test wildfire-get-verdicts
-      type: condition
+      brand: ''
+      description: Delete field from context
+      id: 76be44c3-7496-40c0-89f4-eddbb2343115
       iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "30"
-    separatecontext: false
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 76be44c3-7496-40c0-89f4-eddbb2343115
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 2295\n  }\n}"
+  '24':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: WildFire
                 accessor: Verdicts
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 2820
-        }
-      }
-    note: false
-    timertriggers: []
+                root: WildFire
+          operator: isExists
+      label: 'yes'
+    id: '24'
     ignoreworker: false
-  "25":
-    id: "25"
-    taskid: 152a6284-28e1-4c52-8105-df38ac78f0d4
-    type: regular
+    nexttasks:
+      'yes':
+      - '30'
+    note: false
+    separatecontext: false
     task:
-      id: 152a6284-28e1-4c52-8105-df38ac78f0d4
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      id: 59f4106a-63cd-4065-8461-ec05f4a8a3b6
       iscommand: false
-      brand: ""
+      name: test wildfire-get-verdicts
+      type: condition
+      version: -1
+    taskid: 59f4106a-63cd-4065-8461-ec05f4a8a3b6
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 2820\n  }\n}"
+  '25':
+    id: '25'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "26"
+      - '26'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "26":
-    id: "26"
-    taskid: bf71c670-3e16-4b14-80db-719a2d5886fb
-    type: regular
     task:
-      id: bf71c670-3e16-4b14-80db-719a2d5886fb
-      version: -1
-      name: wildfire-get-verdict
-      description: Get a verdict regarding a hash
-      script: '|||wildfire-get-verdict'
+      brand: ''
+      description: Delete field from context
+      id: 152a6284-28e1-4c52-8105-df38ac78f0d4
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: 152a6284-28e1-4c52-8105-df38ac78f0d4
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1770\n  }\n}"
+  '26':
+    id: '26'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "27"
+      - '27'
+    note: false
     scriptarguments:
       hash:
         simple: afe6b95ad95bc689c356f34ec8d9094c495e4af57c932ac413b65ef132063acc
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "27":
-    id: "27"
-    taskid: 7e8658c9-1fec-47fa-8777-998f758beb22
-    type: condition
     task:
-      id: 7e8658c9-1fec-47fa-8777-998f758beb22
+      brand: ''
+      description: Get a verdict regarding a hash
+      id: bf71c670-3e16-4b14-80db-719a2d5886fb
+      iscommand: true
+      name: wildfire-get-verdict
+      script: '|||wildfire-get-verdict'
+      type: regular
       version: -1
-      name: test wildfire-get-verdict
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "23"
-    separatecontext: false
+    taskid: bf71c670-3e16-4b14-80db-719a2d5886fb
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1945\n  }\n}"
+  '27':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualNumber
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: DBotScore
                 accessor: Score
-            iscontext: true
+                root: DBotScore
+          operator: isEqualNumber
           right:
             value:
-              simple: "3"
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 2120
-        }
-      }
-    note: false
-    timertriggers: []
+              simple: '3'
+      label: 'yes'
+    id: '27'
     ignoreworker: false
-  "28":
-    id: "28"
-    taskid: cf19a4db-4e2d-4158-87cd-681f6a625d51
-    type: regular
+    nexttasks:
+      'yes':
+      - '23'
+    note: false
+    separatecontext: false
     task:
-      id: cf19a4db-4e2d-4158-87cd-681f6a625d51
+      brand: ''
+      id: 7e8658c9-1fec-47fa-8777-998f758beb22
+      iscommand: false
+      name: test wildfire-get-verdict
+      type: condition
       version: -1
-      name: file (with sha1 value in the argument file)
-      description: Retrieve results for a file hash using WildFire
-      script: WildFire-v2|||file
-      type: regular
-      iscommand: true
-      brand: WildFire-v2
+    taskid: 7e8658c9-1fec-47fa-8777-998f758beb22
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 2120\n  }\n}"
+  '28':
+    id: '28'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "29"
+      - '29'
+    note: false
     scriptarguments:
       file:
         simple: a31986a65068af86dbfeddad3e63e05f759b2b32
@@ -647,35 +446,26 @@ tasks:
       threshold: {}
       wait: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 3170
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "29":
-    id: "29"
-    taskid: b581de4c-23a8-4f99-83d1-3abbd8e6cb96
-    type: regular
     task:
-      id: b581de4c-23a8-4f99-83d1-3abbd8e6cb96
-      version: -1
-      name: commentsToContext
-      description: "Takes the comments of a given entry ID and stores them in the
-        incident context, under a provided context key. \nFor accessing the last executed
-        task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
-        the entryId input parameter."
-      scriptName: commentsToContext
+      brand: WildFire-v2
+      description: Retrieve results for a file hash using WildFire
+      id: cf19a4db-4e2d-4158-87cd-681f6a625d51
+      iscommand: true
+      name: file (with sha1 value in the argument file)
+      script: WildFire-v2|||file
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: cf19a4db-4e2d-4158-87cd-681f6a625d51
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 3170\n  }\n}"
+  '29':
+    id: '29'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "31"
+      - '31'
+    note: false
     scriptarguments:
       contextKey:
         simple: checkFile
@@ -683,388 +473,328 @@ tasks:
         simple: ${lastCompletedTaskEntries.[0]}
       listSeperator: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 3345
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "30":
-    id: "30"
-    taskid: d20a5284-2f59-4eaa-85f4-46bec3fe1acc
-    type: regular
     task:
-      id: d20a5284-2f59-4eaa-85f4-46bec3fe1acc
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      description: "Takes the comments of a given entry ID and stores them in the\
+        \ incident context, under a provided context key. \nFor accessing the last\
+        \ executed task's comments, provide ${lastCompletedTaskEntries.[0]} as the\
+        \ value for the entryId input parameter."
+      id: b581de4c-23a8-4f99-83d1-3abbd8e6cb96
       iscommand: false
-      brand: ""
+      name: commentsToContext
+      scriptName: commentsToContext
+      type: regular
+      version: -1
+    taskid: b581de4c-23a8-4f99-83d1-3abbd8e6cb96
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 3345\n  }\n}"
+  '30':
+    id: '30'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "28"
+      - '28'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 2995
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "31":
-    id: "31"
-    taskid: f6ad72e2-5d0d-4bcb-8f40-82b1a844292c
-    type: condition
     task:
-      id: f6ad72e2-5d0d-4bcb-8f40-82b1a844292c
-      version: -1
-      name: test file with sha1 input
-      type: condition
+      brand: ''
+      description: Delete field from context
+      id: d20a5284-2f59-4eaa-85f4-46bec3fe1acc
       iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "32"
-    separatecontext: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: d20a5284-2f59-4eaa-85f4-46bec3fe1acc
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 2995\n  }\n}"
+  '31':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: checkFile
-            iscontext: true
+          operator: containsString
           right:
             value:
               simple: WildFire file hash reputation supports only MD5, SHA256
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 3520
-        }
-      }
-    note: false
-    timertriggers: []
+      label: 'yes'
+    id: '31'
     ignoreworker: false
-  "32":
-    id: "32"
-    taskid: 1d9f76d2-b3c7-4f9c-8470-ae6f6b97d5e2
-    type: regular
+    nexttasks:
+      'yes':
+      - '32'
+    note: false
+    separatecontext: false
     task:
-      id: 1d9f76d2-b3c7-4f9c-8470-ae6f6b97d5e2
+      brand: ''
+      id: f6ad72e2-5d0d-4bcb-8f40-82b1a844292c
+      iscommand: false
+      name: test file with sha1 input
+      type: condition
       version: -1
+    taskid: f6ad72e2-5d0d-4bcb-8f40-82b1a844292c
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 3520\n  }\n}"
+  '32':
+    id: '32'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '33'
+    note: false
+    reputationcalc: 2
+    separatecontext: false
+    task:
+      brand: ''
+      id: 1d9f76d2-b3c7-4f9c-8470-ae6f6b97d5e2
+      iscommand: false
       name: file_command_enrichment_test_script_helper
       scriptName: file_command_enrichment_test_script_helper
       type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "33"
-    reputationcalc: 2
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 3695
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "33":
-    id: "33"
-    taskid: 8bac8203-5d1a-45ef-877d-89d9ce66a65a
-    type: condition
-    task:
-      id: 8bac8203-5d1a-45ef-877d-89d9ce66a65a
       version: -1
-      name: Test enrichment of md5 or sha 256 does exist
-      description: Test enrichment of md5 or sha 256 does exist
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "34"
-    separatecontext: false
+    taskid: 1d9f76d2-b3c7-4f9c-8470-ae6f6b97d5e2
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 3695\n  }\n}"
+  '33':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: DBotScore
+                accessor: Indicator
                 filters:
-                - - operator: stringHasLength
-                    left:
+                - - left:
+                      iscontext: true
                       value:
                         simple: DBotScore.Indicator
-                      iscontext: true
+                    operator: stringHasLength
                     right:
                       value:
-                        simple: "32"
-                accessor: Indicator
+                        simple: '32'
+                root: DBotScore
                 transformers:
                 - operator: uniq
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: 8cbf90aeab2c93b2819fcfd6262b2cdb
-        - operator: isEqualString
-          left:
+        - left:
+            iscontext: true
             value:
               complex:
-                root: DBotScore
+                accessor: Indicator
                 filters:
-                - - operator: stringHasLength
-                    left:
+                - - left:
+                      iscontext: true
                       value:
                         simple: DBotScore.Indicator
-                      iscontext: true
+                    operator: stringHasLength
                     right:
                       value:
-                        simple: "64"
-                accessor: Indicator
+                        simple: '64'
+                root: DBotScore
                 transformers:
                 - operator: uniq
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: fa5953e0c34a4bbf69ac31f3a1360024101c1232bb45cccaad3611b682c92387
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 3870
-        }
-      }
-    note: false
-    timertriggers: []
+      label: 'yes'
+    id: '33'
     ignoreworker: false
-  "34":
-    id: "34"
-    taskid: 2f96368c-5010-4440-8419-4f7635bf125c
-    type: condition
-    task:
-      id: 2f96368c-5010-4440-8419-4f7635bf125c
-      version: -1
-      name: Test enrichment of sha1 does not exist
-      type: condition
-      iscommand: false
-      brand: ""
     nexttasks:
-      "yes":
-      - "35"
+      'yes':
+      - '34'
+    note: false
     separatecontext: false
+    task:
+      brand: ''
+      description: Test enrichment of md5 or sha 256 does exist
+      id: 8bac8203-5d1a-45ef-877d-89d9ce66a65a
+      iscommand: false
+      name: Test enrichment of md5 or sha 256 does exist
+      type: condition
+      version: -1
+    taskid: 8bac8203-5d1a-45ef-877d-89d9ce66a65a
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 3870\n  }\n}"
+  '34':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: DBotScore
                 filters:
-                - - operator: isEqualString
-                    left:
+                - - left:
+                      iscontext: true
                       value:
                         simple: DBotScore.Indicator
-                      iscontext: true
+                    operator: isEqualString
                     right:
                       value:
                         simple: 74eb807ea392650562b43a0e326e5d14b86f43ce
-                - - operator: isEqualString
-                    left:
+                - - left:
+                      iscontext: true
                       value:
                         simple: DBotScore.Vendor
-                      iscontext: true
+                    operator: isEqualString
                     right:
                       value:
                         simple: WildFire
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 4045
-        }
-      }
-    note: false
-    timertriggers: []
+                root: DBotScore
+          operator: isNotExists
+      label: 'yes'
+    id: '34'
     ignoreworker: false
-  "35":
-    id: "35"
-    taskid: 0fe7d87c-0a55-4a2f-8bdb-8222faad9fda
-    type: regular
+    nexttasks:
+      'yes':
+      - '35'
+    note: false
+    separatecontext: false
     task:
-      id: 0fe7d87c-0a55-4a2f-8bdb-8222faad9fda
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      id: 2f96368c-5010-4440-8419-4f7635bf125c
       iscommand: false
-      brand: ""
+      name: Test enrichment of sha1 does not exist
+      type: condition
+      version: -1
+    taskid: 2f96368c-5010-4440-8419-4f7635bf125c
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 4045\n  }\n}"
+  '35':
+    id: '35'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "36"
+      - '36'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 4220
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "36":
-    id: "36"
-    taskid: 7bbfcd3f-f51f-413f-815a-e4ca96ee9a13
-    type: regular
     task:
-      id: 7bbfcd3f-f51f-413f-815a-e4ca96ee9a13
-      version: -1
-      name: wildfire-get-sample
-      description: Retrieve a sample from WildFire
-      script: '|||wildfire-get-sample'
+      brand: ''
+      description: Delete field from context
+      id: 0fe7d87c-0a55-4a2f-8bdb-8222faad9fda
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: 0fe7d87c-0a55-4a2f-8bdb-8222faad9fda
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 4220\n  }\n}"
+  '36':
+    id: '36'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "37"
+      - '37'
+    note: false
     scriptarguments:
       md5:
         simple: 5af84a3db5883627bfdff909e210634e
       sha256: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 4395
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "37":
-    id: "37"
-    taskid: f0db14ad-d0d6-4d8c-87dc-8bcf65cf303e
-    type: condition
     task:
-      id: f0db14ad-d0d6-4d8c-87dc-8bcf65cf303e
+      brand: ''
+      description: Retrieve a sample from WildFire
+      id: 7bbfcd3f-f51f-413f-815a-e4ca96ee9a13
+      iscommand: true
+      name: wildfire-get-sample
+      script: '|||wildfire-get-sample'
+      type: regular
       version: -1
-      name: Test wildfire-get-sample
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "38"
-    separatecontext: false
+    taskid: 7bbfcd3f-f51f-413f-815a-e4ca96ee9a13
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 4395\n  }\n}"
+  '37':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: File
                 accessor: Name
-            iscontext: true
+                root: File
+          operator: containsString
           right:
             value:
               simple: 1d457069cb511af47a587287d59817148d404a2a7f39e1032d16094811f648e3.xlsx
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 4570
-        }
-      }
-    note: false
-    timertriggers: []
+      label: 'yes'
+    id: '37'
     ignoreworker: false
-  "38":
-    id: "38"
-    taskid: a6c56eb1-7faf-4876-8263-e65af9f8dbc3
-    type: regular
+    nexttasks:
+      'yes':
+      - '38'
+    note: false
+    separatecontext: false
     task:
-      id: a6c56eb1-7faf-4876-8263-e65af9f8dbc3
+      brand: ''
+      id: f0db14ad-d0d6-4d8c-87dc-8bcf65cf303e
+      iscommand: false
+      name: Test wildfire-get-sample
+      type: condition
       version: -1
-      name: wildfire-get-sample benign
-      description: Retrieve a sample
-      script: '|||wildfire-get-sample'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: f0db14ad-d0d6-4d8c-87dc-8bcf65cf303e
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 4570\n  }\n}"
+  '38':
+    id: '38'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "39"
+      - '39'
+    note: false
     scriptarguments:
       md5: {}
       sha256:
         simple: 4b4f3e336514eedf8c8a1f9d929b97e42921f757056eb640706bd17e096ddad0
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 4745
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "39":
-    id: "39"
-    taskid: dceddbf4-6230-4c4e-81fb-1f8a93b35767
-    type: regular
     task:
-      id: dceddbf4-6230-4c4e-81fb-1f8a93b35767
-      version: -1
-      name: comments to context
-      description: "Takes the comments of a given entry ID and stores them in the
-        incident context, under a provided context key. \nFor accessing the last executed
-        task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
-        the entryId input parameter."
-      scriptName: commentsToContext
+      brand: ''
+      description: Retrieve a sample
+      id: a6c56eb1-7faf-4876-8263-e65af9f8dbc3
+      iscommand: true
+      name: wildfire-get-sample benign
+      script: '|||wildfire-get-sample'
       type: regular
-      iscommand: false
-      brand: Builtin
+      version: -1
+    taskid: a6c56eb1-7faf-4876-8263-e65af9f8dbc3
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 4745\n  }\n}"
+  '39':
+    id: '39'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "40"
+      - '40'
+    note: false
     scriptarguments:
       contextKey:
         simple: benignSample
@@ -1072,69 +802,60 @@ tasks:
         simple: ${lastCompletedTaskEntries.[0]}
       listSeperator: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 4920
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "40":
-    id: "40"
-    taskid: e80d96be-e692-4f52-8c90-82ee6aaaa742
-    type: condition
     task:
-      id: e80d96be-e692-4f52-8c90-82ee6aaaa742
-      version: -1
-      name: info message of sample not found
-      type: condition
+      brand: Builtin
+      description: "Takes the comments of a given entry ID and stores them in the\
+        \ incident context, under a provided context key. \nFor accessing the last\
+        \ executed task's comments, provide ${lastCompletedTaskEntries.[0]} as the\
+        \ value for the entryId input parameter."
+      id: dceddbf4-6230-4c4e-81fb-1f8a93b35767
       iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "42"
-    separatecontext: false
+      name: comments to context
+      scriptName: commentsToContext
+      type: regular
+      version: -1
+    taskid: dceddbf4-6230-4c4e-81fb-1f8a93b35767
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 4920\n  }\n}"
+  '40':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
                 root: benignSample
-            iscontext: true
+          operator: containsString
           right:
             value:
               simple: Sample was not found.
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 5095
-        }
-      }
-    note: false
-    timertriggers: []
+      label: 'yes'
+    id: '40'
     ignoreworker: false
-  "41":
-    id: "41"
-    taskid: ce60334c-6b86-49aa-83fe-5b59115a1298
-    type: regular
+    nexttasks:
+      'yes':
+      - '42'
+    note: false
+    separatecontext: false
     task:
-      id: ce60334c-6b86-49aa-83fe-5b59115a1298
+      brand: ''
+      id: e80d96be-e692-4f52-8c90-82ee6aaaa742
+      iscommand: false
+      name: info message of sample not found
+      type: condition
       version: -1
-      name: wildfire-file
-      description: Retrieve results for a file hash using WildFire
-      script: WildFire-v2|||file
-      type: regular
-      iscommand: true
-      brand: WildFire-v2
+    taskid: e80d96be-e692-4f52-8c90-82ee6aaaa742
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 5095\n  }\n}"
+  '41':
+    id: '41'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "25"
+      - '25'
+    note: false
     scriptarguments:
       file:
         simple: 458464b0d08e76020f65f0c5fe8cfb4259dfb39161c1ed8d7fcb164ce49ab50c
@@ -1145,67 +866,54 @@ tasks:
       threshold: {}
       wait: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "42":
-    id: "42"
-    taskid: 77ff5316-f701-4b31-8483-7a3c1c75829f
-    type: regular
     task:
-      id: 77ff5316-f701-4b31-8483-7a3c1c75829f
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
+      brand: WildFire-v2
+      description: Retrieve results for a file hash using WildFire
+      id: ce60334c-6b86-49aa-83fe-5b59115a1298
+      iscommand: true
+      name: wildfire-file
+      script: WildFire-v2|||file
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: ce60334c-6b86-49aa-83fe-5b59115a1298
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1595\n  }\n}"
+  '42':
+    id: '42'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "43"
+      - '43'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 5270
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "43":
-    id: "43"
-    taskid: fe35bf07-6c9c-427e-8442-9c3147253a1a
-    type: regular
     task:
-      id: fe35bf07-6c9c-427e-8442-9c3147253a1a
-      version: -1
-      name: FileCreateAndUpload
-      description: |
-        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
-      scriptName: FileCreateAndUpload
-      type: regular
+      brand: ''
+      description: Delete field from context
+      id: 77ff5316-f701-4b31-8483-7a3c1c75829f
       iscommand: false
-      brand: ""
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 77ff5316-f701-4b31-8483-7a3c1c75829f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 5270\n  }\n}"
+  '43':
+    id: '43'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "44"
+      - '44'
+    note: false
     scriptarguments:
       data:
         simple: jojo
@@ -1213,67 +921,55 @@ tasks:
       filename:
         simple: lolo.xml
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 5445
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "44":
-    id: "44"
-    taskid: 71cc04bb-5cd2-4c47-8e27-724814d8f4bb
-    type: regular
     task:
-      id: 71cc04bb-5cd2-4c47-8e27-724814d8f4bb
-      version: -1
-      name: wildfire-upload non supported file type
-      description: Uploads a file to WildFire for analysis.
-      script: '|||wildfire-upload'
+      brand: ''
+      description: 'Will create a file (using the given data input or entry ID) and
+        upload it to current investigation war room.
+
+        '
+      id: fe35bf07-6c9c-427e-8442-9c3147253a1a
+      iscommand: false
+      name: FileCreateAndUpload
+      scriptName: FileCreateAndUpload
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: fe35bf07-6c9c-427e-8442-9c3147253a1a
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 5445\n  }\n}"
+  '44':
+    id: '44'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "45"
+      - '45'
+    note: false
     scriptarguments:
       upload:
         complex:
-          root: File
           accessor: EntryID
+          root: File
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 5620
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "45":
-    id: "45"
-    taskid: c17c4352-c580-4316-8c44-12a165473b7b
-    type: regular
     task:
-      id: c17c4352-c580-4316-8c44-12a165473b7b
-      version: -1
-      name: Comments of warning message to context
-      description: "Takes the comments of a given entry ID and stores them in the
-        incident context, under a provided context key. \nFor accessing the last executed
-        task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
-        the entryId input parameter."
-      scriptName: commentsToContext
+      brand: ''
+      description: Uploads a file to WildFire for analysis.
+      id: 71cc04bb-5cd2-4c47-8e27-724814d8f4bb
+      iscommand: true
+      name: wildfire-upload non supported file type
+      script: '|||wildfire-upload'
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 71cc04bb-5cd2-4c47-8e27-724814d8f4bb
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 5620\n  }\n}"
+  '45':
+    id: '45'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "46"
+      - '46'
+    note: false
     scriptarguments:
       contextKey:
         simple: WarningMessage
@@ -1281,67 +977,140 @@ tasks:
         simple: ${lastCompletedTaskEntries.[0]}
       listSeperator: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 5795
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "46":
-    id: "46"
-    taskid: ff60ce66-d3cd-47be-8419-3c0cbc527a89
-    type: condition
     task:
-      id: ff60ce66-d3cd-47be-8419-3c0cbc527a89
-      version: -1
-      name: Warning message of not supported file type
-      type: condition
+      brand: ''
+      description: "Takes the comments of a given entry ID and stores them in the\
+        \ incident context, under a provided context key. \nFor accessing the last\
+        \ executed task's comments, provide ${lastCompletedTaskEntries.[0]} as the\
+        \ value for the entryId input parameter."
+      id: c17c4352-c580-4316-8c44-12a165473b7b
       iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "17"
-    separatecontext: false
+      name: Comments of warning message to context
+      scriptName: commentsToContext
+      type: regular
+      version: -1
+    taskid: c17c4352-c580-4316-8c44-12a165473b7b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 5795\n  }\n}"
+  '46':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: WarningMessage
-            iscontext: true
+          operator: containsString
           right:
             value:
               simple: Unsupported File Type Sample, file type is not supported
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 5970
-        }
-      }
-    note: false
-    timertriggers: []
+      label: 'yes'
+    id: '46'
     ignoreworker: false
-system: true
-view: |-
-  {
-    "linkLabelsPosition": {
-      "31_32_yes": 0.9,
-      "40_42_yes": 0.85
-    },
-    "paper": {
-      "dimensions": {
-        "height": 6160,
-        "width": 810,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    nexttasks:
+      'yes':
+      - '17'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: ff60ce66-d3cd-47be-8419-3c0cbc527a89
+      iscommand: false
+      name: Warning message of not supported file type
+      type: condition
+      version: -1
+    taskid: ff60ce66-d3cd-47be-8419-3c0cbc527a89
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 5970\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    scriptarguments:
+      upload:
+        simple: http://www.pdf995.com/samples/pdf.pdf
+    separatecontext: false
+    task:
+      brand: ''
+      description: Upload a URL of remote file to WildFire for analysis
+      id: 9816f0d5-e554-43d7-8726-ffa5e0f6523d
+      iscommand: true
+      name: wildfire-upload-file-url
+      script: '|||wildfire-upload-file-url'
+      type: regular
+      version: -1
+    taskid: 9816f0d5-e554-43d7-8726-ffa5e0f6523d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 370\n  }\n}"
+  '7':
+    id: '7'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
+    scriptarguments:
+      format: {}
+      hash:
+        simple: ebb031c3945e884e695dbc63c52a5efcd075375046c49729980073585ee13c52
+      md5: {}
+      sha256: {}
+      verbose:
+        simple: 'true'
+    separatecontext: false
+    task:
+      brand: ''
+      description: Retrieve results for a file hash using WildFire
+      id: a67047ef-9070-4a13-8f32-a24a7ba2ac5a
+      iscommand: true
+      name: wildfire-report
+      script: '|||wildfire-report'
+      type: regular
+      version: -1
+    taskid: a67047ef-9070-4a13-8f32-a24a7ba2ac5a
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 545\n  }\n}"
+  '9':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Score
+                root: DBotScore
+          operator: isEqualNumber
+          right:
+            value:
+              simple: '1'
+      label: 'yes'
+    id: '9'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '13'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Verifies context
+      id: 5d4100c8-f6a4-4513-8eed-9190dfbe6ee9
+      iscommand: false
+      name: test wildfire-report
+      type: condition
+      version: -1
+    taskid: 5d4100c8-f6a4-4513-8eed-9190dfbe6ee9
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 720\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"31_32_yes\": 0.9,\n    \"40_42_yes\"\
+  : 0.85\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 6160,\n \
+  \     \"width\": 810,\n      \"x\": 50,\n      \"y\": 50\n    }\n  }\n}"

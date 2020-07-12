@@ -271,7 +271,8 @@ script:
   isfetch: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 tests:
 - Test-Looker
+toversion: 4.1.9

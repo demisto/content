@@ -1,115 +1,75 @@
-id: Process Email - Generic - Test - Incident Starter
-version: -1
-name: Process Email - Generic - Test - Incident Starter
 description: The reason for having a "starter" test and an "actual incident" test
   is so that we can create a new incident which will have the right incident type
   ("Phishing" incident type) from the very beginning. This is absolutely needed in
   order to create the right incident fields for the test incident. If we create an
   incident and CHANGE its type after creating it, we will not have the phishing incident
   fields generated for us (fields like Email Headers, which we later set in the playbook).
-starttaskid: "0"
+id: Process Email - Generic - Test - Incident Starter
+inputs: []
+name: Process Email - Generic - Test - Incident Starter
+outputs: []
+sourceplaybookid: Phishing v2 Test - Attachment
+starttaskid: '0'
+system: true
 tasks:
-  "0":
-    id: "0"
-    taskid: f75a674b-0bda-4ea3-85a2-2241722cbe29
-    type: start
+  '0':
+    id: '0'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '17'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
+      brand: ''
       id: f75a674b-0bda-4ea3-85a2-2241722cbe29
-      version: -1
-      name: ""
       iscommand: false
-      brand: ""
+      name: ''
+      version: -1
+    taskid: f75a674b-0bda-4ea3-85a2-2241722cbe29
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": -140\n  }\n}"
+  '17':
+    id: '17'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "17"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": -140
-        }
-      }
+      - '23'
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
-  "3":
-    id: "3"
-    taskid: 273875ba-fbcb-4b69-8145-1c388f5dfcff
-    type: title
-    task:
-      id: 273875ba-fbcb-4b69-8145-1c388f5dfcff
-      version: -1
-      name: Begin Real Incident
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 905
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "17":
-    id: "17"
-    taskid: 0797a6a4-8aa3-493d-8654-8b775136bce8
-    type: regular
-    task:
-      id: 0797a6a4-8aa3-493d-8654-8b775136bce8
-      version: -1
-      name: Delete Context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "23"
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 5
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "23":
-    id: "23"
-    taskid: b93114ae-779d-4c8b-8720-f448e22c2423
-    type: regular
     task:
-      id: b93114ae-779d-4c8b-8720-f448e22c2423
-      version: -1
-      name: Create new Phishing incident
-      description: commands.local.cmd.create.inc
-      script: Builtin|||createNewIncident
+      brand: ''
+      id: 0797a6a4-8aa3-493d-8654-8b775136bce8
+      iscommand: false
+      name: Delete Context
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: Builtin
+      version: -1
+    taskid: 0797a6a4-8aa3-493d-8654-8b775136bce8
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 5\n  }\n}"
+  '23':
+    id: '23'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "25"
+      - '25'
+    note: false
+    quietmode: 0
+    reputationcalc: 1
     scriptarguments:
       accountid: {}
       accountname: {}
@@ -258,36 +218,29 @@ tasks:
       vendorid: {}
       vendorproduct: {}
       vulnerabilitycategory: {}
-    reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 185
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "24":
-    id: "24"
-    taskid: b203f285-eacf-469d-8cd8-326b4eaa13fa
-    type: regular
     task:
-      id: b203f285-eacf-469d-8cd8-326b4eaa13fa
-      version: -1
-      name: Set playbook for new incident
-      description: commands.local.cmd.set.playbook
-      script: Builtin|||setPlaybook
-      type: regular
-      iscommand: true
       brand: Builtin
+      description: commands.local.cmd.create.inc
+      id: b93114ae-779d-4c8b-8720-f448e22c2423
+      iscommand: true
+      name: Create new Phishing incident
+      script: Builtin|||createNewIncident
+      type: regular
+      version: -1
+    taskid: b93114ae-779d-4c8b-8720-f448e22c2423
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 185\n  }\n}"
+  '24':
+    id: '24'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
+    quietmode: 0
     scriptarguments:
       incidentId:
         complex:
@@ -295,97 +248,94 @@ tasks:
       name:
         simple: Process Email - Generic - Test - Actual Incident
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 730
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "25":
-    id: "25"
-    taskid: 95976e00-e8d6-4a95-8c55-491b547cbddf
-    type: regular
     task:
-      id: 95976e00-e8d6-4a95-8c55-491b547cbddf
-      version: -1
-      name: Begin investigating the incident
-      description: Start investigation of the incident, so that we can later set the
-        right playbook to run on it. This command has t be unhidden using server configuration.
-      script: Builtin|||investigate
-      type: regular
-      iscommand: true
       brand: Builtin
+      description: commands.local.cmd.set.playbook
+      id: b203f285-eacf-469d-8cd8-326b4eaa13fa
+      iscommand: true
+      name: Set playbook for new incident
+      script: Builtin|||setPlaybook
+      type: regular
+      version: -1
+    taskid: b203f285-eacf-469d-8cd8-326b4eaa13fa
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 730\n  }\n}"
+  '25':
+    id: '25'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "26"
+      - '26'
+    note: false
+    quietmode: 0
     scriptarguments:
       id:
         complex:
           root: CreatedIncidentID
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "26":
-    id: "26"
-    taskid: 7f63f321-da44-4a4d-8d0b-0067a34cc71d
-    type: regular
     task:
-      id: 7f63f321-da44-4a4d-8d0b-0067a34cc71d
-      version: -1
-      name: Wait for investigation to begin
-      description: Sleep for X seconds
-      scriptName: Sleep
+      brand: Builtin
+      description: Start investigation of the incident, so that we can later set the
+        right playbook to run on it. This command has t be unhidden using server configuration.
+      id: 95976e00-e8d6-4a95-8c55-491b547cbddf
+      iscommand: true
+      name: Begin investigating the incident
+      script: Builtin|||investigate
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 95976e00-e8d6-4a95-8c55-491b547cbddf
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 370\n  }\n}"
+  '26':
+    id: '26'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "24"
+      - '24'
+    note: false
+    quietmode: 0
     scriptarguments:
       seconds:
-        simple: "15"
+        simple: '15'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 550
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
+    task:
+      brand: ''
+      description: Sleep for X seconds
+      id: 7f63f321-da44-4a4d-8d0b-0067a34cc71d
+      iscommand: false
+      name: Wait for investigation to begin
+      scriptName: Sleep
+      type: regular
+      version: -1
+    taskid: 7f63f321-da44-4a4d-8d0b-0067a34cc71d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 550\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
+    note: false
     quietmode: 0
-system: true
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1110,
-        "width": 380,
-        "x": 265,
-        "y": -140
-      }
-    }
-  }
-inputs: []
-outputs: []
-sourceplaybookid: Phishing v2 Test - Attachment
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 273875ba-fbcb-4b69-8145-1c388f5dfcff
+      iscommand: false
+      name: Begin Real Incident
+      type: title
+      version: -1
+    taskid: 273875ba-fbcb-4b69-8145-1c388f5dfcff
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 905\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1110,\n      \"width\": 380,\n      \"x\": 265,\n      \"y\":\
+  \ -140\n    }\n  }\n}"

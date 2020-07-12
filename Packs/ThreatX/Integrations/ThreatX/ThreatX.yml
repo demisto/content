@@ -212,7 +212,8 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: 'ID hash of the Entity. To retrieve this value, run the "!threatx-get-entities" command.'
+      description: ID hash of the Entity. To retrieve this value, run the "!threatx-get-entities"
+        command.
       isArray: false
       name: entity_id
       required: true
@@ -231,5 +232,6 @@ script:
   isfetch: false
   runonce: false
   script: '-'
-  type: python
   subtype: python2
+  type: python
+toversion: 4.1.9

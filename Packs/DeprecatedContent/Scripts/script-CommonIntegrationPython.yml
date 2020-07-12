@@ -1,17 +1,19 @@
+comment: Common code that will be merged into each server integration when it runs
 commonfields:
   id: CommonIntegrationPython
   version: -1
+dependson: {}
+deprecated: true
 name: CommonIntegrationPython
-script: |-
-  entryTypes = {'note': 1, 'downloadAgent': 2, 'file': 3, 'error': 4, 'pinned': 5, 'userManagement': 6, 'image': 7, 'plagroundError': 8, 'entryInfoFile': 9, 'map': 15}
-type: python
+script: 'entryTypes = {''note'': 1, ''downloadAgent'': 2, ''file'': 3, ''error'':
+  4, ''pinned'': 5, ''userManagement'': 6, ''image'': 7, ''plagroundError'': 8, ''entryInfoFile'':
+  9, ''map'': 15}'
+scripttarget: 0
 subtype: python2
+system: true
 tags:
 - infra
 - server
-comment: Common code that will be merged into each server integration when it runs
-system: true
-deprecated: true
-scripttarget: 0
-dependson: {}
 timeout: 0s
+toversion: 4.1.9
+type: python

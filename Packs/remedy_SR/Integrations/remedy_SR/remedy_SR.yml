@@ -1,3 +1,4 @@
+beta: true
 category: Case Management
 commonfields:
   id: remedy_sr_beta
@@ -27,9 +28,12 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: |-
-  The BMC Service Request Management application enables an IT department and other business departments to easily define available services, publish those services in a service catalog, and automate fulfillment of those services for the user community, enabling users to help themselves.
-  This integration uses SOAP API and supports SRM 9.0 version.
+description: 'The BMC Service Request Management application enables an IT department
+  and other business departments to easily define available services, publish those
+  services in a service catalog, and automate fulfillment of those services for the
+  user community, enabling users to help themselves.
+
+  This integration uses SOAP API and supports SRM 9.0 version.'
 display: Remedy SR (Beta)
 name: remedy_sr_beta
 script:
@@ -229,8 +233,8 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python2
+  type: python
 tests:
 - No Test
-beta: true
+toversion: 4.1.9

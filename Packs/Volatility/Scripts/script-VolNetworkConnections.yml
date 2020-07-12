@@ -1,112 +1,59 @@
+args:
+- description: Path to memory dump file on the system being used
+  name: memdump
+  required: true
+- description: System with Volatility installed to be used for the analysis
+  name: system
+  required: true
+- description: Volatility profile to use
+  name: profile
+  required: true
+comment: Volatility script for finding all the network connections. This script runs
+  through different commands based on the profile provided.
 commonfields:
   id: VolNetworkConnections
   version: -1
+dependson: {}
 name: VolNetworkConnections
-script: |-
-  var cmds = [];
-  switch (args.profile) {
-      case 'VistaSP0x64' :
-      case 'VistaSP0x86' :
-      case 'VistaSP1x64' :
-      case 'VistaSP1x86' :
-      case 'VistaSP2x64' :
-      case 'VistaSP2x86' :
-      case 'Win2008R2SP0x64' :
-      case 'Win2008R2SP1x64' :
-      case 'Win2008SP1x64' :
-      case 'Win2008SP1x86' :
-      case 'Win2008SP2x64' :
-      case 'Win2008SP2x86' :
-      case 'Win7SP0x64' :
-      case 'Win7SP0x86' :
-      case 'Win7SP1x64' :
-      case 'Win7SP1x86' :
-      case 'Win81U1x64' :
-      case 'Win81U1x86' :
-      case 'Win8SP0x64' :
-      case 'Win8SP0x86' :
-      case 'Win8SP1x64' :
-      case 'Win8SP1x86' :
-      case 'Win10x64' :
-      case 'Win10x86' :
-      case 'Win2012R2x64' :
-      case 'Win2012x64' :
-          cmds.push('netscan');
-          break;
-      case 'Win2003SP0x86' :
-      case 'Win2003SP1x64' :
-      case 'Win2003SP1x86' :
-      case 'Win2003SP2x64' :
-      case 'Win2003SP2x86' :
-      case 'WinXPSP1x64' :
-      case 'WinXPSP2x64' :
-      case 'WinXPSP2x86' :
-      case 'WinXPSP3x86' :
-          cmds.push('connections');
-          cmds.push('connscan');
-          cmds.push('sockets');
-          cmds.push('sockscan');
-          break;
-      default:
-          break;
-  }
-  var resultarr = [];
-  for (var i = 0; i < cmds.length; i++) {
-      var cmdline = cmds[i];
-      if (args.profile) {
-          cmdline = cmdline + ' --profile=' + args.profile;
-      }
-      var out = executeCommand('VolJson', {file:args.memdump, system: args.system, cmd:cmdline});
-      if (out) {
-          var mapper = function(columns) {
-              return function(val) {
-                  return val.reduce(function(prev, curr, i) {
-                      prev[columns[i]] = '' + curr;
-                      return prev;
-                  }, {});
-              };
-          };
-          for (var r = 0; r < out.length; r++) {
-              if (out[r].Type !== entryTypes.error) {
-                  var jsonout = JSON.parse(out[r].Contents);
-                  result = {};
-                  result.Contents = jsonout.rows.map(mapper(jsonout.columns));
-                  result.ContentsFormat = formats.table;
-                  result.Type = entryTypes.note;
-                  resultarr.push(result);
-              }
-              else
-              {
-                  result = {};
-                  var errstring = out[r].Contents;
-                  result.Contents = errstring.split('Stderr:')[1];
-                  result.ContentsFormat = formats.text;
-                  result.Type = entryTypes.error;
-                  resultarr.push(result);
-              }
-          }
-      }
-  }
-  return resultarr;
-type: javascript
+script: "var cmds = [];\nswitch (args.profile) {\n    case 'VistaSP0x64' :\n    case\
+  \ 'VistaSP0x86' :\n    case 'VistaSP1x64' :\n    case 'VistaSP1x86' :\n    case\
+  \ 'VistaSP2x64' :\n    case 'VistaSP2x86' :\n    case 'Win2008R2SP0x64' :\n    case\
+  \ 'Win2008R2SP1x64' :\n    case 'Win2008SP1x64' :\n    case 'Win2008SP1x86' :\n\
+  \    case 'Win2008SP2x64' :\n    case 'Win2008SP2x86' :\n    case 'Win7SP0x64' :\n\
+  \    case 'Win7SP0x86' :\n    case 'Win7SP1x64' :\n    case 'Win7SP1x86' :\n   \
+  \ case 'Win81U1x64' :\n    case 'Win81U1x86' :\n    case 'Win8SP0x64' :\n    case\
+  \ 'Win8SP0x86' :\n    case 'Win8SP1x64' :\n    case 'Win8SP1x86' :\n    case 'Win10x64'\
+  \ :\n    case 'Win10x86' :\n    case 'Win2012R2x64' :\n    case 'Win2012x64' :\n\
+  \        cmds.push('netscan');\n        break;\n    case 'Win2003SP0x86' :\n   \
+  \ case 'Win2003SP1x64' :\n    case 'Win2003SP1x86' :\n    case 'Win2003SP2x64' :\n\
+  \    case 'Win2003SP2x86' :\n    case 'WinXPSP1x64' :\n    case 'WinXPSP2x64' :\n\
+  \    case 'WinXPSP2x86' :\n    case 'WinXPSP3x86' :\n        cmds.push('connections');\n\
+  \        cmds.push('connscan');\n        cmds.push('sockets');\n        cmds.push('sockscan');\n\
+  \        break;\n    default:\n        break;\n}\nvar resultarr = [];\nfor (var\
+  \ i = 0; i < cmds.length; i++) {\n    var cmdline = cmds[i];\n    if (args.profile)\
+  \ {\n        cmdline = cmdline + ' --profile=' + args.profile;\n    }\n    var out\
+  \ = executeCommand('VolJson', {file:args.memdump, system: args.system, cmd:cmdline});\n\
+  \    if (out) {\n        var mapper = function(columns) {\n            return function(val)\
+  \ {\n                return val.reduce(function(prev, curr, i) {\n             \
+  \       prev[columns[i]] = '' + curr;\n                    return prev;\n      \
+  \          }, {});\n            };\n        };\n        for (var r = 0; r < out.length;\
+  \ r++) {\n            if (out[r].Type !== entryTypes.error) {\n                var\
+  \ jsonout = JSON.parse(out[r].Contents);\n                result = {};\n       \
+  \         result.Contents = jsonout.rows.map(mapper(jsonout.columns));\n       \
+  \         result.ContentsFormat = formats.table;\n                result.Type =\
+  \ entryTypes.note;\n                resultarr.push(result);\n            }\n   \
+  \         else\n            {\n                result = {};\n                var\
+  \ errstring = out[r].Contents;\n                result.Contents = errstring.split('Stderr:')[1];\n\
+  \                result.ContentsFormat = formats.text;\n                result.Type\
+  \ = entryTypes.error;\n                resultarr.push(result);\n            }\n\
+  \        }\n    }\n}\nreturn resultarr;"
+scripttarget: 0
+system: true
 tags:
 - memory
 - forensics
 - volatility
 - server
-comment: Volatility script for finding all the network connections. This script runs
-  through different commands based on the profile provided.
-system: true
-args:
-- name: memdump
-  required: true
-  description: Path to memory dump file on the system being used
-- name: system
-  required: true
-  description: System with Volatility installed to be used for the analysis
-- name: profile
-  required: true
-  description: Volatility profile to use
-scripttarget: 0
-dependson: {}
 timeout: 0s
+toversion: 4.1.9
+type: javascript

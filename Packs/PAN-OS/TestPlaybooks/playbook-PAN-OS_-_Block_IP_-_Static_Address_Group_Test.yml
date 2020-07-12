@@ -1,103 +1,77 @@
+fromversion: 4.0.0
 id: PAN-OS - Block IP - Static Address Group Test
-version: -1
+inputs: []
 name: PAN-OS - Block IP - Static Address Group Test
-starttaskid: "0"
-fromversion: "4.0.0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 2a1db7ce-4490-4174-8e80-e113dc0e0a14
-    type: start
-    task:
-      id: 2a1db7ce-4490-4174-8e80-e113dc0e0a14
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: a48819a6-bd4f-45b2-8d86-b8978dbb6ca6
-    type: playbook
-    task:
-      id: a48819a6-bd4f-45b2-8d86-b8978dbb6ca6
-      version: -1
-      name: PAN-OS - Block IP - Static Address Group
-      playbookName: PAN-OS - Block IP - Static Address Group
-      type: playbook
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 2a1db7ce-4490-4174-8e80-e113dc0e0a14
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 2a1db7ce-4490-4174-8e80-e113dc0e0a14
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
     scriptarguments:
       AddressGroupName:
         simple: Demisto Remediation - Static Address Group
       AutoCommit:
-        simple: "No"
+        simple: 'No'
       IP: {}
       LogForwarding: {}
     separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 200
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 4c6f12d0-1317-444f-8485-87b95cf6034e
-    type: title
     task:
-      id: 4c6f12d0-1317-444f-8485-87b95cf6034e
+      brand: ''
+      id: a48819a6-bd4f-45b2-8d86-b8978dbb6ca6
+      iscommand: false
+      name: PAN-OS - Block IP - Static Address Group
+      playbookName: PAN-OS - Block IP - Static Address Group
+      type: playbook
       version: -1
+    taskid: a48819a6-bd4f-45b2-8d86-b8978dbb6ca6
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 200\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 4c6f12d0-1317-444f-8485-87b95cf6034e
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 380
-        }
-      }
-    note: false
+      version: -1
+    taskid: 4c6f12d0-1317-444f-8485-87b95cf6034e
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 395,
-        "width": 380,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 380\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 395,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n\
+  \    }\n  }\n}"

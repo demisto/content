@@ -1,29 +1,26 @@
+args:
+- default: true
+  description: 'specially formatted json with [md5: (path,hostname)]'
+  name: filelocations
+  required: true
+comment: Fetch all of the files from the endpoints where they were found using Cb
+  Live.
 commonfields:
   id: CBLiveFetchFiles
   version: -1
-name: CBLiveFetchFiles
-script: |-
-  import json
-  res = []
-  fileLocations = json.loads(demisto.args()['filelocations'])
-  for md5 in fileLocations:
-      res += demisto.executeCommand('CBLiveGetFile',{'path': fileLocations[md5][0], 'hostname': fileLocations[md5][1]})
-  demisto.results(res)
-type: python
-subtype: python2
-tags:
-- carbon-black
-- endpoint
-comment: Fetch all of the files from the endpoints where they were found using Cb
-  Live.
-system: true
-args:
-- name: filelocations
-  required: true
-  default: true
-  description: 'specially formatted json with [md5: (path,hostname)]'
-scripttarget: 0
 dependson:
   must:
   - CBLiveGetFile
+name: CBLiveFetchFiles
+script: "import json\nres = []\nfileLocations = json.loads(demisto.args()['filelocations'])\n\
+  for md5 in fileLocations:\n    res += demisto.executeCommand('CBLiveGetFile',{'path':\
+  \ fileLocations[md5][0], 'hostname': fileLocations[md5][1]})\ndemisto.results(res)"
+scripttarget: 0
+subtype: python2
+system: true
+tags:
+- carbon-black
+- endpoint
 timeout: 0s
+toversion: 4.1.9
+type: python

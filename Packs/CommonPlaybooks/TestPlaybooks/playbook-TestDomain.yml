@@ -1,174 +1,74 @@
 id: test-domain-indicator
-version: -1
+inputs: []
 name: test-domain-indicator
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: d73eea89-9664-4cbb-8716-b020ddec169d
-    type: start
-    task:
-      id: d73eea89-9664-4cbb-8716-b020ddec169d
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-  "1":
-    id: "1"
-    taskid: 88b9c62b-1518-4c89-8fc8-aea9e3fec8ab
-    type: regular
     task:
-      id: 88b9c62b-1518-4c89-8fc8-aea9e3fec8ab
+      brand: ''
+      id: d73eea89-9664-4cbb-8716-b020ddec169d
+      iscommand: false
+      name: ''
       version: -1
+    taskid: d73eea89-9664-4cbb-8716-b020ddec169d
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    nexttasks:
+      '#none#':
+      - '13'
+    reputationcalc: 2
+    scriptarguments:
+      value:
+        simple: 'https://www.exit.com
+
+          trump@usa.com'
+    separatecontext: false
+    task:
+      brand: ''
+      id: 88b9c62b-1518-4c89-8fc8-aea9e3fec8ab
+      iscommand: false
       name: Print domains
       scriptName: Print
       type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "13"
-    scriptarguments:
-      value:
-        simple: |-
-          https://www.exit.com
-          trump@usa.com
-    reputationcalc: 2
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-  "8":
-    id: "8"
-    taskid: e3538908-4f70-4e69-8724-e785a6d39f1c
+      version: -1
+    taskid: 88b9c62b-1518-4c89-8fc8-aea9e3fec8ab
     type: regular
-    task:
-      id: e3538908-4f70-4e69-8724-e785a6d39f1c
-      version: -1
-      name: Get usa.com indicator
-      scriptName: GetIndicatorDBotScore
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      indicator:
-        simple: usa.com
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-  "9":
-    id: "9"
-    taskid: 2e2b5ffd-3cf0-4ae1-82b5-558da89f4557
-    type: regular
-    task:
-      id: 2e2b5ffd-3cf0-4ae1-82b5-558da89f4557
-      version: -1
-      name: Get exit.com indicator
-      scriptName: GetIndicatorDBotScore
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      indicator:
-        simple: exit.com
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-  "10":
-    id: "10"
-    taskid: 927a80fd-7959-4f62-8111-4309ee52a2cd
-    type: condition
-    task:
-      id: 927a80fd-7959-4f62-8111-4309ee52a2cd
-      version: -1
-      name: Has exit.com indicator
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "11"
-    scriptarguments:
-      expectedValue:
-        simple: usa.com
-      fields: {}
-      path:
-        simple: DBotScore.[3].Indicator
-    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '10':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: string.isEqual
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: DBotScore
+                accessor: Indicator
                 filters:
-                - - operator: string.isEqual
-                    left:
+                - - left:
+                      iscontext: true
                       value:
                         simple: DBotScore.Indicator
-                      iscontext: true
+                    operator: string.isEqual
                     right:
                       value:
                         simple: exit.com
-                accessor: Indicator
-            iscontext: true
+                root: DBotScore
+          operator: string.isEqual
           right:
             value:
               simple: exit.com
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-  "11":
-    id: "11"
-    taskid: b8bf7eff-4e48-46de-8e72-59a1a7aa2854
-    type: condition
-    task:
-      id: b8bf7eff-4e48-46de-8e72-59a1a7aa2854
-      version: -1
-      name: Has usa.com indicator
-      type: condition
-      iscommand: false
-      brand: ""
+      label: 'yes'
+    id: '10'
     nexttasks:
-      "yes":
-      - "12"
+      'yes':
+      - '11'
     scriptarguments:
       expectedValue:
         simple: usa.com
@@ -176,96 +76,140 @@ tasks:
       path:
         simple: DBotScore.[3].Indicator
     separatecontext: false
+    task:
+      brand: ''
+      id: 927a80fd-7959-4f62-8111-4309ee52a2cd
+      iscommand: false
+      name: Has exit.com indicator
+      type: condition
+      version: -1
+    taskid: 927a80fd-7959-4f62-8111-4309ee52a2cd
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+  '11':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: string.isEqual
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: DBotScore
+                accessor: Indicator
                 filters:
-                - - operator: string.isEqual
-                    left:
+                - - left:
+                      iscontext: true
                       value:
                         simple: DBotScore.Indicator
-                      iscontext: true
+                    operator: string.isEqual
                     right:
                       value:
                         simple: usa.com
-                accessor: Indicator
-            iscontext: true
+                root: DBotScore
+          operator: string.isEqual
           right:
             value:
               simple: usa.com
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-  "12":
-    id: "12"
-    taskid: 2d75dd08-c2cd-42ca-832b-91638c6d9ade
-    type: regular
+      label: 'yes'
+    id: '11'
+    nexttasks:
+      'yes':
+      - '12'
+    scriptarguments:
+      expectedValue:
+        simple: usa.com
+      fields: {}
+      path:
+        simple: DBotScore.[3].Indicator
+    separatecontext: false
     task:
-      id: 2d75dd08-c2cd-42ca-832b-91638c6d9ade
-      version: -1
-      name: All Good
-      scriptName: Print
-      type: regular
+      brand: ''
+      id: b8bf7eff-4e48-46de-8e72-59a1a7aa2854
       iscommand: false
-      brand: ""
+      name: Has usa.com indicator
+      type: condition
+      version: -1
+    taskid: b8bf7eff-4e48-46de-8e72-59a1a7aa2854
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+  '12':
+    id: '12'
     scriptarguments:
       value:
         simple: ALL GOOD
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-  "13":
-    id: "13"
-    taskid: ca818786-d32b-492a-8b3e-ef5cd62fabe8
-    type: regular
     task:
-      id: ca818786-d32b-492a-8b3e-ef5cd62fabe8
-      version: -1
-      name: Sleep
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
+      brand: ''
+      id: 2d75dd08-c2cd-42ca-832b-91638c6d9ade
       iscommand: false
-      brand: ""
+      name: All Good
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: 2d75dd08-c2cd-42ca-832b-91638c6d9ade
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+  '13':
+    id: '13'
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     scriptarguments:
       seconds:
-        simple: "2"
+        simple: '2'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1290,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    task:
+      brand: ''
+      description: Sleep for X seconds
+      id: ca818786-d32b-492a-8b3e-ef5cd62fabe8
+      iscommand: false
+      name: Sleep
+      scriptName: Sleep
+      type: regular
+      version: -1
+    taskid: ca818786-d32b-492a-8b3e-ef5cd62fabe8
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '8':
+    id: '8'
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      indicator:
+        simple: usa.com
+    separatecontext: false
+    task:
+      brand: ''
+      id: e3538908-4f70-4e69-8724-e785a6d39f1c
+      iscommand: false
+      name: Get usa.com indicator
+      scriptName: GetIndicatorDBotScore
+      type: regular
+      version: -1
+    taskid: e3538908-4f70-4e69-8724-e785a6d39f1c
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '9':
+    id: '9'
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      indicator:
+        simple: exit.com
+    separatecontext: false
+    task:
+      brand: ''
+      id: 2e2b5ffd-3cf0-4ae1-82b5-558da89f4557
+      iscommand: false
+      name: Get exit.com indicator
+      scriptName: GetIndicatorDBotScore
+      type: regular
+      version: -1
+    taskid: 2e2b5ffd-3cf0-4ae1-82b5-558da89f4557
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1290,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

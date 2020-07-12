@@ -1,22 +1,23 @@
+args:
+- description: Volatility command to run
+  name: cmd
+  required: true
+- description: Path of file to pass as argument to Volatility
+  name: file
+  required: true
+comment: Execute volatility with command and file as parameters and returns raw output
+  from stdout.
 commonfields:
   id: VolRaw
   version: -1
+dependson: {}
 name: VolRaw
 script: packOutput('vol.py -f ' + args.file + ' ' + args.cmd);
-type: javascript
+scripttarget: 1
+system: true
 tags:
 - agent
 - volatility
-comment: Execute volatility with command and file as parameters and returns raw output
-  from stdout.
-system: true
-args:
-- name: cmd
-  required: true
-  description: Volatility command to run
-- name: file
-  required: true
-  description: Path of file to pass as argument to Volatility
-scripttarget: 1
-dependson: {}
 timeout: 0s
+toversion: 4.1.9
+type: javascript

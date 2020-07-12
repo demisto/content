@@ -52,19 +52,19 @@ comment: Ask a user a question on Slack and expect a response. The response can 
 commonfields:
   id: SlackAskUser
   version: -1
-enabled: false
-name: SlackAskUser
-script: '-'
-system: true
-tags:
-- slack
-timeout: 0s
-type: python
-subtype: python2
 dependson:
   must:
   - slack-send
+enabled: false
 fromversion: 3.5.0
-toversion: 4.5.0
+name: SlackAskUser
+script: '-'
+subtype: python2
+system: true
+tags:
+- slack
 tests:
-  - No test - entitlement
+- No test - entitlement
+timeout: 0s
+toversion: 4.1.9
+type: python

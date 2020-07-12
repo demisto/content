@@ -52,26 +52,30 @@ configuration:
   type: 0
 description: Service management suite that comprises ticketing, workflow automation,
   and notification.
-fromversion: 4.1.0
 display: OTRS
+fromversion: 4.1.0
 name: OTRS
 script:
   commands:
   - arguments:
     - default: true
-      description: Ticket ID of the ticket to get details of. If not supplied, the ticket_number argument is required.
+      description: Ticket ID of the ticket to get details of. If not supplied, the
+        ticket_number argument is required.
       isArray: false
       name: ticket_id
       required: false
       secret: false
     - default: false
-      description: Ticket Number of the ticket to get details of. If not supplied, the ticket_id argument is required.
+      description: Ticket Number of the ticket to get details of. If not supplied,
+        the ticket_id argument is required.
       isArray: false
       name: ticket_number
       required: false
       secret: false
     deprecated: false
-    description: Retrieves details for an OTRS ticket by ticket ID or ticket number. The arguments are both optional, but at least one is required for this integration to run.
+    description: Retrieves details for an OTRS ticket by ticket ID or ticket number.
+      The arguments are both optional, but at least one is required for this integration
+      to run.
     execution: false
     name: otrs-get-ticket
     outputs:
@@ -535,4 +539,5 @@ script:
   subtype: python3
   type: python
 tests:
- - OTRS Test
+- OTRS Test
+toversion: 4.1.9

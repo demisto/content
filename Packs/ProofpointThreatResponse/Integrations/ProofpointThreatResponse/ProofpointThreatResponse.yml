@@ -1,3 +1,4 @@
+beta: true
 category: Email Gateway
 commonfields:
   id: Proofpoint Threat Response
@@ -468,7 +469,8 @@ script:
       type: Unknown
   - arguments:
     - default: true
-      description: The ID value of the incident to retrieve (e.g. for incident INC-4000, the input for this argument should be 4000).
+      description: The ID value of the incident to retrieve (e.g. for incident INC-4000,
+        the input for this argument should be 4000).
       isArray: false
       name: incident_id
       required: true
@@ -649,7 +651,8 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: The ID value of the incident to add the comment to (e.g. for incident INC-4000, the input for this argument should be 4000).
+      description: The ID value of the incident to add the comment to (e.g. for incident
+        INC-4000, the input for this argument should be 4000).
       isArray: false
       name: incident_id
       required: true
@@ -707,7 +710,8 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: The ID value of the incident to add the user to (e.g. for incident INC-4000, the input for this argument should be 4000).
+      description: The ID value of the incident to add the user to (e.g. for incident
+        INC-4000, the input for this argument should be 4000).
       isArray: false
       name: incident_id
       required: true
@@ -903,4 +907,4 @@ script:
   type: python
 tests:
 - No test - beta_integration
-beta: true
+toversion: 4.1.9

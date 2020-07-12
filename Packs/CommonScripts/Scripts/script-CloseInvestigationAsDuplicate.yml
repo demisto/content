@@ -1,21 +1,27 @@
+args:
+- description: Duplicate incident id
+  name: duplicateId
+  required: true
+comment: Close the current investigation as duplicate to other investigation.
 commonfields:
   id: CloseInvestigationAsDuplicate
   version: -1
+enabled: true
 name: CloseInvestigationAsDuplicate
-script: |
-  current_incident_id = demisto.incidents()[0]['id']
-  duplicate_id = demisto.args()['duplicateId']
-  res = demisto.executeCommand("linkIncidents", {"incidentId":duplicate_id, "linkedIncidentIDs": current_incident_id, "action":"duplicate"})
+runonce: false
+script: 'current_incident_id = demisto.incidents()[0][''id'']
+
+  duplicate_id = demisto.args()[''duplicateId'']
+
+  res = demisto.executeCommand("linkIncidents", {"incidentId":duplicate_id, "linkedIncidentIDs":
+  current_incident_id, "action":"duplicate"})
+
   demisto.results(res)
-type: python
+
+  '
+scripttarget: 0
 subtype: python2
 tags:
 - dedup
-comment: Close the current investigation as duplicate to other investigation.
-enabled: true
-args:
-- name: duplicateId
-  required: true
-  description: Duplicate incident id
-scripttarget: 0
-runonce: false
+toversion: 4.1.9
+type: python

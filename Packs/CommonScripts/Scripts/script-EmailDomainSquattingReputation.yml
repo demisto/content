@@ -1,102 +1,21 @@
+args:
+- default: true
+  description: The email address to check
+  name: email
+  required: true
+- description: The domain list to check against for squatting (comma separated)
+  isArray: true
+  name: domain
+  required: true
+- defaultValue: '3'
+  description: The similarity threshold
+  name: threshold
+comment: Check if an email address's domain is trying to squat other domain using
+  Levenshtein distance algorithm
 commonfields:
   id: EmailDomainSquattingReputation
   version: -1
 name: EmailDomainSquattingReputation
-script: |2-
-
-  var email = args.email;
-  var domains = argToList(args.domain);
-  var threshold = parseInt(args.threshold);
-
-  var emailParts = email.split('@',2);
-
-  if (emailParts.length < 2){
-      return {
-          ContentsFormat: formats.text,
-          Type: entryTypes.error,
-          Contents: email.toString() + " - is not a valid email address"
-      };
-  }
-  var emailObj = {
-      Username: emailParts[0],
-      Domain: emailParts[1],
-      Address : email,
-      Distance : []
-  };
-
-  domains.forEach(function(domain){
-    if(domain) {
-        var resp = executeCommand("GetStringsDistance", {inputString: emailObj.Domain, compareString: domain});
-
-        if(isError(resp[0])){
-            return resp;
-        }
-
-        data = [dq(resp[0], "Contents.Distances")];
-        data.forEach(function(entry)
-        {
-            emailObj.Distance.push(
-                {
-                    Domain  : dq(entry,"StringB"),
-                    Value   : dq(entry,"LevenshteinDistance")
-                });
-        });
-    }
-  });
-  var ec = {};
-  var suspicious = dq(emailObj,"Distance(val.Value > 0 && val.Value < {0}).Value".format(threshold));
-  var dbotScore = 0;
-  var malicious = null;
-
-  if(suspicious && suspicious.length > 0){
-      //add dbot score, suspicious
-      ec.DBotScore = {
-          Indicator: email,
-          Type: 'email',
-          Vendor: 'DomainSquatting', Score: 2
-      };
-      //add suspicious description to the indicator
-      malicious = {
-          Vendor: "DomainSquatting",
-          Description : "The email address domain is suspicious at domain squatting"
-      };
-  }
-
-  var account = {Email: emailObj};
-  if (malicious){
-      account.Malicious = malicious;
-  }
-
-  ec["Account(val.Email && val.Email.Address && val.Email.Address === obj.Email.Address)"] = account;
-
-  var md = tableToMarkdown("Domain squatting reputation for {0}".format(email),emailObj.Distance);
-
-  return {
-      Type: entryTypes.note,
-      Contents: emailObj,
-      ContentsFormat: formats.json,
-      HumanReadable: md,
-      EntryContext: ec
-  };
-type: javascript
-tags:
-- email
-- reputation
-comment: Check if an email address's domain is trying to squat other domain using
-  Levenshtein distance algorithm
-system: true
-args:
-- name: email
-  required: true
-  default: true
-  description: The email address to check
-- name: domain
-  required: true
-  description: The domain list to check against for squatting (comma separated)
-  isArray: true
-- name: threshold
-  description: The similarity threshold
-  defaultValue: "3"
 outputs:
 - contextPath: Account
   description: 'A user account '
@@ -132,5 +51,36 @@ outputs:
 - contextPath: DBotScore.Score
   description: The DBot score
   type: number
-scripttarget: 0
 runonce: false
+script: "\nvar email = args.email;\nvar domains = argToList(args.domain);\nvar threshold\
+  \ = parseInt(args.threshold);\n\nvar emailParts = email.split('@',2);\n\nif (emailParts.length\
+  \ < 2){\n    return {\n        ContentsFormat: formats.text,\n        Type: entryTypes.error,\n\
+  \        Contents: email.toString() + \" - is not a valid email address\"\n    };\n\
+  }\nvar emailObj = {\n    Username: emailParts[0],\n    Domain: emailParts[1],\n\
+  \    Address : email,\n    Distance : []\n};\n\ndomains.forEach(function(domain){\n\
+  \  if(domain) {\n      var resp = executeCommand(\"GetStringsDistance\", {inputString:\
+  \ emailObj.Domain, compareString: domain});\n\n      if(isError(resp[0])){\n   \
+  \       return resp;\n      }\n\n      data = [dq(resp[0], \"Contents.Distances\"\
+  )];\n      data.forEach(function(entry)\n      {\n          emailObj.Distance.push(\n\
+  \              {\n                  Domain  : dq(entry,\"StringB\"),\n         \
+  \         Value   : dq(entry,\"LevenshteinDistance\")\n              });\n     \
+  \ });\n  }\n});\nvar ec = {};\nvar suspicious = dq(emailObj,\"Distance(val.Value\
+  \ > 0 && val.Value < {0}).Value\".format(threshold));\nvar dbotScore = 0;\nvar malicious\
+  \ = null;\n\nif(suspicious && suspicious.length > 0){\n    //add dbot score, suspicious\n\
+  \    ec.DBotScore = {\n        Indicator: email,\n        Type: 'email',\n     \
+  \   Vendor: 'DomainSquatting', Score: 2\n    };\n    //add suspicious description\
+  \ to the indicator\n    malicious = {\n        Vendor: \"DomainSquatting\",\n  \
+  \      Description : \"The email address domain is suspicious at domain squatting\"\
+  \n    };\n}\n\nvar account = {Email: emailObj};\nif (malicious){\n    account.Malicious\
+  \ = malicious;\n}\n\nec[\"Account(val.Email && val.Email.Address && val.Email.Address\
+  \ === obj.Email.Address)\"] = account;\n\nvar md = tableToMarkdown(\"Domain squatting\
+  \ reputation for {0}\".format(email),emailObj.Distance);\n\nreturn {\n    Type:\
+  \ entryTypes.note,\n    Contents: emailObj,\n    ContentsFormat: formats.json,\n\
+  \    HumanReadable: md,\n    EntryContext: ec\n};"
+scripttarget: 0
+system: true
+tags:
+- email
+- reputation
+toversion: 4.1.9
+type: javascript

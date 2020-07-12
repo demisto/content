@@ -1,158 +1,70 @@
-id: Google-Vault-Generic-Test
-version: -1
-name: Google Vault Generic Test
 description: This is a test for the Google Vault integration. It calls a variety of
   commands of the integration. If the whole playbook succeeds, then the integration
   is working correctly.
-starttaskid: "0"
+id: Google-Vault-Generic-Test
+inputs: []
+name: Google Vault Generic Test
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 7a2c8c3b-ce55-4853-815b-3c1aed3776f6
-    type: start
-    task:
-      id: 7a2c8c3b-ce55-4853-815b-3c1aed3776f6
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 175,
-          "y": 235
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: 44d4e736-3325-4d15-8aa5-8c4c3c081480
-    type: regular
-    task:
-      id: 44d4e736-3325-4d15-8aa5-8c4c3c081480
-      version: -1
-      name: Create matter "playbook test matter + date"
-      description: Creates a new matter with the given name and description. The initial
-        state is open, and the owner is the method caller. First, checks if a matter
-        with the same name already exists.
-      script: '|||gvault-create-matter'
-      type: regular
-      iscommand: true
-      brand: ""
     nexttasks:
       '#none#':
-      - "45"
-      - "46"
+      - '8'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 7a2c8c3b-ce55-4853-815b-3c1aed3776f6
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 7a2c8c3b-ce55-4853-815b-3c1aed3776f6
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 175,\n    \"y\": 235\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '45'
+      - '46'
+    note: false
     scriptarguments:
       description:
         simple: wow
       name:
         simple: ${.='playbook test matter ' +  new Date()}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 175,
-          "y": 580
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: df305835-e77d-4f7f-848b-077e717d3314
-    type: regular
     task:
-      id: df305835-e77d-4f7f-848b-077e717d3314
-      version: -1
-      name: Get created matter
-      description: Checks if we can get the matter information of the matter that
-        was previously created.
-      script: '|||gvault-get-matter'
-      type: regular
+      brand: ''
+      description: Creates a new matter with the given name and description. The initial
+        state is open, and the owner is the method caller. First, checks if a matter
+        with the same name already exists.
+      id: 44d4e736-3325-4d15-8aa5-8c4c3c081480
       iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-      - "24"
-    scriptarguments:
-      matterID: {}
-      matterName:
-        simple: ${GoogleVault.Matter.Name}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 175,
-          "y": 1000
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "8":
-    id: "8"
-    taskid: 99e04b36-1f84-459c-881a-7acc99bad1e6
-    type: regular
-    task:
-      id: 99e04b36-1f84-459c-881a-7acc99bad1e6
-      version: -1
-      name: Delete Context
-      description: Deletes the current context to prevent interference of old remaining
-        data from failing the playbook. You can ignore this part, as it is only a
-        preventative measure for technical purposes.
-      scriptName: DeleteContext
+      name: Create matter "playbook test matter + date"
+      script: '|||gvault-create-matter'
       type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 175,
-          "y": 405
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "15":
-    id: "15"
-    taskid: 1cc165ae-4ceb-436b-8d83-ea0bb703a457
-    type: regular
-    task:
-      id: 1cc165ae-4ceb-436b-8d83-ea0bb703a457
       version: -1
-      name: Create Hold For Account ID 116238185592796178843
-      script: '|||gvault-create-hold'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: 44d4e736-3325-4d15-8aa5-8c4c3c081480
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 175,\n    \"y\": 580\n  }\n}"
+  '15':
+    id: '15'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "16"
+      - '16'
+    note: false
     scriptarguments:
       account: {}
       accountID:
-        simple: "116238185592796178843"
+        simple: '116238185592796178843'
       corpus:
         simple: Mail
       endTime: {}
@@ -164,167 +76,135 @@ tasks:
       terms: {}
       timeFrame: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 365,
-          "y": 1250
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "16":
-    id: "16"
-    taskid: 1db3f670-b0c0-4c1b-8f5f-2faca4351a72
-    type: regular
     task:
-      id: 1db3f670-b0c0-4c1b-8f5f-2faca4351a72
-      version: -1
-      name: Add Held Account 103020731686044834269
-      script: '|||gvault-add-heldAccount'
-      type: regular
+      brand: ''
+      id: 1cc165ae-4ceb-436b-8d83-ea0bb703a457
       iscommand: true
-      brand: ""
+      name: Create Hold For Account ID 116238185592796178843
+      script: '|||gvault-create-hold'
+      type: regular
+      version: -1
+    taskid: 1cc165ae-4ceb-436b-8d83-ea0bb703a457
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 365,\n    \"y\": 1250\n  }\n}"
+  '16':
+    id: '16'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "17"
-      - "18"
+      - '17'
+      - '18'
+    note: false
     scriptarguments:
       account: {}
       accountID:
-        simple: "103020731686044834269"
+        simple: '103020731686044834269'
       holdID:
         simple: ${GoogleVault.Hold(val.name == 'Nightly Test Playbook ID hold').ID}
       matterID:
         simple: ${GoogleVault.Matter.MatterID}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 365,
-          "y": 1425
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "17":
-    id: "17"
-    taskid: f6a0d942-7630-4c9a-860b-87fb5d36b67e
-    type: regular
     task:
-      id: f6a0d942-7630-4c9a-860b-87fb5d36b67e
+      brand: ''
+      id: 1db3f670-b0c0-4c1b-8f5f-2faca4351a72
+      iscommand: true
+      name: Add Held Account 103020731686044834269
+      script: '|||gvault-add-heldAccount'
+      type: regular
       version: -1
+    taskid: 1db3f670-b0c0-4c1b-8f5f-2faca4351a72
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 365,\n    \"y\": 1425\n  }\n}"
+  '17':
+    id: '17'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '19'
+    note: false
+    scriptarguments:
+      account: {}
+      accountID:
+        simple: '116238185592796178843'
+      holdID:
+        simple: ${GoogleVault.Hold.ID}
+      matterID:
+        simple: ${GoogleVault.Matter.MatterID}
+    separatecontext: false
+    task:
+      brand: ''
+      id: f6a0d942-7630-4c9a-860b-87fb5d36b67e
+      iscommand: true
       name: Remove Held Account
       script: '|||gvault-remove-heldAccount'
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: f6a0d942-7630-4c9a-860b-87fb5d36b67e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 580,\n    \"y\": 1600\n  }\n}"
+  '18':
+    id: '18'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
+    note: false
     scriptarguments:
       account: {}
       accountID:
-        simple: "116238185592796178843"
+        simple: '103020731686044834269'
       holdID:
         simple: ${GoogleVault.Hold.ID}
       matterID:
         simple: ${GoogleVault.Matter.MatterID}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 580,
-          "y": 1600
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "18":
-    id: "18"
-    taskid: 8bfb222b-892a-4ed4-8907-da94e2bb6e2f
-    type: regular
     task:
+      brand: ''
       id: 8bfb222b-892a-4ed4-8907-da94e2bb6e2f
-      version: -1
+      iscommand: true
       name: 'Remove Held Account '
       script: '|||gvault-remove-heldAccount'
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: 8bfb222b-892a-4ed4-8907-da94e2bb6e2f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 150,\n    \"y\": 1600\n  }\n}"
+  '19':
+    id: '19'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "19"
+      - '44'
+    note: false
     scriptarguments:
-      account: {}
-      accountID:
-        simple: "103020731686044834269"
       holdID:
         simple: ${GoogleVault.Hold.ID}
       matterID:
         simple: ${GoogleVault.Matter.MatterID}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 150,
-          "y": 1600
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "19":
-    id: "19"
-    taskid: 5a243de8-0c0b-453e-8c28-21f21822e9f9
-    type: regular
     task:
+      brand: ''
       id: 5a243de8-0c0b-453e-8c28-21f21822e9f9
-      version: -1
+      iscommand: true
       name: Delete Hold
       script: '|||gvault-delete-hold'
       type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "44"
-    scriptarguments:
-      holdID:
-        simple: ${GoogleVault.Hold.ID}
-      matterID:
-        simple: ${GoogleVault.Matter.MatterID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 365,
-          "y": 1775
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "20":
-    id: "20"
-    taskid: 4d4132f9-3850-4087-8324-fddef1bef647
-    type: regular
-    task:
-      id: 4d4132f9-3850-4087-8324-fddef1bef647
       version: -1
-      name: Create mail export
-      description: Creates a Google Vault Export in order to perform search actions
-        on emails.
-      script: '|||gvault-create-export-mail'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: 5a243de8-0c0b-453e-8c28-21f21822e9f9
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 365,\n    \"y\": 1775\n  }\n}"
+  '20':
+    id: '20'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "37"
+      - '37'
+    note: false
     scriptarguments:
       IncludeDrafts: {}
       corpus: {}
@@ -338,15 +218,15 @@ tasks:
         complex:
           root: NEW_PASSWORD
           transformers:
-          - operator: DT
-            args:
+          - args:
               dt:
                 value:
                   simple: .='email_test_export_' + val +'_time_' + Date.now()
+            operator: DT
       exportPST:
-        simple: "true"
+        simple: 'true'
       includeDrafts:
-        simple: "true"
+        simple: 'true'
       matterID:
         simple: ${GoogleVault.Matter.MatterID}
       matterName: {}
@@ -360,147 +240,123 @@ tasks:
         simple: 7 days ago
       timeZone: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -340,
-          "y": 2060
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "21":
-    id: "21"
-    taskid: e1414a9a-ab96-43c9-850a-5a5bb67c06a6
-    type: regular
     task:
-      id: e1414a9a-ab96-43c9-850a-5a5bb67c06a6
-      version: -1
-      name: Get Export Status
-      script: '|||gvault-export-status'
-      type: regular
+      brand: ''
+      description: Creates a Google Vault Export in order to perform search actions
+        on emails.
+      id: 4d4132f9-3850-4087-8324-fddef1bef647
       iscommand: true
-      brand: ""
+      name: Create mail export
+      script: '|||gvault-create-export-mail'
+      type: regular
+      version: -1
+    taskid: 4d4132f9-3850-4087-8324-fddef1bef647
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -340,\n    \"y\": 2060\n  }\n}"
+  '21':
+    id: '21'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "33"
+      - '33'
+    note: false
     scriptarguments:
       exportID:
         complex:
-          root: GoogleVault
           accessor: Matter.Export.ExportID
+          root: GoogleVault
       exportIDS:
         simple: ${GoogleVault.Matter.Export.ExportID}
       matterId:
         simple: ${GoogleVault.Matter.MatterID}
       queryIDS: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -340,
-          "y": 3050
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "24":
-    id: "24"
-    taskid: 994b6c12-66ab-4948-89d5-64c6010e19da
-    type: title
     task:
-      id: 994b6c12-66ab-4948-89d5-64c6010e19da
+      brand: ''
+      id: e1414a9a-ab96-43c9-850a-5a5bb67c06a6
+      iscommand: true
+      name: Get Export Status
+      script: '|||gvault-export-status'
+      type: regular
       version: -1
+    taskid: e1414a9a-ab96-43c9-850a-5a5bb67c06a6
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -340,\n    \"y\": 3050\n  }\n}"
+  '24':
+    id: '24'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '26'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 994b6c12-66ab-4948-89d5-64c6010e19da
+      iscommand: false
       name: Create Exports
       type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "26"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -340,
-          "y": 1250
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "26":
-    id: "26"
-    taskid: 25eea044-0b8d-4043-8d38-52ff6635b5a2
-    type: regular
-    task:
-      id: 25eea044-0b8d-4043-8d38-52ff6635b5a2
       version: -1
-      name: GeneratePassword
-      description: "This function generates a password and allows various parameters
-        to customize the properties of the password depending on the use case (e.g.
-        password complexity requirements).  The default behavior is to generate a
-        password of  *random length* including all four character classes (upper,
-        lower, digits, symbols) with at least five and at most ten characters per
-        class. \n\nThe min_* values all default to 0. This means that if the command
-        is executed in this way:\n!GeneratePassword max_lcase=10\nIt is possible that
-        a password of length zero could be generated. It is therefore recommended
-        to always include a min_* parameter that matches. \n\nThe debug parameter
-        will print certain properties of the command into the WarRoom for easy diagnostics."
-      scriptName: GeneratePassword
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: 994b6c12-66ab-4948-89d5-64c6010e19da
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": -340,\n    \"y\": 1250\n  }\n}"
+  '26':
+    id: '26'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "32"
+      - '32'
+    note: false
     scriptarguments:
       debug: {}
       max_digits:
-        simple: "2"
+        simple: '2'
       max_lcase:
-        simple: "2"
+        simple: '2'
       max_symbols:
-        simple: "0"
+        simple: '0'
       max_ucase:
-        simple: "2"
+        simple: '2'
       min_digits:
-        simple: "2"
+        simple: '2'
       min_lcase:
-        simple: "2"
+        simple: '2'
       min_symbols: {}
       min_ucase:
-        simple: "2"
+        simple: '2'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -340,
-          "y": 1370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "27":
-    id: "27"
-    taskid: fac91494-a778-4072-8b89-ddd753c63343
-    type: regular
     task:
-      id: fac91494-a778-4072-8b89-ddd753c63343
-      version: -1
-      name: Create groups export
-      description: Creates a Google Vault Export in order to perform search actions
-        on emails.
-      script: '|||gvault-create-export-groups'
+      brand: ''
+      description: "This function generates a password and allows various parameters\
+        \ to customize the properties of the password depending on the use case (e.g.\
+        \ password complexity requirements).  The default behavior is to generate\
+        \ a password of  *random length* including all four character classes (upper,\
+        \ lower, digits, symbols) with at least five and at most ten characters per\
+        \ class. \n\nThe min_* values all default to 0. This means that if the command\
+        \ is executed in this way:\n!GeneratePassword max_lcase=10\nIt is possible\
+        \ that a password of length zero could be generated. It is therefore recommended\
+        \ to always include a min_* parameter that matches. \n\nThe debug parameter\
+        \ will print certain properties of the command into the WarRoom for easy diagnostics."
+      id: 25eea044-0b8d-4043-8d38-52ff6635b5a2
+      iscommand: false
+      name: GeneratePassword
+      scriptName: GeneratePassword
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: 25eea044-0b8d-4043-8d38-52ff6635b5a2
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -340,\n    \"y\": 1370\n  }\n}"
+  '27':
+    id: '27'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "31"
+      - '31'
+    note: false
     scriptarguments:
       corpus: {}
       dataScope:
@@ -511,13 +367,13 @@ tasks:
         complex:
           root: NEW_PASSWORD
           transformers:
-          - operator: DT
-            args:
+          - args:
               dt:
                 value:
                   simple: .='groups_test_export_' + val +'_time_' + Date.now()
+            operator: DT
       exportPST:
-        simple: "true"
+        simple: 'true'
       groups:
         simple: maya-group-test@demistodev.com,ido-group-test@demistodev.com
       matterID:
@@ -528,33 +384,27 @@ tasks:
       timeFrame: {}
       timeZone: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -340,
-          "y": 1820
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "29":
-    id: "29"
-    taskid: 632f5c84-2db9-43c5-838c-373e5ccc5197
-    type: regular
     task:
-      id: 632f5c84-2db9-43c5-838c-373e5ccc5197
-      version: -1
-      name: Create drive export
+      brand: ''
       description: Creates a Google Vault Export in order to perform search actions
         on emails.
-      script: '|||gvault-create-export-drive'
-      type: regular
+      id: fac91494-a778-4072-8b89-ddd753c63343
       iscommand: true
-      brand: ""
+      name: Create groups export
+      script: '|||gvault-create-export-groups'
+      type: regular
+      version: -1
+    taskid: fac91494-a778-4072-8b89-ddd753c63343
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -340,\n    \"y\": 1820\n  }\n}"
+  '29':
+    id: '29'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "30"
+      - '30'
+    note: false
     scriptarguments:
       corpus: {}
       dataScope:
@@ -566,13 +416,13 @@ tasks:
         complex:
           root: NEW_PASSWORD
           transformers:
-          - operator: DT
-            args:
+          - args:
               dt:
                 value:
                   simple: .='drive_test_export_' + val +'_time_' + Date.now()
+            operator: DT
       includeTeamDrives:
-        simple: "false"
+        simple: 'false'
       matterID:
         simple: ${GoogleVault.Matter.MatterID}
       matterName: {}
@@ -586,145 +436,117 @@ tasks:
       timeFrame: {}
       timeZone: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -340,
-          "y": 1580
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "30":
-    id: "30"
-    taskid: e10fcf76-1065-4749-85c5-ab6c8ba83427
-    type: regular
     task:
+      brand: ''
+      description: Creates a Google Vault Export in order to perform search actions
+        on emails.
+      id: 632f5c84-2db9-43c5-838c-373e5ccc5197
+      iscommand: true
+      name: Create drive export
+      script: '|||gvault-create-export-drive'
+      type: regular
+      version: -1
+    taskid: 632f5c84-2db9-43c5-838c-373e5ccc5197
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -340,\n    \"y\": 1580\n  }\n}"
+  '30':
+    id: '30'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '27'
+    note: false
+    scriptarguments:
+      seconds:
+        simple: '90'
+    separatecontext: false
+    task:
+      brand: ''
+      description: Sleep for X seconds
       id: e10fcf76-1065-4749-85c5-ab6c8ba83427
-      version: -1
+      iscommand: false
       name: Sleep
-      description: Sleep for X seconds
       scriptName: Sleep
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: e10fcf76-1065-4749-85c5-ab6c8ba83427
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -770,\n    \"y\": 1690\n  }\n}"
+  '31':
+    id: '31'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "27"
+      - '20'
+    note: false
     scriptarguments:
       seconds:
-        simple: "90"
+        simple: '90'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -770,
-          "y": 1690
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "31":
-    id: "31"
-    taskid: 81936428-4c73-481e-8391-a7b2c2a2eeee
-    type: regular
     task:
+      brand: ''
+      description: Sleep for X seconds
       id: 81936428-4c73-481e-8391-a7b2c2a2eeee
-      version: -1
+      iscommand: false
       name: Sleep
-      description: Sleep for X seconds
       scriptName: Sleep
       type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "20"
-    scriptarguments:
-      seconds:
-        simple: "90"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -760,
-          "y": 1930
-        }
-      }
-    note: false
+      version: -1
+    taskid: 81936428-4c73-481e-8391-a7b2c2a2eeee
     timertriggers: []
-    ignoreworker: false
-  "32":
-    id: "32"
-    taskid: 512b7482-750e-4fc7-8fca-98727a385f5b
     type: regular
-    task:
-      id: 512b7482-750e-4fc7-8fca-98727a385f5b
-      version: -1
-      name: Sleep
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
+    view: "{\n  \"position\": {\n    \"x\": -760,\n    \"y\": 1930\n  }\n}"
+  '32':
+    id: '32'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "29"
+      - '29'
+    note: false
     scriptarguments:
       seconds:
-        simple: "90"
+        simple: '90'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -760,
-          "y": 1450
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "33":
-    id: "33"
-    taskid: cab9c43c-a976-401a-8b6a-a549cfd1ac00
-    type: title
     task:
-      id: cab9c43c-a976-401a-8b6a-a549cfd1ac00
+      brand: ''
+      description: Sleep for X seconds
+      id: 512b7482-750e-4fc7-8fca-98727a385f5b
+      iscommand: false
+      name: Sleep
+      scriptName: Sleep
+      type: regular
       version: -1
+    taskid: 512b7482-750e-4fc7-8fca-98727a385f5b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -760,\n    \"y\": 1450\n  }\n}"
+  '33':
+    id: '33'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '34'
+      - '35'
+      - '36'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: cab9c43c-a976-401a-8b6a-a549cfd1ac00
+      iscommand: false
       name: Get results
       type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "34"
-      - "35"
-      - "36"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -340,
-          "y": 3290
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "34":
-    id: "34"
-    taskid: 0db67db1-dd85-408a-82b0-aefae9c53206
-    type: regular
-    task:
-      id: 0db67db1-dd85-408a-82b0-aefae9c53206
       version: -1
-      name: Get Drive Results
-      script: '|||gvault-get-drive-results'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: cab9c43c-a976-401a-8b6a-a549cfd1ac00
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": -340,\n    \"y\": 3290\n  }\n}"
+  '34':
+    id: '34'
+    ignoreworker: false
+    note: false
     scriptarguments:
       bucketName:
         simple: ${GoogleVault.Matter.Export.[0].BucketName}
@@ -733,28 +555,22 @@ tasks:
         simple: ${GoogleVault.Matter.Export(val.ExportName.indexOf('drive') != -1
           && val.Status == 'COMPLETED').ViewID}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -850,
-          "y": 3550
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "35":
-    id: "35"
-    taskid: f71ffe38-295b-462e-8699-35507cf2101b
-    type: regular
     task:
-      id: f71ffe38-295b-462e-8699-35507cf2101b
-      version: -1
-      name: Get Mail Results
-      script: '|||gvault-get-mail-results'
-      type: regular
+      brand: ''
+      id: 0db67db1-dd85-408a-82b0-aefae9c53206
       iscommand: true
-      brand: ""
+      name: Get Drive Results
+      script: '|||gvault-get-drive-results'
+      type: regular
+      version: -1
+    taskid: 0db67db1-dd85-408a-82b0-aefae9c53206
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -850,\n    \"y\": 3550\n  }\n}"
+  '35':
+    id: '35'
+    ignoreworker: false
+    note: false
     scriptarguments:
       bucketName:
         simple: ${GoogleVault.Matter.Export.[0].BucketName}
@@ -763,28 +579,22 @@ tasks:
         simple: ${GoogleVault.Matter.Export(val.ExportName.indexOf('mail') != -1 &&
           val.Status == 'COMPLETED').ViewID}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -340,
-          "y": 3550
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "36":
-    id: "36"
-    taskid: 35313cb5-5e21-461d-83a2-69ca7642c0c7
-    type: regular
     task:
-      id: 35313cb5-5e21-461d-83a2-69ca7642c0c7
-      version: -1
-      name: Get Groups Results
-      script: '|||gvault-get-groups-results'
-      type: regular
+      brand: ''
+      id: f71ffe38-295b-462e-8699-35507cf2101b
       iscommand: true
-      brand: ""
+      name: Get Mail Results
+      script: '|||gvault-get-mail-results'
+      type: regular
+      version: -1
+    taskid: f71ffe38-295b-462e-8699-35507cf2101b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -340,\n    \"y\": 3550\n  }\n}"
+  '36':
+    id: '36'
+    ignoreworker: false
+    note: false
     scriptarguments:
       bucketName:
         simple: ${GoogleVault.Matter.Export.[0].BucketName}
@@ -793,63 +603,49 @@ tasks:
         simple: ${GoogleVault.Matter.Export(val.ExportName.indexOf('groups') != -1
           && val.Status == 'COMPLETED').ViewID}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 180,
-          "y": 3550
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "37":
-    id: "37"
-    taskid: 915007e1-564a-4d57-8680-9f6348405c3a
-    type: regular
     task:
-      id: 915007e1-564a-4d57-8680-9f6348405c3a
-      version: -1
-      name: Sleep
-      description: Sleep for X seconds
-      scriptName: Sleep
+      brand: ''
+      id: 35313cb5-5e21-461d-83a2-69ca7642c0c7
+      iscommand: true
+      name: Get Groups Results
+      script: '|||gvault-get-groups-results'
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 35313cb5-5e21-461d-83a2-69ca7642c0c7
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 180,\n    \"y\": 3550\n  }\n}"
+  '37':
+    id: '37'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "38"
+      - '38'
+    note: false
     scriptarguments:
       seconds:
-        simple: "90"
+        simple: '90'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -770,
-          "y": 2180
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "38":
-    id: "38"
-    taskid: 170b2010-0d0f-46d5-8a05-5579d7f95bb0
-    type: regular
     task:
-      id: 170b2010-0d0f-46d5-8a05-5579d7f95bb0
-      version: -1
-      name: Create empty drive export
-      description: Creates a Google Vault Export in order to perform search actions
-        on emails.
-      script: '|||gvault-create-export-drive'
+      brand: ''
+      description: Sleep for X seconds
+      id: 915007e1-564a-4d57-8680-9f6348405c3a
+      iscommand: false
+      name: Sleep
+      scriptName: Sleep
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: 915007e1-564a-4d57-8680-9f6348405c3a
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -770,\n    \"y\": 2180\n  }\n}"
+  '38':
+    id: '38'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "39"
+      - '39'
+    note: false
     scriptarguments:
       corpus: {}
       dataScope:
@@ -861,13 +657,13 @@ tasks:
         complex:
           root: NEW_PASSWORD
           transformers:
-          - operator: DT
-            args:
+          - args:
               dt:
                 value:
                   simple: .='drive_empty_export_' + val +'_time_' + Date.now()
+            operator: DT
       includeTeamDrives:
-        simple: "false"
+        simple: 'false'
       matterID:
         simple: ${GoogleVault.Matter.MatterID}
       matterName: {}
@@ -882,63 +678,78 @@ tasks:
       timeFrame: {}
       timeZone: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -340,
-          "y": 2320
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "39":
-    id: "39"
-    taskid: 71a21ce3-fb27-4067-870e-f0d5cba93fdd
-    type: regular
     task:
-      id: 71a21ce3-fb27-4067-870e-f0d5cba93fdd
-      version: -1
-      name: Sleep
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "40"
-    scriptarguments:
-      seconds:
-        simple: "90"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -760,
-          "y": 2440
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "40":
-    id: "40"
-    taskid: 860ede8b-9225-4fdb-83ba-6eed8e945cb3
-    type: regular
-    task:
-      id: 860ede8b-9225-4fdb-83ba-6eed8e945cb3
-      version: -1
-      name: Create empty groups export
+      brand: ''
       description: Creates a Google Vault Export in order to perform search actions
         on emails.
-      script: '|||gvault-create-export-groups'
-      type: regular
+      id: 170b2010-0d0f-46d5-8a05-5579d7f95bb0
       iscommand: true
-      brand: ""
+      name: Create empty drive export
+      script: '|||gvault-create-export-drive'
+      type: regular
+      version: -1
+    taskid: 170b2010-0d0f-46d5-8a05-5579d7f95bb0
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -340,\n    \"y\": 2320\n  }\n}"
+  '39':
+    id: '39'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "42"
+      - '40'
+    note: false
+    scriptarguments:
+      seconds:
+        simple: '90'
+    separatecontext: false
+    task:
+      brand: ''
+      description: Sleep for X seconds
+      id: 71a21ce3-fb27-4067-870e-f0d5cba93fdd
+      iscommand: false
+      name: Sleep
+      scriptName: Sleep
+      type: regular
+      version: -1
+    taskid: 71a21ce3-fb27-4067-870e-f0d5cba93fdd
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -760,\n    \"y\": 2440\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '15'
+      - '24'
+    note: false
+    scriptarguments:
+      matterID: {}
+      matterName:
+        simple: ${GoogleVault.Matter.Name}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Checks if we can get the matter information of the matter that
+        was previously created.
+      id: df305835-e77d-4f7f-848b-077e717d3314
+      iscommand: true
+      name: Get created matter
+      script: '|||gvault-get-matter'
+      type: regular
+      version: -1
+    taskid: df305835-e77d-4f7f-848b-077e717d3314
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 175,\n    \"y\": 1000\n  }\n}"
+  '40':
+    id: '40'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '42'
+    note: false
     scriptarguments:
       corpus: {}
       dataScope:
@@ -949,13 +760,13 @@ tasks:
         complex:
           root: NEW_PASSWORD
           transformers:
-          - operator: DT
-            args:
+          - args:
               dt:
                 value:
                   simple: .='groups_empty_export_' + val +'_time_' + Date.now()
+            operator: DT
       exportPST:
-        simple: "true"
+        simple: 'true'
       groups:
         simple: maya-group-test@demistodev.com,ido-group-test@demistodev.com
       matterID:
@@ -967,33 +778,27 @@ tasks:
       timeFrame: {}
       timeZone: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -340,
-          "y": 2550
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "41":
-    id: "41"
-    taskid: 4114c295-a2fc-4161-8849-83cb608b38b0
-    type: regular
     task:
-      id: 4114c295-a2fc-4161-8849-83cb608b38b0
-      version: -1
-      name: Create empty mail export
+      brand: ''
       description: Creates a Google Vault Export in order to perform search actions
         on emails.
-      script: '|||gvault-create-export-mail'
-      type: regular
+      id: 860ede8b-9225-4fdb-83ba-6eed8e945cb3
       iscommand: true
-      brand: ""
+      name: Create empty groups export
+      script: '|||gvault-create-export-groups'
+      type: regular
+      version: -1
+    taskid: 860ede8b-9225-4fdb-83ba-6eed8e945cb3
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -340,\n    \"y\": 2550\n  }\n}"
+  '41':
+    id: '41'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "43"
+      - '43'
+    note: false
     scriptarguments:
       IncludeDrafts: {}
       corpus: {}
@@ -1007,15 +812,15 @@ tasks:
         complex:
           root: NEW_PASSWORD
           transformers:
-          - operator: DT
-            args:
+          - args:
               dt:
                 value:
                   simple: .='email_empty_export_' + val +'_time_' + Date.now()
+            operator: DT
       exportPST:
-        simple: "true"
+        simple: 'true'
       includeDrafts:
-        simple: "true"
+        simple: 'true'
       matterID:
         simple: ${GoogleVault.Matter.MatterID}
       matterName: {}
@@ -1029,91 +834,75 @@ tasks:
         simple: 7 days ago
       timeZone: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -340,
-          "y": 2805
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "42":
-    id: "42"
-    taskid: 7e687615-6807-41fa-870b-e9b7c822e591
-    type: regular
     task:
-      id: 7e687615-6807-41fa-870b-e9b7c822e591
-      version: -1
-      name: Sleep
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "41"
-    scriptarguments:
-      seconds:
-        simple: "90"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -750,
-          "y": 2670
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "43":
-    id: "43"
-    taskid: 5265a26a-c0e3-4b32-80a9-3a53ba5a4e99
-    type: regular
-    task:
-      id: 5265a26a-c0e3-4b32-80a9-3a53ba5a4e99
-      version: -1
-      name: Sleep
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "21"
-    scriptarguments:
-      seconds:
-        simple: "90"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -760,
-          "y": 2925
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "44":
-    id: "44"
-    taskid: bafff793-d63b-453f-81ad-4c6f94acfc73
-    type: regular
-    task:
-      id: bafff793-d63b-453f-81ad-4c6f94acfc73
-      version: -1
-      name: Create Hold For Account ID ido-group-test@demistodev.com
-      script: '|||gvault-create-hold'
-      type: regular
+      brand: ''
+      description: Creates a Google Vault Export in order to perform search actions
+        on emails.
+      id: 4114c295-a2fc-4161-8849-83cb608b38b0
       iscommand: true
-      brand: ""
+      name: Create empty mail export
+      script: '|||gvault-create-export-mail'
+      type: regular
+      version: -1
+    taskid: 4114c295-a2fc-4161-8849-83cb608b38b0
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -340,\n    \"y\": 2805\n  }\n}"
+  '42':
+    id: '42'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "47"
+      - '41'
+    note: false
+    scriptarguments:
+      seconds:
+        simple: '90'
+    separatecontext: false
+    task:
+      brand: ''
+      description: Sleep for X seconds
+      id: 7e687615-6807-41fa-870b-e9b7c822e591
+      iscommand: false
+      name: Sleep
+      scriptName: Sleep
+      type: regular
+      version: -1
+    taskid: 7e687615-6807-41fa-870b-e9b7c822e591
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -750,\n    \"y\": 2670\n  }\n}"
+  '43':
+    id: '43'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '21'
+    note: false
+    scriptarguments:
+      seconds:
+        simple: '90'
+    separatecontext: false
+    task:
+      brand: ''
+      description: Sleep for X seconds
+      id: 5265a26a-c0e3-4b32-80a9-3a53ba5a4e99
+      iscommand: false
+      name: Sleep
+      scriptName: Sleep
+      type: regular
+      version: -1
+    taskid: 5265a26a-c0e3-4b32-80a9-3a53ba5a4e99
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -760,\n    \"y\": 2925\n  }\n}"
+  '44':
+    id: '44'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '47'
+    note: false
     scriptarguments:
       account: {}
       accountID:
@@ -1129,123 +918,128 @@ tasks:
       terms: {}
       timeFrame: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 365,
-          "y": 1940
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "45":
-    id: "45"
-    taskid: da4b77f9-b7cb-42af-85f0-8bb5476b407e
-    type: condition
     task:
-      id: da4b77f9-b7cb-42af-85f0-8bb5476b407e
+      brand: ''
+      id: bafff793-d63b-453f-81ad-4c6f94acfc73
+      iscommand: true
+      name: Create Hold For Account ID ido-group-test@demistodev.com
+      script: '|||gvault-create-hold'
+      type: regular
       version: -1
-      name: Verify matter name
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "4"
-    separatecontext: false
+    taskid: bafff793-d63b-453f-81ad-4c6f94acfc73
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 365,\n    \"y\": 1940\n  }\n}"
+  '45':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: GoogleVault.Matter.Name
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": -10,
-          "y": 780
-        }
-      }
-    note: false
-    timertriggers: []
+          operator: isExists
+      label: 'yes'
+    id: '45'
     ignoreworker: false
-  "46":
-    id: "46"
-    taskid: b77b18b2-157c-4a17-8b18-76331c33b860
-    type: condition
-    task:
-      id: b77b18b2-157c-4a17-8b18-76331c33b860
-      version: -1
-      name: Verify matter ID
-      type: condition
-      iscommand: false
-      brand: ""
     nexttasks:
-      "yes":
-      - "4"
+      'yes':
+      - '4'
+    note: false
     separatecontext: false
+    task:
+      brand: ''
+      id: da4b77f9-b7cb-42af-85f0-8bb5476b407e
+      iscommand: false
+      name: Verify matter name
+      type: condition
+      version: -1
+    taskid: da4b77f9-b7cb-42af-85f0-8bb5476b407e
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": -10,\n    \"y\": 780\n  }\n}"
+  '46':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: GoogleVault
                 accessor: Matter.MatterID
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 410,
-          "y": 780
-        }
-      }
-    note: false
-    timertriggers: []
+                root: GoogleVault
+          operator: isExists
+      label: 'yes'
+    id: '46'
     ignoreworker: false
-  "47":
-    id: "47"
-    taskid: 7489e234-5613-4ada-8cfa-bbbc3afda6de
-    type: regular
+    nexttasks:
+      'yes':
+      - '4'
+    note: false
+    separatecontext: false
     task:
-      id: 7489e234-5613-4ada-8cfa-bbbc3afda6de
+      brand: ''
+      id: b77b18b2-157c-4a17-8b18-76331c33b860
+      iscommand: false
+      name: Verify matter ID
+      type: condition
       version: -1
-      name: Delete Hold
-      script: '|||gvault-delete-hold'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: b77b18b2-157c-4a17-8b18-76331c33b860
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 410,\n    \"y\": 780\n  }\n}"
+  '47':
+    id: '47'
+    ignoreworker: false
+    note: false
     scriptarguments:
       holdID:
         simple: ${GoogleVault.Hold(val.name == 'Nightly Test Playbook email hold').ID}
       matterID:
         simple: ${GoogleVault.Matter.MatterID}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 365,
-          "y": 2115
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      id: 7489e234-5613-4ada-8cfa-bbbc3afda6de
+      iscommand: true
+      name: Delete Hold
+      script: '|||gvault-delete-hold'
+      type: regular
+      version: -1
+    taskid: 7489e234-5613-4ada-8cfa-bbbc3afda6de
     timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 365,\n    \"y\": 2115\n  }\n}"
+  '8':
+    id: '8'
     ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 3410,
-        "width": 1810,
-        "x": -850,
-        "y": 235
-      }
-    }
-  }
-inputs: []
-outputs: []
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Deletes the current context to prevent interference of old remaining
+        data from failing the playbook. You can ignore this part, as it is only a
+        preventative measure for technical purposes.
+      id: 99e04b36-1f84-459c-881a-7acc99bad1e6
+      iscommand: false
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 99e04b36-1f84-459c-881a-7acc99bad1e6
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 175,\n    \"y\": 405\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 3410,\n      \"width\": 1810,\n      \"x\": -850,\n      \"y\"\
+  : 235\n    }\n  }\n}"

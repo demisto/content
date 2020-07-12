@@ -1,86 +1,16 @@
-commonfields:
-  id: CEFParser
-  version: -1
-name: CEFParser
-script: |-
-  // Consts
-  var mandatoryLabels = ['cefVersion', 'vendor', 'product', 'version', 'signatureID', 'name', 'severity'];
-
-  // first, split the lines for multiple CEF rows
-  var rows = args.data.split('\nCEF:');
-  var data = [];
-
-  for (var i=0; i<rows.length; i++) {
-      var o = {};
-      // First, read the mandatory fields
-      var start = 0;
-      for (var j=0; j<mandatoryLabels.length; j++) {
-          var end = rows[i].indexOf('|', start);
-          if (end < 0) {
-              throw 'Invalid format in row ' + i + '. Missing mandatory field ' + j + '.';
-          }
-          // Ignore escaped separators
-          while (rows[i][end-1] === '\\') {
-              end = rows[i].indexOf('|', end + 1);
-              if (end < 0) {
-                  throw 'Invalid format in row ' + i + '. Missing mandatory field ' + j + '.';
-              }
-          }
-          o[mandatoryLabels[j]] = (i === 0 && j === 0) ? rows[i].substring(4, end) : rows[i].substring(start, end);
-          start = end + 1;
-      }
-      // Now, handle extensions which should be separated by '='
-      var currLabel = '';
-      var eq = rows[i].indexOf('=', start);
-      while (eq > 0) {
-          if (rows[i][eq-1] === '\\') {
-              eq = rows[i].indexOf('=', eq + 1);
-              continue;
-          }
-          // We found a good '=', now need to go back and find the beginning of the label
-          for (var b=eq-1; b>start; b--) {
-              if (rows[i][b] === ' ') {
-                  b++;
-                  break;
-              }
-          }
-          if (currLabel === '') {
-              currLabel = rows[i].substring(b, eq);
-              start = eq + 1;
-          } else {
-              o[currLabel] = rows[i].substring(start, b).trim();
-              currLabel = rows[i].substring(b, eq);
-              start = eq + 1;
-          }
-          eq = rows[i].indexOf('=', start);
-      }
-      if (currLabel !== '' && start < rows[i].length - 1) {
-          o[currLabel] = rows[i].substring(start);
-      }
-      // Convert labels of custom fields to actual attributes (cs1Label, cn1Label, cs1, cn1)
-      var keys = Object.keys(o);
-      for (var k=0; k<keys.length; k++) {
-          if (keys[k].match(/c[ns]\d+Label/i) && keys.indexOf(keys[k].substring(0, keys[k].length-5)) >= 0) {
-              o[o[keys[k]]] = o[keys[k].substring(0, keys[k].length-5)];
-              delete o[keys[k]];
-              delete o[keys[k].substring(0, keys[k].length-5)];
-          }
-      }
-      data.push(o);
-  }
-  return {Type: entryTypes.note, Contents: data, ContentsFormat: formats.json, HumanReadable: tableToMarkdown('CEF Events', data), EntryContext: {CEFEvent: data}};
-type: javascript
-tags:
-- Utility
+args:
+- default: true
+  description: The data that contains the CEF rows
+  name: data
+  required: true
 comment: Parse CEF data into the context. Please notice that outputs will display
   only the 7 mandatory fields even if the CEF event includes many other custom or
   extended fields.
+commonfields:
+  id: CEFParser
+  version: -1
 enabled: true
-args:
-- name: data
-  required: true
-  default: true
-  description: The data that contains the CEF rows
+name: CEFParser
 outputs:
 - contextPath: CEFEvent.cefVersion
   description: The CEF version
@@ -96,4 +26,40 @@ outputs:
   description: The alert name
 - contextPath: CEFEvent.severity
   description: The alert severity
+script: "// Consts\nvar mandatoryLabels = ['cefVersion', 'vendor', 'product', 'version',\
+  \ 'signatureID', 'name', 'severity'];\n\n// first, split the lines for multiple\
+  \ CEF rows\nvar rows = args.data.split('\\nCEF:');\nvar data = [];\n\nfor (var i=0;\
+  \ i<rows.length; i++) {\n    var o = {};\n    // First, read the mandatory fields\n\
+  \    var start = 0;\n    for (var j=0; j<mandatoryLabels.length; j++) {\n      \
+  \  var end = rows[i].indexOf('|', start);\n        if (end < 0) {\n            throw\
+  \ 'Invalid format in row ' + i + '. Missing mandatory field ' + j + '.';\n     \
+  \   }\n        // Ignore escaped separators\n        while (rows[i][end-1] === '\\\
+  \\') {\n            end = rows[i].indexOf('|', end + 1);\n            if (end <\
+  \ 0) {\n                throw 'Invalid format in row ' + i + '. Missing mandatory\
+  \ field ' + j + '.';\n            }\n        }\n        o[mandatoryLabels[j]] =\
+  \ (i === 0 && j === 0) ? rows[i].substring(4, end) : rows[i].substring(start, end);\n\
+  \        start = end + 1;\n    }\n    // Now, handle extensions which should be\
+  \ separated by '='\n    var currLabel = '';\n    var eq = rows[i].indexOf('=', start);\n\
+  \    while (eq > 0) {\n        if (rows[i][eq-1] === '\\\\') {\n            eq =\
+  \ rows[i].indexOf('=', eq + 1);\n            continue;\n        }\n        // We\
+  \ found a good '=', now need to go back and find the beginning of the label\n  \
+  \      for (var b=eq-1; b>start; b--) {\n            if (rows[i][b] === ' ') {\n\
+  \                b++;\n                break;\n            }\n        }\n      \
+  \  if (currLabel === '') {\n            currLabel = rows[i].substring(b, eq);\n\
+  \            start = eq + 1;\n        } else {\n            o[currLabel] = rows[i].substring(start,\
+  \ b).trim();\n            currLabel = rows[i].substring(b, eq);\n            start\
+  \ = eq + 1;\n        }\n        eq = rows[i].indexOf('=', start);\n    }\n    if\
+  \ (currLabel !== '' && start < rows[i].length - 1) {\n        o[currLabel] = rows[i].substring(start);\n\
+  \    }\n    // Convert labels of custom fields to actual attributes (cs1Label, cn1Label,\
+  \ cs1, cn1)\n    var keys = Object.keys(o);\n    for (var k=0; k<keys.length; k++)\
+  \ {\n        if (keys[k].match(/c[ns]\\d+Label/i) && keys.indexOf(keys[k].substring(0,\
+  \ keys[k].length-5)) >= 0) {\n            o[o[keys[k]]] = o[keys[k].substring(0,\
+  \ keys[k].length-5)];\n            delete o[keys[k]];\n            delete o[keys[k].substring(0,\
+  \ keys[k].length-5)];\n        }\n    }\n    data.push(o);\n}\nreturn {Type: entryTypes.note,\
+  \ Contents: data, ContentsFormat: formats.json, HumanReadable: tableToMarkdown('CEF\
+  \ Events', data), EntryContext: {CEFEvent: data}};"
 scripttarget: 0
+tags:
+- Utility
+toversion: 4.1.9
+type: javascript

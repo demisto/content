@@ -1,46 +1,32 @@
 id: CopyContextToFieldTest
-version: -1
+inputs: []
 name: CopyContextToFieldTest
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: e94df9b6-f714-4ece-83cc-f1c39654a276
-    type: start
-    task:
-      id: e94df9b6-f714-4ece-83cc-f1c39654a276
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "6"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 50
-        }
-      }
+      - '6'
     note: false
-    timertriggers: []
-  "1":
-    id: "1"
-    taskid: 1877675a-9e37-4572-8021-4216e1cc4abe
-    type: regular
+    separatecontext: false
     task:
-      id: 1877675a-9e37-4572-8021-4216e1cc4abe
-      version: -1
-      name: Set context key
-      scriptName: Set
-      type: regular
+      brand: ''
+      id: e94df9b6-f714-4ece-83cc-f1c39654a276
       iscommand: false
-      brand: ""
+      name: ''
+      version: -1
+    taskid: e94df9b6-f714-4ece-83cc-f1c39654a276
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
+    note: false
     scriptarguments:
       append: {}
       key:
@@ -48,30 +34,24 @@ tasks:
       value:
         simple: Some test
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 355
-        }
-      }
-    note: false
-    timertriggers: []
-  "2":
-    id: "2"
-    taskid: b47611c8-4b04-4f3d-8fc0-4898cd4d48d8
-    type: regular
     task:
-      id: b47611c8-4b04-4f3d-8fc0-4898cd4d48d8
-      version: -1
-      name: 'Copy '
-      scriptName: CopyContextToField
-      type: regular
+      brand: ''
+      id: 1877675a-9e37-4572-8021-4216e1cc4abe
       iscommand: false
-      brand: ""
+      name: Set context key
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 1877675a-9e37-4572-8021-4216e1cc4abe
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 355\n  }\n}"
+  '2':
+    id: '2'
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
     scriptarguments:
       incidentsQuery:
         simple: id:${incident.id}
@@ -81,169 +61,133 @@ tasks:
       targetIncidentField:
         simple: name
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 750
-        }
-      }
-    note: false
-    timertriggers: []
-  "3":
-    id: "3"
-    taskid: 18e4a27f-cdb8-469a-8ed6-4eca3c1be3e2
-    type: condition
     task:
-      id: 18e4a27f-cdb8-469a-8ed6-4eca3c1be3e2
-      version: -1
-      name: Check incident name
-      type: condition
+      brand: ''
+      id: b47611c8-4b04-4f3d-8fc0-4898cd4d48d8
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "4"
-    separatecontext: false
+      name: 'Copy '
+      scriptName: CopyContextToField
+      type: regular
+      version: -1
+    taskid: b47611c8-4b04-4f3d-8fc0-4898cd4d48d8
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 750\n  }\n}"
+  '3':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: incident.name
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: Some test
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 925
-        }
-      }
+      label: 'yes'
+    id: '3'
+    nexttasks:
+      '#default#':
+      - '5'
+      'yes':
+      - '4'
     note: false
-    timertriggers: []
-  "4":
-    id: "4"
-    taskid: 0f800087-c005-4435-8a16-0a1d6238e230
-    type: title
+    separatecontext: false
     task:
-      id: 0f800087-c005-4435-8a16-0a1d6238e230
+      brand: ''
+      id: 18e4a27f-cdb8-469a-8ed6-4eca3c1be3e2
+      iscommand: false
+      name: Check incident name
+      type: condition
       version: -1
+    taskid: 18e4a27f-cdb8-469a-8ed6-4eca3c1be3e2
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 925\n  }\n}"
+  '4':
+    id: '4'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 0f800087-c005-4435-8a16-0a1d6238e230
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1115
-        }
-      }
-    note: false
-    timertriggers: []
-  "5":
-    id: "5"
-    taskid: 229b73da-83c7-4d28-8de5-a1e4ec0114e0
-    type: regular
-    task:
-      id: 229b73da-83c7-4d28-8de5-a1e4ec0114e0
       version: -1
-      name: Error
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: 0f800087-c005-4435-8a16-0a1d6238e230
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1115\n  }\n}"
+  '5':
+    id: '5'
+    note: false
     scriptarguments:
       message:
         simple: Incident name different then expected
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1100
-        }
-      }
-    note: false
-    timertriggers: []
-  "6":
-    id: "6"
-    taskid: 7824f0a1-e985-4fed-8741-8e96556efc3e
-    type: regular
     task:
-      id: 7824f0a1-e985-4fed-8741-8e96556efc3e
-      version: -1
-      name: Delete context
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      id: 229b73da-83c7-4d28-8de5-a1e4ec0114e0
       iscommand: false
-      brand: ""
+      name: Error
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 229b73da-83c7-4d28-8de5-a1e4ec0114e0
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1100\n  }\n}"
+  '6':
+    id: '6'
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 190
-        }
-      }
-    note: false
-    timertriggers: []
-  "7":
-    id: "7"
-    taskid: d02366c4-46e5-4e01-81c7-87c085e6978b
-    type: regular
     task:
-      id: d02366c4-46e5-4e01-81c7-87c085e6978b
+      brand: ''
+      id: 7824f0a1-e985-4fed-8741-8e96556efc3e
+      iscommand: false
+      name: Delete context
+      scriptName: DeleteContext
+      type: regular
       version: -1
+    taskid: 7824f0a1-e985-4fed-8741-8e96556efc3e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 190\n  }\n}"
+  '7':
+    id: '7'
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    scriptarguments:
+      seconds:
+        simple: '3'
+    separatecontext: false
+    task:
+      brand: ''
+      id: d02366c4-46e5-4e01-81c7-87c085e6978b
+      iscommand: false
       name: Sleep
       scriptName: Sleep
       type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      seconds:
-        simple: "3"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 550
-        }
-      }
-    note: false
+      version: -1
+    taskid: d02366c4-46e5-4e01-81c7-87c085e6978b
     timertriggers: []
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1145,
-        "width": 810,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 550\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1145,\n      \"width\": 810,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

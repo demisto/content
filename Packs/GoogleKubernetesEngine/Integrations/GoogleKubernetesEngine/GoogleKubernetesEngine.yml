@@ -21,9 +21,11 @@ configuration:
   name: default_zone
   required: true
   type: 0
-description: |-
-  The Google Kubernetes Engine integration is used for building and managing container based
-  applications in Google Cloud Platform (GCP), powered by the open source Kubernetes technology.
+description: 'The Google Kubernetes Engine integration is used for building and managing
+  container based
+
+  applications in Google Cloud Platform (GCP), powered by the open source Kubernetes
+  technology.'
 display: Google Kubernetes Engine
 name: GoogleKubernetesEngine
 script:
@@ -99,8 +101,8 @@ script:
       description: Size of the disk attached to each node, specified in GB.
       type: Number
     - contextPath: GKE.Cluster.NodePool.Config.OauthScopes
-      description: The set of Google API scopes to be made available on all of the
-        node VMs under the “default” service account.
+      description: "The set of Google API scopes to be made available on all of the\
+        \ node VMs under the \u201Cdefault\u201D service account."
       type: String
     - contextPath: GKE.Cluster.NodePool.Config.Metadata.disable-legacy-endpoints
       description: legacy abac Status.
@@ -109,13 +111,14 @@ script:
       description: The desired image type for the node pool.
       type: String
     - contextPath: GKE.Cluster.NodePool.Config.ServiceAccount
-      description: The Google Cloud Platform Service Account to be used by the node
-        VMs. If no Service Account is specified, the “default” service account is
-        used.
+      description: "The Google Cloud Platform Service Account to be used by the node\
+        \ VMs. If no Service Account is specified, the \u201Cdefault\u201D service\
+        \ account is used."
       type: String
     - contextPath: GKE.Cluster.NodePool.Config.DiskType
-      description: Type of the disk attached to each node (e.g. ‘pd-standard’ or ‘pd-ssd’)
-        If unspecified, the default disk type is ‘pd- standard’.
+      description: "Type of the disk attached to each node (e.g. \u2018pd-standard\u2019\
+        \ or \u2018pd-ssd\u2019) If unspecified, the default disk type is \u2018pd-\
+        \ standard\u2019."
       type: String
     - contextPath: GKE.Cluster.NodePool.Config.ShieldedInstanceConfig.EnableIntegrityMonitoring
       description: Defines whether the instance has integrity monitoring enabled.
@@ -158,8 +161,8 @@ script:
       description: The status of the nodes in this pool instance.
       type: String
     - contextPath: GKE.Cluster.Locations
-      description: The desired list of Google Compute Engine zones in which the cluster’s
-        nodes should be located.
+      description: "The desired list of Google Compute Engine zones in which the cluster\u2019\
+        s nodes should be located."
       type: String
     - contextPath: GKE.Cluster.LabelFingerprint
       description: The fingerprint of the set of labels for this cluster.
@@ -215,7 +218,7 @@ script:
       description: erver-defined URL for the resource.
       type: String
     - contextPath: GKE.Cluster.Endpoint
-      description: The IP address of this cluster’s master endpoint.
+      description: "The IP address of this cluster\u2019s master endpoint."
       type: String
     - contextPath: GKE.Cluster.InitialClusterVersion
       description: The initial Kubernetes version for this cluster.
@@ -313,8 +316,8 @@ script:
       description: Size of the disk attached to each node, specified in GB.
       type: Number
     - contextPath: GKE.Cluster.NodePool.Config.OauthScopes
-      description: The set of Google API scopes to be made available on all of the
-        node VMs under the “default” service account.
+      description: "The set of Google API scopes to be made available on all of the\
+        \ node VMs under the \u201Cdefault\u201D service account."
       type: String
     - contextPath: GKE.Cluster.NodePool.Config.Metadata.disable-legacy-endpoints
       description: legacy abac Status.
@@ -323,13 +326,14 @@ script:
       description: The desired image type for the node pool.
       type: String
     - contextPath: GKE.Cluster.NodePool.Config.ServiceAccount
-      description: The Google Cloud Platform Service Account to be used by the node
-        VMs. If no Service Account is specified, the “default” service account is
-        used.
+      description: "The Google Cloud Platform Service Account to be used by the node\
+        \ VMs. If no Service Account is specified, the \u201Cdefault\u201D service\
+        \ account is used."
       type: String
     - contextPath: GKE.Cluster.NodePool.Config.DiskType
-      description: Type of the disk attached to each node (e.g. ‘pd-standard’ or ‘pd-ssd’)
-        If unspecified, the default disk type is ‘pd- standard’.
+      description: "Type of the disk attached to each node (e.g. \u2018pd-standard\u2019\
+        \ or \u2018pd-ssd\u2019) If unspecified, the default disk type is \u2018pd-\
+        \ standard\u2019."
       type: String
     - contextPath: GKE.Cluster.NodePool.Config.ShieldedInstanceConfig.EnableIntegrityMonitoring
       description: Defines whether the instance has integrity monitoring enabled.
@@ -372,8 +376,8 @@ script:
       description: The status of the nodes in this pool instance.
       type: String
     - contextPath: GKE.Cluster.Locations
-      description: The desired list of Google Compute Engine zones in which the cluster’s
-        nodes should be located.
+      description: "The desired list of Google Compute Engine zones in which the cluster\u2019\
+        s nodes should be located."
       type: String
     - contextPath: GKE.Cluster.LabelFingerprint
       description: The fingerprint of the set of labels for this cluster.
@@ -429,7 +433,7 @@ script:
       description: erver-defined URL for the resource.
       type: String
     - contextPath: GKE.Cluster.Endpoint
-      description: The IP address of this cluster’s master endpoint.
+      description: "The IP address of this cluster\u2019s master endpoint."
       type: String
     - contextPath: GKE.Cluster.InitialClusterVersion
       description: The initial Kubernetes version for this cluster.
@@ -553,9 +557,10 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: |-
-        Configuration for NetworkPolicy.
-        This only tracks whether the addon is enabled or not on the Master, it does not track whether network policy is enabled for the nodes.
+      description: 'Configuration for NetworkPolicy.
+
+        This only tracks whether the addon is enabled or not on the Master, it does
+        not track whether network policy is enabled for the nodes.'
       isArray: false
       name: network_policy
       predefined:
@@ -691,9 +696,11 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: |-
-      Configuration options for the master authorized networks feature.
-      Enabled master authorized networks will disallow all external traffic to access Kubernetes master through HTTPS except traffic from the given CIDR blocks, Google Compute Engine Public IPs and Google Prod IPs.
+    description: 'Configuration options for the master authorized networks feature.
+
+      Enabled master authorized networks will disallow all external traffic to access
+      Kubernetes master through HTTPS except traffic from the given CIDR blocks, Google
+      Compute Engine Public IPs and Google Prod IPs.'
     execution: false
     name: gcloud-clusters-set-master-authorized-network
     outputs:
@@ -931,8 +938,8 @@ script:
       description: Size of the disk attached to each node, specified in GB.
       type: Number
     - contextPath: GKE.NodePool.Config.OauthScopes
-      description: The set of Google API scopes to be made available on all of the
-        node VMs under the “default” service account.
+      description: "The set of Google API scopes to be made available on all of the\
+        \ node VMs under the \u201Cdefault\u201D service account."
       type: String
     - contextPath: GKE.NodePool.Config.Metadata.disable-legacy-endpoints
       description: legacy abac Status.
@@ -941,13 +948,14 @@ script:
       description: The desired image type for the node pool.
       type: String
     - contextPath: GKE.NodePool.Config.ServiceAccount
-      description: The Google Cloud Platform Service Account to be used by the node
-        VMs. If no Service Account is specified, the “default” service account is
-        used.
+      description: "The Google Cloud Platform Service Account to be used by the node\
+        \ VMs. If no Service Account is specified, the \u201Cdefault\u201D service\
+        \ account is used."
       type: String
     - contextPath: GKE.NodePool.Config.DiskType
-      description: Type of the disk attached to each node (e.g. ‘pd-standard’ or ‘pd-ssd’)
-        If unspecified, the default disk type is ‘pd- standard’.
+      description: "Type of the disk attached to each node (e.g. \u2018pd-standard\u2019\
+        \ or \u2018pd-ssd\u2019) If unspecified, the default disk type is \u2018pd-\
+        \ standard\u2019."
       type: String
     - contextPath: GKE.NodePool.Config.ShieldedInstanceConfig.EnableIntegrityMonitoring
       description: Defines whether the instance has integrity monitoring enabled.
@@ -1031,8 +1039,8 @@ script:
       description: Size of the disk attached to each node, specified in GB.
       type: Number
     - contextPath: GKE.NodePool.Config.OauthScopes
-      description: The set of Google API scopes to be made available on all of the
-        node VMs under the “default” service account.
+      description: "The set of Google API scopes to be made available on all of the\
+        \ node VMs under the \u201Cdefault\u201D service account."
       type: String
     - contextPath: GKE.NodePool.Config.Metadata.disable-legacy-endpoints
       description: legacy abac Status.
@@ -1041,13 +1049,14 @@ script:
       description: The desired image type for the node pool.
       type: String
     - contextPath: GKE.NodePool.Config.ServiceAccount
-      description: The Google Cloud Platform Service Account to be used by the node
-        VMs. If no Service Account is specified, the “default” service account is
-        used.
+      description: "The Google Cloud Platform Service Account to be used by the node\
+        \ VMs. If no Service Account is specified, the \u201Cdefault\u201D service\
+        \ account is used."
       type: String
     - contextPath: GKE.NodePool.Config.DiskType
-      description: Type of the disk attached to each node (e.g. ‘pd-standard’ or ‘pd-ssd’)
-        If unspecified, the default disk type is ‘pd- standard’.
+      description: "Type of the disk attached to each node (e.g. \u2018pd-standard\u2019\
+        \ or \u2018pd-ssd\u2019) If unspecified, the default disk type is \u2018pd-\
+        \ standard\u2019."
       type: String
     - contextPath: GKE.NodePool.Config.ShieldedInstanceConfig.EnableIntegrityMonitoring
       description: Defines whether the instance has integrity monitoring enabled.
@@ -1298,3 +1307,4 @@ script:
   type: python
 tests:
 - GoogleKubernetesEngine_Test
+toversion: 4.1.9

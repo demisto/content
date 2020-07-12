@@ -1,288 +1,52 @@
+args:
+- default: true
+  description: Active Directory Distinguished Name for the desired user
+  name: dn
+- description: Name of the desired user
+  name: name
+- description: Include these AD attributes of the resulting objects in addition to
+    the default ones
+  name: attributes
+- description: Search user by this custom field type
+  name: customFieldType
+- description: Search user by this custom field data (relevant only if `customFieldType`
+    is provided)
+  name: customFieldData
+- description: The columns headers to show by order
+  name: headers
+- auto: PREDEFINED
+  description: ' Enter ''true'' to allow nested groups search as well'
+  name: nestedSearch
+  predefined:
+  - 'true'
+  - 'false'
+- description: samAccountName of the desire user
+  name: username
+- description: Maximum number of objects to return (default is 20)
+  name: limit
+- description: mail attribute of desire user
+  name: email
+- auto: PREDEFINED
+  description: Include verbose translation for UserAccountControl flags
+  name: userAccountControlOut
+  predefined:
+  - 'true'
+  - 'false'
+- description: Select instance name
+  name: using
+comment: 'Use Active Directory to retrieve detailed information about a user account.
+  The user can be specified by name, email or as an Active Directory Distinguished
+  Name (DN).
+
+  If no filter is provided, the result will show all users.'
 commonfields:
   id: ADGetUser
   version: -1
-name: ADGetUser
-script: |-
-  import re
-
-  UserAccountControlFlags = {
-      'SCRIPT': 0x0001,
-      'ACCOUNTDISABLE': 0x0002,
-      'HOMEDIR_REQUIRED': 0x0008,
-      'LOCKOUT': 0x0010,
-      'PASSWD_NOTREQD': 0x0020,
-      'PASSWD_CANT_CHANGE': 0x0040,
-      'ENCRYPTED_TEXT_PWD_ALLOWED': 0x0080,
-      'TEMP_DUPLICATE_ACCOUNT': 0x0100,
-      'NORMAL_ACCOUNT': 0x0200,
-      'INTERDOMAIN_TRUST_ACCOUNT': 0x0800,
-      'WORKSTATION_TRUST_ACCOUNT': 0x1000,
-      'SERVER_TRUST_ACCOUNT': 0x2000,
-      'DONT_EXPIRE_PASSWORD': 0x10000,
-      'MNS_LOGON_ACCOUNT': 0x20000,
-      'SMARTCARD_REQUIRED': 0x40000,
-      'TRUSTED_FOR_DELEGATION': 0x80000,
-      'NOT_DELEGATED': 0x100000,
-      'USE_DES_KEY_ONLY': 0x200000,
-      'DONT_REQ_PREAUTH': 0x400000,
-      'PASSWORD_EXPIRED': 0x800000,
-      'TRUSTED_TO_AUTH_FOR_DELEGATION': 0x1000000,
-      'PARTIAL_SECRETS_ACCOUNT': 0x04000000
-  }
-
-  limit = 20
-  if demisto.get(demisto.args(), 'limit'):
-      limit = demisto.args()['limit']
-
-
-  def escapeSpecialCharacters(s):
-      return re.sub(r'([\()])', lambda r : '\\' + r.group(), s)
-
-
-  def createAccountEntities(t,attrs):
-      accounts = []
-      for l in t:
-          account = {}
-          account['Type'] = 'AD'
-          account['ID'] = demisto.get(l,'dn')
-          account['Email'] = {'Address':demisto.get(l,'mail')}
-          account['Username'] = demisto.get(l,'samAccountName')
-          account['DisplayName'] = demisto.get(l,'displayName')
-          account['Manager'] = demisto.get(l,'manager')
-          account['Groups'] = demisto.get(l,'memberOf').split('<br>') if demisto.get(l,'memberOf') else ''
-          for attr in set(argToList(attrs)) - set(['dn','mail','name','displayName','memberOf']):
-              account[attr.title()] = demisto.get(l,attr)
-          accounts.append(account)
-
-      return accounts
-
-
-  def prettifyDateTimeADFields(resAD):
-      try:
-          for m in resAD:
-              if isError(m):
-                  continue
-              m['ContentsFormat'] = formats['table']
-              for f in [ 'lastlogon' , 'lastlogoff' , 'pwdLastSet' , 'badPasswordTime' , 'lastLogonTimestamp' ]:
-                  if f not in m['Contents'][0]:
-                      continue
-                  if  m['Contents'][0][f] == "0":
-                      m['Contents'][0][f] = "N/A"
-                  else:
-                      try:
-                          m['Contents'][0][f] = FormatADTimestamp( m['Contents'][0][f] )
-                      except:
-                          pass # Could not prettify timestamp - return as is
-              for f in [ 'whenChanged' , 'whenCreated' ]:
-                  try:
-                      m['Contents'][0][f] = PrettifyCompactedTimestamp( m['Contents'][0][f] )
-                  except:
-                      pass # Could not prettify timestamp - return as is
-          return resAD
-      except Exception as ex:
-          return { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Error occurred while parsing output from ad command. Exception info: ' + str(ex) + '\nInvalid output:\n' + str( resAD ) }
-
-  def translateUserAccountControl(resAD, userAccountControlOut):
-      try:
-          for m in resAD:
-              if isError(m) or not demisto.get(m, 'Contents') or not isinstance(m['Contents'], list):
-                  continue
-              if 'UserAccountControl' not in m['Contents'][0] or m['Contents'][0]['UserAccountControl'] == "":
-                  continue
-              if userAccountControlOut:
-                  accountControlFlags = []
-                  for flag, mask in UserAccountControlFlags.iteritems():
-                      if int(m['Contents'][0]['UserAccountControl'],10) & mask != 0:
-                          accountControlFlags.append(flag)
-                  m['Contents'][0]['UserAccountControl'] = ', '.join(accountControlFlags)
-              else:
-                  m['Contents'][0]['ACCOUNTDISABLE'] = int(m['Contents'][0]['UserAccountControl'],10) & 2 != 0
-          return resAD
-      except Exception as ex:
-          return { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Error occurred while parsing output from ad command. Exception info: ' + str(ex) + '\nInvalid output:\n' + str( resAD ) }
-
-  def listAll(attrs, using, userAccountControlOut):
-      args = {}
-      args['filter'] = "(objectClass=User)"
-      args['attributes'] = attrs
-      args['size-limit'] = limit
-      args['using-brand'] = 'activedir'
-      if using:
-          args['using'] = using
-      resAD = getADSearchResp(args)
-      if isError(resAD[0]) or isinstance(demisto.get(resAD[0],'Contents'), str) or isinstance(demisto.get(resAD[0],'Contents'), unicode):
-          return resAD
-      else:
-          resAD = prettifyDateTimeADFields(resAD)
-          resAD = translateUserAccountControl(resAD, userAccountControlOut)
-          return resAD
-
-  def getGroups(userDN):
-      queryValue = escapeSpecialCharacters(userDN)
-      group_attrs = 'name'
-      filterstr = r"(&(member{0}=".format(':1.2.840.113556.1.4.1941:') + queryValue + ")(objectcategory=group))"
-      args = {
-          'filter' : filterstr,
-          'attributes' : group_attrs,
-          'size-limit' : limit,
-          'using-brand' : 'activedir'
-      }
-      group_resp = getADSearchResp(args)
-      if isError(group_resp[0]):
-          return group_resp
-      try:
-          data = demisto.get(group_resp[0],'Contents')
-          data = data if isinstance(data, list) else [data]
-          memberOf = ",".join([demisto.get(k,'dn') for k in data])
-          return memberOf
-      except Exception as e:
-          return ""
-
-
-  def queryBuilder(queryType,queryValue,attrs,nested,using, userAccountControlOut):
-      args = {}
-      args['size-limit'] = limit
-      args['using-brand'] = 'activedir'
-      if using:
-          args['using'] = using
-      filterstr = r"(&(objectClass=User)({0}={1}))".format(queryType, queryValue)
-      args['filter'] = filterstr
-      args['attributes'] = attrs
-      resp = getADSearchResp(args)
-      if isError(resp) or isinstance(demisto.get(resp[0],'Contents'), str) or isinstance(demisto.get(resp[0],'Contents'), unicode):
-          return resp
-      if nested:
-          for index,user in enumerate(resp[0]['Contents']):
-              memberOf = getGroups(user["dn"])
-              if memberOf:
-                  resp[0]['Contents'][index]['memberOf'] = memberOf
-
-      resp = prettifyDateTimeADFields(resp)
-      resp = translateUserAccountControl(resp, userAccountControlOut)
-      return resp
-
-  def getADSearchResp(args):
-      try:
-          return demisto.executeCommand( 'ad-search', args )
-      except Exception as e:
-          if 'Unsupported Command' in str(e):
-              return_error('No instances of "Active Directory Query" are configured.\nIf you are trying to run "ADGetUser" with "Active Directory Query V2", please use the aquivilant command "ad-get-user" instead.')
-              raise e
-
-  attrs = 'dn,name,displayName,memberOf,mail,samAccountName,manager,UserAccountControl,ACCOUNTDISABLE,provider'
-  queryValue, queryType = "",""
-  headers = argToList(demisto.get(demisto.args(), 'headers'))
-  userAccountControlOut = False
-
-  nestedSearch = True if demisto.get(demisto.args(), 'nestedSearch') == 'true' else False
-
-  if demisto.get(demisto.args(), 'attributes'):
-      attrs += "," + demisto.args()['attributes']
-  if demisto.get(demisto.args(), 'userAccountControlOut'):
-      userAccountControlOut = demisto.args()['userAccountControlOut'] == 'true'
-
-  if demisto.get(demisto.args(), 'dn'):
-      queryValue = demisto.args()['dn']
-      queryType = "distinguishedName"
-  elif demisto.get(demisto.args(), 'name'):
-      queryValue = demisto.args()['name']
-      queryType = "name"
-  elif demisto.get(demisto.args(), 'username'):
-      queryValue = demisto.args()['username']
-      queryType = "samAccountName"
-  elif demisto.get(demisto.args(), 'email'):
-      queryValue = demisto.args()['email']
-      queryType = "mail"
-  elif demisto.get(demisto.args(), 'customFieldType'):
-      if not demisto.get(demisto.args(), 'customFieldData'):
-          demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], '' : 'To do custom search, both "customFieldType" and "customFieldData" should be provided' })
-      else:
-          queryValue = demisto.args()['customFieldData']
-          queryType = demisto.args()['customFieldType']
-  resp = None
-  if queryValue and queryType:
-      resp = queryBuilder(queryType,escapeSpecialCharacters(queryValue),attrs,nestedSearch,demisto.get(demisto.args(),'using'), userAccountControlOut)
-  else:
-      resp = listAll(attrs, demisto.get(demisto.args(),'using'), userAccountControlOut)
-
-  if isError(resp):
-      demisto.results(resp)
-  else:
-      found = False
-      for response in resp:
-          context = {}
-          data = demisto.get(response,'Contents')
-          if isinstance(data, str) or isinstance(data, unicode) :
-              if data == 'No results':
-                  continue
-              found = True
-              md = data
-          else:
-              data = data if isinstance(data, list) else [data]
-              found = True
-              md = tableToMarkdown("Active Directory User", data, headers)
-              context['Account(val.Email && val.Email === obj.Email || val.ID && val.ID === obj.ID || val.Username && val.Username === obj.Username)'] = createAccountEntities(data,attrs)
-              if len(data) > 0 and demisto.get(data[0], 'name'):
-                  context['DBotScore'] = {'Indicator': data[0]['samAccountName'], 'Type': 'username', 'Vendor': 'AD', 'Score': 0, 'isTypedIndicator': True}
-          demisto.results({'Type' : entryTypes['note'],
-                          'Contents': data,
-                          'ContentsFormat' : formats['json'],
-                          'HumanReadable': md,
-                          'ReadableContentsFormat' : formats['markdown'],
-                          'EntryContext' : context})
-      if not found:
-          demisto.results({'Type' : entryTypes['note'],
-                          'Contents': resp,
-                          'ContentsFormat' : formats['json'],
-                          'HumanReadable': 'No results found for user',
-                          'ReadableContentsFormat' : formats['markdown'],
-                          'EntryContext' : {}})
-type: python
-subtype: python2
-tags:
-- active directory
-- enhancement
-- username
-comment: |-
-  Use Active Directory to retrieve detailed information about a user account. The user can be specified by name, email or as an Active Directory Distinguished Name (DN).
-  If no filter is provided, the result will show all users.
+dependson:
+  must:
+  - activedir|||ad-search
 enabled: true
-args:
-- name: dn
-  default: true
-  description: Active Directory Distinguished Name for the desired user
-- name: name
-  description: Name of the desired user
-- name: attributes
-  description: Include these AD attributes of the resulting objects in addition to
-    the default ones
-- name: customFieldType
-  description: Search user by this custom field type
-- name: customFieldData
-  description: Search user by this custom field data (relevant only if `customFieldType`
-    is provided)
-- name: headers
-  description: The columns headers to show by order
-- name: nestedSearch
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  description: ' Enter ''true'' to allow nested groups search as well'
-- name: username
-  description: samAccountName of the desire user
-- name: limit
-  description: Maximum number of objects to return (default is 20)
-- name: email
-  description: mail attribute of desire user
-- name: userAccountControlOut
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  description: Include verbose translation for UserAccountControl flags
-- name: using
-  description: Select instance name
+name: ADGetUser
 outputs:
 - contextPath: Account
   description: Active Directory Account
@@ -321,7 +85,130 @@ outputs:
 - contextPath: DBotScore.Score
   description: The indicator's score
   type: number
+script: "import re\n\nUserAccountControlFlags = {\n    'SCRIPT': 0x0001,\n    'ACCOUNTDISABLE':\
+  \ 0x0002,\n    'HOMEDIR_REQUIRED': 0x0008,\n    'LOCKOUT': 0x0010,\n    'PASSWD_NOTREQD':\
+  \ 0x0020,\n    'PASSWD_CANT_CHANGE': 0x0040,\n    'ENCRYPTED_TEXT_PWD_ALLOWED':\
+  \ 0x0080,\n    'TEMP_DUPLICATE_ACCOUNT': 0x0100,\n    'NORMAL_ACCOUNT': 0x0200,\n\
+  \    'INTERDOMAIN_TRUST_ACCOUNT': 0x0800,\n    'WORKSTATION_TRUST_ACCOUNT': 0x1000,\n\
+  \    'SERVER_TRUST_ACCOUNT': 0x2000,\n    'DONT_EXPIRE_PASSWORD': 0x10000,\n   \
+  \ 'MNS_LOGON_ACCOUNT': 0x20000,\n    'SMARTCARD_REQUIRED': 0x40000,\n    'TRUSTED_FOR_DELEGATION':\
+  \ 0x80000,\n    'NOT_DELEGATED': 0x100000,\n    'USE_DES_KEY_ONLY': 0x200000,\n\
+  \    'DONT_REQ_PREAUTH': 0x400000,\n    'PASSWORD_EXPIRED': 0x800000,\n    'TRUSTED_TO_AUTH_FOR_DELEGATION':\
+  \ 0x1000000,\n    'PARTIAL_SECRETS_ACCOUNT': 0x04000000\n}\n\nlimit = 20\nif demisto.get(demisto.args(),\
+  \ 'limit'):\n    limit = demisto.args()['limit']\n\n\ndef escapeSpecialCharacters(s):\n\
+  \    return re.sub(r'([\\()])', lambda r : '\\\\' + r.group(), s)\n\n\ndef createAccountEntities(t,attrs):\n\
+  \    accounts = []\n    for l in t:\n        account = {}\n        account['Type']\
+  \ = 'AD'\n        account['ID'] = demisto.get(l,'dn')\n        account['Email']\
+  \ = {'Address':demisto.get(l,'mail')}\n        account['Username'] = demisto.get(l,'samAccountName')\n\
+  \        account['DisplayName'] = demisto.get(l,'displayName')\n        account['Manager']\
+  \ = demisto.get(l,'manager')\n        account['Groups'] = demisto.get(l,'memberOf').split('<br>')\
+  \ if demisto.get(l,'memberOf') else ''\n        for attr in set(argToList(attrs))\
+  \ - set(['dn','mail','name','displayName','memberOf']):\n            account[attr.title()]\
+  \ = demisto.get(l,attr)\n        accounts.append(account)\n\n    return accounts\n\
+  \n\ndef prettifyDateTimeADFields(resAD):\n    try:\n        for m in resAD:\n  \
+  \          if isError(m):\n                continue\n            m['ContentsFormat']\
+  \ = formats['table']\n            for f in [ 'lastlogon' , 'lastlogoff' , 'pwdLastSet'\
+  \ , 'badPasswordTime' , 'lastLogonTimestamp' ]:\n                if f not in m['Contents'][0]:\n\
+  \                    continue\n                if  m['Contents'][0][f] == \"0\"\
+  :\n                    m['Contents'][0][f] = \"N/A\"\n                else:\n  \
+  \                  try:\n                        m['Contents'][0][f] = FormatADTimestamp(\
+  \ m['Contents'][0][f] )\n                    except:\n                        pass\
+  \ # Could not prettify timestamp - return as is\n            for f in [ 'whenChanged'\
+  \ , 'whenCreated' ]:\n                try:\n                    m['Contents'][0][f]\
+  \ = PrettifyCompactedTimestamp( m['Contents'][0][f] )\n                except:\n\
+  \                    pass # Could not prettify timestamp - return as is\n      \
+  \  return resAD\n    except Exception as ex:\n        return { 'Type' : entryTypes['error'],\
+  \ 'ContentsFormat' : formats['text'], 'Contents' : 'Error occurred while parsing\
+  \ output from ad command. Exception info: ' + str(ex) + '\\nInvalid output:\\n'\
+  \ + str( resAD ) }\n\ndef translateUserAccountControl(resAD, userAccountControlOut):\n\
+  \    try:\n        for m in resAD:\n            if isError(m) or not demisto.get(m,\
+  \ 'Contents') or not isinstance(m['Contents'], list):\n                continue\n\
+  \            if 'UserAccountControl' not in m['Contents'][0] or m['Contents'][0]['UserAccountControl']\
+  \ == \"\":\n                continue\n            if userAccountControlOut:\n  \
+  \              accountControlFlags = []\n                for flag, mask in UserAccountControlFlags.iteritems():\n\
+  \                    if int(m['Contents'][0]['UserAccountControl'],10) & mask !=\
+  \ 0:\n                        accountControlFlags.append(flag)\n               \
+  \ m['Contents'][0]['UserAccountControl'] = ', '.join(accountControlFlags)\n    \
+  \        else:\n                m['Contents'][0]['ACCOUNTDISABLE'] = int(m['Contents'][0]['UserAccountControl'],10)\
+  \ & 2 != 0\n        return resAD\n    except Exception as ex:\n        return {\
+  \ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' :\
+  \ 'Error occurred while parsing output from ad command. Exception info: ' + str(ex)\
+  \ + '\\nInvalid output:\\n' + str( resAD ) }\n\ndef listAll(attrs, using, userAccountControlOut):\n\
+  \    args = {}\n    args['filter'] = \"(objectClass=User)\"\n    args['attributes']\
+  \ = attrs\n    args['size-limit'] = limit\n    args['using-brand'] = 'activedir'\n\
+  \    if using:\n        args['using'] = using\n    resAD = getADSearchResp(args)\n\
+  \    if isError(resAD[0]) or isinstance(demisto.get(resAD[0],'Contents'), str) or\
+  \ isinstance(demisto.get(resAD[0],'Contents'), unicode):\n        return resAD\n\
+  \    else:\n        resAD = prettifyDateTimeADFields(resAD)\n        resAD = translateUserAccountControl(resAD,\
+  \ userAccountControlOut)\n        return resAD\n\ndef getGroups(userDN):\n    queryValue\
+  \ = escapeSpecialCharacters(userDN)\n    group_attrs = 'name'\n    filterstr = r\"\
+  (&(member{0}=\".format(':1.2.840.113556.1.4.1941:') + queryValue + \")(objectcategory=group))\"\
+  \n    args = {\n        'filter' : filterstr,\n        'attributes' : group_attrs,\n\
+  \        'size-limit' : limit,\n        'using-brand' : 'activedir'\n    }\n   \
+  \ group_resp = getADSearchResp(args)\n    if isError(group_resp[0]):\n        return\
+  \ group_resp\n    try:\n        data = demisto.get(group_resp[0],'Contents')\n \
+  \       data = data if isinstance(data, list) else [data]\n        memberOf = \"\
+  ,\".join([demisto.get(k,'dn') for k in data])\n        return memberOf\n    except\
+  \ Exception as e:\n        return \"\"\n\n\ndef queryBuilder(queryType,queryValue,attrs,nested,using,\
+  \ userAccountControlOut):\n    args = {}\n    args['size-limit'] = limit\n    args['using-brand']\
+  \ = 'activedir'\n    if using:\n        args['using'] = using\n    filterstr = r\"\
+  (&(objectClass=User)({0}={1}))\".format(queryType, queryValue)\n    args['filter']\
+  \ = filterstr\n    args['attributes'] = attrs\n    resp = getADSearchResp(args)\n\
+  \    if isError(resp) or isinstance(demisto.get(resp[0],'Contents'), str) or isinstance(demisto.get(resp[0],'Contents'),\
+  \ unicode):\n        return resp\n    if nested:\n        for index,user in enumerate(resp[0]['Contents']):\n\
+  \            memberOf = getGroups(user[\"dn\"])\n            if memberOf:\n    \
+  \            resp[0]['Contents'][index]['memberOf'] = memberOf\n\n    resp = prettifyDateTimeADFields(resp)\n\
+  \    resp = translateUserAccountControl(resp, userAccountControlOut)\n    return\
+  \ resp\n\ndef getADSearchResp(args):\n    try:\n        return demisto.executeCommand(\
+  \ 'ad-search', args )\n    except Exception as e:\n        if 'Unsupported Command'\
+  \ in str(e):\n            return_error('No instances of \"Active Directory Query\"\
+  \ are configured.\\nIf you are trying to run \"ADGetUser\" with \"Active Directory\
+  \ Query V2\", please use the aquivilant command \"ad-get-user\" instead.')\n   \
+  \         raise e\n\nattrs = 'dn,name,displayName,memberOf,mail,samAccountName,manager,UserAccountControl,ACCOUNTDISABLE,provider'\n\
+  queryValue, queryType = \"\",\"\"\nheaders = argToList(demisto.get(demisto.args(),\
+  \ 'headers'))\nuserAccountControlOut = False\n\nnestedSearch = True if demisto.get(demisto.args(),\
+  \ 'nestedSearch') == 'true' else False\n\nif demisto.get(demisto.args(), 'attributes'):\n\
+  \    attrs += \",\" + demisto.args()['attributes']\nif demisto.get(demisto.args(),\
+  \ 'userAccountControlOut'):\n    userAccountControlOut = demisto.args()['userAccountControlOut']\
+  \ == 'true'\n\nif demisto.get(demisto.args(), 'dn'):\n    queryValue = demisto.args()['dn']\n\
+  \    queryType = \"distinguishedName\"\nelif demisto.get(demisto.args(), 'name'):\n\
+  \    queryValue = demisto.args()['name']\n    queryType = \"name\"\nelif demisto.get(demisto.args(),\
+  \ 'username'):\n    queryValue = demisto.args()['username']\n    queryType = \"\
+  samAccountName\"\nelif demisto.get(demisto.args(), 'email'):\n    queryValue = demisto.args()['email']\n\
+  \    queryType = \"mail\"\nelif demisto.get(demisto.args(), 'customFieldType'):\n\
+  \    if not demisto.get(demisto.args(), 'customFieldData'):\n        demisto.results({\
+  \ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], '' : 'To do\
+  \ custom search, both \"customFieldType\" and \"customFieldData\" should be provided'\
+  \ })\n    else:\n        queryValue = demisto.args()['customFieldData']\n      \
+  \  queryType = demisto.args()['customFieldType']\nresp = None\nif queryValue and\
+  \ queryType:\n    resp = queryBuilder(queryType,escapeSpecialCharacters(queryValue),attrs,nestedSearch,demisto.get(demisto.args(),'using'),\
+  \ userAccountControlOut)\nelse:\n    resp = listAll(attrs, demisto.get(demisto.args(),'using'),\
+  \ userAccountControlOut)\n\nif isError(resp):\n    demisto.results(resp)\nelse:\n\
+  \    found = False\n    for response in resp:\n        context = {}\n        data\
+  \ = demisto.get(response,'Contents')\n        if isinstance(data, str) or isinstance(data,\
+  \ unicode) :\n            if data == 'No results':\n                continue\n \
+  \           found = True\n            md = data\n        else:\n            data\
+  \ = data if isinstance(data, list) else [data]\n            found = True\n     \
+  \       md = tableToMarkdown(\"Active Directory User\", data, headers)\n       \
+  \     context['Account(val.Email && val.Email === obj.Email || val.ID && val.ID\
+  \ === obj.ID || val.Username && val.Username === obj.Username)'] = createAccountEntities(data,attrs)\n\
+  \            if len(data) > 0 and demisto.get(data[0], 'name'):\n              \
+  \  context['DBotScore'] = {'Indicator': data[0]['samAccountName'], 'Type': 'username',\
+  \ 'Vendor': 'AD', 'Score': 0, 'isTypedIndicator': True}\n        demisto.results({'Type'\
+  \ : entryTypes['note'],\n                        'Contents': data,\n           \
+  \             'ContentsFormat' : formats['json'],\n                        'HumanReadable':\
+  \ md,\n                        'ReadableContentsFormat' : formats['markdown'],\n\
+  \                        'EntryContext' : context})\n    if not found:\n       \
+  \ demisto.results({'Type' : entryTypes['note'],\n                        'Contents':\
+  \ resp,\n                        'ContentsFormat' : formats['json'],\n         \
+  \               'HumanReadable': 'No results found for user',\n                \
+  \        'ReadableContentsFormat' : formats['markdown'],\n                     \
+  \   'EntryContext' : {}})"
 scripttarget: 0
-dependson:
-  must:
-  - activedir|||ad-search
+subtype: python2
+tags:
+- active directory
+- enhancement
+- username
+toversion: 4.1.9
+type: python

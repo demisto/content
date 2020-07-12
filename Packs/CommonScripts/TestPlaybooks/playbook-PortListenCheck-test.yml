@@ -1,147 +1,109 @@
 id: PortListenCheck-test
-version: -1
+inputs: []
 name: PortListenCheck-test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: e51a6257-7aae-4a90-80fd-fbf76cbcc24f
+      iscommand: false
+      name: ''
+      version: -1
     taskid: e51a6257-7aae-4a90-80fd-fbf76cbcc24f
     type: start
-    task:
-      id: e51a6257-7aae-4a90-80fd-fbf76cbcc24f
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
+      - '2'
     note: false
-  "1":
-    id: "1"
-    taskid: 56e72941-2276-4ffa-8ae6-925a802760a1
-    type: regular
-    task:
-      id: 56e72941-2276-4ffa-8ae6-925a802760a1
-      version: -1
-      name: PortListenCheck
-      description: Checks whether a port was open on given host
-      scriptName: PortListenCheck
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
     scriptarguments:
       host:
         simple: google.com
       port:
-        simple: "80"
+        simple: '80'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 230
-        }
-      }
-    note: false
-  "2":
-    id: "2"
-    taskid: da1c1f88-9654-4275-8e4d-380af2c91277
-    type: condition
     task:
-      id: da1c1f88-9654-4275-8e4d-380af2c91277
-      version: -1
-      name: Is port open?
-      type: condition
+      brand: ''
+      description: Checks whether a port was open on given host
+      id: 56e72941-2276-4ffa-8ae6-925a802760a1
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "4"
-      "yes":
-      - "3"
-    separatecontext: false
+      name: PortListenCheck
+      scriptName: PortListenCheck
+      type: regular
+      version: -1
+    taskid: 56e72941-2276-4ffa-8ae6-925a802760a1
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+  '2':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isTrue
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: portOpen
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 420
-        }
-      }
+          operator: isTrue
+      label: 'yes'
+    id: '2'
+    nexttasks:
+      '#default#':
+      - '4'
+      'yes':
+      - '3'
     note: false
-  "3":
-    id: "3"
-    taskid: c8ca6661-a005-49f6-8073-e6e1934be632
-    type: title
+    separatecontext: false
     task:
-      id: c8ca6661-a005-49f6-8073-e6e1934be632
+      brand: ''
+      id: da1c1f88-9654-4275-8e4d-380af2c91277
+      iscommand: false
+      name: Is port open?
+      type: condition
       version: -1
+    taskid: da1c1f88-9654-4275-8e4d-380af2c91277
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 420\n  }\n}"
+  '3':
+    id: '3'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: c8ca6661-a005-49f6-8073-e6e1934be632
+      iscommand: false
       name: Good!!
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 840,
-          "y": 720
-        }
-      }
-    note: false
-  "4":
-    id: "4"
-    taskid: 34f797ef-a747-44eb-8451-03ef25f533db
-    type: regular
-    task:
-      id: 34f797ef-a747-44eb-8451-03ef25f533db
       version: -1
-      name: Fail
-      scriptName: Print
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: c8ca6661-a005-49f6-8073-e6e1934be632
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 840,\n    \"y\": 720\n  }\n}"
+  '4':
+    id: '4'
+    note: false
     scriptarguments:
       value: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 140,
-          "y": 680
-        }
-      }
-    note: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 735,
-        "width": 1080,
-        "x": 140,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    task:
+      brand: ''
+      id: 34f797ef-a747-44eb-8451-03ef25f533db
+      iscommand: false
+      name: Fail
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: 34f797ef-a747-44eb-8451-03ef25f533db
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 140,\n    \"y\": 680\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 735,\n      \"width\": 1080,\n      \"x\": 140,\n      \"y\":\
+  \ 50\n    }\n  }\n}"

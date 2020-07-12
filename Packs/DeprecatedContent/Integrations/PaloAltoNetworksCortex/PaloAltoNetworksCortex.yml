@@ -2,7 +2,6 @@ category: Analytics & SIEM
 commonfields:
   id: Palo Alto Networks Cortex
   version: -1
-deprecated: true
 configuration:
 - display: Authentication Token
   name: token
@@ -140,9 +139,11 @@ configuration:
   - wsmprovhost.exe Rare Child Process
   required: false
   type: 16
+deprecated: true
 description: Deprecated - We recommend using the Cortex Data Lake integration instead.
   This framework manages all PA's cloud managed products
 display: Palo Alto Networks Cortex (Deprecated)
+fromversion: 4.1.0
 name: Palo Alto Networks Cortex
 script:
   commands:
@@ -629,7 +630,8 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: An IP address or an array of IP addresses for which to search, for example 1.1.1.1,2.2.2.2.
+      description: An IP address or an array of IP addresses for which to search,
+        for example 1.1.1.1,2.2.2.2.
       isArray: false
       name: ip
       required: false
@@ -653,7 +655,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A destination port number or an array of destination port numbers to search.
+      description: A destination port number or an array of destination port numbers
+        to search.
       isArray: false
       name: port
       required: false
@@ -665,9 +668,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: A free-text query for which to search. This forms the WHERE part of the query,
-        for example,
-        !cortex-query-traffic-logs query="src LIKE '192.168.1.*' AND dst='8.8.8.8'"
+      description: A free-text query for which to search. This forms the WHERE part
+        of the query, for example, !cortex-query-traffic-logs query="src LIKE '192.168.1.*'
+        AND dst='8.8.8.8'"
       isArray: false
       name: query
       required: false
@@ -675,8 +678,8 @@ script:
     - default: false
       defaultValue: all
       description: The fields that are selected in the query. Selection can be "all"
-        (same as *) or a list of specific fields in the table.
-        List of fields can be found after viewing all the outputed fields with all.
+        (same as *) or a list of specific fields in the table. List of fields can
+        be found after viewing all the outputed fields with all.
       isArray: false
       name: fields
       required: false
@@ -698,7 +701,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: The time range for the query, used with the rangeValue argument.
-        The following example runs the query on the previous week, timeRange="weeks" timeValue="1".
+        The following example runs the query on the previous week, timeRange="weeks"
+        timeValue="1".
       isArray: false
       name: timeRange
       predefined:
@@ -709,7 +713,8 @@ script:
       secret: false
     - default: false
       description: The time value for the query, used with the timeRange argument.
-        The following example runs the query on the previous week, timeRange="weeks" timeValue="1".
+        The following example runs the query on the previous week, timeRange="weeks"
+        timeValue="1".
       isArray: false
       name: rangeValue
       required: false
@@ -722,14 +727,13 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Searches the Cortex panw.traffic table, which is the traffic
-      logs table for PAN-OS and Panorama.
+    description: Searches the Cortex panw.traffic table, which is the traffic logs
+      table for PAN-OS and Panorama.
     execution: false
     name: cortex-query-traffic-logs
     outputs:
     - contextPath: Cortex.Logging.Traffic.Action
-      description: Identifies the action that the firewall took for the network
-        traffic.
+      description: Identifies the action that the firewall took for the network traffic.
       type: String
     - contextPath: Cortex.Logging.Traffic.RiskOfApp
       description: Indicates the risk of the application, from a network security
@@ -865,7 +869,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: An IP address or an array of IP addresses for which to search, for example 1.1.1.1,2.2.2.2.
+      description: An IP address or an array of IP addresses for which to search,
+        for example 1.1.1.1,2.2.2.2.
       isArray: false
       name: ip
       required: false
@@ -902,8 +907,7 @@ script:
       secret: false
     - default: false
       description: Free input query to search. This is the WHERE part of the query.
-        so an example will be
-        !cortex-query-traffic-logs query="src LIKE '192.168.1.*'
+        so an example will be !cortex-query-traffic-logs query="src LIKE '192.168.1.*'
         AND dst = '192.168.1.12'"
       isArray: false
       name: query
@@ -912,8 +916,8 @@ script:
     - default: false
       defaultValue: all
       description: The fields that are selected in the query. Selection can be "all"
-        (same as *) or listing of specific fields in the table.
-        List of fields can be found after viewing all the outputed fields with all.
+        (same as *) or listing of specific fields in the table. List of fields can
+        be found after viewing all the outputed fields with all.
       isArray: false
       name: fields
       required: false
@@ -972,8 +976,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Searches the Cortex panw.threat table, which is the threat
-      logs table for PAN-OS/Panorama.
+    description: Searches the Cortex panw.threat table, which is the threat logs table
+      for PAN-OS/Panorama.
     execution: false
     name: cortex-query-threat-logs
     outputs:
@@ -1124,9 +1128,10 @@ script:
       description: The name of the internet domain that was visited in this session.
       type: String
     - contextPath: Cortex.Logging.Threat.Category
-      description: For the URL subtype, this identifies the URL Category. For the
-        WildFire subtype, this identifies the verdict on the file. It is one of ‘malicious’,
-        ‘phishing’, ‘grayware’, or ‘benign’;
+      description: "For the URL subtype, this identifies the URL Category. For the\
+        \ WildFire subtype, this identifies the verdict on the file. It is one of\
+        \ \u2018malicious\u2019, \u2018phishing\u2019, \u2018grayware\u2019, or \u2018\
+        benign\u2019;"
       type: String
     - contextPath: Cortex.Logging.Threat.Sport
       description: Source port utilized by the session.
@@ -1182,8 +1187,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Free-text input query to search. This is the WHERE part of the query
-        so an example will be src = '1.1.1.1' OR rule = 'test rule'.
+      description: Free-text input query to search. This is the WHERE part of the
+        query so an example will be src = '1.1.1.1' OR rule = 'test rule'.
       isArray: false
       name: query
       required: false
@@ -1191,8 +1196,8 @@ script:
     - default: false
       defaultValue: all
       description: The fields that are selected in the query. Selection can be "all"
-        (same as *) or listing of specific fields in the table.
-        List of fields can be found after viewing all the outputed fields with all.
+        (same as *) or listing of specific fields in the table. List of fields can
+        be found after viewing all the outputed fields with all.
       isArray: false
       name: fields
       required: false
@@ -1240,8 +1245,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Searches the Cortex tms.threat table, which is the threat
-      logs table for the Traps endpoint protection and response.
+    description: Searches the Cortex tms.threat table, which is the threat logs table
+      for the Traps endpoint protection and response.
     execution: false
     name: cortex-query-traps-logs
     outputs:
@@ -1323,8 +1328,8 @@ script:
       description: Original time on the endpoint device.
       type: String
     - contextPath: Cortex.Logging.Traps.Facility
-      description: 'The Traps system component that initiated the event For example:,
-        TrapsAgent, TrapsServiceCore, TrapsServiceManagement, TrapsServiceBackend.'
+      description: The Traps system component that initiated the event For example:,
+        TrapsAgent, TrapsServiceCore, TrapsServiceManagement, TrapsServiceBackend.
       type: Sting
     - contextPath: Cortex.Logging.Traps.MessageData.PreventionKey
       description: Unique identifier for security events.
@@ -1532,8 +1537,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Free-text input query to search. This forms the WHERE part of the query.
-        For example, endPointHeader.agentIp = '1.1.1.1'.
+      description: Free-text input query to search. This forms the WHERE part of the
+        query. For example, endPointHeader.agentIp = '1.1.1.1'.
       isArray: false
       name: query
       required: false
@@ -1541,8 +1546,8 @@ script:
     - default: false
       defaultValue: all
       description: The fields that are selected in the query. Selection can be "all"
-        (same as *) or a list of specific fields in the table.
-        You can find the list of fields after viewing all the outputed fields with "all".
+        (same as *) or a list of specific fields in the table. You can find the list
+        of fields after viewing all the outputed fields with "all".
       isArray: false
       name: fields
       required: false
@@ -1590,8 +1595,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Searches the Cortex tms.analytics table, which is the
-      endpoint logs table for Traps Analytics.
+    description: Searches the Cortex tms.analytics table, which is the endpoint logs
+      table for Traps Analytics.
     execution: false
     name: cortex-query-analytics-logs
     outputs:
@@ -1769,8 +1774,8 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 tests:
 - No tests
-fromversion: 4.1.0
+toversion: 4.1.9

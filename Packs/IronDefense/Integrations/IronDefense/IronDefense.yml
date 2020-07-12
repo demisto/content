@@ -21,10 +21,9 @@ configuration:
   name: requestTimeout
   required: false
   type: 0
-description: The IronDefense Integration allows users to interact with
-  IronDefense alerts within Demisto. The Integration provides the ability to rate
-  alerts, update alert statuses, add comments to alerts, and to report observed bad
-  activity.
+description: The IronDefense Integration allows users to interact with IronDefense
+  alerts within Demisto. The Integration provides the ability to rate alerts, update
+  alert statuses, add comments to alerts, and to report observed bad activity.
 display: IronDefense
 name: IronDefense
 script:
@@ -38,7 +37,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The severity rating of the alert. Can be: "Undecided", "Benign", "Suspicious", "Malicious".'
+      description: 'The severity rating of the alert. Can be: "Undecided", "Benign",
+        "Suspicious", "Malicious".'
       isArray: false
       name: severity
       predefined:
@@ -50,7 +50,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Determines whether the rating was expected. Can be: "Unknown", "Expected", "Unexpected". Use "Unknown" if the rating is undecided.'
+      description: 'Determines whether the rating was expected. Can be: "Unknown",
+        "Expected", "Unexpected". Use "Unknown" if the rating is undecided.'
       isArray: false
       name: expectation
       predefined:
@@ -115,7 +116,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The alert status to set. Can be: "Awaiting Review", "Under Review", "Closed".'
+      description: 'The alert status to set. Can be: "Awaiting Review", "Under Review",
+        "Closed".'
       isArray: false
       name: status
       predefined:
@@ -190,7 +192,8 @@ script:
   isfetch: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 tests:
 - IronDefenseTest
+toversion: 4.1.9

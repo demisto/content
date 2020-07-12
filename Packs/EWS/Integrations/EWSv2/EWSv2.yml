@@ -44,10 +44,10 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: |-
-    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
-    ‎                                           Manual Mode
-    Exchange Server Hostname or IP address
+- display: "\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\
+    \u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\n\u200E         \
+    \                                  Manual Mode\nExchange Server Hostname or IP\
+    \ address"
   name: ewsServer
   required: false
   type: 0
@@ -64,10 +64,10 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: |-
-    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
-    ‎                                         Advanced Mode
-    Override Authentication Type (NTLM, Basic, or Digest).
+- display: "\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\
+    \u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\u2509\n\u200E         \
+    \                                Advanced Mode\nOverride Authentication Type (NTLM,\
+    \ Basic, or Digest)."
   name: authType
   required: false
   type: 0
@@ -86,6 +86,8 @@ configuration:
   name: separate_process
   required: false
   type: 8
+defaultClassifier: EWS v2
+defaultMapperIn: EWS v2-mapper
 description: Exchange Web Services and Office 365 (mail)
 display: EWS v2
 name: EWS v2
@@ -1214,5 +1216,4 @@ script:
 tests:
 - pyEWS_Test
 - EWS search-mailbox test
-defaultClassifier: EWS v2
-defaultMapperIn: EWS v2-mapper
+toversion: 4.1.9

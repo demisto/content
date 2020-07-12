@@ -1,149 +1,88 @@
+comment: Classifying TrendMicro incidents
 commonfields:
   id: TrendMicroClassifier
   version: -1
-name: TrendMicroClassifier
-script: |-
-  trendmicro_type_dict = {
-      'Malware' :
-          ['Anti-Malware Alert'],
-      'Unclassified' :
-          ['Abnormal Restart Detected',
-          'Account Balance',
-          'Activation Failed',
-          'Agent InstallatiAnti-Malware Alerton Failed',
-          'Agent Upgrade Recommended (Incompatible with Appliance)',
-          'Agent/Appliance Upgrade Recommended',
-          'Agent/ApplianceUpgrade Recommended (Incompatible Security Update(s))',
-          'Agent/ApplianceUpgrade Recommended (New Version Available)',
-          'Agent/Appliance Upgrade Required',
-          'An update to the Rules is available',
-          'Anti-Malware Component Failure',
-          'Anti-Malware Component Update Failed',
-          'Anti-Malware Engine Offline',
-          'Anti-Malware protection is absent or out of date',
-          'Anti-Malware Quarantine Alert for Storage Limit',
-          'Application Type Misconfiguration',
-          'Application Type Recommendation',
-          'Certified Safe Software Service Offline',
-          'Clock Change Detected',
-          'Communications Problem Detected',
-          'Computer Not Receiving Updates',
-          'Computer Reboot Required',
-          'Computer Reboot Required for Anti-Malware Protection',
-          'Configuration Required',
-          'Connection to Filter Driver Failure',
-          'CPU Critical Threshold Exceeded',
-          'CPU Warning Threshold Exceeded',
-          'Duplicate Computer Detected',
-          'Duplicate Unique Identifiers Detected',
-          'Empty Relay Group Assigned',
-          'Events Suppressed',
-          'Events Truncated',
-          'Files Could Not Be Scanned for Malware',
-          'Firewall Engine Offline',
-          'Firewall Rule Alert',
-          'Firewall Rule Recommendation',
-          'Heartbeat Server Failed',
-          'Incompatible Agent/Appliance Version',
-          'Insufficient Disk Space',
-          'Integrity Monitoring Engine Offline',
-          'Integrity Monitoring information collection has been delayed',
-          'Integrity Monitoring Rule Alert',
-          'Integrity Monitoring Rule Compilation Error    Critical',
-          'Integrity Monitoring Rule Recommendation',
-          'Integrity Monitoring Rule Requires Configuration',
-          'Integrity Monitoring Trusted Platform Module Not Enabled',
-          'Integrity Monitoring Trusted Platform Module Register Value Changed',
-          'Intrusion Prevention Engine Offline',
-          'Intrusion Prevention Rule Alert',
-          'Intrusion Prevention Rule Recommendation',
-          'Intrusion Prevention Rule Removal Recommendation',
-          'Intrusion Prevention Rule Requires Configuration',
-          'Log Inspection Engine Offline',
-          'Log Inspection Rule Alert',
-          'Log Inspection Rule Recommendation',
-          'Log Inspection Rule Requires Configuration',
-          'Low Disk Space',
-          'Manager Offline',
-          'Manager Time Out of Sync',
-          'Memory Critical Threshold Exceeded',
-          'Memory Warning Threshold Exceeded',
-          'Multiple Activated Appliances Detected',
-          'Network Engine Mode Incompatibility',
-          'New Pattern Update is Downloaded and Available',
-          'New Rule Update is Downloaded and Available',
-          'Newer Version of Deep Security Manager is Available',
-          'Newer Versions of Software Available',
-          'Number of Computers exceeds database limit',
-          'Protection Module Licensing Expired',
-          'Protection Module Licensing Expires Soon',
-          'Recommendation',
-          'Reconnaissance Detected: Computer OS Fingerprint Probe',
-          'Reconnaissance Detected: Network or Port Scan',
-          'Reconnaissance Detected: TCP Null Scan',
-          'Reconnaissance Detected: TCP SYNFIN Scan',
-          'Reconnaissance Detected: TCP Xmas Scan',
-          'Relay Update Service Unavailable',
-          'SAP Virus Scan Adapter is not installed',
-          'SAP Virus Scan Adapter is not up to date',
-          'Scheduled Malware Scan Missed',
-          'Send Policy Failed',
-          'Smart Protection Server Connection',
-          'Software Package Not Found',
-          'Software Updates Available for Import',
-          'Unable to communicate',
-          'Unable to Upgrade the Agent Software',
-          'Upgrade of the Deep Security Manager Software Recommended (Incompatible Security Update(s))',
-          'Upgrade of the Filter Driver Recommended (New Version Available)',
-          'User Locked Out',
-          'User Password Expires Soon',
-          'Virtual Appliance is Incompatible With Filter Driver',
-          'Virtual Machine Interfaces Out of Sync',
-          'Virtual Machine Moved to Unprotected ESXi Server',
-          'Virtual Machine Unprotected after move to another ESXi',
-          'VMware Tools Not Installed',
-          'Web Reputation Event Alert']
-      }
-
-  CLASSIFIER_LABEL = 'Label/alertType'
-  CLASSIFIER_DESCRIPTION_LABAL = 'Label/Classifier/Description'
-  CLASSIFIER_HOSTNAME = 'Label/Classifier/Hostname'
-  CONTEXT_SEPARATOR = '|'
-  LABEL_SPLIT = ' - '
-
-  ctx = demisto.context()
-
-  type_name = demisto.get(ctx, CLASSIFIER_LABEL)
-  incident_type = ''
-
-  if type_name:
-      type_name = type_name.split(LABEL_SPLIT)
-      hostname = type_name[1] if len(type_name) > 1 else ''
-      type_name = type_name[0]
-
-      # Set context for future use
-      cur_description = demisto.get(ctx, CLASSIFIER_DESCRIPTION_LABAL) or ''
-      cur_description += CONTEXT_SEPARATOR if cur_description else ''
-      demisto.setContext(CLASSIFIER_DESCRIPTION_LABAL, cur_description + type_name)
-
-      # Looks for incident type in the type dictionary
-      for key, val in trendmicro_type_dict.items():
-          if type_name in val:
-              incident_type = key
-      if incident_type:
-          demisto.setContext(CLASSIFIER_HOSTNAME, hostname)
-          resp = demisto.executeCommand('IncidentSet ', {'type': incident_type, 'updatePlaybookForType' : 'yes'})
-          if isError(resp[0]):
-              demisto.results(resp)
-type: python
-subtype: python2
-tags:
-- Classifier
-- Trend Micro
-comment: Classifying TrendMicro incidents
-system: true
-scripttarget: 0
 dependson:
   must:
   - trendmicro-alert-status
+name: TrendMicroClassifier
+script: "trendmicro_type_dict = {\n    'Malware' :\n        ['Anti-Malware Alert'],\n\
+  \    'Unclassified' :\n        ['Abnormal Restart Detected',\n        'Account Balance',\n\
+  \        'Activation Failed',\n        'Agent InstallatiAnti-Malware Alerton Failed',\n\
+  \        'Agent Upgrade Recommended (Incompatible with Appliance)',\n        'Agent/Appliance\
+  \ Upgrade Recommended',\n        'Agent/ApplianceUpgrade Recommended (Incompatible\
+  \ Security Update(s))',\n        'Agent/ApplianceUpgrade Recommended (New Version\
+  \ Available)',\n        'Agent/Appliance Upgrade Required',\n        'An update\
+  \ to the Rules is available',\n        'Anti-Malware Component Failure',\n     \
+  \   'Anti-Malware Component Update Failed',\n        'Anti-Malware Engine Offline',\n\
+  \        'Anti-Malware protection is absent or out of date',\n        'Anti-Malware\
+  \ Quarantine Alert for Storage Limit',\n        'Application Type Misconfiguration',\n\
+  \        'Application Type Recommendation',\n        'Certified Safe Software Service\
+  \ Offline',\n        'Clock Change Detected',\n        'Communications Problem Detected',\n\
+  \        'Computer Not Receiving Updates',\n        'Computer Reboot Required',\n\
+  \        'Computer Reboot Required for Anti-Malware Protection',\n        'Configuration\
+  \ Required',\n        'Connection to Filter Driver Failure',\n        'CPU Critical\
+  \ Threshold Exceeded',\n        'CPU Warning Threshold Exceeded',\n        'Duplicate\
+  \ Computer Detected',\n        'Duplicate Unique Identifiers Detected',\n      \
+  \  'Empty Relay Group Assigned',\n        'Events Suppressed',\n        'Events\
+  \ Truncated',\n        'Files Could Not Be Scanned for Malware',\n        'Firewall\
+  \ Engine Offline',\n        'Firewall Rule Alert',\n        'Firewall Rule Recommendation',\n\
+  \        'Heartbeat Server Failed',\n        'Incompatible Agent/Appliance Version',\n\
+  \        'Insufficient Disk Space',\n        'Integrity Monitoring Engine Offline',\n\
+  \        'Integrity Monitoring information collection has been delayed',\n     \
+  \   'Integrity Monitoring Rule Alert',\n        'Integrity Monitoring Rule Compilation\
+  \ Error    Critical',\n        'Integrity Monitoring Rule Recommendation',\n   \
+  \     'Integrity Monitoring Rule Requires Configuration',\n        'Integrity Monitoring\
+  \ Trusted Platform Module Not Enabled',\n        'Integrity Monitoring Trusted Platform\
+  \ Module Register Value Changed',\n        'Intrusion Prevention Engine Offline',\n\
+  \        'Intrusion Prevention Rule Alert',\n        'Intrusion Prevention Rule\
+  \ Recommendation',\n        'Intrusion Prevention Rule Removal Recommendation',\n\
+  \        'Intrusion Prevention Rule Requires Configuration',\n        'Log Inspection\
+  \ Engine Offline',\n        'Log Inspection Rule Alert',\n        'Log Inspection\
+  \ Rule Recommendation',\n        'Log Inspection Rule Requires Configuration',\n\
+  \        'Low Disk Space',\n        'Manager Offline',\n        'Manager Time Out\
+  \ of Sync',\n        'Memory Critical Threshold Exceeded',\n        'Memory Warning\
+  \ Threshold Exceeded',\n        'Multiple Activated Appliances Detected',\n    \
+  \    'Network Engine Mode Incompatibility',\n        'New Pattern Update is Downloaded\
+  \ and Available',\n        'New Rule Update is Downloaded and Available',\n    \
+  \    'Newer Version of Deep Security Manager is Available',\n        'Newer Versions\
+  \ of Software Available',\n        'Number of Computers exceeds database limit',\n\
+  \        'Protection Module Licensing Expired',\n        'Protection Module Licensing\
+  \ Expires Soon',\n        'Recommendation',\n        'Reconnaissance Detected: Computer\
+  \ OS Fingerprint Probe',\n        'Reconnaissance Detected: Network or Port Scan',\n\
+  \        'Reconnaissance Detected: TCP Null Scan',\n        'Reconnaissance Detected:\
+  \ TCP SYNFIN Scan',\n        'Reconnaissance Detected: TCP Xmas Scan',\n       \
+  \ 'Relay Update Service Unavailable',\n        'SAP Virus Scan Adapter is not installed',\n\
+  \        'SAP Virus Scan Adapter is not up to date',\n        'Scheduled Malware\
+  \ Scan Missed',\n        'Send Policy Failed',\n        'Smart Protection Server\
+  \ Connection',\n        'Software Package Not Found',\n        'Software Updates\
+  \ Available for Import',\n        'Unable to communicate',\n        'Unable to Upgrade\
+  \ the Agent Software',\n        'Upgrade of the Deep Security Manager Software Recommended\
+  \ (Incompatible Security Update(s))',\n        'Upgrade of the Filter Driver Recommended\
+  \ (New Version Available)',\n        'User Locked Out',\n        'User Password\
+  \ Expires Soon',\n        'Virtual Appliance is Incompatible With Filter Driver',\n\
+  \        'Virtual Machine Interfaces Out of Sync',\n        'Virtual Machine Moved\
+  \ to Unprotected ESXi Server',\n        'Virtual Machine Unprotected after move\
+  \ to another ESXi',\n        'VMware Tools Not Installed',\n        'Web Reputation\
+  \ Event Alert']\n    }\n\nCLASSIFIER_LABEL = 'Label/alertType'\nCLASSIFIER_DESCRIPTION_LABAL\
+  \ = 'Label/Classifier/Description'\nCLASSIFIER_HOSTNAME = 'Label/Classifier/Hostname'\n\
+  CONTEXT_SEPARATOR = '|'\nLABEL_SPLIT = ' - '\n\nctx = demisto.context()\n\ntype_name\
+  \ = demisto.get(ctx, CLASSIFIER_LABEL)\nincident_type = ''\n\nif type_name:\n  \
+  \  type_name = type_name.split(LABEL_SPLIT)\n    hostname = type_name[1] if len(type_name)\
+  \ > 1 else ''\n    type_name = type_name[0]\n\n    # Set context for future use\n\
+  \    cur_description = demisto.get(ctx, CLASSIFIER_DESCRIPTION_LABAL) or ''\n  \
+  \  cur_description += CONTEXT_SEPARATOR if cur_description else ''\n    demisto.setContext(CLASSIFIER_DESCRIPTION_LABAL,\
+  \ cur_description + type_name)\n\n    # Looks for incident type in the type dictionary\n\
+  \    for key, val in trendmicro_type_dict.items():\n        if type_name in val:\n\
+  \            incident_type = key\n    if incident_type:\n        demisto.setContext(CLASSIFIER_HOSTNAME,\
+  \ hostname)\n        resp = demisto.executeCommand('IncidentSet ', {'type': incident_type,\
+  \ 'updatePlaybookForType' : 'yes'})\n        if isError(resp[0]):\n            demisto.results(resp)"
+scripttarget: 0
+subtype: python2
+system: true
+tags:
+- Classifier
+- Trend Micro
 timeout: 0s
+toversion: 4.1.9
+type: python

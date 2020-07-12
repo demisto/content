@@ -69,9 +69,11 @@ args:
   - 'false'
   required: false
   secret: false
+comment: Predict phishing incidents using the out-of-the-box pretrained model.
 commonfields:
   id: DBotPredictOutOfTheBox
   version: -1
+dockerimage: demisto/dl:1.5
 enabled: true
 name: DBotPredictOutOfTheBox
 outputs:
@@ -92,17 +94,16 @@ outputs:
   description: The input text (after pre-processing) with the positive words that
     support the model decision.
   type: String
+runas: DBotWeakRole
+runonce: true
 script: '-'
 subtype: python3
 system: false
-timeout: 60µs
-type: python
-dockerimage: demisto/dl:1.5
-runas: DBotWeakRole
-runonce: true
+tags:
+- phishing
+- ml
 tests:
 - DbotPredictOufOfTheBoxTest
-tags:
-  - phishing
-  - ml
-comment: Predict phishing incidents using the out-of-the-box pretrained model.
+timeout: "60\xB5s"
+toversion: 4.1.9
+type: python

@@ -1,3 +1,4 @@
+comment: ''
 commonfields:
   id: BreachConfirmationHTML
   version: -1
@@ -6,33 +7,18 @@ enabled: true
 name: BreachConfirmationHTML
 runas: DBotWeakRole
 runonce: false
-script: |
-  incident = demisto.incidents()
-  query = incident[0].get('CustomFields', {}).get('breachconfirmation', "Pending Confirmation")
-  Color = 'green'
-
-  if query == "Confirm":
-      color = 'red'
-      html = "<div style='color:red;'><h2>Confirm</h2></div>"
-
-  elif query == "Not Confirm":
-      color = 'red'
-      html = "<div style='color:blue;'><h2>Not Confirm</h2></div>"
-
-  else:
-      html = "<div style='color:green;'><h2>Pending Confirmation</h2></div>"
-
-
-  demisto.results( {
-      'ContentsFormat': formats['html'],
-      'Type': entryTypes['note'],
-      'Contents': html
-  } )
+script: "incident = demisto.incidents()\nquery = incident[0].get('CustomFields', {}).get('breachconfirmation',\
+  \ \"Pending Confirmation\")\nColor = 'green'\n\nif query == \"Confirm\":\n    color\
+  \ = 'red'\n    html = \"<div style='color:red;'><h2>Confirm</h2></div>\"\n\nelif\
+  \ query == \"Not Confirm\":\n    color = 'red'\n    html = \"<div style='color:blue;'><h2>Not\
+  \ Confirm</h2></div>\"\n\nelse:\n    html = \"<div style='color:green;'><h2>Pending\
+  \ Confirmation</h2></div>\"\n\n\ndemisto.results( {\n    'ContentsFormat': formats['html'],\n\
+  \    'Type': entryTypes['note'],\n    'Contents': html\n} )\n"
 scripttarget: 0
 subtype: python3
-comment: ''
 tags:
 - dynamic-section
-type: python
 tests:
 - no tests
+toversion: 4.1.9
+type: python

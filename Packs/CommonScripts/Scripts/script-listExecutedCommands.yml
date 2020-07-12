@@ -1,64 +1,42 @@
-commonfields:
-  id: listExecutedCommands
-  version: -1
-name: listExecutedCommands
-script: |-
-  var fixDate = function(date) {
-      return date.Format('2006-01-02 15:04:05');
-  };
-
-  var entries = executeCommand('getEntries', {});
-
-  dbotCommands = [];
-  userCommands = [];
-  for (var i = 0; i < entries.length; i++) {
-      if (typeof entries[i].Contents == 'string' && entries[i].Contents.indexOf('!') === 0 && entries[i].Contents.indexOf('!listExecutedCommands') !== 0) {
-          if (entries[i].Metadata.User) {
-              if (args.source === 'All' || args.source === 'Manual') {
-                  userCommands.push({
-                      'Time': fixDate(entries[i].Metadata.Created),
-                      'Entry ID': entries[i].ID,
-                      'User': entries[i].Metadata.User,
-                      'Command': entries[i].Contents
-                  });
-              }
-          } else {
-              if (args.source === 'All' || args.source === 'Playbook') {
-                  dbotCommands.push({
-                      'Time': fixDate(entries[i].Metadata.Created),
-                      'Entry ID': entries[i].ID,
-                      'Playbook (Task)': entries[i].Metadata.EntryTask.PlaybookName + " (" + entries[i].Metadata.EntryTask.TaskName + ")",
-                      'Command': entries[i].Contents
-                  });
-              }
-          }
-      }
-  }
-
-  var md = '';
-  if (dbotCommands.length > 0) {
-      md += tableToMarkdown('DBot Executed Commands', dbotCommands, ['Time', 'Entry ID', 'Playbook (Task)', 'Command']) + '\n';
-  }
-  if (userCommands.length > 0) {
-      md += tableToMarkdown('User Executed Commands', userCommands, ['Time', 'Entry ID', 'User', 'Command']) + '\n';
-  }
-  if (md === '') {
-      md = 'No commands found\n';
-  }
-  return {ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md};
-type: javascript
-tags:
-- Utility
-comment: Lists  executed commands in War Room
-enabled: true
 args:
-- name: source
+- auto: PREDEFINED
   default: true
-  auto: PREDEFINED
+  defaultValue: All
+  description: Source of commands to list - user, playbook or both
+  name: source
   predefined:
   - Manual
   - Playbook
   - All
-  description: Source of commands to list - user, playbook or both
-  defaultValue: All
+comment: Lists  executed commands in War Room
+commonfields:
+  id: listExecutedCommands
+  version: -1
+enabled: true
+name: listExecutedCommands
+script: "var fixDate = function(date) {\n    return date.Format('2006-01-02 15:04:05');\n\
+  };\n\nvar entries = executeCommand('getEntries', {});\n\ndbotCommands = [];\nuserCommands\
+  \ = [];\nfor (var i = 0; i < entries.length; i++) {\n    if (typeof entries[i].Contents\
+  \ == 'string' && entries[i].Contents.indexOf('!') === 0 && entries[i].Contents.indexOf('!listExecutedCommands')\
+  \ !== 0) {\n        if (entries[i].Metadata.User) {\n            if (args.source\
+  \ === 'All' || args.source === 'Manual') {\n                userCommands.push({\n\
+  \                    'Time': fixDate(entries[i].Metadata.Created),\n           \
+  \         'Entry ID': entries[i].ID,\n                    'User': entries[i].Metadata.User,\n\
+  \                    'Command': entries[i].Contents\n                });\n     \
+  \       }\n        } else {\n            if (args.source === 'All' || args.source\
+  \ === 'Playbook') {\n                dbotCommands.push({\n                    'Time':\
+  \ fixDate(entries[i].Metadata.Created),\n                    'Entry ID': entries[i].ID,\n\
+  \                    'Playbook (Task)': entries[i].Metadata.EntryTask.PlaybookName\
+  \ + \" (\" + entries[i].Metadata.EntryTask.TaskName + \")\",\n                 \
+  \   'Command': entries[i].Contents\n                });\n            }\n       \
+  \ }\n    }\n}\n\nvar md = '';\nif (dbotCommands.length > 0) {\n    md += tableToMarkdown('DBot\
+  \ Executed Commands', dbotCommands, ['Time', 'Entry ID', 'Playbook (Task)', 'Command'])\
+  \ + '\\n';\n}\nif (userCommands.length > 0) {\n    md += tableToMarkdown('User Executed\
+  \ Commands', userCommands, ['Time', 'Entry ID', 'User', 'Command']) + '\\n';\n}\n\
+  if (md === '') {\n    md = 'No commands found\\n';\n}\nreturn {ContentsFormat: formats.markdown,\
+  \ Type: entryTypes.note, Contents: md};"
 scripttarget: 0
+tags:
+- Utility
+toversion: 4.1.9
+type: javascript

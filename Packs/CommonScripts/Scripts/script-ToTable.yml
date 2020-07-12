@@ -1,33 +1,27 @@
+args:
+- default: true
+  description: The data to display as table - expecting array of objects
+  isArray: true
+  name: data
+  required: true
+- description: Title for the table
+  name: title
+- description: Comma-separated list of columns to display. Accepts nested columns
+    using dot notation.
+  name: columns
+comment: Convert an array to a nice table display. Usually, from the context.
 commonfields:
   id: ToTable
   version: -1
+enabled: true
 name: ToTable
-script: |-
-  var data = args.data;
-  var headers = args.columns ? args.columns.split(',') : null;
-  if(!Array.isArray(data)) {
-      data = [data]
-  }
-  var flatData = [];
-  data.forEach(function(element) {
-    var flattenObject = treeToFlattenObject(element);
-    flatData.push(flattenObject);
-  });
-  return {Type: entryTypes.note, Contents: tableToMarkdown(args.title, flatData, headers), ContentsFormat: formats.markdown};
-type: javascript
+script: "var data = args.data;\nvar headers = args.columns ? args.columns.split(',')\
+  \ : null;\nif(!Array.isArray(data)) {\n    data = [data]\n}\nvar flatData = [];\n\
+  data.forEach(function(element) {\n  var flattenObject = treeToFlattenObject(element);\n\
+  \  flatData.push(flattenObject);\n});\nreturn {Type: entryTypes.note, Contents:\
+  \ tableToMarkdown(args.title, flatData, headers), ContentsFormat: formats.markdown};"
+scripttarget: 0
 tags:
 - Utility
-comment: Convert an array to a nice table display. Usually, from the context.
-enabled: true
-args:
-- name: data
-  required: true
-  default: true
-  description: The data to display as table - expecting array of objects
-  isArray: true
-- name: title
-  description: Title for the table
-- name: columns
-  description: Comma-separated list of columns to display. Accepts nested columns
-    using dot notation.
-scripttarget: 0
+toversion: 4.1.9
+type: javascript

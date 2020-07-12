@@ -1,73 +1,53 @@
+description: ''
 id: AbuseIPDB PopulateIndicators Test
-version: -1
+inputs: []
 name: AbuseIPDB PopulateIndicators Test
-starttaskid: "0"
-description: ""
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 0295597d-b28b-437b-8c9c-f81c3ca854e4
-    type: start
-    task:
-      description: ""
-      id: 0295597d-b28b-437b-8c9c-f81c3ca854e4
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
+      - '1'
     note: false
-    timertriggers: []
-  "1":
-    id: "1"
-    taskid: 00a03d74-204e-4af1-8684-cb04e2db32bf
-    type: regular
+    separatecontext: false
     task:
-      description: ""
-      id: 00a03d74-204e-4af1-8684-cb04e2db32bf
-      version: -1
-      name: AbuseIPDBPopulateIndicators
-      scriptName: AbuseIPDBPopulateIndicators
-      type: regular
+      brand: ''
+      description: ''
+      id: 0295597d-b28b-437b-8c9c-f81c3ca854e4
       iscommand: false
-      brand: ""
+      name: ''
+      version: -1
+    taskid: 0295597d-b28b-437b-8c9c-f81c3ca854e4
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    note: false
     scriptarguments:
       days: {}
       limit:
-        simple: "10"
+        simple: '10'
       saveToContext:
-        simple: "true"
+        simple: 'true'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 220
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      description: ''
+      id: 00a03d74-204e-4af1-8684-cb04e2db32bf
+      iscommand: false
+      name: AbuseIPDBPopulateIndicators
+      scriptName: AbuseIPDBPopulateIndicators
+      type: regular
+      version: -1
+    taskid: 00a03d74-204e-4af1-8684-cb04e2db32bf
     timertriggers: []
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 265,
-        "width": 380,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 220\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 265,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n\
+  \    }\n  }\n}"

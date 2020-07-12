@@ -1,76 +1,61 @@
+args:
+- description: An example argument that will be passed into and used by the script
+  name: ArgumentExample
+  required: true
+comment: This is only an example script, to showcase how to use and write JavaScript
+  scripts
 commonfields:
   id: ExampleJSScript
   version: -1
+dependson: {}
 name: ExampleJSScript
-script: |-
-  // This is an Example server-side script that shows how to use and create JavaScript scripts in the Demisto server
-  // The log function allows you to print data during script execution
-  log('Hello World');
-  // You can use arguments (that are added via the CLI) inside scripts in the following ways, (in our example,
-  // the argument name is : 'ArgumentExample')
-  // e.g. run this script !ExampleJSScript ArgumentExample=MD5
-  log('Your argument value = ' + args.ArgumentExample);
-  // You can view (but not change directly) incidents and investigation properties relevant to your current investigation
-  log('Investigation name is: ' + investigation.name);
-  // Please note incidents can be empty (e.g. if you run the from playground) the following returns the incident
-  // details only if the incidents are not empty
-  if (incidents && typeof incidents === 'object' && incidents !== null) {
-    log('First incident details: ' + incidents[0].details);
-  }
-  // You can run specific integrations if they are already configured. The following is an example of a script
-  // running on a particular splunk instance called "Splunk1".
-  // The first example brings back the first event offset.
-  // log('Splunk query result: ' + executeCommand('search', {'using': 'Splunk1', 'query':' * | head 2 '})[0]['offset']);
-  // executeCommand is used to run a command without specifying the entity that will execute it.
-  // For example, if you want to run a single command that runs on every integration that supports the search command:
-  // log('Search query result: ' + executeCommand('search', {'query':' * | head 2 '}));
-  // Another example for executeCommand enables running an internal command that will get all entries of this investigation
-  log('First Entry content: ' + executeCommand('getEntries', {})[0]);
-  // You can check for all supported commands using the getAllSupportedCommands function.
-  // The following will return all supported commands and the entities supported
-  var cmds = getAllSupportedCommands();
-  for (var key in cmds) {
-    if (cmds.hasOwnProperty(key)) {
-      log('supporting integration: ' + key);
-    }
-  }
-  // Util function isIp
-  log(isIp('8.8.8.8'));
-  // Util function http
-  var res = http('http://www.demisto.com');
-  log('Http GET call result StatusCode = ' +res.StatusCode);
-  // You can perform operations on current investigation and incidents, see follow example,
-  // Methods descriptions available in CommonServer script.
-  /*
-  var user = 'David';
-  var time = new Date();
-  var taskId = '3';
-  setOwner(user);
-  setPlaybook('Phishing Playbook');
-  setSeverity({id: incidents[0].id, severity: 'Critical'});
-  setTaskDueDate({id: taskId, dueDate: time.toUTCString()});
-  taskAssign({id: taskId, assignee: user});
-  You can change incident type, name, severity, details and systems for an investigation with a single incident.
-  This can be done by sending an object to setIncident with the details.
-  setIncident({type: 'Phishing', details: 'Phishing on my computer', severity: 'Critical', name: 'Phishing incident',
-              systems: '2.2.2.2,10.10.10.10'});
-  You can also spawn a new incident from the current one, in the same manner as changing the details of the incident:
-  createNewIncident({type: 'Phishing', details: 'Phishing on your computer', severity: 'Critical', name: 'Phishing incident',
-                                systems: '2.2.2.2,10.10.10.10'});
-  return;
-  */
-  // You can also return either string or JSON objects to be printed to the screen as script results
-  return 'Script success! GO and write new scripts :)';
-type: javascript
+script: "// This is an Example server-side script that shows how to use and create\
+  \ JavaScript scripts in the Demisto server\n// The log function allows you to print\
+  \ data during script execution\nlog('Hello World');\n// You can use arguments (that\
+  \ are added via the CLI) inside scripts in the following ways, (in our example,\n\
+  // the argument name is : 'ArgumentExample')\n// e.g. run this script !ExampleJSScript\
+  \ ArgumentExample=MD5\nlog('Your argument value = ' + args.ArgumentExample);\n//\
+  \ You can view (but not change directly) incidents and investigation properties\
+  \ relevant to your current investigation\nlog('Investigation name is: ' + investigation.name);\n\
+  // Please note incidents can be empty (e.g. if you run the from playground) the\
+  \ following returns the incident\n// details only if the incidents are not empty\n\
+  if (incidents && typeof incidents === 'object' && incidents !== null) {\n  log('First\
+  \ incident details: ' + incidents[0].details);\n}\n// You can run specific integrations\
+  \ if they are already configured. The following is an example of a script\n// running\
+  \ on a particular splunk instance called \"Splunk1\".\n// The first example brings\
+  \ back the first event offset.\n// log('Splunk query result: ' + executeCommand('search',\
+  \ {'using': 'Splunk1', 'query':' * | head 2 '})[0]['offset']);\n// executeCommand\
+  \ is used to run a command without specifying the entity that will execute it.\n\
+  // For example, if you want to run a single command that runs on every integration\
+  \ that supports the search command:\n// log('Search query result: ' + executeCommand('search',\
+  \ {'query':' * | head 2 '}));\n// Another example for executeCommand enables running\
+  \ an internal command that will get all entries of this investigation\nlog('First\
+  \ Entry content: ' + executeCommand('getEntries', {})[0]);\n// You can check for\
+  \ all supported commands using the getAllSupportedCommands function.\n// The following\
+  \ will return all supported commands and the entities supported\nvar cmds = getAllSupportedCommands();\n\
+  for (var key in cmds) {\n  if (cmds.hasOwnProperty(key)) {\n    log('supporting\
+  \ integration: ' + key);\n  }\n}\n// Util function isIp\nlog(isIp('8.8.8.8'));\n\
+  // Util function http\nvar res = http('http://www.demisto.com');\nlog('Http GET\
+  \ call result StatusCode = ' +res.StatusCode);\n// You can perform operations on\
+  \ current investigation and incidents, see follow example,\n// Methods descriptions\
+  \ available in CommonServer script.\n/*\nvar user = 'David';\nvar time = new Date();\n\
+  var taskId = '3';\nsetOwner(user);\nsetPlaybook('Phishing Playbook');\nsetSeverity({id:\
+  \ incidents[0].id, severity: 'Critical'});\nsetTaskDueDate({id: taskId, dueDate:\
+  \ time.toUTCString()});\ntaskAssign({id: taskId, assignee: user});\nYou can change\
+  \ incident type, name, severity, details and systems for an investigation with a\
+  \ single incident.\nThis can be done by sending an object to setIncident with the\
+  \ details.\nsetIncident({type: 'Phishing', details: 'Phishing on my computer', severity:\
+  \ 'Critical', name: 'Phishing incident',\n            systems: '2.2.2.2,10.10.10.10'});\n\
+  You can also spawn a new incident from the current one, in the same manner as changing\
+  \ the details of the incident:\ncreateNewIncident({type: 'Phishing', details: 'Phishing\
+  \ on your computer', severity: 'Critical', name: 'Phishing incident',\n        \
+  \                      systems: '2.2.2.2,10.10.10.10'});\nreturn;\n*/\n// You can\
+  \ also return either string or JSON objects to be printed to the screen as script\
+  \ results\nreturn 'Script success! GO and write new scripts :)';"
+scripttarget: 0
+system: true
 tags:
 - example
-comment: This is only an example script, to showcase how to use and write JavaScript
-  scripts
-system: true
-args:
-- name: ArgumentExample
-  required: true
-  description: An example argument that will be passed into and used by the script
-scripttarget: 0
-dependson: {}
 timeout: 0s
+toversion: 4.1.9
+type: javascript

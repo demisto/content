@@ -251,8 +251,8 @@ script:
         serving this name are from each other
       type: number
     - contextPath: Domain.Security.KolmoorovSmirnov
-      description: olmogorov–Smirnov test on geodiversity. 0 means that the client
-        traffic matches what is expected for this TLD
+      description: "olmogorov\u2013Smirnov test on geodiversity. 0 means that the\
+        \ client traffic matches what is expected for this TLD"
       type: number
     - contextPath: Domain.Security.AttackName
       description: The name of any known attacks associated with this domain, or blank
@@ -321,8 +321,8 @@ script:
         serving this name are from each other
       type: Unknown
     - contextPath: Domain.Security.KolmoorovSmirnov
-      description: olmogorov–Smirnov test on geodiversity. 0 means that the client
-        traffic matches what is expected for this TLD
+      description: "olmogorov\u2013Smirnov test on geodiversity. 0 means that the\
+        \ client traffic matches what is expected for this TLD"
       type: Unknown
     - contextPath: Domain.Security.AttackName
       description: The name of any known attacks associated with this domain, or blank
@@ -666,11 +666,11 @@ script:
       required: true
       secret: false
     deprecated: true
-    description: This command  shows whether the IP address you’ve entered as input
-      has any known malicious domains associated with it. The domains that appear
-      when using this endpoint are those that currently exist in the Umbrella block
-      list. This endpoint will return an array with a single domain name for each
-      domain associated with the IP, along with an id number that can be ignored.
+    description: "This command  shows whether the IP address you\u2019ve entered as\
+      \ input has any known malicious domains associated with it. The domains that\
+      \ appear when using this endpoint are those that currently exist in the Umbrella\
+      \ block list. This endpoint will return an array with a single domain name for\
+      \ each domain associated with the IP, along with an id number that can be ignored."
     execution: false
     name: investigate-umbrella-ip-malicious-domains
     outputs:
@@ -691,11 +691,11 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: This command  shows whether the IP address you’ve entered as input
-      has any known malicious domains associated with it. The domains that appear
-      when using this endpoint are those that currently exist in the Umbrella block
-      list. This endpoint will return an array with a single domain name for each
-      domain associated with the IP, along with an id number that can be ignored.
+    description: "This command  shows whether the IP address you\u2019ve entered as\
+      \ input has any known malicious domains associated with it. The domains that\
+      \ appear when using this endpoint are those that currently exist in the Umbrella\
+      \ block list. This endpoint will return an array with a single domain name for\
+      \ each domain associated with the IP, along with an id number that can be ignored."
     execution: false
     name: umbrella-ip-malicious-domains
     outputs:
@@ -744,11 +744,11 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: This produces a list of matching domains based on a regular expression.
-      You could use this for domain squatting. The pattern search functionality in
-      Investigate uses regular expressions (RegEx) to search against the Investigate
-      database. There are several excellent tools online such as http://regexr.com
-      to help if you’re not familiar with building RegEx.
+    description: "This produces a list of matching domains based on a regular expression.\
+      \ You could use this for domain squatting. The pattern search functionality\
+      \ in Investigate uses regular expressions (RegEx) to search against the Investigate\
+      \ database. There are several excellent tools online such as http://regexr.com\
+      \ to help if you\u2019re not familiar with building RegEx."
     execution: false
     name: umbrella-domain-search
     outputs:
@@ -779,11 +779,11 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: This produces a list of matching domains based on a regular expression.
-      You could use this for domain squatting. The pattern search functionality in
-      Investigate uses regular expressions (RegEx) to search against the Investigate
-      database. There are several excellent tools online such as http://regexr.com
-      to help if you’re not familiar with building RegEx.
+    description: "This produces a list of matching domains based on a regular expression.\
+      \ You could use this for domain squatting. The pattern search functionality\
+      \ in Investigate uses regular expressions (RegEx) to search against the Investigate\
+      \ database. There are several excellent tools online such as http://regexr.com\
+      \ to help if you\u2019re not familiar with building RegEx."
     execution: false
     name: investigate-umbrella-domain-search
     outputs:
@@ -822,7 +822,7 @@ script:
         "1" if the domain is believed to be benign, "0" if it hasn't been classified
         yet.
       type: number
-    - contextPath: Domain.Umbrella.SecureRank 
+    - contextPath: "Domain.Umbrella.SecureRank\_"
       description: Suspicious rank for a domain that reviews based on the lookup behavior
         of client IP for the domain. Securerank is designed to identify hostnames
         requested by known infected clients but never requested by clean clients,
@@ -1080,7 +1080,7 @@ script:
       description: The number of bits required to encode the domain name, as a score.
         This score is to be used in conjunction with DGA and Perplexity.
       type: number
-    - contextPath: Umbrella.DomainDetails.Data.SecureRank 
+    - contextPath: "Umbrella.DomainDetails.Data.SecureRank\_"
       description: Suspicious rank for a domain that reviews based on the lookup behavior
         of client IP for the domain. Securerank is designed to identify hostnames
         requested by known infected clients but never requested by clean clients,
@@ -1112,8 +1112,8 @@ script:
         that have a ccTLD. Score is normalized ratio between 0 and 1.
       type: number
     - contextPath: Umbrella.DomainDetails.Data.KolmogorovSmirnovTest
-      description: Kolmogorov–Smirnov test on geodiversity. 0 means that the client
-        traffic matches what is expected for this TLD.
+      description: "Kolmogorov\u2013Smirnov test on geodiversity. 0 means that the\
+        \ client traffic matches what is expected for this TLD."
       type: number
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -1203,8 +1203,8 @@ script:
       type: string
   - arguments:
     - default: false
-      description: 'Enter the Nameserver’s domain name. (e.g. : ns2.google.com) Comma
-        separated list allowed. (e.g. : ns2.google.com, ns1.google.com)'
+      description: "Enter the Nameserver\u2019s domain name. (e.g. : ns2.google.com)\
+        \ Comma separated list allowed. (e.g. : ns2.google.com, ns1.google.com)"
       isArray: true
       name: nameservers
       required: true
@@ -1362,8 +1362,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Test whether the IP address you’ve entered as input has any known
-      malicious domains associated with it.
+    description: "Test whether the IP address you\u2019ve entered as input has any\
+      \ known malicious domains associated with it."
     execution: false
     name: umbrella-get-malicious-domains-for-ip
     outputs:
@@ -1551,7 +1551,8 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python2
+  type: python
 tests:
 - Cisco Umbrella Test
+toversion: 4.1.9

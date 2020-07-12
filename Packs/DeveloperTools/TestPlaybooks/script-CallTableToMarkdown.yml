@@ -5,77 +5,39 @@ commonfields:
   version: -1
 enabled: false
 name: CallTableToMarkdown
-script: |-
-  ''' GLOBAL VARS '''
-
-  SAMPLE_DATA = {
-      'Status': 5,
-      'ResponderID': 2043038444649,
-      'DueBy': '2019-05-15T08:00:00Z',
-      'FrDueBy': '2019-05-14T09:00:00Z',
-      'Priority': 3,
-      'Source': 1,
-      'Tag': [],
-      'RequesterID': 2043000056647,
-      'UpdatedAt': '2019-05-13T19:52:35Z',
-      'AdditionalFields': {
-          'IsEscalated': False,
-          'Deleted': False,
-          'CompanyID': 44002282180,
-          'FrEscalated': False,
-          'DescriptionHTML': b'<p>Hello there,</p><br /><p>I\xe2\x80\x99m looking to buy a pair of Mary Jane shoes and '
-                             b'I noticed that you have a local store in Aldovia. \xcf\x80. Could you let me know if the '
-                             b'Mary Jane shoes are available in Size 8? I can pick it up from there.</p><br '
-                             b'/><p>Thanks,<br />Emily.</p>'.decode('utf-8'),
-          'Spam': False,
-          'DescriptionText': b'Hello there,I\xe2\x80\x99m looking to buy a pair of Mary Jane shoes and I noticed that '
-                             b'you have a local store in Aldovia. \xcf\x80. Could you let me know if the Mary Jane '
-                             b'shoes are available in Size 8? I can pick it up from there.Thanks,Emily.'.decode('utf-8'),
-          'Type': 'Question'
-      },
-      'ID': 1023,
-      'CreatedAt': '2019-05-13T19:52:33Z',
-      'Subject': 'Mary Jane shoes in Size 8?'
-  }
-
-
-  ''' FUNCTIONS '''
-
-
-  def tbl_to_md_with_non_ascii_chars_nested_dict():
-      """
-      Call tableToMarkdown with sample data that has nested dict with non-ascii characters inside it
-      namely, 'Right Single Quotation Mark' and 'Greek Small Letter Pi'
-
-      Returns
-      -------
-      unicode
-          markdown of SAMPLE_DATA
-      """
-      title = 'Test'
-      human_readable = tableToMarkdown(title, SAMPLE_DATA, removeNull=True)
-      return human_readable
-
-
-  def output_of_test_tbl_to_md():
-      human_readable = tbl_to_md_with_non_ascii_chars_nested_dict()
-      return_outputs(readable_output=human_readable, outputs=SAMPLE_DATA, raw_response=SAMPLE_DATA)
-
-
-  def successful_execute_exit_code():
-      tbl_to_md_with_non_ascii_chars_nested_dict()
-      return 0
-
-
-  ''' EXECUTION '''
-
-  # python2 uses __builtin__ python3 uses builtins
-  if __name__ == "__builtin__" or __name__ == "builtins":
-      output_of_test_tbl_to_md()
-system: false
-timeout: '0'
-type: python
+script: "''' GLOBAL VARS '''\n\nSAMPLE_DATA = {\n    'Status': 5,\n    'ResponderID':\
+  \ 2043038444649,\n    'DueBy': '2019-05-15T08:00:00Z',\n    'FrDueBy': '2019-05-14T09:00:00Z',\n\
+  \    'Priority': 3,\n    'Source': 1,\n    'Tag': [],\n    'RequesterID': 2043000056647,\n\
+  \    'UpdatedAt': '2019-05-13T19:52:35Z',\n    'AdditionalFields': {\n        'IsEscalated':\
+  \ False,\n        'Deleted': False,\n        'CompanyID': 44002282180,\n       \
+  \ 'FrEscalated': False,\n        'DescriptionHTML': b'<p>Hello there,</p><br /><p>I\\\
+  xe2\\x80\\x99m looking to buy a pair of Mary Jane shoes and '\n                \
+  \           b'I noticed that you have a local store in Aldovia. \\xcf\\x80. Could\
+  \ you let me know if the '\n                           b'Mary Jane shoes are available\
+  \ in Size 8? I can pick it up from there.</p><br '\n                           b'/><p>Thanks,<br\
+  \ />Emily.</p>'.decode('utf-8'),\n        'Spam': False,\n        'DescriptionText':\
+  \ b'Hello there,I\\xe2\\x80\\x99m looking to buy a pair of Mary Jane shoes and I\
+  \ noticed that '\n                           b'you have a local store in Aldovia.\
+  \ \\xcf\\x80. Could you let me know if the Mary Jane '\n                       \
+  \    b'shoes are available in Size 8? I can pick it up from there.Thanks,Emily.'.decode('utf-8'),\n\
+  \        'Type': 'Question'\n    },\n    'ID': 1023,\n    'CreatedAt': '2019-05-13T19:52:33Z',\n\
+  \    'Subject': 'Mary Jane shoes in Size 8?'\n}\n\n\n''' FUNCTIONS '''\n\n\ndef\
+  \ tbl_to_md_with_non_ascii_chars_nested_dict():\n    \"\"\"\n    Call tableToMarkdown\
+  \ with sample data that has nested dict with non-ascii characters inside it\n  \
+  \  namely, 'Right Single Quotation Mark' and 'Greek Small Letter Pi'\n\n    Returns\n\
+  \    -------\n    unicode\n        markdown of SAMPLE_DATA\n    \"\"\"\n    title\
+  \ = 'Test'\n    human_readable = tableToMarkdown(title, SAMPLE_DATA, removeNull=True)\n\
+  \    return human_readable\n\n\ndef output_of_test_tbl_to_md():\n    human_readable\
+  \ = tbl_to_md_with_non_ascii_chars_nested_dict()\n    return_outputs(readable_output=human_readable,\
+  \ outputs=SAMPLE_DATA, raw_response=SAMPLE_DATA)\n\n\ndef successful_execute_exit_code():\n\
+  \    tbl_to_md_with_non_ascii_chars_nested_dict()\n    return 0\n\n\n''' EXECUTION\
+  \ '''\n\n# python2 uses __builtin__ python3 uses builtins\nif __name__ == \"__builtin__\"\
+  \ or __name__ == \"builtins\":\n    output_of_test_tbl_to_md()"
 subtype: python2
+system: false
 tags: []
 tests:
 - No test
+timeout: '0'
+toversion: 4.1.9
+type: python

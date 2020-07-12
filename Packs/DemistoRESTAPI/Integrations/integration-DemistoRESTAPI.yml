@@ -1,247 +1,156 @@
+category: Utilities
 commonfields:
   id: Demisto REST API
   version: -1
-name: Demisto REST API
-display: Demisto REST API
-category: Utilities
-image: data:image/png;base64,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
+configuration:
+- defaultvalue: https://127.0.0.1
+  display: Demisto Server URL
+  name: url
+  required: true
+  type: 0
+- defaultvalue: ''
+  display: Demisto Server API Key
+  name: apikey
+  required: true
+  type: 4
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ''
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Use Demisto REST APIs
 detaileddescription: Creating API keys is done in the Demisto interface, under Settings
   -> Integrations -> API Keys
-configuration:
-- display: Demisto Server URL
-  name: url
-  defaultvalue: https://127.0.0.1
-  type: 0
-  required: true
-- display: Demisto Server API Key
-  name: apikey
-  defaultvalue: ""
-  type: 4
-  required: true
-- display: Trust any certificate (not secure)
-  name: insecure
-  defaultvalue: ""
-  type: 8
-  required: false
-- display: Use system proxy settings
-  name: proxy
-  defaultvalue: ''
-  type: 8
-  required: false
+display: Demisto REST API
+image: data:image/png;base64,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
+name: Demisto REST API
 script:
-  script: |
-    var serverURL = params.url;
-    if (serverURL.slice(-1) === '/') {
-        serverURL = serverURL.slice(0,-1);
-    }
-
-    sendMultipart = function (uri, entryID, body) {
-        var requestUrl = serverURL;
-        if (uri.slice(-1) !== '/') {
-            requestUrl += '/';
-        }
-        requestUrl += uri;
-
-        var res = httpMultipart(
-            requestUrl,
-            entryID,
-            {
-                Headers: {
-                    'Authorization': [params.apikey],
-                    'Content-Type': ['multipart/form-data'],
-                    'Accept': ['application/json']
-                },
-            },
-            body,
-            params.insecure,
-            params.proxy,
-            undefined,
-            'file'
-        );
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Demisto REST APIs - Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
-        }
-        try {
-            var response = res.Body;
-            try {
-                response = JSON.parse(res.Body);
-            } catch (ex) {
-                // do nothing, already handled prior the try/catch
-            }
-            return {response: response};
-        } catch (ex) {
-            throw 'Demisto REST APIs - Error parsing response - ' + ex + '\nBody:' + res.Body;
-        }
-
-    };
-
-    var sendRequest = function(method, uri, body, raw) {
-        var requestUrl = serverURL;
-        if (uri.slice(0, 1) !== '/') {
-            requestUrl += '/';
-        }
-        requestUrl += uri;
-
-        var res = http(
-            requestUrl,
-            {
-                Method: method,
-                Headers: {
-                    'Accept': ['application/json'],
-                    'content-type': ['application/json'],
-                    'authorization': [params.apikey]
-                },
-                Body: body,
-                SaveToFile: raw
-            },
-            params.insecure,
-            params.proxy
-        );
-
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Demisto REST APIs - Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
-        }
-        if (raw) {
-            return res;
-        } else {
-            try {
-                var response = res.Body;
-                try {
-                    response = JSON.parse(res.Body);
-                } catch (ex) {
-                    // do nothing, already handled prior the try/catch
-                }
-                return {response: response};
-            } catch (ex) {
-                throw 'Demisto REST APIs - Error parsing response - ' + ex + '\nBody:' + res.Body;
-            }
-        }
-    };
-
-    var deleteIncidents = function(ids_to_delete) {
-        var body = {
-            ids: ids_to_delete,
-            all: false,
-            filter: {}
-        };
-
-        var res = sendRequest('POST', '/incident/batchDelete', JSON.stringify(body));
-        if (isError(res[0])) {
-            throw res[0].Contents;
-        }
-
-        var response = res['response']
-        var md = tableToMarkdown('Demisto delete incidents', response, ['data', 'total', "notUpdated"]);
-
-        return {
-            ContentsFormat: formats.json,
-            Type: entryTypes.note,
-            Contents: res,
-            HumanReadable: md
-        };
-    };
-
-    switch (command) {
-        case 'test-module':
-            sendRequest('GET','user');
-            return 'ok';
-        case 'demisto-api-post':
-            var body = JSON.parse(args.body);
-            return sendRequest('POST',args.uri, args.body);
-        case 'demisto-api-get':
-            return sendRequest('GET',args.uri);
-        case 'demisto-api-put':
-            var body = JSON.parse(args.body);
-            return sendRequest('PUT',args.uri, args.body);
-        case 'demisto-api-delete':
-            return sendRequest('DELETE',args.uri);
-        case 'demisto-api-multipart':
-            return sendMultipart(args.uri, args.entryID, args.body);
-        case 'demisto-api-download':
-            var res = sendRequest('GET',args.uri,args.body,true);
-            var filename = res.Path;
-            if (args.filename) {
-                filename = args.filename;
-            } else {
-                var disposition = res.Headers['Content-Disposition'][0].split('=');
-                if (disposition.length === 2) {
-                    filename = disposition[1];
-                }
-            }
-            var desc = args.description || '';
-            return ({Type: entryTypes.file, FileID: res.Path, File: filename, Contents: desc});
-        case 'demisto-delete-incidents':
-            var ids = argToList(args.ids);
-            return deleteIncidents(ids);
-        default:
-            throw 'Demisto REST APIs - unknown command';
-    }
-  type: javascript
   commands:
-  - name: demisto-api-post
-    arguments:
-    - name: uri
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: Request URI (i.e. /incident)
-    - name: body
-      description: Body of HTTP POST
+      name: uri
+      required: true
+    - description: Body of HTTP POST
+      name: body
     description: send HTTP POST request
     execution: true
-  - name: demisto-api-get
-    arguments:
-    - name: uri
-      required: true
-      default: true
+    name: demisto-api-post
+  - arguments:
+    - default: true
       description: Request URI (i.e. /user)
+      name: uri
+      required: true
     description: send HTTP GET requests
-  - name: demisto-api-put
-    arguments:
-    - name: uri
-      required: true
-      default: true
+    name: demisto-api-get
+  - arguments:
+    - default: true
       description: Request URI (i.e. /user)
-    - name: body
-      description: Request body
+      name: uri
+      required: true
+    - description: Request body
+      name: body
     description: send HTTP PUT request
     execution: true
-  - name: demisto-api-delete
-    arguments:
-    - name: uri
-      required: true
-      default: true
+    name: demisto-api-put
+  - arguments:
+    - default: true
       description: Request URI (i.e. /user)
+      name: uri
+      required: true
     description: send HTTP DELETE request
     execution: true
-  - name: demisto-api-download
-    arguments:
-    - name: uri
+    name: demisto-api-delete
+  - arguments:
+    - description: Request URI
+      name: uri
       required: true
-      description: Request URI
-    - name: filename
-      description: File name of download
-    - name: description
-      description: Description of file entry
+    - description: File name of download
+      name: filename
+    - description: Description of file entry
+      name: description
     description: Download files from Demisto server
-  - name: demisto-api-multipart
-    arguments:
-    - name: uri
+    name: demisto-api-download
+  - arguments:
+    - description: Request URI
+      name: uri
       required: true
-      description: Request URI
-    - name: entryID
+    - description: File entry ID
+      name: entryID
       required: true
-      description: File entry ID
-    - name: body
-      description: Request body
+    - description: Request body
+      name: body
     description: Send HTTP Multipart request to upload files to Demisto server
-  - name: demisto-delete-incidents
-    arguments:
-    - name: ids
+    name: demisto-api-multipart
+  - arguments:
+    - description: IDs of the incidents to delete
+      name: ids
       required: true
-      description: IDs of the incidents to delete
     description: Delete Demisto incidents
     execution: true
+    name: demisto-delete-incidents
   runonce: false
+  script: "var serverURL = params.url;\nif (serverURL.slice(-1) === '/') {\n    serverURL\
+    \ = serverURL.slice(0,-1);\n}\n\nsendMultipart = function (uri, entryID, body)\
+    \ {\n    var requestUrl = serverURL;\n    if (uri.slice(-1) !== '/') {\n     \
+    \   requestUrl += '/';\n    }\n    requestUrl += uri;\n\n    var res = httpMultipart(\n\
+    \        requestUrl,\n        entryID,\n        {\n            Headers: {\n  \
+    \              'Authorization': [params.apikey],\n                'Content-Type':\
+    \ ['multipart/form-data'],\n                'Accept': ['application/json']\n \
+    \           },\n        },\n        body,\n        params.insecure,\n        params.proxy,\n\
+    \        undefined,\n        'file'\n    );\n    if (res.StatusCode < 200 || res.StatusCode\
+    \ >= 300) {\n        throw 'Demisto REST APIs - Request Failed.\\nStatus code:\
+    \ ' + res.StatusCode + '.\\nBody: ' + JSON.stringify(res) + '.';\n    }\n    try\
+    \ {\n        var response = res.Body;\n        try {\n            response = JSON.parse(res.Body);\n\
+    \        } catch (ex) {\n            // do nothing, already handled prior the\
+    \ try/catch\n        }\n        return {response: response};\n    } catch (ex)\
+    \ {\n        throw 'Demisto REST APIs - Error parsing response - ' + ex + '\\\
+    nBody:' + res.Body;\n    }\n\n};\n\nvar sendRequest = function(method, uri, body,\
+    \ raw) {\n    var requestUrl = serverURL;\n    if (uri.slice(0, 1) !== '/') {\n\
+    \        requestUrl += '/';\n    }\n    requestUrl += uri;\n\n    var res = http(\n\
+    \        requestUrl,\n        {\n            Method: method,\n            Headers:\
+    \ {\n                'Accept': ['application/json'],\n                'content-type':\
+    \ ['application/json'],\n                'authorization': [params.apikey]\n  \
+    \          },\n            Body: body,\n            SaveToFile: raw\n        },\n\
+    \        params.insecure,\n        params.proxy\n    );\n\n    if (res.StatusCode\
+    \ < 200 || res.StatusCode >= 300) {\n        throw 'Demisto REST APIs - Request\
+    \ Failed.\\nStatus code: ' + res.StatusCode + '.\\nBody: ' + JSON.stringify(res)\
+    \ + '.';\n    }\n    if (raw) {\n        return res;\n    } else {\n        try\
+    \ {\n            var response = res.Body;\n            try {\n               \
+    \ response = JSON.parse(res.Body);\n            } catch (ex) {\n             \
+    \   // do nothing, already handled prior the try/catch\n            }\n      \
+    \      return {response: response};\n        } catch (ex) {\n            throw\
+    \ 'Demisto REST APIs - Error parsing response - ' + ex + '\\nBody:' + res.Body;\n\
+    \        }\n    }\n};\n\nvar deleteIncidents = function(ids_to_delete) {\n   \
+    \ var body = {\n        ids: ids_to_delete,\n        all: false,\n        filter:\
+    \ {}\n    };\n\n    var res = sendRequest('POST', '/incident/batchDelete', JSON.stringify(body));\n\
+    \    if (isError(res[0])) {\n        throw res[0].Contents;\n    }\n\n    var\
+    \ response = res['response']\n    var md = tableToMarkdown('Demisto delete incidents',\
+    \ response, ['data', 'total', \"notUpdated\"]);\n\n    return {\n        ContentsFormat:\
+    \ formats.json,\n        Type: entryTypes.note,\n        Contents: res,\n    \
+    \    HumanReadable: md\n    };\n};\n\nswitch (command) {\n    case 'test-module':\n\
+    \        sendRequest('GET','user');\n        return 'ok';\n    case 'demisto-api-post':\n\
+    \        var body = JSON.parse(args.body);\n        return sendRequest('POST',args.uri,\
+    \ args.body);\n    case 'demisto-api-get':\n        return sendRequest('GET',args.uri);\n\
+    \    case 'demisto-api-put':\n        var body = JSON.parse(args.body);\n    \
+    \    return sendRequest('PUT',args.uri, args.body);\n    case 'demisto-api-delete':\n\
+    \        return sendRequest('DELETE',args.uri);\n    case 'demisto-api-multipart':\n\
+    \        return sendMultipart(args.uri, args.entryID, args.body);\n    case 'demisto-api-download':\n\
+    \        var res = sendRequest('GET',args.uri,args.body,true);\n        var filename\
+    \ = res.Path;\n        if (args.filename) {\n            filename = args.filename;\n\
+    \        } else {\n            var disposition = res.Headers['Content-Disposition'][0].split('=');\n\
+    \            if (disposition.length === 2) {\n                filename = disposition[1];\n\
+    \            }\n        }\n        var desc = args.description || '';\n      \
+    \  return ({Type: entryTypes.file, FileID: res.Path, File: filename, Contents:\
+    \ desc});\n    case 'demisto-delete-incidents':\n        var ids = argToList(args.ids);\n\
+    \        return deleteIncidents(ids);\n    default:\n        throw 'Demisto REST\
+    \ APIs - unknown command';\n}\n"
+  type: javascript
 tests:
-  - No test
+- No test
+toversion: 4.1.9

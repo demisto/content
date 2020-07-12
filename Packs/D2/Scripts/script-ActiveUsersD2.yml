@@ -1,48 +1,30 @@
+comment: Get active users from a D2 agent and parsed them into context
 commonfields:
   id: ActiveUsersD2
   version: -1
 name: ActiveUsersD2
-script: |-
-  resp = executeCommand("D2ActiveUsers", {});
-  if (isError(resp[0])) {
-      return resp;
-  }
-
-  data = dq(resp[0],'Contents');
-  if (!data) {
-      return { ContentsFormat: formats.text, Type: entryTypes.error, Contents: 'No Active Users were found' };
-  }
-  users = [];
-  data.forEach(function(u){
-              var user = {};
-              var username = null;
-              var domain = null;
-              user = dq(u,"Antecedent");
-              user = user.split(",");
-
-              if (user.length === 2) {
-                  try {
-                      domain = user[0].split('=')[1].replace(/['"]+/g, '')
-                      username = user[1].split('=')[1].replace(/['"]+/g, '')
-                  } catch (ex) {
-                      return ex;
-                  }
-              }
-
-              if(domain && username && !users.some(e => e.Username == username && e.Domain == domain)) {
-                  users.push({'Username' : username, 'Domain' : domain});
-              }
-          });
-
-  var md = tableToMarkdown("Users", users);
-  var ec = {"Account(val.Username == obj.Username)" : users};
-  return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': users, "HumanReadable": md, "EntryContext": ec} );
-type: javascript
+script: "resp = executeCommand(\"D2ActiveUsers\", {});\nif (isError(resp[0])) {\n\
+  \    return resp;\n}\n\ndata = dq(resp[0],'Contents');\nif (!data) {\n    return\
+  \ { ContentsFormat: formats.text, Type: entryTypes.error, Contents: 'No Active Users\
+  \ were found' };\n}\nusers = [];\ndata.forEach(function(u){\n            var user\
+  \ = {};\n            var username = null;\n            var domain = null;\n    \
+  \        user = dq(u,\"Antecedent\");\n            user = user.split(\",\");\n\n\
+  \            if (user.length === 2) {\n                try {\n                 \
+  \   domain = user[0].split('=')[1].replace(/['\"]+/g, '')\n                    username\
+  \ = user[1].split('=')[1].replace(/['\"]+/g, '')\n                } catch (ex) {\n\
+  \                    return ex;\n                }\n            }\n\n          \
+  \  if(domain && username && !users.some(e => e.Username == username && e.Domain\
+  \ == domain)) {\n                users.push({'Username' : username, 'Domain' : domain});\n\
+  \            }\n        });\n\nvar md = tableToMarkdown(\"Users\", users);\nvar\
+  \ ec = {\"Account(val.Username == obj.Username)\" : users};\nreturn ( {'ContentsFormat':\
+  \ formats.json, 'Type': entryTypes.note, 'Contents': users, \"HumanReadable\": md,\
+  \ \"EntryContext\": ec} );"
+scripttarget: 0
+system: true
 tags:
 - endpoint
 - agent
-comment: Get active users from a D2 agent and parsed them into context
-system: true
-scripttarget: 0
 tests:
-  - No test
+- No test
+toversion: 4.1.9
+type: javascript

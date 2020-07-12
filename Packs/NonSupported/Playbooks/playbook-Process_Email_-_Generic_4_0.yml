@@ -1,296 +1,202 @@
-id: process_email_-_generic
-version: -1
-name: Process Email - Generic
-fromversion: 4.0.0
-toversion: 4.5.9
 description: Add email details to the relevant context entities and handle the case
   where original emails are attached.
-starttaskid: "0"
+fromversion: 4.0.0
+id: process_email_-_generic
+inputs:
+- description: An EML or MSG file with
+  key: File
+  required: false
+  value:
+    complex:
+      root: File
+- description: The receiving email address
+  key: Email
+  required: false
+  value:
+    complex:
+      accessor: labels.Email
+      root: incident
+- description: CC addresses
+  key: Email/cc
+  required: false
+  value:
+    complex:
+      accessor: labels.CC
+      root: incident
+- description: The originator of the email
+  key: Email/from
+  required: false
+  value:
+    complex:
+      accessor: labels.Email/from
+      root: incident
+- description: "The email\u2019s subject"
+  key: Email/subject
+  required: false
+  value:
+    complex:
+      accessor: labels.Email/subject
+      root: incident
+- description: "The email\u2019s text"
+  key: Email/text
+  required: false
+  value:
+    complex:
+      accessor: labels.Email/text
+      root: incident
+- description: "The emai\u2019sl html"
+  key: Email/html
+  required: false
+  value:
+    complex:
+      accessor: labels.Email/html
+      root: incident
+- description: "The email\u2019s headers"
+  key: Email/headers
+  required: false
+  value:
+    complex:
+      accessor: labels.Email/headers
+      root: incident
+- description: "The email\u2019s format"
+  key: Email/format
+  required: false
+  value:
+    complex:
+      accessor: labels.Email/format
+      root: incident
+- description: 'Retrieve the original email in the thread. Default is "False".
+
+
+    You must have the necessary permissions in your email service to execute global
+    search.
+
+
+    - EWS: eDiscovery
+
+    - Gmail: Google Apps Domain-Wide Delegation of Authority'
+  key: GetOriginalEmail
+  required: false
+  value:
+    simple: 'False'
+name: Process Email - Generic
+outputs:
+- contextPath: Email.HTML
+  description: Email 'html' body if exists
+  type: string
+- contextPath: Email
+  description: Email object
+  type: unknown
+- contextPath: Email.CC
+  description: Email 'cc' addresses
+  type: string
+- contextPath: Email.From
+  description: Email 'from' sender
+  type: string
+- contextPath: Email.Subject
+  description: Email subject
+  type: string
+- contextPath: Email.To
+  description: Email 'to' addresses
+  type: string
+- contextPath: Email.Text
+  description: Email 'text' body if exists
+  type: string
+- contextPath: Email.Headers
+  description: The full email headers as a single string
+  type: string
+- contextPath: Email.Attachments
+  description: The list of attachment names in the email
+  type: string
+- contextPath: Email.Format
+  description: The format of the email if available
+  type: string
+- contextPath: File
+  description: The File object
+  type: unknown
+starttaskid: '0'
+system: true
 tasks:
-  "0":
-    id: "0"
-    taskid: 5bfb4aa2-96ee-40a9-8806-51f5317a9be3
-    type: start
-    task:
-      id: 5bfb4aa2-96ee-40a9-8806-51f5317a9be3
-      version: -1
-      name: ""
-      description: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 377.5,
-          "y": -280
-        }
-      }
+      - '1'
     note: false
-    timertriggers: []
-    ignoreworker: false
-  "1":
-    id: "1"
-    taskid: f4ec5dda-65f9-465c-88f4-4319d0e57edf
-    type: condition
+    separatecontext: false
     task:
-      id: f4ec5dda-65f9-465c-88f4-4319d0e57edf
+      brand: ''
+      description: ''
+      id: 5bfb4aa2-96ee-40a9-8806-51f5317a9be3
+      iscommand: false
+      name: ''
       version: -1
-      name: Do we have original emails attached?
+    taskid: 5bfb4aa2-96ee-40a9-8806-51f5317a9be3
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 377.5,\n    \"y\": -280\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      'no':
+      - '16'
+      'yes':
+      - '3'
+    note: false
+    reputationcalc: 1
+    results:
+    - reportedemailentryid
+    scriptarguments:
+      entryid:
+        simple: ${inputs.File.EntryID}
+    separatecontext: false
+    task:
+      brand: ''
       description: Identify whether the incident includes an email message attached
         as an eml or msg file and return the answer to playbook. Also saves the identified
         entry ID to context for use for later. Commonly used in automated playbooks
         that handle phishing reports sent to a special phishing mailbox set up by
         the security team.
+      id: f4ec5dda-65f9-465c-88f4-4319d0e57edf
+      iscommand: false
+      name: Do we have original emails attached?
       scriptName: IdentifyAttachedEmail
       type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "no":
-      - "16"
-      "yes":
-      - "3"
-    scriptarguments:
-      entryid:
-        simple: ${inputs.File.EntryID}
-    reputationcalc: 1
-    results:
-    - reportedemailentryid
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 377.5,
-          "y": -65
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 586e1b42-4e1a-4c98-812c-f5e68a37abde
-    type: regular
-    task:
-      id: 586e1b42-4e1a-4c98-812c-f5e68a37abde
       version: -1
-      name: Add original email details to context
-      description: ""
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      append: {}
-      key:
-        simple: Email
-      value:
-        simple: '${inputs={To: val[''Email''], CC: val[''Email/cc''], From: val[''Email/from''],
-          Subject: val[''Email/subject''], Text: val[''Email/text''], HTML: val[''Email/html''],
-          Headers: val[''Email/headers''], Format: val[''Email/format'']}}'
-    reputationcalc: 2
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -60,
-          "y": 820
-        }
-      }
-    note: false
+    taskid: f4ec5dda-65f9-465c-88f4-4319d0e57edf
     timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: 674d0e72-c104-41f9-806b-afbaf8444bea
-    type: regular
-    task:
-      id: 674d0e72-c104-41f9-806b-afbaf8444bea
-      version: -1
-      name: Add original email attachments to context
-      description: Parses an email from an EML or MSG file and populates all relevant
-        context data to investigate the email. Also extracts indicators from the email
-        messages.
-      scriptName: ParseEmailFiles
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      entryid:
-        simple: ${reportedemailentryid}
-      max_depth: {}
-      parse_only_headers: {}
-    reputationcalc: 2
-    results:
-    - AttachmentName
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 630,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 96f1a90d-aed3-4905-82bd-eb8b75204ffc
     type: condition
-    task:
-      id: 96f1a90d-aed3-4905-82bd-eb8b75204ffc
-      version: -1
-      name: Is there an HTML label in the email?
-      description: ""
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "6"
-      "yes":
-      - "5"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: Email
-                accessor: HTML
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Email.HTML
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 340,
-          "y": 1220
-        }
-      }
-    note: false
-    timertriggers: []
+    view: "{\n  \"position\": {\n    \"x\": 377.5,\n    \"y\": -65\n  }\n}"
+  '11':
+    id: '11'
     ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 79efc198-1523-4a55-89ad-668e64fba48c
-    type: regular
-    task:
-      id: 79efc198-1523-4a55-89ad-668e64fba48c
-      version: -1
-      name: Render HTML to an image
-      description: ""
-      tags:
-      - email_html_image
-      script: Rasterize|||rasterize-email
-      type: regular
-      iscommand: true
-      brand: Rasterize
     nexttasks:
       '#none#':
-      - "6"
-    scriptarguments:
-      height: {}
-      htmlBody:
-        complex:
-          root: Email
-          accessor: HTML
-      type: {}
-      width: {}
-    reputationcalc: 1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 100,
-          "y": 1440
-        }
-      }
+      - '4'
     note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 811ebf69-5fe0-4314-8cff-ca8e91774fe8
-    type: title
-    task:
-      id: 811ebf69-5fe0-4314-8cff-ca8e91774fe8
-      version: -1
-      name: Done
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 340,
-          "y": 1670
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "11":
-    id: "11"
-    taskid: 599cbc26-9525-4dd7-8692-3b572ef01c53
-    type: title
     task:
+      brand: ''
+      description: ''
       id: 599cbc26-9525-4dd7-8692-3b572ef01c53
-      version: -1
-      name: Advance features
-      description: ""
-      type: title
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 340,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "13":
-    id: "13"
-    taskid: 98601be8-c258-47c5-8666-0babb2f1789d
-    type: regular
-    task:
-      id: 98601be8-c258-47c5-8666-0babb2f1789d
+      name: Advance features
+      type: title
       version: -1
-      name: Set incident with the Email object data
-      description: Updates Demisto incident fields using data from the email object.
-        Also extracts indicators from the email message.
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
+    taskid: 599cbc26-9525-4dd7-8692-3b572ef01c53
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 340,\n    \"y\": 1070\n  }\n}"
+  '13':
+    id: '13'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
+    note: false
+    reputationcalc: 2
     scriptarguments:
       1longtexttest: {}
       aaaa: {}
@@ -306,37 +212,38 @@ tasks:
       attachamenthash: {}
       attachmentcount:
         complex:
+          accessor: 'Attachment.Count
+
+            '
           root: Email
-          accessor: |
-            Attachment.Count
       attachmentextension:
         complex:
-          root: Email
           accessor: Attachment.Extension
+          root: Email
       attachmenthash:
         complex:
-          root: Email
           accessor: Attachment.Hash
+          root: Email
       attachmentid:
         complex:
-          root: Email
           accessor: Attachment.ID
+          root: Email
       attachmentitem:
         complex:
-          root: Email
           accessor: Attachment.Item
+          root: Email
       attachmentname:
         complex:
-          root: Email
           accessor: Attachment.Name
+          root: Email
       attachmentsize:
         complex:
-          root: Email
           accessor: Attachment.Size
+          root: Email
       attachmenttype:
         complex:
-          root: Email
           accessor: Attachment.Type
+          root: Email
       awsinstancename: {}
       backupowner: {}
       bbb: {}
@@ -362,7 +269,7 @@ tasks:
       datepicker: {}
       daysbetweenreportcreation: {}
       deleteEmptyField:
-        simple: "True"
+        simple: 'True'
       department: {}
       departmentadmin: {}
       dest: {}
@@ -373,107 +280,107 @@ tasks:
       duration: {}
       emailbcc:
         complex:
-          root: Email
           accessor: BCC
+          root: Email
           transformers:
           - operator: uniq
           - operator: Stringify
       emailbody:
         complex:
-          root: Email
           accessor: Text
+          root: Email
           transformers:
           - operator: Stringify
       emailbodyformat:
         complex:
-          root: Email
           accessor: BodyFormat
+          root: Email
       emailbodyhtml:
         complex:
-          root: Email
           accessor: HTML
+          root: Email
           transformers:
           - operator: Stringify
       emailcc:
         complex:
-          root: Email
           accessor: CC
+          root: Email
           transformers:
           - operator: uniq
           - operator: Stringify
       emailclientname:
         complex:
-          root: Email
           accessor: ClientName
+          root: Email
       emailfrom:
         complex:
-          root: Email
           accessor: From
+          root: Email
           transformers:
           - operator: uniq
           - operator: Stringify
       emailimage:
         complex:
-          root: Email
           accessor: Image
+          root: Email
       emailinreplyto:
         complex:
-          root: Email
           accessor: InReplyTo
+          root: Email
       emailkeywords:
         complex:
-          root: Email
           accessor: Keywords
+          root: Email
       emailmessageid:
         complex:
-          root: Email
           accessor: ID
+          root: Email
       emailreceived:
         complex:
-          root: Email
           accessor: Received
+          root: Email
       emailreplyto:
         complex:
-          root: Email
           accessor: ReplyTo
+          root: Email
       emailreturnpath:
         complex:
-          root: Email
           accessor: ReturnPath
+          root: Email
       emailsenderip:
         complex:
-          root: Email
           accessor: SenderIP
+          root: Email
       emailsize:
         complex:
-          root: Email
           accessor: Size
+          root: Email
       emailsource:
         complex:
-          root: Email
           accessor: Source
+          root: Email
       emailsubject:
         complex:
-          root: Email
           accessor: Subject
+          root: Email
           transformers:
           - operator: uniq
           - operator: Stringify
       emailto:
         complex:
-          root: Email
           accessor: To
+          root: Email
           transformers:
           - operator: uniq
-          - operator: join
-            args:
+          - args:
               separator:
                 value:
                   simple: ','
+            operator: join
       emailtocount:
         complex:
-          root: Email
           accessor: To
+          root: Email
           transformers:
           - operator: uniq
           - operator: count
@@ -576,8 +483,8 @@ tasks:
       telefield: {}
       teleselect: {}
       test: {}
-      test2: {}
       test111: {}
+      test2: {}
       testassociationdumpme: {}
       testfield: {}
       testguy: {}
@@ -606,143 +513,125 @@ tasks:
       zvtfirstseen: {}
       zvtother: {}
       zvtvendorcount: {}
-    reputationcalc: 2
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 350,
-          "y": 820
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "16":
-    id: "16"
-    taskid: 54eafd46-2cb7-4d4f-8cea-7bf65808e8a3
-    type: condition
     task:
-      id: 54eafd46-2cb7-4d4f-8cea-7bf65808e8a3
-      version: -1
-      name: Should retrieve the original email?
-      description: If True, retrieve the original email in the thread
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "2"
-      "yes":
-      - "17"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.GetOriginalEmail
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 110,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "17":
-    id: "17"
-    taskid: a73fbff7-92c7-4d83-86cf-2719189e8cae
-    type: playbook
-    task:
-      id: a73fbff7-92c7-4d83-86cf-2719189e8cae
-      version: -1
-      name: Get Original Email - Generic
-      description: |-
-        Use this playbook to retrieve the original email in the thread, including headers and attahcments, when the reporting user forwarded the original email not as an attachment.
-
-        You must have the necessary permissions in your email service to execute global search.
-
-        - EWS: eDiscovery
-        - Gmail: Google Apps Domain-Wide Delegation of Authority
-      playbookName: Get Original Email - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 340,
-          "y": 450
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "18":
-    id: "18"
-    taskid: f20efab6-7ee1-46a1-8964-0f89ffa22415
-    type: condition
-    task:
-      id: f20efab6-7ee1-46a1-8964-0f89ffa22415
-      version: -1
-      name: Was the original email retrieved?
-      description: Is there an email object in the context?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "2"
-      "yes":
-      - "13"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: Email
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 340,
-          "y": 620
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "19":
-    id: "19"
-    taskid: be23418a-f7f1-4ed8-8d53-7e8cfcef87b5
-    type: regular
-    task:
-      id: be23418a-f7f1-4ed8-8d53-7e8cfcef87b5
-      version: -1
-      name: Set incident with the Email object data
+      brand: Builtin
       description: Updates Demisto incident fields using data from the email object.
+        Also extracts indicators from the email message.
+      id: 98601be8-c258-47c5-8666-0babb2f1789d
+      iscommand: true
+      name: Set incident with the Email object data
       script: Builtin|||setIncident
       type: regular
-      iscommand: true
-      brand: Builtin
+      version: -1
+    taskid: 98601be8-c258-47c5-8666-0babb2f1789d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 350,\n    \"y\": 820\n  }\n}"
+  '16':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: inputs.GetOriginalEmail
+          operator: isEqualString
+          right:
+            value:
+              simple: 'True'
+      label: 'yes'
+    id: '16'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '2'
+      'yes':
+      - '17'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: If True, retrieve the original email in the thread
+      id: 54eafd46-2cb7-4d4f-8cea-7bf65808e8a3
+      iscommand: false
+      name: Should retrieve the original email?
+      type: condition
+      version: -1
+    taskid: 54eafd46-2cb7-4d4f-8cea-7bf65808e8a3
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 110,\n    \"y\": 195\n  }\n}"
+  '17':
+    id: '17'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "11"
+      - '18'
+    note: false
+    separatecontext: true
+    task:
+      brand: ''
+      description: 'Use this playbook to retrieve the original email in the thread,
+        including headers and attahcments, when the reporting user forwarded the original
+        email not as an attachment.
+
+
+        You must have the necessary permissions in your email service to execute global
+        search.
+
+
+        - EWS: eDiscovery
+
+        - Gmail: Google Apps Domain-Wide Delegation of Authority'
+      id: a73fbff7-92c7-4d83-86cf-2719189e8cae
+      iscommand: false
+      name: Get Original Email - Generic
+      playbookName: Get Original Email - Generic
+      type: playbook
+      version: -1
+    taskid: a73fbff7-92c7-4d83-86cf-2719189e8cae
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 340,\n    \"y\": 450\n  }\n}"
+  '18':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Email
+          operator: isExists
+      label: 'yes'
+    id: '18'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '2'
+      'yes':
+      - '13'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Is there an email object in the context?
+      id: f20efab6-7ee1-46a1-8964-0f89ffa22415
+      iscommand: false
+      name: Was the original email retrieved?
+      type: condition
+      version: -1
+    taskid: f20efab6-7ee1-46a1-8964-0f89ffa22415
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 340,\n    \"y\": 620\n  }\n}"
+  '19':
+    id: '19'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '11'
+    note: false
+    reputationcalc: 1
     scriptarguments:
       1longtexttest: {}
       aaaa: {}
@@ -758,37 +647,38 @@ tasks:
       attachamenthash: {}
       attachmentcount:
         complex:
+          accessor: 'Attachment.Count
+
+            '
           root: Email
-          accessor: |
-            Attachment.Count
       attachmentextension:
         complex:
-          root: Email
           accessor: Attachment.Extension
+          root: Email
       attachmenthash:
         complex:
-          root: Email
           accessor: Attachment.Hash
+          root: Email
       attachmentid:
         complex:
-          root: Email
           accessor: Attachment.ID
+          root: Email
       attachmentitem:
         complex:
-          root: Email
           accessor: Attachment.Item
+          root: Email
       attachmentname:
         complex:
-          root: Email
           accessor: Attachment.Name
+          root: Email
       attachmentsize:
         complex:
-          root: Email
           accessor: Attachment.Size
+          root: Email
       attachmenttype:
         complex:
-          root: Email
           accessor: Attachment.Type
+          root: Email
       awsinstancename: {}
       backupowner: {}
       bbb: {}
@@ -816,7 +706,7 @@ tasks:
       datepicker: {}
       daysbetweenreportcreation: {}
       deleteEmptyField:
-        simple: "True"
+        simple: 'True'
       department: {}
       departmentadmin: {}
       dest: {}
@@ -827,115 +717,115 @@ tasks:
       duration: {}
       emailbcc:
         complex:
-          root: Email
           accessor: HeadersMap.BCC
+          root: Email
           transformers:
           - operator: uniq
           - operator: Stringify
       emailbody:
         complex:
-          root: Email
           accessor: Text
+          root: Email
           transformers:
           - operator: Stringify
       emailbodyformat:
         complex:
-          root: Email
           accessor: BodyFormat
+          root: Email
       emailbodyhtml:
         complex:
-          root: Email
           accessor: HTML
+          root: Email
           transformers:
           - operator: Stringify
       emailbodyhtmlraw: {}
       emailcc:
         complex:
-          root: Email
           accessor: CC
+          root: Email
           transformers:
           - operator: uniq
           - operator: Stringify
       emailclientname:
         complex:
-          root: Email
           accessor: ClientName
+          root: Email
       emailfrom:
         complex:
-          root: Email
           accessor: From
+          root: Email
           transformers:
           - operator: uniq
           - operator: Stringify
       emailfromdisplayname: {}
       emailimage:
         complex:
-          root: Email
           accessor: Image
+          root: Email
       emailinreplyto:
         complex:
-          root: Email
           accessor: InReplyTo
+          root: Email
       emailkeywords:
         complex:
-          root: Email
           accessor: Keywords
+          root: Email
       emailmessageid:
         complex:
-          root: Email
           accessor: HeadersMap.Message-ID
+          root: Email
           transformers:
           - operator: uniq
       emailreceived: {}
       emailreplyto:
         complex:
-          root: Email
           accessor: HeadersMap.Reply-To
+          root: Email
           transformers:
           - operator: uniq
       emailreturnpath:
         complex:
-          root: Email
           accessor: HeadersMap.Return-Path
+          root: Email
           transformers:
           - operator: uniq
       emailsenderdomain: {}
       emailsenderip:
         complex:
-          root: Email
           accessor: SenderIP
+          root: Email
           transformers:
           - operator: uniq
       emailsize:
         complex:
-          root: Email
           accessor: Size
+          root: Email
           transformers:
           - operator: uniq
       emailsource:
         complex:
-          root: Email
           accessor: Source
+          root: Email
           transformers:
           - operator: uniq
       emailsubject:
         complex:
-          root: Email
           accessor: Subject
+          root: Email
           transformers:
           - operator: uniq
           - operator: Stringify
       emailsubjectlanguage: {}
       emailto:
         complex:
-          root: Email
           accessor: To
+          root: Email
           transformers:
           - operator: uniq
       emailtocount:
         complex:
-          root: Email
           accessor: To
+          root: Email
           transformers:
           - operator: uniq
           - operator: count
@@ -1040,8 +930,8 @@ tasks:
       telefield: {}
       teleselect: {}
       test: {}
-      test2: {}
       test111: {}
+      test2: {}
       testassociationdumpme: {}
       testfield: {}
       testguy: {}
@@ -1070,143 +960,172 @@ tasks:
       zvtfirstseen: {}
       zvtother: {}
       zvtvendorcount: {}
-    reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 870,
-          "y": 610
-        }
-      }
-    note: false
+    task:
+      brand: Builtin
+      description: Updates Demisto incident fields using data from the email object.
+      id: be23418a-f7f1-4ed8-8d53-7e8cfcef87b5
+      iscommand: true
+      name: Set incident with the Email object data
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: be23418a-f7f1-4ed8-8d53-7e8cfcef87b5
     timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 870,\n    \"y\": 610\n  }\n}"
+  '2':
+    id: '2'
     ignoreworker: false
-system: true
-view: |-
-  {
-    "linkLabelsPosition": {
-      "16_2_#default#": 0.73,
-      "18_13_yes": 0.72,
-      "18_2_#default#": 0.47,
-      "4_5_yes": 0.57
-    },
-    "paper": {
-      "dimensions": {
-        "height": 2015,
-        "width": 1310,
-        "x": -60,
-        "y": -280
-      }
-    }
-  }
-inputs:
-- key: File
-  value:
-    complex:
-      root: File
-  required: false
-  description: An EML or MSG file with
-- key: Email
-  value:
-    complex:
-      root: incident
-      accessor: labels.Email
-  required: false
-  description: The receiving email address
-- key: Email/cc
-  value:
-    complex:
-      root: incident
-      accessor: labels.CC
-  required: false
-  description: CC addresses
-- key: Email/from
-  value:
-    complex:
-      root: incident
-      accessor: labels.Email/from
-  required: false
-  description: The originator of the email
-- key: Email/subject
-  value:
-    complex:
-      root: incident
-      accessor: labels.Email/subject
-  required: false
-  description: The email’s subject
-- key: Email/text
-  value:
-    complex:
-      root: incident
-      accessor: labels.Email/text
-  required: false
-  description: The email’s text
-- key: Email/html
-  value:
-    complex:
-      root: incident
-      accessor: labels.Email/html
-  required: false
-  description: The emai’sl html
-- key: Email/headers
-  value:
-    complex:
-      root: incident
-      accessor: labels.Email/headers
-  required: false
-  description: The email’s headers
-- key: Email/format
-  value:
-    complex:
-      root: incident
-      accessor: labels.Email/format
-  required: false
-  description: The email’s format
-- key: GetOriginalEmail
-  value:
-    simple: "False"
-  required: false
-  description: |-
-    Retrieve the original email in the thread. Default is "False".
-
-    You must have the necessary permissions in your email service to execute global search.
-
-    - EWS: eDiscovery
-    - Gmail: Google Apps Domain-Wide Delegation of Authority
-outputs:
-- contextPath: Email.HTML
-  description: Email 'html' body if exists
-  type: string
-- contextPath: Email
-  description: Email object
-  type: unknown
-- contextPath: Email.CC
-  description: Email 'cc' addresses
-  type: string
-- contextPath: Email.From
-  description: Email 'from' sender
-  type: string
-- contextPath: Email.Subject
-  description: Email subject
-  type: string
-- contextPath: Email.To
-  description: Email 'to' addresses
-  type: string
-- contextPath: Email.Text
-  description: Email 'text' body if exists
-  type: string
-- contextPath: Email.Headers
-  description: The full email headers as a single string
-  type: string
-- contextPath: Email.Attachments
-  description: The list of attachment names in the email
-  type: string
-- contextPath: Email.Format
-  description: The format of the email if available
-  type: string
-- contextPath: File
-  description: The File object
-  type: unknown
+    nexttasks:
+      '#none#':
+      - '11'
+    note: false
+    reputationcalc: 2
+    scriptarguments:
+      append: {}
+      key:
+        simple: Email
+      value:
+        simple: '${inputs={To: val[''Email''], CC: val[''Email/cc''], From: val[''Email/from''],
+          Subject: val[''Email/subject''], Text: val[''Email/text''], HTML: val[''Email/html''],
+          Headers: val[''Email/headers''], Format: val[''Email/format'']}}'
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 586e1b42-4e1a-4c98-812c-f5e68a37abde
+      iscommand: false
+      name: Add original email details to context
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 586e1b42-4e1a-4c98-812c-f5e68a37abde
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -60,\n    \"y\": 820\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '19'
+    note: false
+    reputationcalc: 2
+    results:
+    - AttachmentName
+    scriptarguments:
+      entryid:
+        simple: ${reportedemailentryid}
+      max_depth: {}
+      parse_only_headers: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Parses an email from an EML or MSG file and populates all relevant
+        context data to investigate the email. Also extracts indicators from the email
+        messages.
+      id: 674d0e72-c104-41f9-806b-afbaf8444bea
+      iscommand: false
+      name: Add original email attachments to context
+      scriptName: ParseEmailFiles
+      type: regular
+      version: -1
+    taskid: 674d0e72-c104-41f9-806b-afbaf8444bea
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 630,\n    \"y\": 195\n  }\n}"
+  '4':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: HTML
+                root: Email
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: Email.HTML
+          operator: isNotEmpty
+      label: 'yes'
+    id: '4'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '6'
+      'yes':
+      - '5'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 96f1a90d-aed3-4905-82bd-eb8b75204ffc
+      iscommand: false
+      name: Is there an HTML label in the email?
+      type: condition
+      version: -1
+    taskid: 96f1a90d-aed3-4905-82bd-eb8b75204ffc
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 340,\n    \"y\": 1220\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      height: {}
+      htmlBody:
+        complex:
+          accessor: HTML
+          root: Email
+      type: {}
+      width: {}
+    separatecontext: false
+    task:
+      brand: Rasterize
+      description: ''
+      id: 79efc198-1523-4a55-89ad-668e64fba48c
+      iscommand: true
+      name: Render HTML to an image
+      script: Rasterize|||rasterize-email
+      tags:
+      - email_html_image
+      type: regular
+      version: -1
+    taskid: 79efc198-1523-4a55-89ad-668e64fba48c
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 100,\n    \"y\": 1440\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 811ebf69-5fe0-4314-8cff-ca8e91774fe8
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 811ebf69-5fe0-4314-8cff-ca8e91774fe8
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 340,\n    \"y\": 1670\n  }\n}"
 tests:
-  - process_email_-_generic_-_test
+- process_email_-_generic_-_test
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"16_2_#default#\": 0.73,\n    \"18_13_yes\"\
+  : 0.72,\n    \"18_2_#default#\": 0.47,\n    \"4_5_yes\": 0.57\n  },\n  \"paper\"\
+  : {\n    \"dimensions\": {\n      \"height\": 2015,\n      \"width\": 1310,\n  \
+  \    \"x\": -60,\n      \"y\": -280\n    }\n  }\n}"

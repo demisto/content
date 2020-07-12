@@ -1,175 +1,137 @@
 id: GoogleCloudCompute-Test
-version: -1
+inputs:
+- description: ''
+  key: zone
+  required: false
+  value:
+    simple: us-east1-b
 name: GoogleCloudCompute-Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 922e6871-1537-489c-807e-c70fa6da5cef
-    type: start
-    task:
-      id: 922e6871-1537-489c-807e-c70fa6da5cef
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-        - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 760,
-          "y": 60
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: e5bc3bb7-5e4f-4336-85e8-ba0ffbc3e51f
-    type: regular
-    task:
-      id: e5bc3bb7-5e4f-4336-85e8-ba0ffbc3e51f
-      version: -1
-      name: Delete Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
-        - "2"
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 922e6871-1537-489c-807e-c70fa6da5cef
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 922e6871-1537-489c-807e-c70fa6da5cef
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 760,\n    \"y\": 60\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 760,
-          "y": 190
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: a257482d-46e7-4842-8ff8-52a564408e76
-    type: regular
     task:
-      id: a257482d-46e7-4842-8ff8-52a564408e76
-      version: -1
-      name: Get disk type
-      description: Returns the specified disk type. Gets a list of available disk
-        types by making a list() request.
-      script: Google Cloud Compute|||gcp-compute-get-disk-type
+      brand: ''
+      description: Delete field from context
+      id: e5bc3bb7-5e4f-4336-85e8-ba0ffbc3e51f
+      iscommand: false
+      name: Delete Context
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: Google Cloud Compute
+      version: -1
+    taskid: e5bc3bb7-5e4f-4336-85e8-ba0ffbc3e51f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 760,\n    \"y\": 190\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
     nexttasks:
       '#none#':
-        - "3"
+      - '3'
+    note: false
     scriptarguments:
       disktype:
         simple: pd-ssd
       zone:
         simple: ${inputs.zone}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 760,
-          "y": 380
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: a1b6beb7-61fd-457b-85bb-d91a1d718dcd
-    type: regular
     task:
-      id: a1b6beb7-61fd-457b-85bb-d91a1d718dcd
-      version: -1
-      name: Get Image from family
-      description: Returns the latest image that is part of an image family and is
-        not deprecated.
-      script: Google Cloud Compute|||gcp-compute-get-image-from-family
-      type: regular
-      iscommand: true
       brand: Google Cloud Compute
+      description: Returns the specified disk type. Gets a list of available disk
+        types by making a list() request.
+      id: a257482d-46e7-4842-8ff8-52a564408e76
+      iscommand: true
+      name: Get disk type
+      script: Google Cloud Compute|||gcp-compute-get-disk-type
+      type: regular
+      version: -1
+    taskid: a257482d-46e7-4842-8ff8-52a564408e76
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 760,\n    \"y\": 380\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
     nexttasks:
       '#none#':
-        - "4"
+      - '4'
+    note: false
     scriptarguments:
       family:
         simple: debian-9
       project:
         simple: debian-cloud
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 760,
-          "y": 560
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 996a128e-e4a3-4ca0-84af-5b73ba57a825
-    type: regular
     task:
-      id: 996a128e-e4a3-4ca0-84af-5b73ba57a825
-      version: -1
-      name: Get network
-      description: Returns the specified network.
-      script: Google Cloud Compute|||gcp-compute-get-network
-      type: regular
-      iscommand: true
       brand: Google Cloud Compute
+      description: Returns the latest image that is part of an image family and is
+        not deprecated.
+      id: a1b6beb7-61fd-457b-85bb-d91a1d718dcd
+      iscommand: true
+      name: Get Image from family
+      script: Google Cloud Compute|||gcp-compute-get-image-from-family
+      type: regular
+      version: -1
+    taskid: a1b6beb7-61fd-457b-85bb-d91a1d718dcd
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 760,\n    \"y\": 560\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
+    note: false
     scriptarguments:
       network:
         simple: default
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 760,
-          "y": 750
-        }
-      }
-    note: false
+    task:
+      brand: Google Cloud Compute
+      description: Returns the specified network.
+      id: 996a128e-e4a3-4ca0-84af-5b73ba57a825
+      iscommand: true
+      name: Get network
+      script: Google Cloud Compute|||gcp-compute-get-network
+      type: regular
+      version: -1
+    taskid: 996a128e-e4a3-4ca0-84af-5b73ba57a825
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 785,
-        "width": 380,
-        "x": 760,
-        "y": 60
-      }
-    }
-  }
-inputs:
-  - key: zone
-    value:
-      simple: us-east1-b
-    required: false
-    description: ""
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 760,\n    \"y\": 750\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 785,\n      \"width\": 380,\n      \"x\": 760,\n      \"y\": 60\n\
+  \    }\n  }\n}"

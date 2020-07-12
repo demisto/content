@@ -40,8 +40,8 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: Full Incident Enrichment
-  defaultvalue: 'true'
+- defaultvalue: 'true'
+  display: Full Incident Enrichment
   hidden: false
   name: full_enrich
   required: false
@@ -1285,9 +1285,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: ' A comma-separated list of values to add or update in the reference set. Date
-        values must be represented in milliseconds since the Unix Epoch January 1st
-        1970.'
+      description: ' A comma-separated list of values to add or update in the reference
+        set. Date values must be represented in milliseconds since the Unix Epoch
+        January 1st 1970.'
       isArray: true
       name: value
       required: true
@@ -1514,4 +1514,4 @@ script:
   type: python
 tests:
 - test_Qradar
-toversion: 5.4.9
+toversion: 4.1.9

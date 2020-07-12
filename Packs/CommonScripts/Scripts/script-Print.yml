@@ -1,26 +1,22 @@
-commonfields:
-  id: Print
-  version: -1
-name: Print
-script: |
-  return {
-      HumanReadableFormat: formats.markdown,
-      Type: entryTypes.note,
-      Contents: args.value,
-      HumanReadable: args.value
-  };
-type: javascript
-tags:
-- Utility
-comment: Prints text to war room (Markdown supported)
-enabled: true
 args:
-- name: value
-  required: true
-  default: true
+- default: true
   description: The value to print to war room, if you want to print a value stored
     in context, value should be in format ${key}, where key is the name of context
     key
-scripttarget: 0
+  name: value
+  required: true
+comment: Prints text to war room (Markdown supported)
+commonfields:
+  id: Print
+  version: -1
 dependson: {}
+enabled: true
+name: Print
+script: "return {\n    HumanReadableFormat: formats.markdown,\n    Type: entryTypes.note,\n\
+  \    Contents: args.value,\n    HumanReadable: args.value\n};\n"
+scripttarget: 0
+tags:
+- Utility
 timeout: 0s
+toversion: 4.1.9
+type: javascript

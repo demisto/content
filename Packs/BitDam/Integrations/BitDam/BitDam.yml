@@ -1,55 +1,53 @@
+category: Email Gateway
 commonfields:
   id: BitDam
   version: -1
-name: BitDam
-display: BitDam
-category: Email Gateway
+configuration:
+- defaultvalue: https://app.bitdam.com/api/v1.0
+  display: BitDam API URL
+  name: url
+  required: true
+  type: 0
+- defaultvalue: ''
+  display: API Token
+  name: apitoken
+  required: true
+  type: 4
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ''
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: BitDam secure email gateway protects from advanced content-borne threats
   with the most accurate prevention of known and unknown threats, at their source.
-configuration:
-- display: BitDam API URL
-  name: url
-  defaultvalue: https://app.bitdam.com/api/v1.0
-  type: 0
-  required: true
-- display: API Token
-  name: apitoken
-  defaultvalue: ""
-  type: 4
-  required: true
-- display: Trust any certificate (not secure)
-  name: insecure
-  defaultvalue: ""
-  type: 8
-  required: false
-- display: Use system proxy settings
-  name: proxy
-  defaultvalue: ""
-  type: 8
-  required: false
+display: BitDam
+name: BitDam
 script:
-  script: ''
-  type: python
-  subtype: python3
   commands:
-  - name: bitdam-upload-file
-    arguments:
-    - name: entryId
+  - arguments:
+    - description: The file's entry ID from the War Room. Supported files types are
+        doc, dot, docx, docm, dotx, dotm, pdf, rtf, xls, xlt, xlsx, xlsm, xltx, xltm,
+        xlsb, xlam, csv, ppt, pptx, pptm, potx, potm, ppam, ppsx, ppsm and pps.
+      name: entryId
       required: true
-      description: The file's entry ID from the War Room. Supported files types are doc, dot, docx,
-        docm, dotx, dotm, pdf, rtf, xls, xlt, xlsx, xlsm, xltx, xltm, xlsb, xlam,
-        csv, ppt, pptx, pptm, potx, potm, ppam, ppsx, ppsm and pps.
+    description: Uploads a file sample to the BitDam service.
+    name: bitdam-upload-file
     outputs:
     - contextPath: BitDam.FileScan.SHA1
       description: The SHA1 hash of the file.
       type: string
-    description: Uploads a file sample to the BitDam service.
-  - name: bitdam-get-verdict
-    arguments:
-    - name: idValue
-      required: true
-      description: The value of the file's unique identifier (for example - file's
+  - arguments:
+    - description: The value of the file's unique identifier (for example - file's
         SHA1)
+      name: idValue
+      required: true
+    description: Returns the verdict for a scanned file.
+    name: bitdam-get-verdict
     outputs:
     - contextPath: BitDam.Analysis.Status
       description: The status of the analysis. Can be "DONE" or "IN_PROGRESS".
@@ -81,7 +79,10 @@ script:
     - contextPath: File.Malicious.Description
       description: For malicious files, the reason that the vendor made the decision.
       type: string
-    description: Returns the verdict for a scanned file.
   runonce: false
+  script: ''
+  subtype: python3
+  type: python
 tests:
 - Detonate File - BitDam Test
+toversion: 4.1.9

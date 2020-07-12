@@ -1,55 +1,57 @@
-id: Tanium Threat Response - Create Connection
-version: -1
-fromversion: ""
 contentitemfields:
   propagationLabels:
   - all
-name: Tanium Threat Response - Create Connection
 description: Creates a connection to a remote destination from Tanium.
-starttaskid: "0"
+fromversion: ''
+id: Tanium Threat Response - Create Connection
+inputs:
+- description: ''
+  key: connection-id
+  required: true
+  value: {}
+- description: ''
+  key: destination-type
+  required: true
+  value: {}
+- description: ''
+  key: remote
+  required: true
+  value: {}
+- description: ''
+  key: connection-timeout
+  required: false
+  value: {}
+name: Tanium Threat Response - Create Connection
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 5b1da30d-5d25-4a77-8f50-17b0af15ec81
-    type: start
-    task:
-      id: 5b1da30d-5d25-4a77-8f50-17b0af15ec81
-      version: -1
-      name: ""
-      iscommand: false
-      description: ""
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-    skipunavailable: false
-  "1":
-    id: "1"
-    taskid: a3579962-bec9-4e8e-847e-6d1015e66e37
-    type: regular
-    task:
-      id: a3579962-bec9-4e8e-847e-6d1015e66e37
-      version: -1
-      name: Create Connection
-      description: Creates a local or remote connection.
-      script: Tanium Threat Response|||tanium-tr-create-connection
-      type: regular
-      iscommand: true
-      brand: Tanium Threat Response
     nexttasks:
       '#none#':
-      - "2"
+      - '1'
+    note: false
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 5b1da30d-5d25-4a77-8f50-17b0af15ec81
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 5b1da30d-5d25-4a77-8f50-17b0af15ec81
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
     scriptarguments:
       connection-timeout:
         simple: ${inputs.connection-timeout}
@@ -60,117 +62,83 @@ tasks:
       remote:
         simple: ${inputs.remote}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-  "2":
-    id: "2"
-    taskid: 2ec7675d-baf2-49df-840b-edea78b32206
-    type: playbook
     task:
-      id: 2ec7675d-baf2-49df-840b-edea78b32206
+      brand: Tanium Threat Response
+      description: Creates a local or remote connection.
+      id: a3579962-bec9-4e8e-847e-6d1015e66e37
+      iscommand: true
+      name: Create Connection
+      script: Tanium Threat Response|||tanium-tr-create-connection
+      type: regular
       version: -1
-      name: GenericPolling
-      playbookName: GenericPolling
-      type: playbook
+    taskid: a3579962-bec9-4e8e-847e-6d1015e66e37
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
+    loop:
+      exitCondition: ''
       iscommand: false
-      description: ""
-      brand: ""
+      wait: 1
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
     scriptarguments:
       AdditionalPollingCommandArgNames: {}
       AdditionalPollingCommandArgValues: {}
       Ids:
         simple: ${inputs.connection-id}
       Interval:
-        simple: "1"
+        simple: '1'
       PollingCommandArgName:
         simple: connection-name
       PollingCommandName:
         simple: tanium-tr-get-connection-by-name
       Timeout:
-        simple: "10"
+        simple: '10'
       dt:
         simple: Tanium.Connection(val.State != 'active').Name
     separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-  "3":
-    id: "3"
-    taskid: 04183da4-fefd-4739-8fb2-e28034f9907f
-    type: title
     task:
-      id: 04183da4-fefd-4739-8fb2-e28034f9907f
+      brand: ''
+      description: ''
+      id: 2ec7675d-baf2-49df-840b-edea78b32206
+      iscommand: false
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
       version: -1
+    taskid: 2ec7675d-baf2-49df-840b-edea78b32206
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 04183da4-fefd-4739-8fb2-e28034f9907f
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      description: ""
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
+      version: -1
+    taskid: 04183da4-fefd-4739-8fb2-e28034f9907f
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 560,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs:
-- key: connection-id
-  value: {}
-  required: true
-  description: ""
-- key: destination-type
-  value: {}
-  required: true
-  description: ""
-- key: remote
-  value: {}
-  required: true
-  description: ""
-- key: connection-timeout
-  value: {}
-  required: false
-  description: ""
-outputs: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
 tests:
-  - No test
+- No test
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 560,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

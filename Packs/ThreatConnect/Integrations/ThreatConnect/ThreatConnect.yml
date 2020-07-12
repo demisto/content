@@ -2,7 +2,6 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: ThreatConnect
   version: -1
-deprecated: true
 configuration:
 - display: Access ID
   name: accessId
@@ -44,6 +43,7 @@ configuration:
   name: freshness
   required: false
   type: 0
+deprecated: true
 description: Threat intelligence platform.
 display: ThreatConnect
 name: ThreatConnect
@@ -57,19 +57,26 @@ script:
       required: true
       secret: false
     - default: false
-      description: A CSV list of a client's organizations, sources, or communities to which a user has permissions. For example, users with admin permissions can search for indicators belonging to all owners.
+      description: A CSV list of a client's organizations, sources, or communities
+        to which a user has permissions. For example, users with admin permissions
+        can search for indicators belonging to all owners.
       isArray: false
       name: owners
       required: false
       secret: false
     - default: false
-      description: A list of results filtered by indicators whose threat rating is greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious", "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
+      description: A list of results filtered by indicators whose threat rating is
+        greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious",
+        "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
       isArray: false
       name: ratingThreshold
       required: false
       secret: false
     - default: false
-      description: A list of results filtered by indicators whose confidence rating is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed".
+      description: A list of results filtered by indicators whose confidence rating
+        is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited",
+        "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%"
+        - "Probable," or "90-100%" - "Confirmed".
       isArray: false
       name: confidenceThreshold
       required: false
@@ -135,19 +142,26 @@ script:
       required: true
       secret: false
     - default: false
-      description: A CSV list of a client's organizations, sources, or communities to which a client’s API user has been granted permission. For example, "owner1", "owner2", or "owner3".
+      description: "A CSV list of a client's organizations, sources, or communities\
+        \ to which a client\u2019s API user has been granted permission. For example,\
+        \ \"owner1\", \"owner2\", or \"owner3\"."
       isArray: false
       name: owners
       required: false
       secret: false
     - default: false
-      description: A list of results filtered by indicators whose threat rating is greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious", "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
+      description: A list of results filtered by indicators whose threat rating is
+        greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious",
+        "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
       isArray: false
       name: ratingThreshold
       required: false
       secret: false
     - default: false
-      description: A list of results filtered by indicators whose confidence rating is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed".
+      description: A list of results filtered by indicators whose confidence rating
+        is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited",
+        "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%"
+        - "Probable," or "90-100%" - "Confirmed".
       isArray: false
       name: confidenceThreshold
       required: false
@@ -213,19 +227,26 @@ script:
       required: true
       secret: false
     - default: false
-      description: A CSV list of a client's organizations, sources, or communities to which a user has permissions. For example, users with admin permissions can search for indicators belonging to all owners.
+      description: A CSV list of a client's organizations, sources, or communities
+        to which a user has permissions. For example, users with admin permissions
+        can search for indicators belonging to all owners.
       isArray: false
       name: owners
       required: false
       secret: false
     - default: false
-      description: A list of results filtered by indicators whose threat rating is greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious", "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
+      description: A list of results filtered by indicators whose threat rating is
+        greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious",
+        "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
       isArray: false
       name: ratingThreshold
       required: false
       secret: false
     - default: false
-      description: A list of results filtered by indicators whose confidence rating is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed".
+      description: A list of results filtered by indicators whose confidence rating
+        is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited",
+        "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%"
+        - "Probable," or "90-100%" - "Confirmed".
       isArray: false
       name: confidenceThreshold
       required: false
@@ -320,7 +341,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of results that can be returned. The default is 500.
+      description: The maximum number of results that can be returned. The default
+        is 500.
       isArray: false
       name: limit
       required: false
@@ -456,19 +478,25 @@ script:
     name: tc-tag-indicator
   - arguments:
     - default: true
-      description: The name of the indicator by which to search. The command retrieves information from all owners. Can be an IP address, a URL, or a file hash.
+      description: The name of the indicator by which to search. The command retrieves
+        information from all owners. Can be an IP address, a URL, or a file hash.
       isArray: false
       name: indicator
       required: true
       secret: false
     - default: false
-      description: A list of results filtered by indicators whose threat rating is greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious", "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
+      description: A list of results filtered by indicators whose threat rating is
+        greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious",
+        "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
       isArray: false
       name: ratingThreshold
       required: false
       secret: false
     - default: false
-      description: A list of results filtered by indicators whose confidence rating is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed".
+      description: A list of results filtered by indicators whose confidence rating
+        is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited",
+        "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%"
+        - "Probable," or "90-100%" - "Confirmed".
       isArray: false
       name: confidenceThreshold
       required: false
@@ -690,19 +718,23 @@ script:
       required: true
       secret: false
     - default: false
-      description: The threat rating of the indicator. Can be "0" - "Unknown", "1" - "Suspicious", "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
+      description: The threat rating of the indicator. Can be "0" - "Unknown", "1"
+        - "Suspicious", "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
       isArray: false
       name: rating
       required: false
       secret: false
     - default: false
-      description: The confidence rating of the indicator. Can be "0%" - "Unknown," "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed".
+      description: The confidence rating of the indicator. Can be "0%" - "Unknown,"
+        "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%"
+        - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed".
       isArray: false
       name: confidence
       required: false
       secret: false
     - default: false
-      description: The owner of the new indicator. The default is the "defaultOrg" parameter.
+      description: The owner of the new indicator. The default is the "defaultOrg"
+        parameter.
       isArray: false
       name: owner
       required: false
@@ -795,7 +827,8 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The owner of the new incident. The default is the "defaultOrg" parameter.
+      description: The owner of the new incident. The default is the "defaultOrg"
+        parameter.
       isArray: false
       name: owner
       required: false
@@ -807,7 +840,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The creation time of an incident in the "2017-03-21T00:00:00Z" format.
+      description: The creation time of an incident in the "2017-03-21T00:00:00Z"
+        format.
       isArray: false
       name: eventDate
       required: false
@@ -820,7 +854,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The security label applied to the incident. Can be "TLP:RED", "TLP:GREEN", "TLP:AMBER", or "TLP:WHITE".
+      description: The security label applied to the incident. Can be "TLP:RED", "TLP:GREEN",
+        "TLP:AMBER", or "TLP:WHITE".
       isArray: false
       name: securityLabel
       predefined:
@@ -867,7 +902,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The fetched incidents filtered by owner. 
+      description: The fetched incidents filtered by owner.
       isArray: false
       name: owner
       required: false
@@ -895,7 +930,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The type of the indicator. Can be "ADDRESSES", "EMAIL_ADDRESSES", "URLS", "HOSTS", "FILES", or "CUSTOM_INDICATORS".
+      description: The type of the indicator. Can be "ADDRESSES", "EMAIL_ADDRESSES",
+        "URLS", "HOSTS", "FILES", or "CUSTOM_INDICATORS".
       isArray: false
       name: indicatorType
       predefined:
@@ -926,7 +962,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Associates an indicator with an existing incident. The indicator must exist before running this command. To add an indicator, run the tc-add-indicator command.
+    description: Associates an indicator with an existing incident. The indicator
+      must exist before running this command. To add an indicator, run the tc-add-indicator
+      command.
     execution: false
     name: tc-incident-associate-indicator
     outputs:
@@ -1019,19 +1057,26 @@ script:
       required: true
       secret: false
     - default: false
-      description: A CSV list of a client's organizations, sources, or communities to which a user has permissions. For example, users with admin permissions can search for indicators belonging to all owners.
+      description: A CSV list of a client's organizations, sources, or communities
+        to which a user has permissions. For example, users with admin permissions
+        can search for indicators belonging to all owners.
       isArray: false
       name: owners
       required: false
       secret: false
     - default: false
-      description: A list of results filtered by indicators whose threat rating is greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious", "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
+      description: A list of results filtered by indicators whose threat rating is
+        greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious",
+        "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
       isArray: false
       name: ratingThreshold
       required: false
       secret: false
     - default: false
-      description: A list of results filtered by indicators whose confidence rating is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed".
+      description: A list of results filtered by indicators whose confidence rating
+        is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited",
+        "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%"
+        - "Probable," or "90-100%" - "Confirmed".
       isArray: false
       name: confidenceThreshold
       required: false
@@ -1241,14 +1286,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: A CSV list of field:value pairs to update. For example, "rating=3", "confidence=42", and "description=helloWorld".
+      description: A CSV list of field:value pairs to update. For example, "rating=3",
+        "confidence=42", and "description=helloWorld".
       isArray: false
       name: updatedValues
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The updated indicator set as a false positive. Can be "True" or "False".
+      description: The updated indicator set as a false positive. Can be "True" or
+        "False".
       isArray: false
       name: falsePositive
       predefined:
@@ -1264,7 +1311,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The security label applied to the incident. Can be "TLP:RED", "TLP:GREEN", "TLP:AMBER", or "TLP:WHITE".
+      description: The security label applied to the incident. Can be "TLP:RED", "TLP:GREEN",
+        "TLP:AMBER", or "TLP:WHITE".
       isArray: false
       name: securityLabel
       predefined:
@@ -1496,7 +1544,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The owner of the new incident. The default is the "defaultOrg" parameter.
+      description: The owner of the new incident. The default is the "defaultOrg"
+        parameter.
       isArray: false
       name: owner
       required: false
@@ -1550,14 +1599,16 @@ script:
       required: true
       secret: false
     - default: false
-      description: The date on which the event occurred. If the date is not specified, the current date is used.
+      description: The date on which the event occurred. If the date is not specified,
+        the current date is used.
       isArray: false
       name: eventDate
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The status of the event. Can be "Needs Review", "False Positive", "No Further Action", or "Escalated".
+      description: The status of the event. Can be "Needs Review", "False Positive",
+        "No Further Action", or "Escalated".
       isArray: false
       name: status
       predefined:
@@ -1635,7 +1686,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The type of the group to delete. Can be "Incidents", "Events", "Campaigns", or "Threats".
+      description: The type of the group to delete. Can be "Incidents", "Events",
+        "Campaigns", or "Threats".
       isArray: false
       name: type
       predefined:
@@ -1651,13 +1703,15 @@ script:
     name: tc-delete-group
   - arguments:
     - default: false
-      description: The ID of the group to which to add attributes. To get the ID of the group, run the tc-get-groups command.
+      description: The ID of the group to which to add attributes. To get the ID of
+        the group, run the tc-get-groups command.
       isArray: false
       name: group_id
       required: true
       secret: false
     - default: false
-      description: The type of attribute to add to the group. The type is located in the UI in a specific group or under Org Config.
+      description: The type of attribute to add to the group. The type is located
+        in the UI in a specific group or under Org Config.
       isArray: false
       name: attribute_type
       required: true
@@ -1670,7 +1724,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The type of the group. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
+      description: The type of the group. Can be "adversaries", "campaigns", "documents",
+        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
+        or "threats".
       isArray: false
       name: group_type
       predefined:
@@ -1729,7 +1785,9 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The type of the group. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
+      description: The type of the group. Can be "adversaries", "campaigns", "documents",
+        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
+        or "threats".
       isArray: false
       name: group_type
       predefined:
@@ -1770,14 +1828,17 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: The ID of the group to which to add the security label. To get the ID, run the tc-get-groups command.
+      description: The ID of the group to which to add the security label. To get
+        the ID, run the tc-get-groups command.
       isArray: false
       name: group_id
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The type of the group to which to add the security label. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
+      description: The type of the group to which to add the security label. Can be
+        "adversaries", "campaigns", "documents", "emails", "events", "incidents",
+        "intrusionSets", "reports", "signatures", or "threats".
       isArray: false
       name: group_type
       predefined:
@@ -1794,7 +1855,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The name of the security label to add to the group. For example, "TLP:GREEN".
+      description: The name of the security label to add to the group. For example,
+        "TLP:GREEN".
       isArray: false
       name: security_label_name
       required: true
@@ -1805,14 +1867,17 @@ script:
     name: tc-add-group-security-label
   - arguments:
     - default: false
-      description: The ID of the group to which to add the tag. To get the ID, run the tc-get-groups command.
+      description: The ID of the group to which to add the tag. To get the ID, run
+        the tc-get-groups command.
       isArray: false
       name: group_id
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The type of the group to which to add the tag. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
+      description: The type of the group to which to add the tag. Can be "adversaries",
+        "campaigns", "documents", "emails", "events", "incidents", "intrusionSets",
+        "reports", "signatures", or "threats".
       isArray: false
       name: group_type
       predefined:
@@ -1850,7 +1915,8 @@ script:
       description: The entity of the API.
       type: String
     - contextPath: TC.IndicatorType.CasePreference
-      description: The case preference of the indicator. For example, "sensitive", "upper", or "lower".
+      description: The case preference of the indicator. For example, "sensitive",
+        "upper", or "lower".
       type: String
     - contextPath: TC.IndicatorType.Custom
       description: Whether the indicator is a custom indicator.
@@ -1866,20 +1932,25 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The type of the indicator. To get the available types, run the tc-get-indicator-types command. The indicator must be spelled as displayed in the ApiBranch column of the UI.
+      description: The type of the indicator. To get the available types, run the
+        tc-get-indicator-types command. The indicator must be spelled as displayed
+        in the ApiBranch column of the UI.
       isArray: false
       name: indicator_type
       required: true
       secret: false
     - default: false
-      description: The name of the indicator. For example, "indicator_type=emailAddresses" where "indicator=a@a.co.il".        
+      description: The name of the indicator. For example, "indicator_type=emailAddresses"
+        where "indicator=a@a.co.il".
       isArray: false
       name: indicator
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The type of the group. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
+      description: The type of the group. Can be "adversaries", "campaigns", "documents",
+        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
+        or "threats".
       isArray: false
       name: group_type
       predefined:
@@ -1896,7 +1967,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the group. To get the ID of the group, run the tc-get-groups command.
+      description: The ID of the group. To get the ID of the group, run the tc-get-groups
+        command.
       isArray: false
       name: group_id
       required: true
@@ -1933,7 +2005,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether the file is malware. If "true", ThreatConnect creates a password-protected ZIP file on your local machine that contains the sample and uploads the ZIP file.
+      description: Whether the file is malware. If "true", ThreatConnect creates a
+        password-protected ZIP file on your local machine that contains the sample
+        and uploads the ZIP file.
       isArray: false
       name: malware
       predefined:
@@ -1991,8 +2065,9 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The type of group for which to return the ID. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
-        or "threats".
+      description: The type of group for which to return the ID. Can be "adversaries",
+        "campaigns", "documents", "emails", "events", "incidents", "intrusionSets",
+        "reports", "signatures", or "threats".
       isArray: false
       name: group_type
       predefined:
@@ -2009,7 +2084,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the group to retrieve. To get the ID, run the tc-get-groups command.
+      description: The ID of the group to retrieve. To get the ID, run the tc-get-groups
+        command.
       isArray: false
       name: group_id
       required: true
@@ -2043,7 +2119,9 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The type of group for which to return the attribute. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
+      description: The type of group for which to return the attribute. Can be "adversaries",
+        "campaigns", "documents", "emails", "events", "incidents", "intrusionSets",
+        "reports", "signatures", or "threats".
       isArray: false
       name: group_type
       predefined:
@@ -2060,7 +2138,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the group for which to return the attribute. To get the ID, run the tc-get-groups command.
+      description: The ID of the group for which to return the attribute. To get the
+        ID, run the tc-get-groups command.
       isArray: false
       name: group_id
       required: true
@@ -2091,7 +2170,9 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The type of group for which to return the security labels. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
+      description: The type of group for which to return the security labels. Can
+        be "adversaries", "campaigns", "documents", "emails", "events", "incidents",
+        "intrusionSets", "reports", "signatures", or "threats".
       isArray: false
       name: group_type
       predefined:
@@ -2108,7 +2189,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the group for which to return the security labels. To get the ID, run the tc-get-groups command.
+      description: The ID of the group for which to return the security labels. To
+        get the ID, run the tc-get-groups command.
       isArray: false
       name: group_id
       required: true
@@ -2130,7 +2212,9 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The type of group for which to return the tags. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
+      description: The type of group for which to return the tags. Can be "adversaries",
+        "campaigns", "documents", "emails", "events", "incidents", "intrusionSets",
+        "reports", "signatures", or "threats".
       isArray: false
       name: group_type
       predefined:
@@ -2147,7 +2231,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the group for which to return the tags. To get the ID, run the tc-get-groups command.
+      description: The ID of the group for which to return the tags. To get the ID,
+        run the tc-get-groups command.
       isArray: false
       name: group_id
       required: true
@@ -2201,11 +2286,13 @@ script:
       type: String
     - contextPath: File.Extension
       description: The extension of the file.
-      type: String  
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The type of the group for which to return the indicators. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
+      description: The type of the group for which to return the indicators. Can be
+        "adversaries", "campaigns", "documents", "emails", "events", "incidents",
+        "intrusionSets", "reports", "signatures", or "threats".
       isArray: false
       name: group_type
       predefined:
@@ -2222,7 +2309,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the group for which to return the indicators. To get the ID, run the tc-get-groups command.
+      description: The ID of the group for which to return the indicators. To get
+        the ID, run the tc-get-groups command.
       isArray: false
       name: group_id
       required: true
@@ -2262,7 +2350,9 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The type of group. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
+      description: The type of group. Can be "adversaries", "campaigns", "documents",
+        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
+        or "threats".
       isArray: false
       name: group_type
       predefined:
@@ -2307,7 +2397,9 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The type of the group. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
+      description: The type of the group. Can be "adversaries", "campaigns", "documents",
+        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
+        or "threats".
       isArray: false
       name: group_type
       predefined:
@@ -2324,14 +2416,17 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the group. To get the ID of the group, run the tc-get-groups command.
+      description: The ID of the group. To get the ID of the group, run the tc-get-groups
+        command.
       isArray: false
       name: group_id
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The type of group to associate. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
+      description: The type of group to associate. Can be "adversaries", "campaigns",
+        "documents", "emails", "events", "incidents", "intrusionSets", "reports",
+        "signatures", or "threats".
       isArray: false
       name: associated_group_type
       predefined:
@@ -2370,12 +2465,13 @@ script:
     - contextPath: TC.Group.AssociatedGroup.GroupType
       description: The type of the group to associate to.
       type: String
-  dockerimage45: demisto/threatconnect-sdk
   dockerimage: demisto/threatconnect-sdk:1.0.0.7659
+  dockerimage45: demisto/threatconnect-sdk
   isfetch: false
   runonce: false
   script: '-'
-  type: python
   subtype: python2
+  type: python
 tests:
 - No tests - deprecated
+toversion: 4.1.9

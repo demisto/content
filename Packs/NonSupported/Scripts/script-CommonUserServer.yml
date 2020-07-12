@@ -1,14 +1,15 @@
+comment: Common user defined code that will be merged into each server script when
+  it runs
 commonfields:
   id: CommonUserServer
   version: -1
+dependson: {}
 name: CommonUserServer
-script: ""
-type: javascript
+script: ''
+scripttarget: 0
 tags:
 - infra
 - server
-comment: Common user defined code that will be merged into each server script when
-  it runs
-scripttarget: 0
-dependson: {}
 timeout: 0s
+toversion: 4.1.9
+type: javascript

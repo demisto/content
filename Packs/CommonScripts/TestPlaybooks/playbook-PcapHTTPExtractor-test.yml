@@ -1,81 +1,62 @@
 id: PcapHTTPExtractor-Test
-version: -1
+inputs: []
 name: PcapHTTPExtractor-Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 3114633f-b249-4b43-8a38-c264f4404f0c
-    type: start
-    task:
-      id: 3114633f-b249-4b43-8a38-c264f4404f0c
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: d41de1b4-8599-4fc7-813f-a089dac694a0
-    type: regular
-    task:
-      id: d41de1b4-8599-4fc7-813f-a089dac694a0
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 3114633f-b249-4b43-8a38-c264f4404f0c
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 3114633f-b249-4b43-8a38-c264f4404f0c
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 2a2daa67-b1f4-4a61-853e-b8d9eda9a717
-    type: regular
     task:
-      id: 2a2daa67-b1f4-4a61-853e-b8d9eda9a717
-      version: -1
-      name: Get Remote File
-      scriptName: http
-      type: regular
+      brand: ''
+      description: Delete field from context
+      id: d41de1b4-8599-4fc7-813f-a089dac694a0
       iscommand: false
-      brand: ""
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: d41de1b4-8599-4fc7-813f-a089dac694a0
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
     scriptarguments:
       body: {}
       filename: {}
@@ -86,39 +67,31 @@ tasks:
       password: {}
       proxy: {}
       saveAsFile:
-        simple: "yes"
+        simple: 'yes'
       unsecure: {}
       url:
         simple: https://github.com/demisto/content/raw/master/TestData/TestPcapPost.pcap
       username: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: 6529ce01-dc41-45fd-8c5c-fcacd64511d6
-    type: regular
     task:
-      id: 6529ce01-dc41-45fd-8c5c-fcacd64511d6
-      version: -1
-      name: PcapHTTPExtractor
-      description: Allows to parse and extract http flows (requests & responses) from
-        a pcap/pcapng file.
-      scriptName: PcapHTTPExtractor
-      type: regular
+      brand: ''
+      id: 2a2daa67-b1f4-4a61-853e-b8d9eda9a717
       iscommand: false
-      brand: ""
+      name: Get Remote File
+      scriptName: http
+      type: regular
+      version: -1
+    taskid: 2a2daa67-b1f4-4a61-853e-b8d9eda9a717
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
+    note: false
     scriptarguments:
       allowedContentTypes: {}
       entryID:
@@ -128,121 +101,98 @@ tasks:
       pcapFileName: {}
       start: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: ed40037b-4aef-4c70-86fd-a075c698f446
-    type: condition
     task:
-      id: ed40037b-4aef-4c70-86fd-a075c698f446
-      version: -1
-      name: IsResultContextCorrect
-      scriptName: AreValuesEqual
-      type: condition
+      brand: ''
+      description: Allows to parse and extract http flows (requests & responses) from
+        a pcap/pcapng file.
+      id: 6529ce01-dc41-45fd-8c5c-fcacd64511d6
       iscommand: false
-      brand: ""
+      name: PcapHTTPExtractor
+      scriptName: PcapHTTPExtractor
+      type: regular
+      version: -1
+    taskid: 6529ce01-dc41-45fd-8c5c-fcacd64511d6
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
     nexttasks:
-      "yes":
-      - "7"
+      'yes':
+      - '7'
+    note: false
+    results:
+    - AreValuesEqual
     scriptarguments:
       left:
         complex:
-          root: PcapHTTPFlows
           accessor: '[1].Response.HttpDate'
+          root: PcapHTTPFlows
           transformers:
           - operator: trim
       right:
-        simple: 2019-01-14T11:20:42
-    results:
-    - AreValuesEqual
+        simple: 2019-01-14 11:20:42
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 6de92bf4-0e70-4a90-8b2c-b10f64563ca6
-    type: title
     task:
-      id: 6de92bf4-0e70-4a90-8b2c-b10f64563ca6
-      version: -1
-      name: All Good
-      type: title
+      brand: ''
+      id: ed40037b-4aef-4c70-86fd-a075c698f446
       iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -170,
-          "y": 1120
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "7":
-    id: "7"
-    taskid: 4a757e07-a8d7-4b5e-859d-9e1331160a60
-    type: condition
-    task:
-      id: 4a757e07-a8d7-4b5e-859d-9e1331160a60
-      version: -1
       name: IsResultContextCorrect
       scriptName: AreValuesEqual
       type: condition
+      version: -1
+    taskid: ed40037b-4aef-4c70-86fd-a075c698f446
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 6de92bf4-0e70-4a90-8b2c-b10f64563ca6
       iscommand: false
-      brand: ""
+      name: All Good
+      type: title
+      version: -1
+    taskid: 6de92bf4-0e70-4a90-8b2c-b10f64563ca6
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": -170,\n    \"y\": 1120\n  }\n}"
+  '7':
+    id: '7'
+    ignoreworker: false
     nexttasks:
-      "yes":
-      - "6"
+      'yes':
+      - '6'
+    note: false
+    results:
+    - AreValuesEqual
     scriptarguments:
       left:
         complex:
-          root: PcapHTTPFlows
           accessor: '[0].Request.ResultIndex'
+          root: PcapHTTPFlows
       right:
-        simple: "6"
-    results:
-    - AreValuesEqual
+        simple: '6'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -50,
-          "y": 910
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      id: 4a757e07-a8d7-4b5e-859d-9e1331160a60
+      iscommand: false
+      name: IsResultContextCorrect
+      scriptName: AreValuesEqual
+      type: condition
+      version: -1
+    taskid: 4a757e07-a8d7-4b5e-859d-9e1331160a60
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1135,
-        "width": 600,
-        "x": -170,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": -50,\n    \"y\": 910\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1135,\n      \"width\": 600,\n      \"x\": -170,\n      \"y\"\
+  : 50\n    }\n  }\n}"

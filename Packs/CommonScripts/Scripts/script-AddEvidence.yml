@@ -1,62 +1,45 @@
+args:
+- default: true
+  defaultValue: ${lastCompletedTaskEntries}
+  description: Entry IDs to add its output to Evidence Board
+  name: entryIDs
+  required: true
+- deprecated: true
+  description: Description to add to Evidence Board
+  name: desc
+- description: Description to add to Evidence Board
+  name: description
+- description: 'Occurred time of the evidence (time format: 2008-01-02T15:04:05)'
+  name: occurred
+- description: Evidence tags
+  name: tags
+comment: 'Adds provided entries to the incident Evidence Board. In playbook, can be
+  positioned after a task to add the previous task''s entries to Evidence Board automatically
+  (with no need to provide arguments)
+
+  '
 commonfields:
   id: AddEvidence
   version: -1
-name: AddEvidence
+enabled: true
 fromversion: 2.5.0
-script: |-
-  if (!args.entryIDs) {
-      throw 'Missing argument values for command AddEvidenceJS are : entryIDs';
-  }
-  var entryIDs = args.entryIDs;
-  var entryTags = args.tags;
-  var desc = (args.description) ? args.description : args.desc ? args.desc : 'Evidence added by DBot';
-  entryIDs = (Array.isArray(entryIDs)) ? entryIDs : [entryIDs];
-  entryTags = (Array.isArray(entryTags)) ? entryTags.join(',') : entryTags;
-
-  for (var i=0;i<entryIDs.length;i++) {
-      var entryID = entryIDs[i];
-      entries = executeCommand('getEntry', {'id': entryID});
-      if (isValidRes(entries)) {
-          for (var j=0;j<entries.length;j++){
-              var ent=entries[j];
-              var obj = { 'id': entryID, 'description': desc};
-              if (args.occurred) {
-                obj.when = args.occurred;
-              }
-              if (entryTags) {
-                obj.tags = entryTags;
-              }
-              var res = executeCommand('markAsEvidence', obj);
-              if (!isValidRes(res)) {
-                  return res;
-              }
-          }
-      } else {
-          return entries;
-      }
-
-  }
-
-  return "Entry ID " + entryIDs + " added to evidence";
-type: javascript
+name: AddEvidence
+script: "if (!args.entryIDs) {\n    throw 'Missing argument values for command AddEvidenceJS\
+  \ are : entryIDs';\n}\nvar entryIDs = args.entryIDs;\nvar entryTags = args.tags;\n\
+  var desc = (args.description) ? args.description : args.desc ? args.desc : 'Evidence\
+  \ added by DBot';\nentryIDs = (Array.isArray(entryIDs)) ? entryIDs : [entryIDs];\n\
+  entryTags = (Array.isArray(entryTags)) ? entryTags.join(',') : entryTags;\n\nfor\
+  \ (var i=0;i<entryIDs.length;i++) {\n    var entryID = entryIDs[i];\n    entries\
+  \ = executeCommand('getEntry', {'id': entryID});\n    if (isValidRes(entries)) {\n\
+  \        for (var j=0;j<entries.length;j++){\n            var ent=entries[j];\n\
+  \            var obj = { 'id': entryID, 'description': desc};\n            if (args.occurred)\
+  \ {\n              obj.when = args.occurred;\n            }\n            if (entryTags)\
+  \ {\n              obj.tags = entryTags;\n            }\n            var res = executeCommand('markAsEvidence',\
+  \ obj);\n            if (!isValidRes(res)) {\n                return res;\n    \
+  \        }\n        }\n    } else {\n        return entries;\n    }\n\n}\n\nreturn\
+  \ \"Entry ID \" + entryIDs + \" added to evidence\";"
+scripttarget: 0
 tags:
 - Utility
-comment: |
-  Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
-enabled: true
-args:
-- name: entryIDs
-  description: Entry IDs to add its output to Evidence Board
-  defaultValue: ${lastCompletedTaskEntries}
-  required: true
-  default: true
-- name: desc
-  description: Description to add to Evidence Board
-  deprecated: true
-- name: description
-  description: Description to add to Evidence Board
-- name: occurred
-  description: "Occurred time of the evidence (time format: 2008-01-02T15:04:05)"
-- name: tags
-  description: Evidence tags
-scripttarget: 0
+toversion: 4.1.9
+type: javascript

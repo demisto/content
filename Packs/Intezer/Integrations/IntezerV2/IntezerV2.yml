@@ -124,7 +124,8 @@ script:
   isfetch: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 tests:
-  - Intezer Testing v2
+- Intezer Testing v2
+toversion: 4.1.9

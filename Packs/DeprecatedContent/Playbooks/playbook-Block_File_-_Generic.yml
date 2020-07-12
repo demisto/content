@@ -1,106 +1,14 @@
-id: block_file_-_generic
-version: -1
-name: Block File - Generic
-fromversion: 4.0.0
 description: A generic playbook for blocking files from running on endpoints. This
   playbook currently supports Carbon Black Enterprise Response.
-starttaskid: "0"
-tasks:
-  "0":
-    id: "0"
-    taskid: 49ac9316-5f77-48f9-8d21-9f05c335c2e4
-    type: start
-    task:
-      id: 49ac9316-5f77-48f9-8d21-9f05c335c2e4
-      version: -1
-      name: ""
-      description: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
-    note: false
-  "2":
-    id: "2"
-    taskid: e3fbf02a-78a1-4329-837e-a6116bcf92af
-    type: playbook
-    task:
-      id: e3fbf02a-78a1-4329-837e-a6116bcf92af
-      version: -1
-      name: Block File - Carbon Black Response
-      description: ""
-      playbookName: Block File - Carbon Black Response
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      MD5:
-        complex:
-          root: inputs.MD5
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 200
-        }
-      }
-    note: false
-  "3":
-    id: "3"
-    taskid: fceba42b-c11f-4521-8b0a-f86d410adc0e
-    type: title
-    task:
-      id: fceba42b-c11f-4521-8b0a-f86d410adc0e
-      version: -1
-      name: Done
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 370
-        }
-      }
-    note: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 385,
-        "width": 380,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
+fromversion: 4.0.0
+id: block_file_-_generic
 inputs:
-- key: MD5
+- description: The MD5 hash of the file you want to block.
+  key: MD5
+  required: false
   value:
     simple: ${File.MD5}
-  required: false
-  description: The MD5 hash of the file you want to block.
+name: Block File - Generic
 outputs:
 - contextPath: CbResponse.BlockedHashes.LastBlock.Time
   description: Last block time
@@ -108,5 +16,71 @@ outputs:
   description: Last block hostname
 - contextPath: CbResponse.BlockedHashes.LastBlock.CbSensorID
   description: Last block sensor ID
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 49ac9316-5f77-48f9-8d21-9f05c335c2e4
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 49ac9316-5f77-48f9-8d21-9f05c335c2e4
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '2':
+    id: '2'
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    scriptarguments:
+      MD5:
+        complex:
+          root: inputs.MD5
+    separatecontext: true
+    task:
+      brand: ''
+      description: ''
+      id: e3fbf02a-78a1-4329-837e-a6116bcf92af
+      iscommand: false
+      name: Block File - Carbon Black Response
+      playbookName: Block File - Carbon Black Response
+      type: playbook
+      version: -1
+    taskid: e3fbf02a-78a1-4329-837e-a6116bcf92af
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 200\n  }\n}"
+  '3':
+    id: '3'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: fceba42b-c11f-4521-8b0a-f86d410adc0e
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: fceba42b-c11f-4521-8b0a-f86d410adc0e
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 370\n  }\n}"
 tests:
-  - block_indicators_-_generic_-_test
+- block_indicators_-_generic_-_test
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 385,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n\
+  \    }\n  }\n}"

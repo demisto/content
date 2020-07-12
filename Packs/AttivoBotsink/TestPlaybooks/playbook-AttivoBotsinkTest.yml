@@ -1,239 +1,222 @@
 id: AttivoBotsinkTest
-version: -1
+inputs: []
 name: AttivoBotsinkTest
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: cfd4d0b9-6b0d-4a78-863d-74dc94c72e42
-    type: start
-    task:
-      id: cfd4d0b9-6b0d-4a78-863d-74dc94c72e42
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "4"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 50
-        }
-      }
+      - '4'
     note: false
-    timertriggers: []
-  "2":
-    id: "2"
-    taskid: 949c7441-1a74-454b-82cb-da8ac3af924c
-    type: regular
+    separatecontext: false
     task:
-      id: 949c7441-1a74-454b-82cb-da8ac3af924c
+      brand: ''
+      id: cfd4d0b9-6b0d-4a78-863d-74dc94c72e42
+      iscommand: false
+      name: ''
       version: -1
+    taskid: cfd4d0b9-6b0d-4a78-863d-74dc94c72e42
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 50\n  }\n}"
+  '10':
+    id: '10'
+    nexttasks:
+      '#none#':
+      - '11'
+    note: false
+    scriptarguments:
+      decoy_number:
+        simple: '3'
+      vulnerable_ip:
+        simple: 10.128.123.2
+    separatecontext: false
+    task:
+      brand: ''
+      id: 46625bf4-6dcf-4c37-8ffd-2012cad8d545
+      iscommand: true
+      name: Deploy Decoy
+      script: '|||attivo-deploy-decoy'
+      type: regular
+      version: -1
+    taskid: 46625bf4-6dcf-4c37-8ffd-2012cad8d545
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 720\n  }\n}"
+  '11':
+    id: '11'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 5f098233-9976-4834-876f-db81e27d0c43
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 5f098233-9976-4834-876f-db81e27d0c43
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 895\n  }\n}"
+  '2':
+    id: '2'
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 949c7441-1a74-454b-82cb-da8ac3af924c
+      iscommand: true
       name: List Hosts
       script: '|||attivo-list-hosts'
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: 949c7441-1a74-454b-82cb-da8ac3af924c
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 370\n  }\n}"
+  '3':
+    id: '3'
     nexttasks:
       '#none#':
-      - "6"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 370
-        }
-      }
+      - '5'
     note: false
-    timertriggers: []
-  "3":
-    id: "3"
-    taskid: 015fa150-c713-4361-8673-8e0edafa2b66
-    type: regular
+    separatecontext: false
     task:
+      brand: ''
       id: 015fa150-c713-4361-8673-8e0edafa2b66
-      version: -1
+      iscommand: true
       name: List Users
       script: '|||attivo-list-users'
       type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-  "4":
-    id: "4"
-    taskid: 8a41be94-78ba-4214-8523-a63e90954b53
-    type: regular
-    task:
-      id: 8a41be94-78ba-4214-8523-a63e90954b53
       version: -1
-      name: Start Clean
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: 015fa150-c713-4361-8673-8e0edafa2b66
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '4':
+    id: '4'
     nexttasks:
       '#none#':
-      - "2"
-      - "3"
-      - "7"
-      - "9"
+      - '2'
+      - '3'
+      - '7'
+      - '9'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-  "5":
-    id: "5"
-    taskid: d0fa026e-22ee-4010-8185-799cbee5e5e8
-    type: regular
     task:
-      id: d0fa026e-22ee-4010-8185-799cbee5e5e8
-      version: -1
-      name: Check User
-      script: '|||attivo-check-user'
+      brand: ''
+      id: 8a41be94-78ba-4214-8523-a63e90954b53
+      iscommand: false
+      name: Start Clean
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: 8a41be94-78ba-4214-8523-a63e90954b53
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 195\n  }\n}"
+  '5':
+    id: '5'
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
+    note: false
     scriptarguments:
       user:
         simple: a-user-l-ftp-0
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-  "6":
-    id: "6"
-    taskid: 2ab0afe6-62ae-4063-8b54-d52fc448fa47
-    type: regular
     task:
-      id: 2ab0afe6-62ae-4063-8b54-d52fc448fa47
-      version: -1
-      name: Check Host
-      script: '|||attivo-check-host'
-      type: regular
+      brand: ''
+      id: d0fa026e-22ee-4010-8185-799cbee5e5e8
       iscommand: true
-      brand: ""
+      name: Check User
+      script: '|||attivo-check-user'
+      type: regular
+      version: -1
+    taskid: d0fa026e-22ee-4010-8185-799cbee5e5e8
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '6':
+    id: '6'
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
+    note: false
     scriptarguments:
       host:
         simple: linuxserver
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-  "7":
-    id: "7"
-    taskid: 70eb8576-e01f-4615-8227-5524234f90a5
-    type: regular
     task:
-      id: 70eb8576-e01f-4615-8227-5524234f90a5
+      brand: ''
+      id: 2ab0afe6-62ae-4063-8b54-d52fc448fa47
+      iscommand: true
+      name: Check Host
+      script: '|||attivo-check-host'
+      type: regular
       version: -1
+    taskid: 2ab0afe6-62ae-4063-8b54-d52fc448fa47
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 545\n  }\n}"
+  '7':
+    id: '7'
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 70eb8576-e01f-4615-8227-5524234f90a5
+      iscommand: true
       name: List Playbooks
       script: '|||attivo-list-playbooks'
       type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-  "8":
-    id: "8"
-    taskid: 4001ff17-9fd2-4895-8007-5462ffd6b17c
-    type: regular
-    task:
-      id: 4001ff17-9fd2-4895-8007-5462ffd6b17c
       version: -1
-      name: Run Playbook
-      script: '|||attivo-run-playbook'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: 70eb8576-e01f-4615-8227-5524234f90a5
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 545\n  }\n}"
+  '8':
+    id: '8'
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
+    note: false
     scriptarguments:
       attacker_ip:
         simple: CentOS70
       playbook_name:
         simple: Default PlayBook
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-  "9":
-    id: "9"
-    taskid: adb6eae4-67a7-4f63-8ff6-82cf24233293
-    type: regular
     task:
-      id: adb6eae4-67a7-4f63-8ff6-82cf24233293
-      version: -1
-      name: List Events
-      script: '|||attivo-get-events'
-      type: regular
+      brand: ''
+      id: 4001ff17-9fd2-4895-8007-5462ffd6b17c
       iscommand: true
-      brand: ""
+      name: Run Playbook
+      script: '|||attivo-run-playbook'
+      type: regular
+      version: -1
+    taskid: 4001ff17-9fd2-4895-8007-5462ffd6b17c
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 720\n  }\n}"
+  '9':
+    id: '9'
+    note: false
     scriptarguments:
       alerts_end_date: {}
       alerts_start_date: {}
@@ -242,77 +225,20 @@ tasks:
       severity:
         simple: High
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-  "10":
-    id: "10"
-    taskid: 46625bf4-6dcf-4c37-8ffd-2012cad8d545
-    type: regular
     task:
-      id: 46625bf4-6dcf-4c37-8ffd-2012cad8d545
-      version: -1
-      name: Deploy Decoy
-      script: '|||attivo-deploy-decoy'
-      type: regular
+      brand: ''
+      id: adb6eae4-67a7-4f63-8ff6-82cf24233293
       iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      decoy_number:
-        simple: "3"
-      vulnerable_ip:
-        simple: 10.128.123.2
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-  "11":
-    id: "11"
-    taskid: 5f098233-9976-4834-876f-db81e27d0c43
-    type: title
-    task:
-      id: 5f098233-9976-4834-876f-db81e27d0c43
+      name: List Events
+      script: '|||attivo-get-events'
+      type: regular
       version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 895
-        }
-      }
-    note: false
+    taskid: adb6eae4-67a7-4f63-8ff6-82cf24233293
     timertriggers: []
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 910,
-        "width": 1670,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1340,\n    \"y\": 545\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 910,\n      \"width\": 1670,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

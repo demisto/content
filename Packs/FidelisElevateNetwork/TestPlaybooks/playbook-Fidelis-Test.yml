@@ -1,527 +1,215 @@
 id: Fidelis-Test
-version: -1
+inputs: []
 name: Fidelis-Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: e0426a07-bf37-4db5-879c-50caf94ea561
-    type: start
-    task:
-      id: e0426a07-bf37-4db5-879c-50caf94ea561
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: a35443ca-e509-48c1-80f0-c38f421523ff
-    type: regular
-    task:
-      id: a35443ca-e509-48c1-80f0-c38f421523ff
-      version: -1
-      name: Start Clean
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
-      - "2"
-      - "11"
-      - "14"
-      - "17"
-      - "19"
-      - "21"
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: e0426a07-bf37-4db5-879c-50caf94ea561
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: e0426a07-bf37-4db5-879c-50caf94ea561
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+      - '11'
+      - '14'
+      - '17'
+      - '19'
+      - '21'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 01e91474-b487-4ccd-881d-f1b278a0111d
-    type: regular
     task:
-      id: 01e91474-b487-4ccd-881d-f1b278a0111d
-      version: -1
-      name: Get Alarms
-      script: '|||fidelis-list-alerts'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      end_time: {}
-      ioc: {}
-      severity: {}
-      start_time: {}
-      threat_score: {}
-      time_frame:
-        simple: Last 30 Days
-      type: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 152.5,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: ce05f87b-3a61-4cb6-8c8e-46f5ca75c0bf
-    type: regular
-    task:
-      id: ce05f87b-3a61-4cb6-8c8e-46f5ca75c0bf
-      version: -1
-      name: Get Alarms - custom time frame
-      script: '|||fidelis-list-alerts'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      end_time:
-        simple: 2019-01-11T09:50:48Z
-      ioc: {}
-      severity: {}
-      start_time:
-        simple: 2019-01-09T07:50:48Z
-      threat_score: {}
-      time_frame:
-        simple: Custom
-      type: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 152.5,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 1d62d0b8-ab8e-40c2-87a2-d0149c2c79f4
-    type: condition
-    task:
-      id: 1d62d0b8-ab8e-40c2-87a2-d0149c2c79f4
-      version: -1
-      name: Check Get Alerts
-      type: condition
+      brand: ''
+      id: a35443ca-e509-48c1-80f0-c38f421523ff
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "8"
-      "yes":
-      - "6"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: Fidelis.Alert.ID
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 152.5,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 319ba3c0-308e-4d59-8046-83754d75b559
-    type: regular
-    task:
-      id: 319ba3c0-308e-4d59-8046-83754d75b559
-      version: -1
-      name: Error
-      scriptName: PrintErrorEntry
+      name: Start Clean
+      scriptName: DeleteContext
       type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: Test condition was not satisfied.
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 8f0a405e-ce0d-46b1-824d-6c40bc41ed1b
-    type: regular
-    task:
-      id: 8f0a405e-ce0d-46b1-824d-6c40bc41ed1b
       version: -1
-      name: Get Specific Alert
-      script: '|||fidelis-get-alert'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: a35443ca-e509-48c1-80f0-c38f421523ff
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 195\n  }\n}"
+  '10':
+    id: '10'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "7"
+      - '8'
+    note: false
     scriptarguments:
       alert_id:
         complex:
-          root: Fidelis
           accessor: Alert.ID
+          root: Fidelis
           transformers:
           - operator: GetFirstObject
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "7":
-    id: "7"
-    taskid: eaebd696-4811-45be-8df0-253d6ae2add3
-    type: condition
     task:
-      id: eaebd696-4811-45be-8df0-253d6ae2add3
-      version: -1
-      name: Check Get Alert
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "9"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: Fidelis.Alert.Protocol
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "8":
-    id: "8"
-    taskid: 404d618c-60de-46eb-8f56-913a5bc7ee67
-    type: title
-    task:
-      id: 404d618c-60de-46eb-8f56-913a5bc7ee67
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 500,
-          "y": 1610
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "9":
-    id: "9"
-    taskid: 822bd57e-01c8-4ba5-8fbb-9d0c85fd85ee
-    type: regular
-    task:
-      id: 822bd57e-01c8-4ba5-8fbb-9d0c85fd85ee
-      version: -1
-      name: Get Alert report
-      script: '|||fidelis-get-alert-report'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      alert_id:
-        complex:
-          root: Fidelis
-          accessor: Alert.ID
-          transformers:
-          - operator: GetFirstObject
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 500,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "10":
-    id: "10"
-    taskid: 928c8519-b99b-4ac4-83e6-2f900bc6403b
-    type: regular
-    task:
+      brand: ''
       id: 928c8519-b99b-4ac4-83e6-2f900bc6403b
-      version: -1
+      iscommand: true
       name: Get Malware Data
       script: '|||fidelis-get-malware-data'
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: 928c8519-b99b-4ac4-83e6-2f900bc6403b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 500,\n    \"y\": 1420\n  }\n}"
+  '11':
+    id: '11'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "8"
-    scriptarguments:
-      alert_id:
-        complex:
-          root: Fidelis
-          accessor: Alert.ID
-          transformers:
-          - operator: GetFirstObject
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 500,
-          "y": 1420
-        }
-      }
+      - '12'
     note: false
-    timertriggers: []
-    ignoreworker: false
-  "11":
-    id: "11"
-    taskid: e584fa02-2a13-46de-826b-a51a65dc2bfa
-    type: regular
+    separatecontext: false
     task:
+      brand: ''
       id: e584fa02-2a13-46de-826b-a51a65dc2bfa
-      version: -1
+      iscommand: true
       name: Get Pcap Components
       script: '|||fidelis-list-pcap-components'
       type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "12"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 930,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "12":
-    id: "12"
-    taskid: 0cf7c8fd-7994-4e8d-87e7-8c8177926573
-    type: condition
-    task:
-      id: 0cf7c8fd-7994-4e8d-87e7-8c8177926573
       version: -1
-      name: Check Pcap Components
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "13"
-      "yes":
-      - "8"
-    separatecontext: false
+    taskid: e584fa02-2a13-46de-826b-a51a65dc2bfa
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 930,\n    \"y\": 1245\n  }\n}"
+  '12':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: Fidelis.Component.IP
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 930,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
+          operator: isExists
+      label: 'yes'
+    id: '12'
     ignoreworker: false
-  "13":
-    id: "13"
-    taskid: 48eac86a-177d-4e66-88e2-dfd33d332a55
-    type: regular
+    nexttasks:
+      '#default#':
+      - '13'
+      'yes':
+      - '8'
+    note: false
+    separatecontext: false
     task:
-      id: 48eac86a-177d-4e66-88e2-dfd33d332a55
-      version: -1
-      name: Error
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
+      brand: ''
+      id: 0cf7c8fd-7994-4e8d-87e7-8c8177926573
       iscommand: false
-      brand: ""
+      name: Check Pcap Components
+      type: condition
+      version: -1
+    taskid: 0cf7c8fd-7994-4e8d-87e7-8c8177926573
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 930,\n    \"y\": 1420\n  }\n}"
+  '13':
+    id: '13'
+    ignoreworker: false
+    note: false
     scriptarguments:
       message:
         simple: Failed to get Pcap Component
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 940,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "14":
-    id: "14"
-    taskid: 1bcb60da-c4d8-447a-83bc-755b08b187d7
-    type: regular
     task:
-      id: 1bcb60da-c4d8-447a-83bc-755b08b187d7
-      version: -1
-      name: Get Alert by UUID
-      description: Get alert by UUID
-      script: '|||fidelis-get-alert-by-uuid'
+      brand: ''
+      description: Prints an error entry with a given message
+      id: 48eac86a-177d-4e66-88e2-dfd33d332a55
+      iscommand: false
+      name: Error
+      scriptName: PrintErrorEntry
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: 48eac86a-177d-4e66-88e2-dfd33d332a55
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 940,\n    \"y\": 1595\n  }\n}"
+  '14':
+    id: '14'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "16"
+      - '16'
+    note: false
     scriptarguments:
       alert_uuid:
         simple: 2d189aef-a7bd-11e9-8c7d-0e2fc66832d6
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1120,
-          "y": 330
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "16":
-    id: "16"
-    taskid: e9b7857e-7fc4-4f6c-8a45-007e2ae1645e
-    type: regular
     task:
-      id: e9b7857e-7fc4-4f6c-8a45-007e2ae1645e
-      version: -1
-      name: List alerts by IP
-      description: List alerts by source IP or destination IP
-      script: '|||fidelis-list-alerts-by-ip'
-      type: regular
+      brand: ''
+      description: Get alert by UUID
+      id: 1bcb60da-c4d8-447a-83bc-755b08b187d7
       iscommand: true
-      brand: ""
+      name: Get Alert by UUID
+      script: '|||fidelis-get-alert-by-uuid'
+      type: regular
+      version: -1
+    taskid: 1bcb60da-c4d8-447a-83bc-755b08b187d7
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1120,\n    \"y\": 330\n  }\n}"
+  '16':
+    id: '16'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
+    note: false
     scriptarguments:
       dest_ip: {}
       end_time: {}
       src_ip:
-        simple: 10.12.16.101 # disable-secrets-detection
+        simple: 10.12.16.101
       start_time: {}
       time_frame: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1120,
-          "y": 530
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "17":
-    id: "17"
-    taskid: e82c7c7a-e410-46b8-8e16-77fb57f92e20
-    type: regular
     task:
-      id: e82c7c7a-e410-46b8-8e16-77fb57f92e20
-      version: -1
-      name: List Metadata
-      description: Get metadata list
-      script: '|||fidelis-list-metadata'
-      type: regular
+      brand: ''
+      description: List alerts by source IP or destination IP
+      id: e9b7857e-7fc4-4f6c-8a45-007e2ae1645e
       iscommand: true
-      brand: ""
+      name: List alerts by IP
+      script: '|||fidelis-list-alerts-by-ip'
+      type: regular
+      version: -1
+    taskid: e9b7857e-7fc4-4f6c-8a45-007e2ae1645e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1120,\n    \"y\": 530\n  }\n}"
+  '17':
+    id: '17'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
+    note: false
     scriptarguments:
       client_ip: {}
       end_time: {}
@@ -531,197 +219,363 @@ tasks:
       time_frame:
         simple: Last 30 Days
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1580,
-          "y": 330
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "18":
-    id: "18"
-    taskid: 688c0a8e-be0c-4001-86a7-3330e7db1b18
-    type: title
     task:
-      id: 688c0a8e-be0c-4001-86a7-3330e7db1b18
+      brand: ''
+      description: Get metadata list
+      id: e82c7c7a-e410-46b8-8e16-77fb57f92e20
+      iscommand: true
+      name: List Metadata
+      script: '|||fidelis-list-metadata'
+      type: regular
       version: -1
+    taskid: e82c7c7a-e410-46b8-8e16-77fb57f92e20
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1580,\n    \"y\": 330\n  }\n}"
+  '18':
+    id: '18'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 688c0a8e-be0c-4001-86a7-3330e7db1b18
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1380,
-          "y": 815
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "19":
-    id: "19"
-    taskid: 0a12516f-4aee-4848-8971-c1df4c488b82
-    type: regular
-    task:
-      id: 0a12516f-4aee-4848-8971-c1df4c488b82
       version: -1
-      name: Download Malware
+    taskid: 688c0a8e-be0c-4001-86a7-3330e7db1b18
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 1380,\n    \"y\": 815\n  }\n}"
+  '19':
+    id: '19'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '20'
+    note: false
+    scriptarguments:
+      alert_id:
+        simple: '36'
+    separatecontext: false
+    task:
+      brand: ''
       description: Download a malware file from a specified alert
+      id: 0a12516f-4aee-4848-8971-c1df4c488b82
+      iscommand: true
+      name: Download Malware
       script: '|||fidelis-download-malware-file'
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: 0a12516f-4aee-4848-8971-c1df4c488b82
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -400,\n    \"y\": 330\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "20"
-    scriptarguments:
-      alert_id:
-        simple: "36"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -400,
-          "y": 330
-        }
-      }
+      - '3'
     note: false
-    timertriggers: []
-    ignoreworker: false
-  "20":
-    id: "20"
-    taskid: f43b5d24-bad9-4d6a-8012-742012c1eda6
-    type: condition
-    task:
-      id: f43b5d24-bad9-4d6a-8012-742012c1eda6
-      version: -1
-      name: Check file
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "23"
+    scriptarguments:
+      end_time: {}
+      ioc: {}
+      severity: {}
+      start_time: {}
+      threat_score: {}
+      time_frame:
+        simple: Last 30 Days
+      type: {}
     separatecontext: false
+    task:
+      brand: ''
+      id: 01e91474-b487-4ccd-881d-f1b278a0111d
+      iscommand: true
+      name: Get Alarms
+      script: '|||fidelis-list-alerts'
+      type: regular
+      version: -1
+    taskid: 01e91474-b487-4ccd-881d-f1b278a0111d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 152.5,\n    \"y\": 370\n  }\n}"
+  '20':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: File.EntryID
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": -400,
-          "y": 490
-        }
-      }
-    note: false
-    timertriggers: []
+          operator: isExists
+      label: 'yes'
+    id: '20'
     ignoreworker: false
-  "21":
-    id: "21"
-    taskid: e6f19321-eff3-4c33-8a75-1184ae5ec52d
-    type: regular
+    nexttasks:
+      'yes':
+      - '23'
+    note: false
+    separatecontext: false
     task:
-      id: e6f19321-eff3-4c33-8a75-1184ae5ec52d
+      brand: ''
+      id: f43b5d24-bad9-4d6a-8012-742012c1eda6
+      iscommand: false
+      name: Check file
+      type: condition
       version: -1
-      name: Download PCAP File
+    taskid: f43b5d24-bad9-4d6a-8012-742012c1eda6
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": -400,\n    \"y\": 490\n  }\n}"
+  '21':
+    id: '21'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '22'
+    note: false
+    scriptarguments:
+      alert_id:
+        simple: '12'
+    separatecontext: false
+    task:
+      brand: ''
       description: Download the PCAP file from an alert
+      id: e6f19321-eff3-4c33-8a75-1184ae5ec52d
+      iscommand: true
+      name: Download PCAP File
       script: '|||fidelis-download-pcap-file'
       type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "22"
-    scriptarguments:
-      alert_id:
-        simple: "12"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -830,
-          "y": 330
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "22":
-    id: "22"
-    taskid: 419b1cfe-24f7-426c-83f5-ea72b992b7b2
-    type: condition
-    task:
-      id: 419b1cfe-24f7-426c-83f5-ea72b992b7b2
       version: -1
-      name: Check file
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "23"
-    separatecontext: false
+    taskid: e6f19321-eff3-4c33-8a75-1184ae5ec52d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -830,\n    \"y\": 330\n  }\n}"
+  '22':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: File.EntryID
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": -830,
-          "y": 490
-        }
-      }
-    note: false
-    timertriggers: []
+          operator: isExists
+      label: 'yes'
+    id: '22'
     ignoreworker: false
-  "23":
-    id: "23"
-    taskid: d9f1429c-5f5c-4f38-833b-c40f5ae713f8
-    type: title
+    nexttasks:
+      'yes':
+      - '23'
+    note: false
+    separatecontext: false
     task:
-      id: d9f1429c-5f5c-4f38-833b-c40f5ae713f8
+      brand: ''
+      id: 419b1cfe-24f7-426c-83f5-ea72b992b7b2
+      iscommand: false
+      name: Check file
+      type: condition
       version: -1
+    taskid: 419b1cfe-24f7-426c-83f5-ea72b992b7b2
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": -830,\n    \"y\": 490\n  }\n}"
+  '23':
+    id: '23'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: d9f1429c-5f5c-4f38-833b-c40f5ae713f8
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -660,
-          "y": 750
-        }
-      }
-    note: false
+      version: -1
+    taskid: d9f1429c-5f5c-4f38-833b-c40f5ae713f8
     timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": -660,\n    \"y\": 750\n  }\n}"
+  '3':
+    id: '3'
     ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1640,
-        "width": 2790,
-        "x": -830,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    scriptarguments:
+      end_time:
+        simple: 2019-01-11 09:50:48+00:00
+      ioc: {}
+      severity: {}
+      start_time:
+        simple: 2019-01-09 07:50:48+00:00
+      threat_score: {}
+      time_frame:
+        simple: Custom
+      type: {}
+    separatecontext: false
+    task:
+      brand: ''
+      id: ce05f87b-3a61-4cb6-8c8e-46f5ca75c0bf
+      iscommand: true
+      name: Get Alarms - custom time frame
+      script: '|||fidelis-list-alerts'
+      type: regular
+      version: -1
+    taskid: ce05f87b-3a61-4cb6-8c8e-46f5ca75c0bf
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 152.5,\n    \"y\": 545\n  }\n}"
+  '4':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Fidelis.Alert.ID
+          operator: isExists
+      label: 'yes'
+    id: '4'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '8'
+      'yes':
+      - '6'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 1d62d0b8-ab8e-40c2-87a2-d0149c2c79f4
+      iscommand: false
+      name: Check Get Alerts
+      type: condition
+      version: -1
+    taskid: 1d62d0b8-ab8e-40c2-87a2-d0149c2c79f4
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 152.5,\n    \"y\": 720\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
+    note: false
+    scriptarguments:
+      message:
+        simple: Test condition was not satisfied.
+    separatecontext: false
+    task:
+      brand: ''
+      id: 319ba3c0-308e-4d59-8046-83754d75b559
+      iscommand: false
+      name: Error
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 319ba3c0-308e-4d59-8046-83754d75b559
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    scriptarguments:
+      alert_id:
+        complex:
+          accessor: Alert.ID
+          root: Fidelis
+          transformers:
+          - operator: GetFirstObject
+    separatecontext: false
+    task:
+      brand: ''
+      id: 8f0a405e-ce0d-46b1-824d-6c40bc41ed1b
+      iscommand: true
+      name: Get Specific Alert
+      script: '|||fidelis-get-alert'
+      type: regular
+      version: -1
+    taskid: 8f0a405e-ce0d-46b1-824d-6c40bc41ed1b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+  '7':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Fidelis.Alert.Protocol
+          operator: isExists
+      label: 'yes'
+    id: '7'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '5'
+      'yes':
+      - '9'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: eaebd696-4811-45be-8df0-253d6ae2add3
+      iscommand: false
+      name: Check Get Alert
+      type: condition
+      version: -1
+    taskid: eaebd696-4811-45be-8df0-253d6ae2add3
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+  '8':
+    id: '8'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 404d618c-60de-46eb-8f56-913a5bc7ee67
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 404d618c-60de-46eb-8f56-913a5bc7ee67
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 500,\n    \"y\": 1610\n  }\n}"
+  '9':
+    id: '9'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '10'
+    note: false
+    scriptarguments:
+      alert_id:
+        complex:
+          accessor: Alert.ID
+          root: Fidelis
+          transformers:
+          - operator: GetFirstObject
+    separatecontext: false
+    task:
+      brand: ''
+      id: 822bd57e-01c8-4ba5-8fbb-9d0c85fd85ee
+      iscommand: true
+      name: Get Alert report
+      script: '|||fidelis-get-alert-report'
+      type: regular
+      version: -1
+    taskid: 822bd57e-01c8-4ba5-8fbb-9d0c85fd85ee
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 500,\n    \"y\": 1245\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1640,\n      \"width\": 2790,\n      \"x\": -830,\n      \"y\"\
+  : 50\n    }\n  }\n}"

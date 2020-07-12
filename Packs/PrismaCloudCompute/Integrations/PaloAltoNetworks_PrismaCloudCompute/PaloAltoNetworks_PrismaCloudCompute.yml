@@ -8,9 +8,9 @@ configuration:
   required: false
   type: 8
 - defaultvalue: https://example.net:1234
-  display: |-
-    Prisma Cloud Compute Console URL and Port
-    (e.g., https://example.net:1234)
+  display: 'Prisma Cloud Compute Console URL and Port
+
+    (e.g., https://example.net:1234)'
   name: address
   required: true
   type: 0
@@ -39,7 +39,8 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: Use the Prisma Cloud Compute integration to fetch incidents from your Prisma Cloud Compute environment.
+description: Use the Prisma Cloud Compute integration to fetch incidents from your
+  Prisma Cloud Compute environment.
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
 script:
@@ -52,4 +53,5 @@ script:
   subtype: python3
   type: python
 tests:
-  - No test
+- No test
+toversion: 4.1.9

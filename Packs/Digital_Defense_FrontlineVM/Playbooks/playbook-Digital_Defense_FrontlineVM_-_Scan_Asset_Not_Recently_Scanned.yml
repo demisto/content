@@ -1,54 +1,39 @@
-id: Digital Defense FrontlineVM - Scan Asset Not Recently Scanned
-version: -1
-fromversion: 4.1.0
-name: Digital Defense FrontlineVM - Scan Asset Not Recently Scanned
 description: This playbook will pull the IP address from the details value of an incident
   and check if that asset has been scanned within the past 60 days. If not then it
   will prompt to perform a scan on the asset.
+fromversion: 4.1.0
+id: Digital Defense FrontlineVM - Scan Asset Not Recently Scanned
+inputs: []
+name: Digital Defense FrontlineVM - Scan Asset Not Recently Scanned
+outputs: []
 starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: 88b9b394-6c20-4f43-89f0-2577b3b86c16
-    type: start
-    task:
-      id: 88b9b394-6c20-4f43-89f0-2577b3b86c16
-      version: -1
-      name: ''
-      iscommand: false
-      brand: ''
-      description: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - '1'
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
     note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 88b9b394-6c20-4f43-89f0-2577b3b86c16
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 88b9b394-6c20-4f43-89f0-2577b3b86c16
     timertriggers: []
-    ignoreworker: false
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
   '1':
     id: '1'
-    taskid: a09127d0-c096-4b65-80f7-0b05efa3ccb0
-    type: regular
-    task:
-      id: a09127d0-c096-4b65-80f7-0b05efa3ccb0
-      version: -1
-      name: frontline-get-assets (scanned within last 60 days)
-      description: Gathering the ip from the incident details value, query FrontlineVM
-        to check if the asset has been scanned within the past 60 days.
-      script: '|||frontline-get-assets'
-      type: regular
-      iscommand: true
-      brand: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - '2'
+    note: false
     scriptarguments:
       hostname: {}
       ip_address:
@@ -57,199 +42,164 @@ tasks:
       max_days_since_scan:
         simple: '60'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 230
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '2':
-    id: '2'
-    taskid: d54922c3-f992-4f0b-88e6-e754bd329bc6
-    type: condition
     task:
-      id: d54922c3-f992-4f0b-88e6-e754bd329bc6
-      version: -1
-      name: Has been scanned within the last 60 days?
-      description: Checks if assets has been scanned within the last 60 days.
-      type: condition
-      iscommand: false
       brand: ''
+      description: Gathering the ip from the incident details value, query FrontlineVM
+        to check if the asset has been scanned within the past 60 days.
+      id: a09127d0-c096-4b65-80f7-0b05efa3ccb0
+      iscommand: true
+      name: frontline-get-assets (scanned within last 60 days)
+      script: '|||frontline-get-assets'
+      type: regular
+      version: -1
+    taskid: a09127d0-c096-4b65-80f7-0b05efa3ccb0
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+  '2':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: FrontlineVM.Hosts
+          operator: isNotEmpty
+      label: 'yes'
+    id: '2'
+    ignoreworker: false
     nexttasks:
       '#default#':
       - '4'
       'yes':
       - '3'
-    separatecontext: false
-    conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: FrontlineVM.Hosts
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 420
-        }
-      }
     note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Checks if assets has been scanned within the last 60 days.
+      id: d54922c3-f992-4f0b-88e6-e754bd329bc6
+      iscommand: false
+      name: Has been scanned within the last 60 days?
+      type: condition
+      version: -1
+    taskid: d54922c3-f992-4f0b-88e6-e754bd329bc6
     timertriggers: []
-    ignoreworker: false
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 420\n  }\n}"
   '3':
     id: '3'
-    taskid: 1c6a8431-2d09-4128-8bae-f4a655a0c303
-    type: regular
-    task:
-      id: 1c6a8431-2d09-4128-8bae-f4a655a0c303
-      version: -1
-      name: Asset has already been scanned.
-      description: Prints text to war room (Markdown supported)
-      scriptName: Print
-      type: regular
-      iscommand: false
-      brand: ''
+    ignoreworker: false
+    note: false
     scriptarguments:
       value:
-        simple: |-
-          The following asset has already been scanned within the last 60 days:
+        simple: 'The following asset has already been scanned within the last 60 days:
 
-          ${FrontlineVM.Hosts}
+
+          ${FrontlineVM.Hosts}'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 160,
-          "y": 630
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      description: Prints text to war room (Markdown supported)
+      id: 1c6a8431-2d09-4128-8bae-f4a655a0c303
+      iscommand: false
+      name: Asset has already been scanned.
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: 1c6a8431-2d09-4128-8bae-f4a655a0c303
     timertriggers: []
-    ignoreworker: false
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 160,\n    \"y\": 630\n  }\n}"
   '4':
     id: '4'
-    taskid: f74b727d-f10f-4961-8c5a-4d3950117f88
-    type: condition
-    task:
-      id: f74b727d-f10f-4961-8c5a-4d3950117f88
-      version: -1
-      name: Asset has not been scanned.
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
-      type: condition
-      iscommand: false
-      brand: ''
+    ignoreworker: false
+    message:
+      bcc: null
+      body:
+        simple: "The following asset has not been scanned within the past 60 days.\n\
+          Perform scan on asset: \n\n${incident.details}"
+      cc: null
+      format: ''
+      methods:
+      - email
+      replyOptions:
+      - Yes, perform scan
+      - No, do not perform scan
+      subject:
+        simple: Perform Scan on asset
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: Administrator
     nexttasks:
       No, do not perform scan:
       - '5'
       Yes, perform scan:
       - '6'
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 710,
-          "y": 630
-        }
-      }
     note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      id: f74b727d-f10f-4961-8c5a-4d3950117f88
+      iscommand: false
+      name: Asset has not been scanned.
+      type: condition
+      version: -1
+    taskid: f74b727d-f10f-4961-8c5a-4d3950117f88
     timertriggers: []
-    ignoreworker: false
-    message:
-      to:
-        simple: Administrator
-      subject:
-        simple: Perform Scan on asset
-      body:
-        simple: "The following asset has not been scanned within the past 60 days.\n\
-          Perform scan on asset: \n\n${incident.details}"
-      methods:
-      - email
-      format: ''
-      bcc: null
-      cc: null
-      timings:
-        retriescount: 2
-        retriesinterval: 360
-        completeafterreplies: 1
-      replyOptions:
-      - Yes, perform scan
-      - No, do not perform scan
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 710,\n    \"y\": 630\n  }\n}"
   '5':
     id: '5'
-    taskid: 94008e29-1942-4b20-8e4c-ace31eb09de2
-    type: regular
-    task:
-      id: 94008e29-1942-4b20-8e4c-ace31eb09de2
-      version: -1
-      name: Will not perform scan
-      description: Prints text to war room (Markdown supported)
-      scriptName: Print
-      type: regular
-      iscommand: false
-      brand: ''
+    ignoreworker: false
+    note: false
     scriptarguments:
       value:
         simple: "Admin chose not to perform a scan on asset: \n\n${incident.details}"
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 420,
-          "y": 840
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      description: Prints text to war room (Markdown supported)
+      id: 94008e29-1942-4b20-8e4c-ace31eb09de2
+      iscommand: false
+      name: Will not perform scan
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: 94008e29-1942-4b20-8e4c-ace31eb09de2
     timertriggers: []
-    ignoreworker: false
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 420,\n    \"y\": 840\n  }\n}"
   '6':
     id: '6'
-    taskid: 768c960e-59fe-4595-8b7b-ab7d77c0b332
-    type: regular
-    task:
-      id: 768c960e-59fe-4595-8b7b-ab7d77c0b332
-      version: -1
-      name: Performing scan
-      description: When confirmed, will perform scan on asset provided by the incident.
-      script: '|||frontline-scan-asset'
-      type: regular
-      iscommand: true
-      brand: ''
+    ignoreworker: false
+    note: false
     scriptarguments:
       ip_address:
         simple: ${incident.details}
       scan_policy: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 880,
-          "y": 830
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      description: When confirmed, will perform scan on asset provided by the incident.
+      id: 768c960e-59fe-4595-8b7b-ab7d77c0b332
+      iscommand: true
+      name: Performing scan
+      script: '|||frontline-scan-asset'
+      type: regular
+      version: -1
+    taskid: 768c960e-59fe-4595-8b7b-ab7d77c0b332
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 885,
-        "width": 1100,
-        "x": 160,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 880,\n    \"y\": 830\n  }\n}"
 tests:
-  - Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test
+- Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 885,\n      \"width\": 1100,\n      \"x\": 160,\n      \"y\":\
+  \ 50\n    }\n  }\n}"

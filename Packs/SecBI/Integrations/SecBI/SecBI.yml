@@ -19,14 +19,17 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: A threat, intelligence, and investigation platform, enabled by automation of detection and investigation, including remediation and prevention policy enforcements on all integrated appliances.
+description: A threat, intelligence, and investigation platform, enabled by automation
+  of detection and investigation, including remediation and prevention policy enforcements
+  on all integrated appliances.
 display: SecBI
 name: SecBI
 script:
   commands:
   - arguments:
     - default: false
-      description: "The Query for which to filter the incident IDs using Elasticsearch's Query String Syntax. E.g.: \"firstAppearance:[2018-06-01 TO 2018-06-21]\"."
+      description: 'The Query for which to filter the incident IDs using Elasticsearch''s
+        Query String Syntax. E.g.: "firstAppearance:[2018-06-01 TO 2018-06-21]".'
       isArray: false
       name: query
       required: false
@@ -121,4 +124,5 @@ script:
   subtype: python3
   type: python
 tests:
-  - SecBI - Test
+- SecBI - Test
+toversion: 4.1.9

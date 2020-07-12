@@ -1,29 +1,7 @@
-commonfields:
-  id: GDPRContactAuthorities
-  version: -1
-name: GDPRContactAuthorities
-script: ''
-type: python
-tags: []
-comment: |-
-  GDPR Data Protection Supervisory Authority Listing.
-
-  "'supervisory authority' means an independent public authority which is established by a Member State pursuant to
-  Article 51.
-
-  'supervisory authority concerned' means a supervisory authority which is concerned by the processing of personal
-  data because:
-  (a) the controller or processor is established on the territory of the Member State of that supervisory authority.
-  (b) data subjects residing in the Member State of that supervisory authority are substantially affected or likely
-  to be substantially affected by the processing, or
-  (c) a complaint has been lodged with that supervisory authority."
-
-  GDPR - Art. 4 - https://gdpr-info.eu/art-4-gdpr/
-enabled: true
 args:
-- name: country
-  required: true
-  auto: PREDEFINED
+- auto: PREDEFINED
+  description: The name of the authoritie's country
+  name: country
   predefined:
   - Austria
   - Belgium
@@ -57,8 +35,40 @@ args:
   - Liechtenstein
   - Norway
   - Switzerland
-  - ""
-  description: The name of the authoritie's country
+  - ''
+  required: true
+comment: 'GDPR Data Protection Supervisory Authority Listing.
+
+
+  "''supervisory authority'' means an independent public authority which is established
+  by a Member State pursuant to
+
+  Article 51.
+
+
+  ''supervisory authority concerned'' means a supervisory authority which is concerned
+  by the processing of personal
+
+  data because:
+
+  (a) the controller or processor is established on the territory of the Member State
+  of that supervisory authority.
+
+  (b) data subjects residing in the Member State of that supervisory authority are
+  substantially affected or likely
+
+  to be substantially affected by the processing, or
+
+  (c) a complaint has been lodged with that supervisory authority."
+
+
+  GDPR - Art. 4 - https://gdpr-info.eu/art-4-gdpr/'
+commonfields:
+  id: GDPRContactAuthorities
+  version: -1
+dockerimage: demisto/python3:3.7.3.260
+enabled: true
+name: GDPRContactAuthorities
 outputs:
 - contextPath: GDPR.Authority.Name
   description: Authority name
@@ -75,10 +85,13 @@ outputs:
 - contextPath: GDPR.Authority.Country
   description: Authority country
   type: string
-scripttarget: 0
-runonce: false
 runas: DBotWeakRole
-dockerimage: demisto/python3:3.7.3.260
+runonce: false
+script: ''
+scripttarget: 0
 subtype: python3
+tags: []
 tests:
-  - GDPRContactAuthorities Test
+- GDPRContactAuthorities Test
+toversion: 4.1.9
+type: python

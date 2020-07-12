@@ -1,28 +1,23 @@
+comment: Returns the available NetWitness SA users to be assigned to incidents
 commonfields:
   id: NetwitnessSAGetAvailableAssignees
   version: -1
-name: NetwitnessSAGetAvailableAssignees
-script: |
-  resp = demisto.executeCommand("nw-get-available-assignees", demisto.args())
-
-  if isError(resp[0]):
-      demisto.results(resp)
-  else:
-      data = demisto.get(resp[0], "Contents.availableAssignees")
-      if data:
-          data = data if isinstance(data, list) else [data]
-          data = [{k: formatCell(row[k]) for k in row} for row in data]
-          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
-      else:
-          demisto.results("No results.")
-type: python
-subtype: python2
-tags:
-- RSA NetWitness Security Analytics
-comment: Returns the available NetWitness SA users to be assigned to incidents
-system: true
-scripttarget: 0
 dependson:
   must:
   - nw-get-available-assignees
+name: NetwitnessSAGetAvailableAssignees
+script: "resp = demisto.executeCommand(\"nw-get-available-assignees\", demisto.args())\n\
+  \nif isError(resp[0]):\n    demisto.results(resp)\nelse:\n    data = demisto.get(resp[0],\
+  \ \"Contents.availableAssignees\")\n    if data:\n        data = data if isinstance(data,\
+  \ list) else [data]\n        data = [{k: formatCell(row[k]) for k in row} for row\
+  \ in data]\n        demisto.results({\"ContentsFormat\": formats[\"table\"], \"\
+  Type\": entryTypes[\"note\"], \"Contents\": data} )\n    else:\n        demisto.results(\"\
+  No results.\")\n"
+scripttarget: 0
+subtype: python2
+system: true
+tags:
+- RSA NetWitness Security Analytics
 timeout: 0s
+toversion: 4.1.9
+type: python

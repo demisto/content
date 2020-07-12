@@ -43,12 +43,13 @@ outputs:
 - contextPath: File.SHA256
   description: SHA256 hash of the file (only in case of report type=json)
   type: Unknown
-script: '-'
-system: false
-timeout: 600ns
-type: python
-subtype: python2
 runonce: false
+script: '-'
+subtype: python2
+system: false
 tags: []
 tests:
 - JSONtoCSV-Test
+timeout: 600ns
+toversion: 4.1.9
+type: python

@@ -1,49 +1,35 @@
-id: TestIsEmailAddressInternal
-version: -1
-name: TestIsEmailAddressInternal
 description: Test the IsEmailAddressInternal script that used to produce duplicates.
-starttaskid: "0"
+id: TestIsEmailAddressInternal
+inputs: []
+name: TestIsEmailAddressInternal
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: ca1500de-479a-4148-833c-224648249b0d
-    type: start
-    task:
-      id: ca1500de-479a-4148-833c-224648249b0d
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: 7f111bdb-2e01-4485-87c1-9a230de0c8b8
-    type: regular
-    task:
-      id: 7f111bdb-2e01-4485-87c1-9a230de0c8b8
-      version: -1
-      name: Set
-      description: Sets a value into the context with the given context key
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - '6'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: ca1500de-479a-4148-833c-224648249b0d
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: ca1500de-479a-4148-833c-224648249b0d
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
     scriptarguments:
       append: {}
       key:
@@ -51,125 +37,236 @@ tasks:
       value:
         simple: anar@demisto.com
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: ddbe1cd1-3bcb-4bdc-8ff1-3c7dc9c5437e
-    type: condition
     task:
-      id: ddbe1cd1-3bcb-4bdc-8ff1-3c7dc9c5437e
-      version: -1
-      name: AreValuesEqual
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
-      scriptName: AreValuesEqual
-      type: condition
+      brand: ''
+      description: Sets a value into the context with the given context key
+      id: 7f111bdb-2e01-4485-87c1-9a230de0c8b8
       iscommand: false
-      brand: ""
+      name: Set
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 7f111bdb-2e01-4485-87c1-9a230de0c8b8
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '10':
+    id: '10'
+    ignoreworker: false
+    note: false
+    scriptarguments:
+      message:
+        simple: Failed Internal/External check
+    separatecontext: false
+    task:
+      brand: ''
+      description: Prints an error entry with a given message
+      id: 5e1eb7ef-507f-4e2d-8141-d8b4607173d6
+      iscommand: false
+      name: Error
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 5e1eb7ef-507f-4e2d-8141-d8b4607173d6
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 960,\n    \"y\": 1965\n  }\n}"
+  '11':
+    id: '11'
+    ignoreworker: false
     nexttasks:
-      "yes":
-      - "7"
+      'no':
+      - '10'
+      'yes':
+      - '14'
+    note: false
+    results:
+    - AreValuesEqual
     scriptarguments:
       left:
         complex:
-          root: Account
-          accessor: Email.Address
-          transformers:
-          - operator: count
+          root: Account.Email.NetworkType
       right:
-        simple: "1"
-    results:
-    - AreValuesEqual
+        simple: External
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 9d352601-8215-4312-8368-382bb17c5a6e
-    type: title
     task:
-      id: 9d352601-8215-4312-8368-382bb17c5a6e
-      version: -1
-      name: Done
-      type: title
+      brand: ''
+      id: 0ca0a7b7-b89c-4368-8040-454b0dea786b
       iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1965
-        }
-      }
-    note: false
+      name: arevaluesequal external
+      scriptName: AreValuesEqual
+      type: condition
+      version: -1
+    taskid: 0ca0a7b7-b89c-4368-8040-454b0dea786b
     timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1265\n  }\n}"
+  '12':
+    id: '12'
     ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 31606802-117a-49b4-80ef-ed85c690614a
-    type: regular
-    task:
-      id: 31606802-117a-49b4-80ef-ed85c690614a
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - '13'
+    note: false
+    scriptarguments:
+      domain:
+        simple: lol.com
+      email:
+        simple: example@lol_lol.lol.com
+      include_subdomains:
+        simple: 'yes'
+    separatecontext: false
+    task:
+      brand: ''
+      description: Checks if the email address in part of the internal domains
+      id: 863f74df-3c57-4388-84dd-48108a32fcf1
+      iscommand: false
+      name: IsEmailAddressInternal subdomain
+      scriptName: IsEmailAddressInternal
+      type: regular
+      version: -1
+    taskid: 863f74df-3c57-4388-84dd-48108a32fcf1
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1650\n  }\n}"
+  '13':
+    id: '13'
+    ignoreworker: false
+    nexttasks:
+      'no':
+      - '10'
+      'yes':
+      - '5'
+    note: false
+    results:
+    - AreValuesEqual
+    scriptarguments:
+      left:
+        complex:
+          root: Account.Email.NetworkType
+      right:
+        simple: Internal
+    separatecontext: false
+    task:
+      brand: ''
+      id: bacc8c9b-ace5-46f5-820b-d4e2072b41cb
+      iscommand: false
+      name: arevaluesequal internal
+      scriptName: AreValuesEqual
+      type: condition
+      version: -1
+    taskid: bacc8c9b-ace5-46f5-820b-d4e2072b41cb
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1800\n  }\n}"
+  '14':
+    id: '14'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '12'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       key: {}
       keysToKeep: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "7":
-    id: "7"
-    taskid: efbe4b26-1e1c-493c-8879-87c4602c15ad
-    type: regular
     task:
-      id: efbe4b26-1e1c-493c-8879-87c4602c15ad
-      version: -1
-      name: IsEmailAddressInternal
-      description: Checks if the email address in part of the internal domains
-      scriptName: IsEmailAddressInternal
-      type: regular
+      brand: ''
+      description: Delete field from context
+      id: 47b4d5df-d9f3-4d9f-8d90-045623c00abd
       iscommand: false
-      brand: ""
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 47b4d5df-d9f3-4d9f-8d90-045623c00abd
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1470\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '7'
+    note: false
+    results:
+    - AreValuesEqual
+    scriptarguments:
+      left:
+        complex:
+          accessor: Email.Address
+          root: Account
+          transformers:
+          - operator: count
+      right:
+        simple: '1'
+    separatecontext: false
+    task:
+      brand: ''
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      id: ddbe1cd1-3bcb-4bdc-8ff1-3c7dc9c5437e
+      iscommand: false
+      name: AreValuesEqual
+      scriptName: AreValuesEqual
+      type: condition
+      version: -1
+    taskid: ddbe1cd1-3bcb-4bdc-8ff1-3c7dc9c5437e
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 9d352601-8215-4312-8368-382bb17c5a6e
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 9d352601-8215-4312-8368-382bb17c5a6e
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1965\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "8"
+      - '1'
+    note: false
+    scriptarguments:
+      all:
+        simple: 'yes'
+      key: {}
+      keysToKeep: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: 31606802-117a-49b4-80ef-ed85c690614a
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 31606802-117a-49b4-80ef-ed85c690614a
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '7':
+    id: '7'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
     scriptarguments:
       domain:
         simple: demisto.com
@@ -177,68 +274,56 @@ tasks:
         simple: ${Account.Email.Address}
       include_subdomains: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "8":
-    id: "8"
-    taskid: da332731-785a-457c-83f4-ff01f8e4c14a
-    type: condition
     task:
-      id: da332731-785a-457c-83f4-ff01f8e4c14a
-      version: -1
-      name: arevaluesequal internal
-      scriptName: AreValuesEqual
-      type: condition
+      brand: ''
+      description: Checks if the email address in part of the internal domains
+      id: efbe4b26-1e1c-493c-8879-87c4602c15ad
       iscommand: false
-      brand: ""
+      name: IsEmailAddressInternal
+      scriptName: IsEmailAddressInternal
+      type: regular
+      version: -1
+    taskid: efbe4b26-1e1c-493c-8879-87c4602c15ad
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '8':
+    id: '8'
+    ignoreworker: false
     nexttasks:
-      "no":
-      - "10"
-      "yes":
-      - "9"
+      'no':
+      - '10'
+      'yes':
+      - '9'
+    note: false
+    results:
+    - AreValuesEqual
     scriptarguments:
       left:
         complex:
           root: Account.Email.NetworkType
       right:
         simple: Internal
-    results:
-    - AreValuesEqual
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 875
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "9":
-    id: "9"
-    taskid: 68a387f2-534c-4b20-8524-7117ec0f5fda
-    type: regular
     task:
-      id: 68a387f2-534c-4b20-8524-7117ec0f5fda
-      version: -1
-      name: IsEmailAddressInternal
-      description: Checks if the email address in part of the internal domains
-      scriptName: IsEmailAddressInternal
-      type: regular
+      brand: ''
+      id: da332731-785a-457c-83f4-ff01f8e4c14a
       iscommand: false
-      brand: ""
+      name: arevaluesequal internal
+      scriptName: AreValuesEqual
+      type: condition
+      version: -1
+    taskid: da332731-785a-457c-83f4-ff01f8e4c14a
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 875\n  }\n}"
+  '9':
+    id: '9'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
+    note: false
     scriptarguments:
       domain:
         simple: test.com
@@ -246,194 +331,21 @@ tasks:
         simple: ${Account.Email.Address}
       include_subdomains: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1100
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "10":
-    id: "10"
-    taskid: 5e1eb7ef-507f-4e2d-8141-d8b4607173d6
-    type: regular
     task:
-      id: 5e1eb7ef-507f-4e2d-8141-d8b4607173d6
-      version: -1
-      name: Error
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: Failed Internal/External check
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 960,
-          "y": 1965
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "11":
-    id: "11"
-    taskid: 0ca0a7b7-b89c-4368-8040-454b0dea786b
-    type: condition
-    task:
-      id: 0ca0a7b7-b89c-4368-8040-454b0dea786b
-      version: -1
-      name: arevaluesequal external
-      scriptName: AreValuesEqual
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "no":
-      - "10"
-      "yes":
-      - "14"
-    scriptarguments:
-      left:
-        complex:
-          root: Account.Email.NetworkType
-      right:
-        simple: External
-    results:
-    - AreValuesEqual
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1265
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "12":
-    id: "12"
-    taskid: 863f74df-3c57-4388-84dd-48108a32fcf1
-    type: regular
-    task:
-      id: 863f74df-3c57-4388-84dd-48108a32fcf1
-      version: -1
-      name: IsEmailAddressInternal subdomain
+      brand: ''
       description: Checks if the email address in part of the internal domains
+      id: 68a387f2-534c-4b20-8524-7117ec0f5fda
+      iscommand: false
+      name: IsEmailAddressInternal
       scriptName: IsEmailAddressInternal
       type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "13"
-    scriptarguments:
-      domain:
-        simple: lol.com
-      email:
-        simple: example@lol_lol.lol.com
-      include_subdomains:
-        simple: "yes"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1650
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "13":
-    id: "13"
-    taskid: bacc8c9b-ace5-46f5-820b-d4e2072b41cb
-    type: condition
-    task:
-      id: bacc8c9b-ace5-46f5-820b-d4e2072b41cb
       version: -1
-      name: arevaluesequal internal
-      scriptName: AreValuesEqual
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "no":
-      - "10"
-      "yes":
-      - "5"
-    scriptarguments:
-      left:
-        complex:
-          root: Account.Email.NetworkType
-      right:
-        simple: Internal
-    results:
-    - AreValuesEqual
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1800
-        }
-      }
-    note: false
+    taskid: 68a387f2-534c-4b20-8524-7117ec0f5fda
     timertriggers: []
-    ignoreworker: false
-  "14":
-    id: "14"
-    taskid: 47b4d5df-d9f3-4d9f-8d90-045623c00abd
     type: regular
-    task:
-      id: 47b4d5df-d9f3-4d9f-8d90-045623c00abd
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-      keysToKeep: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {
-      "4_7_yes": 0.74
-    },
-    "paper": {
-      "dimensions": {
-        "height": 2010,
-        "width": 1290,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1100\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"4_7_yes\": 0.74\n  },\n  \"paper\": {\n\
+  \    \"dimensions\": {\n      \"height\": 2010,\n      \"width\": 1290,\n      \"\
+  x\": 50,\n      \"y\": 50\n    }\n  }\n}"

@@ -1,109 +1,61 @@
+args:
+- description: Ssdeep value.
+  name: input
+- defaultValue: '1'
+  description: Check similar values in this time frame (days).
+  name: timeFrameDays
+- defaultValue: '50'
+  description: Consider ssdeep similar above this threshold.
+  name: threshold
+comment: Calculate ssdeep reputation based on similar files (by ssdeep similarity)
+  on the system.
 commonfields:
   id: SSDeepReputation
   version: -1
+enabled: true
 name: SSDeepReputation
-script: |-
-
-  REPUTATIONS = {
-      0: 'None',
-      1: 'Good',
-      2: 'Suspicious',
-      3: 'Bad'
-  }
-
-  def get_indicator_from_value(indicator_value):
-      try:
-          if not indicator_value:
-              return None
-          res = demisto.executeCommand("findIndicators", {'value': indicator_value})
-          indicator = res[0]['Contents'][0]
-          return indicator
-      except:
-          pass
-
-
-  def get_ssdeep_related_indicators(ssdeep_indicator):
-      related_indicators = [ssdeep_indicator]
-      for inv_id in ssdeep_indicator['investigationIDs']:
-          try:
-              res = demisto.executeCommand("getContext", {"id": inv_id})
-              context = res[0]['Contents']['context']
-              file_obj = demisto.dt(context, "File(val.SSDeep == '%s')" % ssdeep_indicator['value'])
-              if file_obj is None:
-                  file_obj = {}
-              elif type(file_obj) == list:
-                  file_obj = file_obj[0]
-              related_indicators.append(get_indicator_from_value(file_obj.get('MD5')))
-              related_indicators.append(get_indicator_from_value(file_obj.get('SHA1')))
-              related_indicators.append(get_indicator_from_value(file_obj.get('SHA256')))
-          except:
-              continue
-      related_indicators = [x for x in related_indicators if x is not None]
-      return related_indicators
-
-  ssdeep_value = demisto.args()['input']
-  current_incident_id = demisto.investigation()['id']
-  res = demisto.executeCommand('similarSsdeep', {
-      'value': ssdeep_value,
-      'daysTimeFrame': int(demisto.args()['timeFrameDays']),
-      'threshold': int(demisto.args()['threshold'])
-  })
-  ssdeep_indicators = map(lambda x: x['indicator'], res[0]['Contents'])
-  ssdeep_indicator = get_indicator_from_value(ssdeep_value)
-  if not ssdeep_indicator:
-      # make the current ssdeep part of the current invastigation
-      ssdeep_indicator = {
-          'investigationIDs': [current_incident_id],
-          'score': 0
-      }
-  else:
-      # make sure the current ssdeep part of the current invastigation
-      if ssdeep_indicator.get('investigationIDs') is None:
-          ssdeep_indicator['investigationIDs'] = [current_incident_id]
-      elif current_incident_id not in ssdeep_indicator['investigationIDs']:
-          ssdeep_indicator['investigationIDs'].append(current_incident_id)
-
-  ssdeep_indicators.append(ssdeep_indicator)
-  related_indicators = []
-  for i in ssdeep_indicators:
-      related_indicators += get_ssdeep_related_indicators(i)
-
-  max_score = max(map(lambda x: x.get('score'), related_indicators))
-  max_score_indicator = next(x for x in related_indicators if x.get('score', 0) == max_score)
-  if max_score > ssdeep_indicator.get('score', 0) and max_score > 1:
-      entry = {
-          'Type': entryTypes['note'],
-          'HumanReadable': 'Similarity to %s %s:%s' % (REPUTATIONS[max_score_indicator['score']], max_score_indicator['indicator_type'], max_score_indicator['value']),
-          'ReadableContentsFormat': formats['markdown'],
-          'Contents': max_score,
-          'ContentsFormat': formats['text']
-      }
-      ec = {}
-      ec['DBotScore'] = {
-          'Indicator': ssdeep_value,
-          'Type': 'ssdeep',
-          'Vendor': 'DBot',
-          'Score': max_score
-      }
-      entry['EntryContext'] = ec
-      demisto.results(entry)
-  else:
-      demisto.results(ssdeep_indicator.get('score', 0))
-type: python
+runonce: false
+script: "\nREPUTATIONS = {\n    0: 'None',\n    1: 'Good',\n    2: 'Suspicious',\n\
+  \    3: 'Bad'\n}\n\ndef get_indicator_from_value(indicator_value):\n    try:\n \
+  \       if not indicator_value:\n            return None\n        res = demisto.executeCommand(\"\
+  findIndicators\", {'value': indicator_value})\n        indicator = res[0]['Contents'][0]\n\
+  \        return indicator\n    except:\n        pass\n\n\ndef get_ssdeep_related_indicators(ssdeep_indicator):\n\
+  \    related_indicators = [ssdeep_indicator]\n    for inv_id in ssdeep_indicator['investigationIDs']:\n\
+  \        try:\n            res = demisto.executeCommand(\"getContext\", {\"id\"\
+  : inv_id})\n            context = res[0]['Contents']['context']\n            file_obj\
+  \ = demisto.dt(context, \"File(val.SSDeep == '%s')\" % ssdeep_indicator['value'])\n\
+  \            if file_obj is None:\n                file_obj = {}\n            elif\
+  \ type(file_obj) == list:\n                file_obj = file_obj[0]\n            related_indicators.append(get_indicator_from_value(file_obj.get('MD5')))\n\
+  \            related_indicators.append(get_indicator_from_value(file_obj.get('SHA1')))\n\
+  \            related_indicators.append(get_indicator_from_value(file_obj.get('SHA256')))\n\
+  \        except:\n            continue\n    related_indicators = [x for x in related_indicators\
+  \ if x is not None]\n    return related_indicators\n\nssdeep_value = demisto.args()['input']\n\
+  current_incident_id = demisto.investigation()['id']\nres = demisto.executeCommand('similarSsdeep',\
+  \ {\n    'value': ssdeep_value,\n    'daysTimeFrame': int(demisto.args()['timeFrameDays']),\n\
+  \    'threshold': int(demisto.args()['threshold'])\n})\nssdeep_indicators = map(lambda\
+  \ x: x['indicator'], res[0]['Contents'])\nssdeep_indicator = get_indicator_from_value(ssdeep_value)\n\
+  if not ssdeep_indicator:\n    # make the current ssdeep part of the current invastigation\n\
+  \    ssdeep_indicator = {\n        'investigationIDs': [current_incident_id],\n\
+  \        'score': 0\n    }\nelse:\n    # make sure the current ssdeep part of the\
+  \ current invastigation\n    if ssdeep_indicator.get('investigationIDs') is None:\n\
+  \        ssdeep_indicator['investigationIDs'] = [current_incident_id]\n    elif\
+  \ current_incident_id not in ssdeep_indicator['investigationIDs']:\n        ssdeep_indicator['investigationIDs'].append(current_incident_id)\n\
+  \nssdeep_indicators.append(ssdeep_indicator)\nrelated_indicators = []\nfor i in\
+  \ ssdeep_indicators:\n    related_indicators += get_ssdeep_related_indicators(i)\n\
+  \nmax_score = max(map(lambda x: x.get('score'), related_indicators))\nmax_score_indicator\
+  \ = next(x for x in related_indicators if x.get('score', 0) == max_score)\nif max_score\
+  \ > ssdeep_indicator.get('score', 0) and max_score > 1:\n    entry = {\n       \
+  \ 'Type': entryTypes['note'],\n        'HumanReadable': 'Similarity to %s %s:%s'\
+  \ % (REPUTATIONS[max_score_indicator['score']], max_score_indicator['indicator_type'],\
+  \ max_score_indicator['value']),\n        'ReadableContentsFormat': formats['markdown'],\n\
+  \        'Contents': max_score,\n        'ContentsFormat': formats['text']\n   \
+  \ }\n    ec = {}\n    ec['DBotScore'] = {\n        'Indicator': ssdeep_value,\n\
+  \        'Type': 'ssdeep',\n        'Vendor': 'DBot',\n        'Score': max_score\n\
+  \    }\n    entry['EntryContext'] = ec\n    demisto.results(entry)\nelse:\n    demisto.results(ssdeep_indicator.get('score',\
+  \ 0))"
+scripttarget: 0
 subtype: python2
 tags:
 - reputation
-comment: Calculate ssdeep reputation based on similar files (by ssdeep similarity)
-  on the system.
-enabled: true
-args:
-- name: input
-  description: Ssdeep value.
-- name: timeFrameDays
-  description: Check similar values in this time frame (days).
-  defaultValue: "1"
-- name: threshold
-  description: Consider ssdeep similar above this threshold.
-  defaultValue: "50"
-scripttarget: 0
-runonce: false
+toversion: 4.1.9
+type: python

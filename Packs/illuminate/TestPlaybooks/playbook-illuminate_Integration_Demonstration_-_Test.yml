@@ -1,73 +1,55 @@
+description: ''
+fromversion: 1.8.7
 id: illuminate Integration Demonstration - Test
-version: -1
+inputs: []
 name: illuminate Integration Demonstration - Test
+outputs: []
 starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: 79850193-eacf-4dd6-84cc-9ddcd7a53e59
-    type: start
-    task:
-      id: 79850193-eacf-4dd6-84cc-9ddcd7a53e59
-      version: -1
-      name: ''
-      iscommand: false
-      brand: ''
-      description: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - '2'
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
     note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 79850193-eacf-4dd6-84cc-9ddcd7a53e59
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 79850193-eacf-4dd6-84cc-9ddcd7a53e59
     timertriggers: []
-    ignoreworker: false
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
   '1':
     id: '1'
-    taskid: 61dc1217-21c1-4094-8bb8-24a94394fef6
-    type: playbook
+    ignoreworker: false
+    note: false
+    separatecontext: true
     task:
+      brand: ''
+      description: ''
       id: 61dc1217-21c1-4094-8bb8-24a94394fef6
-      version: -1
+      iscommand: false
       name: Illuminate Integration Demonstration
       playbookName: Illuminate Integration Demonstration
       type: playbook
-      iscommand: false
-      brand: ''
-      description: ''
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 670
-        }
-      }
-    note: false
+      version: -1
+    taskid: 61dc1217-21c1-4094-8bb8-24a94394fef6
     timertriggers: []
-    ignoreworker: false
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 670\n  }\n}"
   '2':
     id: '2'
-    taskid: 03d3dde4-450d-4327-8120-a3fda63c8fc6
-    type: regular
-    task:
-      id: 03d3dde4-450d-4327-8120-a3fda63c8fc6
-      version: -1
-      name: DeleteContext
-      description: ''
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - '5'
+    note: false
     scriptarguments:
       all:
         simple: 'yes'
@@ -76,32 +58,26 @@ tasks:
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 170
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      description: ''
+      id: 03d3dde4-450d-4327-8120-a3fda63c8fc6
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 03d3dde4-450d-4327-8120-a3fda63c8fc6
     timertriggers: []
-    ignoreworker: false
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 170\n  }\n}"
   '5':
     id: '5'
-    taskid: 8128fa4a-5fc2-46d6-8a76-f0c259410e16
-    type: regular
-    task:
-      id: 8128fa4a-5fc2-46d6-8a76-f0c259410e16
-      version: -1
-      name: setIncident
-      description: ''
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
+    ignoreworker: false
     nexttasks:
       '#none#':
       - '1'
+    note: false
     scriptarguments:
       account: {}
       accountid: {}
@@ -304,29 +280,21 @@ tasks:
       xdrurl: {}
       xdrusercount: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 390
-        }
-      }
-    note: false
+    task:
+      brand: Builtin
+      description: ''
+      id: 8128fa4a-5fc2-46d6-8a76-f0c259410e16
+      iscommand: true
+      name: setIncident
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 8128fa4a-5fc2-46d6-8a76-f0c259410e16
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 715,
-        "width": 380,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
-description: ''
-fromversion: 1.8.7
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 390\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 715,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n\
+  \    }\n  }\n}"

@@ -1,73 +1,67 @@
 id: McAfee-MAR_Test
-version: -1
+inputs: []
 name: McAfee-MAR_Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 383c2b00-fa66-4cbe-8547-6dde49d9bd55
-    type: start
-    task:
-      id: 383c2b00-fa66-4cbe-8547-6dde49d9bd55
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "9"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": -120
-        }
-      }
+      - '9'
     note: false
-    timertriggers: []
-  "1":
-    id: "1"
-    taskid: f504d547-a230-4c77-8113-d85c7cf46b8f
-    type: regular
+    separatecontext: false
     task:
-      id: f504d547-a230-4c77-8113-d85c7cf46b8f
+      brand: ''
+      id: 383c2b00-fa66-4cbe-8547-6dde49d9bd55
+      iscommand: false
+      name: ''
       version: -1
-      name: mar-collectors-list
+    taskid: 383c2b00-fa66-4cbe-8547-6dde49d9bd55
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": -120\n  }\n}"
+  '1':
+    id: '1'
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    separatecontext: false
+    task:
+      brand: McAfee Active Response
       description: Returns a list of all collectors and their outputs
+      id: f504d547-a230-4c77-8113-d85c7cf46b8f
+      iscommand: true
+      name: mar-collectors-list
       script: McAfee Active Response|||mar-collectors-list
       type: regular
-      iscommand: true
-      brand: McAfee Active Response
-    nexttasks:
-      '#none#':
-      - "2"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-  "2":
-    id: "2"
-    taskid: c8d110a2-bc74-45b3-8dd6-6decdedd80f8
-    type: regular
-    task:
-      id: c8d110a2-bc74-45b3-8dd6-6decdedd80f8
       version: -1
-      name: mar-search
-      description: Search endpoint data
-      script: McAfee Active Response|||mar-search
-      type: regular
-      iscommand: true
-      brand: McAfee Active Response
+    taskid: f504d547-a230-4c77-8113-d85c7cf46b8f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '10':
+    id: '10'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: c1a381b3-9371-4b7b-8bba-ffab18950c86
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: c1a381b3-9371-4b7b-8bba-ffab18950c86
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1430\n  }\n}"
+  '2':
+    id: '2'
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
     scriptarguments:
       collector:
         simple: HostInfo
@@ -76,36 +70,25 @@ tasks:
       filter-value: {}
       outputs: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-  "3":
-    id: "3"
-    taskid: 9dbfa549-9ece-492e-8d88-d70aeab9840a
-    type: regular
     task:
-      id: 9dbfa549-9ece-492e-8d88-d70aeab9840a
-      version: -1
-      name: VerifyContext mar-search
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
+      brand: McAfee Active Response
+      description: Search endpoint data
+      id: c8d110a2-bc74-45b3-8dd6-6decdedd80f8
+      iscommand: true
+      name: mar-search
+      script: McAfee Active Response|||mar-search
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: c8d110a2-bc74-45b3-8dd6-6decdedd80f8
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '3':
+    id: '3'
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
+    note: false
     scriptarguments:
       expectedValue: {}
       fields:
@@ -113,32 +96,35 @@ tasks:
       path:
         simple: MAR.HostInfo
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-  "4":
-    id: "4"
-    taskid: 37da63cf-c285-4793-88db-b7e8baee04ac
-    type: regular
     task:
-      id: 37da63cf-c285-4793-88db-b7e8baee04ac
-      version: -1
-      name: mar-search with filter
-      description: '!mar-search collector=Processes filter-by=name filter-operator=Equals
-        filter-value=SYSTEM outputs=user_id,name,uptime'
-      script: McAfee Active Response|||mar-search
+      brand: ''
+      description: 'Verifies path in context:
+
+        - Verifies path existence
+
+        - If matching object is an array: verify fields exists in each of the objects
+        in the array
+
+        - If matching object is not an array: verify fields exists in matching object
+
+        - if ''expectedValue'' is given: ensure that the given value is equal to the
+        context path'
+      id: 9dbfa549-9ece-492e-8d88-d70aeab9840a
+      iscommand: false
+      name: VerifyContext mar-search
+      scriptName: VerifyContext
       type: regular
-      iscommand: true
-      brand: McAfee Active Response
+      version: -1
+    taskid: 9dbfa549-9ece-492e-8d88-d70aeab9840a
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '4':
+    id: '4'
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
+    note: false
     scriptarguments:
       collector:
         simple: Processes
@@ -151,36 +137,26 @@ tasks:
       outputs:
         simple: user_id,name,uptime
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-  "5":
-    id: "5"
-    taskid: 55011276-cd95-4732-83c6-78c34a2f0c4a
-    type: regular
     task:
-      id: 55011276-cd95-4732-83c6-78c34a2f0c4a
-      version: -1
-      name: VerifyContext mar-search with filter
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
+      brand: McAfee Active Response
+      description: '!mar-search collector=Processes filter-by=name filter-operator=Equals
+        filter-value=SYSTEM outputs=user_id,name,uptime'
+      id: 37da63cf-c285-4793-88db-b7e8baee04ac
+      iscommand: true
+      name: mar-search with filter
+      script: McAfee Active Response|||mar-search
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 37da63cf-c285-4793-88db-b7e8baee04ac
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '5':
+    id: '5'
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
+    note: false
     scriptarguments:
       expectedValue: {}
       fields:
@@ -188,32 +164,35 @@ tasks:
       path:
         simple: MAR.Processes
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-  "6":
-    id: "6"
-    taskid: fa73b2c9-2813-4fa4-82a5-16b457d65d05
-    type: regular
     task:
-      id: fa73b2c9-2813-4fa4-82a5-16b457d65d05
-      version: -1
-      name: mar-search-multiple
-      description: '!mar-search-multiple collectors=HostInfo,Processes filter_collector=HostInfo
-        filter-by=hostname filter-operator=Equals filter-value=ADMIN-PC'
-      script: McAfee Active Response|||mar-search-multiple
+      brand: ''
+      description: 'Verifies path in context:
+
+        - Verifies path existence
+
+        - If matching object is an array: verify fields exists in each of the objects
+        in the array
+
+        - If matching object is not an array: verify fields exists in matching object
+
+        - if ''expectedValue'' is given: ensure that the given value is equal to the
+        context path'
+      id: 55011276-cd95-4732-83c6-78c34a2f0c4a
+      iscommand: false
+      name: VerifyContext mar-search with filter
+      scriptName: VerifyContext
       type: regular
-      iscommand: true
-      brand: McAfee Active Response
+      version: -1
+    taskid: 55011276-cd95-4732-83c6-78c34a2f0c4a
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+  '6':
+    id: '6'
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
+    note: false
     scriptarguments:
       collectors:
         simple: HostInfo
@@ -222,119 +201,82 @@ tasks:
       filter-value: {}
       filter_collector: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-  "8":
-    id: "8"
-    taskid: 11941a95-0a2a-46a6-8226-917ee997d4e0
-    type: condition
     task:
-      id: 11941a95-0a2a-46a6-8226-917ee997d4e0
+      brand: McAfee Active Response
+      description: '!mar-search-multiple collectors=HostInfo,Processes filter_collector=HostInfo
+        filter-by=hostname filter-operator=Equals filter-value=ADMIN-PC'
+      id: fa73b2c9-2813-4fa4-82a5-16b457d65d05
+      iscommand: true
+      name: mar-search-multiple
+      script: McAfee Active Response|||mar-search-multiple
+      type: regular
       version: -1
-      name: Check search multiple
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "10"
-    separatecontext: false
+    taskid: fa73b2c9-2813-4fa4-82a5-16b457d65d05
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+  '8':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: MAR
                 accessor: SearchMultiple
+                root: MAR
                 transformers:
-                - operator: atIndex
-                  args:
+                - args:
                     index:
                       value:
-                        simple: "0"
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1260
-        }
-      }
+                        simple: '0'
+                  operator: atIndex
+          operator: isExists
+      label: 'yes'
+    id: '8'
+    nexttasks:
+      'yes':
+      - '10'
     note: false
-    timertriggers: []
-  "9":
-    id: "9"
-    taskid: dfadcb24-11ee-4142-84cd-5230375dc9cc
-    type: regular
+    separatecontext: false
     task:
-      id: dfadcb24-11ee-4142-84cd-5230375dc9cc
-      version: -1
-      name: Delete context
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      id: 11941a95-0a2a-46a6-8226-917ee997d4e0
       iscommand: false
-      brand: ""
+      name: Check search multiple
+      type: condition
+      version: -1
+    taskid: 11941a95-0a2a-46a6-8226-917ee997d4e0
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1260\n  }\n}"
+  '9':
+    id: '9'
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 20
-        }
-      }
-    note: false
-    timertriggers: []
-  "10":
-    id: "10"
-    taskid: c1a381b3-9371-4b7b-8bba-ffab18950c86
-    type: title
     task:
-      id: c1a381b3-9371-4b7b-8bba-ffab18950c86
-      version: -1
-      name: Done
-      type: title
+      brand: ''
+      id: dfadcb24-11ee-4142-84cd-5230375dc9cc
       iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1430
-        }
-      }
-    note: false
+      name: Delete context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: dfadcb24-11ee-4142-84cd-5230375dc9cc
     timertriggers: []
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1615,
-        "width": 380,
-        "x": 50,
-        "y": -120
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 20\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1615,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": -120\n\
+  \    }\n  }\n}"

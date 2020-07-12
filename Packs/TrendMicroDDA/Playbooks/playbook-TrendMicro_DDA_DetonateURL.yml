@@ -1,303 +1,26 @@
-id: Detonate URL - Trend Micro Deep Discovery Analyzer Beta
-version: -1
-name: Detonate URL - Trend Micro Deep Discovery Analyzer Beta
-fromversion: 4.0.0
+beta: true
 description: Detonates a URL using the Trend Micro Deep Discovery Analyzer sandbox.
-starttaskid: "0"
-tasks:
-  "0":
-    id: "0"
-    taskid: 3c10637b-c0a9-482b-8d11-9ff6cf5e1744
-    type: start
-    task:
-      id: 3c10637b-c0a9-482b-8d11-9ff6cf5e1744
-      version: -1
-      name: ""
-      description: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-    note: false
-  "1":
-    id: "1"
-    taskid: 067fee81-9349-4ce8-8f0c-f67792bb9e1c
-    type: title
-    task:
-      id: 067fee81-9349-4ce8-8f0c-f67792bb9e1c
-      version: -1
-      name: Done
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-  "2":
-    id: "2"
-    taskid: 24b1a988-d269-4afb-85a3-16584d9c5439
-    type: condition
-    task:
-      id: 24b1a988-d269-4afb-85a3-16584d9c5439
-      version: -1
-      name: Is Trend Micro DDA sandbox enabled?
-      description: |
-        Verify that there is a valid instance of Trend Micro DDA enabled.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "1"
-      "yes":
-      - "3"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Trend Micro Deep Discovery Analyzer Beta
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-  "3":
-    id: "3"
-    taskid: c557351c-345a-473c-8794-272f09e4d8b1
-    type: condition
-    task:
-      id: c557351c-345a-473c-8794-272f09e4d8b1
-      version: -1
-      name: Is there a URL to Detonate?
-      description: Checks that there is a URL in the playbook’s input.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "1"
-      "yes":
-      - "4"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: inputs.URL
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 370
-        }
-      }
-    note: false
-  "4":
-    id: "4"
-    taskid: 917498dc-d53f-491d-8716-02db8173615c
-    type: regular
-    task:
-      id: 917498dc-d53f-491d-8716-02db8173615c
-      version: -1
-      name: Trend Micro DDA Upload URL
-      description: |
-        Uploads the submission to Trend Micro DDA.
-      script: '|||trendmicro-dda-upload-url'
-      type: regular
-      iscommand: true
-      brand: Trend Micro Deep Discovery Analyzer
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      extend-context: {}
-      url:
-        simple: ${inputs.URL}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 545
-        }
-      }
-    note: false
-  "5":
-    id: "5"
-    taskid: ac91e98c-c048-4e83-8ecc-5136ef9ec6a8
-    type: playbook
-    task:
-      id: ac91e98c-c048-4e83-8ecc-5136ef9ec6a8
-      version: -1
-      name: GenericPolling
-      description: Generic Polling Playbook
-      playbookName: GenericPolling
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      Ids:
-        simple: ${TrendMicroDDA.Submission.SHA1}
-      Interval:
-        simple: "1"
-      PollingCommandArgName:
-        simple: sha1
-      PollingCommandName:
-        simple: trendmicro-dda-check-status
-      Timeout:
-        simple: "10"
-      dt:
-        simple: TrendMicroDDA.Submission(val.Status != 'Completed').SHA1
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 720
-        }
-      }
-    note: false
-  "6":
-    id: "6"
-    taskid: 6e9c7162-7dda-4c05-8df8-44215feb1674
-    type: regular
-    task:
-      id: 6e9c7162-7dda-4c05-8df8-44215feb1674
-      version: -1
-      name: trendmicro-dda-check-status
-      description: Updates the status of the submissions in the context.
-      script: '|||trendmicro-dda-check-status'
-      type: regular
-      iscommand: true
-      brand: Trend Micro Deep Discovery Analyzer
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      extend-context: {}
-      sha1:
-        simple: ${TrendMicroDDA.Submission.SHA1}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 895
-        }
-      }
-    note: false
-  "7":
-    id: "7"
-    taskid: db69eb80-00f4-41ed-8844-b434ca5a0e62
-    type: regular
-    task:
-      id: db69eb80-00f4-41ed-8844-b434ca5a0e62
-      version: -1
-      name: Trend Micro DDA Get Report
-      description: Retrieve the reports from Trend Micro DDA.
-      script: '|||trendmicro-dda-get-report'
-      type: regular
-      iscommand: true
-      brand: Trend Micro Deep Discovery Analyzer
-    nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      sha1:
-        simple: ${TrendMicroDDA.Submission(val.Status == 'Completed').SHA1}
-      threshold: {}
-      verbose: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 1070
-        }
-      }
-    note: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1260,
-        "width": 605,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
+fromversion: 4.0.0
+id: Detonate URL - Trend Micro Deep Discovery Analyzer Beta
 inputs:
-- key: URL
+- description: URL to detonate.
+  key: URL
+  required: true
   value:
     complex:
-      root: URL
       accessor: Data
-  required: true
-  description: URL to detonate.
-- key: interval
-  value:
-    simple: "1"
+      root: URL
+- description: Polling frequency - how often the polling command should run (minutes)
+  key: interval
   required: false
-  description: Polling frequency - how often the polling command should run (minutes)
-- key: timeput
   value:
-    simple: "15"
+    simple: '1'
+- description: How much time to wait before a timeout occurs (minutes)
+  key: timeput
   required: false
-  description: How much time to wait before a timeout occurs (minutes)
+  value:
+    simple: '15'
+name: Detonate URL - Trend Micro Deep Discovery Analyzer Beta
 outputs:
 - contextPath: InfoFile.Type
   description: Report file type e.g. "PE"
@@ -368,6 +91,229 @@ outputs:
 - contextPath: File.Name
   description: File name
   type: string
-beta: true
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 3c10637b-c0a9-482b-8d11-9ff6cf5e1744
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 3c10637b-c0a9-482b-8d11-9ff6cf5e1744
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 067fee81-9349-4ce8-8f0c-f67792bb9e1c
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 067fee81-9349-4ce8-8f0c-f67792bb9e1c
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+  '2':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Trend Micro Deep Discovery Analyzer Beta
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: 'yes'
+    id: '2'
+    nexttasks:
+      '#default#':
+      - '1'
+      'yes':
+      - '3'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: 'Verify that there is a valid instance of Trend Micro DDA enabled.
+
+        '
+      id: 24b1a988-d269-4afb-85a3-16584d9c5439
+      iscommand: false
+      name: Is Trend Micro DDA sandbox enabled?
+      type: condition
+      version: -1
+    taskid: 24b1a988-d269-4afb-85a3-16584d9c5439
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '3':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.URL
+          operator: isExists
+      label: 'yes'
+    id: '3'
+    nexttasks:
+      '#default#':
+      - '1'
+      'yes':
+      - '4'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: "Checks that there is a URL in the playbook\u2019s input."
+      id: c557351c-345a-473c-8794-272f09e4d8b1
+      iscommand: false
+      name: Is there a URL to Detonate?
+      type: condition
+      version: -1
+    taskid: c557351c-345a-473c-8794-272f09e4d8b1
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 370\n  }\n}"
+  '4':
+    id: '4'
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    scriptarguments:
+      extend-context: {}
+      url:
+        simple: ${inputs.URL}
+    separatecontext: false
+    task:
+      brand: Trend Micro Deep Discovery Analyzer
+      description: 'Uploads the submission to Trend Micro DDA.
+
+        '
+      id: 917498dc-d53f-491d-8716-02db8173615c
+      iscommand: true
+      name: Trend Micro DDA Upload URL
+      script: '|||trendmicro-dda-upload-url'
+      type: regular
+      version: -1
+    taskid: 917498dc-d53f-491d-8716-02db8173615c
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 545\n  }\n}"
+  '5':
+    id: '5'
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    scriptarguments:
+      Ids:
+        simple: ${TrendMicroDDA.Submission.SHA1}
+      Interval:
+        simple: '1'
+      PollingCommandArgName:
+        simple: sha1
+      PollingCommandName:
+        simple: trendmicro-dda-check-status
+      Timeout:
+        simple: '10'
+      dt:
+        simple: TrendMicroDDA.Submission(val.Status != 'Completed').SHA1
+    separatecontext: true
+    task:
+      brand: ''
+      description: Generic Polling Playbook
+      id: ac91e98c-c048-4e83-8ecc-5136ef9ec6a8
+      iscommand: false
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      version: -1
+    taskid: ac91e98c-c048-4e83-8ecc-5136ef9ec6a8
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 720\n  }\n}"
+  '6':
+    id: '6'
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    scriptarguments:
+      extend-context: {}
+      sha1:
+        simple: ${TrendMicroDDA.Submission.SHA1}
+    separatecontext: false
+    task:
+      brand: Trend Micro Deep Discovery Analyzer
+      description: Updates the status of the submissions in the context.
+      id: 6e9c7162-7dda-4c05-8df8-44215feb1674
+      iscommand: true
+      name: trendmicro-dda-check-status
+      script: '|||trendmicro-dda-check-status'
+      type: regular
+      version: -1
+    taskid: 6e9c7162-7dda-4c05-8df8-44215feb1674
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 895\n  }\n}"
+  '7':
+    id: '7'
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    scriptarguments:
+      sha1:
+        simple: ${TrendMicroDDA.Submission(val.Status == 'Completed').SHA1}
+      threshold: {}
+      verbose: {}
+    separatecontext: false
+    task:
+      brand: Trend Micro Deep Discovery Analyzer
+      description: Retrieve the reports from Trend Micro DDA.
+      id: db69eb80-00f4-41ed-8844-b434ca5a0e62
+      iscommand: true
+      name: Trend Micro DDA Get Report
+      script: '|||trendmicro-dda-get-report'
+      type: regular
+      version: -1
+    taskid: db69eb80-00f4-41ed-8844-b434ca5a0e62
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 1070\n  }\n}"
 tests:
 - No Test - run "Test Playbook TrendMicroDDA" manually
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1260,\n      \"width\": 605,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

@@ -10,19 +10,20 @@ comment: "Sums a List\ne.g. [\"25\", \"10\", \"25\"] =>  \"60\"\n\nThis is an ex
 commonfields:
   id: SumList
   version: -1
+dockerimage: demisto/python3:3.7.4.1150
 enabled: true
 name: SumList
+runas: DBotWeakRole
+runonce: false
 script: '-'
+subtype: python3
 system: false
 tags:
 - transformer
 - number
 - entirelist
-timeout: '0'
-type: python
-runas: DBotWeakRole
-runonce: false
-subtype: python3
-dockerimage: demisto/python3:3.7.4.1150
 tests:
-  - sumList - Test
+- sumList - Test
+timeout: '0'
+toversion: 4.1.9
+type: python

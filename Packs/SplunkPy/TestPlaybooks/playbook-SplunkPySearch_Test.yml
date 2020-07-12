@@ -1,100 +1,74 @@
 id: SplunkPySearch_Test
-version: -1
+inputs: []
 name: SplunkPySearch_Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: d6cdafa3-f828-444a-85d3-71c9b7970811
-    type: start
-    task:
-      id: d6cdafa3-f828-444a-85d3-71c9b7970811
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
+      - '1'
     note: false
-    timertriggers: []
-  "1":
-    id: "1"
-    taskid: d8559b30-c991-4dd5-8725-e28786b08330
-    type: regular
+    separatecontext: false
     task:
-      id: d8559b30-c991-4dd5-8725-e28786b08330
-      version: -1
-      name: SplunkPySearch
-      scriptName: SplunkPySearch
-      type: regular
+      brand: ''
+      id: d6cdafa3-f828-444a-85d3-71c9b7970811
       iscommand: false
-      brand: ""
+      name: ''
+      version: -1
+    taskid: d6cdafa3-f828-444a-85d3-71c9b7970811
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
     scriptarguments:
       query:
         simple: index=*
       rows:
-        simple: "2"
+        simple: '2'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 230
-        }
-      }
-    note: false
-    timertriggers: []
-  "3":
-    id: "3"
-    taskid: 06cc5b4b-46bc-4aaf-81c9-9defc72865bc
-    type: regular
     task:
-      id: 06cc5b4b-46bc-4aaf-81c9-9defc72865bc
-      version: -1
-      name: VerifyHumanReadableContains
-      description: Verify given entry contains a string
-      scriptName: VerifyHumanReadableContains
-      type: regular
+      brand: ''
+      id: d8559b30-c991-4dd5-8725-e28786b08330
       iscommand: false
-      brand: ""
+      name: SplunkPySearch
+      scriptName: SplunkPySearch
+      type: regular
+      version: -1
+    taskid: d8559b30-c991-4dd5-8725-e28786b08330
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+  '3':
+    id: '3'
+    note: false
     scriptarguments:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
       substring:
         simple: 'Splunk Search results for:'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 510
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      description: Verify given entry contains a string
+      id: 06cc5b4b-46bc-4aaf-81c9-9defc72865bc
+      iscommand: false
+      name: VerifyHumanReadableContains
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      version: -1
+    taskid: 06cc5b4b-46bc-4aaf-81c9-9defc72865bc
     timertriggers: []
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 555,
-        "width": 380,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 510\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 555,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n\
+  \    }\n  }\n}"

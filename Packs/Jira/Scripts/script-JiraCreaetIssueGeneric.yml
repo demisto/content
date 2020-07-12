@@ -1,97 +1,70 @@
-commonfields:
-  id: JiraCreateIssue-example
-  version: -1
-name: JiraCreateIssue-example
-script: |-
-  import json
-
-  """
-  This script is used to simplify the process of creating a new Issue in Jira.
-  You can add fields that you want in the Issue as script arguments and or in the
-  code and have a newly created Issue easily.
-  """
-
-  """
-  createIssue default argument, we recommend not changing them.
-  """
-  DEFUALT_ARGS = ['summary',
-                  'projectKey',
-                  'issueTypeName',
-                  'issueTypeId',
-                  'projectName',
-                  'description',
-                  'labels',
-                  'priority',
-                  'dueDate',
-                  'assignee',
-                  'reporter',
-                  'parentIssueKey',
-                  'parentIssueId'
-                  ]
-
-
-  createIssueArgs = {key : value for key,value in demisto.args().items() if key in DEFUALT_ARGS}
-
-
-  """
-  Adding the arguments fields to the issueJson field.
-  """
-
-  extraIssueArgs = {key: value for key,value in demisto.args().items()  if key not in DEFUALT_ARGS}
-  createIssueArgs['issueJson'] = json.dumps(extraIssueArgs)
-
-  """
-  Executing the command
-  """
-  createIssueResult = demisto.executeCommand("jira-create-issue", createIssueArgs)
-  demisto.results(createIssueResult)
-type: python
-subtype: python2
-tags:
-- jira
-- example
+args:
+- description: Summary of the issue, a mandatory field
+  name: summary
+  required: true
+- description: Project key to associate the issue
+  name: projectKey
+- description: Choose issue type by name - e.g. Problem
+  name: issueTypeName
+- description: Choose issue type by its numeric ID
+  name: issueTypeId
+- description: Project name to associate the issue
+  name: projectName
+- description: Issue description
+  name: description
+- description: 'comma separated list of label '
+  name: labels
+- description: priorty name , like High/Medium
+  name: priority
+- description: DueDate for the issue, in format of 2018-03-11
+  name: dueDate
+- description: assignee name
+  name: assignee
+- description: reporter name
+  name: reporter
+- description: Parent issue key if you create a sub-task
+  name: parentIssueKey
+- description: Parent issue ID if you create a sub-task
+  name: parentIssueId
 comment: This script is used to simplify the process of creating a new Issue in Jira.
   You can add fields that you want in the record as script arguments and or in the
   code and have a newly created Issue easily.
+commonfields:
+  id: JiraCreateIssue-example
+  version: -1
+dependson:
+  must:
+  - jira-create-issue
+  - jira-delete-issue
 enabled: true
-args:
-- name: summary
-  required: true
-  description: Summary of the issue, a mandatory field
-- name: projectKey
-  description: Project key to associate the issue
-- name: issueTypeName
-  description: Choose issue type by name - e.g. Problem
-- name: issueTypeId
-  description: Choose issue type by its numeric ID
-- name: projectName
-  description: Project name to associate the issue
-- name: description
-  description: Issue description
-- name: labels
-  description: 'comma separated list of label '
-- name: priority
-  description: priorty name , like High/Medium
-- name: dueDate
-  description: DueDate for the issue, in format of 2018-03-11
-- name: assignee
-  description: assignee name
-- name: reporter
-  description: reporter name
-- name: parentIssueKey
-  description: Parent issue key if you create a sub-task
-- name: parentIssueId
-  description: Parent issue ID if you create a sub-task
+name: JiraCreateIssue-example
 outputs:
 - contextPath: Ticket.Id
   description: Id of ticket
 - contextPath: Ticket.Key
   description: Key of ticket
-scripttarget: 0
-dependson:
-  must:
-  - jira-create-issue
-  - jira-delete-issue
 runonce: false
+script: "import json\n\n\"\"\"\nThis script is used to simplify the process of creating\
+  \ a new Issue in Jira.\nYou can add fields that you want in the Issue as script\
+  \ arguments and or in the\ncode and have a newly created Issue easily.\n\"\"\"\n\
+  \n\"\"\"\ncreateIssue default argument, we recommend not changing them.\n\"\"\"\n\
+  DEFUALT_ARGS = ['summary',\n                'projectKey',\n                'issueTypeName',\n\
+  \                'issueTypeId',\n                'projectName',\n              \
+  \  'description',\n                'labels',\n                'priority',\n    \
+  \            'dueDate',\n                'assignee',\n                'reporter',\n\
+  \                'parentIssueKey',\n                'parentIssueId'\n          \
+  \      ]\n\n\ncreateIssueArgs = {key : value for key,value in demisto.args().items()\
+  \ if key in DEFUALT_ARGS}\n\n\n\"\"\"\nAdding the arguments fields to the issueJson\
+  \ field.\n\"\"\"\n\nextraIssueArgs = {key: value for key,value in demisto.args().items()\
+  \  if key not in DEFUALT_ARGS}\ncreateIssueArgs['issueJson'] = json.dumps(extraIssueArgs)\n\
+  \n\"\"\"\nExecuting the command\n\"\"\"\ncreateIssueResult = demisto.executeCommand(\"\
+  jira-create-issue\", createIssueArgs)\ndemisto.results(createIssueResult)"
+scripttarget: 0
+subtype: python2
+tags:
+- jira
+- example
 tests:
-  - No tests
+- No tests
+toversion: 4.1.9
+type: python

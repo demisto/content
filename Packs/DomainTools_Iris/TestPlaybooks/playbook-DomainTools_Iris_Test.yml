@@ -1,290 +1,12 @@
-id: DomainTools Iris - Test
-version: -1
-name: DomainTools Iris - Test
 description: DomainTools Iris Test Playbook
-starttaskid: "0"
-tasks:
-  "0":
-    id: "0"
-    taskid: 60826e03-b62f-4e1b-887e-62765b25bd61
-    type: start
-    task:
-      id: 60826e03-b62f-4e1b-887e-62765b25bd61
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-      - "2"
-      - "3"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 570,
-          "y": -90
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "1":
-    id: "1"
-    taskid: d8b3c8f5-25ce-4fdf-84cd-29a305880652
-    type: regular
-    task:
-      id: d8b3c8f5-25ce-4fdf-84cd-29a305880652
-      version: -1
-      name: Profile Domain
-      description: Get a complete profile of the domain provided.
-      script: DomainTools Iris|||domain
-      type: regular
-      iscommand: true
-      brand: DomainTools Iris
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      domain:
-        simple: ${inputs.domain}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 560,
-          "y": 90
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: a6350fde-972d-4dfa-89e5-564730eb2ce7
-    type: regular
-    task:
-      id: a6350fde-972d-4dfa-89e5-564730eb2ce7
-      version: -1
-      name: Get Analytics Data for Domain
-      script: DomainTools Iris|||domaintoolsiris-analytics
-      type: regular
-      iscommand: true
-      brand: DomainTools Iris
-      description: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      domain:
-        simple: ${inputs.domain}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 160,
-          "y": 90
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: 6db36223-dd4c-4874-8534-c795c8574d45
-    type: regular
-    task:
-      id: 6db36223-dd4c-4874-8534-c795c8574d45
-      version: -1
-      name: Get Threat Profile for Domain
-      script: DomainTools Iris|||domaintoolsiris-threat-profile
-      type: regular
-      iscommand: true
-      brand: DomainTools Iris
-      description: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      domain:
-        simple: ${inputs.domain}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 980,
-          "y": 90
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: f32f1059-6abe-47e7-80bc-916e0c5ff8a4
-    type: title
-    task:
-      id: f32f1059-6abe-47e7-80bc-916e0c5ff8a4
-      version: -1
-      name: Done
-      description: End of playbook
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 560,
-          "y": 820
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 4b918569-c912-4923-8484-5de58c1341a1
-    type: playbook
-    task:
-      id: 4b918569-c912-4923-8484-5de58c1341a1
-      version: -1
-      name: Indicator Pivoting - DomainTools Iris
-      description: Pivots are used to gather data that shares a common attribute with
-        a domain. For instance, pivoting on an IP Address will give you back all domains
-        related to that IP address.
-      playbookName: Indicator Pivoting - DomainTools Iris
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      EmailAddress:
-        complex:
-          root: DomainTools
-          accessor: Domains.Identity.TechnicalContact.Email.value
-          transformers:
-          - operator: uniq
-      EmailAddressCount:
-        complex:
-          root: DomainTools
-          accessor: Domains.Identity.TechnicalContact.Email.count
-      IPAddress:
-        complex:
-          root: DomainTools
-          accessor: Domains.Hosting.IPAddresses.address.value
-          transformers:
-          - operator: uniq
-      IPAddressCount:
-        complex:
-          root: DomainTools
-          accessor: Domains.Hosting.IPAddresses.address.count
-      MailServerHostName:
-        complex:
-          root: NoData
-      MailServerHostNameCount:
-        simple: "501"
-      NameServerHostName:
-        complex:
-          root: NoData
-      NameServerHostNameCount:
-        simple: "501"
-      NameServerIPAddress:
-        complex:
-          root: NoData
-      NameServerIPAddressCount:
-        simple: "501"
-      PivotThreshold:
-        simple: "500"
-      SSLHash:
-        complex:
-          root: NoData
-      SSLHashCount:
-        simple: "501"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 560,
-          "y": 300
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "7":
-    id: "7"
-    taskid: bd788c2d-b124-47d3-8405-c554d879ce95
-    type: condition
-    task:
-      id: bd788c2d-b124-47d3-8405-c554d879ce95
-      version: -1
-      name: Did Pivoted Domains get added to context?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "5"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: in
-          left:
-            value:
-              simple: 8lock.co
-          right:
-            value:
-              complex:
-                root: DomainTools
-                accessor: PivotedDomains.Name
-            iscontext: true
-      - - operator: in
-          left:
-            value:
-              simple: 8lock.io
-          right:
-            value:
-              complex:
-                root: DomainTools
-                accessor: PivotedDomains.Name
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 560,
-          "y": 520
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 975,
-        "width": 1200,
-        "x": 160,
-        "y": -90
-      }
-    }
-  }
+id: DomainTools Iris - Test
 inputs:
-- key: domain
+- description: Domain name to test.
+  key: domain
+  required: true
   value:
     simple: demisto.com
-  required: true
-  description: Domain name to test.
+name: DomainTools Iris - Test
 outputs:
 - contextPath: Domain.Name
   description: Domain Name
@@ -850,3 +572,231 @@ outputs:
 - contextPath: DomainTools.PivotedDomains.Analytics.GoogleAnalyticTrackingCode
   description: Google Analytics Tracking Code
   type: Number
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '1'
+      - '2'
+      - '3'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 60826e03-b62f-4e1b-887e-62765b25bd61
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 60826e03-b62f-4e1b-887e-62765b25bd61
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 570,\n    \"y\": -90\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    scriptarguments:
+      domain:
+        simple: ${inputs.domain}
+    separatecontext: false
+    task:
+      brand: DomainTools Iris
+      description: Get a complete profile of the domain provided.
+      id: d8b3c8f5-25ce-4fdf-84cd-29a305880652
+      iscommand: true
+      name: Profile Domain
+      script: DomainTools Iris|||domain
+      type: regular
+      version: -1
+    taskid: d8b3c8f5-25ce-4fdf-84cd-29a305880652
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 560,\n    \"y\": 90\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    scriptarguments:
+      domain:
+        simple: ${inputs.domain}
+    separatecontext: false
+    task:
+      brand: DomainTools Iris
+      description: ''
+      id: a6350fde-972d-4dfa-89e5-564730eb2ce7
+      iscommand: true
+      name: Get Analytics Data for Domain
+      script: DomainTools Iris|||domaintoolsiris-analytics
+      type: regular
+      version: -1
+    taskid: a6350fde-972d-4dfa-89e5-564730eb2ce7
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 160,\n    \"y\": 90\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    scriptarguments:
+      domain:
+        simple: ${inputs.domain}
+    separatecontext: false
+    task:
+      brand: DomainTools Iris
+      description: ''
+      id: 6db36223-dd4c-4874-8534-c795c8574d45
+      iscommand: true
+      name: Get Threat Profile for Domain
+      script: DomainTools Iris|||domaintoolsiris-threat-profile
+      type: regular
+      version: -1
+    taskid: 6db36223-dd4c-4874-8534-c795c8574d45
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 980,\n    \"y\": 90\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: End of playbook
+      id: f32f1059-6abe-47e7-80bc-916e0c5ff8a4
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: f32f1059-6abe-47e7-80bc-916e0c5ff8a4
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 560,\n    \"y\": 820\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    scriptarguments:
+      EmailAddress:
+        complex:
+          accessor: Domains.Identity.TechnicalContact.Email.value
+          root: DomainTools
+          transformers:
+          - operator: uniq
+      EmailAddressCount:
+        complex:
+          accessor: Domains.Identity.TechnicalContact.Email.count
+          root: DomainTools
+      IPAddress:
+        complex:
+          accessor: Domains.Hosting.IPAddresses.address.value
+          root: DomainTools
+          transformers:
+          - operator: uniq
+      IPAddressCount:
+        complex:
+          accessor: Domains.Hosting.IPAddresses.address.count
+          root: DomainTools
+      MailServerHostName:
+        complex:
+          root: NoData
+      MailServerHostNameCount:
+        simple: '501'
+      NameServerHostName:
+        complex:
+          root: NoData
+      NameServerHostNameCount:
+        simple: '501'
+      NameServerIPAddress:
+        complex:
+          root: NoData
+      NameServerIPAddressCount:
+        simple: '501'
+      PivotThreshold:
+        simple: '500'
+      SSLHash:
+        complex:
+          root: NoData
+      SSLHashCount:
+        simple: '501'
+    separatecontext: true
+    task:
+      brand: ''
+      description: Pivots are used to gather data that shares a common attribute with
+        a domain. For instance, pivoting on an IP Address will give you back all domains
+        related to that IP address.
+      id: 4b918569-c912-4923-8484-5de58c1341a1
+      iscommand: false
+      name: Indicator Pivoting - DomainTools Iris
+      playbookName: Indicator Pivoting - DomainTools Iris
+      type: playbook
+      version: -1
+    taskid: 4b918569-c912-4923-8484-5de58c1341a1
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 560,\n    \"y\": 300\n  }\n}"
+  '7':
+    conditions:
+    - condition:
+      - - left:
+            value:
+              simple: 8lock.co
+          operator: in
+          right:
+            iscontext: true
+            value:
+              complex:
+                accessor: PivotedDomains.Name
+                root: DomainTools
+      - - left:
+            value:
+              simple: 8lock.io
+          operator: in
+          right:
+            iscontext: true
+            value:
+              complex:
+                accessor: PivotedDomains.Name
+                root: DomainTools
+      label: 'yes'
+    id: '7'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '5'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: bd788c2d-b124-47d3-8405-c554d879ce95
+      iscommand: false
+      name: Did Pivoted Domains get added to context?
+      type: condition
+      version: -1
+    taskid: bd788c2d-b124-47d3-8405-c554d879ce95
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 560,\n    \"y\": 520\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 975,\n      \"width\": 1200,\n      \"x\": 160,\n      \"y\":\
+  \ -90\n    }\n  }\n}"

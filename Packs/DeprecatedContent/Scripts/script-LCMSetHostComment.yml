@@ -1,53 +1,41 @@
+args:
+- default: true
+  description: The host's name
+  name: name
+- description: The new comment to set for the host
+  name: comment
+  required: true
+- description: The host's IP
+  name: ip
+comment: This script is deprecated. LightCyber Magna is no longer available.
 commonfields:
   id: LCMSetHostComment
   version: -1
-name: LCMSetHostComment
-script: |+
-  import re
-  ID_REGEX = r'Id: ([a-zA-Z0-9\-]+)'
-
-  dArgs = demisto.args()
-  resp = demisto.executeCommand("LCMHosts", dArgs)
-  if isError(resp[0]):
-      demisto.results(resp)
-  elif  resp[0]['Contents'] == 'No results.':
-      demisto.results('Host not found in LightCyber.')
-  else:
-      #demisto.log(str(resp))
-      hosts = resp[0]['Contents']
-      if isinstance(hosts, list) and len(hosts) == 1 :
-          reMatch = re.search(ID_REGEX, hosts[0]['HostId'], re.I)
-          if reMatch and len(reMatch.groups()) > 0:
-              hostID = reMatch.group(1)
-          if hostID:
-              resp = demisto.executeCommand("lcm-set-host-comment", {'id': hostID, 'comment': dArgs['comment']})
-              if isError(resp[0]) or resp[0]['Contents'] != 'No result returned':
-                  demisto.results(resp)
-              else:
-                  demisto.results('Done')
-          else:
-              demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Could not extract host ID.' } )
-      else:
-          demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Results weren\'t a single host: ' + str(resp)[:3000] } )
-
-type: python
-subtype: python2
-tags:
-- lightcyber
-comment: This script is deprecated. LightCyber Magna is no longer available.
-args:
-- name: name
-  default: true
-  description: The host's name
-- name: comment
-  required: true
-  description: The new comment to set for the host
-- name: ip
-  description: The host's IP
-scripttarget: 0
-deprecated: true
 dependson:
   must:
   - lcm-set-host-comment
-timeout: 0s
+deprecated: true
+name: LCMSetHostComment
+script: "import re\nID_REGEX = r'Id: ([a-zA-Z0-9\\-]+)'\n\ndArgs = demisto.args()\n\
+  resp = demisto.executeCommand(\"LCMHosts\", dArgs)\nif isError(resp[0]):\n    demisto.results(resp)\n\
+  elif  resp[0]['Contents'] == 'No results.':\n    demisto.results('Host not found\
+  \ in LightCyber.')\nelse:\n    #demisto.log(str(resp))\n    hosts = resp[0]['Contents']\n\
+  \    if isinstance(hosts, list) and len(hosts) == 1 :\n        reMatch = re.search(ID_REGEX,\
+  \ hosts[0]['HostId'], re.I)\n        if reMatch and len(reMatch.groups()) > 0:\n\
+  \            hostID = reMatch.group(1)\n        if hostID:\n            resp = demisto.executeCommand(\"\
+  lcm-set-host-comment\", {'id': hostID, 'comment': dArgs['comment']})\n         \
+  \   if isError(resp[0]) or resp[0]['Contents'] != 'No result returned':\n      \
+  \          demisto.results(resp)\n            else:\n                demisto.results('Done')\n\
+  \        else:\n            demisto.results( { \"Type\" : entryTypes[\"error\"],\
+  \ \"ContentsFormat\" : formats[\"text\"], \"Contents\" : 'Could not extract host\
+  \ ID.' } )\n    else:\n        demisto.results( { \"Type\" : entryTypes[\"error\"\
+  ], \"ContentsFormat\" : formats[\"text\"], \"Contents\" : 'Results weren\\'t a single\
+  \ host: ' + str(resp)[:3000] } )\n\n"
+scripttarget: 0
+subtype: python2
 system: true
+tags:
+- lightcyber
+timeout: 0s
+toversion: 4.1.9
+type: python

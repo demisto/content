@@ -1,101 +1,75 @@
 id: SMB test
-version: -1
+inputs: []
 name: SMB test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 7d00ae67-5175-4418-8e8a-d09ee6681135
-    type: start
-    task:
-      id: 7d00ae67-5175-4418-8e8a-d09ee6681135
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "6"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 50
-        }
-      }
+      - '6'
     note: false
-    timertriggers: []
-  "1":
-    id: "1"
-    taskid: 1318b929-317a-4aca-8826-817a73394ccb
-    type: regular
+    separatecontext: false
     task:
-      id: 1318b929-317a-4aca-8826-817a73394ccb
+      brand: ''
+      id: 7d00ae67-5175-4418-8e8a-d09ee6681135
+      iscommand: false
+      name: ''
       version: -1
-      name: smb-download
-      description: Download a file from the SMB server
-      script: "|||smb-download"
-      type: regular
-      iscommand: true
+    taskid: 7d00ae67-5175-4418-8e8a-d09ee6681135
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    note: false
     scriptarguments:
       download_and_attach:
-        simple: "no"
+        simple: 'no'
       file_path:
         simple: Shared/asd.txt
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-  "2":
-    id: "2"
-    taskid: 9a4f14b7-5df9-460b-8268-d292925c51a9
-    type: regular
     task:
-      id: 9a4f14b7-5df9-460b-8268-d292925c51a9
-      version: -1
-      name: smb-upload
-      description: Upload a file to the SMB server
-      script: "|||smb-upload"
-      type: regular
+      description: Download a file from the SMB server
+      id: 1318b929-317a-4aca-8826-817a73394ccb
       iscommand: true
+      name: smb-download
+      script: '|||smb-download'
+      type: regular
+      version: -1
+    taskid: 1318b929-317a-4aca-8826-817a73394ccb
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 895\n  }\n}"
+  '2':
+    id: '2'
+    note: false
     scriptarguments:
       content:
-        simple: "123"
+        simple: '123'
       entryID: {}
       file_path:
         simple: Shared/zxc.txt
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-  "3":
-    id: "3"
-    taskid: 5f522da4-b8a8-4a16-8658-7a28f214852b
-    type: regular
     task:
-      id: 5f522da4-b8a8-4a16-8658-7a28f214852b
-      version: -1
-      name: smb-upload
       description: Upload a file to the SMB server
-      script: "|||smb-upload"
-      type: regular
+      id: 9a4f14b7-5df9-460b-8268-d292925c51a9
       iscommand: true
+      name: smb-upload
+      script: '|||smb-upload'
+      type: regular
+      version: -1
+    taskid: 9a4f14b7-5df9-460b-8268-d292925c51a9
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+  '3':
+    id: '3'
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
+    note: false
     scriptarguments:
       content: {}
       entryID:
@@ -103,58 +77,45 @@ tasks:
       file_path:
         simple: Shared/123.txt
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-  "4":
-    id: "4"
-    taskid: d86019cf-1da9-41ad-802f-c68016511089
-    type: regular
     task:
-      id: d86019cf-1da9-41ad-802f-c68016511089
-      version: -1
-      name: smb-download
-      description: Download a file from the SMB server
-      script: "|||smb-download"
-      type: regular
+      description: Upload a file to the SMB server
+      id: 5f522da4-b8a8-4a16-8658-7a28f214852b
       iscommand: true
+      name: smb-upload
+      script: '|||smb-upload'
+      type: regular
+      version: -1
+    taskid: 5f522da4-b8a8-4a16-8658-7a28f214852b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 545\n  }\n}"
+  '4':
+    id: '4'
+    note: false
     scriptarguments:
       download_and_attach:
-        simple: "yes"
+        simple: 'yes'
       file_path:
         simple: Shared/asd.txt
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-  "5":
-    id: "5"
-    taskid: 43ed9c1d-0c1e-414a-8f54-963b2158e68e
-    type: regular
     task:
-      id: 43ed9c1d-0c1e-414a-8f54-963b2158e68e
-      version: -1
-      name: Get file
-      description: Sends http request. Returns the response as json.
-      scriptName: http
+      description: Download a file from the SMB server
+      id: d86019cf-1da9-41ad-802f-c68016511089
+      iscommand: true
+      name: smb-download
+      script: '|||smb-download'
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: d86019cf-1da9-41ad-802f-c68016511089
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 895\n  }\n}"
+  '5':
+    id: '5'
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
     scriptarguments:
       body: {}
       filename: {}
@@ -165,100 +126,83 @@ tasks:
       password: {}
       proxy: {}
       saveAsFile:
-        simple: "yes"
+        simple: 'yes'
       unsecure: {}
       url:
         simple: https://github.com/demisto/content/raw/master/TestData/hebrew_file.txt
       username: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-  "6":
-    id: "6"
-    taskid: 2958dde9-ebbf-4021-8d57-5243e937a375
-    type: regular
     task:
+      brand: ''
+      description: Sends http request. Returns the response as json.
+      id: 43ed9c1d-0c1e-414a-8f54-963b2158e68e
+      iscommand: false
+      name: Get file
+      scriptName: http
+      type: regular
+      version: -1
+    taskid: 43ed9c1d-0c1e-414a-8f54-963b2158e68e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 370\n  }\n}"
+  '6':
+    id: '6'
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Delete field from context
       id: 2958dde9-ebbf-4021-8d57-5243e937a375
-      version: -1
+      iscommand: false
       name: DeleteContext
-      description: Delete field from context
       scriptName: DeleteContext
       type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 195
-        }
-      }
-    note: false
+      version: -1
+    taskid: 2958dde9-ebbf-4021-8d57-5243e937a375
     timertriggers: []
-  "7":
-    id: "7"
-    taskid: 9dc730fc-9fbc-4e10-88bb-0db7db5fc498
     type: regular
-    task:
-      id: 9dc730fc-9fbc-4e10-88bb-0db7db5fc498
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 195\n  }\n}"
+  '7':
+    id: '7'
     nexttasks:
       '#none#':
-      - "2"
-      - "1"
-      - "4"
+      - '2'
+      - '1'
+      - '4'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 720
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: 9dc730fc-9fbc-4e10-88bb-0db7db5fc498
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 9dc730fc-9fbc-4e10-88bb-0db7db5fc498
     timertriggers: []
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 940,
-        "width": 1240,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 720\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 940,\n      \"width\": 1240,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

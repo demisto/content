@@ -1,112 +1,60 @@
+args:
+- default: true
+  description: Filter by incident IDs
+  isArray: true
+  name: id
+- description: Filter by incident name
+  isArray: true
+  name: name
+- description: Filter by the status (e.g. assigned)
+  isArray: true
+  name: status
+- description: Filter by excluding status (e.g. assigned)
+  isArray: true
+  name: notstatus
+- description: Filter by closing reason
+  isArray: true
+  name: reason
+- description: Filter by from date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
+  name: fromdate
+- description: Filter by to date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
+  name: todate
+- description: Filter by from close date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
+  name: fromclosedate
+- description: Filter by to close date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
+  name: toclosedate
+- description: Filter by from due date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
+  name: fromduedate
+- description: Filter by to due date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
+  name: toduedate
+- description: Filter by Severity
+  isArray: true
+  name: level
+- description: Filter by incident owners
+  isArray: true
+  name: owner
+- description: Filter by incident details
+  name: details
+- description: Filter by incident type
+  isArray: true
+  name: type
+- description: Use free form query (use Lucene syntax) as filter. All other filters
+    will be ignored when this filter is used.
+  isArray: true
+  name: query
+- description: Filter by the page number
+  name: page
+- description: Filter by the page size (per fetch)
+  name: size
+- description: Sort in format of field.asc,field.desc,...
+  name: sort
+comment: Deprecated. use SearchIncidentsV2 instead.
 commonfields:
   id: SearchIncidents
   version: -1
-name: SearchIncidents
-script: |-
-  function invalideEscape(str) {
-      var i;
-      var special = ["n", "t", "r", "'", "\"", "7"];
-      for (i = 0; i < str.length - 1; i++) {
-          if (str[i] === '\\') {
-              if (special.indexOf(str[i + 1] == -1)) {
-                  return str.substr(0, i);
-              }
-          }
-      }
-      return str;
-  }
-
-
-  // Clean all the empty ones
-  Object.keys(args).forEach(function(a) {if (!args[a]) delete args[a];});
-  var keys = Object.keys(args);
-  var i;
-  var md;
-  for (i = 0; i < keys.length; i++) {
-      temp = invalideEscape(args[keys[i]]);
-      if (temp.length != args[keys[i]].length) {
-          md += "\n##### Error while parsing the argument: '" + keys[i] +
-          "'\n##### Succeeded parsing untill:\n- " + temp;
-
-      }
-  }
-  if (!!md) {
-      return {Type: entryTypes.error, Contents: md, ContentsFormat: formats.markdown, HumanReadable: md};
-  }
-
-  var arrArgs = ['id', 'name', 'status', 'notstatus', 'reason', 'level', 'system', 'owner', 'type'];
-  for (var i=0; i<arrArgs.length; i++) {
-      var tmp = argToList(args[arrArgs[i]]);
-      if (tmp && tmp.length > 0) {
-          args[arrArgs[i]] = tmp.join(',');
-      }
-  }
-
-
-  var res = executeCommand('getIncidents', args);
-  if (isValidRes(res)) {
-      var data = res[0].Contents.data;
-      var md = tableToMarkdown('Incidents found', data, ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed']);
-      return {Type: entryTypes.note, Contents: data, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {foundIncidents: data}};
-  } else {
-      return res;
-  }
-
-type: javascript
-tags:
-- Utility
-comment: Deprecated. use SearchIncidentsV2 instead.
+deprecated: true
 enabled: true
-args:
-- name: id
-  default: true
-  description: Filter by incident IDs
-  isArray: true
-- name: name
-  description: Filter by incident name
-  isArray: true
-- name: status
-  description: Filter by the status (e.g. assigned)
-  isArray: true
-- name: notstatus
-  description: Filter by excluding status (e.g. assigned)
-  isArray: true
-- name: reason
-  description: Filter by closing reason
-  isArray: true
-- name: fromdate
-  description: Filter by from date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
-- name: todate
-  description: Filter by to date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
-- name: fromclosedate
-  description: Filter by from close date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
-- name: toclosedate
-  description: Filter by to close date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
-- name: fromduedate
-  description: Filter by from due date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
-- name: toduedate
-  description: Filter by to due date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
-- name: level
-  description: Filter by Severity
-  isArray: true
-- name: owner
-  description: Filter by incident owners
-  isArray: true
-- name: details
-  description: Filter by incident details
-- name: type
-  description: Filter by incident type
-  isArray: true
-- name: query
-  description: Use free form query (use Lucene syntax) as filter. All other filters
-    will be ignored when this filter is used.
-  isArray: true
-- name: page
-  description: Filter by the page number
-- name: size
-  description: Filter by the page size (per fetch)
-- name: sort
-  description: Sort in format of field.asc,field.desc,...
+name: SearchIncidents
 outputs:
 - contextPath: foundIncidents.id
   description: IDs of the found incidents
@@ -130,7 +78,30 @@ outputs:
   description: Due dates of the found incidents
 - contextPath: foundIncidents.phase
   description: Phases of the found incidents
+script: "function invalideEscape(str) {\n    var i;\n    var special = [\"n\", \"\
+  t\", \"r\", \"'\", \"\\\"\", \"7\"];\n    for (i = 0; i < str.length - 1; i++) {\n\
+  \        if (str[i] === '\\\\') {\n            if (special.indexOf(str[i + 1] ==\
+  \ -1)) {\n                return str.substr(0, i);\n            }\n        }\n \
+  \   }\n    return str;\n}\n\n\n// Clean all the empty ones\nObject.keys(args).forEach(function(a)\
+  \ {if (!args[a]) delete args[a];});\nvar keys = Object.keys(args);\nvar i;\nvar\
+  \ md;\nfor (i = 0; i < keys.length; i++) {\n    temp = invalideEscape(args[keys[i]]);\n\
+  \    if (temp.length != args[keys[i]].length) {\n        md += \"\\n##### Error\
+  \ while parsing the argument: '\" + keys[i] +\n        \"'\\n##### Succeeded parsing\
+  \ untill:\\n- \" + temp;\n\n    }\n}\nif (!!md) {\n    return {Type: entryTypes.error,\
+  \ Contents: md, ContentsFormat: formats.markdown, HumanReadable: md};\n}\n\nvar\
+  \ arrArgs = ['id', 'name', 'status', 'notstatus', 'reason', 'level', 'system', 'owner',\
+  \ 'type'];\nfor (var i=0; i<arrArgs.length; i++) {\n    var tmp = argToList(args[arrArgs[i]]);\n\
+  \    if (tmp && tmp.length > 0) {\n        args[arrArgs[i]] = tmp.join(',');\n \
+  \   }\n}\n\n\nvar res = executeCommand('getIncidents', args);\nif (isValidRes(res))\
+  \ {\n    var data = res[0].Contents.data;\n    var md = tableToMarkdown('Incidents\
+  \ found', data, ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed']);\n\
+  \    return {Type: entryTypes.note, Contents: data, ContentsFormat: formats.json,\
+  \ HumanReadable: md, EntryContext: {foundIncidents: data}};\n} else {\n    return\
+  \ res;\n}"
 scripttarget: 0
-deprecated: true
+tags:
+- Utility
 tests:
-  - No test
+- No test
+toversion: 4.1.9
+type: javascript

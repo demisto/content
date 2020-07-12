@@ -1,46 +1,32 @@
 id: test-LinkIncidentsWithRetry
-version: -1
+inputs: []
 name: test-LinkIncidentsWithRetry
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 5393d61b-49eb-4432-878a-009e14e8a7fd
-    type: start
-    task:
-      id: 5393d61b-49eb-4432-878a-009e14e8a7fd
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "2"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 50
-        }
-      }
+      - '2'
     note: false
-    timertriggers: []
-  "1":
-    id: "1"
-    taskid: b843a831-c273-4598-8590-3835ccb8ae39
-    type: regular
+    separatecontext: false
     task:
-      id: b843a831-c273-4598-8590-3835ccb8ae39
-      version: -1
-      name: LinkIncidentsWithRetry
-      scriptName: LinkIncidentsWithRetry
-      type: regular
+      brand: ''
+      id: 5393d61b-49eb-4432-878a-009e14e8a7fd
       iscommand: false
-      brand: ""
+      name: ''
+      version: -1
+    taskid: 5393d61b-49eb-4432-878a-009e14e8a7fd
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
+    note: false
     scriptarguments:
       extend-context:
         simple: out=
@@ -48,38 +34,31 @@ tasks:
         complex:
           root: CreatedIncidentID
           transformers:
-          - operator: join
-            args:
+          - args:
               separator:
                 value:
                   simple: ','
+            operator: join
       retryLimit: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-  "2":
-    id: "2"
-    taskid: f077d0e4-5f26-4c02-8e89-343a85f8cd98
-    type: regular
     task:
-      id: f077d0e4-5f26-4c02-8e89-343a85f8cd98
-      version: -1
-      name: createNewIncident
-      description: Create a new incident
-      script: Builtin|||createNewIncident
+      brand: ''
+      id: b843a831-c273-4598-8590-3835ccb8ae39
+      iscommand: false
+      name: LinkIncidentsWithRetry
+      scriptName: LinkIncidentsWithRetry
       type: regular
-      iscommand: true
-      brand: Builtin
+      version: -1
+    taskid: b843a831-c273-4598-8590-3835ccb8ae39
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 545\n  }\n}"
+  '2':
+    id: '2'
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
     scriptarguments:
       customFields: {}
       details:
@@ -99,31 +78,25 @@ tasks:
       systems: {}
       type: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-  "3":
-    id: "3"
-    taskid: 58426ffc-5ae5-4413-87ba-dfacb6e81bb2
-    type: regular
     task:
-      id: 58426ffc-5ae5-4413-87ba-dfacb6e81bb2
-      version: -1
-      name: createNewIncident
+      brand: Builtin
       description: Create a new incident
+      id: f077d0e4-5f26-4c02-8e89-343a85f8cd98
+      iscommand: true
+      name: createNewIncident
       script: Builtin|||createNewIncident
       type: regular
-      iscommand: true
-      brand: Builtin
+      version: -1
+    taskid: f077d0e4-5f26-4c02-8e89-343a85f8cd98
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 195\n  }\n}"
+  '3':
+    id: '3'
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
+    note: false
     scriptarguments:
       customFields: {}
       details:
@@ -143,105 +116,82 @@ tasks:
       systems: {}
       type: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-  "4":
-    id: "4"
-    taskid: 677f807c-971e-48f1-8210-b42263cb92bb
-    type: condition
     task:
-      id: 677f807c-971e-48f1-8210-b42263cb92bb
+      brand: Builtin
+      description: Create a new incident
+      id: 58426ffc-5ae5-4413-87ba-dfacb6e81bb2
+      iscommand: true
+      name: createNewIncident
+      script: Builtin|||createNewIncident
+      type: regular
       version: -1
-      name: is output correct?
-      scriptName: AreValuesEqual
-      type: condition
-      iscommand: false
-      brand: ""
+    taskid: 58426ffc-5ae5-4413-87ba-dfacb6e81bb2
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 370\n  }\n}"
+  '4':
+    id: '4'
     nexttasks:
       '#default#':
-      - "6"
-      "yes":
-      - "5"
+      - '6'
+      'yes':
+      - '5'
+    note: false
+    results:
+    - AreValuesEqual
     scriptarguments:
       left:
         simple: 2 incidents linked
       right:
         simple: ${out}
-    results:
-    - AreValuesEqual
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-  "5":
-    id: "5"
-    taskid: 8a438a1d-1693-4766-8c1c-8eab4cf710a2
-    type: title
     task:
-      id: 8a438a1d-1693-4766-8c1c-8eab4cf710a2
+      brand: ''
+      id: 677f807c-971e-48f1-8210-b42263cb92bb
+      iscommand: false
+      name: is output correct?
+      scriptName: AreValuesEqual
+      type: condition
       version: -1
+    taskid: 677f807c-971e-48f1-8210-b42263cb92bb
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 720\n  }\n}"
+  '5':
+    id: '5'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 8a438a1d-1693-4766-8c1c-8eab4cf710a2
+      iscommand: false
       name: All good!
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 910
-        }
-      }
-    note: false
-    timertriggers: []
-  "6":
-    id: "6"
-    taskid: b0c6621c-6ca5-4f95-8144-1d133d4492d0
-    type: regular
-    task:
-      id: b0c6621c-6ca5-4f95-8144-1d133d4492d0
       version: -1
-      name: FAIL
-      scriptName: Print
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: 8a438a1d-1693-4766-8c1c-8eab4cf710a2
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 910\n  }\n}"
+  '6':
+    id: '6'
+    note: false
     scriptarguments:
       value: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 895
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      id: b0c6621c-6ca5-4f95-8144-1d133d4492d0
+      iscommand: false
+      name: FAIL
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: b0c6621c-6ca5-4f95-8144-1d133d4492d0
     timertriggers: []
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 940,
-        "width": 810,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 895\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 940,\n      \"width\": 810,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

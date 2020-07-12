@@ -1,43 +1,41 @@
+category: Network Security
 commonfields:
   id: FortiGate
   version: -1
-name: FortiGate
-display: FortiGate
-category: Network Security
-description: Manage FortiGate Firewall
 configuration:
-- display: Server URL (e.g. https://192.168.0.1)
+- defaultvalue: ''
+  display: Server URL (e.g. https://192.168.0.1)
   name: server
-  defaultvalue: ""
+  required: true
   type: 0
-  required: true
-- display: Account username
+- defaultvalue: ''
+  display: Account username
   name: credentials
-  defaultvalue: ""
-  type: 9
   required: true
-- display: Trust any certificate (not secure)
+  type: 9
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
   name: unsecure
-  defaultvalue: ""
-  type: 8
   required: false
-- display: Use system proxy settings
+  type: 8
+- defaultvalue: 'false'
+  display: Use system proxy settings
   name: proxy
-  defaultvalue: "false"
-  type: 8
   required: false
+  type: 8
+description: Manage FortiGate Firewall
+display: FortiGate
+name: FortiGate
 script:
-  script: ''
-  type: python
-  subtype: python2
   commands:
-  - name: fortigate-get-addresses
-    arguments:
-    - name: address
+  - arguments:
+    - defaultValue: root
       description: Filter by address (ip or domain)
-      defaultValue: root
-    - name: name
-      description: Filter by address name
+      name: address
+    - description: Filter by address name
+      name: name
+    description: Get all address objects from your firewall
+    name: fortigate-get-addresses
     outputs:
     - contextPath: Fortigate.Address.Name
       description: Address name
@@ -51,11 +49,11 @@ script:
     - contextPath: Fortigate.Address.EndIP
       description: Address object end IP address
       type: string
-    description: Get all address objects from your firewall
-  - name: fortigate-get-service-groups
-    arguments:
-    - name: name
-      description: Filter by group name
+  - arguments:
+    - description: Filter by group name
+      name: name
+    description: Get information about FortiGate service groups
+    name: fortigate-get-service-groups
     outputs:
     - contextPath: Fortigate.ServiceGroup.Name
       description: Service Group name
@@ -63,23 +61,23 @@ script:
     - contextPath: Fortigate.ServiceGroup.Member.Name
       description: Service Group member name
       type: string
-    description: Get information about FortiGate service groups
-  - name: fortigate-update-service-group
-    arguments:
-    - name: groupName
+  - arguments:
+    - description: Group name to update
+      name: groupName
       required: true
-      description: Group name to update
-    - name: serviceName
-      required: true
-      description: Service name to update from the group (If providing data argument
+    - description: Service name to update from the group (If providing data argument
         value does not matter)
-    - name: action
+      name: serviceName
       required: true
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: Action to take on the service
+      name: action
       predefined:
       - add
       - remove
-      description: Action to take on the service
+      required: true
+    description: Update a FortiGate service group
+    name: fortigate-update-service-group
     outputs:
     - contextPath: Fortigate.ServiceGroup.Name
       description: Service group name
@@ -87,12 +85,12 @@ script:
     - contextPath: Fortigate.ServiceGroup.Service.Name
       description: Service name
       type: string
-    description: Update a FortiGate service group
-  - name: fortigate-delete-service-group
-    arguments:
-    - name: groupName
+  - arguments:
+    - description: Group name of the group you would like to delete
+      name: groupName
       required: true
-      description: Group name of the group you would like to delete
+    description: Delete a service group from FortiGate
+    name: fortigate-delete-service-group
     outputs:
     - contextPath: Fortigate.ServiceGroup.Name
       description: Service group name
@@ -100,33 +98,11 @@ script:
     - contextPath: Fortigate.ServiceGroup.Deleted
       description: Was service group deleted
       type: boolean
-    description: Delete a service group from FortiGate
-  - name: fortigate-get-firewall-service
-    arguments:
-    - name: serviceName
-      description: Service name
-    outputs:
-    - contextPath: Fortigate.Service.Name
-      description: Service name
-      type: string
-    - contextPath: Fortigate.Service.Ports.TCP
-      description: TCP Port range included for the service
-      type: string
-    - contextPath: Fortigate.Service.Ports.UDP
-      description: UDP Port range included for the service
-      type: string
+  - arguments:
+    - description: Service name
+      name: serviceName
     description: Get information about a service from FortiGate Firewall
-  - name: fortigate-create-firewall-service
-    arguments:
-    - name: serviceName
-      required: true
-      description: Service name
-    - name: tcpRange
-      description: 'TCP Port range for the service. Example: 100-120 or simply a single
-        port.'
-    - name: udpRange
-      description: 'UDP Port range for the service. Example: 100-120, or simply a
-        single port.'
+    name: fortigate-get-firewall-service
     outputs:
     - contextPath: Fortigate.Service.Name
       description: Service name
@@ -137,13 +113,35 @@ script:
     - contextPath: Fortigate.Service.Ports.UDP
       description: UDP Port range included for the service
       type: string
+  - arguments:
+    - description: Service name
+      name: serviceName
+      required: true
+    - description: 'TCP Port range for the service. Example: 100-120 or simply a single
+        port.'
+      name: tcpRange
+    - description: 'UDP Port range for the service. Example: 100-120, or simply a
+        single port.'
+      name: udpRange
     description: Create a service in FortiGate firewall
-  - name: fortigate-get-policy
-    arguments:
-    - name: policyName
-      description: Policy name
-    - name: policyID
-      description: Policy ID
+    name: fortigate-create-firewall-service
+    outputs:
+    - contextPath: Fortigate.Service.Name
+      description: Service name
+      type: string
+    - contextPath: Fortigate.Service.Ports.TCP
+      description: TCP Port range included for the service
+      type: string
+    - contextPath: Fortigate.Service.Ports.UDP
+      description: UDP Port range included for the service
+      type: string
+  - arguments:
+    - description: Policy name
+      name: policyName
+    - description: Policy ID
+      name: policyID
+    description: Get information about a firewall policy on FortiGate
+    name: fortigate-get-policy
     outputs:
     - contextPath: Fortigate.Policy.Name
       description: Policy name
@@ -175,15 +173,13 @@ script:
     - contextPath: Fortigate.Policy.Security
       description: Policy attached security profile
       type: string
-    description: Get information about a firewall policy on FortiGate
-  - name: fortigate-update-policy
-    arguments:
-    - name: policyID
+  - arguments:
+    - description: Policy ID
+      name: policyID
       required: true
-      description: Policy ID
-    - name: field
-      required: true
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: Field parameter to update
+      name: field
       predefined:
       - description
       - status
@@ -193,27 +189,30 @@ script:
       - action
       - log
       - nat
-      description: Field parameter to update
-    - name: value
       required: true
-      description: Value of field parameter to update
-    - name: keep_original_data
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+    - description: Value of field parameter to update
+      name: value
+      required: true
+    - auto: PREDEFINED
       description: Whether to keep the original data or not. Only relevant if the
         updated field is "source" or "destination". If the supplied value is 'True',
         the current data will not be replaced. Instead, the supplied addresses will
         be added / removed from the existing data.
-    - name: add_or_remove
-      auto: PREDEFINED
+      name: keep_original_data
       predefined:
-      - add
-      - remove
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
       description: Whether to add or remove the supplied addresses from the existing
         data. Only relevant in case the field to update is "source" or "destination",
         and keep_original_data is specified to 'True'.
+      name: add_or_remove
+      predefined:
+      - add
+      - remove
+    description: Update a firewall policy on FortiGate
+    execution: true
+    name: fortigate-update-policy
     outputs:
     - contextPath: Fortigate.Policy.Name
       description: Policy name
@@ -242,59 +241,59 @@ script:
     - contextPath: Fortigate.Policy.Log
       description: Does the policy log the traffic or not
       type: boolean
-    description: Update a firewall policy on FortiGate
-    execution: true
-  - name: fortigate-create-policy
-    arguments:
-    - name: policyName
+  - arguments:
+    - description: Policy name
+      name: policyName
       required: true
-      description: Policy name
-    - name: description
-      description: Description for the policy
-    - name: sourceIntf
+    - description: Description for the policy
+      name: description
+    - description: 'Source interface  (examples : port1, port2 or port3)'
+      name: sourceIntf
       required: true
-      description: 'Source interface  (examples : port1, port2 or port3)'
-    - name: dstIntf
+    - description: 'Destination interface (examples : port1, port2 or port3)'
+      name: dstIntf
       required: true
-      description: 'Destination interface (examples : port1, port2 or port3)'
-    - name: source
+    - description: 'Source IP address, range or domain (examples : all, update.microsoft.com)'
+      name: source
       required: true
-      description: 'Source IP address, range or domain (examples : all, update.microsoft.com)'
-    - name: destination
+    - description: 'Destination IP address, range or domain (examples : all, update.microsoft.com)'
+      name: destination
       required: true
-      description: 'Destination IP address, range or domain (examples : all, update.microsoft.com)'
-    - name: service
+    - description: Service for the policy (for example HTTP)
+      name: service
       required: true
-      description: Service for the policy (for example HTTP)
-    - name: action
-      required: true
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: Action to take
+      name: action
       predefined:
       - accept
       - block
-      description: Action to take
-    - name: status
-      auto: PREDEFINED
+      required: true
+    - auto: PREDEFINED
+      defaultValue: enable
+      description: policy status
+      name: status
       predefined:
       - enable
       - disable
-      description: policy status
+    - auto: PREDEFINED
       defaultValue: enable
-    - name: log
-      auto: PREDEFINED
+      description: Will the policy log the traffic or not
+      name: log
       predefined:
       - all
       - utm
       - disable
-      description: Will the policy log the traffic or not
+    - auto: PREDEFINED
       defaultValue: enable
-    - name: nat
-      auto: PREDEFINED
+      description: enable/disable NAT
+      name: nat
       predefined:
       - enable
       - disable
-      description: enable/disable NAT
-      defaultValue: enable
+    description: Create a firewall policy (rule) on FortiGate
+    execution: true
+    name: fortigate-create-policy
     outputs:
     - contextPath: Fortigate.Policy.Name
       description: Policy name
@@ -329,23 +328,22 @@ script:
     - contextPath: Fortigate.Policy.NAT
       description: Policy NAT
       type: string
-    description: Create a firewall policy (rule) on FortiGate
-    execution: true
-  - name: fortigate-move-policy
-    arguments:
-    - name: policyID
+  - arguments:
+    - description: Policy ID
+      name: policyID
       required: true
-      description: Policy ID
-    - name: position
-      required: true
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: Position for the policy (before or after)
+      name: position
       predefined:
       - before
       - after
-      description: Position for the policy (before or after)
-    - name: neighbor
       required: true
-      description: The ID of the policy being used as a positional anchor
+    - description: The ID of the policy being used as a positional anchor
+      name: neighbor
+      required: true
+    description: Move a firewall policy rule to a different position
+    name: fortigate-move-policy
     outputs:
     - contextPath: Fortigate.Policy.ID
       description: Policy ID
@@ -353,12 +351,13 @@ script:
     - contextPath: Fortigate.Policy.Moved
       description: Was policy moved successfully
       type: boolean
-    description: Move a firewall policy rule to a different position
-  - name: fortigate-delete-policy
-    arguments:
-    - name: policyID
+  - arguments:
+    - description: Policy ID
+      name: policyID
       required: true
-      description: Policy ID
+    description: Delete a policy from FortiGate firewall
+    execution: true
+    name: fortigate-delete-policy
     outputs:
     - contextPath: Fortigate.Policy.ID
       description: Policy ID
@@ -366,12 +365,11 @@ script:
     - contextPath: Fortigate.Policy.Deleted
       description: Was policy deleted successfully
       type: boolean
-    description: Delete a policy from FortiGate firewall
-    execution: true
-  - name: fortigate-get-address-groups
-    arguments:
-    - name: groupName
-      description: Filter by group name
+  - arguments:
+    - description: Filter by group name
+      name: groupName
+    description: Get information about address groups from FortiGate
+    name: fortigate-get-address-groups
     outputs:
     - contextPath: Fortigate.AddressGroup.Name
       description: Address Group name
@@ -382,23 +380,23 @@ script:
     - contextPath: Fortigate.AddressGroup.UUID
       description: Address Group UUID
       type: string
-    description: Get information about address groups from FortiGate
-  - name: fortigate-update-address-group
-    arguments:
-    - name: groupName
+  - arguments:
+    - description: Group name
+      name: groupName
       required: true
-      description: Group name
-    - name: address
-      required: true
-      description: An address to add or remove from the group (If providing data argument,
+    - description: An address to add or remove from the group (If providing data argument,
         value does not matter)
-    - name: action
+      name: address
       required: true
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: Action to take on the service
+      name: action
       predefined:
       - add
       - remove
-      description: Action to take on the service
+      required: true
+    description: Update an address group on FortiGate firewall
+    name: fortigate-update-address-group
     outputs:
     - contextPath: Fortigate.AddressGroup.Name
       description: Address group name
@@ -408,15 +406,15 @@ script:
       type: string
     - contextPath: Fortigate.AddressGroup.UUID
       description: Address group UUID
-    description: Update an address group on FortiGate firewall
-  - name: fortigate-create-address-group
-    arguments:
-    - name: groupName
+  - arguments:
+    - description: Group name
+      name: groupName
       required: true
-      description: Group name
-    - name: address
+    - description: Address member to add to the group
+      name: address
       required: true
-      description: Address member to add to the group
+    description: Create an address group in FortiGate firewall
+    name: fortigate-create-address-group
     outputs:
     - contextPath: Fortigate.AddressGroup.Name
       description: Address group name
@@ -424,12 +422,12 @@ script:
     - contextPath: Fortigate.AddressGroup.Address
       description: Address group member address
       type: string
-    description: Create an address group in FortiGate firewall
-  - name: fortigate-delete-address-group
-    arguments:
-    - name: name
+  - arguments:
+    - description: Address group name
+      name: name
       required: true
-      description: Address group name
+    description: Delete an address group from FortiGate firewall
+    name: fortigate-delete-address-group
     outputs:
     - contextPath: Fortigate.AddressGroup.Name
       description: Address group name
@@ -437,27 +435,27 @@ script:
     - contextPath: Fortigate.AddressGroup.Deleted
       description: Was address group deleted
       type: boolean
-    description: Delete an address group from FortiGate firewall
-  - name: fortigate-ban-ip
-    arguments:
-    - name: ip_address
+  - arguments:
+    - description: CSV list of IP addresses to ban. IPv4 and IPv6 addresses are supported.
+        For example, "1.1.1.1,6.7.8.9".
+      isArray: true
+      name: ip_address
       required: true
-      description: CSV list of IP addresses to ban. IPv4 and IPv6 addresses
+    - description: Time until ban expires in seconds. 0 for indefinite ban.
+      name: expiry
+    description: Adds IP addresses to the banned list.
+    name: fortigate-ban-ip
+  - arguments:
+    - description: CSV list of banned user IP addresses to clear. IPv4 and IPv6 addresses
         are supported. For example, "1.1.1.1,6.7.8.9".
       isArray: true
-    - name: expiry
-      description: Time until ban expires in seconds. 0 for indefinite ban.
-    description: Adds IP addresses to the banned list.
-  - name: fortigate-unban-ip
-    arguments:
-    - name: ip_address
+      name: ip_address
       required: true
-      description: CSV list of banned user IP addresses to clear. IPv4 and IPv6
-        addresses are supported. For example, "1.1.1.1,6.7.8.9".
-      isArray: true
     description: Clears a list of specific banned IP addresses.
-  - name: fortigate-get-banned-ips
-    arguments: []
+    name: fortigate-unban-ip
+  - arguments: []
+    description: Returns a list of banned IP addresses.
+    name: fortigate-get-banned-ips
     outputs:
     - contextPath: Fortigate.BannedIP.IP
       description: The IP address.
@@ -471,7 +469,10 @@ script:
     - contextPath: Fortigate.BannedIP.Source
       description: Source of the ban.
       type: string
-    description: Returns a list of banned IP addresses.
   runonce: false
+  script: ''
+  subtype: python2
+  type: python
 tests:
 - Fortigate Test
+toversion: 4.1.9

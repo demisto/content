@@ -1,87 +1,61 @@
+args:
+- description: '"process" or "binary" according to the type of search you want to
+    run.'
+  name: type
+- default: true
+  description: Query to be run - in Carbon Black syntax
+  name: query
+- description: Number of rows to return. If omitted, default is as stated in the Carbon
+    Black API documentation, currently 10.
+  name: rows
+- description: 'Start at this row #. Allows pagination through large response. If
+    omitted, default is as stated in the Carbon Black API documentation, currently
+    0. '
+  name: start
+comment: Deprecated, use the cb-binary command and cb-get-processes command, instead.
 commonfields:
   id: CBSearch
   version: -1
-name: CBSearch
-script: |-
-  //Script to query carbon black servers:
-  //type must be either 'process' or 'binary'
-  //can provide query & number of rows to return
-  function formatresults(rows, columns) {
-      var table = [];
-      for (var index in rows) {
-          var row = rows[index];
-          if (typeof (row) === "object") {
-              tablerow = {};
-              for (var name in row) {
-                  var value = row[name];
-                  if (typeof (value) === "object") {
-                      value = JSON.stringify(value);
-                  }
-                  var columnIndex = columns.indexOf(name);
-                  var columnName;
-                  if (columnIndex !== -1) {
-                      columnName = columnIndex.toString() + ". " + name;
-                  } else {
-                      columnName = name;
-                  }
-                  tablerow[columnName] = value;
-              }
-              table.push(tablerow);
-          }
-      }
-      return table;
-  }
-  var output = [];
-  var searchType = args.type ? args.type : 'process';
-  if ((searchType !== 'process') && (searchType !== 'binary')) {
-      output.push({ContentsFormat: formats.text, Type: entryTypes.error, Contents: "Error! type must be 'process' or 'binary"});
-  } else {
-      var res = [];
-      var columns = [];
-      if (searchType === 'process') {
-          columns = ["hostname", "username", "process_pid", "path", "process_md5", "start", "os_type", "parent_pid", "sensor_id"];
-      } else {
-          columns = ["md5", "observed_filename", "original_filename", "is_executable_image", "endpoint", "signed", "os_type"];
-      }
-      myArgs = {
-        start: args.start ? args.start : '0',
-        rows: args.rows ? args.rows : '20'
-      };
-      if(args.query)
-          myArgs.query = args.query;
-      res = executeCommand('cb-' + searchType, myArgs);
-      var table = formatresults(res[0].Contents.results, columns);
-      output.push({ContentsFormat: formats.table, Type: entryTypes.note, Contents: table});
-  }
-  return output;
-type: javascript
-tags:
-- carbon-black
-- endpoint
-- enhancement
-comment: Deprecated, use the cb-binary command and cb-get-processes command, instead.
-system: true
-args:
-- name: type
-  description: '"process" or "binary" according to the type of search you want to
-    run.'
-- name: query
-  default: true
-  description: Query to be run - in Carbon Black syntax
-- name: rows
-  description: Number of rows to return. If omitted, default is as stated in the Carbon
-    Black API documentation, currently 10.
-- name: start
-  description: 'Start at this row #. Allows pagination through large response. If
-    omitted, default is as stated in the Carbon Black API documentation, currently
-    0. '
-scripttarget: 0
 dependson:
   must: []
   should:
   - cb-process
   - cb-binary
-timeout: 0s
 deprecated: true
+name: CBSearch
+script: "//Script to query carbon black servers:\n//type must be either 'process'\
+  \ or 'binary'\n//can provide query & number of rows to return\nfunction formatresults(rows,\
+  \ columns) {\n    var table = [];\n    for (var index in rows) {\n        var row\
+  \ = rows[index];\n        if (typeof (row) === \"object\") {\n            tablerow\
+  \ = {};\n            for (var name in row) {\n                var value = row[name];\n\
+  \                if (typeof (value) === \"object\") {\n                    value\
+  \ = JSON.stringify(value);\n                }\n                var columnIndex =\
+  \ columns.indexOf(name);\n                var columnName;\n                if (columnIndex\
+  \ !== -1) {\n                    columnName = columnIndex.toString() + \". \" +\
+  \ name;\n                } else {\n                    columnName = name;\n    \
+  \            }\n                tablerow[columnName] = value;\n            }\n \
+  \           table.push(tablerow);\n        }\n    }\n    return table;\n}\nvar output\
+  \ = [];\nvar searchType = args.type ? args.type : 'process';\nif ((searchType !==\
+  \ 'process') && (searchType !== 'binary')) {\n    output.push({ContentsFormat: formats.text,\
+  \ Type: entryTypes.error, Contents: \"Error! type must be 'process' or 'binary\"\
+  });\n} else {\n    var res = [];\n    var columns = [];\n    if (searchType ===\
+  \ 'process') {\n        columns = [\"hostname\", \"username\", \"process_pid\",\
+  \ \"path\", \"process_md5\", \"start\", \"os_type\", \"parent_pid\", \"sensor_id\"\
+  ];\n    } else {\n        columns = [\"md5\", \"observed_filename\", \"original_filename\"\
+  , \"is_executable_image\", \"endpoint\", \"signed\", \"os_type\"];\n    }\n    myArgs\
+  \ = {\n      start: args.start ? args.start : '0',\n      rows: args.rows ? args.rows\
+  \ : '20'\n    };\n    if(args.query)\n        myArgs.query = args.query;\n    res\
+  \ = executeCommand('cb-' + searchType, myArgs);\n    var table = formatresults(res[0].Contents.results,\
+  \ columns);\n    output.push({ContentsFormat: formats.table, Type: entryTypes.note,\
+  \ Contents: table});\n}\nreturn output;"
+scripttarget: 0
+system: true
+tags:
+- carbon-black
+- endpoint
+- enhancement
 tests:
-  - No tests
+- No tests
+timeout: 0s
+toversion: 4.1.9
+type: javascript

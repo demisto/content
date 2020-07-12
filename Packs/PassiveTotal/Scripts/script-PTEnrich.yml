@@ -1,30 +1,22 @@
+args:
+- default: true
+  description: The IP or domain to enrich
+  name: query
+  required: true
+comment: Enrich the given IP or domain with metadata, malware, osint
 commonfields:
   id: PTEnrich
   version: -1
+dependson:
+  must:
+  - pt-enrichment
+  - pt-malware
+  - pt-osint
+  - pt-get-subdomains
+  - pt-passive-dns
+  - pt-whois
+  - pt-ssl-cert
 name: PTEnrich
-script: |
-  var res = [];
-  var commands = ['pt-get-subdomains', 'pt-passive-dns', 'pt-whois', 'pt-ssl-cert', 'pt-enrichment', 'pt-malware', 'pt-osint'];
-  for (var i in commands) {
-      var r = executeCommand(commands[i], {query: args.query});
-      if (isError(r[0])) {
-          return r[0];
-      }
-      res.push(r[0]);
-  }
-  return res;
-type: javascript
-tags:
-- passive-total
-- server
-- threat-intel
-comment: Enrich the given IP or domain with metadata, malware, osint
-system: true
-args:
-- name: query
-  required: true
-  default: true
-  description: The IP or domain to enrich
 outputs:
 - contextPath: subdomains
   description: List of subdomains as strings
@@ -66,16 +58,18 @@ outputs:
   description: Vendor used to calculate the score
 - contextPath: DBotScore.Score
   description: The actual score
+script: "var res = [];\nvar commands = ['pt-get-subdomains', 'pt-passive-dns', 'pt-whois',\
+  \ 'pt-ssl-cert', 'pt-enrichment', 'pt-malware', 'pt-osint'];\nfor (var i in commands)\
+  \ {\n    var r = executeCommand(commands[i], {query: args.query});\n    if (isError(r[0]))\
+  \ {\n        return r[0];\n    }\n    res.push(r[0]);\n}\nreturn res;\n"
 scripttarget: 0
-dependson:
-  must:
-  - pt-enrichment
-  - pt-malware
-  - pt-osint
-  - pt-get-subdomains
-  - pt-passive-dns
-  - pt-whois
-  - pt-ssl-cert
-timeout: 0s
+system: true
+tags:
+- passive-total
+- server
+- threat-intel
 tests:
-  - No test
+- No test
+timeout: 0s
+toversion: 4.1.9
+type: javascript

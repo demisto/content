@@ -51,9 +51,9 @@ configuration:
   required: false
   type: 0
 - defaultvalue: opened_at
-  display: |-
-    Timestamp field to filter by (e.g., `opened_at`)
-    This is how the filter is applied to the query: “ORDERBYopened_at^opened_at>[Last Run]. To prevent duplicate incidents, this field is mandatory for fetching incidents.
+  display: "Timestamp field to filter by (e.g., `opened_at`)\nThis is how the filter\
+    \ is applied to the query: \u201CORDERBYopened_at^opened_at>[Last Run]. To prevent\
+    \ duplicate incidents, this field is mandatory for fetching incidents."
   name: timestamp_field
   required: false
   type: 0
@@ -65,9 +65,9 @@ configuration:
   name: get_attachments
   required: false
   type: 8
+deprecated: true
 description: Deprecated - We recommend using ServiceNow v2 instead.
 display: ServiceNow - Deprecated
-deprecated: true
 name: ServiceNow
 script:
   commands:
@@ -4142,7 +4142,8 @@ script:
   isfetch: true
   runonce: false
   script: '-'
-  type: python
   subtype: python2
+  type: python
 tests:
 - No test - Hibernating instance
+toversion: 4.1.9

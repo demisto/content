@@ -1,54 +1,41 @@
-id: DBotCreatePhishingClassifierJob
-version: -1
-name: DBot Create Phishing Classifier Job
 description: 'Train the phishing machine learning model. This playbook should be used
   as job, to run repeatedly, for example every week. '
-starttaskid: "0"
+fromversion: 4.1.0
+id: DBotCreatePhishingClassifierJob
+inputs: []
+name: DBot Create Phishing Classifier Job
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 3f296bee-5970-4a35-819b-30ace9905ff7
-    type: start
-    task:
-      id: 3f296bee-5970-4a35-819b-30ace9905ff7
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-      description: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "4"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
+      - '4'
     note: false
-    timertriggers: []
-  "1":
-    id: "1"
-    taskid: 831b0954-1008-49f0-84e1-43dc7c585ec0
-    type: playbook
+    separatecontext: false
     task:
-      id: 831b0954-1008-49f0-84e1-43dc7c585ec0
-      version: -1
-      name: DBotCreatePhishingClassifier
-      description: Create a phishing classifier using machine learning technique,
-        based on email content
-      playbookName: DBot Create Phishing Classifier
-      type: playbook
+      brand: ''
+      description: ''
+      id: 3f296bee-5970-4a35-819b-30ace9905ff7
       iscommand: false
-      brand: ""
+      name: ''
+      version: -1
+    taskid: 3f296bee-5970-4a35-819b-30ace9905ff7
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
     scriptarguments:
-      modelListStoreName:
-        simple: phishing_model
       emailSubjectKey:
         simple: name
       emailTagKey:
@@ -56,133 +43,108 @@ tasks:
       emailTextKey:
         simple: details
       hashData:
-        simple: "no"
+        simple: 'no'
       historicalDataFileListName: {}
       incidentsEvaluationQuery:
         simple: type:Phishing and created:>="180 days ago" and created:<"7 days ago"
       incidentsTrainingQuery:
         simple: type:Phishing and created:>="7 days ago"
       isContextNeeded:
-        simple: "no"
+        simple: 'no'
       maxIncidentsToFetchOnTraining:
-        simple: "3000"
+        simple: '3000'
+      modelListStoreName:
+        simple: phishing_model
       phishingLabels:
         simple: malicious,other
     separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-  "2":
-    id: "2"
-    taskid: f2153861-94b2-4de6-8883-546b3e4dc5b9
-    type: title
     task:
-      id: f2153861-94b2-4de6-8883-546b3e4dc5b9
+      brand: ''
+      description: Create a phishing classifier using machine learning technique,
+        based on email content
+      id: 831b0954-1008-49f0-84e1-43dc7c585ec0
+      iscommand: false
+      name: DBotCreatePhishingClassifier
+      playbookName: DBot Create Phishing Classifier
+      type: playbook
       version: -1
+    taskid: 831b0954-1008-49f0-84e1-43dc7c585ec0
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '2':
+    id: '2'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: f2153861-94b2-4de6-8883-546b3e4dc5b9
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-      description: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-  "3":
-    id: "3"
-    taskid: a0577456-3576-460d-8ede-15c6569f611a
-    type: regular
-    task:
-      id: a0577456-3576-460d-8ede-15c6569f611a
       version: -1
-      name: Close incident
-      description: Close the investigation - we want to close the incident if the
-        playbook successfully finished.
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
-      brand: Builtin
+    taskid: f2153861-94b2-4de6-8883-546b3e4dc5b9
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '3':
+    id: '3'
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
     scriptarguments:
       assetid: {}
       closeNotes: {}
       closeReason: {}
       id: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-  "4":
-    id: "4"
-    taskid: cd901cee-98fa-416b-8e39-519218a516ea
-    type: regular
     task:
-      id: cd901cee-98fa-416b-8e39-519218a516ea
-      version: -1
-      name: Clean context
-      description: Clear all context data
-      scriptName: DeleteContext
+      brand: Builtin
+      description: Close the investigation - we want to close the incident if the
+        playbook successfully finished.
+      id: a0577456-3576-460d-8ede-15c6569f611a
+      iscommand: true
+      name: Close incident
+      script: Builtin|||closeInvestigation
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: a0577456-3576-460d-8ede-15c6569f611a
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '4':
+    id: '4'
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      description: Clear all context data
+      id: cd901cee-98fa-416b-8e39-519218a516ea
+      iscommand: false
+      name: Clean context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: cd901cee-98fa-416b-8e39-519218a516ea
     timertriggers: []
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 735,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
-fromversion: 4.1.0
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
 tests:
-  - No tests
+- No tests
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 735,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

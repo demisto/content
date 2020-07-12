@@ -1,21 +1,22 @@
+alt_dockerimages:
+- demisto/python3:3.7.3.286
+- demisto/python3:3.8.3.8494
+comment: Common code that will be merged into each server script when it runs.
 commonfields:
   id: CommonServerPython
   version: -1
+dependson: {}
 name: CommonServerPython
 script: ''
-type: python
+scripttarget: 0
 subtype: python2
+system: true
 tags:
 - infra
 - server
-comment: Common code that will be merged into each server script when it runs.
-system: true
-scripttarget: 0
-dependson: {}
-timeout: 0s
-alt_dockerimages: # used for unit testing
-  - demisto/python3:3.7.3.286
-  - demisto/python3:3.8.3.8494
 tests:
-  - TestCommonPython
-  - Test-debug-mode
+- TestCommonPython
+- Test-debug-mode
+timeout: 0s
+toversion: 4.1.9
+type: python

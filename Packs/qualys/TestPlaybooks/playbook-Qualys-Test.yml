@@ -1,113 +1,87 @@
-id: Qualys-Test
-version: -1
 contentitemfields:
   propagationLabels: []
+id: Qualys-Test
+inputs: []
 name: Qualys-Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 0677c945-19eb-4f40-88d8-c0466e56a412
-    type: start
-    task:
-      id: 0677c945-19eb-4f40-88d8-c0466e56a412
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "39"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-  "10":
-    id: "10"
-    taskid: f9245719-b4fd-4569-87b9-c29e6db6aeb0
-    type: regular
-    task:
-      id: f9245719-b4fd-4569-87b9-c29e6db6aeb0
-      version: -1
-      name: Delete All Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
-      - "27"
+      - '39'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 0677c945-19eb-4f40-88d8-c0466e56a412
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 0677c945-19eb-4f40-88d8-c0466e56a412
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '10':
+    id: '10'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '27'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       key: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "25":
-    id: "25"
-    taskid: 43a52ad3-7f15-4bd1-839d-74348fa92705
-    type: regular
     task:
-      id: 43a52ad3-7f15-4bd1-839d-74348fa92705
-      version: -1
-      name: qualys-report-list
-      description: get list of generated reports in the system
-      script: Qualys|||qualys-report-list
+      brand: ''
+      description: Delete field from context
+      id: f9245719-b4fd-4569-87b9-c29e6db6aeb0
+      iscommand: false
+      name: Delete All Context
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: Qualys
+      version: -1
+    taskid: f9245719-b4fd-4569-87b9-c29e6db6aeb0
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '25':
+    id: '25'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "41"
+      - '41'
+    note: false
     scriptarguments:
       expires_before_datetime: {}
       id: {}
       state: {}
       user_login: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "27":
-    id: "27"
-    taskid: ae806029-4a94-4da3-8572-c85e3e0f6a1d
-    type: regular
     task:
-      id: ae806029-4a94-4da3-8572-c85e3e0f6a1d
-      version: -1
-      name: qualys-pc-scan-list
-      description: Get  list of compliance scans in your account.
-      script: Qualys|||qualys-pc-scan-list
-      type: regular
-      iscommand: true
       brand: Qualys
+      description: get list of generated reports in the system
+      id: 43a52ad3-7f15-4bd1-839d-74348fa92705
+      iscommand: true
+      name: qualys-report-list
+      script: Qualys|||qualys-report-list
+      type: regular
+      version: -1
+    taskid: 43a52ad3-7f15-4bd1-839d-74348fa92705
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '27':
+    id: '27'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "28"
+      - '28'
+    note: false
     scriptarguments:
       launched_after_datetime: {}
       launched_before_datetime: {}
@@ -122,88 +96,70 @@ tasks:
       type: {}
       user_login: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "28":
-    id: "28"
-    taskid: 636ae050-5d65-40e5-86a1-22ddaafabc62
-    type: title
     task:
-      id: 636ae050-5d65-40e5-86a1-22ddaafabc62
+      brand: Qualys
+      description: Get  list of compliance scans in your account.
+      id: ae806029-4a94-4da3-8572-c85e3e0f6a1d
+      iscommand: true
+      name: qualys-pc-scan-list
+      script: Qualys|||qualys-pc-scan-list
+      type: regular
       version: -1
+    taskid: ae806029-4a94-4da3-8572-c85e3e0f6a1d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+  '28':
+    id: '28'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '29'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 636ae050-5d65-40e5-86a1-22ddaafabc62
+      iscommand: false
       name: Fail only if exception is thrown
       type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "29"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "29":
-    id: "29"
-    taskid: 50df3c49-3a3b-49a8-8b0b-e8b2e2678a5c
-    type: regular
-    task:
-      id: 50df3c49-3a3b-49a8-8b0b-e8b2e2678a5c
       version: -1
-      name: Delete All Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: 636ae050-5d65-40e5-86a1-22ddaafabc62
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+  '29':
+    id: '29'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "30"
+      - '30'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       key: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "30":
-    id: "30"
-    taskid: d6fe61d7-22c7-4f56-8435-85373641769a
-    type: regular
     task:
-      id: d6fe61d7-22c7-4f56-8435-85373641769a
-      version: -1
-      name: qualys-vm-scan-list
-      description: Lists vulnerability scans in the user’s account
-      script: Qualys|||qualys-vm-scan-list
+      brand: ''
+      description: Delete field from context
+      id: 50df3c49-3a3b-49a8-8b0b-e8b2e2678a5c
+      iscommand: false
+      name: Delete All Context
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: Qualys
+      version: -1
+    taskid: 50df3c49-3a3b-49a8-8b0b-e8b2e2678a5c
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+  '30':
+    id: '30'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "31"
+      - '31'
+    note: false
     scriptarguments:
       launched_after_datetime: {}
       launched_before_datetime: {}
@@ -218,321 +174,255 @@ tasks:
       type: {}
       user_login: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "31":
-    id: "31"
-    taskid: d525b9a5-05a3-42ea-8086-90a82550b740
-    type: title
     task:
-      id: d525b9a5-05a3-42ea-8086-90a82550b740
+      brand: Qualys
+      description: "Lists vulnerability scans in the user\u2019s account"
+      id: d6fe61d7-22c7-4f56-8435-85373641769a
+      iscommand: true
+      name: qualys-vm-scan-list
+      script: Qualys|||qualys-vm-scan-list
+      type: regular
       version: -1
+    taskid: d6fe61d7-22c7-4f56-8435-85373641769a
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1420\n  }\n}"
+  '31':
+    id: '31'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '32'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: d525b9a5-05a3-42ea-8086-90a82550b740
+      iscommand: false
       name: Fail only if exception is thrown
       type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "32"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "32":
-    id: "32"
-    taskid: 9a4c8cf5-6545-4a74-8231-f27370490dd0
-    type: regular
-    task:
-      id: 9a4c8cf5-6545-4a74-8231-f27370490dd0
       version: -1
-      name: Delete All Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: d525b9a5-05a3-42ea-8086-90a82550b740
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1595\n  }\n}"
+  '32':
+    id: '32'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "33"
+      - '33'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       key: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "33":
-    id: "33"
-    taskid: 75932a30-fa52-47f8-8d88-c22040d3b146
-    type: regular
     task:
-      id: 75932a30-fa52-47f8-8d88-c22040d3b146
+      brand: ''
+      description: Delete field from context
+      id: 9a4c8cf5-6545-4a74-8231-f27370490dd0
+      iscommand: false
+      name: Delete All Context
+      scriptName: DeleteContext
+      type: regular
       version: -1
+    taskid: 9a4c8cf5-6545-4a74-8231-f27370490dd0
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1770\n  }\n}"
+  '33':
+    id: '33'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '34'
+    note: false
+    separatecontext: false
+    task:
+      brand: Qualys
+      id: 75932a30-fa52-47f8-8d88-c22040d3b146
+      iscommand: true
       name: qualys-report-template-list
       script: Qualys|||qualys-report-template-list
       type: regular
-      iscommand: true
-      brand: Qualys
-    nexttasks:
-      '#none#':
-      - "34"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "34":
-    id: "34"
-    taskid: d0ad88ed-4a4f-40de-8b33-5249def8dfd6
-    type: regular
-    task:
-      id: d0ad88ed-4a4f-40de-8b33-5249def8dfd6
       version: -1
-      name: VerifyContext qualys-report-template-list
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: 75932a30-fa52-47f8-8d88-c22040d3b146
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1945\n  }\n}"
+  '34':
+    id: '34'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "35"
+      - '35'
+    note: false
     scriptarguments:
       expectedValue: {}
       extend-context: {}
       fields:
         simple: Global,ID,LastUpdate,Title,Type,User.FirstName,User.LastName,User.Login,TemplateType
       isArray:
-        simple: "true"
+        simple: 'true'
       path:
         simple: Qualys.ReportTemplate
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2120
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "35":
-    id: "35"
-    taskid: bc1bbadd-ae08-4dc9-8bf6-b7db368bc012
-    type: regular
     task:
-      id: bc1bbadd-ae08-4dc9-8bf6-b7db368bc012
-      version: -1
-      name: Delete All Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      id: d0ad88ed-4a4f-40de-8b33-5249def8dfd6
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "38"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2295
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "37":
-    id: "37"
-    taskid: bd594cc7-2d35-4105-86b6-7848fb9dca19
-    type: regular
-    task:
-      id: bd594cc7-2d35-4105-86b6-7848fb9dca19
-      version: -1
-      name: VerifyContext qualys-scheduled-report-list
+      name: VerifyContext qualys-report-template-list
       scriptName: VerifyContext
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: d0ad88ed-4a4f-40de-8b33-5249def8dfd6
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2120\n  }\n}"
+  '35':
+    id: '35'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "40"
+      - '38'
+    note: false
+    scriptarguments:
+      all:
+        simple: 'yes'
+      key: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: bc1bbadd-ae08-4dc9-8bf6-b7db368bc012
+      iscommand: false
+      name: Delete All Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: bc1bbadd-ae08-4dc9-8bf6-b7db368bc012
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2295\n  }\n}"
+  '37':
+    id: '37'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '40'
+    note: false
     scriptarguments:
       expectedValue: {}
       extend-context: {}
       fields:
         simple: ID,OutputFormat,Schedule,Title
       isArray:
-        simple: "true"
+        simple: 'true'
       path:
         simple: Qualys.Report
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2645
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "38":
-    id: "38"
-    taskid: 75e84d8a-7963-4348-84d5-d3fa386864be
-    type: regular
     task:
-      id: 75e84d8a-7963-4348-84d5-d3fa386864be
-      version: -1
-      name: qualys-scheduled-report-list
-      description: Get list of scheduled reports
-      script: Qualys|||qualys-scheduled-report-list
+      brand: ''
+      id: bd594cc7-2d35-4105-86b6-7848fb9dca19
+      iscommand: false
+      name: VerifyContext qualys-scheduled-report-list
+      scriptName: VerifyContext
       type: regular
-      iscommand: true
-      brand: Qualys
+      version: -1
+    taskid: bd594cc7-2d35-4105-86b6-7848fb9dca19
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2645\n  }\n}"
+  '38':
+    id: '38'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "37"
+      - '37'
+    note: false
     scriptarguments:
       id: {}
       is_active: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "39":
-    id: "39"
-    taskid: 259aa086-33c9-4fe0-8b33-986c4c04a93b
-    type: regular
     task:
-      id: 259aa086-33c9-4fe0-8b33-986c4c04a93b
-      version: -1
-      name: Delete All Context
-      description: Delete field from context
-      scriptName: DeleteContext
+      brand: Qualys
+      description: Get list of scheduled reports
+      id: 75e84d8a-7963-4348-84d5-d3fa386864be
+      iscommand: true
+      name: qualys-scheduled-report-list
+      script: Qualys|||qualys-scheduled-report-list
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 75e84d8a-7963-4348-84d5-d3fa386864be
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2470\n  }\n}"
+  '39':
+    id: '39'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "25"
+      - '25'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "40":
-    id: "40"
-    taskid: 68eefeb1-93bc-43b4-8dae-63d1107a9667
-    type: title
     task:
-      id: 68eefeb1-93bc-43b4-8dae-63d1107a9667
+      brand: ''
+      description: Delete field from context
+      id: 259aa086-33c9-4fe0-8b33-986c4c04a93b
+      iscommand: false
+      name: Delete All Context
+      scriptName: DeleteContext
+      type: regular
       version: -1
+    taskid: 259aa086-33c9-4fe0-8b33-986c4c04a93b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '40':
+    id: '40'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 68eefeb1-93bc-43b4-8dae-63d1107a9667
+      iscommand: false
       name: End
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2820
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "41":
-    id: "41"
-    taskid: bc48cf4a-901e-40b3-88fd-fe83246704ed
-    type: title
-    task:
-      id: bc48cf4a-901e-40b3-88fd-fe83246704ed
       version: -1
-      name: Fail only if exception is thrown
-      type: title
-      iscommand: false
-      brand: ""
+    taskid: 68eefeb1-93bc-43b4-8dae-63d1107a9667
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2820\n  }\n}"
+  '41':
+    id: '41'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "10"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 580
-        }
-      }
+      - '10'
     note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: bc48cf4a-901e-40b3-88fd-fe83246704ed
+      iscommand: false
+      name: Fail only if exception is thrown
+      type: title
+      version: -1
+    taskid: bc48cf4a-901e-40b3-88fd-fe83246704ed
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 2835,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 580\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 2835,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

@@ -1,32 +1,30 @@
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Ipstack
   version: -1
-name: Ipstack
-display: ipstack
-category: Data Enrichment & Threat Intelligence
-description: "One of the leading IP to geolocation \nAPIs and global IP database services."
 configuration:
-- display: API Key
+- defaultvalue: ''
+  display: API Key
   name: apikey
-  defaultvalue: ""
-  type: 4
   required: true
-- display: Use system proxy settings
+  type: 4
+- defaultvalue: ''
+  display: Use system proxy settings
   name: proxy
-  defaultvalue: ''
-  type: 8
   required: false
+  type: 8
+description: "One of the leading IP to geolocation \nAPIs and global IP database services."
+display: ipstack
+name: Ipstack
 script:
-  script: '-'
-  type: python
-  subtype: python2
   commands:
-  - name: ip
-    arguments:
-    - name: ip
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: IP address to query.
+      name: ip
+      required: true
+    description: Queries an IP address in ipstack.
+    name: ip
     outputs:
     - contextPath: IP.Address
       description: IP address.
@@ -52,7 +50,10 @@ script:
     - contextPath: Ipstack.IP.longitude
       description: Longitude of the IP address.
       type: string
-    description: Queries an IP address in ipstack.
   runonce: false
+  script: '-'
+  subtype: python2
+  type: python
 tests:
-  - Ipstack_Test
+- Ipstack_Test
+toversion: 4.1.9

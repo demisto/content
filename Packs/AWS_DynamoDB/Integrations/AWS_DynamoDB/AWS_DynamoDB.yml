@@ -6216,3 +6216,4 @@ script:
   type: python
 tests:
 - AWS_DynamoDB-Test
+toversion: 4.1.9

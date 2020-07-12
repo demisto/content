@@ -6,12 +6,12 @@ args:
   required: false
   secret: false
 - default: false
+  deprecated: true
   description: The name of the file. The file must be uploaded to the War Room.
   isArray: false
   name: file
   required: false
   secret: false
-  deprecated: true
 - default: false
   description: The column number that contains IP Addresses. (First column is column
     0)
@@ -77,16 +77,17 @@ outputs:
 - contextPath: ParseCSV.ParsedCSV
   description: Parsed csv in form of JSON array
   type: Unknown
+runas: DBotWeakRole
+runonce: false
 script: '-'
+subtype: python2
 system: false
 tags:
 - file
 - csv
 - Utility
-timeout: '0'
-type: python
-subtype: python2
-runas: DBotWeakRole
-runonce: false
 tests:
 - No tests
+timeout: '0'
+toversion: 4.1.9
+type: python

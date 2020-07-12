@@ -1,78 +1,58 @@
 id: CreateEmailHtmlBody_test_pb
-version: -1
+inputs: []
 name: CreateEmailHtmlBody_test_pb
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 1df4bce4-3a9d-4d81-812d-659ad25077ff
-    type: start
-    task:
-      id: 1df4bce4-3a9d-4d81-812d-659ad25077ff
-      version: -1
-      name: ""
-      description: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "4"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
+      - '4'
     note: false
-    timertriggers: []
-  "1":
-    id: "1"
-    taskid: 668dbda2-9499-4c24-8cb5-273bbd7ddce8
-    type: regular
+    separatecontext: false
     task:
-      id: 668dbda2-9499-4c24-8cb5-273bbd7ddce8
+      brand: ''
+      description: ''
+      id: 1df4bce4-3a9d-4d81-812d-659ad25077ff
+      iscommand: false
+      name: ''
       version: -1
-      name: createList
-      description: commands.local.cmd.list.create
-      script: Builtin|||createList
-      type: regular
-      iscommand: true
-      brand: Builtin
+    taskid: 1df4bce4-3a9d-4d81-812d-659ad25077ff
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
     scriptarguments:
       listData:
         simple: '{incident.name}'
       listName:
         simple: test_list
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-  "2":
-    id: "2"
-    taskid: db3edd95-9e7b-43fe-8cf4-31498809a1cb
-    type: regular
     task:
-      id: db3edd95-9e7b-43fe-8cf4-31498809a1cb
-      version: -1
-      name: create email html body
-      scriptName: CreateEmailHtmlBody
+      brand: Builtin
+      description: commands.local.cmd.list.create
+      id: 668dbda2-9499-4c24-8cb5-273bbd7ddce8
+      iscommand: true
+      name: createList
+      script: Builtin|||createList
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 668dbda2-9499-4c24-8cb5-273bbd7ddce8
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '2':
+    id: '2'
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
     scriptarguments:
       key:
         simple: foo
@@ -80,113 +60,89 @@ tasks:
         simple: test_list
       object: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-  "3":
-    id: "3"
-    taskid: a1b3b697-ed0d-41fb-88f6-573a04370afd
-    type: condition
     task:
-      id: a1b3b697-ed0d-41fb-88f6-573a04370afd
-      version: -1
-      name: Test the script
-      type: condition
+      brand: ''
+      id: db3edd95-9e7b-43fe-8cf4-31498809a1cb
       iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "5"
-    separatecontext: false
+      name: create email html body
+      scriptName: CreateEmailHtmlBody
+      type: regular
+      version: -1
+    taskid: db3edd95-9e7b-43fe-8cf4-31498809a1cb
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '3':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: foo
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
+          operator: isExists
+      label: 'yes'
+    id: '3'
+    nexttasks:
+      'yes':
+      - '5'
     note: false
-    timertriggers: []
-  "4":
-    id: "4"
-    taskid: 0dc931ac-67db-4548-8401-fa998a1aa9fa
-    type: regular
+    separatecontext: false
     task:
-      id: 0dc931ac-67db-4548-8401-fa998a1aa9fa
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      id: a1b3b697-ed0d-41fb-88f6-573a04370afd
       iscommand: false
-      brand: ""
+      name: Test the script
+      type: condition
+      version: -1
+    taskid: a1b3b697-ed0d-41fb-88f6-573a04370afd
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '4':
+    id: '4'
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-  "5":
-    id: "5"
-    taskid: fd8cbecb-015a-4d60-8ca4-3769a2e1addc
-    type: title
     task:
-      id: fd8cbecb-015a-4d60-8ca4-3769a2e1addc
-      version: -1
-      name: Done
-      description: ""
-      type: title
+      brand: ''
+      description: Delete field from context
+      id: 0dc931ac-67db-4548-8401-fa998a1aa9fa
       iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 910
-        }
-      }
-    note: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 0dc931ac-67db-4548-8401-fa998a1aa9fa
     timertriggers: []
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 925,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '5':
+    id: '5'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: fd8cbecb-015a-4d60-8ca4-3769a2e1addc
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: fd8cbecb-015a-4d60-8ca4-3769a2e1addc
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 910\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 925,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

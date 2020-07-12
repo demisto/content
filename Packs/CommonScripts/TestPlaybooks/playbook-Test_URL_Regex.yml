@@ -1,74 +1,54 @@
-id: test_url_regex
-version: -1
-name: Test URL Regex
 description: Test the URL regex
-starttaskid: "0"
+id: test_url_regex
+inputs: []
+name: Test URL Regex
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 2135d445-3df4-4fb9-8c23-9a4beb6c742e
+      iscommand: false
+      name: ''
+      version: -1
     taskid: 2135d445-3df4-4fb9-8c23-9a4beb6c742e
     type: start
-    task:
-      id: 2135d445-3df4-4fb9-8c23-9a4beb6c742e
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "4"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
+      - '2'
     note: false
-  "1":
-    id: "1"
-    taskid: ea3987cd-ec64-4f6e-88c3-b8c911e8780d
-    type: regular
-    task:
-      id: ea3987cd-ec64-4f6e-88c3-b8c911e8780d
-      version: -1
-      name: Print URL
-      scriptName: Print
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
+    reputationcalc: 2
     scriptarguments:
       value:
         simple: http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2008-2540
-    reputationcalc: 2
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 395
-        }
-      }
-    note: false
-  "2":
-    id: "2"
-    taskid: e3e22eff-5098-4586-8eb2-b09096ec1fdd
-    type: regular
     task:
-      id: e3e22eff-5098-4586-8eb2-b09096ec1fdd
-      version: -1
-      name: VerifyContext
-      scriptName: VerifyContext
-      type: regular
+      brand: ''
+      id: ea3987cd-ec64-4f6e-88c3-b8c911e8780d
       iscommand: false
-      brand: ""
+      name: Print URL
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: ea3987cd-ec64-4f6e-88c3-b8c911e8780d
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 395\n  }\n}"
+  '2':
+    id: '2'
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
     scriptarguments:
       expectedValue:
         simple: http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2008-2540
@@ -76,76 +56,58 @@ tasks:
       path:
         simple: URL.Data
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 570
-        }
-      }
-    note: false
-  "3":
-    id: "3"
-    taskid: 0a65e9fd-99b5-4207-88fd-2ee8d85b28bd
-    type: title
     task:
-      id: 0a65e9fd-99b5-4207-88fd-2ee8d85b28bd
+      brand: ''
+      id: e3e22eff-5098-4586-8eb2-b09096ec1fdd
+      iscommand: false
+      name: VerifyContext
+      scriptName: VerifyContext
+      type: regular
       version: -1
+    taskid: e3e22eff-5098-4586-8eb2-b09096ec1fdd
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 570\n  }\n}"
+  '3':
+    id: '3'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 0a65e9fd-99b5-4207-88fd-2ee8d85b28bd
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 745
-        }
-      }
-    note: false
-  "4":
-    id: "4"
-    taskid: b99e2862-da90-4a34-80e6-57057c37f9cb
-    type: regular
-    task:
-      id: b99e2862-da90-4a34-80e6-57057c37f9cb
       version: -1
-      name: Delete Context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: 0a65e9fd-99b5-4207-88fd-2ee8d85b28bd
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 745\n  }\n}"
+  '4':
+    id: '4'
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 200
-        }
-      }
-    note: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 760,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    task:
+      brand: ''
+      id: b99e2862-da90-4a34-80e6-57057c37f9cb
+      iscommand: false
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: b99e2862-da90-4a34-80e6-57057c37f9cb
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 200\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 760,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

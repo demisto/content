@@ -485,7 +485,8 @@ script:
   isfetch: false
   runonce: false
   script: '-'
-  type: python
   subtype: python2
+  type: python
 tests:
 - No tests
+toversion: 4.1.9

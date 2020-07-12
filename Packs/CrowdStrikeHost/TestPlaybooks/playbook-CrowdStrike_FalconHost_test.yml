@@ -1,332 +1,217 @@
 id: FalconHost Test
-version: -1
-vcShouldKeepItemLegacyProdMachine: false
+inputs: []
 name: FalconHost Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 814a2191-34e0-40f0-8666-40c67174a0e3
-    type: start
+  '0':
+    id: '0'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
+      brand: ''
       id: 814a2191-34e0-40f0-8666-40c67174a0e3
-      version: -1
-      name: ""
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "7":
-    id: "7"
-    taskid: f16f4c13-934e-422f-8415-6d84bd306c88
-    type: regular
-    task:
-      id: f16f4c13-934e-422f-8415-6d84bd306c88
+      name: ''
       version: -1
-      name: Search devices
-      description: Search for devices in your environment by platform, host name,
-        IP, or a number of other parameters
-      script: FalconHost|||cs-device-search
-      type: regular
-      iscommand: true
-      brand: FalconHost
-    nexttasks:
-      '#none#':
-      - "13"
-    scriptarguments:
-      filter: {}
-      limit: {}
-      offset:
-        simple: "1"
-      query: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 370
-        }
-      }
-    note: false
+    taskid: 814a2191-34e0-40f0-8666-40c67174a0e3
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "8":
-    id: "8"
-    taskid: d84e95eb-b9a3-457e-83c9-4cab302a94b5
-    type: regular
-    task:
-      id: d84e95eb-b9a3-457e-83c9-4cab302a94b5
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "13":
-    id: "13"
-    taskid: 1a6ef7d7-f6a0-4028-8111-56913ffcc87d
-    type: condition
-    task:
-      id: 1a6ef7d7-f6a0-4028-8111-56913ffcc87d
-      version: -1
-      name: Found any devices?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "31"
-      "yes":
-      - "15"
-    separatecontext: false
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 50\n  }\n}"
+  '13':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
                 root: FalconHostDevices
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
+          operator: isExists
+      label: 'yes'
+    id: '13'
     ignoreworker: false
-    skipunavailable: false
+    nexttasks:
+      '#default#':
+      - '31'
+      'yes':
+      - '15'
+    note: false
     quietmode: 0
-  "15":
-    id: "15"
-    taskid: d3f6e785-edad-4a2b-89ed-1247ea92d857
-    type: regular
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: d3f6e785-edad-4a2b-89ed-1247ea92d857
+      brand: ''
+      id: 1a6ef7d7-f6a0-4028-8111-56913ffcc87d
+      iscommand: false
+      name: Found any devices?
+      type: condition
       version: -1
-      name: Get device details
-      description: Get details for one or more devices, according to device ID
-      script: FalconHost|||cs-device-details
-      type: regular
-      iscommand: true
-      brand: FalconHost
+    taskid: 1a6ef7d7-f6a0-4028-8111-56913ffcc87d
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 545\n  }\n}"
+  '15':
+    id: '15'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "16"
+      - '16'
+    note: false
+    quietmode: 0
     scriptarguments:
       ids:
         simple: ${FalconHostDevices}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 377.5,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "16":
-    id: "16"
-    taskid: c5092555-1c08-41ae-8d39-b4cee81f02fd
-    type: regular
     task:
-      id: c5092555-1c08-41ae-8d39-b4cee81f02fd
-      version: -1
-      name: Verify Endpoint
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
+      brand: FalconHost
+      description: Get details for one or more devices, according to device ID
+      id: d3f6e785-edad-4a2b-89ed-1247ea92d857
+      iscommand: true
+      name: Get device details
+      script: FalconHost|||cs-device-details
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: d3f6e785-edad-4a2b-89ed-1247ea92d857
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 377.5,\n    \"y\": 720\n  }\n}"
+  '16':
+    id: '16'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
+    note: false
+    quietmode: 0
     scriptarguments:
       expectedValue: {}
       fields: {}
       path:
         simple: Endpoint
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 377.5,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "17":
-    id: "17"
-    taskid: e32e6cd8-3a3f-4af6-8f74-aa25e3f5166f
-    type: regular
     task:
-      id: e32e6cd8-3a3f-4af6-8f74-aa25e3f5166f
-      version: -1
-      name: Search by MD5
-      description: Returns a list of device IDs on which an indicator ran
-      script: FalconHost|||cs-device-ran-on
+      brand: ''
+      description: 'Verifies path in context:
+
+        - Verifies path existence
+
+        - If matching object is an array: verify fields exists in each of the objects
+        in the array
+
+        - If matching object is not an array: verify fields exists in matching object
+
+        - if ''expectedValue'' is given: ensure that the given value is equal to the
+        context path'
+      id: c5092555-1c08-41ae-8d39-b4cee81f02fd
+      iscommand: false
+      name: Verify Endpoint
+      scriptName: VerifyContext
       type: regular
-      iscommand: true
-      brand: FalconHost
+      version: -1
+    taskid: c5092555-1c08-41ae-8d39-b4cee81f02fd
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 377.5,\n    \"y\": 895\n  }\n}"
+  '17':
+    id: '17'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "24"
+      - '24'
+    note: false
+    quietmode: 0
     scriptarguments:
       type:
         simple: md5
       value:
         simple: 36bd4be7042f6de7e332c05cef287d05
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 377.5,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "18":
-    id: "18"
-    taskid: 30a8b402-3b19-4fcd-85c2-89c784800ce4
-    type: regular
     task:
-      id: 30a8b402-3b19-4fcd-85c2-89c784800ce4
-      version: -1
-      name: Get details
-      description: Get details for one or more devices, according to device ID
-      script: FalconHost|||cs-device-details
-      type: regular
-      iscommand: true
       brand: FalconHost
+      description: Returns a list of device IDs on which an indicator ran
+      id: e32e6cd8-3a3f-4af6-8f74-aa25e3f5166f
+      iscommand: true
+      name: Search by MD5
+      script: FalconHost|||cs-device-ran-on
+      type: regular
+      version: -1
+    taskid: e32e6cd8-3a3f-4af6-8f74-aa25e3f5166f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 377.5,\n    \"y\": 1245\n  }\n}"
+  '18':
+    id: '18'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "33"
+      - '33'
+    note: false
+    quietmode: 0
     scriptarguments:
       ids:
         simple: ${FalconHostDevices}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "19":
-    id: "19"
-    taskid: 89baa8b3-c51d-4fd3-82ca-4ab5b0aa68f8
-    type: regular
     task:
-      id: 89baa8b3-c51d-4fd3-82ca-4ab5b0aa68f8
-      version: -1
-      name: Delete Context
-      description: Delete field from context
-      scriptName: DeleteContext
+      brand: FalconHost
+      description: Get details for one or more devices, according to device ID
+      id: 30a8b402-3b19-4fcd-85c2-89c784800ce4
+      iscommand: true
+      name: Get details
+      script: FalconHost|||cs-device-details
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 30a8b402-3b19-4fcd-85c2-89c784800ce4
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 1595\n  }\n}"
+  '19':
+    id: '19'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 377.5,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "21":
-    id: "21"
-    taskid: 68dfc3fe-83f7-4055-8ae4-2c8ea4e0277b
-    type: regular
     task:
-      id: 68dfc3fe-83f7-4055-8ae4-2c8ea4e0277b
-      version: -1
-      name: Search with number offset
-      description: Search for devices in your environment by platform, host name,
-        IP, or various other parameters
-      script: FalconHost|||cs-device-search
+      brand: ''
+      description: Delete field from context
+      id: 89baa8b3-c51d-4fd3-82ca-4ab5b0aa68f8
+      iscommand: false
+      name: Delete Context
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: FalconHost
+      version: -1
+    taskid: 89baa8b3-c51d-4fd3-82ca-4ab5b0aa68f8
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 377.5,\n    \"y\": 1070\n  }\n}"
+  '21':
+    id: '21'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "22"
+      - '22'
+    note: false
+    quietmode: 0
     scriptarguments:
       filter: {}
       limit: {}
@@ -334,483 +219,457 @@ tasks:
         simple: ${Offset}
       query: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 377.5,
-          "y": 2470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "22":
-    id: "22"
-    taskid: 96b3082f-634e-4464-8243-eb28911f29fa
-    type: regular
     task:
-      id: 96b3082f-634e-4464-8243-eb28911f29fa
-      version: -1
-      name: Get device details
-      description: Get details for one or more devices, according to device ID
-      script: FalconHost|||cs-device-details
-      type: regular
-      iscommand: true
       brand: FalconHost
+      description: Search for devices in your environment by platform, host name,
+        IP, or various other parameters
+      id: 68dfc3fe-83f7-4055-8ae4-2c8ea4e0277b
+      iscommand: true
+      name: Search with number offset
+      script: FalconHost|||cs-device-search
+      type: regular
+      version: -1
+    taskid: 68dfc3fe-83f7-4055-8ae4-2c8ea4e0277b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 377.5,\n    \"y\": 2470\n  }\n}"
+  '22':
+    id: '22'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "31"
+      - '31'
+    note: false
+    quietmode: 0
     scriptarguments:
       ids:
         simple: ${FalconHostDevices}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 377.5,
-          "y": 2645
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "23":
-    id: "23"
-    taskid: bebd7ce9-ca44-4728-8bc2-d182accddbf5
-    type: regular
     task:
-      id: bebd7ce9-ca44-4728-8bc2-d182accddbf5
-      version: -1
-      name: Set number offset
-      description: Sets a value into the context with the given context key
-      scriptName: Set
+      brand: FalconHost
+      description: Get details for one or more devices, according to device ID
+      id: 96b3082f-634e-4464-8243-eb28911f29fa
+      iscommand: true
+      name: Get device details
+      script: FalconHost|||cs-device-details
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 96b3082f-634e-4464-8243-eb28911f29fa
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 377.5,\n    \"y\": 2645\n  }\n}"
+  '23':
+    id: '23'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "21"
+      - '21'
+    note: false
+    quietmode: 0
     scriptarguments:
       append: {}
       key:
         simple: Offset
       value:
-        simple: "1"
+        simple: '1'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 377.5,
-          "y": 2295
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "24":
-    id: "24"
-    taskid: d9e46570-c5f0-4c44-8aaa-a9f001c8d688
-    type: condition
     task:
-      id: d9e46570-c5f0-4c44-8aaa-a9f001c8d688
-      version: -1
-      name: Found any devices?
-      type: condition
+      brand: ''
+      description: Sets a value into the context with the given context key
+      id: bebd7ce9-ca44-4728-8bc2-d182accddbf5
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "33"
-      "yes":
-      - "18"
-    separatecontext: false
+      name: Set number offset
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: bebd7ce9-ca44-4728-8bc2-d182accddbf5
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 377.5,\n    \"y\": 2295\n  }\n}"
+  '24':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
                 root: FalconHostDevices
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 377.5,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
+          operator: isExists
+      label: 'yes'
+    id: '24'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "25":
-    id: "25"
-    taskid: 9c68c21d-78a8-4487-89c1-0a7876c8b74a
-    type: condition
-    task:
-      id: 9c68c21d-78a8-4487-89c1-0a7876c8b74a
-      version: -1
-      name: Check detections were fetched
-      description: Check detections were fetched
-      type: condition
-      iscommand: false
-      brand: ""
     nexttasks:
       '#default#':
-      - "27"
-      "yes":
-      - "26"
+      - '33'
+      'yes':
+      - '18'
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: d9e46570-c5f0-4c44-8aaa-a9f001c8d688
+      iscommand: false
+      name: Found any devices?
+      type: condition
+      version: -1
+    taskid: d9e46570-c5f0-4c44-8aaa-a9f001c8d688
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 377.5,\n    \"y\": 1420\n  }\n}"
+  '25':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: CrowdStrikeHost
-                accessor: Detections.detection_id
+    - condition:
+      - - left:
             iscontext: true
-      - - operator: greaterThan
-          left:
             value:
               complex:
-                root: CrowdStrikeHost
                 accessor: Detections.detection_id
+                root: CrowdStrikeHost
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Detections.detection_id
+                root: CrowdStrikeHost
                 transformers:
                 - operator: count
-            iscontext: true
+          operator: greaterThan
           right:
             value:
-              simple: "1"
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 2995
-        }
-      }
-    note: false
-    timertriggers: []
+              simple: '1'
+      label: 'yes'
+    id: '25'
     ignoreworker: false
-    skipunavailable: false
+    nexttasks:
+      '#default#':
+      - '27'
+      'yes':
+      - '26'
+    note: false
     quietmode: 0
-  "26":
-    id: "26"
-    taskid: 4b1c707d-956b-48c6-8db8-ea6eadb7a0bd
-    type: regular
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 4b1c707d-956b-48c6-8db8-ea6eadb7a0bd
+      brand: ''
+      description: Check detections were fetched
+      id: 9c68c21d-78a8-4487-89c1-0a7876c8b74a
+      iscommand: false
+      name: Check detections were fetched
+      type: condition
       version: -1
-      name: Get Detection Details
-      description: Fetch details of a Crowdstrike Detection using the detection ID
-      script: '|||cs-detection-details'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: 9c68c21d-78a8-4487-89c1-0a7876c8b74a
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 2995\n  }\n}"
+  '26':
+    id: '26'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "28"
+      - '28'
+    note: false
+    quietmode: 0
     scriptarguments:
       detection_id:
         complex:
-          root: CrowdStrikeHost
           accessor: Detections.detection_id
+          root: CrowdStrikeHost
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3170
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "27":
-    id: "27"
-    taskid: 79dd6e1e-4b80-42e8-8628-3078e72aef69
-    type: title
     task:
-      id: 79dd6e1e-4b80-42e8-8628-3078e72aef69
+      brand: ''
+      description: Fetch details of a Crowdstrike Detection using the detection ID
+      id: 4b1c707d-956b-48c6-8db8-ea6eadb7a0bd
+      iscommand: true
+      name: Get Detection Details
+      script: '|||cs-detection-details'
+      type: regular
       version: -1
+    taskid: 4b1c707d-956b-48c6-8db8-ea6eadb7a0bd
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3170\n  }\n}"
+  '27':
+    id: '27'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 79dd6e1e-4b80-42e8-8628-3078e72aef69
+      iscommand: false
       name: No Detections to check
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 3185
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "28":
-    id: "28"
-    taskid: e915c6ff-a88b-47d5-8572-14fdec4d6ee8
-    type: condition
-    task:
-      id: e915c6ff-a88b-47d5-8572-14fdec4d6ee8
       version: -1
-      name: Assert detections details were fetched
-      description: Assert detections details were fetched
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "29"
-    separatecontext: false
+    taskid: 79dd6e1e-4b80-42e8-8628-3078e72aef69
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 3185\n  }\n}"
+  '28':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: CrowdStrikeHost
                 accessor: Detections.first_behavior
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3345
-        }
-      }
-    note: false
-    timertriggers: []
+                root: CrowdStrikeHost
+          operator: isExists
+      label: 'yes'
+    id: '28'
     ignoreworker: false
-    skipunavailable: false
+    nexttasks:
+      'yes':
+      - '29'
+    note: false
     quietmode: 0
-  "29":
-    id: "29"
-    taskid: b9c891b1-3d19-4a68-8519-2f48f94b7105
-    type: regular
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: b9c891b1-3d19-4a68-8519-2f48f94b7105
+      brand: ''
+      description: Assert detections details were fetched
+      id: e915c6ff-a88b-47d5-8572-14fdec4d6ee8
+      iscommand: false
+      name: Assert detections details were fetched
+      type: condition
       version: -1
-      name: Change Detection to in_progress
-      description: Sets the state of a detection in Falcon Host. You can obtain detection
-        IDs from the Falcon Host UI or from the Falcon Streaming API.
-      script: '|||cs-resolve-detection'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: e915c6ff-a88b-47d5-8572-14fdec4d6ee8
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3345\n  }\n}"
+  '29':
+    id: '29'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "30"
+      - '30'
+    note: false
+    quietmode: 0
     scriptarguments:
       ids:
         complex:
-          root: CrowdStrikeHost
           accessor: Detections.detection_id
+          root: CrowdStrikeHost
       status:
         simple: in_progress
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3520
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "30":
-    id: "30"
-    taskid: db5f714e-a4e7-4da1-8d07-2083c0b33e5a
-    type: title
     task:
-      id: db5f714e-a4e7-4da1-8d07-2083c0b33e5a
+      brand: ''
+      description: Sets the state of a detection in Falcon Host. You can obtain detection
+        IDs from the Falcon Host UI or from the Falcon Streaming API.
+      id: b9c891b1-3d19-4a68-8519-2f48f94b7105
+      iscommand: true
+      name: Change Detection to in_progress
+      script: '|||cs-resolve-detection'
+      type: regular
       version: -1
-      name: Done
-      description: Done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3695
-        }
-      }
-    note: false
+    taskid: b9c891b1-3d19-4a68-8519-2f48f94b7105
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "31":
-    id: "31"
-    taskid: f40e6b74-da7f-4dd9-8196-18957526f7d3
     type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3520\n  }\n}"
+  '30':
+    id: '30'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: f40e6b74-da7f-4dd9-8196-18957526f7d3
+      brand: ''
+      description: Done
+      id: db5f714e-a4e7-4da1-8d07-2083c0b33e5a
+      iscommand: false
+      name: Done
+      type: title
       version: -1
-      name: Search Detections Since 2017
+    taskid: db5f714e-a4e7-4da1-8d07-2083c0b33e5a
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3695\n  }\n}"
+  '31':
+    id: '31'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '25'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      first_behavior:
+        simple: '2017-01-31T22:36:11Z'
+      query: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
       description: String search through all Crowdstrike Detection fields.  For example,
         provide a sensor ID to search for all detections that contain that sensor
         ID (and any other fields that would happen to contain it)
+      id: f40e6b74-da7f-4dd9-8196-18957526f7d3
+      iscommand: true
+      name: Search Detections Since 2017
       script: '|||cs-detection-search'
       type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "25"
-    scriptarguments:
-      first_behavior:
-        simple: "2017-01-31T22:36:11Z"
-      query: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 2820
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "33":
-    id: "33"
-    taskid: d6c3da2e-28a9-43a6-87ab-7b8e0385079d
-    type: regular
-    task:
-      id: d6c3da2e-28a9-43a6-87ab-7b8e0385079d
       version: -1
-      name: Search by IPv4
-      description: Returns a list of device IDs on which an indicator ran
-      script: FalconHost|||cs-device-ran-on
-      type: regular
-      iscommand: true
-      brand: FalconHost
+    taskid: f40e6b74-da7f-4dd9-8196-18957526f7d3
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 2820\n  }\n}"
+  '33':
+    id: '33'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "37"
+      - '37'
+    note: false
+    quietmode: 0
     scriptarguments:
       type:
         simple: ipv4
       value:
         simple: 10.2.101.237
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 377.5,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "37":
-    id: "37"
-    taskid: 4529e31f-2a27-48d8-83c0-e26bccad20e7
-    type: regular
     task:
-      id: 4529e31f-2a27-48d8-83c0-e26bccad20e7
-      version: -1
-      name: Search by IPv6
+      brand: FalconHost
       description: Returns a list of device IDs on which an indicator ran
+      id: d6c3da2e-28a9-43a6-87ab-7b8e0385079d
+      iscommand: true
+      name: Search by IPv4
       script: FalconHost|||cs-device-ran-on
       type: regular
-      iscommand: true
-      brand: FalconHost
+      version: -1
+    taskid: d6c3da2e-28a9-43a6-87ab-7b8e0385079d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 377.5,\n    \"y\": 1770\n  }\n}"
+  '37':
+    id: '37'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "38"
+      - '38'
+    note: false
+    quietmode: 0
     scriptarguments:
       type:
         simple: ipv6
       value:
         simple: 2001:4860:4860::8888
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 377.5,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "38":
-    id: "38"
-    taskid: 657811da-8607-42da-87e2-fa4b393a1de2
-    type: regular
     task:
-      id: 657811da-8607-42da-87e2-fa4b393a1de2
-      version: -1
-      name: Delete Context
-      description: Delete field from context
-      scriptName: DeleteContext
+      brand: FalconHost
+      description: Returns a list of device IDs on which an indicator ran
+      id: 4529e31f-2a27-48d8-83c0-e26bccad20e7
+      iscommand: true
+      name: Search by IPv6
+      script: FalconHost|||cs-device-ran-on
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 4529e31f-2a27-48d8-83c0-e26bccad20e7
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 377.5,\n    \"y\": 1945\n  }\n}"
+  '38':
+    id: '38'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "23"
+      - '23'
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 377.5,
-          "y": 2120
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: 657811da-8607-42da-87e2-fa4b393a1de2
+      iscommand: false
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 657811da-8607-42da-87e2-fa4b393a1de2
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 377.5,\n    \"y\": 2120\n  }\n}"
+  '7':
+    id: '7'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '13'
+    note: false
     quietmode: 0
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 3710,
-        "width": 820,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    scriptarguments:
+      filter: {}
+      limit: {}
+      offset:
+        simple: '1'
+      query: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: FalconHost
+      description: Search for devices in your environment by platform, host name,
+        IP, or a number of other parameters
+      id: f16f4c13-934e-422f-8415-6d84bd306c88
+      iscommand: true
+      name: Search devices
+      script: FalconHost|||cs-device-search
+      type: regular
+      version: -1
+    taskid: f16f4c13-934e-422f-8415-6d84bd306c88
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 370\n  }\n}"
+  '8':
+    id: '8'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: 'yes'
+      key: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: d84e95eb-b9a3-457e-83c9-4cab302a94b5
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: d84e95eb-b9a3-457e-83c9-4cab302a94b5
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 195\n  }\n}"
+toversion: 4.1.9
+vcShouldKeepItemLegacyProdMachine: false
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 3710,\n      \"width\": 820,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

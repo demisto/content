@@ -1,17 +1,18 @@
+args:
+- default: true
+  description: Path of the file to retrieve on the endpoint filesystem
+  name: filepath
+comment: Get a file from a system using D2 agent.
 commonfields:
   id: D2GetFile
   version: -1
+dependson: {}
 name: D2GetFile
 script: pack_file(args.filepath);
-type: javascript
+scripttarget: 1
+system: true
 tags:
 - agent
-comment: Get a file from a system using D2 agent.
-system: true
-args:
-- name: filepath
-  default: true
-  description: Path of the file to retrieve on the endpoint filesystem
-scripttarget: 1
-dependson: {}
 timeout: 0s
+toversion: 4.1.9
+type: javascript

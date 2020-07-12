@@ -28,11 +28,7 @@ script:
     - contextPath: GoogleCloudTranslate.SupportedLanguages
       description: The list of supported two-letter ISO language codes.
       type: list
-  - deprecated: false
-    description: Returns the translated text.
-    execution: false
-    name: gct-translate-text
-    arguments:
+  - arguments:
     - default: false
       description: The text to translate.
       isArray: false
@@ -40,24 +36,32 @@ script:
       required: true
       secret: false
     - default: false
-      description: The two-letter ISO language code of the target language. Default is "en" (English).
+      description: The two-letter ISO language code of the target language. Default
+        is "en" (English).
       name: target
       required: false
       secret: false
     - default: false
-      description: The two-letter ISO language code of the source language. Default is "autodetect".
+      description: The two-letter ISO language code of the source language. Default
+        is "autodetect".
       name: source
       required: false
       secret: false
+    deprecated: false
+    description: Returns the translated text.
+    execution: false
+    name: gct-translate-text
     outputs:
     - contextPath: GoogleCloudTranslate.TranslateText.ID
       description: The ID of the request.
       type: String
     - contextPath: GoogleCloudTranslate.TranslateText.detected_language_code
-      description: The detected two-letter ISO language code of the source language. Null, if no source argument is defined.
+      description: The detected two-letter ISO language code of the source language.
+        Null, if no source argument is defined.
       type: String
     - contextPath: GoogleCloudTranslate.TranslateText.source_language_code
-      description: The source language as specified in the source argument. Null, if no source argument is defined.
+      description: The source language as specified in the source argument. Null,
+        if no source argument is defined.
       type: String
     - contextPath: GoogleCloudTranslate.TranslateText.target_language_code
       description: The two letter ISO language code to which the text was translated.
@@ -72,5 +76,6 @@ script:
   isfetch: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
+toversion: 4.1.9

@@ -1,83 +1,63 @@
 id: Test-Detonate URL - ThreatGrid
-version: -1
+inputs: []
 name: Test-Detonate URL - ThreatGrid
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 0e004152-20aa-40d4-8be1-2f11031e176a
-    type: start
-    task:
-      id: 0e004152-20aa-40d4-8be1-2f11031e176a
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "2"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
+      - '2'
     note: false
-    timertriggers: []
-  "2":
-    id: "2"
-    taskid: 2ebf7435-ceb3-4644-8a0c-52da8d7f830f
-    type: playbook
+    separatecontext: false
     task:
-      id: 2ebf7435-ceb3-4644-8a0c-52da8d7f830f
-      version: -1
-      name: Detonate URL - ThreatGrid
-      playbookName: Detonate URL - ThreatGrid
-      type: playbook
+      brand: ''
+      id: 0e004152-20aa-40d4-8be1-2f11031e176a
       iscommand: false
-      brand: ""
+      name: ''
+      version: -1
+    taskid: 0e004152-20aa-40d4-8be1-2f11031e176a
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '2':
+    id: '2'
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
+    note: false
     scriptarguments:
       FileName:
         simple: file-detonated-via-demisto
       Interval:
-        simple: "1"
+        simple: '1'
       Playbook:
         simple: default
       Private: {}
       Source: {}
       Tags: {}
       Timeout:
-        simple: "15"
+        simple: '15'
       URL:
         simple: www.google.com
       VM: {}
     separatecontext: true
-    loop:
+    task:
+      brand: ''
+      id: 2ebf7435-ceb3-4644-8a0c-52da8d7f830f
       iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
+      name: Detonate URL - ThreatGrid
+      playbookName: Detonate URL - ThreatGrid
+      type: playbook
+      version: -1
+    taskid: 2ebf7435-ceb3-4644-8a0c-52da8d7f830f
     timertriggers: []
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 240,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 240,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

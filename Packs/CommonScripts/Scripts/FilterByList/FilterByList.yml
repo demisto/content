@@ -39,7 +39,8 @@ args:
   secret: false
 - default: false
   defaultValue: ','
-  description: A one-character string used to delimit fields. For example, a comma "," should match the list separator configuration.
+  description: A one-character string used to delimit fields. For example, a comma
+    "," should match the list separator configuration.
   isArray: false
   name: delimiter
   required: false
@@ -61,14 +62,15 @@ outputs:
 - contextPath: List.NotIn
   description: The list of items not in the list.
   type: Unknown
+runas: DBotWeakRole
+runonce: false
 script: '-'
 subtype: python2
 system: false
 tags:
 - whitelist
-timeout: '0'
-type: python
-runas: DBotWeakRole
-runonce: false
 tests:
 - FilterByList - Test
+timeout: '0'
+toversion: 4.1.9
+type: python

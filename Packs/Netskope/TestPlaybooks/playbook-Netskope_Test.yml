@@ -1,46 +1,32 @@
 id: Netskope Test
-version: -1
+inputs: []
 name: Netskope Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 460c6756-a817-4a6b-8964-5e8b6cf7323c
-    type: start
-    task:
-      id: 460c6756-a817-4a6b-8964-5e8b6cf7323c
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
+      - '1'
     note: false
-    timertriggers: []
-  "1":
-    id: "1"
-    taskid: 647f312a-8616-4b6e-874e-596f183f1567
-    type: regular
+    separatecontext: false
     task:
-      id: 647f312a-8616-4b6e-874e-596f183f1567
+      brand: ''
+      id: 460c6756-a817-4a6b-8964-5e8b6cf7323c
+      iscommand: false
+      name: ''
       version: -1
-      name: netskope-alerts
-      script: '|||netskope-alerts'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: 460c6756-a817-4a6b-8964-5e8b6cf7323c
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
     scriptarguments:
       endtime: {}
       query: {}
@@ -50,36 +36,24 @@ tasks:
       type:
         simple: Malware
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 230
-        }
-      }
-    note: false
-    timertriggers: []
-  "2":
-    id: "2"
-    taskid: 4f46a651-cff8-473a-82f5-a49b4e422a38
-    type: regular
     task:
-      id: 4f46a651-cff8-473a-82f5-a49b4e422a38
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
+      brand: ''
+      id: 647f312a-8616-4b6e-874e-596f183f1567
+      iscommand: true
+      name: netskope-alerts
+      script: '|||netskope-alerts'
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 647f312a-8616-4b6e-874e-596f183f1567
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+  '2':
+    id: '2'
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
     scriptarguments:
       expectedValue: {}
       fields:
@@ -87,30 +61,35 @@ tasks:
       path:
         simple: Netskope.Alerts
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 410
-        }
-      }
-    note: false
-    timertriggers: []
-  "3":
-    id: "3"
-    taskid: 69a409e1-6a8e-4046-8622-50963c6d74f7
-    type: regular
     task:
-      id: 69a409e1-6a8e-4046-8622-50963c6d74f7
-      version: -1
-      name: netskope-events
-      script: '|||netskope-events'
+      brand: ''
+      description: 'Verifies path in context:
+
+        - Verifies path existence
+
+        - If matching object is an array: verify fields exists in each of the objects
+        in the array
+
+        - If matching object is not an array: verify fields exists in matching object
+
+        - if ''expectedValue'' is given: ensure that the given value is equal to the
+        context path'
+      id: 4f46a651-cff8-473a-82f5-a49b4e422a38
+      iscommand: false
+      name: VerifyContext
+      scriptName: VerifyContext
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: 4f46a651-cff8-473a-82f5-a49b4e422a38
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 410\n  }\n}"
+  '3':
+    id: '3'
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
+    note: false
     scriptarguments:
       endtime:
         simple: 28-12-2018T01:01:01Z
@@ -118,41 +97,29 @@ tasks:
       query: {}
       skip: {}
       starttime:
-        simple: "1545260461"
+        simple: '1545260461'
       timeperiod: {}
       type:
         simple: audit
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 590
-        }
-      }
-    note: false
-    timertriggers: []
-  "4":
-    id: "4"
-    taskid: 71e5c03d-a66e-4326-89dc-097c10777a78
-    type: regular
     task:
-      id: 71e5c03d-a66e-4326-89dc-097c10777a78
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
+      brand: ''
+      id: 69a409e1-6a8e-4046-8622-50963c6d74f7
+      iscommand: true
+      name: netskope-events
+      script: '|||netskope-events'
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 69a409e1-6a8e-4046-8622-50963c6d74f7
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 590\n  }\n}"
+  '4':
+    id: '4'
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
+    note: false
     scriptarguments:
       expectedValue: {}
       fields:
@@ -160,47 +127,46 @@ tasks:
       path:
         simple: Netskope.Events
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 770
-        }
-      }
-    note: false
-    timertriggers: []
-  "5":
-    id: "5"
-    taskid: 65ea66fc-1743-492a-8801-a093a20bb132
-    type: title
     task:
-      id: 65ea66fc-1743-492a-8801-a093a20bb132
+      brand: ''
+      description: 'Verifies path in context:
+
+        - Verifies path existence
+
+        - If matching object is an array: verify fields exists in each of the objects
+        in the array
+
+        - If matching object is not an array: verify fields exists in matching object
+
+        - if ''expectedValue'' is given: ensure that the given value is equal to the
+        context path'
+      id: 71e5c03d-a66e-4326-89dc-097c10777a78
+      iscommand: false
+      name: VerifyContext
+      scriptName: VerifyContext
+      type: regular
       version: -1
+    taskid: 71e5c03d-a66e-4326-89dc-097c10777a78
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 770\n  }\n}"
+  '5':
+    id: '5'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 65ea66fc-1743-492a-8801-a093a20bb132
+      iscommand: false
       name: Success
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 961
-        }
-      }
-    note: false
+      version: -1
+    taskid: 65ea66fc-1743-492a-8801-a093a20bb132
     timertriggers: []
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 976,
-        "width": 380,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 961\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 976,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n\
+  \    }\n  }\n}"

@@ -1,47 +1,32 @@
 id: OTRS Test
-version: -1
+inputs: []
 name: OTRS Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 50777ca7-f966-49e4-81f6-8e6b6115445f
-    type: start
-    task:
-      id: 50777ca7-f966-49e4-81f6-8e6b6115445f
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
+      - '1'
     note: false
-    timertriggers: []
-  "1":
-    id: "1"
-    taskid: a8b5a7e6-2b8c-46bd-8ace-dfdb5b7a2a96
-    type: regular
+    separatecontext: false
     task:
-      id: a8b5a7e6-2b8c-46bd-8ace-dfdb5b7a2a96
+      brand: ''
+      id: 50777ca7-f966-49e4-81f6-8e6b6115445f
+      iscommand: false
+      name: ''
       version: -1
-      name: Create ticket
-      description: Create a new ticket in OTRS
-      script: '|||otrs-create-ticket'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: 50777ca7-f966-49e4-81f6-8e6b6115445f
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
     scriptarguments:
       article_body:
         simple: Testing
@@ -60,224 +45,315 @@ tasks:
       type:
         simple: Unclassified
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-  "2":
-    id: "2"
-    taskid: fa037010-596f-4d56-89b2-34058fcbe6fe
-    type: condition
     task:
-      id: fa037010-596f-4d56-89b2-34058fcbe6fe
+      brand: ''
+      description: Create a new ticket in OTRS
+      id: a8b5a7e6-2b8c-46bd-8ace-dfdb5b7a2a96
+      iscommand: true
+      name: Create ticket
+      script: '|||otrs-create-ticket'
+      type: regular
       version: -1
-      name: Verify outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "3"
-    separatecontext: false
+    taskid: a8b5a7e6-2b8c-46bd-8ace-dfdb5b7a2a96
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '10':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: OTRS.Ticket.Article.Subject
+          operator: isEqualString
+          right:
+            value:
+              simple: ClosingSubject
+      - - left:
             iscontext: true
+            value:
+              simple: OTRS.Ticket.Title
+          operator: isEqualString
+          right:
+            value:
+              simple: UpdatedTitle
+      - - left:
+            iscontext: true
+            value:
+              simple: OTRS.Ticket.State
+          operator: isEqualString
+          right:
+            value:
+              simple: closed successful
+      - - left:
+            iscontext: true
+            value:
+              simple: OTRS.Ticket.Article.Body
+          operator: isEqualString
+          right:
+            value:
+              simple: ClosingBody
+      label: 'yes'
+    id: '10'
+    nexttasks:
+      'yes':
+      - '12'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 3f87e2e1-84c9-4a22-810f-806331bcf115
+      iscommand: false
+      name: Verify outputs
+      type: condition
+      version: -1
+    taskid: 3f87e2e1-84c9-4a22-810f-806331bcf115
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1770\n  }\n}"
+  '11':
+    id: '11'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: f2bc247c-43ca-4b5c-8dd9-066bfbb0f0b8
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: f2bc247c-43ca-4b5c-8dd9-066bfbb0f0b8
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2120\n  }\n}"
+  '12':
+    id: '12'
+    nexttasks:
+      '#none#':
+      - '11'
+    note: false
+    scriptarguments:
+      add_to_context: {}
+      brand_name: {}
+      error_msg_in_incident: {}
+      expect_data: {}
+      instance_name:
+        complex:
+          accessor: name
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: modules.brand
+              operator: isEqualString
+              right:
+                value:
+                  simple: OTRS
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: modules.state
+              operator: isEqualString
+              right:
+                value:
+                  simple: active
+          root: modules
+    separatecontext: false
+    task:
+      brand: ''
+      id: 21c27c51-b0f3-4f81-8697-5ce71e2380d4
+      iscommand: false
+      name: FetchFromInstance
+      scriptName: FetchFromInstance
+      type: regular
+      version: -1
+    taskid: 21c27c51-b0f3-4f81-8697-5ce71e2380d4
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1945\n  }\n}"
+  '2':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: OTRS.Ticket.Article.Subject
+          operator: isEqualString
           right:
             value:
               simple: TestArticle
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: OTRS.Ticket.Type
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: Unclassified
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: OTRS.Ticket.Title
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: TestTicket
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: OTRS.Ticket.State
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: new
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: OTRS.Ticket.Queue
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: Inbox::SIEM
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: OTRS.Ticket.Priority
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: 2 low
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: OTRS.Ticket.Article.Body
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: Testing
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
+      label: 'yes'
+    id: '2'
+    nexttasks:
+      'yes':
+      - '3'
     note: false
-    timertriggers: []
-  "3":
-    id: "3"
-    taskid: 592bfabe-5569-416a-85bd-7ca0c4fc3920
-    type: regular
+    separatecontext: false
     task:
-      id: 592bfabe-5569-416a-85bd-7ca0c4fc3920
+      brand: ''
+      id: fa037010-596f-4d56-89b2-34058fcbe6fe
+      iscommand: false
+      name: Verify outputs
+      type: condition
       version: -1
-      name: Get ticket
-      script: '|||otrs-get-ticket'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: fa037010-596f-4d56-89b2-34058fcbe6fe
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '3':
+    id: '3'
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
+    note: false
     scriptarguments:
       ticket_id:
         simple: ${OTRS.Ticket.ID}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-  "4":
-    id: "4"
-    taskid: b67649f2-17cf-486b-88a3-1e9f630c0d65
-    type: condition
     task:
-      id: b67649f2-17cf-486b-88a3-1e9f630c0d65
+      brand: ''
+      id: 592bfabe-5569-416a-85bd-7ca0c4fc3920
+      iscommand: true
+      name: Get ticket
+      script: '|||otrs-get-ticket'
+      type: regular
       version: -1
-      name: Verify outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "5"
-    separatecontext: false
+    taskid: 592bfabe-5569-416a-85bd-7ca0c4fc3920
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '4':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: OTRS.Ticket.Article.Subject
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: TestArticle
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: OTRS.Ticket.Type
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: Unclassified
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: OTRS.Ticket.Title
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: TestTicket
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: OTRS.Ticket.State
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: new
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: OTRS.Ticket.Queue
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: Inbox::SIEM
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: OTRS.Ticket.Priority
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: 2 low
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: OTRS.Ticket.Article.Body
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: Testing
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
+      label: 'yes'
+    id: '4'
+    nexttasks:
+      'yes':
+      - '5'
     note: false
-    timertriggers: []
-  "5":
-    id: "5"
-    taskid: f63d1a46-fdbc-4909-8de9-bba048a10cf4
-    type: regular
+    separatecontext: false
     task:
-      id: f63d1a46-fdbc-4909-8de9-bba048a10cf4
+      brand: ''
+      id: b67649f2-17cf-486b-88a3-1e9f630c0d65
+      iscommand: false
+      name: Verify outputs
+      type: condition
       version: -1
-      name: Update ticket
-      script: '|||otrs-update-ticket'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: b67649f2-17cf-486b-88a3-1e9f630c0d65
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '5':
+    id: '5'
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
+    note: false
     scriptarguments:
       article_body: {}
       article_subject: {}
@@ -293,113 +369,101 @@ tasks:
       type:
         simple: Incident
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-  "6":
-    id: "6"
-    taskid: 9c64e321-0644-451d-8582-c602301b9960
-    type: condition
     task:
-      id: 9c64e321-0644-451d-8582-c602301b9960
+      brand: ''
+      id: f63d1a46-fdbc-4909-8de9-bba048a10cf4
+      iscommand: true
+      name: Update ticket
+      script: '|||otrs-update-ticket'
+      type: regular
       version: -1
-      name: Verify outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "7"
-    separatecontext: false
+    taskid: f63d1a46-fdbc-4909-8de9-bba048a10cf4
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+  '6':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: OTRS.Ticket.Article.Subject
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: TestArticle
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: OTRS.Ticket.Type
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: Incident
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: OTRS.Ticket.Title
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: UpdatedTitle
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: OTRS.Ticket.State
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: open
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: OTRS.Ticket.Queue
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: Inbox::SIEM
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: OTRS.Ticket.Priority
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: 1 very low
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: OTRS.Ticket.Article.Body
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: Testing
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
+      label: 'yes'
+    id: '6'
+    nexttasks:
+      'yes':
+      - '7'
     note: false
-    timertriggers: []
-  "7":
-    id: "7"
-    taskid: c80c45e4-36f0-4b3c-8b8e-f4b6fdfefbc2
-    type: regular
+    separatecontext: false
     task:
-      id: c80c45e4-36f0-4b3c-8b8e-f4b6fdfefbc2
+      brand: ''
+      id: 9c64e321-0644-451d-8582-c602301b9960
+      iscommand: false
+      name: Verify outputs
+      type: condition
       version: -1
-      name: Search ticket
-      script: '|||otrs-search-ticket'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: 9c64e321-0644-451d-8582-c602301b9960
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+  '7':
+    id: '7'
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
+    note: false
     scriptarguments:
       created_after: {}
       created_before: {}
@@ -408,113 +472,101 @@ tasks:
       title:
         simple: ${OTRS.Ticket.ID}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-  "8":
-    id: "8"
-    taskid: 9e799e9a-0e9b-4972-8532-a592d603a993
-    type: condition
     task:
-      id: 9e799e9a-0e9b-4972-8532-a592d603a993
+      brand: ''
+      id: c80c45e4-36f0-4b3c-8b8e-f4b6fdfefbc2
+      iscommand: true
+      name: Search ticket
+      script: '|||otrs-search-ticket'
+      type: regular
       version: -1
-      name: Verify outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "9"
-    separatecontext: false
+    taskid: c80c45e4-36f0-4b3c-8b8e-f4b6fdfefbc2
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+  '8':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: OTRS.Ticket.Article.Subject
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: TestArticle
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: OTRS.Ticket.Type
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: Incident
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: OTRS.Ticket.Title
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: UpdatedTitle
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: OTRS.Ticket.State
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: open
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: OTRS.Ticket.Queue
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: Inbox::SIEM
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: OTRS.Ticket.Priority
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: 1 very low
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: OTRS.Ticket.Article.Body
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: Testing
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
+      label: 'yes'
+    id: '8'
+    nexttasks:
+      'yes':
+      - '9'
     note: false
-    timertriggers: []
-  "9":
-    id: "9"
-    taskid: 69484779-02a4-476e-8ca6-a0df80f2294e
-    type: regular
+    separatecontext: false
     task:
-      id: 69484779-02a4-476e-8ca6-a0df80f2294e
+      brand: ''
+      id: 9e799e9a-0e9b-4972-8532-a592d603a993
+      iscommand: false
+      name: Verify outputs
+      type: condition
       version: -1
-      name: Close ticket
-      script: '|||otrs-close-ticket'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: 9e799e9a-0e9b-4972-8532-a592d603a993
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1420\n  }\n}"
+  '9':
+    id: '9'
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
+    note: false
     scriptarguments:
       article_body:
         simple: ClosingBody
@@ -523,158 +575,20 @@ tasks:
       ticket_id:
         simple: ${OTRS.Ticket.ID}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-  "10":
-    id: "10"
-    taskid: 3f87e2e1-84c9-4a22-810f-806331bcf115
-    type: condition
     task:
-      id: 3f87e2e1-84c9-4a22-810f-806331bcf115
-      version: -1
-      name: Verify outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "12"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: OTRS.Ticket.Article.Subject
-            iscontext: true
-          right:
-            value:
-              simple: ClosingSubject
-      - - operator: isEqualString
-          left:
-            value:
-              simple: OTRS.Ticket.Title
-            iscontext: true
-          right:
-            value:
-              simple: UpdatedTitle
-      - - operator: isEqualString
-          left:
-            value:
-              simple: OTRS.Ticket.State
-            iscontext: true
-          right:
-            value:
-              simple: closed successful
-      - - operator: isEqualString
-          left:
-            value:
-              simple: OTRS.Ticket.Article.Body
-            iscontext: true
-          right:
-            value:
-              simple: ClosingBody
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-  "11":
-    id: "11"
-    taskid: f2bc247c-43ca-4b5c-8dd9-066bfbb0f0b8
-    type: title
-    task:
-      id: f2bc247c-43ca-4b5c-8dd9-066bfbb0f0b8
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2120
-        }
-      }
-    note: false
-    timertriggers: []
-  "12":
-    id: "12"
-    taskid: 21c27c51-b0f3-4f81-8697-5ce71e2380d4
-    type: regular
-    task:
-      id: 21c27c51-b0f3-4f81-8697-5ce71e2380d4
-      version: -1
-      name: FetchFromInstance
-      scriptName: FetchFromInstance
+      brand: ''
+      id: 69484779-02a4-476e-8ca6-a0df80f2294e
+      iscommand: true
+      name: Close ticket
+      script: '|||otrs-close-ticket'
       type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      add_to_context: {}
-      brand_name: {}
-      error_msg_in_incident: {}
-      expect_data: {}
-      instance_name:
-        complex:
-          root: modules
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: modules.brand
-                iscontext: true
-              right:
-                value:
-                  simple: OTRS
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: modules.state
-                iscontext: true
-              right:
-                value:
-                  simple: active
-              ignorecase: true
-          accessor: name
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1945
-        }
-      }
-    note: false
+      version: -1
+    taskid: 69484779-02a4-476e-8ca6-a0df80f2294e
     timertriggers: []
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 2135,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1595\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 2135,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

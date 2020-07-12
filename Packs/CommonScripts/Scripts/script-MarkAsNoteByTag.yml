@@ -1,37 +1,28 @@
+args:
+- default: true
+  description: Entries with the given tag will be marked as notes
+  name: tag
+  required: true
+comment: Mark entries as notes if they are tagged with given tag
 commonfields:
   id: MarkAsNoteByTag
   version: -1
+enabled: true
 name: MarkAsNoteByTag
-script: |
-  entries = demisto.executeCommand('getEntries', {})
-  if isError(entries[0]):
-      demisto.results({'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': 'Unable to retrieve entries'})
-  else:
-      ids = ''
-      for e in entries:
-          tags = e.get('Metadata', {}).get('tags')
-          if not tags:
-              tags = []
-          if demisto.getArg('tag') in tags:
-              if ids == '':
-                  ids = e['Metadata']['id']
-              else:
-                  ids += ',' + e['Metadata']['id']
-      if ids != '':
-          demisto.results(demisto.executeCommand('markAsNote', {'entryIDs': ids}))
-      else:
-          demisto.results({'Type': entryTypes['error'], 'ContentsFormat': formats['text'],
-              'Contents': "No entries with '" + demisto.getArg('tag') + "' found"})
-type: python
+runonce: false
+script: "entries = demisto.executeCommand('getEntries', {})\nif isError(entries[0]):\n\
+  \    demisto.results({'Type': entryTypes['error'], 'ContentsFormat': formats['text'],\
+  \ 'Contents': 'Unable to retrieve entries'})\nelse:\n    ids = ''\n    for e in\
+  \ entries:\n        tags = e.get('Metadata', {}).get('tags')\n        if not tags:\n\
+  \            tags = []\n        if demisto.getArg('tag') in tags:\n            if\
+  \ ids == '':\n                ids = e['Metadata']['id']\n            else:\n   \
+  \             ids += ',' + e['Metadata']['id']\n    if ids != '':\n        demisto.results(demisto.executeCommand('markAsNote',\
+  \ {'entryIDs': ids}))\n    else:\n        demisto.results({'Type': entryTypes['error'],\
+  \ 'ContentsFormat': formats['text'],\n            'Contents': \"No entries with\
+  \ '\" + demisto.getArg('tag') + \"' found\"})\n"
+scripttarget: 0
 subtype: python2
 tags:
 - Utility
-comment: Mark entries as notes if they are tagged with given tag
-enabled: true
-args:
-- name: tag
-  required: true
-  default: true
-  description: Entries with the given tag will be marked as notes
-scripttarget: 0
-runonce: false
+toversion: 4.1.9
+type: python

@@ -1,54 +1,21 @@
+args:
+- default: true
+  description: Enter Command
+  name: cmd
+- description: enter sysargs
+  name: sysargs
+comment: "This command will allow you to run commands against a local Docker Container.\
+  \ You can run commands like wc for instance with word count, or other types of commands\
+  \ that you want on the docker container. \n\nWe recommend for tools that you want\
+  \ to use that are not part of the default Docker container, to cope this Automation\
+  \ script and then create a customer docker container with /docker_image_create with\
+  \ a custom docker container to add any command level tool to Demisto and output\
+  \ the results directly to the context."
 commonfields:
   id: RunDockerCommand
   version: -1
-name: RunDockerCommand
-script: |-
-  import subprocess
-  ret = []
-  sysargs = None;
-
-  cmdarg = demisto.args()['cmd']
-  if demisto.args().has_key('sysargs'):
-      sysargs = demisto.args()['sysargs']
-
-  if sysargs == None:
-      output = None
-      try:
-          output = subprocess.check_output(cmdarg, shell=True)
-      except subprocess.CalledProcessError as e:
-          output = e.output
-      ret.append(output)
-  else:
-      ret.append(subprocess.check_output([cmdarg, sysargs]))
-
-  ec = {'Command': cmdarg, 'Results': ret[0]}
-
-  demisto.results({
-    'Type': entryTypes['note'],
-    'ContentsFormat': formats['json'],
-    'Contents': ret,
-    'HumanReadable': ret[0],
-    'EntryContext': {'CommandResults': ec}
-  })
-  sys.exit(0)
-type: python
-subtype: python2
-tags:
-- Utilities
-comment: "This command will allow you to run commands against a local Docker Container.
-  You can run commands like wc for instance with word count, or other types of commands
-  that you want on the docker container. \n\nWe recommend for tools that you want
-  to use that are not part of the default Docker container, to cope this Automation
-  script and then create a customer docker container with /docker_image_create with
-  a custom docker container to add any command level tool to Demisto and output the
-  results directly to the context."
 enabled: true
-args:
-- name: cmd
-  default: true
-  description: Enter Command
-- name: sysargs
-  description: enter sysargs
+name: RunDockerCommand
 outputs:
 - contextPath: CommandResults.Command
   description: This will contain the command line tool name and arguments that were
@@ -58,4 +25,18 @@ outputs:
     You will need to parse the results of the command into the format you want. Try
     looking at commands like ExtractRegex or create your own follow on automation
     script that will parse the results into the format you would like.
+script: "import subprocess\nret = []\nsysargs = None;\n\ncmdarg = demisto.args()['cmd']\n\
+  if demisto.args().has_key('sysargs'):\n    sysargs = demisto.args()['sysargs']\n\
+  \nif sysargs == None:\n    output = None\n    try:\n        output = subprocess.check_output(cmdarg,\
+  \ shell=True)\n    except subprocess.CalledProcessError as e:\n        output =\
+  \ e.output\n    ret.append(output)\nelse:\n    ret.append(subprocess.check_output([cmdarg,\
+  \ sysargs]))\n\nec = {'Command': cmdarg, 'Results': ret[0]}\n\ndemisto.results({\n\
+  \  'Type': entryTypes['note'],\n  'ContentsFormat': formats['json'],\n  'Contents':\
+  \ ret,\n  'HumanReadable': ret[0],\n  'EntryContext': {'CommandResults': ec}\n})\n\
+  sys.exit(0)"
 scripttarget: 0
+subtype: python2
+tags:
+- Utilities
+toversion: 4.1.9
+type: python

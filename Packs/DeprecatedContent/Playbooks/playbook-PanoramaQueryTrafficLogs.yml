@@ -1,129 +1,145 @@
-id: PanoramaQueryTrafficLogs
-version: -1
-name: PanoramaQueryTrafficLogs
-fromversion: 4.0.0
 description: Queries traffic logs in a PAN-OS Panorama or Firewall device.
-starttaskid: "0"
+fromversion: 4.0.0
+id: PanoramaQueryTrafficLogs
+inputs:
+- description: The number of logs to retrieve. The maximum is 5,000.
+  key: number_of_logs
+  required: false
+  value:
+    simple: '100'
+- description: Specify the log display order; "forward" - oldest first, "backward"
+    - newest first. Default is backward.
+  key: direction
+  required: false
+  value:
+    simple: backward
+- description: Specify the match criteria for the logs. This is similar to the query
+    provided in the web interface under the Monitor tab when viewing the logs.
+  key: query
+  required: false
+  value: {}
+- description: source address for the query
+  key: source
+  required: false
+  value: {}
+- description: Destination address for the query,
+  key: destination
+  required: false
+  value: {}
+- description: 'Start time for the query, for example: YYYY/MM/DD HH:MM:SS.'
+  key: receive_time
+  required: false
+  value: {}
+- description: Application for the query.
+  key: application
+  required: false
+  value: {}
+- description: Destination port for the query.
+  key: to_port
+  required: false
+  value: {}
+- description: Action for the query.
+  key: action
+  required: false
+  value:
+    simple: allow
+name: PanoramaQueryTrafficLogs
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 7de51952-0933-4b9c-8bf1-b9bd0a1e887d
-    type: start
-    task:
-      id: 7de51952-0933-4b9c-8bf1-b9bd0a1e887d
-      version: -1
-      name: ""
-      description: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
+      - '1'
     note: false
-    timertriggers: []
-    ignoreworker: false
-  "1":
-    id: "1"
-    taskid: 99a631c1-8dd8-4a8a-8608-98f964655794
-    type: condition
-    task:
-      id: 99a631c1-8dd8-4a8a-8608-98f964655794
-      version: -1
-      name: Is Palo Alto Networks PAN-OS enabled?
-      description: Checks if there is a valid instance of the Palo Alto Networks PAN-OS integration enabled.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "2"
-      "yes":
-      - "3"
     separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 7de51952-0933-4b9c-8bf1-b9bd0a1e887d
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 7de51952-0933-4b9c-8bf1-b9bd0a1e887d
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: modules
+                accessor: brand
                 filters:
-                - - operator: isEqualString
-                    left:
+                - - left:
+                      iscontext: true
                       value:
                         simple: modules.brand
-                      iscontext: true
+                    operator: isEqualString
                     right:
                       value:
                         simple: Panorama
-                - - operator: isEqualString
-                    left:
+                - - left:
+                      iscontext: true
                       value:
                         simple: modules.state
-                      iscontext: true
+                    operator: isEqualString
                     right:
                       value:
                         simple: active
-                accessor: brand
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
+                root: modules
+          operator: isExists
+      label: 'yes'
+    id: '1'
     ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 0c582d23-1783-4574-82db-35350df254ff
-    type: title
-    task:
-      id: 0c582d23-1783-4574-82db-35350df254ff
-      version: -1
-      name: Done
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
+    nexttasks:
+      '#default#':
+      - '2'
+      'yes':
+      - '3'
+    note: false
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: 0a3a3ded-4ea5-4225-8e50-90f4d3096604
-    type: regular
     task:
-      id: 0a3a3ded-4ea5-4225-8e50-90f4d3096604
+      brand: ''
+      description: Checks if there is a valid instance of the Palo Alto Networks PAN-OS
+        integration enabled.
+      id: 99a631c1-8dd8-4a8a-8608-98f964655794
+      iscommand: false
+      name: Is Palo Alto Networks PAN-OS enabled?
+      type: condition
       version: -1
-      name: panorama-query-traffic-logs
-      description: Queries traffic logs.
-      script: '|||panorama-query-traffic-logs'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: 99a631c1-8dd8-4a8a-8608-98f964655794
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 0c582d23-1783-4574-82db-35350df254ff
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 0c582d23-1783-4574-82db-35350df254ff
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
+    note: false
     scriptarguments:
       action:
         complex:
@@ -153,245 +169,175 @@ tasks:
         complex:
           root: inputs.to_port
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: a15dbada-1559-4c04-80b9-5219290608ce
-    type: regular
     task:
-      id: a15dbada-1559-4c04-80b9-5219290608ce
-      version: -1
-      name: panorama-check-traffic-logs-status
-      description: Checks the status of a traffic logs query.
-      script: '|||panorama-check-traffic-logs-status'
-      type: regular
+      brand: ''
+      description: Queries traffic logs.
+      id: 0a3a3ded-4ea5-4225-8e50-90f4d3096604
       iscommand: true
-      brand: ""
+      name: panorama-query-traffic-logs
+      script: '|||panorama-query-traffic-logs'
+      type: regular
+      version: -1
+    taskid: 0a3a3ded-4ea5-4225-8e50-90f4d3096604
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 370\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
+    note: false
     scriptarguments:
       job_id:
         complex:
-          root: Panorama
           accessor: TrafficLogs.JobID
+          root: Panorama
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: eec80951-45c2-4823-8f68-e6a27deb77e0
-    type: condition
     task:
-      id: eec80951-45c2-4823-8f68-e6a27deb77e0
+      brand: ''
+      description: Checks the status of a traffic logs query.
+      id: a15dbada-1559-4c04-80b9-5219290608ce
+      iscommand: true
+      name: panorama-check-traffic-logs-status
+      script: '|||panorama-check-traffic-logs-status'
+      type: regular
       version: -1
-      name: Filter JobID
-      description: ""
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "2"
-      "yes":
-      - "6"
-    separatecontext: false
+    taskid: a15dbada-1559-4c04-80b9-5219290608ce
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 895\n  }\n}"
+  '5':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: Panorama
+                accessor: TrafficLogs.JobID
                 filters:
-                - - operator: isNotEqualString
-                    left:
+                - - left:
+                      iscontext: true
                       value:
                         simple: Panorama.TrafficLogs.Status
-                      iscontext: true
+                    operator: isNotEqualString
                     right:
                       value:
                         simple: Completed
-                - - operator: isNotEqualString
-                    left:
+                - - left:
+                      iscontext: true
                       value:
                         simple: Panorama.TrafficLogs.Status
-                      iscontext: true
+                    operator: isNotEqualString
                     right:
                       value:
                         simple: Failed
-                accessor: TrafficLogs.JobID
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
+                root: Panorama
+          operator: isExists
+      label: 'yes'
+    id: '5'
     ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 0d71170a-8e17-41f5-8d33-15294a1dcd6e
-    type: playbook
+    nexttasks:
+      '#default#':
+      - '2'
+      'yes':
+      - '6'
+    note: false
+    separatecontext: false
     task:
-      id: 0d71170a-8e17-41f5-8d33-15294a1dcd6e
-      version: -1
-      name: GenericPolling
-      description: ""
-      playbookName: GenericPolling
-      type: playbook
+      brand: ''
+      description: ''
+      id: eec80951-45c2-4823-8f68-e6a27deb77e0
       iscommand: false
-      brand: ""
+      name: Filter JobID
+      type: condition
+      version: -1
+    taskid: eec80951-45c2-4823-8f68-e6a27deb77e0
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 545\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
+    note: false
     scriptarguments:
       AdditionalPollingCommandArgNames: {}
       AdditionalPollingCommandArgValues: {}
       Ids:
         complex:
-          root: Panorama
           accessor: TrafficLogs.JobID
+          root: Panorama
       Interval:
-        simple: "1"
+        simple: '1'
       PollingCommandArgName:
         simple: job_id
       PollingCommandName:
         simple: panorama-check-traffic-logs-status
       Timeout:
-        simple: "10"
+        simple: '10'
       dt:
         simple: Panorama.TrafficLogs(val.Status != 'Completed' && val.Status != 'Failed').JobID
     separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "7":
-    id: "7"
-    taskid: c70e2c02-5135-4d4a-82bd-d1e820a3aa2a
-    type: regular
     task:
-      id: c70e2c02-5135-4d4a-82bd-d1e820a3aa2a
+      brand: ''
+      description: ''
+      id: 0d71170a-8e17-41f5-8d33-15294a1dcd6e
+      iscommand: false
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
       version: -1
-      name: panorama-get-traffic-logs
-      description: Retrieves traffic log query data by job id
-      script: '|||panorama-get-traffic-logs'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: 0d71170a-8e17-41f5-8d33-15294a1dcd6e
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 720\n  }\n}"
+  '7':
+    id: '7'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
     scriptarguments:
       job_id:
         complex:
-          root: Panorama
+          accessor: TrafficLogs.JobID
           filters:
-          - - operator: isEqualString
-              left:
+          - - left:
+                iscontext: true
                 value:
                   simple: Panorama.TrafficLogs.Status
-                iscontext: true
+              operator: isEqualString
               right:
                 value:
                   simple: Completed
-          accessor: TrafficLogs.JobID
+          root: Panorama
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 1070
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      description: Retrieves traffic log query data by job id
+      id: c70e2c02-5135-4d4a-82bd-d1e820a3aa2a
+      iscommand: true
+      name: panorama-get-traffic-logs
+      script: '|||panorama-get-traffic-logs'
+      type: regular
+      version: -1
+    taskid: c70e2c02-5135-4d4a-82bd-d1e820a3aa2a
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1260,
-        "width": 605,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs:
-- key: number_of_logs
-  value:
-    simple: "100"
-  required: false
-  description: The number of logs to retrieve. The maximum is 5,000.
-- key: direction
-  value:
-    simple: backward
-  required: false
-  description: Specify the log display order; "forward" - oldest first, "backward" - newest first. Default is backward.
-- key: query
-  value: {}
-  required: false
-  description: Specify the match criteria for the logs. This is similar to the query
-    provided in the web interface under the Monitor tab when viewing the logs.
-- key: source
-  value: {}
-  required: false
-  description: source address for the query
-- key: destination
-  value: {}
-  required: false
-  description: Destination address for the query,
-- key: receive_time
-  value: {}
-  required: false
-  description: 'Start time for the query, for example: YYYY/MM/DD HH:MM:SS.'
-- key: application
-  value: {}
-  required: false
-  description: Application for the query.
-- key: to_port
-  value: {}
-  required: false
-  description: Destination port for the query.
-- key: action
-  value:
-    simple: allow
-  required: false
-  description: Action for the query.
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 1070\n  }\n}"
 tests:
 - palo_alto_firewall_test_pb
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1260,\n      \"width\": 605,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

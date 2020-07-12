@@ -1,18 +1,11 @@
+args: []
+comment: Returns all Demisto modules (integrations instances)
 commonfields:
   id: ExposeModules
   version: -1
-name: ExposeModules
-script: |
-  var all = getModules();
-  var allArr = Object.keys(all).map(function(m) {return {instance: m, brand: all[m].brand, category: all[m].category, state: all[m].state};});
-  return {Type: entryTypes.note, Contents: allArr, ContentsFormat: formats.json, HumanReadable: tableToMarkdown('Modules', allArr, ['brand', 'instance', 'category', 'state']), EntryContext: {ConfiguredModules: allArr}};
-type: javascript
-comment: Returns all Demisto modules (integrations instances)
-tags:
-- Utility
-system: true
+dependson: {}
 deprecated: true
-args: []
+name: ExposeModules
 outputs:
 - contextPath: ConfiguredModules.instance
   description: The instance name of the configured module
@@ -22,6 +15,20 @@ outputs:
   description: The category of the configured module
 - contextPath: ConfiguredModules.state
   description: The state of the configured module - active or not
+script: 'var all = getModules();
+
+  var allArr = Object.keys(all).map(function(m) {return {instance: m, brand: all[m].brand,
+  category: all[m].category, state: all[m].state};});
+
+  return {Type: entryTypes.note, Contents: allArr, ContentsFormat: formats.json, HumanReadable:
+  tableToMarkdown(''Modules'', allArr, [''brand'', ''instance'', ''category'', ''state'']),
+  EntryContext: {ConfiguredModules: allArr}};
+
+  '
 scripttarget: 0
-dependson: {}
+system: true
+tags:
+- Utility
 timeout: 0s
+toversion: 4.1.9
+type: javascript

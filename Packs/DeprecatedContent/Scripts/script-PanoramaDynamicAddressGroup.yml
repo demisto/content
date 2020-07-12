@@ -1,50 +1,37 @@
-commonfields:
-  id: PanoramaDynamicAddressGroup
-  version: -1
-name: PanoramaDynamicAddressGroup
-script: |-
-  var req =
-  '<uid-message>\
-       <version>1.0</version>\
-       <type>update</type>\
-       <payload>\
-           <'+args.type+'>\
-               <entry ip="'+args.ip+'">\
-                   <tag>\
-                      <member>'+args.guid+'</member>\
-                   </tag>\
-               </entry>\
-           </'+args.type+'>\
-       </payload>\
-  </uid-message>';
-
-  return {Type: 3,
-        FileID: saveFile(req),
-        File: args.fileName ? args.fileName : 'Dynamic Address Group Mapping.xml',
-        Contents: args.fileName
-  };
-type: javascript
-tags: []
-comment: Register/Unregister to address group with Panorama
-enabled: true
 args:
-- name: type
-  required: true
+- auto: PREDEFINED
   default: true
-  auto: PREDEFINED
+  description: Action type - register or unregister
+  name: type
   predefined:
   - register
   - unregister
-  description: Action type - register or unregister
-- name: ip
   required: true
-  description: IP address to be modified
-- name: guid
+- description: IP address to be modified
+  name: ip
   required: true
-  description: Group GUID to be modified
-- name: fileName
-  description: Name of output file
-scripttarget: 0
+- description: Group GUID to be modified
+  name: guid
+  required: true
+- description: Name of output file
+  name: fileName
+comment: Register/Unregister to address group with Panorama
+commonfields:
+  id: PanoramaDynamicAddressGroup
+  version: -1
 deprecated: true
+enabled: true
+name: PanoramaDynamicAddressGroup
+script: "var req =\n'<uid-message>\\\n     <version>1.0</version>\\\n     <type>update</type>\\\
+  \n     <payload>\\\n         <'+args.type+'>\\\n             <entry ip=\"'+args.ip+'\"\
+  >\\\n                 <tag>\\\n                    <member>'+args.guid+'</member>\\\
+  \n                 </tag>\\\n             </entry>\\\n         </'+args.type+'>\\\
+  \n     </payload>\\\n</uid-message>';\n\nreturn {Type: 3,\n      FileID: saveFile(req),\n\
+  \      File: args.fileName ? args.fileName : 'Dynamic Address Group Mapping.xml',\n\
+  \      Contents: args.fileName\n};"
+scripttarget: 0
+tags: []
 tests:
 - palo_alto_firewall_test_pb
+toversion: 4.1.9
+type: javascript

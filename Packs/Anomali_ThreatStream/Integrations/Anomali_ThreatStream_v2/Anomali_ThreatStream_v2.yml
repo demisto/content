@@ -184,16 +184,18 @@ script:
       description: 'IPs resolved by DNS. '
       type: String
     - contextPath: Domain.WHOIS.CreationDate
-      description: |-
-        Date the domain was created. The date format is: YYYYMMDDThhmmss.
+      description: 'Date the domain was created. The date format is: YYYYMMDDThhmmss.
+
         Where T denotes the start of the value
-        for time, in UTC time.
+
+        for time, in UTC time.'
       type: Date
     - contextPath: Domain.WHOIS.UpdatedDate
-      description: |-
-        Date the domain was last updated. The date format is: YYYYMMDDThhmmss.
+      description: 'Date the domain was last updated. The date format is: YYYYMMDDThhmmss.
+
         Where T denotes the start of the value
-        for time, in UTC time.
+
+        for time, in UTC time.'
       type: Date
     - contextPath: Domain.WHOIS.Registrant.Name
       description: Name of the registrant.
@@ -217,9 +219,10 @@ script:
       description: The indicator type.
       type: String
     - contextPath: ThreatStream.Domain.Modified
-      description: |-
-        Date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-        for time, in UTC time.
+      description: 'Date and time when the indicator was last updated. The date format
+        is: YYYYMMDDThhmmss, where "T" denotes the start of the value
+
+        for time, in UTC time.'
       type: String
     - contextPath: ThreatStream.Domain.Severity
       description: The indicator severity ("very-high", "high", "medium", "low").
@@ -326,9 +329,10 @@ script:
       description: The MD5 hash of the indicator.
       type: String
     - contextPath: ThreatStream.File.Modified
-      description: |-
-        Date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-        for time, in UTC time.
+      description: 'Date and time when the indicator was last updated. The date format
+        is: YYYYMMDDThhmmss, where "T" denotes the start of the value
+
+        for time, in UTC time.'
       type: String
     - contextPath: ThreatStream.File.Source
       description: The source of the indicator.
@@ -403,9 +407,10 @@ script:
       description: The source of the indicator.
       type: String
     - contextPath: ThreatStream.EmailReputation.Modified
-      description: |-
-        Date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-        for time, in UTC time.
+      description: 'Date and time when the indicator was last updated. The date format
+        is: YYYYMMDDThhmmss, where "T" denotes the start of the value
+
+        for time, in UTC time.'
       type: String
   - arguments:
     - auto: PREDEFINED
@@ -450,14 +455,16 @@ script:
       description: The source value.
       type: String
     - contextPath: ThreatStream.PassiveDNS.FirstSeen
-      description: |-
-        The first seen date. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-        for time, in UTC time.
+      description: 'The first seen date. The date format is: YYYYMMDDThhmmss, where
+        "T" denotes the start of the value
+
+        for time, in UTC time.'
       type: String
     - contextPath: ThreatStream.PassiveDNS.LastSeen
-      description: |-
-        The last seen date. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-        for time, in UTC time.
+      description: 'The last seen date. The date format is: YYYYMMDDThhmmss, where
+        "T" denotes the start of the value
+
+        for time, in UTC time.'
       type: String
   - arguments:
     - default: false
@@ -1041,9 +1048,11 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Level of certainty that an observable
-        is of the reported indicator type. Confidence scores range from 0-100, in increasing order of confidence, and is assigned by ThreatStream based on several factors.
+      description: 'Level of certainty that an observable
+
+        is of the reported indicator type. Confidence scores range from 0-100, in
+        increasing order of confidence, and is assigned by ThreatStream based on several
+        factors.'
       isArray: false
       name: confidence
       required: false
@@ -1055,11 +1064,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        When the indicator was first seen on
+      description: 'When the indicator was first seen on
+
         the ThreatStream cloud platform. Date must be specified in this format:
-        YYYYMMDDThhmmss, where "T" denotes the start of the value for time, in UTC time.
-        For example, 2014-10-02T20:44:35.
+
+        YYYYMMDDThhmmss, where "T" denotes the start of the value for time, in UTC
+        time.
+
+        For example, 2014-10-02T20:44:35.'
       isArray: false
       name: created_ts
       required: false
@@ -1148,9 +1160,10 @@ script:
       description: The indicator type.
       type: String
     - contextPath: ThreatStream.Indicators.Modified
-      description: |-
-        Date and time when the indicator was last updated on the ThreatStream. Format: YYYYMMDDThhmmss, where T denotes the start of the value
-        for time, in UTC time.
+      description: 'Date and time when the indicator was last updated on the ThreatStream.
+        Format: YYYYMMDDThhmmss, where T denotes the start of the value
+
+        for time, in UTC time.'
       type: String
     - contextPath: ThreatStream.Indicators.Confidence
       description: Level of certainty that an observable is of the reported indicator
@@ -1549,9 +1562,10 @@ script:
       description: Vendor that reported the indicator as malicious.
       type: String
     - contextPath: ThreatStream.URL.Modified
-      description: |-
-        Date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-        for time, in UTC time.
+      description: 'Date and time when the indicator was last updated. The date format
+        is: YYYYMMDDThhmmss, where "T" denotes the start of the value
+
+        for time, in UTC time.'
       type: String
     - contextPath: ThreatStream.URL.Confidence
       description: Level of certainty that an observable is of the reported indicator
@@ -1590,3 +1604,4 @@ script:
   type: python
 tests:
 - ThreatStream-Test
+toversion: 4.1.9

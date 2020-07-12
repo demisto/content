@@ -1,191 +1,147 @@
+description: ''
 id: Azure Compute - Test
-version: -1
+inputs: []
 name: Azure Compute - Test
-description: ""
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 98c0064b-e483-4097-831f-f7a5c5c3e055
-    type: start
-    task:
-      id: 98c0064b-e483-4097-831f-f7a5c5c3e055
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
+      - '1'
     note: false
-    timertriggers: []
-    ignoreworker: false
-  "1":
-    id: "1"
-    taskid: 20195e75-c884-4544-8231-6922ee05f8e5
-    type: regular
+    separatecontext: false
     task:
-      id: 20195e75-c884-4544-8231-6922ee05f8e5
+      brand: ''
+      id: 98c0064b-e483-4097-831f-f7a5c5c3e055
+      iscommand: false
+      name: ''
       version: -1
-      name: azure-list-subscriptions
+    taskid: 98c0064b-e483-4097-831f-f7a5c5c3e055
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    separatecontext: false
+    task:
+      brand: Azure Compute v2
       description: Lists the subscriptions for this application.
+      id: 20195e75-c884-4544-8231-6922ee05f8e5
+      iscommand: true
+      name: azure-list-subscriptions
       script: Azure Compute v2|||azure-list-subscriptions
       type: regular
-      iscommand: true
-      brand: Azure Compute v2
-    nexttasks:
-      '#none#':
-      - "2"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 230
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 96af46a5-438a-4310-8732-503d77c246fa
-    type: regular
-    task:
-      id: 96af46a5-438a-4310-8732-503d77c246fa
       version: -1
-      name: azure-list-resource-groups
-      description: Lists all resource groups that belong to your Azure subscription.
-      script: Azure Compute v2|||azure-list-resource-groups
-      type: regular
-      iscommand: true
-      brand: Azure Compute v2
+    taskid: 20195e75-c884-4544-8231-6922ee05f8e5
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
     scriptarguments:
       subscription_id: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 410
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: fe3418e8-0cfd-46da-8fea-f9bcc659c5bb
-    type: regular
     task:
-      id: fe3418e8-0cfd-46da-8fea-f9bcc659c5bb
+      brand: Azure Compute v2
+      description: Lists all resource groups that belong to your Azure subscription.
+      id: 96af46a5-438a-4310-8732-503d77c246fa
+      iscommand: true
+      name: azure-list-resource-groups
+      script: Azure Compute v2|||azure-list-resource-groups
+      type: regular
       version: -1
-      name: azure-vm-list-instances
+    taskid: 96af46a5-438a-4310-8732-503d77c246fa
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 410\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    scriptarguments:
+      resource_group:
+        simple: compute-integration
+    separatecontext: false
+    task:
+      brand: Azure Compute v2
       description: Lists the virtual machine instances in the given resource group.
+      id: fe3418e8-0cfd-46da-8fea-f9bcc659c5bb
+      iscommand: true
+      name: azure-vm-list-instances
       script: Azure Compute v2|||azure-vm-list-instances
       type: regular
-      iscommand: true
-      brand: Azure Compute v2
+      version: -1
+    taskid: fe3418e8-0cfd-46da-8fea-f9bcc659c5bb
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 590\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "4"
+      - '5'
+    note: false
     scriptarguments:
       resource_group:
         simple: compute-integration
+      virtual_machine_name:
+        simple: TestOAuth
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 590
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 0c9d8586-0106-4831-8422-bdb759ce6cbc
-    type: regular
     task:
-      id: 0c9d8586-0106-4831-8422-bdb759ce6cbc
-      version: -1
-      name: azure-vm-get-instance-details
+      brand: Azure Compute v2
       description: Gets the properties of a given virtual machine.
+      id: 0c9d8586-0106-4831-8422-bdb759ce6cbc
+      iscommand: true
+      name: azure-vm-get-instance-details
       script: Azure Compute v2|||azure-vm-get-instance-details
       type: regular
-      iscommand: true
-      brand: Azure Compute v2
-    nexttasks:
-      '#none#':
-      - "5"
+      version: -1
+    taskid: 0c9d8586-0106-4831-8422-bdb759ce6cbc
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 770\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
+    note: false
     scriptarguments:
       resource_group:
         simple: compute-integration
       virtual_machine_name:
         simple: TestOAuth
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: d56a266d-3669-4292-8934-9d7b0c9c522b
-    type: regular
     task:
-      id: d56a266d-3669-4292-8934-9d7b0c9c522b
-      version: -1
-      name: azure-vm-start-instance
+      brand: Azure Compute v2
       description: Powers on a given virtual machine.
+      id: d56a266d-3669-4292-8934-9d7b0c9c522b
+      iscommand: true
+      name: azure-vm-start-instance
       script: Azure Compute v2|||azure-vm-start-instance
       type: regular
-      iscommand: true
-      brand: Azure Compute v2
-    scriptarguments:
-      resource_group:
-        simple: compute-integration
-      virtual_machine_name:
-        simple: TestOAuth
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 950
-        }
-      }
-    note: false
+      version: -1
+    taskid: d56a266d-3669-4292-8934-9d7b0c9c522b
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 995,
-        "width": 380,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 950\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 995,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n\
+  \    }\n  }\n}"

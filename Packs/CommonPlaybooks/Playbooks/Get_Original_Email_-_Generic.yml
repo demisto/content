@@ -1,131 +1,19 @@
-id: get_original_email_-_generic
-version: -1
-name: Get Original Email - Generic
-description: |-
-  Use this playbook to retrieve the original email in the thread, including headers and attahcments, when the reporting user forwarded the original email not as an attachment.
+description: 'Use this playbook to retrieve the original email in the thread, including
+  headers and attahcments, when the reporting user forwarded the original email not
+  as an attachment.
 
-  You must have the necessary permissions in your email service to execute global search.
+
+  You must have the necessary permissions in your email service to execute global
+  search.
+
 
   - EWS: eDiscovery
-  - Gmail: Google Apps Domain-Wide Delegation of Authority
-starttaskid: "0"
-tasks:
-  "0":
-    id: "0"
-    taskid: d7920fee-8ada-4d48-8197-2e08d19a54dc
-    type: start
-    task:
-      id: d7920fee-8ada-4d48-8197-2e08d19a54dc
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "6"
-      - "8"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: b52aade3-aa90-4343-8417-d4aa26803d62
-    type: title
-    task:
-      id: b52aade3-aa90-4343-8417-d4aa26803d62
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: eaebbf2e-aa04-4581-8157-2f55adc08880
-    type: playbook
-    task:
-      id: eaebbf2e-aa04-4581-8157-2f55adc08880
-      version: -1
-      name: Get Original Email - Gmail
-      playbookName: Get Original Email - Gmail
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "3"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "8":
-    id: "8"
-    taskid: 73a4ccfb-a535-4af3-8587-121339850a37
-    type: playbook
-    task:
-      id: 73a4ccfb-a535-4af3-8587-121339850a37
-      version: -1
-      name: Get Original Email - EWS
-      playbookName: Get Original Email - EWS
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "3"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 385,
-        "width": 810,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
+
+  - Gmail: Google Apps Domain-Wide Delegation of Authority'
+fromversion: 4.0.0
+id: get_original_email_-_generic
 inputs: []
+name: Get Original Email - Generic
 outputs:
 - contextPath: Email
   description: The email object
@@ -159,7 +47,92 @@ outputs:
   type: string
 - contextPath: Email.HeadersMap
   description: The headers of the email.
-fromversion: 4.0.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '6'
+      - '8'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: d7920fee-8ada-4d48-8197-2e08d19a54dc
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: d7920fee-8ada-4d48-8197-2e08d19a54dc
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 50\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: b52aade3-aa90-4343-8417-d4aa26803d62
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: b52aade3-aa90-4343-8417-d4aa26803d62
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 370\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    separatecontext: true
+    task:
+      brand: ''
+      description: ''
+      id: eaebbf2e-aa04-4581-8157-2f55adc08880
+      iscommand: false
+      name: Get Original Email - Gmail
+      playbookName: Get Original Email - Gmail
+      type: playbook
+      version: -1
+    taskid: eaebbf2e-aa04-4581-8157-2f55adc08880
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 195\n  }\n}"
+  '8':
+    id: '8'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    separatecontext: true
+    task:
+      brand: ''
+      description: ''
+      id: 73a4ccfb-a535-4af3-8587-121339850a37
+      iscommand: false
+      name: Get Original Email - EWS
+      playbookName: Get Original Email - EWS
+      type: playbook
+      version: -1
+    taskid: 73a4ccfb-a535-4af3-8587-121339850a37
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
 tests:
 - Phishing v2 Test - Attachment
 - Phishing v2 Test - Inline
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 385,\n      \"width\": 810,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

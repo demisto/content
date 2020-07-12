@@ -1,80 +1,62 @@
+args:
+- default: true
+  description: Points added to score per malicious URL in incident context (float)
+  name: bad_url_weight
+  required: true
+- description: Points added to score per malicious IP in incident context (float)
+  name: bad_ip_weight
+  required: true
+- description: Points added to score per malicious hash in incident context (float)
+  name: bad_hash_weight
+  required: true
+- description: Minimal score to raise severity to Critical (int)
+  name: threshold_critical
+  required: true
+- description: Minimal score to raise severity to High (int)
+  name: threshold_high
+  required: true
+- description: Minimal score to raise severity to Medium (int)
+  name: threshold_medium
+  required: true
+- description: Starting score to add onto. Can be set manually or mapped from context
+    in playbooks.
+  name: initialscore
+  required: true
+comment: Calculate a weighted score based on number of malicious indicators involved
+  in the incident. Each indicator type can have a different weight. Finally if score
+  exceeds certain thresholds, increase incident severity. Thresholds can also be overriden
+  by providing them in arguments.
 commonfields:
   id: SetSeverityByScore
   version: -1
+dependson: {}
+deprecated: true
 name: SetSeverityByScore
-script: |-
-  sev = None
-  if demisto.incidents():
-      sev = int(demisto.get(demisto.incidents()[0], 'severity'))
-  if sev is None:
-      demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Could not retrieve severity for incident. Exiting.' } )
-
-  badWeights = {"bad_urls": float(demisto.args()['bad_url_weight']),
-                "bad_ips": float(demisto.args()['bad_ip_weight']),
-                "bad_hashes": float(demisto.args()['bad_hash_weight'])}
-  tCritical = int(demisto.args()['threshold_critical'])
-  tHigh = int(demisto.args()['threshold_high'])
-  tMed = int(demisto.args()['threshold_medium'])
-
-  score = demisto.get(demisto.args(), 'initialscore')
-
-  # Must explicitly compare to None since 0 is a valid score
-  if score is None:
-      # Setting initial score based on severity. Severity "Unknown" yields score 0.
-      score = sev * 25
-
-  for badKey in badWeights:
-      if badKey in demisto.context():
-          v = demisto.context()[badKey]
-          v = v if isinstance(v, list) else [v]
-          score += len(v) * badWeights[badKey]
-
-  demisto.setContext('score', score)
-  if score >= tMed and sev < 2:
-      demisto.log('tMed')
-      if score >= tHigh and sev < 3:
-          demisto.log('tHigh')
-          if score >= tCritical and sev < 4:
-              demisto.log('tCrit')
-              demisto.executeCommand('IncidentSet', {'severity': 'critical'})
-          else:
-              demisto.executeCommand('IncidentSet', {'severity': 'high'})
-      else:
-          demisto.executeCommand('IncidentSet', {'severity': 'medium'})
-  # If no escalation required - don't change severity
-type: python
+script: "sev = None\nif demisto.incidents():\n    sev = int(demisto.get(demisto.incidents()[0],\
+  \ 'severity'))\nif sev is None:\n    demisto.results( { \"Type\" : entryTypes[\"\
+  error\"], \"ContentsFormat\" : formats[\"text\"], \"Contents\" : 'Could not retrieve\
+  \ severity for incident. Exiting.' } )\n\nbadWeights = {\"bad_urls\": float(demisto.args()['bad_url_weight']),\n\
+  \              \"bad_ips\": float(demisto.args()['bad_ip_weight']),\n          \
+  \    \"bad_hashes\": float(demisto.args()['bad_hash_weight'])}\ntCritical = int(demisto.args()['threshold_critical'])\n\
+  tHigh = int(demisto.args()['threshold_high'])\ntMed = int(demisto.args()['threshold_medium'])\n\
+  \nscore = demisto.get(demisto.args(), 'initialscore')\n\n# Must explicitly compare\
+  \ to None since 0 is a valid score\nif score is None:\n    # Setting initial score\
+  \ based on severity. Severity \"Unknown\" yields score 0.\n    score = sev * 25\n\
+  \nfor badKey in badWeights:\n    if badKey in demisto.context():\n        v = demisto.context()[badKey]\n\
+  \        v = v if isinstance(v, list) else [v]\n        score += len(v) * badWeights[badKey]\n\
+  \ndemisto.setContext('score', score)\nif score >= tMed and sev < 2:\n    demisto.log('tMed')\n\
+  \    if score >= tHigh and sev < 3:\n        demisto.log('tHigh')\n        if score\
+  \ >= tCritical and sev < 4:\n            demisto.log('tCrit')\n            demisto.executeCommand('IncidentSet',\
+  \ {'severity': 'critical'})\n        else:\n            demisto.executeCommand('IncidentSet',\
+  \ {'severity': 'high'})\n    else:\n        demisto.executeCommand('IncidentSet',\
+  \ {'severity': 'medium'})\n# If no escalation required - don't change severity"
+scripttarget: 0
 subtype: python2
+system: true
 tags:
 - url
 - ip
 - hash
-comment: "Calculate a weighted score based on number of malicious indicators involved in the incident. Each indicator type can have a different weight. Finally if score exceeds certain thresholds, increase incident severity. Thresholds can also be overriden by providing them in arguments."
-system: true
-deprecated: true
-args:
-- name: bad_url_weight
-  required: true
-  default: true
-  description: Points added to score per malicious URL in incident context (float)
-- name: bad_ip_weight
-  required: true
-  description: Points added to score per malicious IP in incident context (float)
-- name: bad_hash_weight
-  required: true
-  description: Points added to score per malicious hash in incident context (float)
-- name: threshold_critical
-  required: true
-  description: Minimal score to raise severity to Critical (int)
-- name: threshold_high
-  required: true
-  description: Minimal score to raise severity to High (int)
-- name: threshold_medium
-  required: true
-  description: Minimal score to raise severity to Medium (int)
-- name: initialscore
-  required: true
-  description: Starting score to add onto. Can be set manually or mapped from context
-    in playbooks.
-scripttarget: 0
-dependson: {}
 timeout: 0s
+toversion: 4.1.9
+type: python

@@ -46,8 +46,8 @@ script:
   - arguments:
     - default: false
       defaultValue: 1h
-      description: Duration (from now) for which to pull updated data, for
-        example, "1d", "1h" or "10m".
+      description: Duration (from now) for which to pull updated data, for example,
+        "1d", "1h" or "10m".
       isArray: false
       name: since
       required: false
@@ -235,8 +235,8 @@ script:
       secret: false
     - default: false
       defaultValue: 1h
-      description: Duration (from now) for which to pull updated data, for
-        example, "1d", "1h" or "10m".
+      description: Duration (from now) for which to pull updated data, for example,
+        "1d", "1h" or "10m".
       isArray: false
       name: since
       required: false
@@ -295,7 +295,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieves indicators from a speicifed PhishLabs incident. To fetch incidents to Demisto, enable fetching incidents.
+    description: Retrieves indicators from a speicifed PhishLabs incident. To fetch
+      incidents to Demisto, enable fetching incidents.
     execution: false
     name: phishlabs-get-incident-indicators
     outputs:
@@ -457,7 +458,8 @@ script:
   isfetch: true
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 tests:
 - PhishLabsIOC TestPlaybook
+toversion: 4.1.9

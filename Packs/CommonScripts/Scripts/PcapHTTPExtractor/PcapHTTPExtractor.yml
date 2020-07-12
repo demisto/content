@@ -44,6 +44,7 @@ comment: Allows to parse and extract http flows (requests & responses) from a pc
 commonfields:
   id: PcapHTTPExtractor
   version: -1
+dockerimage: demisto/pcap-http-extractor:1.0.0.98
 enabled: true
 name: PcapHTTPExtractor
 outputs:
@@ -87,13 +88,13 @@ outputs:
   description: Time the packet was sniffed (unixtime).
   type: String
 script: ''
+subtype: python2
 system: false
 tags:
 - pcap
 - http
-timeout: '0'
-type: python
-dockerimage: demisto/pcap-http-extractor:1.0.0.98
 tests:
 - PcapHTTPExtractor-Test
-subtype: python2
+timeout: '0'
+toversion: 4.1.9
+type: python

@@ -1,697 +1,573 @@
-id: CanaryTools Test
-version: -1
-name: CanaryTools Test
 fromversion: 4.1.0
-starttaskid: "0"
+id: CanaryTools Test
+inputs: []
+name: CanaryTools Test
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 40146564-30d7-457a-85c1-a6efb9e8883d
-    type: start
+  '0':
+    id: '0'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    separatecontext: false
     task:
+      brand: ''
       id: 40146564-30d7-457a-85c1-a6efb9e8883d
-      version: -1
-      name: ""
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: e1063c50-6e0e-4c9c-8b8c-7281f84f1495
-    type: regular
-    task:
-      id: e1063c50-6e0e-4c9c-8b8c-7281f84f1495
+      name: ''
       version: -1
-      name: canarytools-check-whitelist
-      description: Check whether a given IP and port are whitelisted
-      script: Thinkst Canary|||canarytools-check-whitelist
-      type: regular
-      iscommand: true
-      brand: Thinkst Canary
+    taskid: 40146564-30d7-457a-85c1-a6efb9e8883d
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 50\n  }\n}"
+  '10':
+    id: '10'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "12"
+      - '22'
+    note: false
     scriptarguments:
-      ip:
-        simple: 8.8.8.8
-      port:
-        simple: "45"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: ac51931d-a70e-423f-87f9-9e3524e1ab1d
-    type: regular
-    task:
-      id: ac51931d-a70e-423f-87f9-9e3524e1ab1d
-      version: -1
-      name: canarytools-edit-alert-status
-      description: Edit the status for an Alert in Canary Tools
-      script: Thinkst Canary|||canarytools-edit-alert-status
-      type: regular
-      iscommand: true
-      brand: Thinkst Canary
-    nexttasks:
-      '#none#':
-      - "21"
-    scriptarguments:
-      alert_id:
-        simple: incident:canarytoken:aabf05edc0eaaadd1ecbdc2c::1554285907
-      alertID:
-        simple: incident:canarytoken:d6fe0ae4dfd36cc3cc6d9d4f::1548593719
-      status:
-        simple: Acknowledge
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "7":
-    id: "7"
-    taskid: bd881164-9eb1-4e9d-8010-7e258be111f1
-    type: regular
-    task:
-      id: bd881164-9eb1-4e9d-8010-7e258be111f1
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-      - "8"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "8":
-    id: "8"
-    taskid: d82f244b-f6c8-4536-825e-7d5cded966ed
-    type: regular
-    task:
-      id: d82f244b-f6c8-4536-825e-7d5cded966ed
-      version: -1
-      name: canarytools-list-canaries
-      description: List all registered Canaries
-      script: Thinkst Canary|||canarytools-list-canaries
-      type: regular
-      iscommand: true
-      brand: Thinkst Canary
-    nexttasks:
-      '#none#':
-      - "15"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "9":
-    id: "9"
-    taskid: 860075b5-b244-4d70-8872-77fee6ce54f8
-    type: regular
-    task:
-      id: 860075b5-b244-4d70-8872-77fee6ce54f8
-      version: -1
-      name: canarytools-list-tokens
-      description: List all Canary tokens
-      script: Thinkst Canary|||canarytools-list-tokens
-      type: regular
-      iscommand: true
-      brand: Thinkst Canary
-    nexttasks:
-      '#none#':
-      - "13"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "10":
-    id: "10"
-    taskid: 25c2cbc2-b10f-4ba4-8037-8563916c753f
-    type: regular
-    task:
-      id: 25c2cbc2-b10f-4ba4-8037-8563916c753f
-      version: -1
-      name: canarytools-edit-alert-status
-      description: Edit the status for an Alert in Canary Tools
-      script: Thinkst Canary|||canarytools-edit-alert-status
-      type: regular
-      iscommand: true
-      brand: Thinkst Canary
-    nexttasks:
-      '#none#':
-      - "22"
-    scriptarguments:
-      alert_id:
-        simple: incident:canarytoken:aabf05edc0eaaadd1ecbdc2c::1554285907
       alertID:
         simple: incident:canarytoken:6229a4c578d513d17c804e7f:94.188.164.68:1551117488
+      alert_id:
+        simple: incident:canarytoken:aabf05edc0eaaadd1ecbdc2c::1554285907
       status:
         simple: Unacknowledge
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "11":
-    id: "11"
-    taskid: 3b1cca5d-9e65-43dc-83a5-f216252d5516
-    type: regular
     task:
-      id: 3b1cca5d-9e65-43dc-83a5-f216252d5516
-      version: -1
-      name: canarytools-get-token
-      description: Fetch Canary Token file from the Canary Tools server
-      script: Thinkst Canary|||canarytools-get-token
-      type: regular
-      iscommand: true
       brand: Thinkst Canary
+      description: Edit the status for an Alert in Canary Tools
+      id: 25c2cbc2-b10f-4ba4-8037-8563916c753f
+      iscommand: true
+      name: canarytools-edit-alert-status
+      script: Thinkst Canary|||canarytools-edit-alert-status
+      type: regular
+      version: -1
+    taskid: 25c2cbc2-b10f-4ba4-8037-8563916c753f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1945\n  }\n}"
+  '11':
+    id: '11'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "24"
+      - '24'
+    note: false
     scriptarguments:
       token:
         complex:
-          root: CanaryTools
           accessor: Token
+          root: CanaryTools
           transformers:
-          - operator: atIndex
-            args:
+          - args:
               index:
                 value:
-                  simple: "0"
-          - operator: getField
-            args:
+                  simple: '0'
+            operator: atIndex
+          - args:
               field:
                 value:
                   simple: CanaryToken
+            operator: getField
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "12":
-    id: "12"
-    taskid: 4accecba-c2b8-408b-81bf-0ef82813c695
-    type: condition
     task:
-      id: 4accecba-c2b8-408b-81bf-0ef82813c695
+      brand: Thinkst Canary
+      description: Fetch Canary Token file from the Canary Tools server
+      id: 3b1cca5d-9e65-43dc-83a5-f216252d5516
+      iscommand: true
+      name: canarytools-get-token
+      script: Thinkst Canary|||canarytools-get-token
+      type: regular
       version: -1
-      name: IsTrue
-      description: Check if a given value is true. Will return 'no' otherwise
-      scriptName: IsTrue
-      type: condition
-      iscommand: false
-      brand: ""
+    taskid: 3b1cca5d-9e65-43dc-83a5-f216252d5516
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 720\n  }\n}"
+  '12':
+    id: '12'
+    ignoreworker: false
     nexttasks:
-      "yes":
-      - "16"
+      'yes':
+      - '16'
+    note: false
     scriptarguments:
       value:
         simple: ${CanaryTools.IP.Whitelisted}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "13":
-    id: "13"
-    taskid: 3e358194-fb13-4545-828a-4169f9ee2442
-    type: condition
     task:
-      id: 3e358194-fb13-4545-828a-4169f9ee2442
-      version: -1
-      name: Check list-tokens outputs
-      type: condition
+      brand: ''
+      description: Check if a given value is true. Will return 'no' otherwise
+      id: 4accecba-c2b8-408b-81bf-0ef82813c695
       iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "11"
-    separatecontext: false
+      name: IsTrue
+      scriptName: IsTrue
+      type: condition
+      version: -1
+    taskid: 4accecba-c2b8-408b-81bf-0ef82813c695
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+  '13':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: CanaryTools
                 accessor: Token
+                root: CanaryTools
                 transformers:
-                - operator: atIndex
-                  args:
+                - args:
                     index:
                       value:
-                        simple: "0"
-                - operator: getField
-                  args:
+                        simple: '0'
+                  operator: atIndex
+                - args:
                     field:
                       value:
                         simple: CanaryToken
+                  operator: getField
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               complex:
-                root: CanaryTools
                 accessor: Token
+                root: CanaryTools
                 transformers:
-                - operator: atIndex
-                  args:
+                - args:
                     index:
                       value:
-                        simple: "0"
-                - operator: getField
-                  args:
+                        simple: '0'
+                  operator: atIndex
+                - args:
                     field:
                       value:
                         simple: CreatedTime
+                  operator: getField
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               complex:
-                root: CanaryTools
                 accessor: Token
+                root: CanaryTools
                 transformers:
-                - operator: atIndex
-                  args:
+                - args:
                     index:
                       value:
-                        simple: "0"
-                - operator: getField
-                  args:
+                        simple: '0'
+                  operator: atIndex
+                - args:
                     field:
                       value:
                         simple: Kind
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
+                  operator: getField
+          operator: isExists
+      label: 'yes'
+    id: '13'
     ignoreworker: false
-  "15":
-    id: "15"
-    taskid: b4f923ee-2117-44f3-88cd-19b1d0d86a22
-    type: condition
-    task:
-      id: b4f923ee-2117-44f3-88cd-19b1d0d86a22
-      version: -1
-      name: Check list-canaries outputs
-      type: condition
-      iscommand: false
-      brand: ""
     nexttasks:
-      "yes":
-      - "2"
+      'yes':
+      - '11'
+    note: false
     separatecontext: false
+    task:
+      brand: ''
+      id: 3e358194-fb13-4545-828a-4169f9ee2442
+      iscommand: false
+      name: Check list-tokens outputs
+      type: condition
+      version: -1
+    taskid: 3e358194-fb13-4545-828a-4169f9ee2442
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 545\n  }\n}"
+  '15':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: CanaryTools.Device.ID
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: CanaryTools.Device.Name
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: CanaryTools.Device.Description
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: CanaryTools.Device.Status
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
+          operator: isExists
+      label: 'yes'
+    id: '15'
     ignoreworker: false
-  "16":
-    id: "16"
-    taskid: 934b446b-df4f-4d86-8da5-854269a32b2e
-    type: regular
+    nexttasks:
+      'yes':
+      - '2'
+    note: false
+    separatecontext: false
     task:
-      id: 934b446b-df4f-4d86-8da5-854269a32b2e
+      brand: ''
+      id: b4f923ee-2117-44f3-88cd-19b1d0d86a22
+      iscommand: false
+      name: Check list-canaries outputs
+      type: condition
       version: -1
-      name: canarytools-check-whitelist
-      description: Check whether a given IP and port are whitelisted
-      script: Thinkst Canary|||canarytools-check-whitelist
-      type: regular
-      iscommand: true
-      brand: Thinkst Canary
+    taskid: b4f923ee-2117-44f3-88cd-19b1d0d86a22
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '16':
+    id: '16'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "20"
+      - '20'
+    note: false
     scriptarguments:
       ip:
         simple: 8.8.8.8
       port:
-        simple: "8"
+        simple: '8'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "19":
-    id: "19"
-    taskid: c5e9f2ca-cd90-4fbb-8a17-91c4fae01592
-    type: title
     task:
-      id: c5e9f2ca-cd90-4fbb-8a17-91c4fae01592
+      brand: Thinkst Canary
+      description: Check whether a given IP and port are whitelisted
+      id: 934b446b-df4f-4d86-8da5-854269a32b2e
+      iscommand: true
+      name: canarytools-check-whitelist
+      script: Thinkst Canary|||canarytools-check-whitelist
+      type: regular
       version: -1
+    taskid: 934b446b-df4f-4d86-8da5-854269a32b2e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1245\n  }\n}"
+  '19':
+    id: '19'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: c5e9f2ca-cd90-4fbb-8a17-91c4fae01592
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 2470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "20":
-    id: "20"
-    taskid: 9dd2009a-0271-4aa4-877b-3f091d1f4521
-    type: condition
-    task:
-      id: 9dd2009a-0271-4aa4-877b-3f091d1f4521
       version: -1
-      name: Check if not Whitelisted
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "4"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: CanaryTools.IP.Whitelisted
-            iscontext: true
-          right:
-            value:
-              simple: "False"
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1420
-        }
-      }
-    note: false
+    taskid: c5e9f2ca-cd90-4fbb-8a17-91c4fae01592
     timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 2470\n  }\n}"
+  '2':
+    id: '2'
     ignoreworker: false
-  "21":
-    id: "21"
-    taskid: 0d49d5ad-83a2-400c-870a-d1cfc9caaf6b
-    type: condition
-    task:
-      id: 0d49d5ad-83a2-400c-870a-d1cfc9caaf6b
-      version: -1
-      name: Check Status
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "10"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: CanaryTools.Alert.Status
-            iscontext: true
-          right:
-            value:
-              simple: Acknowledge
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "22":
-    id: "22"
-    taskid: 8f40d04d-bdb7-4b1a-84a9-6a7e03ce37a2
-    type: condition
-    task:
-      id: 8f40d04d-bdb7-4b1a-84a9-6a7e03ce37a2
-      version: -1
-      name: Check Status
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "23"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: CanaryTools.Alert.Status
-            iscontext: true
-          right:
-            value:
-              simple: Acknowledge
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 2120
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "23":
-    id: "23"
-    taskid: 813754d4-9e09-49e8-89fd-57b98e4742fd
-    type: regular
-    task:
-      id: 813754d4-9e09-49e8-89fd-57b98e4742fd
-      version: -1
-      name: Test Fetch
-      scriptName: FetchFromInstance
-      type: regular
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - '12'
+    note: false
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+      port:
+        simple: '45'
+    separatecontext: false
+    task:
+      brand: Thinkst Canary
+      description: Check whether a given IP and port are whitelisted
+      id: e1063c50-6e0e-4c9c-8b8c-7281f84f1495
+      iscommand: true
+      name: canarytools-check-whitelist
+      script: Thinkst Canary|||canarytools-check-whitelist
+      type: regular
+      version: -1
+    taskid: e1063c50-6e0e-4c9c-8b8c-7281f84f1495
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+  '20':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: CanaryTools.IP.Whitelisted
+          operator: isEqualString
+          right:
+            value:
+              simple: 'False'
+      label: 'yes'
+    id: '20'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '4'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 9dd2009a-0271-4aa4-877b-3f091d1f4521
+      iscommand: false
+      name: Check if not Whitelisted
+      type: condition
+      version: -1
+    taskid: 9dd2009a-0271-4aa4-877b-3f091d1f4521
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1420\n  }\n}"
+  '21':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: CanaryTools.Alert.Status
+          operator: isEqualString
+          right:
+            value:
+              simple: Acknowledge
+      label: 'yes'
+    id: '21'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '10'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 0d49d5ad-83a2-400c-870a-d1cfc9caaf6b
+      iscommand: false
+      name: Check Status
+      type: condition
+      version: -1
+    taskid: 0d49d5ad-83a2-400c-870a-d1cfc9caaf6b
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1770\n  }\n}"
+  '22':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: CanaryTools.Alert.Status
+          operator: isEqualString
+          right:
+            value:
+              simple: Acknowledge
+      label: 'yes'
+    id: '22'
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - '23'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 8f40d04d-bdb7-4b1a-84a9-6a7e03ce37a2
+      iscommand: false
+      name: Check Status
+      type: condition
+      version: -1
+    taskid: 8f40d04d-bdb7-4b1a-84a9-6a7e03ce37a2
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 2120\n  }\n}"
+  '23':
+    id: '23'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '19'
+    note: false
     scriptarguments:
       add_to_context: {}
       brand_name:
         simple: Thinkst Canary
       expect_data:
-        simple: "false"
+        simple: 'false'
       instance_name: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 2295
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "24":
-    id: "24"
-    taskid: 2f4bfc7d-a60f-4b1f-8fcd-d1542c2c9a45
-    type: regular
     task:
-      id: 2f4bfc7d-a60f-4b1f-8fcd-d1542c2c9a45
-      version: -1
-      name: canarytools-whitelist-ip
-      description: Whitelist an IP address in Canary
-      script: Thinkst Canary|||canarytools-whitelist-ip
+      brand: ''
+      id: 813754d4-9e09-49e8-89fd-57b98e4742fd
+      iscommand: false
+      name: Test Fetch
+      scriptName: FetchFromInstance
       type: regular
-      iscommand: true
-      brand: Thinkst Canary
+      version: -1
+    taskid: 813754d4-9e09-49e8-89fd-57b98e4742fd
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 2295\n  }\n}"
+  '24':
+    continueonerror: true
+    id: '24'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "25"
+      - '25'
+    note: false
     scriptarguments:
       ip:
         simple: 4.4.4.4.4
       port: {}
-    continueonerror: true
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "25":
-    id: "25"
-    taskid: 4b42307f-00ad-456c-8bfa-273b8bdf1a21
-    type: condition
     task:
-      id: 4b42307f-00ad-456c-8bfa-273b8bdf1a21
+      brand: Thinkst Canary
+      description: Whitelist an IP address in Canary
+      id: 2f4bfc7d-a60f-4b1f-8fcd-d1542c2c9a45
+      iscommand: true
+      name: canarytools-whitelist-ip
+      script: Thinkst Canary|||canarytools-whitelist-ip
+      type: regular
       version: -1
-      name: isError
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
-      scriptName: isError
-      type: condition
-      iscommand: false
-      brand: ""
+    taskid: 2f4bfc7d-a60f-4b1f-8fcd-d1542c2c9a45
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 895\n  }\n}"
+  '25':
+    id: '25'
+    ignoreworker: false
     nexttasks:
-      "yes":
-      - "16"
+      'yes':
+      - '16'
+    note: false
     scriptarguments:
       entryId:
         simple: ${lastCompletedTaskEntries}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1070
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      id: 4b42307f-00ad-456c-8bfa-273b8bdf1a21
+      iscommand: false
+      name: isError
+      scriptName: isError
+      type: condition
+      version: -1
+    taskid: 4b42307f-00ad-456c-8bfa-273b8bdf1a21
     timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1070\n  }\n}"
+  '4':
+    id: '4'
     ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {
-      "22_23_#default#": 0.89
-    },
-    "paper": {
-      "dimensions": {
-        "height": 2485,
-        "width": 810,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    nexttasks:
+      '#none#':
+      - '21'
+    note: false
+    scriptarguments:
+      alertID:
+        simple: incident:canarytoken:d6fe0ae4dfd36cc3cc6d9d4f::1548593719
+      alert_id:
+        simple: incident:canarytoken:aabf05edc0eaaadd1ecbdc2c::1554285907
+      status:
+        simple: Acknowledge
+    separatecontext: false
+    task:
+      brand: Thinkst Canary
+      description: Edit the status for an Alert in Canary Tools
+      id: ac51931d-a70e-423f-87f9-9e3524e1ab1d
+      iscommand: true
+      name: canarytools-edit-alert-status
+      script: Thinkst Canary|||canarytools-edit-alert-status
+      type: regular
+      version: -1
+    taskid: ac51931d-a70e-423f-87f9-9e3524e1ab1d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1595\n  }\n}"
+  '7':
+    id: '7'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '9'
+      - '8'
+    note: false
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: bd881164-9eb1-4e9d-8010-7e258be111f1
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: bd881164-9eb1-4e9d-8010-7e258be111f1
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 195\n  }\n}"
+  '8':
+    id: '8'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '15'
+    note: false
+    separatecontext: false
+    task:
+      brand: Thinkst Canary
+      description: List all registered Canaries
+      id: d82f244b-f6c8-4536-825e-7d5cded966ed
+      iscommand: true
+      name: canarytools-list-canaries
+      script: Thinkst Canary|||canarytools-list-canaries
+      type: regular
+      version: -1
+    taskid: d82f244b-f6c8-4536-825e-7d5cded966ed
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '9':
+    id: '9'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '13'
+    note: false
+    separatecontext: false
+    task:
+      brand: Thinkst Canary
+      description: List all Canary tokens
+      id: 860075b5-b244-4d70-8872-77fee6ce54f8
+      iscommand: true
+      name: canarytools-list-tokens
+      script: Thinkst Canary|||canarytools-list-tokens
+      type: regular
+      version: -1
+    taskid: 860075b5-b244-4d70-8872-77fee6ce54f8
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 370\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {\n    \"22_23_#default#\": 0.89\n  },\n  \"paper\"\
+  : {\n    \"dimensions\": {\n      \"height\": 2485,\n      \"width\": 810,\n   \
+  \   \"x\": 50,\n      \"y\": 50\n    }\n  }\n}"

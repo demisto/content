@@ -1,50 +1,38 @@
+args:
+- default: true
+  description: Path to memory dump file on the system being used
+  name: memdump
+  required: true
+- description: Process ID to pass to volatility malfind command
+  name: pid
+  required: true
+- description: Path to directory in which to save dumped memory sections
+  name: dumpdir
+  required: true
+- description: If "true", deletes the dir with the VAD dumps
+  name: dodelete
+- description: Volatility system to run the script on.
+  name: system
+  required: true
+comment: Volatility script for command ldrmodules
 commonfields:
   id: VolMalfindDumpAgent
   version: -1
+dependson: {}
 name: VolMalfindDumpAgent
-script: |-
-  var res = [];
-  var output = {Success: false};
-  var cmdline = 'sudo vol.py -f ' + args.memdump + ' malfind';
-  if (args.pid) {
-     cmdline = cmdline + ' -p ' + args.pid;
-  }
-  var dumpdir = args.dumpdir;
-  cmdline = cmdline + ' -D ' + dumpdir;
-
-  executeCommand('RemoteExec', {system:args.system, cmd:'sudo mkdir ' + dumpdir});
-  var volExec = executeCommand('RemoteExec', {system:args.system, cmd: cmdline})[0];
-  res.push(volExec);
-  if (volExec.Type !== entryTypes.error) {
-     // we need to take all the files and move them over.
-     res.push(executeCommand('copy-from', {using:args.system, file: dumpdir + '/*'}));
-  }
-  if ('true' === args.dodelete) {
-      res.push(executeCommand('RemoteExec', {system:args.system, cmd:'sudo rm -rf ' + dumpdir}));
-  }
-
-  return res;
-type: javascript
+script: "var res = [];\nvar output = {Success: false};\nvar cmdline = 'sudo vol.py\
+  \ -f ' + args.memdump + ' malfind';\nif (args.pid) {\n   cmdline = cmdline + ' -p\
+  \ ' + args.pid;\n}\nvar dumpdir = args.dumpdir;\ncmdline = cmdline + ' -D ' + dumpdir;\n\
+  \nexecuteCommand('RemoteExec', {system:args.system, cmd:'sudo mkdir ' + dumpdir});\n\
+  var volExec = executeCommand('RemoteExec', {system:args.system, cmd: cmdline})[0];\n\
+  res.push(volExec);\nif (volExec.Type !== entryTypes.error) {\n   // we need to take\
+  \ all the files and move them over.\n   res.push(executeCommand('copy-from', {using:args.system,\
+  \ file: dumpdir + '/*'}));\n}\nif ('true' === args.dodelete) {\n    res.push(executeCommand('RemoteExec',\
+  \ {system:args.system, cmd:'sudo rm -rf ' + dumpdir}));\n}\n\nreturn res;"
+scripttarget: 0
+system: true
 tags:
 - volatility
-comment: Volatility script for command ldrmodules
-system: true
-args:
-- name: memdump
-  required: true
-  default: true
-  description: Path to memory dump file on the system being used
-- name: pid
-  required: true
-  description: Process ID to pass to volatility malfind command
-- name: dumpdir
-  required: true
-  description: Path to directory in which to save dumped memory sections
-- name: dodelete
-  description: If "true", deletes the dir with the VAD dumps
-- name: system
-  required: true
-  description: Volatility system to run the script on.
-scripttarget: 0
-dependson: {}
 timeout: 0s
+toversion: 4.1.9
+type: javascript

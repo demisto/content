@@ -1,1237 +1,104 @@
+category: Messaging
 commonfields:
   id: EWS
   version: -1
-name: EWS
-display: EWS (Deprecated)
-deprecated: true
-category: Messaging
-image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAAAXNSR0IArs4c6QAADIVJREFUeAHtXHt0FNUZv/fOYzebJ3k1CQ8THiaBBLAEiuIRAu2hoqinSrR6xIqeoq1gRast2rr8UThYPT5QKigeDvScUkCl1lePWiggL4MYFWMMLxMgaTYk2WR3Z+dx7+13JxGBJmQ3BJgN+U4mMztzHzPf737f/b7vfjMYXQLEEcJos1ea21SWUdUSzg1o+PKcZNeiIQr62Uu3jfy0L7NA7ksPZwM5BUmPPeSLqzrRMPh4IDysNmiMzOB0tL6djKC8ZRjjPJViBVWeCKH7ipNpX3r+zp4lZgEGMAniXJr28s7MFtM1tMGkBUMYv0K3+KhARVUuZySLEqJSJEExghADLDmDDWoiHbkUAj/6PjkeYFsqvUiae3lVylet5sCmkJ7fRq3R2RYr1hbvHGoYbBDF4RQmKYhxDEACbgz2Akza5wW02xHqKICFVK6tqI/72z5fVnMofHlDiBRkWdaoMLVGWQdP5FFK0ylRJQpTajuIUEMIpACV6t0+7KVYwDEAZyz5+Pl0JuVbbx8YYZhYqFdPu3oVYIKKtdUrHFPjUsSpx8/sGIBPGMp8G0RbvYJYUgseSmz9dC4ccAzAyOpXsecCZFd1Qff1U1/mgHMk+CJyGSYEmNzB7eoFElZCLzTTa030AwysnLyi/OffhMhcFu65AUdgjGAiaWNUa/1n/vdXY6/XEX52HwIYZEfIYfu/dqs7Qjlo0HFug4avQYbwuXpKoi5HfpNMn5o1swUh7xs9bak368UQwICerNr4EQzH4DYRsQNrW+wwYjpIURh+BCBaxUyGIbAVIWAYGrN96W6sdtyFFrf7ae8rbCKUlpSyGkDqBzjykYqRR0XNOfFog85oYxxRmjjiTUR1t0im0ZzgSWpNdfMADVttlw0YEPq2pWn81nrrA93sBrCOG4jjKKQS1GxJ0gDWWfQLgJUFtpw3wQA6Y9TACYaSKIcAt7gEYDMuJ0b+bOe3ZGxIMCEoXiGHqhZMeACkFWTk7PST5XtMGABnL3TK1fEu9Gp6Bt54pF564ts26X7LFF101AdwVRlrYzKUB5BO35FMelrDASiZlOC6fo/PXGWZHfaVCMo4hGIDYGAWhdUDWPLjqNTbLessiiMT3Y6WVs4tCcFhiM9C8/LG7/LVIemPZof0KyC6eUl83u77x7/WVcelK8r3d6G8u6pywc7HDMBncsTr9ZKjRTcXyUx1n3mtJqgV86ZuBf1ktVXbfYl+PZyEpg0+fnjDxEVjn9+buL8FP4RBegtT2Cv75l+5GjQHWry1OkOicS5RkWqavnDGCJ/dCOhke+/Af469se54lTrhjoSVn/ve9VtkIFhapxSHORHmQdOKXE2+9kXNvZUh6cmnl2xf+eLU3KUN/67N58SFBrv0TxYWJy2Axjm4UvOf2dn0OKXMDf4QSnPxCl6+YhoumRv5SDrlLi/UYcwCHAoQ3GoyosFsa8ewz4FjPoO7WkJWssyk387/T81Mn44KXFhvGJul3jWrdFSwdOW++Xsa9Gd1g4rRY4dEMOcp59DlBavq1KkjIgaAW3SawRNRpU4KSQAb/CHLstDxAC8gkoRyEvnCN2ePq5wM4O4W4OoWFBFaQXTJERauVQxQzEpwWGkVmLgRLPTDemI7q2kHAOfAe0xklC7TD6sXXLVmwrJdd++pDz1jmCKT4IyxxL+fd1VFMTF3pqaOWYCTTE0fkqxuqg/hzKBuIsqYlJWgZPtNKzWg4yFiHo6eMHJJNDxjROLDE5fvufWLRrbCsCDnxw6sfN8egUGV5eZfo7fr7Mm/uiU01U5CiL7D814jZgFeUHaVBiy/FzgkDNx27r87T82vuqMsRPEaakYeV6aMSzanJRllx7F/VjUG8z73sVcNisBL4m2AsGZgNZNbIKXgkw+KY7tfmzl8Dhrh5WNe2DXnqya+CLJNzjtYPekgpudgoTdhs1ME7OMZy3S/haPmdKab1Kki7gkg1Qf5tPJ66+865eAOcZQaLx+bOyZj+tB4ssyjyiYCFd4YZtnz3jv446v/su/2b/x8BWgPiKF+L+E9AeJ81YlpgDtjCqMsqiCHaGNb6sE1RSn4adWlIM3iqTpFLtuggrm8McgLNh3wP7t8Suofpg2Mn5Kqsu0aUoZ82Wy9vrc+tAYsa/lcrfjOnqO3zsWsivau369WmujGD462tRimruclxKHBKW50rNUobhER/yjocVdh+p4hrz9ZYFznO8KUpeYp6p2BZV0bIlNmf/Tfd2bnqdf9YbQ89fZtaFFNK3/U4BhUu7ON6ZgFGCmG56MD2gpYnhuAwaCt8luoujUImpKBpo2O6Zvr9DlDtRsmX53tfkTmAfJ1q7SYU/B5Yb71SJyGTZM06OqkVdXGO1/V6DdVPVL6+I9e3Lujus1c4ddJDqLRDagoxt45F41ZFe02k7hBuQZAQE47Ax+WIgPix0YUEazvuNdiIFajSdPXVzXt+DZoXI+gLQxLkyky33/zsJQ5qkJMbupiuWnSNt21acYLW9P3PDDu7Ruz5GlZHrxTlHUqxSzAvc5QSMeFxaDEkEUmcVnBCTKtunek/NNtxwMFBpJsBLlloDYAeWeb/OaUlzZnrb675Os7c6VrM1T6vvCfnUgxC7AIdBDMPUgBY1dIkAh4EJgSIU58MqsjWo4L3xl83niJVhV76Iwqf2JSncYeZPbyYXtjNshUmXSo1f0KX79eWlpW4i9KUv+ktDta0fZ43ss7c9hF8NgjTTU0PJktqWzS0xNceHDAYImShDMYJymMsR+AnZUctesCUpiisNpJGcrNb6X8+ejwmoe36EzynGlIcZhzgwrPQ0ObxWiiTBHpIM50k2IW4LKyUSKS8ZQYC7DoDk4sbLNm4S1PrVdu+evOe3RZflFIW0Qk4BHgqqz2mgz3DZt+ecX+0c+VP1ar8StVrGscQt7gAMed6g5BcOSkv82pCHU5k2JLRfu8nYqJHeQQAY8NG2hpHg6fCJhtsBwQMcddYIZnqbz+6kzP9QDuZzNe/fSaA23WkyLhqyQr7jeFae5b4t2K3wV6WIUEAFWWkCdG3k6MIQnG0sejfR7unaUh7xYRverSF5JkFtUy08RsZXVynLJ26cxRNfetqcjceDS4SqdSnEeix2/KSXjjkZn5jbPXVU5o0klKyIQwh6IgjxFuQyVzow6qRDzqeqlgbAAM7/b6NVJ47YbqClVZ7CNL0LFsjGrcRD6a4SE+i9PaAYpSn+NJavzduGEtEzZuJ1oUDHq5bOwxURwWKNx5T+9e3WxKw8VLbmEk5yz5vHHdnWsqbl9zW+E3Zzb5nY4gWMzBzqTYABh4BzlZStAkeUGM89qtZUg0h/NHdYYwDAAMKwES0VrfONLQoBCcEDaMiM0eYQ2vHDAuYeyyT547HibX8o73pBik5LZgddpH9eF/3bq6/JZ1d42r6QzG6as+TT+LQumsygU7FzMA2xwR67xiFhZv6wOJw5OWDsIK5EKnAeppYBXBLnKhmuwf/ouKw/4nQpqVe+aqkDDU6oPy2LeOmDtSF+9s/H8gCSRbsgwT8gFOku2qnfx1UQ9iC+CzsgrgFn6sQB2oY9f+o5v/9SGW2WaS3C6/CADrFzommbrOM9v97FMbFH0CuN8lGQiDmrK2U0tczOM+BHDP2QivNUBlcCgikbyuEglEXdhUt4p8geCven43vVuzH2Dg52XxUpOGpIMUXn7pKREYIEGLN+bFm//Yer+2DjsE4n6AAdEP7/nhqjpUtzYbZUej2U8bC3V1CGevLDXwwi0WfvC0Sxf1Rz/AwH6M7TchHO/T9mSk9Fwn9aS3/joXnAOOkWAMq0K2/XLaB8t6rDEvOCOd2qFjAIZVnF+7JFwEHzMrChg8lzL4lBKWFWp/0A6APg14p7LTefflGIBP/H7icoARI/jW5KJHqz2fHDeHHNNCw5tCKD9IaTFHpChM8SDOWJoFr+LaAQ57lQ6OmJD0fmnvbHg5BmBxcyJcgLbAx7G2jGiFn192bAI6jMrL5bsPpaXVBAJDj7Vp+ZCdM7rVRPmagYZZBA2E96/jYRBASBNqnZT2yKNZUKtPkqMA7orDNvAlJSKzrb5j2yHKApZk0ebD6vbDjTmBsJTfEDALwpwXBy1WCEDnQfgwnRFZYvYHSQFskVF7iUl7TAAswOyMAHiGSvPCcO1Qx/aeLe3w8dKFoyuTdzXQQbUBbYRu0TGgEgogEaOQUTzYQiRJUmBB11Khib5NMQ1wZ9DY0u4V30AsPAHXxVYB20Yh7WCmS2Vr92YfaFVzMzx8wqB4ubmzNvrSuf8BON13AZrf558AAAAASUVORK5CYII=
-description: Exchange Web Services and Office 365 (mail)
-detaileddescription: |-
-  For Office 365, use https://outlook.office365.com/EWS/Exchange.asmx (default) as the Server  URL.
-  Default version is used when accessing the EWS API to determine the API version.
-  By default Demisto uses the Exchange2010 version.
-  It is recommended not to change this value unless you run into issues.
-  The default value can be bypassed in individual exchange commands by adding "version=Exhcange{yyyy}" where yyyy is the exchange version.
-
-  To fetch emails from a specific folder, folder ID needs to be specified, this ID can be fetched using the ews-find-folders command
 configuration:
-- display: Server URL
+- defaultvalue: https://outlook.office365.com/EWS/Exchange.asmx/
+  display: Server URL
   name: server
-  defaultvalue: https://outlook.office365.com/EWS/Exchange.asmx/
-  type: 0
   required: true
-- display: ""
+  type: 0
+- defaultvalue: ''
+  display: ''
   name: credentials
-  defaultvalue: ""
+  required: true
   type: 9
-  required: true
-- display: Domain
+- defaultvalue: ''
+  display: Domain
   name: domain
-  defaultvalue: ""
-  type: 0
   required: true
-- display: Default Target Mailbox
+  type: 0
+- defaultvalue: ''
+  display: Default Target Mailbox
   name: defaultTargetMailbox
-  defaultvalue: ""
-  type: 0
   required: false
-- display: Default Version
+  type: 0
+- defaultvalue: Exchange2010
+  display: Default Version
   name: defaultServerVersion
-  defaultvalue: Exchange2010
-  type: 0
   required: false
-- display: Authentication Type (NTLM or Basic)
-  name: authType
-  defaultvalue: NTLM
   type: 0
+- defaultvalue: NTLM
+  display: Authentication Type (NTLM or Basic)
+  name: authType
   required: true
+  type: 0
 - display: Has impersonation rights
   name: impersonation
-  type: 8
   required: false
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
-  type: 8
   required: false
-- display: Use system proxy settings
+  type: 8
+- defaultvalue: ''
+  display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 - display: Fetch incidents
   name: isFetch
+  required: false
   type: 8
-  required: false
-- display: Maximum number of emails to fetch each time
+- defaultvalue: '100'
+  display: Maximum number of emails to fetch each time
   name: pageSize
-  defaultvalue: "100"
-  type: 0
   required: false
+  type: 0
 - display: Incident type
   name: incidentType
+  required: false
   type: 13
-  required: false
-- display: Folder ID
+- defaultvalue: ''
+  display: Folder ID
   name: folder
-  defaultvalue: ""
-  type: 0
   required: false
+  type: 0
+deprecated: true
+description: Exchange Web Services and Office 365 (mail)
+detaileddescription: 'For Office 365, use https://outlook.office365.com/EWS/Exchange.asmx
+  (default) as the Server  URL.
+
+  Default version is used when accessing the EWS API to determine the API version.
+
+  By default Demisto uses the Exchange2010 version.
+
+  It is recommended not to change this value unless you run into issues.
+
+  The default value can be bypassed in individual exchange commands by adding "version=Exhcange{yyyy}"
+  where yyyy is the exchange version.
+
+
+  To fetch emails from a specific folder, folder ID needs to be specified, this ID
+  can be fetched using the ews-find-folders command'
+display: EWS (Deprecated)
+image: data:image/png;base64,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
+name: EWS
 script:
-  script: |
-    var server = params.server.replace(/[\/]+$/, '') + '/';
-    var defaultPageSize = 100;
-    var office365address = 'https://outlook.office365.com/EWS/Exchange.asmx/';
-
-    // map of argument that can contain distinguished item as values
-    var distinguishedArgs = {
-        'folders-ids': { // view https://msdn.microsoft.com/en-us/library/office/aa580808(v=exchg.150).aspx
-            template: '<t:DistinguishedFolderId Id="%id%">' +
-                        '<t:Mailbox>' +
-                           '<t:EmailAddress>%target-mailbox%</t:EmailAddress>' +
-                       '</t:Mailbox>' +
-                      '</t:DistinguishedFolderId>',
-            items: ['calendar', 'contacts', 'deleteditems', 'drafts', 'inbox', 'journal', 'notes', 'outbox', 'sentitems', 'tasks', 'msgfolderroot',
-                                'root', 'junkemail', 'searchfolders', 'voicemail']
-        },
-        'folder-id': {
-            template: '<t:DistinguishedFolderId Id="%id%">' +
-                        '<t:Mailbox>' +
-                           '<t:EmailAddress>%target-mailbox%</t:EmailAddress>' +
-                       '</t:Mailbox>' +
-                      '</t:DistinguishedFolderId>',
-            items: ['calendar', 'contacts', 'deleteditems', 'drafts', 'inbox', 'journal', 'notes', 'outbox', 'sentitems', 'tasks', 'msgfolderroot',
-                                'root', 'junkemail', 'searchfolders', 'voicemail']
-        }
-    }
-
-    var commandsDictionary = {
-        'ews-find-folders': {
-            template:
-                '<?xml version="1.0" encoding="utf-8"?>' +
-                '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" ' +
-                'xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">' +
-                '<soap:Header>'+
-                '<t:RequestServerVersion Version="%version%" />'+
-                '%impersonation%'+
-                '</soap:Header>'+
-                '<soap:Body>' +
-                '<FindFolder Traversal="Deep" xmlns="http://schemas.microsoft.com/exchange/services/2006/messages">' +
-                '<FolderShape>' +
-                '<t:BaseShape>Default</t:BaseShape>' +
-                '</FolderShape>' +
-                '<ParentFolderIds>' +
-                '<t:DistinguishedFolderId Id="root"/>' +
-                '</ParentFolderIds>' +
-                '</FindFolder>' +
-                '</soap:Body>' +
-                '</soap:Envelope>',
-            contextKey: 'EWS.Folders(val.ID == obj.FolderID.ID)',
-            innerPath: 'Envelope.Body.FindFolderResponse.ResponseMessages.FindFolderResponseMessage.RootFolder.Folders.Folder',
-            targetToContext: true,
-            resStatus: 'Envelope.Body.FindFolderResponse.ResponseMessages.FindFolderResponseMessage.-ResponseClass',
-            translator: [
-                {to: 'DisplayName', from: 'DisplayName'},
-                {to: 'TotalCount', from: 'TotalCount'},
-                {to: 'UnreadCount', from: 'UnreadCount'},
-                {to: 'FolderID-ID', from: 'FolderId.-Id'},
-                {to: 'FolderID-ChangeKey', from: 'FolderId.-ChangeKey'},
-            ]
-        },
-        'ews-get-folder': {
-            arrayArgName: 'folders-ids',
-            contextKey: 'EWS.Folders(val.FolderID.ID == obj.FolderID.ID)',
-            innerPath: 'Envelope.Body.GetFolderResponse.ResponseMessages.GetFolderResponseMessage.Folders.Folder',
-            resStatus: 'Envelope.Body.GetFolderResponse.ResponseMessages.GetFolderResponseMessage.-ResponseClass',
-            targetToContext: true,
-            translator: [
-                {to: 'ChildFolderCount', from: 'ChildFolderCount'},
-                {to: 'DisplayName', from: 'DisplayName'},
-                {to: 'TotalCount', from: 'TotalCount'},
-                {to: 'UnreadCount', from: 'UnreadCount'},
-                {to: 'FolderID-ID', from: 'FolderId.-Id'},
-                {to: 'FolderID-ChangeKey', from: 'FolderId.-ChangeKey'},
-            ],
-            tableTitle: 'EWS get folder for %target-mailbox% folders %folders-ids%',
-            template:
-               '<?xml version="1.0" encoding="utf-8"?>' +
-               '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"' +
-                ' xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types\">' +
-                '<soap:Header>' +
-                '<t:RequestServerVersion Version="%version%" />' +
-                '%impersonation%'+
-                '</soap:Header>' +
-                '<soap:Body>' +
-                '<GetFolder xmlns="http://schemas.microsoft.com/exchange/services/2006/messages"' +
-                ' xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">' +
-                '<FolderShape>' +
-                '<t:BaseShape>Default</t:BaseShape>' +
-                '</FolderShape>' +
-                '<FolderIds>' +
-                '%folders-ids%' +
-                '</FolderIds>' +
-                '</GetFolder>' +
-                '</soap:Body>' +
-                '</soap:Envelope>'
-            },
-        'ews-delete-items': {
-            arrayArgName: 'item-ids',
-            innerPath: 'Envelope.Body.DeleteItemResponse.ResponseMessages.DeleteItemResponseMessage',
-            resStatus: 'Envelope.Body.DeleteItemResponse.ResponseMessages.DeleteItemResponseMessage.-ResponseClass',
-            translator: [
-                {to: 'Class', from: '-ResponseClass'},
-                {to: 'ResponseCode', from: 'ResponseCode'},
-                {to: 'Message', from: 'MessageText'},
-                {to: 'Link', from: 'DescriptiveLinkKey'},
-            ],
-            tableTitle: 'EWS delete items items for %target-mailbox% items %item-ids%',
-            deleteContextKey: 'EWS.DeletedItems',
-            targetToContext: true,
-            template:
-                '<?xml version="1.0" encoding="utf-8"?>'+
-                '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"'+
-                ' xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">'+
-                '<soap:Header>'+
-                '<t:RequestServerVersion Version="%version%" />'+
-                '%impersonation%'+
-                '</soap:Header>'+
-                '<soap:Body>'+
-                '<DeleteItem DeleteType="HardDelete" xmlns="http://schemas.microsoft.com/exchange/services/2006/messages">'+
-                '<ItemIds>'+
-                '%item-ids%'+
-                '</ItemIds>'+
-                '</DeleteItem>'+
-                '</soap:Body>'+
-                '</soap:Envelope>'
-            },
-        'ews-get-items': {
-            arrayArgName: 'item-ids',
-            innerPath: 'Envelope.Body.GetItemResponse.ResponseMessages.GetItemResponseMessage.Items.Message',
-            resStatus: 'Envelope.Body.GetItemResponse.ResponseMessages.GetItemResponseMessage.-ResponseClass',
-            translator: [
-                {to: 'BodyType', from: 'Body.-BodyType'},
-                {to: 'Body', from: 'Body.#text'},
-                {to: 'Created', from: 'DateTimeCreated'},
-                {to: 'Sent', from: 'DateTimeSent'},
-                {to: 'From-Email', from: 'From.Mailbox.EmailAddress'},
-                {to: 'From-Name', from: 'From.Mailbox.Name'},
-                {to: 'From-RoutingType', from: 'From.Mailbox.RoutingType'},
-                {to: 'To-Email', from: 'ToRecipients.Mailbox.EmailAddress'},
-                {to: 'To-Name', from: 'ToRecipients.Mailbox.Name'},
-                {to: 'To-RoutingType', from: 'ToRecipients.Mailbox.RoutingType'},
-                {to: 'HasAttachments', from: 'HasAttachments'},
-                {to: 'IsAssociated', from: 'IsAssociated'},
-                {to: 'IsRead', from: 'IsRead'},
-                {to: 'Sensitivity', from: 'Sensitivity'},
-                {to: 'Size', from: 'Size'},
-                {to: 'ID', from: 'ItemId.-Id'},
-                {to: 'Subject', from: 'Subject'},
-                {to: 'Attachment-ID', from: 'Attachments.FileAttachment.AttachmentId.-Id'},
-                {to: 'Attachment-IsContactPhoto', from: 'Attachments.FileAttachment.IsContactPhoto'},
-                {to: 'Attachment-IsInline', from: 'Attachments.FileAttachment.IsInline'},
-                {to: 'Attachment-LastModifiedTime', from: 'Attachments.FileAttachment.LastModifiedTime'},
-                {to: 'Attachment-Name', from: 'Attachments.FileAttachment.Name'},
-                {to: 'Attachment-Size', from: 'Attachments.FileAttachment.Size'},
-                {to: 'Mail-Attachment-ID', from: 'Attachments.ItemAttachment.AttachmentId.-Id'},
-                {to: 'Mail-Attachment-IsContactPhoto', from: 'Attachments.ItemAttachment.IsContactPhoto'},
-                {to: 'Mail-Attachment-IsInline', from: 'Attachments.ItemAttachment.IsInline'},
-                {to: 'Mail-Attachment-LastModifiedTime', from: 'Attachments.ItemAttachment.LastModifiedTime'},
-                {to: 'Mail-Attachment-Name', from: 'Attachments.ItemAttachment.Name'},
-                {to: 'Mail-Attachment-Size', from: 'Attachments.ItemAttachment.Size'},
-            ],
-            tableTitle: 'EWS get items for %target-mailbox% items %item-ids% items',
-            nonDisplayItems: ['Body'],
-            contextKey: 'EWS.Items(val.ID == obj.ID)',
-            targetToContext: true,
-            defaultArgs: {
-                'include-mime-content': false
-            },
-            template:
-                '<?xml version="1.0" encoding="utf-8"?>'+
-                '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'+
-                ' xmlns:xsd="http://www.w3.org/2001/XMLSchema"'+
-                ' xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"'+
-                ' xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">'+
-                '<soap:Header>'+
-                '<t:RequestServerVersion Version="%version%" />'+
-                '%impersonation%'+
-                '</soap:Header>'+
-                '<soap:Body>'+
-                '<GetItem xmlns="http://schemas.microsoft.com/exchange/services/2006/messages"'+
-                ' xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">'+
-                '<ItemShape>' +
-                '<t:BaseShape>AllProperties</t:BaseShape>' +
-                '<t:IncludeMimeContent>%include-mime-content%</t:IncludeMimeContent>'+
-                '<t:AdditionalProperties><t:ExtendedFieldURI DistinguishedPropertySetId="InternetHeaders" PropertyName="From" PropertyType="String" /></t:AdditionalProperties>'+
-                '</ItemShape>' +
-                '<ItemIds>'+
-                '%item-ids%'+
-                '</ItemIds>'+
-                '</GetItem>'+
-                '</soap:Body>'+
-                '</soap:Envelope>'
-            },
-        'ews-search-mailbox': {
-            arrayArgName: 'folder-id',
-            innerPath: 'Envelope.Body.FindItemResponse.ResponseMessages.FindItemResponseMessage.RootFolder.Items.Message',
-            resStatus: 'Envelope.Body.FindItemResponse.ResponseMessages.FindItemResponseMessage.-ResponseClass',
-            defaultArgs: {
-                'max-entries-returned': 10
-            },
-            targetToContext: true,
-            translator: [
-                {to: 'Created', from: 'DateTimeCreated'},
-                {to: 'Sent', from: 'DateTimeSent'},
-                {to: 'From-Email', from: 'From.Mailbox.EmailAddress'},
-                {to: 'From-Name', from: 'From.Mailbox.Name'},
-                {to: 'HasAttachments', from: 'HasAttachments'},
-                {to: 'IsAssociated', from: 'IsAssociated'},
-                {to: 'IsRead', from: 'IsRead'},
-                {to: 'Sensitivity', from: 'Sensitivity'},
-                {to: 'Size', from: 'Size'},
-                {to: 'ID', from: 'ItemId.-Id'},
-                {to: 'Subject', from: 'Subject'},
-            ],
-            tableTitle: 'EWS search mailbox %target-mailbox% folder %folder-id% with query %query%',
-            contextKey: 'EWS.SearchItems(val.ID == obj.ID)',
-            template:
-                '<?xml version="1.0" encoding="utf-8"?>'+
-                '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'+
-                    ' xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages"'+
-                    ' xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types"'+
-                    ' xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">'+
-                    '<soap:Header>'+
-                        '<t:RequestServerVersion Version="%version%" />'+
-                        '%impersonation%'+
-                    '</soap:Header>'+
-                    '<soap:Body>'+
-                        '<m:FindItem Traversal="Shallow">'+
-                        '<m:ItemShape>' +
-                            '<t:BaseShape>AllProperties</t:BaseShape>' +
-                        '</m:ItemShape>' +
-                        '<m:IndexedPageItemView MaxEntriesReturned="%max-entries-returned%" Offset="0" BasePoint="Beginning" />'+
-                        '<m:ParentFolderIds>'+
-                            '%folder-id%'+
-                        '</m:ParentFolderIds>'+
-                        '<m:QueryString>%query%</m:QueryString>'+
-                        '</m:FindItem>'+
-                    '</soap:Body>'+
-                '</soap:Envelope>'
-            },
-        'ews-get-contacts': {
-            arrayArgName: 'item-ids',
-            targetToContext: true,
-            template:
-                '<?xml version="1.0" encoding="utf-8"?>'+
-                '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'+
-                ' xmlns:xsd="http://www.w3.org/2001/XMLSchema"'+
-                ' xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"'+
-                ' xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">'+
-                '<soap:Header>'+
-                '<t:RequestServerVersion Version="%version%" />'+
-                '%impersonation%'+
-                '</soap:Header>'+
-                '<soap:Body>'+
-                '<GetItem xmlns="http://schemas.microsoft.com/exchange/services/2006/messages">'+
-                '<ItemShape>'+
-                '<t:BaseShape>Default</t:BaseShape>'+
-                '</ItemShape>'+
-                '<ItemIds>'+
-                '%item-ids%'+
-                '</ItemIds>'+
-                '</GetItem>'+
-                '</soap:Body>'+
-                '</soap:Envelope>'
-            },
-        'ews-delete-attachments': {
-            arrayArgName: 'item-ids',
-            fillerName: 'attachments-ids',
-            innerPath: 'Envelope.Body.DeleteAttachmentResponse.ResponseMessages.DeleteAttachmentResponseMessage',
-            resStatus: 'Envelope.Body.DeleteAttachmentResponse.ResponseMessages.DeleteAttachmentResponseMessage.-ResponseClass',
-            translator: [
-                {to: 'Class', from: '-ResponseClass'},
-                {to: 'ResponseCode', from: 'ResponseCode'},
-                {to: 'Message', from: 'MessageText'},
-                {to: 'Link', from: 'DescriptiveLinkKey'},
-            ],
-            tableTitle: 'EWS delete attachments items for %target-mailbox% items %attachments-ids%',
-            deleteContextKey: 'EWS.DeletedAttachments',
-            targetToContext: true,
-            template:
-                '<?xml version="1.0" encoding="utf-8"?>'+
-                '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'+
-                ' xmlns:xsd="http://www.w3.org/2001/XMLSchema"'+
-                ' xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"'+
-                ' xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">'+
-                '<soap:Header>'+
-                '<t:RequestServerVersion Version="%version%" />'+
-                '%impersonation%'+
-                '</soap:Header>'+
-                '<soap:Body>'+
-                '<DeleteAttachment xmlns="http://schemas.microsoft.com/exchange/services/2006/messages"'+
-                ' xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">'+
-                '<AttachmentIds>'+
-                '%item-ids%'+
-                '</AttachmentIds>'+
-                '</DeleteAttachment>'+
-                '</soap:Body>'+
-                '</soap:Envelope>'
-            },
-        'ews-get-searchable-mailboxes': {
-            fillerName: 'attachments-ids',
-            tableTitle: 'EWS get searchable mail boxes',
-            innerPath: 'Envelope.Body.GetSearchableMailboxesResponse.SearchableMailboxes.SearchableMailbox',
-            resStatus: 'Envelope.Body.GetSearchableMailboxesResponse.-ResponseClass',
-            translator: [
-                {to: 'MailAddress', from: 'PrimarySmtpAddress'},
-                {to: 'ReferenceId', from: 'ReferenceId'},
-                {to: 'IsExternal', from: 'IsExternalMailbox'},
-                {to: 'Display', from: 'DisplayName'},
-            ],
-            defaultArgs: {
-                'filter': ' '
-            },
-            contextKey: 'EWS.Mailboxes',
-            template:
-                '<?xml version="1.0" encoding="UTF-8"?>'+
-                '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"'+
-                              ' xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types"'+
-                              ' xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages">'+
-                   '<soap:Header>'+
-                      '<t:RequestServerVersion Version="Exchange2013" />'+
-                   '</soap:Header>'+
-                   '<soap:Body >'+
-                      '<m:GetSearchableMailboxes>'+
-                         '<m:SearchFilter>%filter%</m:SearchFilter>'+
-                         '<m:ExpandGroupMembership>false</m:ExpandGroupMembership>'+
-                      '</m:GetSearchableMailboxes>'+
-                   '</soap:Body>'+
-                '</soap:Envelope>'
-            },
-        'ews-search-mailboxes': {
-          arrayArgName: 'mailbox-search-scope',
-          tableTitle: 'EWS search mail boxes result for filter %filter%',
-          template:
-            '<?xml version="1.0" encoding="utf-8"?>' +
-            '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' +
-                           'xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages" ' +
-                           'xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types" ' +
-                           'xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
-                '<soap:Header>' +
-                    '<t:RequestServerVersion Version="%version%"/>' +
-                '</soap:Header>' +
-                '<soap:Body>' +
-                    '<m:SearchMailboxes>' +
-                        '<m:SearchQueries>' +
-                            '<t:MailboxQuery>' +
-                                '<t:Query>%filter%</t:Query>' +
-                                '<t:MailboxSearchScopes>' +
-                                    '%mailbox-search-scope%'+
-                                '</t:MailboxSearchScopes>' +
-                            '</t:MailboxQuery>' +
-                        '</m:SearchQueries>' +
-                        '<m:ResultType>PreviewOnly</m:ResultType>' +
-                        '<m:Deduplication>false</m:Deduplication>' +
-                        '<m:PageSize>1000</m:PageSize>' +
-                        '<m:PageDirection>Next</m:PageDirection>' +
-                    '</m:SearchMailboxes>' +
-                '</soap:Body>' +
-            '</soap:Envelope>',
-            innerPath: 'Envelope.Body.SearchMailboxesResponse.ResponseMessages.SearchMailboxesResponseMessage.SearchMailboxesResult.Items.SearchPreviewItem',
-            resStatus: 'Envelope.Body.SearchMailboxesResponse.ResponseMessages.SearchMailboxesResponseMessage.-ResponseClass',
-            translator: [
-                {to: 'MailAddress', from: 'Mailbox.PrimarySmtpAddress'},
-                {to: 'ItemID', from: 'Id.-Id'},
-                {to: 'HasAttachment', from: 'HasAttachment'},
-                {to: 'MailboxID', from: 'Mailbox.MailboxId'},
-                {to: 'Read', from: 'Read'},
-                {to: 'ReceivedTime', from: 'ReceivedTime'},
-                {to: 'Sender', from: 'Sender'},
-                {to: 'SentTime', from: 'SentTime'},
-                {to: 'Size', from: 'Size'},
-                {to: 'Subject', from: 'Subject'},
-                {to: 'ToRecipients', from: 'ToRecipients.SmtpAddress'},
-            ],
-            contextKey: 'EWS.Searchs.Search(obj.filter==val.filter)',
-            contextArrayName: 'Results',
-            argsToContext: ['filter']
-        },
-        'ews-move-item' : {
-            arrayArgName: 'folder-id',
-            tableTitle: 'Successfully moved item',
-            template:
-                '<?xml version="1.0" encoding="utf-8"?>'+
-                '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' +
-                               ' xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages"' +
-                               ' xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types"' +
-                               ' xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
-                '<soap:Header>'+
-                    '<t:RequestServerVersion Version="%version%" />'+
-                    '%impersonation%'+
-                '</soap:Header>'+
-                '<soap:Body>' +
-                    '<m:MoveItem xmlns="http://schemas.microsoft.com/exchange/services/2006/messages" ' +
-                    'xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">' +
-                        '<m:ToFolderId>' +
-                            '%folder-id%' +
-                        '</m:ToFolderId>' +
-                        '<m:ItemIds>' +
-                            '<t:ItemId Id="%item-id%" />' +
-                        '</m:ItemIds>' +
-                    '</m:MoveItem>' +
-                '</soap:Body>' +
-            '</soap:Envelope>',
-            innerPath: 'Envelope.Body.MoveItemResponse.ResponseMessages.MoveItemResponseMessage.Items.Message',
-            resStatus: 'Envelope.Body.MoveItemResponse.ResponseMessages.MoveItemResponseMessage.-ResponseClass',
-            contextKey: 'EWS.MovedItems',
-            translator: [
-                { to: 'NewItemID', from: 'ItemId.-Id'}
-            ],
-            argsToContext: ['item-id'],
-            addUpdatesToContext: function(entry){
-                if (!entry.EntryContext) {
-                    return;
-                }
-                var oldID = args['item-id'];
-                var newItem = { ID: entry.EntryContext['EWS.MovedItems']['NewItemID']};
-                var inContext = function(path) {
-                    var val  = dq(invContext, path);
-                    return val ? true : false;
-                };
-                var paths = ['EWS.Items(val.ID==="'+ oldID +'")', 'EWS.SearchItems(val.ID==="' + oldID +'")'];
-                paths.forEach(function(path){
-                    if(inContext(path)) {
-                        entry.EntryContext[path] = newItem;
-                    }
-                });
-            }
-        },
-        'folder-id': {
-            template: '<t:FolderId Id="%id%"/>'
-        },
-        'folders-ids': {
-            template: '<t:FolderId Id="%id%"/>'
-        },
-        'item-ids': {
-            template:
-                '<t:ItemId Id="%id%" />'
-        },
-        'attachments-ids': {
-            template:
-                '<t:AttachmentId Id="%id%" />'
-        },
-        'mailbox-search-scope': {
-            template:
-                '<t:MailboxSearchScope>' +
-                    '<t:Mailbox>%id%</t:Mailbox>' +
-                    '<t:SearchScope>All</t:SearchScope>' +
-                    '<t:ExtendedAttributes/>' +
-                '</t:MailboxSearchScope>'
-        }
-    };
-
-    function getDefaultTargetMailbox() {
-        if (params.defaultTargetMailbox) {
-            return params.defaultTargetMailbox;
-        }
-        return params.credentials.identifier + '@' + params.domain;
-    }
-
-    function setImpersonation(args) {
-        args['impersonation'] = '';
-        if (params.impersonation) {
-            args['impersonation'] = replaceInTemplates('<t:ExchangeImpersonation>'+
-                    '<t:ConnectingSID>'+
-                    '<t:PrimarySmtpAddress>%target-mailbox%</t:PrimarySmtpAddress>'+
-                    '</t:ConnectingSID>'+
-                    '</t:ExchangeImpersonation>', args);
-        }
-    }
-
-    var mapObjFunction = function(mapFields) {
-        var transformSingleObj= function(obj) {
-            var res = {};
-            mapFields.forEach(function(f) {
-               res[f.to] = dq(obj, f.from);
-            });
-            return res;
-        };
-        return function(obj) {
-            if (obj instanceof Array) {
-                var res = [];
-                for (var j=0; j < obj.length; j++) {
-                    res.push(transformSingleObj(obj[j]));
-                }
-                return res;
-            }
-            return transformSingleObj(obj);
-        }
-    }
-
-    var createContext = function(data, extraData) {
-        var createContextSingle = function(obj) {
-            var res = {};
-            var keys = Object.keys(obj);
-            keys.forEach(function(k) {
-                var values = k.split('-');
-                var current = res;
-                for (var j = 0; j<values.length - 1; j++) {
-                    if (!current[values[j]]) {
-                        current[values[j]] = {};
-                    }
-                    current = current[values[j]];
-                }
-                current[values[j]] = obj[k];
-            });
-
-            var extraKeys = Object.keys(extraData);
-            extraKeys.forEach(function(k) {
-                res[k] = extraData[k];
-            });
-
-            return res;
-        };
-        if (data instanceof Array) {
-            var res = [];
-            for (var j=0; j < data.length; j++) {
-                res.push(createContextSingle(data[j]));
-            }
-            return res;
-        }
-        return createContextSingle(data);
-    }
-
-    var buildDisplay = function(currentCommand, translated) {
-        var createDisplaySingle = function(obj) {
-            var disp = {};
-            var keys = Object.keys(obj);
-            for (var k in keys) {
-                if ((!currentCommand.nonDisplayItems || currentCommand.nonDisplayItems.indexOf(keys[k]) === -1) && obj[keys[k]]) {
-                    disp[keys[k]] = obj[keys[k]];
-                }
-            }
-            return disp;
-        };
-        if (translated instanceof Array) {
-            var res = [];
-            for (var j=0; j < translated.length; j++) {
-                res.push(createDisplaySingle(translated[j]));
-            }
-            return res;
-        }
-        return createDisplaySingle(translated);
-    }
-
-    var execute = function(command, args, returnRaw) {
-        var currentCommand = commandsDictionary[command];
-        var hrTitle = command;
-        if (currentCommand.tableTitle) {
-            hrTitle = replaceInTemplates(currentCommand.tableTitle, args);
-        }
-        if (currentCommand.defaultArgs) {
-            var keys = Object.keys(currentCommand.defaultArgs);
-            for (var j in keys) {
-                if (!args[keys[j]]) {
-                    args[keys[j]] = currentCommand.defaultArgs[keys[j]];
-                }
-            }
-        }
-        var ids = [];
-        if (currentCommand.deleteContextKey && args[currentCommand.arrayArgName]) {
-            if (Array.isArray(args[currentCommand.arrayArgName])) {
-                ids = args[currentCommand.arrayArgName];
-            } else {
-                ids = args[currentCommand.arrayArgName].split(',');
-            }
-        }
-        var httpParams = {
-                Method: 'POST',
-                Headers: {
-                    'Content-Type': ['text/xml; charset=utf-8']
-                },
-                Username: params.credentials.identifier + (server === office365address ? ('@' + params.domain) : ''),
-                Password: params.credentials.password,
-                Domain: params.domain,
-                AuthProtocol: [params.authType],
-                Body: buildBody(command, args),
-            };
-        var res = http(server, httpParams, params.insecure, params.proxy);
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Got status code ' + res.StatusCode + ' from EWS with body ' + res.Body + ' with headers ' + JSON.stringify(res.Headers);
-        }
-        var bdy = res.Body.replace(/&#x.*?;/g, "");
-        var raw = JSON.parse(x2j(bdy));
-        if (currentCommand.resStatus) {
-            resStatus = dq(raw, currentCommand.resStatus);
-            if (!Array.isArray(resStatus)) {
-                resStatus = [resStatus];
-            }
-            if (resStatus[0] !== 'Success') {
-                throw 'Got EWS error ' + resStatus + ' from EWS with body ' + res.Body + ' with headers ' + JSON.stringify(res.Headers);
-            }
-        }
-        if(returnRaw){
-            return raw;
-        }
-        return createEntry(currentCommand, raw, hrTitle, ids);
-    }
-
-    function createEntry(currentCommand, raw, hrTitle, deletedContext){
-        var entry = {
-            Type: entryTypes.note,
-            Contents: raw,
-            ContentsFormat: formats.json,
-            ReadableContentsFormat: formats.markdown,
-        };
-        if (currentCommand.innerPath) {
-            var data = dq(raw, currentCommand.innerPath);
-            if (currentCommand.translator) {
-                if (data) {
-                    var translated = mapObjFunction(currentCommand.translator)(data);
-                    extraContext = {};
-                    if (currentCommand.targetToContext) {
-                        extraContext.targetMailbox = args['target-mailbox'];
-                    }
-                    if (currentCommand.contextKey) {
-                        entry.EntryContext = {};
-                        var arrContext;
-                        if (currentCommand.contextArrayName) {
-                            arrContext = {};
-                            arrContext[currentCommand.contextArrayName] = createContext(translated, extraContext);
-                        }
-                        entry.EntryContext[currentCommand.contextKey] = arrContext ? arrContext : createContext(translated, extraContext);
-                        if (currentCommand.argsToContext) {
-                            for (var k in currentCommand.argsToContext) {
-                                entry.EntryContext[currentCommand.contextKey][currentCommand.argsToContext[k]] = args[currentCommand.argsToContext[k]];
-                            }
-                        }
-                    } else if (currentCommand.deleteContextKey && deletedContext && deletedContext.length) {
-                        entry.EntryContext = {};
-                        entry.EntryContext[currentCommand.deleteContextKey] = deletedContext;
-                    }
-                    var disp = buildDisplay(currentCommand, translated);
-                    entry.HumanReadable = tableToMarkdown(
-                        hrTitle,
-                        disp
-                    );
-                } else {
-                    entry.HumanReadable = 'No results';
-                }
-            }
-        }
-        if(currentCommand.addUpdatesToContext) {
-            currentCommand.addUpdatesToContext(entry);
-        }
-        return entry;
-    }
-
-    function buildBody(command, args) {
-        var currentCommand = commandsDictionary[command];
-        if (currentCommand.defaultArgs) {
-            for (var j in currentCommand.defaultArgs) {
-                if (!args[j]) {
-                    args[j] = currentCommand.defaultArgs[j];
-                }
-            }
-        }
-        if (currentCommand.arrayArgName) {
-            var items = [];
-            if (Array.isArray(args[currentCommand.arrayArgName])) {
-                items = args[currentCommand.arrayArgName];
-            } else {
-                items = args[currentCommand.arrayArgName].split(',');
-            }
-            var itemsStr = '';
-            for (var i in items) {
-                var itemId = items[i];
-                var template;
-                var distinguished = distinguishedArgs[currentCommand.arrayArgName];
-                if(distinguished && distinguished.items.indexOf(itemId) > -1) {
-                    template = distinguished.template;
-                } else {
-                    template = commandsDictionary[currentCommand.fillerName || currentCommand.arrayArgName].template;
-                }
-                itemsStr += replaceInTemplates(template, {id: itemId, 'target-mailbox': args['target-mailbox']});
-            }
-            args[currentCommand.arrayArgName] = itemsStr;
-        }
-        return replaceInTemplates(currentCommand.template, args);
-    }
-
-    function sendRequest(tmpl, reqArgs, resStatusPath) {
-        var readyBody = replaceInTemplates(tmpl, reqArgs);
-        var httpParams = {
-                Method: 'POST',
-                Headers: {
-                    'Content-Type': ['text/xml; charset=utf-8']
-                },
-                Username: params.credentials.identifier + (server === office365address ? ('@' + params.domain) : ''),
-                Password: params.credentials.password,
-                Domain: params.domain,
-                AuthProtocol: [params.authType],
-                Body: readyBody
-            };
-        var res = http(server, httpParams, params.insecure, params.proxy);
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Got status code ' + res.StatusCode + ' from EWS with body ' + res.Body + ' with headers ' + JSON.stringify(res.Headers);
-        }
-        var bdy = res.Body.replace(/&#x.*?;/g, "");
-        var raw = JSON.parse(x2j(bdy));
-
-        var resStatus = dq(raw, resStatusPath);
-        if (!Array.isArray(resStatus)) {
-            resStatus = [resStatus];
-        }
-        if (resStatus[0] !== 'Success') {
-            throw 'Got EWS error ' + resStatus + ' from EWS with body ' + res.Body + ' with headers ' + JSON.stringify(res.Headers);
-        }
-
-        return raw;
-    }
-
-    function parseItemAttachment(rawItem, args) {
-        var itemPath = 'Envelope.Body.GetAttachmentResponse.ResponseMessages.GetAttachmentResponseMessage.Attachments.ItemAttachment';
-        var entry;
-
-        var data = dq(raw, itemPath);
-        if (data) {
-            entry = {
-                Type: entryTypes.note,
-                Contents: raw,
-                ContentsFormat: formats.json,
-                ReadableContentsFormat: formats.markdown,
-            };
-            var translator = [
-                {to: 'BodyType', from: 'Message.Body.-BodyType'},
-                {to: 'Body', from: 'Message.Body.#text'},
-                {to: 'Created', from: 'Message.DateTimeCreated'},
-                {to: 'Sent', from: 'Message.DateTimeSent'},
-                {to: 'From-Email', from: 'Message.From.Mailbox.EmailAddress'},
-                {to: 'From-Name', from: 'Message.From.Mailbox.Name'},
-                {to: 'From-RoutingType', from: 'Message.From.Mailbox.RoutingType'},
-                {to: 'To-Email', from: 'Message.ReceivedBy.Mailbox.EmailAddress'},
-                {to: 'To-Name', from: 'Message.ReceivedBy.ToRecipients.Mailbox.Name'},
-                {to: 'To-RoutingType', from: 'Message.ToRecipients.Mailbox.RoutingType'},
-                {to: 'HasAttachments', from: 'Message.HasAttachments'},
-                {to: 'IsAssociated', from: 'Message.IsAssociated'},
-                {to: 'IsRead', from: 'Message.IsRead'},
-                {to: 'Sensitivity', from: 'Sensitivity'},
-                {to: 'Size', from: 'Size'},
-                {to: 'ID', from: 'AttachmentId.-Id'},
-                {to: 'Subject', from: 'Message.Subject'},
-                {to: 'Attachment-ID', from: 'Message.Attachments.FileAttachment.AttachmentId.-Id'},
-                {to: 'Attachment-IsContactPhoto', from: 'Message.Attachments.FileAttachment.IsContactPhoto'},
-                {to: 'Attachment-IsInline', from: 'Message.Attachments.FileAttachment.IsInline'},
-                {to: 'Attachment-LastModifiedTime', from: 'Message.Attachments.FileAttachment.LastModifiedTime'},
-                {to: 'Attachment-Name', from: 'Message.Attachments.FileAttachment.Name'},
-                {to: 'Attachment-Size', from: 'Message.Attachments.FileAttachment.Size'},
-                {to: 'Mail-Attachment-ID', from: 'Message.Attachments.ItemAttachment.AttachmentId.-Id'},
-                {to: 'Mail-Attachment-IsContactPhoto', from: 'Message.Attachments.ItemAttachment.IsContactPhoto'},
-                {to: 'Mail-Attachment-IsInline', from: 'Message.Attachments.ItemAttachment.IsInline'},
-                {to: 'Mail-Attachment-LastModifiedTime', from: 'Message.Attachments.ItemAttachment.LastModifiedTime'},
-                {to: 'Mail-Attachment-Name', from: 'Message.Attachments.ItemAttachment.Name'},
-                {to: 'Mail-Attachment-Size', from: 'Message.Attachments.ItemAttachment.Size'},
-                {to: 'Headers', from: "Message.InternetMessageHeaders.InternetMessageHeader"},
-            ];
-            var translated = mapObjFunction(translator)(data);
-
-            var contextKey = 'EWS.Items(val.ID == obj.ID)';
-            entry.EntryContext = {};
-            entry.EntryContext[contextKey] = createContext(translated, {targetMailbox: args['target-mailbox']});
-
-            var disp = buildDisplay({}, translated);
-            var hrTitle = replaceInTemplates('EWS get attachment got item for %target-mailbox%, %attachment-id% ', args);
-            entry.HumanReadable = tableToMarkdown(
-                hrTitle,
-                disp
-            );
-        }
-        return entry;
-    }
-
-    function parseFileAttachment(raw, args) {
-        var fileNamePath = 'Envelope.Body.GetAttachmentResponse.ResponseMessages.GetAttachmentResponseMessage.Attachments.FileAttachment.Name';
-        var fileContentPath = 'Envelope.Body.GetAttachmentResponse.ResponseMessages.GetAttachmentResponseMessage.Attachments.FileAttachment.Content';
-        var fileName = dq(raw, fileNamePath);
-        var entry;
-        if(fileName) {
-            var entry = entry = {Type: 3, FileID: saveFile(raw, fileContentPath, true), File: fileName, Contents: fileName};
-        }
-        return entry;
-    }
-
-    function getAttachment(attachArgs, isItem) {
-        var attachmentTmpl = '<?xml version="1.0" encoding="utf-8"?>' +
-    '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">' +
-    '  <soap:Header>' +
-    '<t:RequestServerVersion Version="%version%" />' +
-    '%impersonation%'+
-    ' </soap:Header>' +
-    '  <soap:Body>' +
-    '    <GetAttachment xmlns="http://schemas.microsoft.com/exchange/services/2006/messages" xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">' +
-    '      <AttachmentShape/>' +
-    '     <AttachmentIds>' +
-    '        <t:AttachmentId Id="%attachment-id%"/>' +
-    '      </AttachmentIds>' +
-    '    </GetAttachment>' +
-    '   </soap:Body>' +
-    ' </soap:Envelope>';
-        raw = sendRequest(attachmentTmpl, attachArgs, 'Envelope.Body.GetAttachmentResponse.ResponseMessages.GetAttachmentResponseMessage.-ResponseClass');
-        var entry;
-        if(isItem) {
-            entry = parseItemAttachment(raw, attachArgs);
-        } else {
-            entry = parseFileAttachment(raw, attachArgs);
-        }
-        if(!entry) {
-            entry = {
-                Type: entryTypes.note,
-                Contents: raw,
-                ContentsFormat: formats.json,
-                ReadableContentsFormat: formats.markdown,
-                HumanReadable: 'No results'
-            };
-        }
-        return entry;
-    }
-
-    function fetchEmailsAsIncidents() {
-        var lastRun = getLastRun();
-        if (!lastRun || !lastRun.lastTime) {
-            lastRun = {
-                lastId: '',
-                lastTime: new Date(new Date().getTime() - (10 * 60 * 1000)).getTime()
-            }
-        }
-        if (lastRun.folderId !== params.folder) {
-          //Folder was changed, we need to reset lastRun
-          lastRun = {
-              folderId: params.folder,
-              lastId: '',
-              lastTime: new Date(new Date().getTime() - (10 * 60 * 1000)).getTime()
-          }
-        }
-        var pageSize = params.pageSize ? parseInt(params.pageSize) : defaultPageSize;
-        //Will fetch emails according to time stamp
-            var fetchTmpl = '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages" xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
-    '    <soap:Header>' +
-    '        <t:RequestServerVersion Version="%version%" />' +
-    '%impersonation%'+
-    '    </soap:Header>' +
-    '    <soap:Body>' +
-    '        <m:FindItem Traversal="Shallow">' +
-    '            <m:ItemShape>' +
-    '                <t:BaseShape>IdOnly</t:BaseShape>' +
-    '            </m:ItemShape>' +
-    '            <m:IndexedPageItemView MaxEntriesReturned="100" Offset="0" BasePoint="Beginning" />' +
-    '            <m:Restriction>' +
-    '                <t:And>' +
-    '                    <t:IsGreaterThan>' +
-    '                        <t:FieldURI FieldURI="item:DateTimeReceived" />' +
-    '                        <t:FieldURIOrConstant>' +
-    '                            <t:Constant Value="%last_time%"/>' +
-    '                        </t:FieldURIOrConstant>' +
-    '                    </t:IsGreaterThan>' +
-    '                </t:And>' +
-    '            </m:Restriction>' +
-    '            <m:SortOrder>' +
-    '                <t:FieldOrder Order="Ascending">' +
-    '                    <t:FieldURI FieldURI="item:DateTimeReceived" />' +
-    '                </t:FieldOrder>' +
-    '            </m:SortOrder>' +
-    '            <m:ParentFolderIds>' +
-                '%target-folder%'+
-    '            </m:ParentFolderIds>' +
-    '        </m:FindItem>' +
-    '    </soap:Body>' +
-    '</soap:Envelope>';
-
-    var defaultTargetTargetFolderTmpl ='<t:DistinguishedFolderId Id="inbox">' +
-                        '<t:Mailbox>' +
-                            '<t:EmailAddress>%target-mailbox%</t:EmailAddress>' +
-                        '</t:Mailbox>' +
-                    '</t:DistinguishedFolderId>';
-
-    var targetFolderTmpl ='<t:FolderId Id="%folder%"></t:FolderId>';
-
-        var fetchArgs = {};
-        setImpersonation(fetchArgs);
-        if (lastRun.lastId) {
-            lastItemOp = '                    <t:IsNotEqualTo>' +
-    '                        <t:FieldURI FieldURI="item:ItemId" />' +
-    '                        <t:FieldURIOrConstant>' +
-    '                            <t:Constant Value="%last_item%"/>' +
-    '                        </t:FieldURIOrConstant>' +
-    '                    </t:IsNotEqualTo>';
-            opArgs = {};
-            opArgs.last_item = lastRun.lastId;
-            readyIdOp = replaceInTemplates(lastItemOp, opArgs);
-            fetchArgs.last_item_op = readyIdOp;
-        } else {
-            fetchArgs.last_item_op = "";
-        }
-        fetchArgs.last_time = new Date(lastRun.lastTime).toISOString();
-        fetchArgs['target-mailbox'] = getDefaultTargetMailbox();
-        if (lastRun.folderId) {
-            fetchArgs['folder'] = lastRun.folderId;
-            fetchArgs['target-folder'] = replaceInTemplates(targetFolderTmpl,fetchArgs);
-        } else {
-         fetchArgs['target-folder'] = replaceInTemplates(defaultTargetTargetFolderTmpl,fetchArgs);
-        }
-        fetchArgs.version = params.defaultServerVersion
-        raw = sendRequest(fetchTmpl, fetchArgs, 'Envelope.Body.FindItemResponse.ResponseMessages.FindItemResponseMessage.-ResponseClass');
-
-        //Now iterate on email ids, and do get items one by one
-        var itemIdPath = "Envelope.Body.FindItemResponse.ResponseMessages.FindItemResponseMessage.RootFolder.Items.Message.ItemId.-Id";
-        var itemIds = dq(raw, itemIdPath);
-        if (itemIds && !Array.isArray(itemIds)) {
-            itemIds = [itemIds];
-        }
-        incidents = [];
-        if (itemIds) {
-            itemArgs = {};
-            itemArgs['item-ids'] = '';
-            for (var i = 0 ; i < itemIds.length; i++) {
-                itemArgs['item-ids'] += '<t:ItemId Id="' + itemIds[i] + '" />'
-            }
-            itemArgs['target-mailbox'] = getDefaultTargetMailbox();
-            itemArgs.version = params.defaultServerVersion;
-            itemArgs['include-mime-content'] = "false";
-            setImpersonation(itemArgs);
-            rawItem = sendRequest(commandsDictionary['ews-get-items'].template, itemArgs, commandsDictionary['ews-get-items'].resStatus);
-            actualMessages = rawItem.Envelope.Body.GetItemResponse.ResponseMessages.GetItemResponseMessage;
-            if (actualMessages && !Array.isArray(actualMessages)) {
-                actualMessages = [actualMessages];
-            }
-            if (actualMessages) {
-                //Now create an incident from each item
-                for (var i = 0 ; i < actualMessages.length; i++) {
-                    // if fetched incident is the same as the one in lastRun - ignore it
-                    if (lastRun.lastId == actualMessages[i].Items.Message.ItemId["-Id"]) {
-                      continue;
-                    }
-
-                    message = actualMessages[i];
-                    if (message['-ResponseClass'] === 'Success') {
-                        //There is a reall item here, lets start to create the incident
-                        incident = {};
-                        incident.details = message.Items.Message.Body['#text'];
-                        incident.name = message.Items.Message.Subject;
-                        incident.occurred = new Date(Date.parse(message.Items.Message.DateTimeReceived));
-                        if (lastRun.lastTime < incident.occurred.getTime()) {
-                            lastRun.lastTime = incident.occurred.getTime();
-                            lastRun.lastId = message.Items.Message.ItemId["-Id"];
-                            setLastRun(lastRun);
-                        }
-                        labels = [];
-                        //handle  recipients
-                        recipients = message.Items.Message.ToRecipients;
-                        recipients = recipients ? recipients.Mailbox : null;
-                        if (recipients && !Array.isArray(recipients)) {
-                            recipients = [recipients];
-                        }
-                        if (recipients) {
-                            for (j = 0 ; j < recipients.length; j++) {
-                                labels.push({type: 'Email', value: recipients[j].EmailAddress})
-                            }
-                        }
-                        //handle cc
-                        recipients = message.Items.Message.CcRecipients;
-                        recipients = recipients ? recipients.Mailbox : null;
-                        if (recipients && !Array.isArray(recipients)) {
-                            recipients = [recipients];
-                        }
-                        if (recipients) {
-                            for (j = 0 ; j < recipients.length; j++) {
-                                labels.push({type: 'Email/cc', value: recipients[j].EmailAddress})
-                            }
-                        }
-                        //handle Email/from
-                        sender = message.Items.Message.From.Mailbox;
-                        if (sender) {
-                            labels.push({type: 'Email/from', value: sender.EmailAddress})
-                        }
-                        //Email format
-                        format = message.Items.Message.Body;
-                        bodyFormatLabel = 'Email/text';
-                        if (format) {
-                            labels.push({type: 'Email/format', value: format['-BodyType']})
-                            if (format['-BodyType'] === 'HTML') {
-                                bodyFormatLabel = 'Email/html';
-                            }
-                        }
-                        labels.push({type: bodyFormatLabel, value: format['#text'] });
-                        labels.push({type: 'Email/subject', value: incident.name });
-
-                        //Handle attachment - file name
-                        attachments = message.Items.Message.Attachments;
-                        attachments = attachments ? attachments.FileAttachment : null;
-                        if (attachments && !Array.isArray(attachments)) {
-                            attachments = [attachments];
-                        }
-                        if (attachments) {
-                            for (j = 0; j < attachments.length; j++ ) {
-                                labels.push({type: 'Email/attachments', value: attachments[j].Name});
-                                labels.push({type: 'Email/attachmentId', value: attachments[j].AttachmentId['-Id']});
-                            }
-                        }
-
-                        //Handle item attachment
-                        attachments = message.Items.Message.Attachments;
-                        attachments = attachments ? attachments.ItemAttachment : null;
-                        if (attachments && !Array.isArray(attachments)) {
-                            attachments = [attachments];
-                        }
-                        if (attachments) {
-                            for (j = 0; j < attachments.length; j++ ) {
-                                labels.push({type: 'Email/attachmentItems', value: attachments[j].Name});
-                                labels.push({type: 'Email/attachmentItemsId', value: attachments[j].AttachmentId['-Id']});
-                            }
-                        }
-
-                        //Handle headers
-                        headers = message.Items.Message.InternetMessageHeaders.InternetMessageHeader;
-                        if (headers && !Array.isArray(headers)) {
-                            headers = [headers];
-                        }
-                        if (headers) {
-                            for (j = 0; j < headers.length; j++ ) {
-                                labels.push({type: 'Email/Header/'+headers[j]['-HeaderName'], value: headers[j]['#text']});
-                            }
-                        }
-
-                        //Add item ID
-                        labels.push({type: 'Email/ID', value: message.Items.Message.ItemId['-Id']})
-
-                        incident.labels = labels;
-                        incident.rawJSON = JSON.stringify(message.Items.Message);
-                        incidents.push(incident);
-                    }
-                }
-            }
-        }
-        return JSON.stringify(incidents);
-    }
-
-    function searchMailboxes(args){
-        if (!args['mailbox-search-scope']) {
-            var mailboxes = execute('ews-get-searchable-mailboxes', {}, true);
-            args['mailbox-search-scope'] = dq(mailboxes, 'Envelope.Body.GetSearchableMailboxesResponse.SearchableMailboxes.SearchableMailbox.ReferenceId');
-        } else {
-            if (!Array.isArray(args['mailbox-search-scope'])) {
-                args['mailbox-search-scope'] = args['mailbox-search-scope'].split(';');
-            }
-        }
-        args['mailbox-search-scope'] = args['mailbox-search-scope'].map(function(a) { return a.replace(/(&)/g, '&amp;').trim(); });
-        var slicedMailboxes = [];
-
-        // breaks the list of mailboxes into groups of 15,000 due to EWS limitation of max number of mailboxes per search
-        for (var i=0; i< args['mailbox-search-scope'].length / 15000; i++){
-            slicedMailboxes.push(args['mailbox-search-scope'].slice(i*15000, (i+1)*15000));
-        }
-
-        var resArray = [];
-        if(slicedMailboxes.length === 0){
-            return "No mailboxes to search";
-        }
-
-        currentCommand = commandsDictionary['ews-search-mailboxes'];
-        var rawData = [];
-        var lastRes;
-        for (var j=0; j< slicedMailboxes.length; j++){
-            args['mailbox-search-scope'] = slicedMailboxes[j];
-            res =  execute(command, args, true);
-            data = dq(res, currentCommand.innerPath);
-            if (data){
-                lastRes = res;
-                rawData = rawData.concat(data);
-            }
-        }
-        if(!lastRes){
-            return "No results";
-        }
-        try {
-            lastRes.Envelope.Body.SearchMailboxesResponse.ResponseMessages.SearchMailboxesResponseMessage.SearchMailboxesResult.Items.SearchPreviewItem = rawData;
-        } catch (err) {
-            throw 'Error - response from EWS could not be parsed.\nResponse from EWS is:\n' + JSON.stringify(lastRes);
-        }
-        return createEntry(currentCommand, lastRes, replaceInTemplates(currentCommand.tableTitle, args));
-    }
-
-    // test credentials with GetInboxRules operation
-    // operation doc can be found at https://msdn.microsoft.com/en-us/library/office/ff709501(v=exchg.150).aspx
-    function testModule() {
-        var xml =
-            '<?xml version="1.0" encoding="utf-8"?>' +
-            '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' +
-                    ' xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages"' +
-                    ' xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types"' +
-                    ' xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' +
-              '<soap:Header>' +
-                '<t:RequestServerVersion Version="%version%" />' +
-              '</soap:Header>' +
-              '<soap:Body>' +
-                '<m:GetInboxRules />' +
-              '</soap:Body>' +
-            '</soap:Envelope>';
-
-        var httpParams = {
-                Method: 'POST',
-                Headers: {
-                    'Content-Type': ['text/xml; charset=utf-8']
-                },
-                Username: params.credentials.identifier + (server === office365address ? ('@' + params.domain) : ''),
-                Password: params.credentials.password,
-                AuthProtocol: [params.authType],
-                Body: replaceInTemplates(xml, args)
-            };
-        var res = http(server, httpParams, params.insecure, params.proxy);
-        if (res.StatusCode !== 200) {
-            throw JSON.stringify(res);
-        }
-        return 'ok';
-    }
-
-    if (!args.version) {
-        args.version = params.defaultServerVersion;
-    }
-    if (!args['target-mailbox']) {
-        args['target-mailbox'] = getDefaultTargetMailbox();
-    }
-    args['target-mailbox'] = args['target-mailbox'].replace(/(&)/g, '&amp;');
-
-    setImpersonation(args);
-
-    switch (command) {
-        case 'test-module':
-            return testModule();
-        case 'fetch-incidents':
-            return fetchEmailsAsIncidents();
-        case 'ews-get-attachment': {
-            return getAttachment(args, false);
-        }
-        case 'ews-get-attachment-item': {
-            return getAttachment(args, true);
-        }
-        case 'ews-search-mailboxes':
-            return searchMailboxes(args);
-        default:
-            return execute(command, args);
-    }
-  type: javascript
   commands:
-  - name: ews-get-folder
-    deprecated: true
-    arguments:
-    - name: folders-ids
-      required: true
-      description: The Item IDs (result of the ews-search-mailbox command)
+  - arguments:
+    - description: The Item IDs (result of the ews-search-mailbox command)
       isArray: true
-    - name: target-mailbox
-      description: The user email address
-    - name: version
-      description: Exchange version (by default 2010, change to 2013 if using 2013).
+      name: folders-ids
+      required: true
+    - description: The user email address
+      name: target-mailbox
+    - description: Exchange version (by default 2010, change to 2013 if using 2013).
         This can also be set in the settings/integrations page
+      name: version
+    deprecated: true
+    description: Get a folder from a mailbox in the Exchange store.
+    name: ews-get-folder
     outputs:
     - contextPath: EWS.Folders.ChildFolderCount
       description: Folder child folder count
@@ -1245,56 +112,56 @@ script:
       description: Folder id
     - contextPath: EWS.Folders.FolderID.ChangeKey
       description: Folder change key
-    description: Get a folder from a mailbox in the Exchange store.
-  - name: ews-delete-items
-    deprecated: true
-    arguments:
-    - name: item-ids
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: The item IDs (result of the ews-search-mailbox)
       isArray: true
-    - name: target-mailbox
-      description: The user email address
-    - name: version
-      description: Exchange version (by default 2010, change to 2013 if using 2013).
+      name: item-ids
+      required: true
+    - description: The user email address
+      name: target-mailbox
+    - description: Exchange version (by default 2010, change to 2013 if using 2013).
         This can also be set in the settings/integrations page
+      name: version
+    deprecated: true
+    description: Delete an item (e.g. an e-mail) from a mailbox in the Exchange store
+    name: ews-delete-items
     outputs:
     - contextPath: EWS.DeletedItems.ID
       description: ID of deleted items
-    description: Delete an item (e.g. an e-mail) from a mailbox in the Exchange store
-  - name: ews-delete-attachments
-    deprecated: true
-    arguments:
-    - name: item-ids
-      required: true
-      default: true
-      description: The attachment IDs  (result of the ews-get-items command)
+  - arguments:
+    - default: true
+      description: "The attachment IDs \_(result of the ews-get-items command)"
       isArray: true
-    - name: target-mailbox
-      description: The user email address
-    - name: version
-      description: Exchange version (by default 2010, change to 2013 if using 2013).
+      name: item-ids
+      required: true
+    - description: The user email address
+      name: target-mailbox
+    - description: Exchange version (by default 2010, change to 2013 if using 2013).
         This can also be set in the settings/integrations page
+      name: version
+    deprecated: true
+    description: Delete an attachment from the Exchange store
+    name: ews-delete-attachments
     outputs:
     - contextPath: EWS.DeletedAttachments.ID
       description: ID of the deleted attachment
-    description: Delete an attachment from the Exchange store
-  - name: ews-get-items
-    deprecated: true
-    arguments:
-    - name: item-ids
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: The Item IDs (result of the ews-search-mailbox command)
       isArray: true
-    - name: target-mailbox
-      description: The user email address
-    - name: version
-      description: Exchange version (by default 2010, change to 2013 if using 2013).
+      name: item-ids
+      required: true
+    - description: The user email address
+      name: target-mailbox
+    - description: Exchange version (by default 2010, change to 2013 if using 2013).
         This can also be set in the settings/integrations page
-    - name: include-mime-content
-      description: Include file content
+      name: version
+    - description: Include file content
+      name: include-mime-content
+    deprecated: true
+    description: Get the item ID and other important information including file content
+    name: ews-get-items
     outputs:
     - contextPath: EWS.Items.Created
       description: Time where the element was created
@@ -1338,24 +205,27 @@ script:
       description: Last modified time of the mail attachment
     - contextPath: EWS.Items.Mail.Attachment.IsInline
       description: Whether the mail attachment appears inline within an item
-    description: Get the item ID and other important information including file content
-  - name: ews-search-mailbox
-    deprecated: true
-    arguments:
-    - name: query
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: A mailbox query string based on Advanced Query Syntax (AQS).
-    - name: folder-id
+      name: query
       required: true
-      description: The folder where the query will run
-    - name: target-mailbox
-      description: The user email address
-    - name: version
-      description: Exchange version (by default 2010, change to 2013 if using 2013).
+    - description: The folder where the query will run
+      name: folder-id
+      required: true
+    - description: The user email address
+      name: target-mailbox
+    - description: Exchange version (by default 2010, change to 2013 if using 2013).
         This can also be set in the settings/integrations page
-    - name: max-entries-returned
-      description: Stop querying after specified number is reached
+      name: version
+    - description: Stop querying after specified number is reached
+      name: max-entries-returned
+    deprecated: true
+    description: 'Find items in a mailbox. The user account which is used to interact
+      with the Exchange MUST have permissions to impersonate other users. Otherwise,
+      any operation on a mailbox that does not belong to that user will fail. Instructions
+      on how to configure exchange impersonation can be found here: https://msdn.microsoft.com/en-us/library/bb204095.aspx'
+    name: ews-search-mailbox
     outputs:
     - contextPath: EWS.SearchItems.ID
       description: Mail ID
@@ -1379,28 +249,25 @@ script:
       description: Mail size
     - contextPath: EWS.SearchItems.Subject
       description: Mail subject
-    description: 'Find items in a mailbox. The user account which is used to interact
-      with the Exchange MUST have permissions to impersonate other users. Otherwise,
-      any operation on a mailbox that does not belong to that user will fail. Instructions
-      on how to configure exchange impersonation can be found here: https://msdn.microsoft.com/en-us/library/bb204095.aspx'
-  - name: ews-get-contacts
-    deprecated: true
-    arguments:
-    - name: item-ids
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: The item IDs (result of the ews-search-mailbox command)
       isArray: true
-    - name: target-mailbox
-      description: The user email address
-    - name: version
-      description: Exchange version (by default 2010, change to 2013 if using 2013).
+      name: item-ids
+      required: true
+    - description: The user email address
+      name: target-mailbox
+    - description: Exchange version (by default 2010, change to 2013 if using 2013).
         This can also be set in the settings/integrations page
+      name: version
+    deprecated: true
     description: Retrieve contact items from the Contacts folder
-  - name: ews-get-searchable-mailboxes
-    arguments:
-    - name: filter
-      description: Search filter, default is empty
+    name: ews-get-contacts
+  - arguments:
+    - description: Search filter, default is empty
+      name: filter
+    description: Retrieve a list of mailboxes that could be searched
+    name: ews-get-searchable-mailboxes
     outputs:
     - contextPath: EWS.Mailboxes.MailAddress
       description: Searchable mail address
@@ -1410,20 +277,20 @@ script:
       description: Searchable mail display name
     - contextPath: EWS.Mailboxes.ReferenceId
       description: Reference ID of the mail box, for further use on other ews queries
-    description: Retrieve a list of mailboxes that could be searched
-  - name: ews-search-mailboxes
-    deprecated: true
-    arguments:
-    - name: filter
+  - arguments:
+    - description: Filter to search upon
+      name: filter
       required: true
-      description: Filter to search upon
-    - name: version
-      description: Exchange version (by default 2010, change to 2013 if using 2013).
+    - description: Exchange version (by default 2010, change to 2013 if using 2013).
         This can also be set in the settings/integrations page
-    - name: mailbox-search-scope
-      description: An array of mail boxes references id, or string semicolon separated
+      name: version
+    - description: An array of mail boxes references id, or string semicolon separated
         ids
       isArray: true
+      name: mailbox-search-scope
+    deprecated: true
+    description: Search across mailboxes using a filter
+    name: ews-search-mailboxes
     outputs:
     - contextPath: EWS.Searchs.Search.Results.ItemID
       description: Results item ID
@@ -1449,15 +316,15 @@ script:
       description: Result subject
     - contextPath: EWS.Searchs.Search.Results.EWS.Searchs.Search.Results.ToRecipients
       description: Result to recipients
-    description: Search across mailboxes using a filter
-  - name: ews-get-attachment
-    deprecated: true
-    arguments:
-    - name: attachment-id
+  - arguments:
+    - description: The ID of the attachment as received via get-items
+      name: attachment-id
       required: true
-      description: The ID of the attachment as received via get-items
-    - name: target-mailbox
-      description: The mailbox where this attachment was found
+    - description: The mailbox where this attachment was found
+      name: target-mailbox
+    deprecated: true
+    description: Get actual attachment file from email
+    name: ews-get-attachment
     outputs:
     - contextPath: File.SHA256
       description: Attachment's SHA256
@@ -1479,12 +346,12 @@ script:
       description: Attachment's EntryID
     - contextPath: File.SSDeep
       description: Attachment's SSDeep hash
-    description: Get actual attachment file from email
-  - name: ews-find-folders
+  - arguments:
+    - description: The mailbox to search in
+      name: target-mailbox
     deprecated: true
-    arguments:
-    - name: target-mailbox
-      description: The mailbox to search in
+    description: Get all folder from a mailbox located under the root folder
+    name: ews-find-folders
     outputs:
     - contextPath: EWS.Folders.ChildFolderCount
       description: Folder child folder count
@@ -1498,16 +365,16 @@ script:
       description: Folder id
     - contextPath: EWS.Folders.FolderID.ChangeKey
       description: Folder change key
-    description: Get all folder from a mailbox located under the root folder
-  - name: ews-get-attachment-item
-    deprecated: true
-    arguments:
-    - name: attachment-id
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: The ID of the mail-attachment as received via get-items
-    - name: target-mailbox
-      description: The mailbox where this attachment was found
+      name: attachment-id
+      required: true
+    - description: The mailbox where this attachment was found
+      name: target-mailbox
+    deprecated: true
+    description: Get actual attachment item from email
+    name: ews-get-attachment-item
     outputs:
     - contextPath: EWS.Items.Created
       description: Time where the element was created
@@ -1555,31 +422,644 @@ script:
       description: Mail attachment header name
     - contextPath: EWS.Items.Headers.#text
       description: Mail attachment text
-    description: Get actual attachment item from email
-  - name: ews-move-item
-    deprecated: true
-    arguments:
-    - name: target-mailbox
-      description: The user email address
-    - name: item-id
+  - arguments:
+    - description: The user email address
+      name: target-mailbox
+    - description: The item ID (can be found in results from ews-search-mailbox command)
+      name: item-id
       required: true
-      description: The item ID (can be found in results from ews-search-mailbox command)
-    - name: folder-id
-      required: true
-      description: The folder id or distinguished id. Distinguished id is the folder
+    - description: The folder id or distinguished id. Distinguished id is the folder
         name reference (e.g. 'inbox', 'junkemail') while folder id is alphanumeric
         (e.g.'AAMkAGY3OTQyMzMzLW'). All folder-ids are listed in ews-find-folders
         command.
-    - name: version
-      description: Exchange version (by default 2010, change to 2013 if using 2013).
+      name: folder-id
+      required: true
+    - description: Exchange version (by default 2010, change to 2013 if using 2013).
         This can also be set in the settings/integrations page
+      name: version
+    deprecated: true
+    description: Move one or more item to one destination folder. Note that after
+      an item is moved, a new id will be associated with it.
+    name: ews-move-item
     outputs:
     - contextPath: EWS.MovedItems.NewItemID
       description: The new item id
     - contextPath: EWS.MovedItems.item-id
       description: The old item id
-    description: Move one or more item to one destination folder. Note that after
-      an item is moved, a new id will be associated with it.
   isfetch: true
+  script: "var server = params.server.replace(/[\\/]+$/, '') + '/';\nvar defaultPageSize\
+    \ = 100;\nvar office365address = 'https://outlook.office365.com/EWS/Exchange.asmx/';\n\
+    \n// map of argument that can contain distinguished item as values\nvar distinguishedArgs\
+    \ = {\n    'folders-ids': { // view https://msdn.microsoft.com/en-us/library/office/aa580808(v=exchg.150).aspx\n\
+    \        template: '<t:DistinguishedFolderId Id=\"%id%\">' +\n               \
+    \     '<t:Mailbox>' +\n                       '<t:EmailAddress>%target-mailbox%</t:EmailAddress>'\
+    \ +\n                   '</t:Mailbox>' +\n                  '</t:DistinguishedFolderId>',\n\
+    \        items: ['calendar', 'contacts', 'deleteditems', 'drafts', 'inbox', 'journal',\
+    \ 'notes', 'outbox', 'sentitems', 'tasks', 'msgfolderroot',\n                \
+    \            'root', 'junkemail', 'searchfolders', 'voicemail']\n    },\n    'folder-id':\
+    \ {\n        template: '<t:DistinguishedFolderId Id=\"%id%\">' +\n           \
+    \         '<t:Mailbox>' +\n                       '<t:EmailAddress>%target-mailbox%</t:EmailAddress>'\
+    \ +\n                   '</t:Mailbox>' +\n                  '</t:DistinguishedFolderId>',\n\
+    \        items: ['calendar', 'contacts', 'deleteditems', 'drafts', 'inbox', 'journal',\
+    \ 'notes', 'outbox', 'sentitems', 'tasks', 'msgfolderroot',\n                \
+    \            'root', 'junkemail', 'searchfolders', 'voicemail']\n    }\n}\n\n\
+    var commandsDictionary = {\n    'ews-find-folders': {\n        template:\n   \
+    \         '<?xml version=\"1.0\" encoding=\"utf-8\"?>' +\n            '<soap:Envelope\
+    \ xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\" ' +\n            'xmlns:t=\"\
+    http://schemas.microsoft.com/exchange/services/2006/types\">' +\n            '<soap:Header>'+\n\
+    \            '<t:RequestServerVersion Version=\"%version%\" />'+\n           \
+    \ '%impersonation%'+\n            '</soap:Header>'+\n            '<soap:Body>'\
+    \ +\n            '<FindFolder Traversal=\"Deep\" xmlns=\"http://schemas.microsoft.com/exchange/services/2006/messages\"\
+    >' +\n            '<FolderShape>' +\n            '<t:BaseShape>Default</t:BaseShape>'\
+    \ +\n            '</FolderShape>' +\n            '<ParentFolderIds>' +\n     \
+    \       '<t:DistinguishedFolderId Id=\"root\"/>' +\n            '</ParentFolderIds>'\
+    \ +\n            '</FindFolder>' +\n            '</soap:Body>' +\n           \
+    \ '</soap:Envelope>',\n        contextKey: 'EWS.Folders(val.ID == obj.FolderID.ID)',\n\
+    \        innerPath: 'Envelope.Body.FindFolderResponse.ResponseMessages.FindFolderResponseMessage.RootFolder.Folders.Folder',\n\
+    \        targetToContext: true,\n        resStatus: 'Envelope.Body.FindFolderResponse.ResponseMessages.FindFolderResponseMessage.-ResponseClass',\n\
+    \        translator: [\n            {to: 'DisplayName', from: 'DisplayName'},\n\
+    \            {to: 'TotalCount', from: 'TotalCount'},\n            {to: 'UnreadCount',\
+    \ from: 'UnreadCount'},\n            {to: 'FolderID-ID', from: 'FolderId.-Id'},\n\
+    \            {to: 'FolderID-ChangeKey', from: 'FolderId.-ChangeKey'},\n      \
+    \  ]\n    },\n    'ews-get-folder': {\n        arrayArgName: 'folders-ids',\n\
+    \        contextKey: 'EWS.Folders(val.FolderID.ID == obj.FolderID.ID)',\n    \
+    \    innerPath: 'Envelope.Body.GetFolderResponse.ResponseMessages.GetFolderResponseMessage.Folders.Folder',\n\
+    \        resStatus: 'Envelope.Body.GetFolderResponse.ResponseMessages.GetFolderResponseMessage.-ResponseClass',\n\
+    \        targetToContext: true,\n        translator: [\n            {to: 'ChildFolderCount',\
+    \ from: 'ChildFolderCount'},\n            {to: 'DisplayName', from: 'DisplayName'},\n\
+    \            {to: 'TotalCount', from: 'TotalCount'},\n            {to: 'UnreadCount',\
+    \ from: 'UnreadCount'},\n            {to: 'FolderID-ID', from: 'FolderId.-Id'},\n\
+    \            {to: 'FolderID-ChangeKey', from: 'FolderId.-ChangeKey'},\n      \
+    \  ],\n        tableTitle: 'EWS get folder for %target-mailbox% folders %folders-ids%',\n\
+    \        template:\n           '<?xml version=\"1.0\" encoding=\"utf-8\"?>' +\n\
+    \           '<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"\
+    ' +\n            ' xmlns:t=\"http://schemas.microsoft.com/exchange/services/2006/types\\\
+    \">' +\n            '<soap:Header>' +\n            '<t:RequestServerVersion Version=\"\
+    %version%\" />' +\n            '%impersonation%'+\n            '</soap:Header>'\
+    \ +\n            '<soap:Body>' +\n            '<GetFolder xmlns=\"http://schemas.microsoft.com/exchange/services/2006/messages\"\
+    ' +\n            ' xmlns:t=\"http://schemas.microsoft.com/exchange/services/2006/types\"\
+    >' +\n            '<FolderShape>' +\n            '<t:BaseShape>Default</t:BaseShape>'\
+    \ +\n            '</FolderShape>' +\n            '<FolderIds>' +\n           \
+    \ '%folders-ids%' +\n            '</FolderIds>' +\n            '</GetFolder>'\
+    \ +\n            '</soap:Body>' +\n            '</soap:Envelope>'\n        },\n\
+    \    'ews-delete-items': {\n        arrayArgName: 'item-ids',\n        innerPath:\
+    \ 'Envelope.Body.DeleteItemResponse.ResponseMessages.DeleteItemResponseMessage',\n\
+    \        resStatus: 'Envelope.Body.DeleteItemResponse.ResponseMessages.DeleteItemResponseMessage.-ResponseClass',\n\
+    \        translator: [\n            {to: 'Class', from: '-ResponseClass'},\n \
+    \           {to: 'ResponseCode', from: 'ResponseCode'},\n            {to: 'Message',\
+    \ from: 'MessageText'},\n            {to: 'Link', from: 'DescriptiveLinkKey'},\n\
+    \        ],\n        tableTitle: 'EWS delete items items for %target-mailbox%\
+    \ items %item-ids%',\n        deleteContextKey: 'EWS.DeletedItems',\n        targetToContext:\
+    \ true,\n        template:\n            '<?xml version=\"1.0\" encoding=\"utf-8\"\
+    ?>'+\n            '<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"\
+    '+\n            ' xmlns:t=\"http://schemas.microsoft.com/exchange/services/2006/types\"\
+    >'+\n            '<soap:Header>'+\n            '<t:RequestServerVersion Version=\"\
+    %version%\" />'+\n            '%impersonation%'+\n            '</soap:Header>'+\n\
+    \            '<soap:Body>'+\n            '<DeleteItem DeleteType=\"HardDelete\"\
+    \ xmlns=\"http://schemas.microsoft.com/exchange/services/2006/messages\">'+\n\
+    \            '<ItemIds>'+\n            '%item-ids%'+\n            '</ItemIds>'+\n\
+    \            '</DeleteItem>'+\n            '</soap:Body>'+\n            '</soap:Envelope>'\n\
+    \        },\n    'ews-get-items': {\n        arrayArgName: 'item-ids',\n     \
+    \   innerPath: 'Envelope.Body.GetItemResponse.ResponseMessages.GetItemResponseMessage.Items.Message',\n\
+    \        resStatus: 'Envelope.Body.GetItemResponse.ResponseMessages.GetItemResponseMessage.-ResponseClass',\n\
+    \        translator: [\n            {to: 'BodyType', from: 'Body.-BodyType'},\n\
+    \            {to: 'Body', from: 'Body.#text'},\n            {to: 'Created', from:\
+    \ 'DateTimeCreated'},\n            {to: 'Sent', from: 'DateTimeSent'},\n     \
+    \       {to: 'From-Email', from: 'From.Mailbox.EmailAddress'},\n            {to:\
+    \ 'From-Name', from: 'From.Mailbox.Name'},\n            {to: 'From-RoutingType',\
+    \ from: 'From.Mailbox.RoutingType'},\n            {to: 'To-Email', from: 'ToRecipients.Mailbox.EmailAddress'},\n\
+    \            {to: 'To-Name', from: 'ToRecipients.Mailbox.Name'},\n           \
+    \ {to: 'To-RoutingType', from: 'ToRecipients.Mailbox.RoutingType'},\n        \
+    \    {to: 'HasAttachments', from: 'HasAttachments'},\n            {to: 'IsAssociated',\
+    \ from: 'IsAssociated'},\n            {to: 'IsRead', from: 'IsRead'},\n      \
+    \      {to: 'Sensitivity', from: 'Sensitivity'},\n            {to: 'Size', from:\
+    \ 'Size'},\n            {to: 'ID', from: 'ItemId.-Id'},\n            {to: 'Subject',\
+    \ from: 'Subject'},\n            {to: 'Attachment-ID', from: 'Attachments.FileAttachment.AttachmentId.-Id'},\n\
+    \            {to: 'Attachment-IsContactPhoto', from: 'Attachments.FileAttachment.IsContactPhoto'},\n\
+    \            {to: 'Attachment-IsInline', from: 'Attachments.FileAttachment.IsInline'},\n\
+    \            {to: 'Attachment-LastModifiedTime', from: 'Attachments.FileAttachment.LastModifiedTime'},\n\
+    \            {to: 'Attachment-Name', from: 'Attachments.FileAttachment.Name'},\n\
+    \            {to: 'Attachment-Size', from: 'Attachments.FileAttachment.Size'},\n\
+    \            {to: 'Mail-Attachment-ID', from: 'Attachments.ItemAttachment.AttachmentId.-Id'},\n\
+    \            {to: 'Mail-Attachment-IsContactPhoto', from: 'Attachments.ItemAttachment.IsContactPhoto'},\n\
+    \            {to: 'Mail-Attachment-IsInline', from: 'Attachments.ItemAttachment.IsInline'},\n\
+    \            {to: 'Mail-Attachment-LastModifiedTime', from: 'Attachments.ItemAttachment.LastModifiedTime'},\n\
+    \            {to: 'Mail-Attachment-Name', from: 'Attachments.ItemAttachment.Name'},\n\
+    \            {to: 'Mail-Attachment-Size', from: 'Attachments.ItemAttachment.Size'},\n\
+    \        ],\n        tableTitle: 'EWS get items for %target-mailbox% items %item-ids%\
+    \ items',\n        nonDisplayItems: ['Body'],\n        contextKey: 'EWS.Items(val.ID\
+    \ == obj.ID)',\n        targetToContext: true,\n        defaultArgs: {\n     \
+    \       'include-mime-content': false\n        },\n        template:\n       \
+    \     '<?xml version=\"1.0\" encoding=\"utf-8\"?>'+\n            '<soap:Envelope\
+    \ xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"'+\n            ' xmlns:xsd=\"\
+    http://www.w3.org/2001/XMLSchema\"'+\n            ' xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"\
+    '+\n            ' xmlns:t=\"http://schemas.microsoft.com/exchange/services/2006/types\"\
+    >'+\n            '<soap:Header>'+\n            '<t:RequestServerVersion Version=\"\
+    %version%\" />'+\n            '%impersonation%'+\n            '</soap:Header>'+\n\
+    \            '<soap:Body>'+\n            '<GetItem xmlns=\"http://schemas.microsoft.com/exchange/services/2006/messages\"\
+    '+\n            ' xmlns:t=\"http://schemas.microsoft.com/exchange/services/2006/types\"\
+    >'+\n            '<ItemShape>' +\n            '<t:BaseShape>AllProperties</t:BaseShape>'\
+    \ +\n            '<t:IncludeMimeContent>%include-mime-content%</t:IncludeMimeContent>'+\n\
+    \            '<t:AdditionalProperties><t:ExtendedFieldURI DistinguishedPropertySetId=\"\
+    InternetHeaders\" PropertyName=\"From\" PropertyType=\"String\" /></t:AdditionalProperties>'+\n\
+    \            '</ItemShape>' +\n            '<ItemIds>'+\n            '%item-ids%'+\n\
+    \            '</ItemIds>'+\n            '</GetItem>'+\n            '</soap:Body>'+\n\
+    \            '</soap:Envelope>'\n        },\n    'ews-search-mailbox': {\n   \
+    \     arrayArgName: 'folder-id',\n        innerPath: 'Envelope.Body.FindItemResponse.ResponseMessages.FindItemResponseMessage.RootFolder.Items.Message',\n\
+    \        resStatus: 'Envelope.Body.FindItemResponse.ResponseMessages.FindItemResponseMessage.-ResponseClass',\n\
+    \        defaultArgs: {\n            'max-entries-returned': 10\n        },\n\
+    \        targetToContext: true,\n        translator: [\n            {to: 'Created',\
+    \ from: 'DateTimeCreated'},\n            {to: 'Sent', from: 'DateTimeSent'},\n\
+    \            {to: 'From-Email', from: 'From.Mailbox.EmailAddress'},\n        \
+    \    {to: 'From-Name', from: 'From.Mailbox.Name'},\n            {to: 'HasAttachments',\
+    \ from: 'HasAttachments'},\n            {to: 'IsAssociated', from: 'IsAssociated'},\n\
+    \            {to: 'IsRead', from: 'IsRead'},\n            {to: 'Sensitivity',\
+    \ from: 'Sensitivity'},\n            {to: 'Size', from: 'Size'},\n           \
+    \ {to: 'ID', from: 'ItemId.-Id'},\n            {to: 'Subject', from: 'Subject'},\n\
+    \        ],\n        tableTitle: 'EWS search mailbox %target-mailbox% folder %folder-id%\
+    \ with query %query%',\n        contextKey: 'EWS.SearchItems(val.ID == obj.ID)',\n\
+    \        template:\n            '<?xml version=\"1.0\" encoding=\"utf-8\"?>'+\n\
+    \            '<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\
+    '+\n                ' xmlns:m=\"http://schemas.microsoft.com/exchange/services/2006/messages\"\
+    '+\n                ' xmlns:t=\"http://schemas.microsoft.com/exchange/services/2006/types\"\
+    '+\n                ' xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"\
+    >'+\n                '<soap:Header>'+\n                    '<t:RequestServerVersion\
+    \ Version=\"%version%\" />'+\n                    '%impersonation%'+\n       \
+    \         '</soap:Header>'+\n                '<soap:Body>'+\n                \
+    \    '<m:FindItem Traversal=\"Shallow\">'+\n                    '<m:ItemShape>'\
+    \ +\n                        '<t:BaseShape>AllProperties</t:BaseShape>' +\n  \
+    \                  '</m:ItemShape>' +\n                    '<m:IndexedPageItemView\
+    \ MaxEntriesReturned=\"%max-entries-returned%\" Offset=\"0\" BasePoint=\"Beginning\"\
+    \ />'+\n                    '<m:ParentFolderIds>'+\n                        '%folder-id%'+\n\
+    \                    '</m:ParentFolderIds>'+\n                    '<m:QueryString>%query%</m:QueryString>'+\n\
+    \                    '</m:FindItem>'+\n                '</soap:Body>'+\n     \
+    \       '</soap:Envelope>'\n        },\n    'ews-get-contacts': {\n        arrayArgName:\
+    \ 'item-ids',\n        targetToContext: true,\n        template:\n           \
+    \ '<?xml version=\"1.0\" encoding=\"utf-8\"?>'+\n            '<soap:Envelope xmlns:xsi=\"\
+    http://www.w3.org/2001/XMLSchema-instance\"'+\n            ' xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\
+    '+\n            ' xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"'+\n\
+    \            ' xmlns:t=\"http://schemas.microsoft.com/exchange/services/2006/types\"\
+    >'+\n            '<soap:Header>'+\n            '<t:RequestServerVersion Version=\"\
+    %version%\" />'+\n            '%impersonation%'+\n            '</soap:Header>'+\n\
+    \            '<soap:Body>'+\n            '<GetItem xmlns=\"http://schemas.microsoft.com/exchange/services/2006/messages\"\
+    >'+\n            '<ItemShape>'+\n            '<t:BaseShape>Default</t:BaseShape>'+\n\
+    \            '</ItemShape>'+\n            '<ItemIds>'+\n            '%item-ids%'+\n\
+    \            '</ItemIds>'+\n            '</GetItem>'+\n            '</soap:Body>'+\n\
+    \            '</soap:Envelope>'\n        },\n    'ews-delete-attachments': {\n\
+    \        arrayArgName: 'item-ids',\n        fillerName: 'attachments-ids',\n \
+    \       innerPath: 'Envelope.Body.DeleteAttachmentResponse.ResponseMessages.DeleteAttachmentResponseMessage',\n\
+    \        resStatus: 'Envelope.Body.DeleteAttachmentResponse.ResponseMessages.DeleteAttachmentResponseMessage.-ResponseClass',\n\
+    \        translator: [\n            {to: 'Class', from: '-ResponseClass'},\n \
+    \           {to: 'ResponseCode', from: 'ResponseCode'},\n            {to: 'Message',\
+    \ from: 'MessageText'},\n            {to: 'Link', from: 'DescriptiveLinkKey'},\n\
+    \        ],\n        tableTitle: 'EWS delete attachments items for %target-mailbox%\
+    \ items %attachments-ids%',\n        deleteContextKey: 'EWS.DeletedAttachments',\n\
+    \        targetToContext: true,\n        template:\n            '<?xml version=\"\
+    1.0\" encoding=\"utf-8\"?>'+\n            '<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\
+    '+\n            ' xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"'+\n         \
+    \   ' xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"'+\n           \
+    \ ' xmlns:t=\"http://schemas.microsoft.com/exchange/services/2006/types\">'+\n\
+    \            '<soap:Header>'+\n            '<t:RequestServerVersion Version=\"\
+    %version%\" />'+\n            '%impersonation%'+\n            '</soap:Header>'+\n\
+    \            '<soap:Body>'+\n            '<DeleteAttachment xmlns=\"http://schemas.microsoft.com/exchange/services/2006/messages\"\
+    '+\n            ' xmlns:t=\"http://schemas.microsoft.com/exchange/services/2006/types\"\
+    >'+\n            '<AttachmentIds>'+\n            '%item-ids%'+\n            '</AttachmentIds>'+\n\
+    \            '</DeleteAttachment>'+\n            '</soap:Body>'+\n           \
+    \ '</soap:Envelope>'\n        },\n    'ews-get-searchable-mailboxes': {\n    \
+    \    fillerName: 'attachments-ids',\n        tableTitle: 'EWS get searchable mail\
+    \ boxes',\n        innerPath: 'Envelope.Body.GetSearchableMailboxesResponse.SearchableMailboxes.SearchableMailbox',\n\
+    \        resStatus: 'Envelope.Body.GetSearchableMailboxesResponse.-ResponseClass',\n\
+    \        translator: [\n            {to: 'MailAddress', from: 'PrimarySmtpAddress'},\n\
+    \            {to: 'ReferenceId', from: 'ReferenceId'},\n            {to: 'IsExternal',\
+    \ from: 'IsExternalMailbox'},\n            {to: 'Display', from: 'DisplayName'},\n\
+    \        ],\n        defaultArgs: {\n            'filter': ' '\n        },\n \
+    \       contextKey: 'EWS.Mailboxes',\n        template:\n            '<?xml version=\"\
+    1.0\" encoding=\"UTF-8\"?>'+\n            '<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"\
+    '+\n                          ' xmlns:t=\"http://schemas.microsoft.com/exchange/services/2006/types\"\
+    '+\n                          ' xmlns:m=\"http://schemas.microsoft.com/exchange/services/2006/messages\"\
+    >'+\n               '<soap:Header>'+\n                  '<t:RequestServerVersion\
+    \ Version=\"Exchange2013\" />'+\n               '</soap:Header>'+\n          \
+    \     '<soap:Body >'+\n                  '<m:GetSearchableMailboxes>'+\n     \
+    \                '<m:SearchFilter>%filter%</m:SearchFilter>'+\n              \
+    \       '<m:ExpandGroupMembership>false</m:ExpandGroupMembership>'+\n        \
+    \          '</m:GetSearchableMailboxes>'+\n               '</soap:Body>'+\n  \
+    \          '</soap:Envelope>'\n        },\n    'ews-search-mailboxes': {\n   \
+    \   arrayArgName: 'mailbox-search-scope',\n      tableTitle: 'EWS search mail\
+    \ boxes result for filter %filter%',\n      template:\n        '<?xml version=\"\
+    1.0\" encoding=\"utf-8\"?>' +\n        '<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\
+    \ ' +\n                       'xmlns:m=\"http://schemas.microsoft.com/exchange/services/2006/messages\"\
+    \ ' +\n                       'xmlns:t=\"http://schemas.microsoft.com/exchange/services/2006/types\"\
+    \ ' +\n                       'xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"\
+    >' +\n            '<soap:Header>' +\n                '<t:RequestServerVersion\
+    \ Version=\"%version%\"/>' +\n            '</soap:Header>' +\n            '<soap:Body>'\
+    \ +\n                '<m:SearchMailboxes>' +\n                    '<m:SearchQueries>'\
+    \ +\n                        '<t:MailboxQuery>' +\n                          \
+    \  '<t:Query>%filter%</t:Query>' +\n                            '<t:MailboxSearchScopes>'\
+    \ +\n                                '%mailbox-search-scope%'+\n             \
+    \               '</t:MailboxSearchScopes>' +\n                        '</t:MailboxQuery>'\
+    \ +\n                    '</m:SearchQueries>' +\n                    '<m:ResultType>PreviewOnly</m:ResultType>'\
+    \ +\n                    '<m:Deduplication>false</m:Deduplication>' +\n      \
+    \              '<m:PageSize>1000</m:PageSize>' +\n                    '<m:PageDirection>Next</m:PageDirection>'\
+    \ +\n                '</m:SearchMailboxes>' +\n            '</soap:Body>' +\n\
+    \        '</soap:Envelope>',\n        innerPath: 'Envelope.Body.SearchMailboxesResponse.ResponseMessages.SearchMailboxesResponseMessage.SearchMailboxesResult.Items.SearchPreviewItem',\n\
+    \        resStatus: 'Envelope.Body.SearchMailboxesResponse.ResponseMessages.SearchMailboxesResponseMessage.-ResponseClass',\n\
+    \        translator: [\n            {to: 'MailAddress', from: 'Mailbox.PrimarySmtpAddress'},\n\
+    \            {to: 'ItemID', from: 'Id.-Id'},\n            {to: 'HasAttachment',\
+    \ from: 'HasAttachment'},\n            {to: 'MailboxID', from: 'Mailbox.MailboxId'},\n\
+    \            {to: 'Read', from: 'Read'},\n            {to: 'ReceivedTime', from:\
+    \ 'ReceivedTime'},\n            {to: 'Sender', from: 'Sender'},\n            {to:\
+    \ 'SentTime', from: 'SentTime'},\n            {to: 'Size', from: 'Size'},\n  \
+    \          {to: 'Subject', from: 'Subject'},\n            {to: 'ToRecipients',\
+    \ from: 'ToRecipients.SmtpAddress'},\n        ],\n        contextKey: 'EWS.Searchs.Search(obj.filter==val.filter)',\n\
+    \        contextArrayName: 'Results',\n        argsToContext: ['filter']\n   \
+    \ },\n    'ews-move-item' : {\n        arrayArgName: 'folder-id',\n        tableTitle:\
+    \ 'Successfully moved item',\n        template:\n            '<?xml version=\"\
+    1.0\" encoding=\"utf-8\"?>'+\n            '<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\
+    ' +\n                           ' xmlns:m=\"http://schemas.microsoft.com/exchange/services/2006/messages\"\
+    ' +\n                           ' xmlns:t=\"http://schemas.microsoft.com/exchange/services/2006/types\"\
+    ' +\n                           ' xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"\
+    >' +\n            '<soap:Header>'+\n                '<t:RequestServerVersion Version=\"\
+    %version%\" />'+\n                '%impersonation%'+\n            '</soap:Header>'+\n\
+    \            '<soap:Body>' +\n                '<m:MoveItem xmlns=\"http://schemas.microsoft.com/exchange/services/2006/messages\"\
+    \ ' +\n                'xmlns:t=\"http://schemas.microsoft.com/exchange/services/2006/types\"\
+    >' +\n                    '<m:ToFolderId>' +\n                        '%folder-id%'\
+    \ +\n                    '</m:ToFolderId>' +\n                    '<m:ItemIds>'\
+    \ +\n                        '<t:ItemId Id=\"%item-id%\" />' +\n             \
+    \       '</m:ItemIds>' +\n                '</m:MoveItem>' +\n            '</soap:Body>'\
+    \ +\n        '</soap:Envelope>',\n        innerPath: 'Envelope.Body.MoveItemResponse.ResponseMessages.MoveItemResponseMessage.Items.Message',\n\
+    \        resStatus: 'Envelope.Body.MoveItemResponse.ResponseMessages.MoveItemResponseMessage.-ResponseClass',\n\
+    \        contextKey: 'EWS.MovedItems',\n        translator: [\n            { to:\
+    \ 'NewItemID', from: 'ItemId.-Id'}\n        ],\n        argsToContext: ['item-id'],\n\
+    \        addUpdatesToContext: function(entry){\n            if (!entry.EntryContext)\
+    \ {\n                return;\n            }\n            var oldID = args['item-id'];\n\
+    \            var newItem = { ID: entry.EntryContext['EWS.MovedItems']['NewItemID']};\n\
+    \            var inContext = function(path) {\n                var val  = dq(invContext,\
+    \ path);\n                return val ? true : false;\n            };\n       \
+    \     var paths = ['EWS.Items(val.ID===\"'+ oldID +'\")', 'EWS.SearchItems(val.ID===\"\
+    ' + oldID +'\")'];\n            paths.forEach(function(path){\n              \
+    \  if(inContext(path)) {\n                    entry.EntryContext[path] = newItem;\n\
+    \                }\n            });\n        }\n    },\n    'folder-id': {\n \
+    \       template: '<t:FolderId Id=\"%id%\"/>'\n    },\n    'folders-ids': {\n\
+    \        template: '<t:FolderId Id=\"%id%\"/>'\n    },\n    'item-ids': {\n  \
+    \      template:\n            '<t:ItemId Id=\"%id%\" />'\n    },\n    'attachments-ids':\
+    \ {\n        template:\n            '<t:AttachmentId Id=\"%id%\" />'\n    },\n\
+    \    'mailbox-search-scope': {\n        template:\n            '<t:MailboxSearchScope>'\
+    \ +\n                '<t:Mailbox>%id%</t:Mailbox>' +\n                '<t:SearchScope>All</t:SearchScope>'\
+    \ +\n                '<t:ExtendedAttributes/>' +\n            '</t:MailboxSearchScope>'\n\
+    \    }\n};\n\nfunction getDefaultTargetMailbox() {\n    if (params.defaultTargetMailbox)\
+    \ {\n        return params.defaultTargetMailbox;\n    }\n    return params.credentials.identifier\
+    \ + '@' + params.domain;\n}\n\nfunction setImpersonation(args) {\n    args['impersonation']\
+    \ = '';\n    if (params.impersonation) {\n        args['impersonation'] = replaceInTemplates('<t:ExchangeImpersonation>'+\n\
+    \                '<t:ConnectingSID>'+\n                '<t:PrimarySmtpAddress>%target-mailbox%</t:PrimarySmtpAddress>'+\n\
+    \                '</t:ConnectingSID>'+\n                '</t:ExchangeImpersonation>',\
+    \ args);\n    }\n}\n\nvar mapObjFunction = function(mapFields) {\n    var transformSingleObj=\
+    \ function(obj) {\n        var res = {};\n        mapFields.forEach(function(f)\
+    \ {\n           res[f.to] = dq(obj, f.from);\n        });\n        return res;\n\
+    \    };\n    return function(obj) {\n        if (obj instanceof Array) {\n   \
+    \         var res = [];\n            for (var j=0; j < obj.length; j++) {\n  \
+    \              res.push(transformSingleObj(obj[j]));\n            }\n        \
+    \    return res;\n        }\n        return transformSingleObj(obj);\n    }\n\
+    }\n\nvar createContext = function(data, extraData) {\n    var createContextSingle\
+    \ = function(obj) {\n        var res = {};\n        var keys = Object.keys(obj);\n\
+    \        keys.forEach(function(k) {\n            var values = k.split('-');\n\
+    \            var current = res;\n            for (var j = 0; j<values.length -\
+    \ 1; j++) {\n                if (!current[values[j]]) {\n                    current[values[j]]\
+    \ = {};\n                }\n                current = current[values[j]];\n  \
+    \          }\n            current[values[j]] = obj[k];\n        });\n\n      \
+    \  var extraKeys = Object.keys(extraData);\n        extraKeys.forEach(function(k)\
+    \ {\n            res[k] = extraData[k];\n        });\n\n        return res;\n\
+    \    };\n    if (data instanceof Array) {\n        var res = [];\n        for\
+    \ (var j=0; j < data.length; j++) {\n            res.push(createContextSingle(data[j]));\n\
+    \        }\n        return res;\n    }\n    return createContextSingle(data);\n\
+    }\n\nvar buildDisplay = function(currentCommand, translated) {\n    var createDisplaySingle\
+    \ = function(obj) {\n        var disp = {};\n        var keys = Object.keys(obj);\n\
+    \        for (var k in keys) {\n            if ((!currentCommand.nonDisplayItems\
+    \ || currentCommand.nonDisplayItems.indexOf(keys[k]) === -1) && obj[keys[k]])\
+    \ {\n                disp[keys[k]] = obj[keys[k]];\n            }\n        }\n\
+    \        return disp;\n    };\n    if (translated instanceof Array) {\n      \
+    \  var res = [];\n        for (var j=0; j < translated.length; j++) {\n      \
+    \      res.push(createDisplaySingle(translated[j]));\n        }\n        return\
+    \ res;\n    }\n    return createDisplaySingle(translated);\n}\n\nvar execute =\
+    \ function(command, args, returnRaw) {\n    var currentCommand = commandsDictionary[command];\n\
+    \    var hrTitle = command;\n    if (currentCommand.tableTitle) {\n        hrTitle\
+    \ = replaceInTemplates(currentCommand.tableTitle, args);\n    }\n    if (currentCommand.defaultArgs)\
+    \ {\n        var keys = Object.keys(currentCommand.defaultArgs);\n        for\
+    \ (var j in keys) {\n            if (!args[keys[j]]) {\n                args[keys[j]]\
+    \ = currentCommand.defaultArgs[keys[j]];\n            }\n        }\n    }\n  \
+    \  var ids = [];\n    if (currentCommand.deleteContextKey && args[currentCommand.arrayArgName])\
+    \ {\n        if (Array.isArray(args[currentCommand.arrayArgName])) {\n       \
+    \     ids = args[currentCommand.arrayArgName];\n        } else {\n           \
+    \ ids = args[currentCommand.arrayArgName].split(',');\n        }\n    }\n    var\
+    \ httpParams = {\n            Method: 'POST',\n            Headers: {\n      \
+    \          'Content-Type': ['text/xml; charset=utf-8']\n            },\n     \
+    \       Username: params.credentials.identifier + (server === office365address\
+    \ ? ('@' + params.domain) : ''),\n            Password: params.credentials.password,\n\
+    \            Domain: params.domain,\n            AuthProtocol: [params.authType],\n\
+    \            Body: buildBody(command, args),\n        };\n    var res = http(server,\
+    \ httpParams, params.insecure, params.proxy);\n    if (res.StatusCode < 200 ||\
+    \ res.StatusCode >= 300) {\n        throw 'Got status code ' + res.StatusCode\
+    \ + ' from EWS with body ' + res.Body + ' with headers ' + JSON.stringify(res.Headers);\n\
+    \    }\n    var bdy = res.Body.replace(/&#x.*?;/g, \"\");\n    var raw = JSON.parse(x2j(bdy));\n\
+    \    if (currentCommand.resStatus) {\n        resStatus = dq(raw, currentCommand.resStatus);\n\
+    \        if (!Array.isArray(resStatus)) {\n            resStatus = [resStatus];\n\
+    \        }\n        if (resStatus[0] !== 'Success') {\n            throw 'Got\
+    \ EWS error ' + resStatus + ' from EWS with body ' + res.Body + ' with headers\
+    \ ' + JSON.stringify(res.Headers);\n        }\n    }\n    if(returnRaw){\n   \
+    \     return raw;\n    }\n    return createEntry(currentCommand, raw, hrTitle,\
+    \ ids);\n}\n\nfunction createEntry(currentCommand, raw, hrTitle, deletedContext){\n\
+    \    var entry = {\n        Type: entryTypes.note,\n        Contents: raw,\n \
+    \       ContentsFormat: formats.json,\n        ReadableContentsFormat: formats.markdown,\n\
+    \    };\n    if (currentCommand.innerPath) {\n        var data = dq(raw, currentCommand.innerPath);\n\
+    \        if (currentCommand.translator) {\n            if (data) {\n         \
+    \       var translated = mapObjFunction(currentCommand.translator)(data);\n  \
+    \              extraContext = {};\n                if (currentCommand.targetToContext)\
+    \ {\n                    extraContext.targetMailbox = args['target-mailbox'];\n\
+    \                }\n                if (currentCommand.contextKey) {\n       \
+    \             entry.EntryContext = {};\n                    var arrContext;\n\
+    \                    if (currentCommand.contextArrayName) {\n                \
+    \        arrContext = {};\n                        arrContext[currentCommand.contextArrayName]\
+    \ = createContext(translated, extraContext);\n                    }\n        \
+    \            entry.EntryContext[currentCommand.contextKey] = arrContext ? arrContext\
+    \ : createContext(translated, extraContext);\n                    if (currentCommand.argsToContext)\
+    \ {\n                        for (var k in currentCommand.argsToContext) {\n \
+    \                           entry.EntryContext[currentCommand.contextKey][currentCommand.argsToContext[k]]\
+    \ = args[currentCommand.argsToContext[k]];\n                        }\n      \
+    \              }\n                } else if (currentCommand.deleteContextKey &&\
+    \ deletedContext && deletedContext.length) {\n                    entry.EntryContext\
+    \ = {};\n                    entry.EntryContext[currentCommand.deleteContextKey]\
+    \ = deletedContext;\n                }\n                var disp = buildDisplay(currentCommand,\
+    \ translated);\n                entry.HumanReadable = tableToMarkdown(\n     \
+    \               hrTitle,\n                    disp\n                );\n     \
+    \       } else {\n                entry.HumanReadable = 'No results';\n      \
+    \      }\n        }\n    }\n    if(currentCommand.addUpdatesToContext) {\n   \
+    \     currentCommand.addUpdatesToContext(entry);\n    }\n    return entry;\n}\n\
+    \nfunction buildBody(command, args) {\n    var currentCommand = commandsDictionary[command];\n\
+    \    if (currentCommand.defaultArgs) {\n        for (var j in currentCommand.defaultArgs)\
+    \ {\n            if (!args[j]) {\n                args[j] = currentCommand.defaultArgs[j];\n\
+    \            }\n        }\n    }\n    if (currentCommand.arrayArgName) {\n   \
+    \     var items = [];\n        if (Array.isArray(args[currentCommand.arrayArgName]))\
+    \ {\n            items = args[currentCommand.arrayArgName];\n        } else {\n\
+    \            items = args[currentCommand.arrayArgName].split(',');\n        }\n\
+    \        var itemsStr = '';\n        for (var i in items) {\n            var itemId\
+    \ = items[i];\n            var template;\n            var distinguished = distinguishedArgs[currentCommand.arrayArgName];\n\
+    \            if(distinguished && distinguished.items.indexOf(itemId) > -1) {\n\
+    \                template = distinguished.template;\n            } else {\n  \
+    \              template = commandsDictionary[currentCommand.fillerName || currentCommand.arrayArgName].template;\n\
+    \            }\n            itemsStr += replaceInTemplates(template, {id: itemId,\
+    \ 'target-mailbox': args['target-mailbox']});\n        }\n        args[currentCommand.arrayArgName]\
+    \ = itemsStr;\n    }\n    return replaceInTemplates(currentCommand.template, args);\n\
+    }\n\nfunction sendRequest(tmpl, reqArgs, resStatusPath) {\n    var readyBody =\
+    \ replaceInTemplates(tmpl, reqArgs);\n    var httpParams = {\n            Method:\
+    \ 'POST',\n            Headers: {\n                'Content-Type': ['text/xml;\
+    \ charset=utf-8']\n            },\n            Username: params.credentials.identifier\
+    \ + (server === office365address ? ('@' + params.domain) : ''),\n            Password:\
+    \ params.credentials.password,\n            Domain: params.domain,\n         \
+    \   AuthProtocol: [params.authType],\n            Body: readyBody\n        };\n\
+    \    var res = http(server, httpParams, params.insecure, params.proxy);\n    if\
+    \ (res.StatusCode < 200 || res.StatusCode >= 300) {\n        throw 'Got status\
+    \ code ' + res.StatusCode + ' from EWS with body ' + res.Body + ' with headers\
+    \ ' + JSON.stringify(res.Headers);\n    }\n    var bdy = res.Body.replace(/&#x.*?;/g,\
+    \ \"\");\n    var raw = JSON.parse(x2j(bdy));\n\n    var resStatus = dq(raw, resStatusPath);\n\
+    \    if (!Array.isArray(resStatus)) {\n        resStatus = [resStatus];\n    }\n\
+    \    if (resStatus[0] !== 'Success') {\n        throw 'Got EWS error ' + resStatus\
+    \ + ' from EWS with body ' + res.Body + ' with headers ' + JSON.stringify(res.Headers);\n\
+    \    }\n\n    return raw;\n}\n\nfunction parseItemAttachment(rawItem, args) {\n\
+    \    var itemPath = 'Envelope.Body.GetAttachmentResponse.ResponseMessages.GetAttachmentResponseMessage.Attachments.ItemAttachment';\n\
+    \    var entry;\n\n    var data = dq(raw, itemPath);\n    if (data) {\n      \
+    \  entry = {\n            Type: entryTypes.note,\n            Contents: raw,\n\
+    \            ContentsFormat: formats.json,\n            ReadableContentsFormat:\
+    \ formats.markdown,\n        };\n        var translator = [\n            {to:\
+    \ 'BodyType', from: 'Message.Body.-BodyType'},\n            {to: 'Body', from:\
+    \ 'Message.Body.#text'},\n            {to: 'Created', from: 'Message.DateTimeCreated'},\n\
+    \            {to: 'Sent', from: 'Message.DateTimeSent'},\n            {to: 'From-Email',\
+    \ from: 'Message.From.Mailbox.EmailAddress'},\n            {to: 'From-Name', from:\
+    \ 'Message.From.Mailbox.Name'},\n            {to: 'From-RoutingType', from: 'Message.From.Mailbox.RoutingType'},\n\
+    \            {to: 'To-Email', from: 'Message.ReceivedBy.Mailbox.EmailAddress'},\n\
+    \            {to: 'To-Name', from: 'Message.ReceivedBy.ToRecipients.Mailbox.Name'},\n\
+    \            {to: 'To-RoutingType', from: 'Message.ToRecipients.Mailbox.RoutingType'},\n\
+    \            {to: 'HasAttachments', from: 'Message.HasAttachments'},\n       \
+    \     {to: 'IsAssociated', from: 'Message.IsAssociated'},\n            {to: 'IsRead',\
+    \ from: 'Message.IsRead'},\n            {to: 'Sensitivity', from: 'Sensitivity'},\n\
+    \            {to: 'Size', from: 'Size'},\n            {to: 'ID', from: 'AttachmentId.-Id'},\n\
+    \            {to: 'Subject', from: 'Message.Subject'},\n            {to: 'Attachment-ID',\
+    \ from: 'Message.Attachments.FileAttachment.AttachmentId.-Id'},\n            {to:\
+    \ 'Attachment-IsContactPhoto', from: 'Message.Attachments.FileAttachment.IsContactPhoto'},\n\
+    \            {to: 'Attachment-IsInline', from: 'Message.Attachments.FileAttachment.IsInline'},\n\
+    \            {to: 'Attachment-LastModifiedTime', from: 'Message.Attachments.FileAttachment.LastModifiedTime'},\n\
+    \            {to: 'Attachment-Name', from: 'Message.Attachments.FileAttachment.Name'},\n\
+    \            {to: 'Attachment-Size', from: 'Message.Attachments.FileAttachment.Size'},\n\
+    \            {to: 'Mail-Attachment-ID', from: 'Message.Attachments.ItemAttachment.AttachmentId.-Id'},\n\
+    \            {to: 'Mail-Attachment-IsContactPhoto', from: 'Message.Attachments.ItemAttachment.IsContactPhoto'},\n\
+    \            {to: 'Mail-Attachment-IsInline', from: 'Message.Attachments.ItemAttachment.IsInline'},\n\
+    \            {to: 'Mail-Attachment-LastModifiedTime', from: 'Message.Attachments.ItemAttachment.LastModifiedTime'},\n\
+    \            {to: 'Mail-Attachment-Name', from: 'Message.Attachments.ItemAttachment.Name'},\n\
+    \            {to: 'Mail-Attachment-Size', from: 'Message.Attachments.ItemAttachment.Size'},\n\
+    \            {to: 'Headers', from: \"Message.InternetMessageHeaders.InternetMessageHeader\"\
+    },\n        ];\n        var translated = mapObjFunction(translator)(data);\n\n\
+    \        var contextKey = 'EWS.Items(val.ID == obj.ID)';\n        entry.EntryContext\
+    \ = {};\n        entry.EntryContext[contextKey] = createContext(translated, {targetMailbox:\
+    \ args['target-mailbox']});\n\n        var disp = buildDisplay({}, translated);\n\
+    \        var hrTitle = replaceInTemplates('EWS get attachment got item for %target-mailbox%,\
+    \ %attachment-id% ', args);\n        entry.HumanReadable = tableToMarkdown(\n\
+    \            hrTitle,\n            disp\n        );\n    }\n    return entry;\n\
+    }\n\nfunction parseFileAttachment(raw, args) {\n    var fileNamePath = 'Envelope.Body.GetAttachmentResponse.ResponseMessages.GetAttachmentResponseMessage.Attachments.FileAttachment.Name';\n\
+    \    var fileContentPath = 'Envelope.Body.GetAttachmentResponse.ResponseMessages.GetAttachmentResponseMessage.Attachments.FileAttachment.Content';\n\
+    \    var fileName = dq(raw, fileNamePath);\n    var entry;\n    if(fileName) {\n\
+    \        var entry = entry = {Type: 3, FileID: saveFile(raw, fileContentPath,\
+    \ true), File: fileName, Contents: fileName};\n    }\n    return entry;\n}\n\n\
+    function getAttachment(attachArgs, isItem) {\n    var attachmentTmpl = '<?xml\
+    \ version=\"1.0\" encoding=\"utf-8\"?>' +\n'<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\
+    \ xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"\
+    \ xmlns:t=\"http://schemas.microsoft.com/exchange/services/2006/types\">' +\n\
+    '  <soap:Header>' +\n'<t:RequestServerVersion Version=\"%version%\" />' +\n'%impersonation%'+\n\
+    ' </soap:Header>' +\n'  <soap:Body>' +\n'    <GetAttachment xmlns=\"http://schemas.microsoft.com/exchange/services/2006/messages\"\
+    \ xmlns:t=\"http://schemas.microsoft.com/exchange/services/2006/types\">' +\n\
+    '      <AttachmentShape/>' +\n'     <AttachmentIds>' +\n'        <t:AttachmentId\
+    \ Id=\"%attachment-id%\"/>' +\n'      </AttachmentIds>' +\n'    </GetAttachment>'\
+    \ +\n'   </soap:Body>' +\n' </soap:Envelope>';\n    raw = sendRequest(attachmentTmpl,\
+    \ attachArgs, 'Envelope.Body.GetAttachmentResponse.ResponseMessages.GetAttachmentResponseMessage.-ResponseClass');\n\
+    \    var entry;\n    if(isItem) {\n        entry = parseItemAttachment(raw, attachArgs);\n\
+    \    } else {\n        entry = parseFileAttachment(raw, attachArgs);\n    }\n\
+    \    if(!entry) {\n        entry = {\n            Type: entryTypes.note,\n   \
+    \         Contents: raw,\n            ContentsFormat: formats.json,\n        \
+    \    ReadableContentsFormat: formats.markdown,\n            HumanReadable: 'No\
+    \ results'\n        };\n    }\n    return entry;\n}\n\nfunction fetchEmailsAsIncidents()\
+    \ {\n    var lastRun = getLastRun();\n    if (!lastRun || !lastRun.lastTime) {\n\
+    \        lastRun = {\n            lastId: '',\n            lastTime: new Date(new\
+    \ Date().getTime() - (10 * 60 * 1000)).getTime()\n        }\n    }\n    if (lastRun.folderId\
+    \ !== params.folder) {\n      //Folder was changed, we need to reset lastRun\n\
+    \      lastRun = {\n          folderId: params.folder,\n          lastId: '',\n\
+    \          lastTime: new Date(new Date().getTime() - (10 * 60 * 1000)).getTime()\n\
+    \      }\n    }\n    var pageSize = params.pageSize ? parseInt(params.pageSize)\
+    \ : defaultPageSize;\n    //Will fetch emails according to time stamp\n      \
+    \  var fetchTmpl = '<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\
+    \ xmlns:m=\"http://schemas.microsoft.com/exchange/services/2006/messages\" xmlns:t=\"\
+    http://schemas.microsoft.com/exchange/services/2006/types\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"\
+    >' +\n'    <soap:Header>' +\n'        <t:RequestServerVersion Version=\"%version%\"\
+    \ />' +\n'%impersonation%'+\n'    </soap:Header>' +\n'    <soap:Body>' +\n'  \
+    \      <m:FindItem Traversal=\"Shallow\">' +\n'            <m:ItemShape>' +\n\
+    '                <t:BaseShape>IdOnly</t:BaseShape>' +\n'            </m:ItemShape>'\
+    \ +\n'            <m:IndexedPageItemView MaxEntriesReturned=\"100\" Offset=\"\
+    0\" BasePoint=\"Beginning\" />' +\n'            <m:Restriction>' +\n'        \
+    \        <t:And>' +\n'                    <t:IsGreaterThan>' +\n'            \
+    \            <t:FieldURI FieldURI=\"item:DateTimeReceived\" />' +\n'         \
+    \               <t:FieldURIOrConstant>' +\n'                            <t:Constant\
+    \ Value=\"%last_time%\"/>' +\n'                        </t:FieldURIOrConstant>'\
+    \ +\n'                    </t:IsGreaterThan>' +\n'                </t:And>' +\n\
+    '            </m:Restriction>' +\n'            <m:SortOrder>' +\n'           \
+    \     <t:FieldOrder Order=\"Ascending\">' +\n'                    <t:FieldURI\
+    \ FieldURI=\"item:DateTimeReceived\" />' +\n'                </t:FieldOrder>'\
+    \ +\n'            </m:SortOrder>' +\n'            <m:ParentFolderIds>' +\n   \
+    \         '%target-folder%'+\n'            </m:ParentFolderIds>' +\n'        </m:FindItem>'\
+    \ +\n'    </soap:Body>' +\n'</soap:Envelope>';\n\nvar defaultTargetTargetFolderTmpl\
+    \ ='<t:DistinguishedFolderId Id=\"inbox\">' +\n                    '<t:Mailbox>'\
+    \ +\n                        '<t:EmailAddress>%target-mailbox%</t:EmailAddress>'\
+    \ +\n                    '</t:Mailbox>' +\n                '</t:DistinguishedFolderId>';\n\
+    \nvar targetFolderTmpl ='<t:FolderId Id=\"%folder%\"></t:FolderId>';\n\n    var\
+    \ fetchArgs = {};\n    setImpersonation(fetchArgs);\n    if (lastRun.lastId) {\n\
+    \        lastItemOp = '                    <t:IsNotEqualTo>' +\n'            \
+    \            <t:FieldURI FieldURI=\"item:ItemId\" />' +\n'                   \
+    \     <t:FieldURIOrConstant>' +\n'                            <t:Constant Value=\"\
+    %last_item%\"/>' +\n'                        </t:FieldURIOrConstant>' +\n'   \
+    \                 </t:IsNotEqualTo>';\n        opArgs = {};\n        opArgs.last_item\
+    \ = lastRun.lastId;\n        readyIdOp = replaceInTemplates(lastItemOp, opArgs);\n\
+    \        fetchArgs.last_item_op = readyIdOp;\n    } else {\n        fetchArgs.last_item_op\
+    \ = \"\";\n    }\n    fetchArgs.last_time = new Date(lastRun.lastTime).toISOString();\n\
+    \    fetchArgs['target-mailbox'] = getDefaultTargetMailbox();\n    if (lastRun.folderId)\
+    \ {\n        fetchArgs['folder'] = lastRun.folderId;\n        fetchArgs['target-folder']\
+    \ = replaceInTemplates(targetFolderTmpl,fetchArgs);\n    } else {\n     fetchArgs['target-folder']\
+    \ = replaceInTemplates(defaultTargetTargetFolderTmpl,fetchArgs);\n    }\n    fetchArgs.version\
+    \ = params.defaultServerVersion\n    raw = sendRequest(fetchTmpl, fetchArgs, 'Envelope.Body.FindItemResponse.ResponseMessages.FindItemResponseMessage.-ResponseClass');\n\
+    \n    //Now iterate on email ids, and do get items one by one\n    var itemIdPath\
+    \ = \"Envelope.Body.FindItemResponse.ResponseMessages.FindItemResponseMessage.RootFolder.Items.Message.ItemId.-Id\"\
+    ;\n    var itemIds = dq(raw, itemIdPath);\n    if (itemIds && !Array.isArray(itemIds))\
+    \ {\n        itemIds = [itemIds];\n    }\n    incidents = [];\n    if (itemIds)\
+    \ {\n        itemArgs = {};\n        itemArgs['item-ids'] = '';\n        for (var\
+    \ i = 0 ; i < itemIds.length; i++) {\n            itemArgs['item-ids'] += '<t:ItemId\
+    \ Id=\"' + itemIds[i] + '\" />'\n        }\n        itemArgs['target-mailbox']\
+    \ = getDefaultTargetMailbox();\n        itemArgs.version = params.defaultServerVersion;\n\
+    \        itemArgs['include-mime-content'] = \"false\";\n        setImpersonation(itemArgs);\n\
+    \        rawItem = sendRequest(commandsDictionary['ews-get-items'].template, itemArgs,\
+    \ commandsDictionary['ews-get-items'].resStatus);\n        actualMessages = rawItem.Envelope.Body.GetItemResponse.ResponseMessages.GetItemResponseMessage;\n\
+    \        if (actualMessages && !Array.isArray(actualMessages)) {\n           \
+    \ actualMessages = [actualMessages];\n        }\n        if (actualMessages) {\n\
+    \            //Now create an incident from each item\n            for (var i =\
+    \ 0 ; i < actualMessages.length; i++) {\n                // if fetched incident\
+    \ is the same as the one in lastRun - ignore it\n                if (lastRun.lastId\
+    \ == actualMessages[i].Items.Message.ItemId[\"-Id\"]) {\n                  continue;\n\
+    \                }\n\n                message = actualMessages[i];\n         \
+    \       if (message['-ResponseClass'] === 'Success') {\n                    //There\
+    \ is a reall item here, lets start to create the incident\n                  \
+    \  incident = {};\n                    incident.details = message.Items.Message.Body['#text'];\n\
+    \                    incident.name = message.Items.Message.Subject;\n        \
+    \            incident.occurred = new Date(Date.parse(message.Items.Message.DateTimeReceived));\n\
+    \                    if (lastRun.lastTime < incident.occurred.getTime()) {\n \
+    \                       lastRun.lastTime = incident.occurred.getTime();\n    \
+    \                    lastRun.lastId = message.Items.Message.ItemId[\"-Id\"];\n\
+    \                        setLastRun(lastRun);\n                    }\n       \
+    \             labels = [];\n                    //handle  recipients\n       \
+    \             recipients = message.Items.Message.ToRecipients;\n             \
+    \       recipients = recipients ? recipients.Mailbox : null;\n               \
+    \     if (recipients && !Array.isArray(recipients)) {\n                      \
+    \  recipients = [recipients];\n                    }\n                    if (recipients)\
+    \ {\n                        for (j = 0 ; j < recipients.length; j++) {\n    \
+    \                        labels.push({type: 'Email', value: recipients[j].EmailAddress})\n\
+    \                        }\n                    }\n                    //handle\
+    \ cc\n                    recipients = message.Items.Message.CcRecipients;\n \
+    \                   recipients = recipients ? recipients.Mailbox : null;\n   \
+    \                 if (recipients && !Array.isArray(recipients)) {\n          \
+    \              recipients = [recipients];\n                    }\n           \
+    \         if (recipients) {\n                        for (j = 0 ; j < recipients.length;\
+    \ j++) {\n                            labels.push({type: 'Email/cc', value: recipients[j].EmailAddress})\n\
+    \                        }\n                    }\n                    //handle\
+    \ Email/from\n                    sender = message.Items.Message.From.Mailbox;\n\
+    \                    if (sender) {\n                        labels.push({type:\
+    \ 'Email/from', value: sender.EmailAddress})\n                    }\n        \
+    \            //Email format\n                    format = message.Items.Message.Body;\n\
+    \                    bodyFormatLabel = 'Email/text';\n                    if (format)\
+    \ {\n                        labels.push({type: 'Email/format', value: format['-BodyType']})\n\
+    \                        if (format['-BodyType'] === 'HTML') {\n             \
+    \               bodyFormatLabel = 'Email/html';\n                        }\n \
+    \                   }\n                    labels.push({type: bodyFormatLabel,\
+    \ value: format['#text'] });\n                    labels.push({type: 'Email/subject',\
+    \ value: incident.name });\n\n                    //Handle attachment - file name\n\
+    \                    attachments = message.Items.Message.Attachments;\n      \
+    \              attachments = attachments ? attachments.FileAttachment : null;\n\
+    \                    if (attachments && !Array.isArray(attachments)) {\n     \
+    \                   attachments = [attachments];\n                    }\n    \
+    \                if (attachments) {\n                        for (j = 0; j < attachments.length;\
+    \ j++ ) {\n                            labels.push({type: 'Email/attachments',\
+    \ value: attachments[j].Name});\n                            labels.push({type:\
+    \ 'Email/attachmentId', value: attachments[j].AttachmentId['-Id']});\n       \
+    \                 }\n                    }\n\n                    //Handle item\
+    \ attachment\n                    attachments = message.Items.Message.Attachments;\n\
+    \                    attachments = attachments ? attachments.ItemAttachment :\
+    \ null;\n                    if (attachments && !Array.isArray(attachments)) {\n\
+    \                        attachments = [attachments];\n                    }\n\
+    \                    if (attachments) {\n                        for (j = 0; j\
+    \ < attachments.length; j++ ) {\n                            labels.push({type:\
+    \ 'Email/attachmentItems', value: attachments[j].Name});\n                   \
+    \         labels.push({type: 'Email/attachmentItemsId', value: attachments[j].AttachmentId['-Id']});\n\
+    \                        }\n                    }\n\n                    //Handle\
+    \ headers\n                    headers = message.Items.Message.InternetMessageHeaders.InternetMessageHeader;\n\
+    \                    if (headers && !Array.isArray(headers)) {\n             \
+    \           headers = [headers];\n                    }\n                    if\
+    \ (headers) {\n                        for (j = 0; j < headers.length; j++ ) {\n\
+    \                            labels.push({type: 'Email/Header/'+headers[j]['-HeaderName'],\
+    \ value: headers[j]['#text']});\n                        }\n                 \
+    \   }\n\n                    //Add item ID\n                    labels.push({type:\
+    \ 'Email/ID', value: message.Items.Message.ItemId['-Id']})\n\n               \
+    \     incident.labels = labels;\n                    incident.rawJSON = JSON.stringify(message.Items.Message);\n\
+    \                    incidents.push(incident);\n                }\n          \
+    \  }\n        }\n    }\n    return JSON.stringify(incidents);\n}\n\nfunction searchMailboxes(args){\n\
+    \    if (!args['mailbox-search-scope']) {\n        var mailboxes = execute('ews-get-searchable-mailboxes',\
+    \ {}, true);\n        args['mailbox-search-scope'] = dq(mailboxes, 'Envelope.Body.GetSearchableMailboxesResponse.SearchableMailboxes.SearchableMailbox.ReferenceId');\n\
+    \    } else {\n        if (!Array.isArray(args['mailbox-search-scope'])) {\n \
+    \           args['mailbox-search-scope'] = args['mailbox-search-scope'].split(';');\n\
+    \        }\n    }\n    args['mailbox-search-scope'] = args['mailbox-search-scope'].map(function(a)\
+    \ { return a.replace(/(&)/g, '&amp;').trim(); });\n    var slicedMailboxes = [];\n\
+    \n    // breaks the list of mailboxes into groups of 15,000 due to EWS limitation\
+    \ of max number of mailboxes per search\n    for (var i=0; i< args['mailbox-search-scope'].length\
+    \ / 15000; i++){\n        slicedMailboxes.push(args['mailbox-search-scope'].slice(i*15000,\
+    \ (i+1)*15000));\n    }\n\n    var resArray = [];\n    if(slicedMailboxes.length\
+    \ === 0){\n        return \"No mailboxes to search\";\n    }\n\n    currentCommand\
+    \ = commandsDictionary['ews-search-mailboxes'];\n    var rawData = [];\n    var\
+    \ lastRes;\n    for (var j=0; j< slicedMailboxes.length; j++){\n        args['mailbox-search-scope']\
+    \ = slicedMailboxes[j];\n        res =  execute(command, args, true);\n      \
+    \  data = dq(res, currentCommand.innerPath);\n        if (data){\n           \
+    \ lastRes = res;\n            rawData = rawData.concat(data);\n        }\n   \
+    \ }\n    if(!lastRes){\n        return \"No results\";\n    }\n    try {\n   \
+    \     lastRes.Envelope.Body.SearchMailboxesResponse.ResponseMessages.SearchMailboxesResponseMessage.SearchMailboxesResult.Items.SearchPreviewItem\
+    \ = rawData;\n    } catch (err) {\n        throw 'Error - response from EWS could\
+    \ not be parsed.\\nResponse from EWS is:\\n' + JSON.stringify(lastRes);\n    }\n\
+    \    return createEntry(currentCommand, lastRes, replaceInTemplates(currentCommand.tableTitle,\
+    \ args));\n}\n\n// test credentials with GetInboxRules operation\n// operation\
+    \ doc can be found at https://msdn.microsoft.com/en-us/library/office/ff709501(v=exchg.150).aspx\n\
+    function testModule() {\n    var xml =\n        '<?xml version=\"1.0\" encoding=\"\
+    utf-8\"?>' +\n        '<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\
+    ' +\n                ' xmlns:m=\"http://schemas.microsoft.com/exchange/services/2006/messages\"\
+    ' +\n                ' xmlns:t=\"http://schemas.microsoft.com/exchange/services/2006/types\"\
+    ' +\n                ' xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"\
+    >' +\n          '<soap:Header>' +\n            '<t:RequestServerVersion Version=\"\
+    %version%\" />' +\n          '</soap:Header>' +\n          '<soap:Body>' +\n \
+    \           '<m:GetInboxRules />' +\n          '</soap:Body>' +\n        '</soap:Envelope>';\n\
+    \n    var httpParams = {\n            Method: 'POST',\n            Headers: {\n\
+    \                'Content-Type': ['text/xml; charset=utf-8']\n            },\n\
+    \            Username: params.credentials.identifier + (server === office365address\
+    \ ? ('@' + params.domain) : ''),\n            Password: params.credentials.password,\n\
+    \            AuthProtocol: [params.authType],\n            Body: replaceInTemplates(xml,\
+    \ args)\n        };\n    var res = http(server, httpParams, params.insecure, params.proxy);\n\
+    \    if (res.StatusCode !== 200) {\n        throw JSON.stringify(res);\n    }\n\
+    \    return 'ok';\n}\n\nif (!args.version) {\n    args.version = params.defaultServerVersion;\n\
+    }\nif (!args['target-mailbox']) {\n    args['target-mailbox'] = getDefaultTargetMailbox();\n\
+    }\nargs['target-mailbox'] = args['target-mailbox'].replace(/(&)/g, '&amp;');\n\
+    \nsetImpersonation(args);\n\nswitch (command) {\n    case 'test-module':\n   \
+    \     return testModule();\n    case 'fetch-incidents':\n        return fetchEmailsAsIncidents();\n\
+    \    case 'ews-get-attachment': {\n        return getAttachment(args, false);\n\
+    \    }\n    case 'ews-get-attachment-item': {\n        return getAttachment(args,\
+    \ true);\n    }\n    case 'ews-search-mailboxes':\n        return searchMailboxes(args);\n\
+    \    default:\n        return execute(command, args);\n}\n"
+  type: javascript
 tests:
-  - No test
+- No test
+toversion: 4.1.9

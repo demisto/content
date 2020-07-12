@@ -1,108 +1,76 @@
 id: IPInfoTest
-version: -1
+inputs: []
 name: IPInfoTest
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 3acaed5b-5909-4b07-8368-fdd136db2334
+      iscommand: false
+      name: ''
+      version: -1
     taskid: 3acaed5b-5909-4b07-8368-fdd136db2334
     type: start
-    task:
-      id: 3acaed5b-5909-4b07-8368-fdd136db2334
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 50
-        }
-      }
+      - '2'
     note: false
-  "1":
-    id: "1"
-    taskid: b2064027-0ab4-447b-85e4-9762bbabfa79
-    type: regular
-    task:
-      id: b2064027-0ab4-447b-85e4-9762bbabfa79
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       key: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 195
-        }
-      }
-    note: false
-  "2":
-    id: "2"
-    taskid: f4e163e3-9257-4f98-88da-b780f5bdd2f2
-    type: regular
     task:
-      id: f4e163e3-9257-4f98-88da-b780f5bdd2f2
-      version: -1
-      name: ip
-      description: Check IP reputation (when information is available, returns a JSON
-        with details).  Uses all configured Threat Intelligence feeds
-      script: ipinfo|||ip
+      brand: ''
+      description: Delete field from context
+      id: b2064027-0ab4-447b-85e4-9762bbabfa79
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: ipinfo
+      version: -1
+    taskid: b2064027-0ab4-447b-85e4-9762bbabfa79
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 195\n  }\n}"
+  '2':
+    id: '2'
     nexttasks:
       '#none#':
-      - "3"
-      - "4"
-      - "5"
+      - '3'
+      - '4'
+      - '5'
+    note: false
     scriptarguments:
       ip:
         simple: 1.1.1.1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 370
-        }
-      }
-    note: false
-  "3":
-    id: "3"
-    taskid: 86196c9e-026d-45f1-89f1-57276be540c1
-    type: regular
     task:
-      id: 86196c9e-026d-45f1-89f1-57276be540c1
-      version: -1
-      name: VerifyContext Geo
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
+      brand: ipinfo
+      description: Check IP reputation (when information is available, returns a JSON
+        with details).  Uses all configured Threat Intelligence feeds
+      id: f4e163e3-9257-4f98-88da-b780f5bdd2f2
+      iscommand: true
+      name: ip
+      script: ipinfo|||ip
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: f4e163e3-9257-4f98-88da-b780f5bdd2f2
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 370\n  }\n}"
+  '3':
+    id: '3'
+    note: false
     scriptarguments:
       expectedValue: {}
       fields:
@@ -110,32 +78,31 @@ tasks:
       path:
         simple: IP.Geo
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-  "4":
-    id: "4"
-    taskid: cc1e7e4e-4a78-4c01-8786-d9c6f032e8b9
-    type: regular
     task:
-      id: cc1e7e4e-4a78-4c01-8786-d9c6f032e8b9
-      version: -1
-      name: VerifyContext Address
-      description: |-
-        Verifies path in context:
+      brand: ''
+      description: 'Verifies path in context:
+
         - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
+
+        - If matching object is an array: verify fields exists in each of the objects
+        in the array
+
         - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+
+        - if ''expectedValue'' is given: ensure that the given value is equal to the
+        context path'
+      id: 86196c9e-026d-45f1-89f1-57276be540c1
+      iscommand: false
+      name: VerifyContext Geo
       scriptName: VerifyContext
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 86196c9e-026d-45f1-89f1-57276be540c1
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '4':
+    id: '4'
+    note: false
     scriptarguments:
       expectedValue: {}
       fields:
@@ -143,26 +110,31 @@ tasks:
       path:
         simple: IP
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 545
-        }
-      }
-    note: false
-  "5":
-    id: "5"
-    taskid: b7058c76-3475-4c8e-800d-626e1270e9c9
-    type: regular
     task:
-      id: b7058c76-3475-4c8e-800d-626e1270e9c9
-      version: -1
-      name: Verify DBotScore
+      brand: ''
+      description: 'Verifies path in context:
+
+        - Verifies path existence
+
+        - If matching object is an array: verify fields exists in each of the objects
+        in the array
+
+        - If matching object is not an array: verify fields exists in matching object
+
+        - if ''expectedValue'' is given: ensure that the given value is equal to the
+        context path'
+      id: cc1e7e4e-4a78-4c01-8786-d9c6f032e8b9
+      iscommand: false
+      name: VerifyContext Address
       scriptName: VerifyContext
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: cc1e7e4e-4a78-4c01-8786-d9c6f032e8b9
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 545\n  }\n}"
+  '5':
+    id: '5'
+    note: false
     scriptarguments:
       expectedValue:
         simple: '"0"'
@@ -170,25 +142,19 @@ tasks:
       path:
         simple: DBotScore(val.Vendor=='ipinfo').Score=>val.length&&val.length>0?val[0]+'':val+''
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 545
-        }
-      }
-    note: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 590,
-        "width": 1240,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    task:
+      brand: ''
+      id: b7058c76-3475-4c8e-800d-626e1270e9c9
+      iscommand: false
+      name: Verify DBotScore
+      scriptName: VerifyContext
+      type: regular
+      version: -1
+    taskid: b7058c76-3475-4c8e-800d-626e1270e9c9
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 545\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 590,\n      \"width\": 1240,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

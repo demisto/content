@@ -1,34 +1,27 @@
+args:
+- description: error to raise
+  name: error
+  required: true
+- description: Expected value
+  name: expected
+- description: Actual value
+  name: actual
+- description: Details
+  name: details
+comment: raise error
 commonfields:
   id: RaiseError
   version: -1
+enabled: true
 name: RaiseError
-script: |-
-  contents = demisto.args()["error"]
-
-  for arg_name in ["expected", "actual", "details"]:
-      arg_val = demisto.args().get(arg_name)
-      if (arg_val):
-          contents = "%s\n%s - %s" % (contents, arg_name.title(), arg_val, )
-
-  demisto.results({
-      "Type" : entryTypes["error"],
-      "ContentsFormat" : formats["text"],
-      "Contents" : contents
-  })
-type: python
+runonce: false
+script: "contents = demisto.args()[\"error\"]\n\nfor arg_name in [\"expected\", \"\
+  actual\", \"details\"]:\n    arg_val = demisto.args().get(arg_name)\n    if (arg_val):\n\
+  \        contents = \"%s\\n%s - %s\" % (contents, arg_name.title(), arg_val, )\n\
+  \ndemisto.results({\n    \"Type\" : entryTypes[\"error\"],\n    \"ContentsFormat\"\
+  \ : formats[\"text\"],\n    \"Contents\" : contents\n})"
+scripttarget: 0
 subtype: python2
 tags: []
-comment: raise error
-enabled: true
-args:
-- name: error
-  required: true
-  description: error to raise
-- name: expected
-  description: Expected value
-- name: actual
-  description: Actual value
-- name: details
-  description: Details
-scripttarget: 0
-runonce: false
+toversion: 4.1.9
+type: python

@@ -1,95 +1,71 @@
-id: search_endpoints_by_hash_-_crowdstrike_-_test
-version: -1
-name: Search Endpoints By Hash - CrowdStrike - Test
-fromversion: 3.5.0
 description: A test playbook for CrowdStrike Rapid IOC Hunting
-starttaskid: "0"
+fromversion: 3.5.0
+id: search_endpoints_by_hash_-_crowdstrike_-_test
+inputs: []
+name: Search Endpoints By Hash - CrowdStrike - Test
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
+    nexttasks:
+      '#none#':
+      - '4'
+    separatecontext: false
+    task:
+      brand: ''
+      id: ad53972a-4d9e-43ff-8d5e-d1603c3ef891
+      iscommand: false
+      name: ''
+      version: -1
     taskid: ad53972a-4d9e-43ff-8d5e-d1603c3ef891
     type: start
-    task:
-      id: ad53972a-4d9e-43ff-8d5e-d1603c3ef891
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '3':
+    id: '3'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-  "3":
-    id: "3"
+    task:
+      brand: ''
+      description: ''
+      id: ade05085-d22e-470a-8a44-b2b2707c48d3
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
     taskid: ade05085-d22e-470a-8a44-b2b2707c48d3
     type: title
-    task:
-      id: ade05085-d22e-470a-8a44-b2b2707c48d3
-      version: -1
-      name: Done
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-  "4":
-    id: "4"
-    taskid: d20d4e24-01d3-4528-8442-789b96db9711
-    type: regular
-    task:
-      id: d20d4e24-01d3-4528-8442-789b96db9711
-      version: -1
-      name: Clear Context
-      description: Clear all context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '4':
+    id: '4'
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       key: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-  "5":
-    id: "5"
-    taskid: e4502e7d-24b6-4e69-80fb-617590474104
-    type: playbook
     task:
-      id: e4502e7d-24b6-4e69-80fb-617590474104
-      version: -1
-      name: Search Endpoints By Hash - CrowdStrike
-      playbookId: search_endpoints_by_hash_-_crowdstrike
-      playbookName: Search Endpoints By Hash - CrowdStrike
-      type: playbook
+      brand: ''
+      description: Clear all context
+      id: d20d4e24-01d3-4528-8442-789b96db9711
       iscommand: false
-      brand: ""
+      name: Clear Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: d20d4e24-01d3-4528-8442-789b96db9711
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '5':
+    id: '5'
+    loop:
+      exitCondition: ''
+      iscommand: false
+      wait: 1
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       MD5Hash:
         simple: 36bd4be7042f6de7e332c05cef287d05
@@ -98,28 +74,20 @@ tasks:
       SHA256Hash:
         simple: 56cdfe418592b3fd68cea60da9689fb51a9bd90409b747d02fa08ed90db81e37
     separatecontext: true
-    loop:
+    task:
+      brand: ''
+      id: e4502e7d-24b6-4e69-80fb-617590474104
       iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 560,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+      name: Search Endpoints By Hash - CrowdStrike
+      playbookId: search_endpoints_by_hash_-_crowdstrike
+      playbookName: Search Endpoints By Hash - CrowdStrike
+      type: playbook
+      version: -1
+    taskid: e4502e7d-24b6-4e69-80fb-617590474104
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 560,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

@@ -1,369 +1,118 @@
 id: ThreatExchange-test
-version: -1
+inputs: []
 name: ThreatExchange-test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: b579332d-e6ea-4bfe-879b-3fb0c14f9602
-    type: start
-    task:
-      id: b579332d-e6ea-4bfe-879b-3fb0c14f9602
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "1":
-    id: "1"
-    taskid: 46e3552d-a8d4-4198-8256-51abe41358c2
-    type: regular
-    task:
-      id: 46e3552d-a8d4-4198-8256-51abe41358c2
-      version: -1
-      name: ExtractIP
-      description: Extract IPs from the given text and place them both as output and
-        in the context of a playbook.
-      script: ExtractIP
-      type: regular
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - '1'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: b579332d-e6ea-4bfe-879b-3fb0c14f9602
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: b579332d-e6ea-4bfe-879b-3fb0c14f9602
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    quietmode: 0
     scriptarguments:
       text:
         simple: dsdsdsd 84.238.65.92  dffdfdfdf 8.8.8.8
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "2":
-    id: "2"
-    taskid: 9c5d3c2a-1359-48ca-8df2-cc0cf03faf8c
-    type: regular
     task:
-      id: 9c5d3c2a-1359-48ca-8df2-cc0cf03faf8c
-      version: -1
-      name: ip
-      description: Check IP Reputation
-      script: ThreatExchange|||ip
+      brand: ''
+      description: Extract IPs from the given text and place them both as output and
+        in the context of a playbook.
+      id: 46e3552d-a8d4-4198-8256-51abe41358c2
+      iscommand: false
+      name: ExtractIP
+      script: ExtractIP
       type: regular
-      iscommand: true
-      brand: ThreatExchange
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      headers: {}
-      ip:
-        simple: ${IP.Address}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "3":
-    id: "3"
-    taskid: b7757129-78db-47ed-826b-2f68599500a2
-    type: condition
-    task:
-      id: b7757129-78db-47ed-826b-2f68599500a2
       version: -1
-      name: IsMaliciousIndicatorFound
-      description: Checks if the investigation found any Malicious File/URL/IP, if
-        so return yes, otherwise no.
-      script: IsMaliciousIndicatorFound
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "no":
-      - "5"
-      "yes":
-      - "4"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 545
-        }
-      }
-    note: false
+    taskid: 46e3552d-a8d4-4198-8256-51abe41358c2
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "4":
-    id: "4"
-    taskid: d1c6da34-101f-4eed-8e3f-a9a9541d1169
     type: regular
-    task:
-      id: d1c6da34-101f-4eed-8e3f-a9a9541d1169
-      version: -1
-      name: extractHash
-      script: ExtractHash
-      type: regular
-      iscommand: false
-      brand: ""
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 195\n  }\n}"
+  '10':
+    id: '10'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "9"
-    scriptarguments:
-      text:
-        simple: ssdsd cb57e263ab51f8e9b40d6f292bb17512cec0aa701bde14df33dfc06c815be54c
-          ddd
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 720
-        }
-      }
+      - '18'
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
-  "5":
-    id: "5"
-    taskid: 5d867793-064f-4e59-8b8c-767e2e05f04a
-    type: title
-    task:
-      id: 5d867793-064f-4e59-8b8c-767e2e05f04a
-      version: -1
-      name: wrong!!!
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 735
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "6":
-    id: "6"
-    taskid: 6078dcc1-be88-480a-8e45-115870ce7c27
-    type: condition
-    task:
-      id: 6078dcc1-be88-480a-8e45-115870ce7c27
-      version: -1
-      name: is file malicious
-      script: Exists
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "no":
-      - "8"
-      "yes":
-      - "11"
-    scriptarguments:
-      value:
-        simple: File(val.Malicious)
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "8":
-    id: "8"
-    taskid: c669f900-da06-499e-8fe6-a9cb218df2e2
-    type: title
-    task:
-      id: c669f900-da06-499e-8fe6-a9cb218df2e2
-      version: -1
-      name: Wrong2!!!
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1260
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "9":
-    id: "9"
-    taskid: aeadde86-a40b-451f-823d-8d5fdfbccca1
-    type: regular
-    task:
-      id: aeadde86-a40b-451f-823d-8d5fdfbccca1
-      version: -1
-      name: file
-      description: Check file reputation of the given hash
-      script: ThreatExchange|||file
-      type: regular
-      iscommand: true
-      brand: ThreatExchange
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      file:
-        simple: ${File.SHA256}
-      headers: {}
-      limit: {}
-      since: {}
-      until: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "10":
-    id: "10"
-    taskid: 55eeeba1-349b-420b-895c-07811637f2cd
-    type: regular
-    task:
-      id: 55eeeba1-349b-420b-895c-07811637f2cd
-      version: -1
-      name: Success
-      script: Print
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
     scriptarguments:
       extend-context:
         simple: result=
       value:
         simple: Success
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "11":
-    id: "11"
-    taskid: db54a9bc-2217-429e-861b-0fd06232eba7
-    type: regular
     task:
-      id: db54a9bc-2217-429e-861b-0fd06232eba7
-      version: -1
-      name: ExtractURL
-      description: Extract URLs from the given text and place them both as output
-        and in the context of a playbook. If given an object, will convert to JSON.
-      script: ExtractURL
-      type: regular
+      brand: ''
+      id: 55eeeba1-349b-420b-895c-07811637f2cd
       iscommand: false
-      brand: ""
+      name: Success
+      script: Print
+      type: regular
+      version: -1
+    taskid: 55eeeba1-349b-420b-895c-07811637f2cd
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 1770\n  }\n}"
+  '11':
+    id: '11'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "12"
+      - '12'
+    note: false
+    quietmode: 0
     scriptarguments:
       text:
         simple: xxx---www.demisto.com---ttt
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "12":
-    id: "12"
-    taskid: 2a17d12a-657f-4aff-86fd-699087860928
-    type: regular
     task:
-      id: 2a17d12a-657f-4aff-86fd-699087860928
-      version: -1
-      name: url
-      description: Check URL Reputation
-      script: ThreatExchange|||url
+      brand: ''
+      description: Extract URLs from the given text and place them both as output
+        and in the context of a playbook. If given an object, will convert to JSON.
+      id: db54a9bc-2217-429e-861b-0fd06232eba7
+      iscommand: false
+      name: ExtractURL
+      script: ExtractURL
       type: regular
-      iscommand: true
-      brand: ThreatExchange
+      version: -1
+    taskid: db54a9bc-2217-429e-861b-0fd06232eba7
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1245\n  }\n}"
+  '12':
+    id: '12'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "13"
+      - '13'
+    note: false
+    quietmode: 0
     scriptarguments:
       headers: {}
       limit: {}
@@ -372,90 +121,102 @@ tasks:
       url:
         simple: ${URL}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "13":
-    id: "13"
-    taskid: f5f8ff7b-36dd-4a92-8c75-4c06bbf6d485
-    type: condition
     task:
-      id: f5f8ff7b-36dd-4a92-8c75-4c06bbf6d485
+      brand: ThreatExchange
+      description: Check URL Reputation
+      id: 2a17d12a-657f-4aff-86fd-699087860928
+      iscommand: true
+      name: url
+      script: ThreatExchange|||url
+      type: regular
       version: -1
-      name: is url malicious
-      script: Exists
-      type: condition
-      iscommand: false
-      brand: ""
+    taskid: 2a17d12a-657f-4aff-86fd-699087860928
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1420\n  }\n}"
+  '13':
+    id: '13'
+    ignoreworker: false
     nexttasks:
-      "no":
-      - "10"
-      "yes":
-      - "14"
+      'no':
+      - '10'
+      'yes':
+      - '14'
+    note: false
+    quietmode: 0
     scriptarguments:
       value:
         simple: ${URL(val.Malicious)}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "14":
-    id: "14"
-    taskid: 7daffaba-ea39-4fd3-864c-6f53bff958b2
-    type: title
     task:
-      id: 7daffaba-ea39-4fd3-864c-6f53bff958b2
-      version: -1
-      name: Wrong!! found malicious URL , but given url is clean
-      type: title
+      brand: ''
+      id: f5f8ff7b-36dd-4a92-8c75-4c06bbf6d485
       iscommand: false
-      brand: ""
+      name: is url malicious
+      script: Exists
+      type: condition
+      version: -1
+    taskid: f5f8ff7b-36dd-4a92-8c75-4c06bbf6d485
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1595\n  }\n}"
+  '14':
+    id: '14'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "17"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1785
-        }
-      }
+      - '17'
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
-  "15":
-    id: "15"
-    taskid: eaa12430-462d-4f3d-8469-1726a0c67db5
-    type: regular
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: eaa12430-462d-4f3d-8469-1726a0c67db5
+      brand: ''
+      id: 7daffaba-ea39-4fd3-864c-6f53bff958b2
+      iscommand: false
+      name: Wrong!! found malicious URL , but given url is clean
+      type: title
       version: -1
+    taskid: 7daffaba-ea39-4fd3-864c-6f53bff958b2
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1785\n  }\n}"
+  '15':
+    id: '15'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      field1:
+        simple: NonExistent
+      field2: {}
+      field3: {}
+      field4: {}
+      value1: {}
+      value2: {}
+      value3: {}
+      value4: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: eaa12430-462d-4f3d-8469-1726a0c67db5
+      iscommand: false
       name: Fail-Flow
       scriptName: VerifyContextFields
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: eaa12430-462d-4f3d-8469-1726a0c67db5
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1408\n  }\n}"
+  '16':
+    id: '16'
+    ignoreworker: false
+    note: false
+    quietmode: 0
     scriptarguments:
       field1:
         simple: NonExistent
@@ -467,30 +228,24 @@ tasks:
       value3: {}
       value4: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1408
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "16":
-    id: "16"
-    taskid: 2a054455-4756-4b53-84a0-0b67d6984cdb
-    type: regular
     task:
+      brand: ''
       id: 2a054455-4756-4b53-84a0-0b67d6984cdb
-      version: -1
+      iscommand: false
       name: Fail-Flow
       script: VerifyContextFields
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 2a054455-4756-4b53-84a0-0b67d6984cdb
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 895\n  }\n}"
+  '17':
+    id: '17'
+    ignoreworker: false
+    note: false
+    quietmode: 0
     scriptarguments:
       field1:
         simple: NonExistent
@@ -502,70 +257,27 @@ tasks:
       value3: {}
       value4: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "17":
-    id: "17"
-    taskid: 63483cbd-666f-4ce6-8816-450fdcd33a98
-    type: regular
     task:
+      brand: ''
       id: 63483cbd-666f-4ce6-8816-450fdcd33a98
-      version: -1
+      iscommand: false
       name: Fail-Flow
       script: VerifyContextFields
       type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      field1:
-        simple: NonExistent
-      field2: {}
-      field3: {}
-      field4: {}
-      value1: {}
-      value2: {}
-      value3: {}
-      value4: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1924
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "18":
-    id: "18"
-    taskid: 8739e206-6a07-4647-83c2-f8c3c796ebbe
-    type: regular
-    task:
-      id: 8739e206-6a07-4647-83c2-f8c3c796ebbe
       version: -1
-      name: ExtractDomain
-      description: Extract Domains from the given text and place them both as output
-        and in the context of a playbook. If given an object, will convert to JSON.
-      script: ExtractDomain
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: 63483cbd-666f-4ce6-8816-450fdcd33a98
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1924\n  }\n}"
+  '18':
+    id: '18'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
+    note: false
+    quietmode: 0
     scriptarguments:
       calcReputation: {}
       markAsIndicator: {}
@@ -573,33 +285,29 @@ tasks:
         simple: http://www.nba.com   http://www.dorsha.com http://www.biotecku.xyz
       urlRegex: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1951
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "19":
-    id: "19"
-    taskid: f64af01f-72c6-443d-8d7a-a100de51b9b4
-    type: regular
     task:
-      id: f64af01f-72c6-443d-8d7a-a100de51b9b4
-      version: -1
-      name: 'Verify context '
-      script: VerifyContextFields
-      type: regular
+      brand: ''
+      description: Extract Domains from the given text and place them both as output
+        and in the context of a playbook. If given an object, will convert to JSON.
+      id: 8739e206-6a07-4647-83c2-f8c3c796ebbe
       iscommand: false
-      brand: ""
+      name: ExtractDomain
+      script: ExtractDomain
+      type: regular
+      version: -1
+    taskid: 8739e206-6a07-4647-83c2-f8c3c796ebbe
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 1951\n  }\n}"
+  '19':
+    id: '19'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "20"
+      - '20'
+    note: false
+    quietmode: 0
     scriptarguments:
       expectedValue: {}
       field1:
@@ -618,34 +326,54 @@ tasks:
       value3: {}
       value4: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 2153
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "20":
-    id: "20"
-    taskid: 5da841f8-0c32-4b0a-8179-e88fa0c36f9a
-    type: regular
     task:
-      id: 5da841f8-0c32-4b0a-8179-e88fa0c36f9a
-      version: -1
-      name: domain
-      description: Check domain reputation
-      script: ThreatExchange|||domain
+      brand: ''
+      id: f64af01f-72c6-443d-8d7a-a100de51b9b4
+      iscommand: false
+      name: 'Verify context '
+      script: VerifyContextFields
       type: regular
-      iscommand: true
-      brand: ThreatExchange
+      version: -1
+    taskid: f64af01f-72c6-443d-8d7a-a100de51b9b4
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 2153\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "21"
+      - '3'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      headers: {}
+      ip:
+        simple: ${IP.Address}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ThreatExchange
+      description: Check IP Reputation
+      id: 9c5d3c2a-1359-48ca-8df2-cc0cf03faf8c
+      iscommand: true
+      name: ip
+      script: ThreatExchange|||ip
+      type: regular
+      version: -1
+    taskid: 9c5d3c2a-1359-48ca-8df2-cc0cf03faf8c
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 370\n  }\n}"
+  '20':
+    id: '20'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '21'
+    note: false
+    quietmode: 0
     scriptarguments:
       domain:
         simple: ${Domain.Name}
@@ -654,30 +382,25 @@ tasks:
       since: {}
       until: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 2367
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "21":
-    id: "21"
-    taskid: 47f8d2aa-0752-4411-86db-51f2cfefaa06
-    type: regular
     task:
-      id: 47f8d2aa-0752-4411-86db-51f2cfefaa06
-      version: -1
-      name: Verify malicious Domain found
-      script: VerifyContextFields
+      brand: ThreatExchange
+      description: Check domain reputation
+      id: 5da841f8-0c32-4b0a-8179-e88fa0c36f9a
+      iscommand: true
+      name: domain
+      script: ThreatExchange|||domain
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 5da841f8-0c32-4b0a-8179-e88fa0c36f9a
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 2367\n  }\n}"
+  '21':
+    id: '21'
+    ignoreworker: false
+    note: false
+    quietmode: 0
     scriptarguments:
       field1:
         simple: Domain.Malicious
@@ -689,29 +412,172 @@ tasks:
       value3: {}
       value4: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 2600
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
+    task:
+      brand: ''
+      id: 47f8d2aa-0752-4411-86db-51f2cfefaa06
+      iscommand: false
+      name: Verify malicious Domain found
+      script: VerifyContextFields
+      type: regular
+      version: -1
+    taskid: 47f8d2aa-0752-4411-86db-51f2cfefaa06
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 2600\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
+    nexttasks:
+      'no':
+      - '5'
+      'yes':
+      - '4'
+    note: false
     quietmode: 0
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 2645,
-        "width": 1025,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks if the investigation found any Malicious File/URL/IP, if
+        so return yes, otherwise no.
+      id: b7757129-78db-47ed-826b-2f68599500a2
+      iscommand: false
+      name: IsMaliciousIndicatorFound
+      script: IsMaliciousIndicatorFound
+      type: condition
+      version: -1
+    taskid: b7757129-78db-47ed-826b-2f68599500a2
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 545\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      text:
+        simple: ssdsd cb57e263ab51f8e9b40d6f292bb17512cec0aa701bde14df33dfc06c815be54c
+          ddd
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: d1c6da34-101f-4eed-8e3f-a9a9541d1169
+      iscommand: false
+      name: extractHash
+      script: ExtractHash
+      type: regular
+      version: -1
+    taskid: d1c6da34-101f-4eed-8e3f-a9a9541d1169
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 720\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '16'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 5d867793-064f-4e59-8b8c-767e2e05f04a
+      iscommand: false
+      name: wrong!!!
+      type: title
+      version: -1
+    taskid: 5d867793-064f-4e59-8b8c-767e2e05f04a
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 735\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
+    nexttasks:
+      'no':
+      - '8'
+      'yes':
+      - '11'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: File(val.Malicious)
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 6078dcc1-be88-480a-8e45-115870ce7c27
+      iscommand: false
+      name: is file malicious
+      script: Exists
+      type: condition
+      version: -1
+    taskid: 6078dcc1-be88-480a-8e45-115870ce7c27
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1070\n  }\n}"
+  '8':
+    id: '8'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '15'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: c669f900-da06-499e-8fe6-a9cb218df2e2
+      iscommand: false
+      name: Wrong2!!!
+      type: title
+      version: -1
+    taskid: c669f900-da06-499e-8fe6-a9cb218df2e2
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1260\n  }\n}"
+  '9':
+    id: '9'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      file:
+        simple: ${File.SHA256}
+      headers: {}
+      limit: {}
+      since: {}
+      until: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ThreatExchange
+      description: Check file reputation of the given hash
+      id: aeadde86-a40b-451f-823d-8d5fdfbccca1
+      iscommand: true
+      name: file
+      script: ThreatExchange|||file
+      type: regular
+      version: -1
+    taskid: aeadde86-a40b-451f-823d-8d5fdfbccca1
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 895\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 2645,\n      \"width\": 1025,\n      \"x\": 50,\n      \"y\":\
+  \ 50\n    }\n  }\n}"

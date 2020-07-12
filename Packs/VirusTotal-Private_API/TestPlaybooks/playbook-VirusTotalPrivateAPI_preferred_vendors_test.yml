@@ -1,100 +1,75 @@
 id: virusTotalPrivateAPI-test-preferred-vendors
-version: -1
+inputs: []
 name: virusTotalPrivateAPI-test-preferred-vendors
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 202eec0b-d500-4619-830c-8f244cbf010f
-    type: start
-    task:
-      id: 202eec0b-d500-4619-830c-8f244cbf010f
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "27"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": -510
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: 7bf9f9a8-aeca-4c9f-8fec-c6bbc08331ef
-    type: regular
-    task:
-      id: 7bf9f9a8-aeca-4c9f-8fec-c6bbc08331ef
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - '27'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 202eec0b-d500-4619-830c-8f244cbf010f
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 202eec0b-d500-4619-830c-8f244cbf010f
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": -510\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '12'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       key: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "12":
-    id: "12"
-    taskid: 893a5941-58c7-4375-82ca-4e891e473550
-    type: title
     task:
-      id: 893a5941-58c7-4375-82ca-4e891e473550
+      brand: ''
+      description: Delete field from context
+      id: 7bf9f9a8-aeca-4c9f-8fec-c6bbc08331ef
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
       version: -1
+    taskid: 7bf9f9a8-aeca-4c9f-8fec-c6bbc08331ef
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '12':
+    id: '12'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 893a5941-58c7-4375-82ca-4e891e473550
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "26":
-    id: "26"
-    taskid: 268af6e2-b9c5-4616-8c1f-91acc780dabb
-    type: regular
-    task:
-      id: 268af6e2-b9c5-4616-8c1f-91acc780dabb
       version: -1
-      name: Get info on file
-      script: '|||vt-private-get-file-report'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: 893a5941-58c7-4375-82ca-4e891e473550
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 400\n  }\n}"
+  '26':
+    id: '26'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "28"
+      - '28'
+    note: false
     scriptarguments:
       allInfo: {}
       resource:
@@ -102,96 +77,77 @@ tasks:
       shortFormat: {}
       threshold: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": -130
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "27":
-    id: "27"
-    taskid: e1997659-45af-4d2b-86d9-ac52cf8cedda
-    type: regular
     task:
-      id: e1997659-45af-4d2b-86d9-ac52cf8cedda
-      version: -1
-      name: Delete Context
-      scriptName: DeleteContext
+      brand: ''
+      id: 268af6e2-b9c5-4616-8c1f-91acc780dabb
+      iscommand: true
+      name: Get info on file
+      script: '|||vt-private-get-file-report'
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 268af6e2-b9c5-4616-8c1f-91acc780dabb
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": -130\n  }\n}"
+  '27':
+    id: '27'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "26"
+      - '26'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": -320
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "28":
-    id: "28"
-    taskid: 7fd0a5a4-8050-4c5c-8459-105bd0ed2472
-    type: condition
     task:
-      id: 7fd0a5a4-8050-4c5c-8459-105bd0ed2472
-      version: -1
-      name: 'Verify file is malicious '
-      type: condition
+      brand: ''
+      id: e1997659-45af-4d2b-86d9-ac52cf8cedda
       iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "1"
-    separatecontext: false
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: e1997659-45af-4d2b-86d9-ac52cf8cedda
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": -320\n  }\n}"
+  '28':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: DBotScore.Score
-            iscontext: true
+          operator: isEqualString
           right:
             value:
-              simple: "3"
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 40
-        }
-      }
-    note: false
-    timertriggers: []
+              simple: '3'
+      label: 'yes'
+    id: '28'
     ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 975,
-        "width": 380,
-        "x": 50,
-        "y": -510
-      }
-    }
-  }
-inputs: []
-outputs: []
+    nexttasks:
+      'yes':
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 7fd0a5a4-8050-4c5c-8459-105bd0ed2472
+      iscommand: false
+      name: 'Verify file is malicious '
+      type: condition
+      version: -1
+    taskid: 7fd0a5a4-8050-4c5c-8459-105bd0ed2472
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 40\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 975,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": -510\n\
+  \    }\n  }\n}"

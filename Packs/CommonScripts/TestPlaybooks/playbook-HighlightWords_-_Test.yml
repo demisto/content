@@ -1,46 +1,32 @@
 id: HighlightWords_Test
-version: -1
+inputs: []
 name: HighlightWords - Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: a70e88ab-5ce6-4dbd-87f5-d95a9d38cdd7
-    type: start
-    task:
-      id: a70e88ab-5ce6-4dbd-87f5-d95a9d38cdd7
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "2"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
+      - '2'
     note: false
-    timertriggers: []
-  "2":
-    id: "2"
-    taskid: fe682f19-2158-4d36-8b65-0b1d0cae2265
-    type: regular
+    separatecontext: false
     task:
-      id: fe682f19-2158-4d36-8b65-0b1d0cae2265
-      version: -1
-      name: Highlight words
-      scriptName: HighlightWords
-      type: regular
+      brand: ''
+      id: a70e88ab-5ce6-4dbd-87f5-d95a9d38cdd7
       iscommand: false
-      brand: ""
+      name: ''
+      version: -1
+    taskid: a70e88ab-5ce6-4dbd-87f5-d95a9d38cdd7
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '2':
+    id: '2'
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
+    note: false
     scriptarguments:
       terms:
         simple: example1,example2
@@ -51,53 +37,41 @@ tasks:
       words:
         simple: example,example2
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-  "5":
-    id: "5"
-    taskid: d18fdcf6-5701-477f-851e-c02906439623
-    type: regular
     task:
-      id: d18fdcf6-5701-477f-851e-c02906439623
-      version: -1
-      name: Check if highlighted
-      scriptName: VerifyHumanReadableContains
-      type: regular
+      brand: ''
+      id: fe682f19-2158-4d36-8b65-0b1d0cae2265
       iscommand: false
-      brand: ""
+      name: Highlight words
+      scriptName: HighlightWords
+      type: regular
+      version: -1
+    taskid: fe682f19-2158-4d36-8b65-0b1d0cae2265
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '5':
+    id: '5'
+    note: false
     scriptarguments:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
       substring:
         simple: '**example2**'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 380
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      id: d18fdcf6-5701-477f-851e-c02906439623
+      iscommand: false
+      name: Check if highlighted
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      version: -1
+    taskid: d18fdcf6-5701-477f-851e-c02906439623
     timertriggers: []
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 425,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 380\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 425,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

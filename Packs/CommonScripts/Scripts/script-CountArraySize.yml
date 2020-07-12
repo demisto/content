@@ -1,35 +1,29 @@
+args:
+- default: true
+  description: The array to count it's size
+  isArray: true
+  name: array
+  required: true
+- default: false
+  description: The Context key to place result in, default is ArraySize
+  name: contextKey
+  required: false
+comment: Count an array size
 commonfields:
   id: CountArraySize
   version: -1
-name: CountArraySize
-script: |-
-  var arr = args.array;
-  if (Array.isArray(arr)) {
-      var key = 'ArraySize';
-      if ((args.contextKey) && (args.contextKey.length > 0 )) {
-          key = args.contextKey;
-      }
-      setContext(key,arr.length);
-      return arr.length;
-  }
-  return 'Given input is not an array';
-type: javascript
-tags:
-- Utility
-comment: Count an array size
-system: true
 enabled: true
-args:
-- name: array
-  required: true
-  default: true
-  isArray: true
-  description: The array to count it's size
-- name: contextKey
-  required: false
-  default: false
-  description: The Context key to place result in, default is ArraySize
+name: CountArraySize
 outputs:
 - contextPath: ArraySize
   description: Array size
+script: "var arr = args.array;\nif (Array.isArray(arr)) {\n    var key = 'ArraySize';\n\
+  \    if ((args.contextKey) && (args.contextKey.length > 0 )) {\n        key = args.contextKey;\n\
+  \    }\n    setContext(key,arr.length);\n    return arr.length;\n}\nreturn 'Given\
+  \ input is not an array';"
 scripttarget: 0
+system: true
+tags:
+- Utility
+toversion: 4.1.9
+type: javascript

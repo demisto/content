@@ -1,45 +1,35 @@
+args:
+- description: 'The input url '
+  name: value
+  required: true
+comment: 'Converts
+
+  https:%2F%2Fexample.com
+
+  into
+
+  https://example.com'
 commonfields:
   id: URLDecode
   version: -1
-name: URLDecode
-script: |-
-  from urllib.parse import unquote
-
-  value = demisto.args()["value"]
-  processed_value = unquote(value)
-
-  eContext = {
-      'DecodedURL': processed_value
-      }
-
-  entry = {'Type' : entryTypes['note'],
-      'Contents': eContext,
-      'ContentsFormat' : formats['json'],
-      'HumanReadable': processed_value,
-      'ReadableContentsFormat' : formats['markdown'],
-      'EntryContext' : eContext}
-
-  demisto.results(entry)
-type: python
-subtype: python3
-tags:
-- transformer
-comment: |-
-  Converts
-  https:%2F%2Fexample.com
-  into
-  https://example.com
+dockerimage: python:3
 enabled: true
-args:
-- name: value
-  required: true
-  description: 'The input url '
+name: URLDecode
 outputs:
 - contextPath: DecodedURL
   description: Parsed url as key/value
   type: string
-scripttarget: 0
 runonce: false
-dockerimage: python:3
+script: "from urllib.parse import unquote\n\nvalue = demisto.args()[\"value\"]\nprocessed_value\
+  \ = unquote(value)\n\neContext = {\n    'DecodedURL': processed_value\n    }\n\n\
+  entry = {'Type' : entryTypes['note'],\n    'Contents': eContext,\n    'ContentsFormat'\
+  \ : formats['json'],\n    'HumanReadable': processed_value,\n    'ReadableContentsFormat'\
+  \ : formats['markdown'],\n    'EntryContext' : eContext}\n\ndemisto.results(entry)"
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
 tests:
-  - URLDecode-Test
+- URLDecode-Test
+toversion: 4.1.9
+type: python

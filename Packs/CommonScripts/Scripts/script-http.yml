@@ -1,126 +1,80 @@
-commonfields:
-  id: http
-  version: -1
-name: http
-comment: Sends http request. Returns the response as json.
-script: |+
-  var requestObj = {
-      Method: args.method,
-  };
-
-  if (args.username) {
-      requestObj.Username = args.username;
-  }
-
-  if (args.username) {
-      requestObj.Password = args.password;
-  }
-
-  if (args.body) {
-      var body = (typeof args.body) === 'string' ? args.body : JSON.stringify(args.body);
-      requestObj.Body = body;
-  }
-
-  if (args.headers) {
-      var headersJs = {};
-      var headersArr = args.headers.split(',');
-      for (i = 0; i < headersArr.length; i++) {
-          var keyValue = headersArr[i].split(':');
-          if (keyValue.length != 2 ){
-              throw 'Invalid headers. Please make sure you have entered "headers" in correct format.';
-          } else {
-              headersJs[keyValue[0]] = [keyValue[1]];
-          }
-      }
-      requestObj.Headers = headersJs;
-  }
-  if (args.saveAsFile === 'yes') {
-      requestObj.SaveToFile = true;
-  }
-
-  var unsecure = (args.unsecure === 'true' || args.insecure === 'true');
-  var proxy = (args.proxy === 'true');
-  var res = http(args.url, requestObj, unsecure, proxy);
-  var fileName;
-  if (args.filename) {
-      fileName = args.filename;
-  } else if (res.Headers['Content-disposition']) {
-      fileName = res.Headers['Content-disposition'][0];
-  } else {
-      fileName = 'http-file';
-  }
-
-  if (args.saveAsFile === 'yes') {
-      return {
-          Type: 3,
-          FileID: res.Path,
-          File: fileName,
-          Contents: fileName
-      };
-  }
-
-  return {
-      Type: entryTypes.note,
-      Contents: res,
-      ContentsFormat: formats.json,
-      EntryContext: {
-          'HttpRequest.Response': res
-      }
-  };
-
-
-
-type: javascript
-tags:
-- Utility
-enabled: true
 args:
-- name: method
-  required: true
-  auto: PREDEFINED
+- auto: PREDEFINED
+  description: The method for the http request
+  name: method
   predefined:
   - GET
   - POST
   - DELETE
   - PUT
-  description: The method for the http request
-- name: body
-  description: The body for the http request
-- name: url
   required: true
-  description: The url for the http request
-- name: headers
-  description: The headers for the http request, in the format of 'key1:value1,key2:value2, ...'
-- name: insecure
-  auto: PREDEFINED
-  description: Trust any certificate (not secure)
+- description: The body for the http request
+  name: body
+- description: The url for the http request
+  name: url
+  required: true
+- description: The headers for the http request, in the format of 'key1:value1,key2:value2,
+    ...'
+  name: headers
+- auto: PREDEFINED
   deprecated: true
-- name: unsecure
-  auto: PREDEFINED
   description: Trust any certificate (not secure)
+  name: insecure
+- auto: PREDEFINED
+  defaultValue: 'true'
+  description: Trust any certificate (not secure)
+  name: unsecure
   predefined:
-  - "true"
-  - "false"
-  defaultValue: "true"
-- name: proxy
-  auto: PREDEFINED
+  - 'true'
+  - 'false'
+- auto: PREDEFINED
+  defaultValue: 'false'
   description: Use system proxy settings
+  name: proxy
   predefined:
-  - "true"
-  - "false"
-  defaultValue: "false"
-- name: username
-  description: The user for the http request
-- name: password
+  - 'true'
+  - 'false'
+- description: The user for the http request
+  name: username
+- description: The password for the http request
+  name: password
   secret: true
-  description: The password for the http request
-- name: saveAsFile
+- defaultValue: 'no'
   description: yes to save file, else no. Default is no
-  defaultValue: "no"
-- name: filename
-  description: Using filename from headers if filename is not given. Default is http-file
+  name: saveAsFile
+- description: Using filename from headers if filename is not given. Default is http-file
+  name: filename
+comment: Sends http request. Returns the response as json.
+commonfields:
+  id: http
+  version: -1
+enabled: true
+fromversion: 3.5.0
+name: http
 outputs:
 - contextPath: HttpRequest.Response
   description: The response for the http request
+script: "var requestObj = {\n    Method: args.method,\n};\n\nif (args.username) {\n\
+  \    requestObj.Username = args.username;\n}\n\nif (args.username) {\n    requestObj.Password\
+  \ = args.password;\n}\n\nif (args.body) {\n    var body = (typeof args.body) ===\
+  \ 'string' ? args.body : JSON.stringify(args.body);\n    requestObj.Body = body;\n\
+  }\n\nif (args.headers) {\n    var headersJs = {};\n    var headersArr = args.headers.split(',');\n\
+  \    for (i = 0; i < headersArr.length; i++) {\n        var keyValue = headersArr[i].split(':');\n\
+  \        if (keyValue.length != 2 ){\n            throw 'Invalid headers. Please\
+  \ make sure you have entered \"headers\" in correct format.';\n        } else {\n\
+  \            headersJs[keyValue[0]] = [keyValue[1]];\n        }\n    }\n    requestObj.Headers\
+  \ = headersJs;\n}\nif (args.saveAsFile === 'yes') {\n    requestObj.SaveToFile =\
+  \ true;\n}\n\nvar unsecure = (args.unsecure === 'true' || args.insecure === 'true');\n\
+  var proxy = (args.proxy === 'true');\nvar res = http(args.url, requestObj, unsecure,\
+  \ proxy);\nvar fileName;\nif (args.filename) {\n    fileName = args.filename;\n\
+  } else if (res.Headers['Content-disposition']) {\n    fileName = res.Headers['Content-disposition'][0];\n\
+  } else {\n    fileName = 'http-file';\n}\n\nif (args.saveAsFile === 'yes') {\n \
+  \   return {\n        Type: 3,\n        FileID: res.Path,\n        File: fileName,\n\
+  \        Contents: fileName\n    };\n}\n\nreturn {\n    Type: entryTypes.note,\n\
+  \    Contents: res,\n    ContentsFormat: formats.json,\n    EntryContext: {\n  \
+  \      'HttpRequest.Response': res\n    }\n};\n\n\n\n"
 scripttarget: 0
-fromversion: 3.5.0
+tags:
+- Utility
+toversion: 4.1.9
+type: javascript

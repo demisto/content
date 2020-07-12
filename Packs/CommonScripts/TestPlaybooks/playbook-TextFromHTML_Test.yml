@@ -1,266 +1,204 @@
-id: TextFromHTML_test_playbook
-version: -1
-name: TextFromHTML Test
 description: Test the TextFromHTML script
-starttaskid: "0"
+id: TextFromHTML_test_playbook
+inputs: []
+name: TextFromHTML Test
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: d2f0582e-13e8-4c58-8758-7ac4231b0f49
+      iscommand: false
+      name: ''
+      version: -1
     taskid: d2f0582e-13e8-4c58-8758-7ac4231b0f49
     type: start
-    task:
-      id: d2f0582e-13e8-4c58-8758-7ac4231b0f49
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
+      - '6'
     note: false
-  "1":
-    id: "1"
-    taskid: 670558f2-50d0-4e43-8bb0-95729b2301dd
-    type: regular
-    task:
-      id: 670558f2-50d0-4e43-8bb0-95729b2301dd
-      version: -1
-      name: TextFromHTML English
-      description: Extract regular text from the given HTML
-      scriptName: TextFromHTML
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
     scriptarguments:
       extend-context:
         simple: english=
       html:
-        simple: |-
-          <!DOCTYPE html>
+        simple: '<!DOCTYPE html>
+
           <html>
+
           <body>
+
           <h1>This is heading 1</h1>
+
           </body>
-          </html>
+
+          </html>'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-  "2":
-    id: "2"
-    taskid: 307e44c4-21b5-4c40-8545-129db13f1ff7
-    type: title
     task:
-      id: 307e44c4-21b5-4c40-8545-129db13f1ff7
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-  "3":
-    id: "3"
-    taskid: 2c78e250-95c3-4966-8cdf-5925f754bfe8
-    type: regular
-    task:
-      id: 2c78e250-95c3-4966-8cdf-5925f754bfe8
-      version: -1
-      name: TextFromHTML Hebrew
+      brand: ''
       description: Extract regular text from the given HTML
+      id: 670558f2-50d0-4e43-8bb0-95729b2301dd
+      iscommand: false
+      name: TextFromHTML English
       scriptName: TextFromHTML
       type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      extend-context:
-        simple: hebrew=
-      html:
-        simple: |-
-          <!DOCTYPE html>
-          <html>
-          <body>
-          <h1>משפט בעברית לבדיקה</h1>
-          </body>
-          </html>
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-  "4":
-    id: "4"
-    taskid: 462d07e9-2932-4ada-8c1f-c1685d63a153
-    type: regular
-    task:
-      id: 462d07e9-2932-4ada-8c1f-c1685d63a153
       version: -1
-      name: TextFromHTML Spanish
-      description: Extract regular text from the given HTML
-      scriptName: TextFromHTML
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      extend-context:
-        simple: spanish=
-      html:
-        simple: |-
-          <!DOCTYPE html>
-          <html>
-          <body>
-          <h1>Frase en español para revisión</h1>
-          </body>
-          </html>
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-  "6":
-    id: "6"
-    taskid: 9454119c-168b-4c1a-8e09-a630d0902d1f
+    taskid: 670558f2-50d0-4e43-8bb0-95729b2301dd
     type: regular
-    task:
-      id: 9454119c-168b-4c1a-8e09-a630d0902d1f
-      version: -1
-      name: Verify context English
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '10':
+    id: '10'
     nexttasks:
       '#none#':
-      - "3"
+      - '2'
+    note: false
     scriptarguments:
       expectedValue:
-        simple: |2
-
-          This is heading 1
-      fields: {}
-      path:
-        simple: english
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-  "8":
-    id: "8"
-    taskid: e5a56030-0c1e-489b-8c6f-eef09272aea2
-    type: regular
-    task:
-      id: e5a56030-0c1e-489b-8c6f-eef09272aea2
-      version: -1
-      name: Verify context Hebrew
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      expectedValue:
-        simple: |2
-
-          משפט בעברית לבדיקה
-      fields: {}
-      path:
-        simple: hebrew
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-  "10":
-    id: "10"
-    taskid: edef43b1-6b31-4df2-8afa-af4a0974cbdd
-    type: regular
-    task:
-      id: edef43b1-6b31-4df2-8afa-af4a0974cbdd
-      version: -1
-      name: Verify context Hebrew
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      expectedValue:
-        simple: |2
-
-          Frase en español para revisión
+        simple: "\nFrase en espa\xF1ol para revisi\xF3n\n"
       fields: {}
       path:
         simple: spanish
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
+    task:
+      brand: ''
+      id: edef43b1-6b31-4df2-8afa-af4a0974cbdd
+      iscommand: false
+      name: Verify context Hebrew
+      scriptName: VerifyContext
+      type: regular
+      version: -1
+    taskid: edef43b1-6b31-4df2-8afa-af4a0974cbdd
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+  '2':
+    id: '2'
     note: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1260,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    separatecontext: false
+    task:
+      brand: ''
+      id: 307e44c4-21b5-4c40-8545-129db13f1ff7
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 307e44c4-21b5-4c40-8545-129db13f1ff7
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+  '3':
+    id: '3'
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    scriptarguments:
+      extend-context:
+        simple: hebrew=
+      html:
+        simple: "<!DOCTYPE html>\n<html>\n<body>\n<h1>\u05DE\u05E9\u05E4\u05D8 \u05D1\
+          \u05E2\u05D1\u05E8\u05D9\u05EA \u05DC\u05D1\u05D3\u05D9\u05E7\u05D4</h1>\n\
+          </body>\n</html>"
+    separatecontext: false
+    task:
+      brand: ''
+      description: Extract regular text from the given HTML
+      id: 2c78e250-95c3-4966-8cdf-5925f754bfe8
+      iscommand: false
+      name: TextFromHTML Hebrew
+      scriptName: TextFromHTML
+      type: regular
+      version: -1
+    taskid: 2c78e250-95c3-4966-8cdf-5925f754bfe8
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '4':
+    id: '4'
+    nexttasks:
+      '#none#':
+      - '10'
+    note: false
+    scriptarguments:
+      extend-context:
+        simple: spanish=
+      html:
+        simple: "<!DOCTYPE html>\n<html>\n<body>\n<h1>Frase en espa\xF1ol para revisi\xF3\
+          n</h1>\n</body>\n</html>"
+    separatecontext: false
+    task:
+      brand: ''
+      description: Extract regular text from the given HTML
+      id: 462d07e9-2932-4ada-8c1f-c1685d63a153
+      iscommand: false
+      name: TextFromHTML Spanish
+      scriptName: TextFromHTML
+      type: regular
+      version: -1
+    taskid: 462d07e9-2932-4ada-8c1f-c1685d63a153
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+  '6':
+    id: '6'
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    scriptarguments:
+      expectedValue:
+        simple: '
+
+          This is heading 1
+
+          '
+      fields: {}
+      path:
+        simple: english
+    separatecontext: false
+    task:
+      brand: ''
+      id: 9454119c-168b-4c1a-8e09-a630d0902d1f
+      iscommand: false
+      name: Verify context English
+      scriptName: VerifyContext
+      type: regular
+      version: -1
+    taskid: 9454119c-168b-4c1a-8e09-a630d0902d1f
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '8':
+    id: '8'
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    scriptarguments:
+      expectedValue:
+        simple: "\n\u05DE\u05E9\u05E4\u05D8 \u05D1\u05E2\u05D1\u05E8\u05D9\u05EA \u05DC\
+          \u05D1\u05D3\u05D9\u05E7\u05D4\n"
+      fields: {}
+      path:
+        simple: hebrew
+    separatecontext: false
+    task:
+      brand: ''
+      id: e5a56030-0c1e-489b-8c6f-eef09272aea2
+      iscommand: false
+      name: Verify context Hebrew
+      scriptName: VerifyContext
+      type: regular
+      version: -1
+    taskid: e5a56030-0c1e-489b-8c6f-eef09272aea2
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1260,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

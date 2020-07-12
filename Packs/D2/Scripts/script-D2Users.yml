@@ -1,29 +1,18 @@
+comment: Show local accounts
 commonfields:
   id: D2Users
   version: -1
+dependson: {}
 name: D2Users
-script: |-
-  function usersUnix() {
-    packOutput('cat /etc/passwd');
-  }
-  function usersWindows() {
-    pack(wmi_query('select * from Win32_Account'), 'table');
-  }
-  try {
-    if (env.OS === 'windows') {
-      usersWindows();
-    } else {
-      usersUnix();
-    }
-  } catch (ex) {
-    pack('Error: ' + ex);
-  }
-type: javascript
+script: "function usersUnix() {\n  packOutput('cat /etc/passwd');\n}\nfunction usersWindows()\
+  \ {\n  pack(wmi_query('select * from Win32_Account'), 'table');\n}\ntry {\n  if\
+  \ (env.OS === 'windows') {\n    usersWindows();\n  } else {\n    usersUnix();\n\
+  \  }\n} catch (ex) {\n  pack('Error: ' + ex);\n}"
+scripttarget: 1
+system: true
 tags:
 - agent
 - endpoint
-comment: Show local accounts
-system: true
-scripttarget: 1
-dependson: {}
 timeout: 0s
+toversion: 4.1.9
+type: javascript

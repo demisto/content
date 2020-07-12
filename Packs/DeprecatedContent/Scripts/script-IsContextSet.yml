@@ -1,36 +1,34 @@
+args:
+- default: true
+  description: Key to check if exists
+  name: key
+  required: true
+- description: Optional value to compare to context. If not provided will check only
+    existence.
+  name: value
+comment: Check if a context key is set. Can also optionally provide a value argument
+  to compare against context data for this key.
 commonfields:
   id: IsContextSet
   version: -1
+dependson: {}
+deprecated: true
 name: IsContextSet
-script: |
-  contextValue = demisto.get(demisto.context(), demisto.args()['key'])
-  compareValue = demisto.get(demisto.args(), 'value')
-  if contextValue and (not compareValue or contextValue == compareValue):
-      demisto.results('yes')
-  else:
-      demisto.results('no')
-type: python
+outputs:
+- contextPath: true
+  description: if given value exists in context
+- contextPath: false
+  description: if given value does not exist in context
+script: "contextValue = demisto.get(demisto.context(), demisto.args()['key'])\ncompareValue\
+  \ = demisto.get(demisto.args(), 'value')\nif contextValue and (not compareValue\
+  \ or contextValue == compareValue):\n    demisto.results('yes')\nelse:\n    demisto.results('no')\n"
+scripttarget: 0
 subtype: python2
+system: true
 tags:
 - server
 - Utility
 - Condition
-system: true
-deprecated: true
-args:
-- name: key
-  required: true
-  default: true
-  description: Key to check if exists
-- name: value
-  description: Optional value to compare to context. If not provided will check only
-    existence.
-comment: Check if a context key is set. Can also optionally provide a value argument to compare against context data for this key.
-scripttarget: 0
-dependson: {}
 timeout: 0s
-outputs:
-- contextPath: yes
-  description: if given value exists in context
-- contextPath: no
-  description: if given value does not exist in context
+toversion: 4.1.9
+type: python

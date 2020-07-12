@@ -138,8 +138,8 @@ script:
     description: Get a list of incidents
     execution: false
     name: symantec-mss-incidents-list
-  dockerimage45: demisto/symantec_mss
   dockerimage: demisto/symantec_mss:latest
+  dockerimage45: demisto/symantec_mss
   isfetch: true
   longRunning: false
   longRunningPort: false
@@ -148,4 +148,5 @@ script:
   subtype: python2
   type: python
 tests:
-  - SymantecMSSTest
+- SymantecMSSTest
+toversion: 4.1.9

@@ -1,98 +1,77 @@
+args:
+- description: Free text to search on. could be the hostname, agent guid etc.
+  name: searchText
+  required: true
+comment: Return system info
 commonfields:
   id: EPOFindSystem
   version: -1
-name: EPOFindSystem
-script: |2
-
-  def createSystemContext(system):
-      context = {}
-      context["AutoID"] = system["EPOBranchNode.AutoID"]
-      context["CPUSerialNum"] = system["EPOComputerProperties.CPUSerialNum"]
-      context["CPUSpeed"] = system["EPOComputerProperties.CPUSpeed"]
-      context["CPUType"] = system["EPOComputerProperties.CPUType"]
-      context["ComputerName"] = system["EPOComputerProperties.ComputerName"]
-      context["DefaultLangID"] = system["EPOComputerProperties.DefaultLangID"]
-      context["Description"] = system["EPOComputerProperties.Description"]
-      context["DomainName"] = system["EPOComputerProperties.DomainName"]
-      context["FreeDiskSpace"] = system["EPOComputerProperties.FreeDiskSpace"]
-      context["FreeMemory"] = system["EPOComputerProperties.FreeMemory"]
-      context["IPAddress"] = system["EPOComputerProperties.IPAddress"]
-      context["Hostname"] = system["EPOComputerProperties.IPHostName"]
-      context["IPSubnet"] = system["EPOComputerProperties.IPSubnet"]
-      context["IPSubnetMask"] = system["EPOComputerProperties.IPSubnetMask"]
-      context["IPV4x"] = system["EPOComputerProperties.IPV4x"]
-      context["IPV6"] = system["EPOComputerProperties.IPV6"]
-      context["IPXAddress"] = system["EPOComputerProperties.IPXAddress"]
-      context["IsPortable"] = system["EPOComputerProperties.IsPortable"]
-      context["LastAgentHandler"] = system["EPOComputerProperties.LastAgentHandler"]
-      context["NetAddress"] = system["EPOComputerProperties.NetAddress"]
-      context["NumOfCPU"] = system["EPOComputerProperties.NumOfCPU"]
-      context["OSBitMode"] = system["EPOComputerProperties.OSBitMode"]
-      context["OSBuildNum"] = system["EPOComputerProperties.OSBuildNum"]
-      context["OSOEMID"] = system["EPOComputerProperties.OSOEMID"]
-      context["OSPlatform"] = system["EPOComputerProperties.OSPlatform"]
-      context["OSServicePackVer"] = system["EPOComputerProperties.OSServicePackVer"]
-      context["OSType"] = system["EPOComputerProperties.OSType"]
-      context["OSVersion"] = system["EPOComputerProperties.OSVersion"]
-      context["ParentID"] = system["EPOComputerProperties.ParentID"]
-      context["SubnetAddress"] = system["EPOComputerProperties.SubnetAddress"]
-      context["SubnetMask"] = system["EPOComputerProperties.SubnetMask"]
-      context["SystemDescription"] = system["EPOComputerProperties.SystemDescription"]
-      context["SysvolFreeSpace"] = system["EPOComputerProperties.SysvolFreeSpace"]
-      context["SysvolTotalSpace"] = system["EPOComputerProperties.SysvolTotalSpace"]
-      context["TimeZone"] = system["EPOComputerProperties.TimeZone"]
-      context["TotalDiskSpace"] = system["EPOComputerProperties.TotalDiskSpace"]
-      context["TotalPhysicalMemory"] = system["EPOComputerProperties.TotalPhysicalMemory"]
-      context["UserName"] = system["EPOComputerProperties.UserName"]
-      context["UserProperty1"] = system["EPOComputerProperties.UserProperty1"]
-      context["UserProperty2"] = system["EPOComputerProperties.UserProperty2"]
-      context["UserProperty3"] = system["EPOComputerProperties.UserProperty3"]
-      context["UserProperty4"] = system["EPOComputerProperties.UserProperty4"]
-      context["Vdi"] = system["EPOComputerProperties.Vdi"]
-      context["AgentGUID"] = system["EPOLeafNode.AgentGUID"]
-      context["AgentVersion"] = system["EPOLeafNode.AgentVersion"]
-      context["ExcludedTags"] = system["EPOLeafNode.ExcludedTags"]
-      context["LastUpdate"] = system["EPOLeafNode.LastUpdate"]
-      context["ManagedState"] = system["EPOLeafNode.ManagedState"]
-      context["Tags"] = system["EPOLeafNode.Tags"]
-
-      return context
-
-
-  resp = demisto.executeCommand("epo-command", {"command":"system.find", "searchText": demisto.args()["searchText"]})
-  res_error=[]
-  for res in resp:
-      if isError(res):
-          res_error.append(res)
-      else:
-          endpoint = []
-          context = {}
-          for entry in demisto.get(res,'Contents'):
-              endpoint.append(createSystemContext(entry))
-
-          context["Endpoint(val.Hostname == obj.Hostname)"] = endpoint
-
-          demisto.results({'Type' : entryTypes['note'],
-                          'Contents': demisto.get(res,'Contents'),
-                          'ContentsFormat' : formats['json'],
-                          'HumanReadable': demisto.get(res,'HumanReadable'),
-                          'ReadableContentsFormat' : formats['markdown'],
-                          'EntryContext' : context})
-type: python
-subtype: python2
-tags:
-- epo
-comment: Return system info
-system: true
-args:
-- name: searchText
-  required: true
-  description: Free text to search on. could be the hostname, agent guid etc.
-outputs:
-- contextPath: Endpoint.Hostname
-  description: Hostname
-scripttarget: 0
-timeout: 0s
 dependson:
   must:
   - epo-command
+name: EPOFindSystem
+outputs:
+- contextPath: Endpoint.Hostname
+  description: Hostname
+script: "\ndef createSystemContext(system):\n    context = {}\n    context[\"AutoID\"\
+  ] = system[\"EPOBranchNode.AutoID\"]\n    context[\"CPUSerialNum\"] = system[\"\
+  EPOComputerProperties.CPUSerialNum\"]\n    context[\"CPUSpeed\"] = system[\"EPOComputerProperties.CPUSpeed\"\
+  ]\n    context[\"CPUType\"] = system[\"EPOComputerProperties.CPUType\"]\n    context[\"\
+  ComputerName\"] = system[\"EPOComputerProperties.ComputerName\"]\n    context[\"\
+  DefaultLangID\"] = system[\"EPOComputerProperties.DefaultLangID\"]\n    context[\"\
+  Description\"] = system[\"EPOComputerProperties.Description\"]\n    context[\"DomainName\"\
+  ] = system[\"EPOComputerProperties.DomainName\"]\n    context[\"FreeDiskSpace\"\
+  ] = system[\"EPOComputerProperties.FreeDiskSpace\"]\n    context[\"FreeMemory\"\
+  ] = system[\"EPOComputerProperties.FreeMemory\"]\n    context[\"IPAddress\"] = system[\"\
+  EPOComputerProperties.IPAddress\"]\n    context[\"Hostname\"] = system[\"EPOComputerProperties.IPHostName\"\
+  ]\n    context[\"IPSubnet\"] = system[\"EPOComputerProperties.IPSubnet\"]\n    context[\"\
+  IPSubnetMask\"] = system[\"EPOComputerProperties.IPSubnetMask\"]\n    context[\"\
+  IPV4x\"] = system[\"EPOComputerProperties.IPV4x\"]\n    context[\"IPV6\"] = system[\"\
+  EPOComputerProperties.IPV6\"]\n    context[\"IPXAddress\"] = system[\"EPOComputerProperties.IPXAddress\"\
+  ]\n    context[\"IsPortable\"] = system[\"EPOComputerProperties.IsPortable\"]\n\
+  \    context[\"LastAgentHandler\"] = system[\"EPOComputerProperties.LastAgentHandler\"\
+  ]\n    context[\"NetAddress\"] = system[\"EPOComputerProperties.NetAddress\"]\n\
+  \    context[\"NumOfCPU\"] = system[\"EPOComputerProperties.NumOfCPU\"]\n    context[\"\
+  OSBitMode\"] = system[\"EPOComputerProperties.OSBitMode\"]\n    context[\"OSBuildNum\"\
+  ] = system[\"EPOComputerProperties.OSBuildNum\"]\n    context[\"OSOEMID\"] = system[\"\
+  EPOComputerProperties.OSOEMID\"]\n    context[\"OSPlatform\"] = system[\"EPOComputerProperties.OSPlatform\"\
+  ]\n    context[\"OSServicePackVer\"] = system[\"EPOComputerProperties.OSServicePackVer\"\
+  ]\n    context[\"OSType\"] = system[\"EPOComputerProperties.OSType\"]\n    context[\"\
+  OSVersion\"] = system[\"EPOComputerProperties.OSVersion\"]\n    context[\"ParentID\"\
+  ] = system[\"EPOComputerProperties.ParentID\"]\n    context[\"SubnetAddress\"] =\
+  \ system[\"EPOComputerProperties.SubnetAddress\"]\n    context[\"SubnetMask\"] =\
+  \ system[\"EPOComputerProperties.SubnetMask\"]\n    context[\"SystemDescription\"\
+  ] = system[\"EPOComputerProperties.SystemDescription\"]\n    context[\"SysvolFreeSpace\"\
+  ] = system[\"EPOComputerProperties.SysvolFreeSpace\"]\n    context[\"SysvolTotalSpace\"\
+  ] = system[\"EPOComputerProperties.SysvolTotalSpace\"]\n    context[\"TimeZone\"\
+  ] = system[\"EPOComputerProperties.TimeZone\"]\n    context[\"TotalDiskSpace\"]\
+  \ = system[\"EPOComputerProperties.TotalDiskSpace\"]\n    context[\"TotalPhysicalMemory\"\
+  ] = system[\"EPOComputerProperties.TotalPhysicalMemory\"]\n    context[\"UserName\"\
+  ] = system[\"EPOComputerProperties.UserName\"]\n    context[\"UserProperty1\"] =\
+  \ system[\"EPOComputerProperties.UserProperty1\"]\n    context[\"UserProperty2\"\
+  ] = system[\"EPOComputerProperties.UserProperty2\"]\n    context[\"UserProperty3\"\
+  ] = system[\"EPOComputerProperties.UserProperty3\"]\n    context[\"UserProperty4\"\
+  ] = system[\"EPOComputerProperties.UserProperty4\"]\n    context[\"Vdi\"] = system[\"\
+  EPOComputerProperties.Vdi\"]\n    context[\"AgentGUID\"] = system[\"EPOLeafNode.AgentGUID\"\
+  ]\n    context[\"AgentVersion\"] = system[\"EPOLeafNode.AgentVersion\"]\n    context[\"\
+  ExcludedTags\"] = system[\"EPOLeafNode.ExcludedTags\"]\n    context[\"LastUpdate\"\
+  ] = system[\"EPOLeafNode.LastUpdate\"]\n    context[\"ManagedState\"] = system[\"\
+  EPOLeafNode.ManagedState\"]\n    context[\"Tags\"] = system[\"EPOLeafNode.Tags\"\
+  ]\n\n    return context\n\n\nresp = demisto.executeCommand(\"epo-command\", {\"\
+  command\":\"system.find\", \"searchText\": demisto.args()[\"searchText\"]})\nres_error=[]\n\
+  for res in resp:\n    if isError(res):\n        res_error.append(res)\n    else:\n\
+  \        endpoint = []\n        context = {}\n        for entry in demisto.get(res,'Contents'):\n\
+  \            endpoint.append(createSystemContext(entry))\n\n        context[\"Endpoint(val.Hostname\
+  \ == obj.Hostname)\"] = endpoint\n\n        demisto.results({'Type' : entryTypes['note'],\n\
+  \                        'Contents': demisto.get(res,'Contents'),\n            \
+  \            'ContentsFormat' : formats['json'],\n                        'HumanReadable':\
+  \ demisto.get(res,'HumanReadable'),\n                        'ReadableContentsFormat'\
+  \ : formats['markdown'],\n                        'EntryContext' : context})\n"
+scripttarget: 0
+subtype: python2
+system: true
+tags:
+- epo
+timeout: 0s
+toversion: 4.1.9
+type: python

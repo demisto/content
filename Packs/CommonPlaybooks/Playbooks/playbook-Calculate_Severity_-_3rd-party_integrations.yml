@@ -1,478 +1,410 @@
-id: calculate_severity_-_3rd-party_integrations
-version: -1
-name: Calculate Severity - 3rd-party integrations
-fromversion: 3.6.0
 description: Calculates the incident severity level according to the methodology of
   a 3rd-party integration.
-starttaskid: "0"
+fromversion: 3.6.0
+id: calculate_severity_-_3rd-party_integrations
+inputs:
+- description: Qualys Vulnerability Severity score (1-5).
+  key: QualysSeverity
+  required: false
+  value:
+    complex:
+      accessor: Severity
+      root: Qualys
+- description: ' Nexpose Vulnerability Severity score (Moderate, Severe, Critical).'
+  key: NexposeSeverity
+  required: false
+  value:
+    complex:
+      accessor: Asset.Vulnerability.Severity
+      root: Nexpose
+name: Calculate Severity - 3rd-party integrations
+outputs:
+- contextPath: Severity
+  description: The output severity
+  type: string
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
+    nexttasks:
+      '#none#':
+      - '25'
+      - '26'
+    reputationcalc: 0
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 3eded69b-617e-4212-86b7-2537474285f3
+      iscommand: false
+      name: ''
+      version: -1
     taskid: 3eded69b-617e-4212-86b7-2537474285f3
     type: start
-    task:
-      id: 3eded69b-617e-4212-86b7-2537474285f3
-      version: -1
-      name: ""
-      description: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "25"
-      - "26"
+    view: "{\n  \"position\": {\n    \"x\": 1032.5,\n    \"y\": 50\n  }\n}"
+  '10':
+    id: '10'
     reputationcalc: 0
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1032.5,
-          "y": 50
-        }
-      }
-  "6":
-    id: "6"
-    taskid: 5f92bc72-085f-4c03-8404-82f83dac6c62
-    type: regular
     task:
-      id: 5f92bc72-085f-4c03-8404-82f83dac6c62
-      version: -1
-      name: Set severity to "High"
-      description: Set the severity level to High.
-      scriptName: Set
-      type: regular
+      brand: ''
+      description: ''
+      id: 483350d5-ab17-44cd-87b3-0e2360ce3577
       iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      append: {}
-      key:
-        simple: Severity
-      value:
-        simple: high
-    reputationcalc: 0
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 507.5,
-          "y": 730
-        }
-      }
-  "10":
-    id: "10"
+      name: Done
+      type: title
+      version: -1
     taskid: 483350d5-ab17-44cd-87b3-0e2360ce3577
     type: title
-    task:
-      id: 483350d5-ab17-44cd-87b3-0e2360ce3577
-      version: -1
-      name: Done
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    reputationcalc: 0
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1032.5,
-          "y": 1004
-        }
-      }
-  "21":
-    id: "21"
-    taskid: a91ad8e7-d063-4466-8137-711519c902f2
-    type: condition
-    task:
-      id: a91ad8e7-d063-4466-8137-711519c902f2
-      version: -1
-      name: Is there a Qualys severity?
-      description: Check if there is a “QualysSeverity” in the playbook inputs.
-      type: condition
-      iscommand: false
-      brand: ""
+    view: "{\n  \"position\": {\n    \"x\": 1032.5,\n    \"y\": 1004\n  }\n}"
+  '21':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.QualysSeverity
+          operator: general.isExists
+      label: 'yes'
+    id: '21'
     nexttasks:
       '#default#':
-      - "10"
-      "yes":
-      - "22"
+      - '10'
+      'yes':
+      - '22'
     reputationcalc: 0
     separatecontext: false
+    task:
+      brand: ''
+      description: "Check if there is a \u201CQualysSeverity\u201D in the playbook\
+        \ inputs."
+      id: a91ad8e7-d063-4466-8137-711519c902f2
+      iscommand: false
+      name: Is there a Qualys severity?
+      type: condition
+      version: -1
+    taskid: a91ad8e7-d063-4466-8137-711519c902f2
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 1247.5,\n    \"y\": 340\n  }\n}"
+  '22':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: general.isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: inputs.QualysSeverity
+                    operator: number.greaterThanOrEqual
+                    right:
+                      value:
+                        simple: '4'
                 root: inputs.QualysSeverity
+          operator: general.isExists
+      label: HIGH
+    - condition:
+      - - left:
             iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1247.5,
-          "y": 340
-        }
-      }
-  "22":
-    id: "22"
-    taskid: 52fae7c2-b907-4877-8a6a-ed1fbf0ad988
-    type: condition
-    task:
-      id: 52fae7c2-b907-4877-8a6a-ed1fbf0ad988
-      version: -1
-      name: Assign severity level based on Qualys vulnerability score
-      description: |-
-        Severity level is assigned according to:
-
-        * High = 4+
-        * Medium = 2-3
-        * Low = 1
-      type: condition
-      iscommand: false
-      brand: ""
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: inputs.QualysSeverity
+                    operator: number.greaterThanOrEqual
+                    right:
+                      value:
+                        simple: '2'
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: inputs.QualysSeverity
+                    operator: number.lessThan
+                    right:
+                      value:
+                        simple: '4'
+                root: inputs.QualysSeverity
+          operator: general.isExists
+      label: MEDIUM
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: inputs.QualysSeverity
+                    operator: number.lessThan
+                    right:
+                      value:
+                        simple: '2'
+                root: inputs.QualysSeverity
+          operator: general.isExists
+      label: LOW
+    id: '22'
     nexttasks:
       HIGH:
-      - "6"
+      - '6'
       LOW:
-      - "24"
+      - '24'
       MEDIUM:
-      - "23"
+      - '23'
     reputationcalc: 0
     separatecontext: false
-    conditions:
-    - label: HIGH
-      condition:
-      - - operator: general.isExists
-          left:
-            value:
-              complex:
-                root: inputs.QualysSeverity
-                filters:
-                - - operator: number.greaterThanOrEqual
-                    left:
-                      value:
-                        simple: inputs.QualysSeverity
-                      iscontext: true
-                    right:
-                      value:
-                        simple: "4"
-            iscontext: true
-    - label: MEDIUM
-      condition:
-      - - operator: general.isExists
-          left:
-            value:
-              complex:
-                root: inputs.QualysSeverity
-                filters:
-                - - operator: number.greaterThanOrEqual
-                    left:
-                      value:
-                        simple: inputs.QualysSeverity
-                      iscontext: true
-                    right:
-                      value:
-                        simple: "2"
-                - - operator: number.lessThan
-                    left:
-                      value:
-                        simple: inputs.QualysSeverity
-                      iscontext: true
-                    right:
-                      value:
-                        simple: "4"
-            iscontext: true
-    - label: LOW
-      condition:
-      - - operator: general.isExists
-          left:
-            value:
-              complex:
-                root: inputs.QualysSeverity
-                filters:
-                - - operator: number.lessThan
-                    left:
-                      value:
-                        simple: inputs.QualysSeverity
-                      iscontext: true
-                    right:
-                      value:
-                        simple: "2"
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1247.5,
-          "y": 513
-        }
-      }
-  "23":
-    id: "23"
-    taskid: 89c78898-8fef-4807-8a3d-1c4f042c4eb2
-    type: regular
     task:
-      id: 89c78898-8fef-4807-8a3d-1c4f042c4eb2
-      version: -1
-      name: Set severity to "Medium"
-      description: Set the severity level to Medium.
-      scriptName: Set
-      type: regular
+      brand: ''
+      description: 'Severity level is assigned according to:
+
+
+        * High = 4+
+
+        * Medium = 2-3
+
+        * Low = 1'
+      id: 52fae7c2-b907-4877-8a6a-ed1fbf0ad988
       iscommand: false
-      brand: Builtin
+      name: Assign severity level based on Qualys vulnerability score
+      type: condition
+      version: -1
+    taskid: 52fae7c2-b907-4877-8a6a-ed1fbf0ad988
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 1247.5,\n    \"y\": 513\n  }\n}"
+  '23':
+    id: '23'
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
+    reputationcalc: 0
     scriptarguments:
       append: {}
       key:
         simple: Severity
       value:
         simple: medium
-    reputationcalc: 0
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1032.5,
-          "y": 730
-        }
-      }
-  "24":
-    id: "24"
-    taskid: 84f71501-bcb9-481c-85d5-2efa59f1c1a4
-    type: regular
     task:
-      id: 84f71501-bcb9-481c-85d5-2efa59f1c1a4
-      version: -1
-      name: Set severity to "Low"
-      description: Set the severity level to Low.
+      brand: Builtin
+      description: Set the severity level to Medium.
+      id: 89c78898-8fef-4807-8a3d-1c4f042c4eb2
+      iscommand: false
+      name: Set severity to "Medium"
       scriptName: Set
       type: regular
-      iscommand: false
-      brand: Builtin
+      version: -1
+    taskid: 89c78898-8fef-4807-8a3d-1c4f042c4eb2
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1032.5,\n    \"y\": 730\n  }\n}"
+  '24':
+    id: '24'
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
+    reputationcalc: 0
     scriptarguments:
       append: {}
       key:
         simple: Severity
       value:
         simple: low
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: Set the severity level to Low.
+      id: 84f71501-bcb9-481c-85d5-2efa59f1c1a4
+      iscommand: false
+      name: Set severity to "Low"
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 84f71501-bcb9-481c-85d5-2efa59f1c1a4
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1554,\n    \"y\": 730\n  }\n}"
+  '25':
+    id: '25'
+    nexttasks:
+      '#none#':
+      - '21'
     reputationcalc: 0
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1554,
-          "y": 730
-        }
-      }
-  "25":
-    id: "25"
+    task:
+      brand: ''
+      description: ''
+      id: 1487586f-f1f8-4136-8d7e-444a34750493
+      iscommand: false
+      name: Calculate using Qualys Vulnerability Management
+      type: title
+      version: -1
     taskid: 1487586f-f1f8-4136-8d7e-444a34750493
     type: title
-    task:
-      id: 1487586f-f1f8-4136-8d7e-444a34750493
-      version: -1
-      name: Calculate using Qualys Vulnerability Management
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
+    view: "{\n  \"position\": {\n    \"x\": 1247.5,\n    \"y\": 195\n  }\n}"
+  '26':
+    id: '26'
     nexttasks:
       '#none#':
-      - "21"
+      - '27'
     reputationcalc: 0
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1247.5,
-          "y": 195
-        }
-      }
-  "26":
-    id: "26"
+    task:
+      brand: ''
+      description: ''
+      id: aa7b1201-afbc-4d7b-89f5-e21011257699
+      iscommand: false
+      name: Calculate using Nexpose Vulnerability Management
+      type: title
+      version: -1
     taskid: aa7b1201-afbc-4d7b-89f5-e21011257699
     type: title
-    task:
-      id: aa7b1201-afbc-4d7b-89f5-e21011257699
-      version: -1
-      name: Calculate using Nexpose Vulnerability Management
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "27"
-    reputationcalc: 0
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 817.5,
-          "y": 195
-        }
-      }
-  "27":
-    id: "27"
-    taskid: 9712ee01-9cb9-4dfa-80b3-aa3beadf990c
-    type: condition
-    task:
-      id: 9712ee01-9cb9-4dfa-80b3-aa3beadf990c
-      version: -1
-      name: Is there a Nexpose severity?
-      description: Check if there is a “NexposeSeverity” in the playbook inputs.
-      type: condition
-      iscommand: false
-      brand: ""
+    view: "{\n  \"position\": {\n    \"x\": 817.5,\n    \"y\": 195\n  }\n}"
+  '27':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.NexposeSeverity
+          operator: general.isExists
+      label: 'yes'
+    id: '27'
     nexttasks:
       '#default#':
-      - "10"
-      "yes":
-      - "28"
+      - '10'
+      'yes':
+      - '28'
     reputationcalc: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: general.isExists
-          left:
-            value:
-              complex:
-                root: inputs.NexposeSeverity
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 817.5,
-          "y": 340
-        }
-      }
-  "28":
-    id: "28"
-    taskid: d5f43287-75c2-4799-8374-95677a68c876
-    type: condition
     task:
-      id: d5f43287-75c2-4799-8374-95677a68c876
-      version: -1
-      name: Assign severity level based on Nexpose vulnerability score
-      description: |-
-        Severity level is assigned according to:
-
-        * High = Critical
-        * Medium = Severe
-        * Low = Moderate
-      type: condition
+      brand: ''
+      description: "Check if there is a \u201CNexposeSeverity\u201D in the playbook\
+        \ inputs."
+      id: 9712ee01-9cb9-4dfa-80b3-aa3beadf990c
       iscommand: false
-      brand: ""
-    nexttasks:
-      HIGH:
-      - "6"
-      LOW:
-      - "24"
-      MEDIUM:
-      - "23"
-    reputationcalc: 0
-    separatecontext: false
+      name: Is there a Nexpose severity?
+      type: condition
+      version: -1
+    taskid: 9712ee01-9cb9-4dfa-80b3-aa3beadf990c
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 817.5,\n    \"y\": 340\n  }\n}"
+  '28':
     conditions:
-    - label: HIGH
-      condition:
-      - - operator: general.isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: inputs.NexposeSeverity
                 filters:
-                - - operator: string.isEqual
+                - - ignorecase: true
                     left:
+                      iscontext: true
                       value:
                         simple: inputs.NexposeSeverity
-                      iscontext: true
+                    operator: string.isEqual
                     right:
                       value:
                         simple: Critical
-                    ignorecase: true
+                root: inputs.NexposeSeverity
+          operator: general.isExists
+      label: HIGH
+    - condition:
+      - - left:
             iscontext: true
-    - label: MEDIUM
-      condition:
-      - - operator: general.isExists
-          left:
             value:
               complex:
-                root: inputs.NexposeSeverity
                 filters:
-                - - operator: string.isEqual
+                - - ignorecase: true
                     left:
+                      iscontext: true
                       value:
                         simple: inputs.NexposeSeverity
-                      iscontext: true
+                    operator: string.isEqual
                     right:
                       value:
                         simple: Severe
-                    ignorecase: true
+                root: inputs.NexposeSeverity
+          operator: general.isExists
+      label: MEDIUM
+    - condition:
+      - - left:
             iscontext: true
-    - label: LOW
-      condition:
-      - - operator: general.isExists
-          left:
             value:
               complex:
-                root: inputs.NexposeSeverity
                 filters:
-                - - operator: string.isEqual
+                - - ignorecase: true
                     left:
+                      iscontext: true
                       value:
                         simple: inputs.NexposeSeverity
-                      iscontext: true
+                    operator: string.isEqual
                     right:
                       value:
                         simple: Moderate
-                    ignorecase: true
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 817.5,
-          "y": 529
-        }
-      }
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1019,
-        "width": 1426.5,
-        "x": 507.5,
-        "y": 50
-      }
-    }
-  }
-inputs:
-- key: QualysSeverity
-  value:
-    complex:
-      root: Qualys
-      accessor: Severity
-  required: false
-  description: Qualys Vulnerability Severity score (1-5).
-- key: NexposeSeverity
-  value:
-    complex:
-      root: Nexpose
-      accessor: Asset.Vulnerability.Severity
-  required: false
-  description: ' Nexpose Vulnerability Severity score (Moderate, Severe, Critical).'
-outputs:
-- contextPath: Severity
-  description: The output severity
-  type: string
+                root: inputs.NexposeSeverity
+          operator: general.isExists
+      label: LOW
+    id: '28'
+    nexttasks:
+      HIGH:
+      - '6'
+      LOW:
+      - '24'
+      MEDIUM:
+      - '23'
+    reputationcalc: 0
+    separatecontext: false
+    task:
+      brand: ''
+      description: 'Severity level is assigned according to:
+
+
+        * High = Critical
+
+        * Medium = Severe
+
+        * Low = Moderate'
+      id: d5f43287-75c2-4799-8374-95677a68c876
+      iscommand: false
+      name: Assign severity level based on Nexpose vulnerability score
+      type: condition
+      version: -1
+    taskid: d5f43287-75c2-4799-8374-95677a68c876
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 817.5,\n    \"y\": 529\n  }\n}"
+  '6':
+    id: '6'
+    nexttasks:
+      '#none#':
+      - '10'
+    reputationcalc: 0
+    scriptarguments:
+      append: {}
+      key:
+        simple: Severity
+      value:
+        simple: high
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: Set the severity level to High.
+      id: 5f92bc72-085f-4c03-8404-82f83dac6c62
+      iscommand: false
+      name: Set severity to "High"
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 5f92bc72-085f-4c03-8404-82f83dac6c62
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 507.5,\n    \"y\": 730\n  }\n}"
 tests:
-  - No tests
+- No tests
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1019,\n      \"width\": 1426.5,\n      \"x\": 507.5,\n      \"\
+  y\": 50\n    }\n  }\n}"

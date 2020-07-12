@@ -97,6 +97,7 @@ comment: Predict text label using a pre-trained machine learning phishing model,
 commonfields:
   id: DBotPredictPhishingWords
   version: -1
+dockerimage: demisto/dl:1.3
 enabled: false
 name: DBotPredictPhishingWords
 outputs:
@@ -123,8 +124,8 @@ system: false
 tags:
 - ml
 - phishing
-timeout: '0'
-type: python
-dockerimage: demisto/dl:1.3
 tests:
 - Create Phishing Classifier V2 ML Test
+timeout: '0'
+toversion: 4.1.9
+type: python

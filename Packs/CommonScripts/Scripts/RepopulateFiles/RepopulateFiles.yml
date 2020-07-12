@@ -1,15 +1,16 @@
+comment: After running DeleteContext, this script can repopulate all the file entries
+  in the ${File} context key
 commonfields:
   id: RepopulateFiles
   version: -1
+enabled: true
 name: RepopulateFiles
+runas: DBotWeakRole
+runonce: false
 script: ''
+scripttarget: 0
+subtype: python2
 tags:
 - Utility
-comment: After running DeleteContext, this script can repopulate all the file entries
-  in the ${File} context key
-enabled: true
-scripttarget: 0
+toversion: 4.1.9
 type: python
-subtype: python2
-runonce: false
-runas: DBotWeakRole

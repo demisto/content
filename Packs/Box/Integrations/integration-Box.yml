@@ -1,575 +1,195 @@
+category: IT Services
 commonfields:
   id: Box
   version: -1
-name: Box
-display: Box
-category: IT Services
-image: data:image/png;base64,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
-description: Manage Box users
-detaileddescription: |-
-  Note: the following stages should be done in less than 30 seconds due to Box security.
-  1. Create a new Box instance
-  2. In your browser, copy the following line containing Demisto application client id:
-  https://account.box.com/api/oauth2/authorize?response_type=code&client_id=hznnisyhdf09nu9saf2eyfzupawrn9b2&state=lulubalulu
-  (client_id is demisto-application client id)
-  3. Allow access to it using your box credentials
-  4. You will be redirected to a non active page, with a url in this form:
-  https://localhost/?state=lulubalulu&code=MCTNCsN1gJIjA2cEJ72nczpXzcLVVQxJ
-  5. Copy the code from the url and use it the the next step
-  6. Run box_initiate command with access_code argument in the CLI in this form:
-  !box_initiate access_code=ACCESS_CODE
-  For additional info you may watch https://www.youtube.com/watch?v=ha26tN8amI0
-  Or read about box oauth2 process at https://docs.box.com/docs/oauth-20
 configuration:
-- display: Trust any certificate (not secure)
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
+description: Manage Box users
+detaileddescription: 'Note: the following stages should be done in less than 30 seconds
+  due to Box security.
+
+  1. Create a new Box instance
+
+  2. In your browser, copy the following line containing Demisto application client
+  id:
+
+  https://account.box.com/api/oauth2/authorize?response_type=code&client_id=hznnisyhdf09nu9saf2eyfzupawrn9b2&state=lulubalulu
+
+  (client_id is demisto-application client id)
+
+  3. Allow access to it using your box credentials
+
+  4. You will be redirected to a non active page, with a url in this form:
+
+  https://localhost/?state=lulubalulu&code=MCTNCsN1gJIjA2cEJ72nczpXzcLVVQxJ
+
+  5. Copy the code from the url and use it the the next step
+
+  6. Run box_initiate command with access_code argument in the CLI in this form:
+
+  !box_initiate access_code=ACCESS_CODE
+
+  For additional info you may watch https://www.youtube.com/watch?v=ha26tN8amI0
+
+  Or read about box oauth2 process at https://docs.box.com/docs/oauth-20'
+display: Box
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFsAAAAyCAYAAAAzzacLAAAKkklEQVR42u1aeXAT1xkPJtAAJSRMgRAaJsAAhTapMaEECDTh8G1J1uED6HAEKFMmpDRpSNMOSaYtk84ESqeTtCmHQ9rEWNaxki3JxtwMdwM0DTTQkITa+3ZXK1myjW0wBvW3xviK9mlXWvKXduYbezS7733v9773Hb/v3Xdf8vlmn8UfhcbkebgSk4P48xly2eRgX8z0NaUkkdH4yatoHmK2Cx8bnWzE6CQdArAjOrf4uyQ6Gj8AemU+0w10t7BivpOMSCKkKdj+LV8H+o7kO7nUJEIaPiaHuE0ObEhaEqEk2Emwk08S7CTYSbCTYCfBToKdfJJgJ8FOPvGBrXMLY/VuzmJkyB/AEJbinSpIDcQN2Wm2cy/r3fwcXQU3RCsdwdEMsNj8T2L8n4KzeRd/7ZC9kGqIDfJni417Xu8mU+YfFPsrHdfgIqONTm4dvn9b7+KW6V38sER1XbBfSMnz8AsNLm6zycltyvX601SBnV4TGJhXKZgsdk4Ctpnyfk+5Csp2K0CfHK/ilnJuRD7D/xJj/QtyS8Gc7VjkGQD4AozhYdrYuZ6Ghdi4QM/vC2zsf6ZcujYxXn1HCe3353j5D7DuPhwT+5oSsH8Ixefnu7jzCgGOJtch75gc/EilSud6/ANzvfxLUFpUO5+p+3/O4GJfyPFwA/qOv/z98IM4gZ9H+1ZfwZ/N23stLgs3O8WtRkd0vQyuYBYN7BuQA5C2BIDuKbV6t5Ad262RyfkMd8KkzZxYJDlsdPjH9XJLLjJbdrPA5ZvtfJlaoItL61dFp6q79NgSy7I1Ffj4CHzrS3IK51WSdLwX1Hpek50jZgeZ3e2ealNNDvn3zXY2sqiGf0Nx3LM3PIuT0ko7bVlVwpvfKNh3LcfoDL7aV+FVO8OZOPYt92xupi5ktjV0Aa53kb0SqPLfsJEFB0IFsYB+4hNxgq6CraNtHtYsGpz1UxMFux0SgogqAmcH4Gkf+5d2WZr1ypMqLVpycYHOb24o/46rtTBN46U55xxtHJdXyf3P7JAHvKCcYIOCafKuo3kIAvhxE2UMi006JQ0WJQEymtzEsdgLv/e8keFxHJExONmH8p11Yw0MQYTnN+Odr+hgd/yt17nqJhbvEfvBR56SXEyMwBfCUd1hZDgDgu0k/DbczJDhAFDy8Wbo83f81qTAle3NrRT7SWtPPd/6DH5roempqyCXf/Dp9dHRwC7aw5fQgJZOzrwj4deVpn59FOVOF5T7Z8U6WngXTWTuNdpCOpRxsB8Z3WRjrHnNDm7X4lLhUQXzjgP4ZbFOVY6H/1m3O6lfZbbT39e5/dU6V2uvrCbLF34Fbo+2tgjqjTI1RU0PoNmdOV5hoJoIjdx8tsVOCCWzkDKdVooVtllsZKXqQs1JNsAqb1Myg6+yvd15uMkhbKEBZ3LURQqtgT/dfX/u0UBeQXndLdoGZVbzZydcufmQarDRgd8Rb6I/76iQisImQAsg0X0diTz1z8Yl8c777CFxLS0Awv2tv/vurBO3Uyw20RXLJRhcwmqzLTwR31LjS6GVcFm+G5PUluuSdZ3RM2RQIiWsoYL9iRqw7/i64LZES+dF+/jtFBdxque7c461fyevQrhA0xM0RT0q1C9j6H5z3pHmzHi4EYiYpQm/wZD9yi2bJQtr+FGJzjn3aHAs4oycFbbpGXFq73w5PK0zu4ozO4P1M40b4iWiziDQ9dMCbIOLtyhVuqCc26oViZXr4f8iZ606N7e27/uzjwcKJB+tvn4gkUX7yPb4WT+H8ioqJm/A+Ed25sYxFU/fX/9jrebN9nLZ8keevBftmxUloTd6XsdTYtEFNuFIlrdtUAJgk3wt6Vyjgz2uQPnG3Er/o1rNiRpgrFzBBVq1UnaTfEErLWD2zDxQHF2dcebG4wnx2Tj6M7XlzjmXArC/wJEcpNkGM9wwiQGMvj7usNx3K0pahiIjOh07mJPGpf9ofUqpL90iPxA/Q1PLdrJOBWBL1OcDGm7wgxiPlZnriNx3aedaUpCy7o+VRSGmiXnu0ASFR5v7DQXsbG0tmz2sAOx6s00YqdmcdjIGYzbIUAA++XTV/47SwIgC6fzkz4LDlVRbS6OzZMgKrMIrWi06o4ofRrGwXpJRLWrmvgrLxGcpxlQSfYMC69QESNC38NuCI8sbomduFnvtNHnyhzug1aJ1nmCGcjqUbNIsQDLkLVmQbOQXfd9f8mFwAVzDjXio48Iy4fdUZbJ8/FAodFVmkFvPHQxqYmWgK8uVK85dKtwjfjvROTN94sOUtUmbOr13M7tpPDKL2niLGqnyzagOLIm1+yWUC/GeRBe9cF94kdpKTO8ObUw4t7fXvkmZ54LZxnYxec8dDAwG93zMRHEfwKlZ6ovSgiaMqnH+gfof0XLRTApDhh0L/DruypGpHw3lLqvvrJAWfSU7L24C7EhDJixNvn/KsK/34lFqxF30vJqNrChpeDXb2zJT72Zb6Xm3cGnKxZuPRC9pK4MpuDNxUt53s2Dh+A2q/XSlXwL6FAXU250iF+kFpKazVG+wS0wHaRSmULshNDu6ipBCq/CyOQbQBkawdq2rQlwjdWBo7iTb6/fNON3cX4Z75g2xIjCi9y4k8SOUAc1lggT6IkaOeghM2w7qvA7ShHx3ncnhj3n5prCcfAv+fiM26brcUZc64ItL/Zu7s5WGXLzbTmsCYMPPPvFJey9uOr2mfhtNb8nCC6wUjqfYypUqoEIFyGaDm50OJQZ3nQ4vn6KvIKMMDGdCX85Hs9hOa7mVUR2cW1waHFZURgli3UHzHGRtto8fD6sd0J278wP1bv8knYd/EbpfjMmT27kLy3eLHfdCFuxr+550eujtO1acdq43O9jheh2tuKVFqmjXF6TNgP9eHT0zqRJH5XjIJYXcs2QNAEm6gUROIHj8G3/Dylg9Fq39YBfJlXq+ORdK31boz6VW2yWI5PYkF/XfzotASrpNrcXlwbnSnOiiDM+q4s/R/DRwaJtxOpQpZ5zLS1pHF5Xxl2kWDnfTsuZvd+aMcletJQ2uQrxXVwqkY4nrbLujBNL16pg2tZd12MiqXaFld+fL8Qil1KsMTF1k9faG9bFc1+xjrTORRDTKGagU7+AGP3/65PUxMnfs/E/LkTeJSmE5//7kz9rvlynnN5juDdg3AfbKbtqVTJV+o7fAgn9V3qRoKqa5kztdel4+ldW5idRrO6Xd5RzSluPlfhW74hPy4JIEDYEmsKz0XsZkY5+hBTb0Gg8WlV5TRYYVl/o30Xue7JYYRUHgAQSgTRLHnNgR5k7kegTFlWi2z/8YLnOWJgjyLcy7Gxv3tTsfOm9gBMbnolsg9+X3Pw2Pja9REdgjXxRxZmVlb7X/MRwDiWOoU3WZx0EOQ8y4w9c/rgrQhguQDLFirGsq5m1AyvkB/k6njZ3jC6MJzbb3ATuQUV07K95CaubJtmEwzkN9U80iq/Cu6sFQGQ3FHQtUm9zbsBjprvbFTt/uv5OZSGQ7LJLhfg7qdmqBldekf4m5vosLL8uQl+8EkEexAVc6U1Chk/8+BNLsPRRmxTCKR5QXPyQV3/4Rl4DKIL/VV/KPJ6yrMzAYqe8auOAPoVMJ/jcUlYma4JB8VDz/B8NzDA4p3965AAAAAElFTkSuQmCC
+name: Box
 script:
-  script: |-
-    /*
-        params.code = access_code in new integration
-    */
-    var Base = 'https://api.box.com/2.0/';
-    var BrandData = getBrandContext();
-    var ContextData = getIntegrationContext();
-    var CurrentTime = new Date();
-    var twoGraceMinute = 2 * 60 * 1000;
-
-    function fileInfoKeysCamelized(old_obj){
-        /* Gettin a JSON Object and returning all keys in camelcases and without underscore */
-        var new_obj;
-        if (old_obj instanceof Array){
-            new_obj = [];
-            for (var k in old_obj){
-                new_obj.push(fileInfoKeysCamelized(k));
-                }
-        }else if (old_obj instanceof Object){
-            new_obj = {};
-            for (var k in old_obj){
-                new_obj[underscoreToCamelCase(k)] = fileInfoKeysCamelized(old_obj[k]);
-            }
-        }else{
-            return old_obj;
-        }
-        return new_obj;
-    }
-
-    var sendRequest = function(method, url, body, token, redirect) {
-        if (redirect === undefined){
-            redirect = true;
-        }
-        return http(
-                url,
-                {
-                    Method: method,
-                    Headers: token ? {'Authorization': ['Bearer ' + token]} : {},
-                    Body: body,
-                },
-                false,
-                params.proxy,
-                redirect
-            );
-    }
-
-    var getNewToken = function() {
-        var request = {
-            client_id: BrandData.client_id,
-            client_secret: BrandData.client_secret,
-        };
-        request.code = args.access_code ? args.access_code : params.code;
-        // if there's no request code, return error
-        if (!params.code && !args.access_code){
-            throw "There's no access code, please use box_initiate command.";
-        }
-        request.grant_type = 'authorization_code';
-        // Send it and get initial access token
-        var response = sendRequest('POST', 'https://api.box.com/oauth2/token', encodeToURLQuery(request).substr(1), undefined);
-        if (response.StatusCode < 200 || response.StatusCode >= 300) {
-            throw 'Failed to get new token, request status code: ' + response.StatusCode + ' and Body: ' + response.Body + '.';
-        }
-        // save new token
-        newResponse = JSON.parse(response.Body);
-        newResponse.expires_in = newResponse.expires_in * 1000 + CurrentTime.getTime();
-        newResponse.code = args.access_code ? args.access_code : params.code;
-        setIntegrationContext(newResponse);
-        return newResponse.access_token;
-    }
-
-    function refreshToken(){
-        ContextData = getIntegrationContext();
-        var request = {
-            client_id: BrandData.client_id,
-            client_secret: BrandData.client_secret,
-        };
-        ContextData.expires_in += twoGraceMinute;
-        setIntegrationContext(ContextData);
-        // Build renewal request
-        request.refresh_token = ContextData.refresh_token;
-        request.grant_type = 'refresh_token';
-        // Send it and get new access token
-        var response = sendRequest('POST', 'https://api.box.com/oauth2/token', encodeToURLQuery(request).substr(1), undefined);
-        var i = 0;
-        var isRefreshed = false;
-        while (i < 5 && response.StatusCode === 401 && !isRefreshed) {
-            // try to refresh 5 times if we got 401
-            ContextData = getIntegrationContext();
-            wait(Math.floor(Math.random() * 10));
-            isRefreshed = ContextData.expires_in > (10 * 60 * 1000 + CurrentTime.getTime());
-            i++;
-        }
-        if (response.StatusCode < 200 || response.StatusCode >= 300) {
-            throw 'Failed to refresh token, request status code: ' + response.StatusCode + ' and Body: ' + response.Body + '.';
-        }
-        // save new token and refresh token
-        refreshResponse = JSON.parse(response.Body);
-        refreshResponse.expires_in = refreshResponse.expires_in * 1000 + CurrentTime.getTime();
-        refreshResponse.code = args.access_code ? args.access_code : params.code;
-        setIntegrationContext(refreshResponse);
-        return refreshResponse.access_token;
-    }
-
-    var getToken = function(forceRefresh) {
-        var returnToken = '';
-        ContextData = getIntegrationContext();
-        if (!Object.keys(ContextData).length) {
-            // Build get initial tokens request
-            returnToken = getNewToken();
-        } else if (forceRefresh || (ContextData.expiry && (ContextData.expires_in - twoGraceMinute > CurrentTime.getTime()))) {
-            // Give this thread two minutes before trying to get a new token
-            returnToken = refreshToken();
-        } else {
-            // context exist and valid - return token from context
-            returnToken = ContextData.access_token ;
-        }
-        return returnToken;
-    }
-
-    var urlDict = {
-        'box_get_current_user': 'users/me',
-        'box_get_users':'users',
-        'box_update_user':'users/',
-        'box_delete_user':'users/',
-        'box_add_user':'users',
-        'box_move_folder':'users/',
-        'box_files_get': 'files/$$/content',
-        'box_files_get_info': 'files/',
-        'box_files_upload': 'files/content'
-    }
-
-    var methodDict = {
-        'box_get_current_user': 'GET',
-        'box_get_users':'GET',
-        'box_update_user':'PUT',
-        'box_add_user':'POST',
-        'box_delete_user':'DELETE',
-        'box_move_folder':'PUT',
-        'box_files_get': 'GET',
-        'box_files_get_info': 'GET',
-        'box_files_upload': 'POST'
-    }
-
-    var userTableDict = {
-        'id':'ID',
-        'login':'Username',
-        'name':'Name',
-        'created_at':'Created at',
-        'status':'Status'
-    }
-
-    var userContextDict = {
-        'id':'ID',
-        'name':'Display Name',
-        'login':'Username',
-        'type':'Groups'
-    }
-
-
-    var encodeBody = function(command, args) {
-        if (command === 'box_move_folder') {
-            return JSON.stringify({'owned_by': { 'id': args['to_user_id']}});
-        }
-        if (args && Object.keys(args).length) {
-            return JSON.stringify(args);
-        }
-        return undefined;
-    }
-
-    var getURL = function(command, args) {
-        var base = urlDict[command];
-        switch (command) {
-            case 'box_update_user':
-            case 'box_delete_user':
-                base += args['user_id'];
-                delete args['user_id'];
-                break;
-            case 'box_move_folder':
-                // currently supporting only moving root folder (id:0) so setting it here hard-coded
-                args['folder_id']=0;
-                base += args['from_user_id'] + '/folders/' + args['folder_id'];
-                delete args['from_user_id'];
-                delete args['folder_id'];
-                break;
-            case 'box_files_get':
-                base = urlDict[command].replace('$$', args['file_id']);
-                delete args['file_id'];
-                break;
-            case 'box_files_get_info':
-                // base hardcoded because of use in other commands
-                base = urlDict[command] + args['file_id']
-                break;
-        }
-        return base
-    }
-
-    var usersToEc = function(users) {
-        var ec={};
-        ec.Account=[];
-
-        if (!users) {
-            return;
-        }
-
-        if (!Array.isArray(users)) {
-            users = [users];
-        }
-        for (var i=0;i<users.length;i++) {
-            var user = {'type':'Box'};
-            for (var key in userContextDict) {
-                user[userContextDict[key]] = users[i][key];
-            }
-            ec.Account.push(user);
-        }
-        return ec;
-    }
-    var usersToMd = function(users,verbose) {
-        var md ='';
-        if (!users) {
-            md += 'No users found\n';
-            return md;
-        }
-
-        if (!Array.isArray(users)) {
-            users = [users];
-        }
-
-        if (verbose=='true') {
-            for (var i=0;i<users.length;i++) {
-                md += '#### ' + users[i].login + '\n';
-                var head='|';
-                var line='|';
-                var data='|';
-                for (var key in users[i]) {
-                    head += key + '|';
-                    line += '-|';
-                    data += users[i][key] + '|';
-                }
-                md += head + '\n' + line + '\n' + data + '\n';
-            }
-
-        } else {
-            var head = '|';
-            var line = '|';
-            for (var key in userTableDict) {
-                head += userTableDict[key] + '|';
-                line += '-|';
-            }
-            md += head + '\n' + line + '\n';
-
-            for (var i=0;i<users.length;i++) {
-                md += '|';
-                for (var key in userTableDict) {
-                    md += users[i][key] + '|';
-                }
-                md += '\n';
-            }
-        }
-        return md;
-
-    };
-
-
-    function getFileInfo(){
-        // Getting file info
-        var command = 'box_files_get_info'
-        var method = methodDict['box_get_files_info']
-        var query = '';
-        var body = '';
-        var url = getURL(command, args);
-        query = encodeToURLQuery(args);
-        var response = sendRequest(method, Base + url + query, body, token, false);
-        var i = 0;
-        while (i < 5 && response.StatusCode === 401 || response.StatusCode === 400) {
-            // try to refresh 5 times if we got 401
-            token = getToken(true);
-            wait(Math.floor(Math.random() * 10));
-            response = sendRequest(method, Base + url + query, body, token, url, true);
-                i++;
-        }
-        if (response.StatusCode < 200 || response.StatusCode >= 300) {
-               throw 'Failed to ' + command + ', request status code: ' + response.StatusCode + ' and Body: ' + response.Body + '.';
-        }
-        var md = '';
-        var ec = null;
-        return response;
-    }
-    function getFiles(){
-        // Getting file info
-        var name = JSON.parse(getFileInfo().Body).name;
-        var method = methodDict[command];
-        var query = '';
-        var body = '';
-        var url = getURL(command, args);
-        query = encodeToURLQuery(args);
-        var response = sendRequest(method, Base + url + query, body, token, false);
-        var i = 0;
-        while (i < 5 && response.StatusCode === 401 || response.StatusCode === 400) {
-            // try to refresh 5 times if we got 401
-            token = getToken(true);
-            wait(Math.floor(Math.random() * 10));
-            response = sendRequest(method, Base + url + query, body, token, url, true);
-                i++;
-        }
-        if (response.StatusCode < 200 || response.StatusCode >= 300) {
-               throw 'Failed to ' + command + ', request status code: ' + response.StatusCode + ' and Body: ' + response.Body + '.';
-        }
-        return {Type: 3, FileID: saveFile(response.Bytes), File: name, Contents: name};
-    }
-
-    // Initialize token
-    var token = getToken(false);
-    switch (command) {
-        case 'test-module':
-            return "Please use box_initiate command to initialize Box's instance.";
-        case 'box_initiate':
-            var access_code = args.access_code;
-            token = getToken();
-            var testResponse = sendRequest('GET', Base + urlDict['box_get_current_user'], undefined, token, 'Test');
-            if (testResponse.StatusCode === 200) {
-                return 'Box initialized successfully';
-            }
-            return {Type: entryTypes.error, Contents:'Get the following status code ' + testResponse.StatusCode};
-        case 'box_files_get':
-            return getFiles();
-        default:
-            var method = methodDict[command];
-            var query = '';
-            var body = '';
-            var url = getURL(command, args);
-            if (method === 'GET') {
-                query = encodeToURLQuery(args);
-            } else {
-                body = encodeBody(command, args);
-            }
-            var response = sendRequest(method, Base + url + query, body, token, url);
-            var i = 0;
-            while (i < 5 && response.StatusCode === 401) {
-                // try to refresh 5 times if we got 401
-                token = getToken(true);
-                wait(Math.floor(Math.random() * 10));
-                response = sendRequest(method, Base + url + query, body, token, url);
-                response = sendRequest(method, Base + url + query, body, token, url);
-                i++;
-            }
-            if (response.StatusCode < 200 || response.StatusCode >= 300) {
-                throw 'Failed to ' + command + ', request status code: ' + response.StatusCode + ' and Body: ' + response.Body + '.';
-            }
-
-            var md = '';
-            var ec = null;
-            var contents = response.Body ? JSON.parse(response.Body) : 'success';
-            switch (command) {
-                case 'box_get_users':
-                    md = '### Box account users\n';
-                    md += usersToMd(contents.entries,args.verbose);
-                    ec = usersToEc(contents.entries);
-                    break;
-                case 'box_get_current_user':
-                    md = '### Box account current user\n';
-                    md += usersToMd(contents,args.verbose);
-                    break;
-                case 'box_update_user':
-                    md = '### User updated\n';
-                    md += usersToMd(contents,args.verbose);
-                    break;
-                case 'box_add_user':
-                    md = '### User created\n';
-                    md += usersToMd(contents,args.verbose);
-                    break;
-                case 'box_delete_user':
-                    md = '### User deleted\n';
-                    md += contents + '\n';
-                    break;
-                case 'box_move_folder':
-                    md = '### Folder moved\n';
-                    md += 'Content is now available in account **' + contents.owned_by.login + '** under directory **' + contents.name + '**\n';
-                    break;
-                case 'box_files_get_info':
-                    contents = fileInfoKeysCamelized(contents);
-                    md = '### File info:\n';
-                    md += objToMd(contents);
-                    ec = {
-                        'Box(val.Sha1 === obj.Sha1)': contents
-                    };
-                    break;
-                default:
-                    md = "### Box Response: " + response.Status + '\n';
-                    md += "#### response contents:\n" + objToMd(contents) + '\n';
-            }
-            return {Type: entryTypes.note, Contents: contents, EntryContext: ec, ContentsFormat: formats.json, HumanReadable: md};
-    }
-  type: javascript
   commands:
-  - name: box_get_current_user
-    arguments:
-    - name: verbose
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+  - arguments:
+    - auto: PREDEFINED
       description: Print verbose data on each user
+      name: verbose
+      predefined:
+      - 'true'
+      - 'false'
     description: Retrieves information about the user who is currently logged in i.e.
       the user for whom this auth token was generated
-  - name: box_get_users
-    arguments:
-    - name: filter_term
-      description: A string used to filter the results to only users starting with
+    name: box_get_current_user
+  - arguments:
+    - description: A string used to filter the results to only users starting with
         the filter_term in either the name or the login
-    - name: limit
-      description: The number of records to return. The default is 100 and the max
+      name: filter_term
+    - description: The number of records to return. The default is 100 and the max
         is 1000
-    - name: offset
-      description: The record at which to start. The default is 0
-    - name: user_type
-      description: The type of user to search for. Valid values are all, external
+      name: limit
+    - description: The record at which to start. The default is 0
+      name: offset
+    - description: The type of user to search for. Valid values are all, external
         or managed. If nothing is provided, the default behavior will be managed only
-    - name: verbose
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      name: user_type
+    - auto: PREDEFINED
       description: Print verbose data on each user
+      name: verbose
+      predefined:
+      - 'true'
+      - 'false'
+    description: Returns a list of all users for the Enterprise along with their user_id,
+      public_name, and login
+    name: box_get_users
     outputs:
     - contextPath: Account
       description: Account information of users returned by query, including ID, name
         and username
-    description: Returns a list of all users for the Enterprise along with their user_id,
-      public_name, and login
-  - name: box_update_user
-    arguments:
-    - name: notify
-      description: Whether the user should receive an email when they are rolled out
+  - arguments:
+    - description: Whether the user should receive an email when they are rolled out
         of an enterprise
-    - name: enterprise
-      description: Setting this to null will roll the user out of the enterprise and
+      name: notify
+    - description: Setting this to null will roll the user out of the enterprise and
         make them a free user. When passing a null value, do not pass this value as
         a string
-    - name: name
-      description: The name of this user
-    - name: role
-      description: string This user’s enterprise role
-    - name: language
-      description: The language of this user
-    - name: is_sync_enabled
-      description: Whether or not this user can use Box Sync
-    - name: job_title
-      description: The user’s job title
-    - name: phone
-      description: The user’s phone number
-    - name: address
-      description: The user’s address
-    - name: space_amount
-      description: The user’s total available space amount in byte. A value of -1
-        grants unlimited storage
-    - name: tracking_codes
-      description: An array of key/value pairs set by the user’s admin
-    - name: can_see_managed_users
-      description: ' boolean Whether this user can see other enterprise users in its
+      name: enterprise
+    - description: The name of this user
+      name: name
+    - description: "string This user\u2019s enterprise role"
+      name: role
+    - description: The language of this user
+      name: language
+    - description: Whether or not this user can use Box Sync
+      name: is_sync_enabled
+    - description: "The user\u2019s job title"
+      name: job_title
+    - description: "The user\u2019s phone number"
+      name: phone
+    - description: "The user\u2019s address"
+      name: address
+    - description: "The user\u2019s total available space amount in byte. A value\
+        \ of -1 grants unlimited storage"
+      name: space_amount
+    - description: "An array of key/value pairs set by the user\u2019s admin"
+      name: tracking_codes
+    - description: ' boolean Whether this user can see other enterprise users in its
         contact list'
-    - name: status
-      description: Can be active, inactive, cannot_delete_edit, or cannot_delete_edit_upload
-    - name: timezone
-      description: The timezone of this user
-    - name: is_exempt_from_device_limits
-      description: Whether to exempt this user from Enterprise device limits
-    - name: is_exempt_from_login_verification
-      description: Whether or not this user must use two-factor authentication
-    - name: is_password_reset_required
-      description: Whether or not the user is required to reset password
-    - name: user_id
-      required: true
-      default: true
+      name: can_see_managed_users
+    - description: Can be active, inactive, cannot_delete_edit, or cannot_delete_edit_upload
+      name: status
+    - description: The timezone of this user
+      name: timezone
+    - description: Whether to exempt this user from Enterprise device limits
+      name: is_exempt_from_device_limits
+    - description: Whether or not this user must use two-factor authentication
+      name: is_exempt_from_login_verification
+    - description: Whether or not the user is required to reset password
+      name: is_password_reset_required
+    - default: true
       description: The user id to update
+      name: user_id
+      required: true
     description: Used to edit the settings and information about a user
-  - name: box_add_user
-    arguments:
-    - name: login
-      required: true
-      default: true
+    name: box_update_user
+  - arguments:
+    - default: true
       description: The email address this user uses to login
-    - name: name
+      name: login
       required: true
-      description: The name of this user
-    - name: role
-      description: This user’s enterprise role. Can be coadmin or user
-    - name: language
-      description: The language of this user
-    - name: is_sync_enabled
-      description: Whether or not this user can use Box Sync
-    - name: job_title
-      description: The user’s job title
-    - name: phone
-      description: The user’s phone number
-    - name: address
-      description: The user’s address
-    - name: space_amount
-      description: The user’s total available space amount in bytes
-    - name: tracking_codes
-      description: An array of key/value pairs set by the user’s admin
-    - name: can_see_managed_users
-      description: Can be active, inactive, cannot_delete_edit, or cannot_delete_edit_upload
-    - name: timezone
-      description: The timezone of this user
-    - name: is_exempt_from_device_limits
-      description: Whether to exempt this user from Enterprise device limits
-    - name: is_exempt_from_login_verification
-      description: Whether or not this user must use two-factor authentication
+    - description: The name of this user
+      name: name
+      required: true
+    - description: "This user\u2019s enterprise role. Can be coadmin or user"
+      name: role
+    - description: The language of this user
+      name: language
+    - description: Whether or not this user can use Box Sync
+      name: is_sync_enabled
+    - description: "The user\u2019s job title"
+      name: job_title
+    - description: "The user\u2019s phone number"
+      name: phone
+    - description: "The user\u2019s address"
+      name: address
+    - description: "The user\u2019s total available space amount in bytes"
+      name: space_amount
+    - description: "An array of key/value pairs set by the user\u2019s admin"
+      name: tracking_codes
+    - description: Can be active, inactive, cannot_delete_edit, or cannot_delete_edit_upload
+      name: can_see_managed_users
+    - description: The timezone of this user
+      name: timezone
+    - description: Whether to exempt this user from Enterprise device limits
+      name: is_exempt_from_device_limits
+    - description: Whether or not this user must use two-factor authentication
+      name: is_exempt_from_login_verification
     description: Used to provision a new user in an enterprise
-  - name: box_delete_user
-    arguments:
-    - name: notify
-      description: Determines if the destination user should receive email notification
+    name: box_add_user
+  - arguments:
+    - description: Determines if the destination user should receive email notification
         of the transfer
-    - name: force
-      description: Whether or not the user should be deleted even if this user still
+      name: notify
+    - description: Whether or not the user should be deleted even if this user still
         own files
-    - name: user_id
-      required: true
-      default: true
+      name: force
+    - default: true
       description: The user id to update
+      name: user_id
+      required: true
     description: Deletes a user in an enterprise account
-  - name: box_move_folder
-    arguments:
-    - name: from_user_id
-      required: true
-      default: true
+    name: box_delete_user
+  - arguments:
+    - default: true
       description: The ID of the user who the folder will be transferred from
-    - name: to_user_id
+      name: from_user_id
       required: true
-      description: The ID of the user who the folder will be transferred to
-    description: Moves all of the owned content from within one user’s folder into
-      a new folder in another user’s account. You can move folders across users as
-      long as the you have administrative permissions and the ‘source’ user owns the
-      folders. To move everything from the root folder, use “0” which always represents
-      the root folder of a Box account (Currently only moving of the root folder (0)
-      is supported)
-  - name: box_files_get
+    - description: The ID of the user who the folder will be transferred to
+      name: to_user_id
+      required: true
+    description: "Moves all of the owned content from within one user\u2019s folder\
+      \ into a new folder in another user\u2019s account. You can move folders across\
+      \ users as long as the you have administrative permissions and the \u2018source\u2019\
+      \ user owns the folders. To move everything from the root folder, use \u201C\
+      0\u201D which always represents the root folder of a Box account (Currently\
+      \ only moving of the root folder (0) is supported)"
+    name: box_move_folder
+  - arguments:
+    - description: File's id
+      name: file_id
+      required: true
     description: getting a file from private Box storage
-    arguments:
-    - name: file_id
-      required: true
-      description: File's id
+    name: box_files_get
     outputs:
     - contextPath: File.Name
       description: Filename
@@ -589,17 +209,18 @@ script:
     - contextPath: File.SHA256
       description: SHA256 hash of the file
       type: string
-  - name: box_initiate
-    arguments:
-    - name: access_code
+  - arguments:
+    - description: Box's access code (see description)
+      name: access_code
       required: true
-      description: Box's access code (see description)
     description: Initialising of Box's integration
-  - name: box_files_get_info
-    arguments:
-    - name: file_id
+    name: box_initiate
+  - arguments:
+    - description: File's ID
+      name: file_id
       required: true
-      description: File's ID
+    description: Getting file info of provided ID
+    name: box_files_get_info
     outputs:
     - contextPath: Box.Size
       description: Size of file (in bits)
@@ -712,7 +333,178 @@ script:
     - contextPath: Box.ItemStatus
       description: File's status
       type: string
-    description: Getting file info of provided ID
   runonce: false
+  script: "/*\n    params.code = access_code in new integration\n*/\nvar Base = 'https://api.box.com/2.0/';\n\
+    var BrandData = getBrandContext();\nvar ContextData = getIntegrationContext();\n\
+    var CurrentTime = new Date();\nvar twoGraceMinute = 2 * 60 * 1000;\n\nfunction\
+    \ fileInfoKeysCamelized(old_obj){\n    /* Gettin a JSON Object and returning all\
+    \ keys in camelcases and without underscore */\n    var new_obj;\n    if (old_obj\
+    \ instanceof Array){\n        new_obj = [];\n        for (var k in old_obj){\n\
+    \            new_obj.push(fileInfoKeysCamelized(k));\n            }\n    }else\
+    \ if (old_obj instanceof Object){\n        new_obj = {};\n        for (var k in\
+    \ old_obj){\n            new_obj[underscoreToCamelCase(k)] = fileInfoKeysCamelized(old_obj[k]);\n\
+    \        }\n    }else{\n        return old_obj;\n    }\n    return new_obj;\n\
+    }\n\nvar sendRequest = function(method, url, body, token, redirect) {\n    if\
+    \ (redirect === undefined){\n        redirect = true;\n    }\n    return http(\n\
+    \            url,\n            {\n                Method: method,\n          \
+    \      Headers: token ? {'Authorization': ['Bearer ' + token]} : {},\n       \
+    \         Body: body,\n            },\n            false,\n            params.proxy,\n\
+    \            redirect\n        );\n}\n\nvar getNewToken = function() {\n    var\
+    \ request = {\n        client_id: BrandData.client_id,\n        client_secret:\
+    \ BrandData.client_secret,\n    };\n    request.code = args.access_code ? args.access_code\
+    \ : params.code;\n    // if there's no request code, return error\n    if (!params.code\
+    \ && !args.access_code){\n        throw \"There's no access code, please use box_initiate\
+    \ command.\";\n    }\n    request.grant_type = 'authorization_code';\n    // Send\
+    \ it and get initial access token\n    var response = sendRequest('POST', 'https://api.box.com/oauth2/token',\
+    \ encodeToURLQuery(request).substr(1), undefined);\n    if (response.StatusCode\
+    \ < 200 || response.StatusCode >= 300) {\n        throw 'Failed to get new token,\
+    \ request status code: ' + response.StatusCode + ' and Body: ' + response.Body\
+    \ + '.';\n    }\n    // save new token\n    newResponse = JSON.parse(response.Body);\n\
+    \    newResponse.expires_in = newResponse.expires_in * 1000 + CurrentTime.getTime();\n\
+    \    newResponse.code = args.access_code ? args.access_code : params.code;\n \
+    \   setIntegrationContext(newResponse);\n    return newResponse.access_token;\n\
+    }\n\nfunction refreshToken(){\n    ContextData = getIntegrationContext();\n  \
+    \  var request = {\n        client_id: BrandData.client_id,\n        client_secret:\
+    \ BrandData.client_secret,\n    };\n    ContextData.expires_in += twoGraceMinute;\n\
+    \    setIntegrationContext(ContextData);\n    // Build renewal request\n    request.refresh_token\
+    \ = ContextData.refresh_token;\n    request.grant_type = 'refresh_token';\n  \
+    \  // Send it and get new access token\n    var response = sendRequest('POST',\
+    \ 'https://api.box.com/oauth2/token', encodeToURLQuery(request).substr(1), undefined);\n\
+    \    var i = 0;\n    var isRefreshed = false;\n    while (i < 5 && response.StatusCode\
+    \ === 401 && !isRefreshed) {\n        // try to refresh 5 times if we got 401\n\
+    \        ContextData = getIntegrationContext();\n        wait(Math.floor(Math.random()\
+    \ * 10));\n        isRefreshed = ContextData.expires_in > (10 * 60 * 1000 + CurrentTime.getTime());\n\
+    \        i++;\n    }\n    if (response.StatusCode < 200 || response.StatusCode\
+    \ >= 300) {\n        throw 'Failed to refresh token, request status code: ' +\
+    \ response.StatusCode + ' and Body: ' + response.Body + '.';\n    }\n    // save\
+    \ new token and refresh token\n    refreshResponse = JSON.parse(response.Body);\n\
+    \    refreshResponse.expires_in = refreshResponse.expires_in * 1000 + CurrentTime.getTime();\n\
+    \    refreshResponse.code = args.access_code ? args.access_code : params.code;\n\
+    \    setIntegrationContext(refreshResponse);\n    return refreshResponse.access_token;\n\
+    }\n\nvar getToken = function(forceRefresh) {\n    var returnToken = '';\n    ContextData\
+    \ = getIntegrationContext();\n    if (!Object.keys(ContextData).length) {\n  \
+    \      // Build get initial tokens request\n        returnToken = getNewToken();\n\
+    \    } else if (forceRefresh || (ContextData.expiry && (ContextData.expires_in\
+    \ - twoGraceMinute > CurrentTime.getTime()))) {\n        // Give this thread two\
+    \ minutes before trying to get a new token\n        returnToken = refreshToken();\n\
+    \    } else {\n        // context exist and valid - return token from context\n\
+    \        returnToken = ContextData.access_token ;\n    }\n    return returnToken;\n\
+    }\n\nvar urlDict = {\n    'box_get_current_user': 'users/me',\n    'box_get_users':'users',\n\
+    \    'box_update_user':'users/',\n    'box_delete_user':'users/',\n    'box_add_user':'users',\n\
+    \    'box_move_folder':'users/',\n    'box_files_get': 'files/$$/content',\n \
+    \   'box_files_get_info': 'files/',\n    'box_files_upload': 'files/content'\n\
+    }\n\nvar methodDict = {\n    'box_get_current_user': 'GET',\n    'box_get_users':'GET',\n\
+    \    'box_update_user':'PUT',\n    'box_add_user':'POST',\n    'box_delete_user':'DELETE',\n\
+    \    'box_move_folder':'PUT',\n    'box_files_get': 'GET',\n    'box_files_get_info':\
+    \ 'GET',\n    'box_files_upload': 'POST'\n}\n\nvar userTableDict = {\n    'id':'ID',\n\
+    \    'login':'Username',\n    'name':'Name',\n    'created_at':'Created at',\n\
+    \    'status':'Status'\n}\n\nvar userContextDict = {\n    'id':'ID',\n    'name':'Display\
+    \ Name',\n    'login':'Username',\n    'type':'Groups'\n}\n\n\nvar encodeBody\
+    \ = function(command, args) {\n    if (command === 'box_move_folder') {\n    \
+    \    return JSON.stringify({'owned_by': { 'id': args['to_user_id']}});\n    }\n\
+    \    if (args && Object.keys(args).length) {\n        return JSON.stringify(args);\n\
+    \    }\n    return undefined;\n}\n\nvar getURL = function(command, args) {\n \
+    \   var base = urlDict[command];\n    switch (command) {\n        case 'box_update_user':\n\
+    \        case 'box_delete_user':\n            base += args['user_id'];\n     \
+    \       delete args['user_id'];\n            break;\n        case 'box_move_folder':\n\
+    \            // currently supporting only moving root folder (id:0) so setting\
+    \ it here hard-coded\n            args['folder_id']=0;\n            base += args['from_user_id']\
+    \ + '/folders/' + args['folder_id'];\n            delete args['from_user_id'];\n\
+    \            delete args['folder_id'];\n            break;\n        case 'box_files_get':\n\
+    \            base = urlDict[command].replace('$$', args['file_id']);\n       \
+    \     delete args['file_id'];\n            break;\n        case 'box_files_get_info':\n\
+    \            // base hardcoded because of use in other commands\n            base\
+    \ = urlDict[command] + args['file_id']\n            break;\n    }\n    return\
+    \ base\n}\n\nvar usersToEc = function(users) {\n    var ec={};\n    ec.Account=[];\n\
+    \n    if (!users) {\n        return;\n    }\n\n    if (!Array.isArray(users))\
+    \ {\n        users = [users];\n    }\n    for (var i=0;i<users.length;i++) {\n\
+    \        var user = {'type':'Box'};\n        for (var key in userContextDict)\
+    \ {\n            user[userContextDict[key]] = users[i][key];\n        }\n    \
+    \    ec.Account.push(user);\n    }\n    return ec;\n}\nvar usersToMd = function(users,verbose)\
+    \ {\n    var md ='';\n    if (!users) {\n        md += 'No users found\\n';\n\
+    \        return md;\n    }\n\n    if (!Array.isArray(users)) {\n        users\
+    \ = [users];\n    }\n\n    if (verbose=='true') {\n        for (var i=0;i<users.length;i++)\
+    \ {\n            md += '#### ' + users[i].login + '\\n';\n            var head='|';\n\
+    \            var line='|';\n            var data='|';\n            for (var key\
+    \ in users[i]) {\n                head += key + '|';\n                line +=\
+    \ '-|';\n                data += users[i][key] + '|';\n            }\n       \
+    \     md += head + '\\n' + line + '\\n' + data + '\\n';\n        }\n\n    } else\
+    \ {\n        var head = '|';\n        var line = '|';\n        for (var key in\
+    \ userTableDict) {\n            head += userTableDict[key] + '|';\n          \
+    \  line += '-|';\n        }\n        md += head + '\\n' + line + '\\n';\n\n  \
+    \      for (var i=0;i<users.length;i++) {\n            md += '|';\n          \
+    \  for (var key in userTableDict) {\n                md += users[i][key] + '|';\n\
+    \            }\n            md += '\\n';\n        }\n    }\n    return md;\n\n\
+    };\n\n\nfunction getFileInfo(){\n    // Getting file info\n    var command = 'box_files_get_info'\n\
+    \    var method = methodDict['box_get_files_info']\n    var query = '';\n    var\
+    \ body = '';\n    var url = getURL(command, args);\n    query = encodeToURLQuery(args);\n\
+    \    var response = sendRequest(method, Base + url + query, body, token, false);\n\
+    \    var i = 0;\n    while (i < 5 && response.StatusCode === 401 || response.StatusCode\
+    \ === 400) {\n        // try to refresh 5 times if we got 401\n        token =\
+    \ getToken(true);\n        wait(Math.floor(Math.random() * 10));\n        response\
+    \ = sendRequest(method, Base + url + query, body, token, url, true);\n       \
+    \     i++;\n    }\n    if (response.StatusCode < 200 || response.StatusCode >=\
+    \ 300) {\n           throw 'Failed to ' + command + ', request status code: '\
+    \ + response.StatusCode + ' and Body: ' + response.Body + '.';\n    }\n    var\
+    \ md = '';\n    var ec = null;\n    return response;\n}\nfunction getFiles(){\n\
+    \    // Getting file info\n    var name = JSON.parse(getFileInfo().Body).name;\n\
+    \    var method = methodDict[command];\n    var query = '';\n    var body = '';\n\
+    \    var url = getURL(command, args);\n    query = encodeToURLQuery(args);\n \
+    \   var response = sendRequest(method, Base + url + query, body, token, false);\n\
+    \    var i = 0;\n    while (i < 5 && response.StatusCode === 401 || response.StatusCode\
+    \ === 400) {\n        // try to refresh 5 times if we got 401\n        token =\
+    \ getToken(true);\n        wait(Math.floor(Math.random() * 10));\n        response\
+    \ = sendRequest(method, Base + url + query, body, token, url, true);\n       \
+    \     i++;\n    }\n    if (response.StatusCode < 200 || response.StatusCode >=\
+    \ 300) {\n           throw 'Failed to ' + command + ', request status code: '\
+    \ + response.StatusCode + ' and Body: ' + response.Body + '.';\n    }\n    return\
+    \ {Type: 3, FileID: saveFile(response.Bytes), File: name, Contents: name};\n}\n\
+    \n// Initialize token\nvar token = getToken(false);\nswitch (command) {\n    case\
+    \ 'test-module':\n        return \"Please use box_initiate command to initialize\
+    \ Box's instance.\";\n    case 'box_initiate':\n        var access_code = args.access_code;\n\
+    \        token = getToken();\n        var testResponse = sendRequest('GET', Base\
+    \ + urlDict['box_get_current_user'], undefined, token, 'Test');\n        if (testResponse.StatusCode\
+    \ === 200) {\n            return 'Box initialized successfully';\n        }\n\
+    \        return {Type: entryTypes.error, Contents:'Get the following status code\
+    \ ' + testResponse.StatusCode};\n    case 'box_files_get':\n        return getFiles();\n\
+    \    default:\n        var method = methodDict[command];\n        var query =\
+    \ '';\n        var body = '';\n        var url = getURL(command, args);\n    \
+    \    if (method === 'GET') {\n            query = encodeToURLQuery(args);\n  \
+    \      } else {\n            body = encodeBody(command, args);\n        }\n  \
+    \      var response = sendRequest(method, Base + url + query, body, token, url);\n\
+    \        var i = 0;\n        while (i < 5 && response.StatusCode === 401) {\n\
+    \            // try to refresh 5 times if we got 401\n            token = getToken(true);\n\
+    \            wait(Math.floor(Math.random() * 10));\n            response = sendRequest(method,\
+    \ Base + url + query, body, token, url);\n            response = sendRequest(method,\
+    \ Base + url + query, body, token, url);\n            i++;\n        }\n      \
+    \  if (response.StatusCode < 200 || response.StatusCode >= 300) {\n          \
+    \  throw 'Failed to ' + command + ', request status code: ' + response.StatusCode\
+    \ + ' and Body: ' + response.Body + '.';\n        }\n\n        var md = '';\n\
+    \        var ec = null;\n        var contents = response.Body ? JSON.parse(response.Body)\
+    \ : 'success';\n        switch (command) {\n            case 'box_get_users':\n\
+    \                md = '### Box account users\\n';\n                md += usersToMd(contents.entries,args.verbose);\n\
+    \                ec = usersToEc(contents.entries);\n                break;\n \
+    \           case 'box_get_current_user':\n                md = '### Box account\
+    \ current user\\n';\n                md += usersToMd(contents,args.verbose);\n\
+    \                break;\n            case 'box_update_user':\n               \
+    \ md = '### User updated\\n';\n                md += usersToMd(contents,args.verbose);\n\
+    \                break;\n            case 'box_add_user':\n                md\
+    \ = '### User created\\n';\n                md += usersToMd(contents,args.verbose);\n\
+    \                break;\n            case 'box_delete_user':\n               \
+    \ md = '### User deleted\\n';\n                md += contents + '\\n';\n     \
+    \           break;\n            case 'box_move_folder':\n                md =\
+    \ '### Folder moved\\n';\n                md += 'Content is now available in account\
+    \ **' + contents.owned_by.login + '** under directory **' + contents.name + '**\\\
+    n';\n                break;\n            case 'box_files_get_info':\n        \
+    \        contents = fileInfoKeysCamelized(contents);\n                md = '###\
+    \ File info:\\n';\n                md += objToMd(contents);\n                ec\
+    \ = {\n                    'Box(val.Sha1 === obj.Sha1)': contents\n          \
+    \      };\n                break;\n            default:\n                md =\
+    \ \"### Box Response: \" + response.Status + '\\n';\n                md += \"\
+    #### response contents:\\n\" + objToMd(contents) + '\\n';\n        }\n       \
+    \ return {Type: entryTypes.note, Contents: contents, EntryContext: ec, ContentsFormat:\
+    \ formats.json, HumanReadable: md};\n}"
+  type: javascript
 tests:
-  - No test
+- No test
+toversion: 4.1.9

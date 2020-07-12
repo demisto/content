@@ -1,48 +1,34 @@
 id: CompareIncidentsLabels-test-playbook
-version: -1
+inputs: []
 name: CompareIncidentsLabels test playbook
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 9daed4bd-f446-4009-8626-73581bfd6060
-    type: start
-    task:
-      id: 9daed4bd-f446-4009-8626-73581bfd6060
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: db9958e9-ea8e-4b39-86ee-ccb32636d11e
-    type: regular
-    task:
-      id: db9958e9-ea8e-4b39-86ee-ccb32636d11e
-      version: -1
-      name: Create incident
-      description: commands.local.cmd.create.inc
-      script: Builtin|||createNewIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
     nexttasks:
       '#none#':
-      - "2"
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 9daed4bd-f446-4009-8626-73581bfd6060
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 9daed4bd-f446-4009-8626-73581bfd6060
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
     scriptarguments:
       affecteddata: {}
       affecteddatatype: {}
@@ -139,32 +125,26 @@ tasks:
       vulnerabilitycategory: {}
       whereisdatahosted: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: f406e101-d395-4d92-8387-39d4a4dd85d9
-    type: regular
     task:
-      id: f406e101-d395-4d92-8387-39d4a4dd85d9
-      version: -1
-      name: Create the same incident
+      brand: Builtin
       description: commands.local.cmd.create.inc
+      id: db9958e9-ea8e-4b39-86ee-ccb32636d11e
+      iscommand: true
+      name: Create incident
       script: Builtin|||createNewIncident
       type: regular
-      iscommand: true
-      brand: Builtin
+      version: -1
+    taskid: db9958e9-ea8e-4b39-86ee-ccb32636d11e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
     scriptarguments:
       affecteddata: {}
       affecteddatatype: {}
@@ -261,32 +241,26 @@ tasks:
       vulnerabilitycategory: {}
       whereisdatahosted: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: 76a36dd5-1f52-461a-80f9-722ca2e2575b
-    type: regular
     task:
-      id: 76a36dd5-1f52-461a-80f9-722ca2e2575b
-      version: -1
-      name: Create different incident
+      brand: Builtin
       description: commands.local.cmd.create.inc
+      id: f406e101-d395-4d92-8387-39d4a4dd85d9
+      iscommand: true
+      name: Create the same incident
       script: Builtin|||createNewIncident
       type: regular
-      iscommand: true
-      brand: Builtin
+      version: -1
+    taskid: f406e101-d395-4d92-8387-39d4a4dd85d9
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
+    note: false
     scriptarguments:
       affecteddata: {}
       affecteddatatype: {}
@@ -383,184 +357,160 @@ tasks:
       vulnerabilitycategory: {}
       whereisdatahosted: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 931254fd-55df-43ef-82ee-737d158ecdcf
-    type: regular
     task:
+      brand: Builtin
+      description: commands.local.cmd.create.inc
+      id: 76a36dd5-1f52-461a-80f9-722ca2e2575b
+      iscommand: true
+      name: Create different incident
+      script: Builtin|||createNewIncident
+      type: regular
+      version: -1
+    taskid: 76a36dd5-1f52-461a-80f9-722ca2e2575b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    scriptarguments:
+      inc1:
+        complex:
+          root: CreatedIncidentID
+          transformers:
+          - args:
+              index:
+                value:
+                  simple: '1'
+            operator: atIndex
+      inc2:
+        complex:
+          root: CreatedIncidentID
+          transformers:
+          - args:
+              index:
+                value:
+                  simple: '0'
+            operator: atIndex
+      incident_id_1:
+        complex:
+          root: CreatedIncidentID
+          transformers:
+          - args:
+              index:
+                value:
+                  simple: '1'
+            operator: atIndex
+      incident_id_2:
+        complex:
+          root: CreatedIncidentID
+          transformers:
+          - args:
+              index:
+                value:
+                  simple: '0'
+            operator: atIndex
+    separatecontext: false
+    task:
+      brand: ''
+      description: Compares the labels of two incidents. Returns the different labels
+        in them.
       id: 931254fd-55df-43ef-82ee-737d158ecdcf
-      version: -1
+      iscommand: false
       name: Check the first 2 labels
-      description: Compares the labels of two incidents. Returns the different labels
-        in them.
       scriptName: CompareIncidentsLabels
       type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
+      version: -1
+    taskid: 931254fd-55df-43ef-82ee-737d158ecdcf
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
+    note: false
     scriptarguments:
       inc1:
         complex:
           root: CreatedIncidentID
           transformers:
-          - operator: atIndex
-            args:
+          - args:
               index:
                 value:
-                  simple: "1"
+                  simple: '1'
+            operator: atIndex
       inc2:
         complex:
           root: CreatedIncidentID
           transformers:
-          - operator: atIndex
-            args:
+          - args:
               index:
                 value:
-                  simple: "0"
+                  simple: '2'
+            operator: atIndex
       incident_id_1:
         complex:
           root: CreatedIncidentID
           transformers:
-          - operator: atIndex
-            args:
+          - args:
               index:
                 value:
-                  simple: "1"
+                  simple: '1'
+            operator: atIndex
       incident_id_2:
         complex:
           root: CreatedIncidentID
           transformers:
-          - operator: atIndex
-            args:
+          - args:
               index:
                 value:
-                  simple: "0"
+                  simple: '2'
+            operator: atIndex
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: aa681551-105e-4adc-8756-d4b0f992523a
-    type: regular
     task:
+      brand: ''
+      description: Compares the labels of two incidents. Returns the different labels
+        in them.
       id: aa681551-105e-4adc-8756-d4b0f992523a
-      version: -1
+      iscommand: false
       name: Check the last 2 labels
-      description: Compares the labels of two incidents. Returns the different labels
-        in them.
       scriptName: CompareIncidentsLabels
       type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      inc1:
-        complex:
-          root: CreatedIncidentID
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "1"
-      inc2:
-        complex:
-          root: CreatedIncidentID
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "2"
-      incident_id_1:
-        complex:
-          root: CreatedIncidentID
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "1"
-      incident_id_2:
-        complex:
-          root: CreatedIncidentID
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "2"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: bb607639-6535-4d21-830e-8f2a651d933c
-    type: regular
-    task:
-      id: bb607639-6535-4d21-830e-8f2a651d933c
       version: -1
-      name: Sleep
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: aa681551-105e-4adc-8756-d4b0f992523a
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
+    note: false
     scriptarguments:
       seconds:
-        simple: "5"
+        simple: '5'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      description: Sleep for X seconds
+      id: bb607639-6535-4d21-830e-8f2a651d933c
+      iscommand: false
+      name: Sleep
+      scriptName: Sleep
+      type: regular
+      version: -1
+    taskid: bb607639-6535-4d21-830e-8f2a651d933c
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1115,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1115,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

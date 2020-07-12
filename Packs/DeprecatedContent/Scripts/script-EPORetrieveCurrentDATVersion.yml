@@ -1,52 +1,40 @@
+args:
+- default: true
+  description: Instance names of ePO servers to check (comma-separated)
+  name: repos
+  required: true
+comment: Retrieve DAT version currently installed in the given ePO server
 commonfields:
   id: EPORetrieveCurrentDATVersion
   version: -1
-name: EPORetrieveCurrentDATVersion
-script: |
-  res = []
-  repos = demisto.get(demisto.args(), 'repos')
-  if not repos:
-      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Received empty repository list!"})
-  else:
-      repos = ','.join(repos) if isinstance(repos, list) else repos
-      # Find the VSCANDAT1000 Package
-      dArgs = {"using": repos,
-               "command": "repository.findPackages",
-               "params": "searchText=VSCANDAT1000"
-               }
-      repoVersions = {}
-      resCmdName = demisto.executeCommand('epo-command', dArgs)
-      try:
-          for entry in resCmdName:
-              if isError(entry):
-                  res = resCmdName
-                  break
-              else:
-                  repoName = entry['ModuleName']
-                  myData = demisto.get(entry, 'Contents.response')[0]['productDetectionProductVersion']
-                  repoVersions[repoName] = myData
-      except Exception as ex:
-          res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                      "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmdName)})
-
-      demisto.setContext('repoversions', repoVersions)
-      tbl = [{'Repository': k, 'Version of DAT': repoVersions[k]} for k in repoVersions]
-      res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": tbl})
-  demisto.results(res)
-type: python
-subtype: python2
-tags:
-- epo
-comment: Retrieve DAT version currently installed in the given ePO server
-system: true
-deprecated: true
-args:
-- name: repos
-  required: true
-  default: true
-  description: Instance names of ePO servers to check (comma-separated)
-scripttarget: 0
 dependson:
   must:
   - epo-command
+deprecated: true
+name: EPORetrieveCurrentDATVersion
+script: "res = []\nrepos = demisto.get(demisto.args(), 'repos')\nif not repos:\n \
+  \   res.append({\"Type\": entryTypes[\"error\"], \"ContentsFormat\": formats[\"\
+  text\"], \"Contents\": \"Received empty repository list!\"})\nelse:\n    repos =\
+  \ ','.join(repos) if isinstance(repos, list) else repos\n    # Find the VSCANDAT1000\
+  \ Package\n    dArgs = {\"using\": repos,\n             \"command\": \"repository.findPackages\"\
+  ,\n             \"params\": \"searchText=VSCANDAT1000\"\n             }\n    repoVersions\
+  \ = {}\n    resCmdName = demisto.executeCommand('epo-command', dArgs)\n    try:\n\
+  \        for entry in resCmdName:\n            if isError(entry):\n            \
+  \    res = resCmdName\n                break\n            else:\n              \
+  \  repoName = entry['ModuleName']\n                myData = demisto.get(entry, 'Contents.response')[0]['productDetectionProductVersion']\n\
+  \                repoVersions[repoName] = myData\n    except Exception as ex:\n\
+  \        res.append({\"Type\": entryTypes[\"error\"], \"ContentsFormat\": formats[\"\
+  text\"],\n                    \"Contents\": \"Error occurred while parsing output\
+  \ from command. Exception info:\\n\" + str(ex) + \"\\n\\nInvalid output:\\n\" +\
+  \ str(resCmdName)})\n\n    demisto.setContext('repoversions', repoVersions)\n  \
+  \  tbl = [{'Repository': k, 'Version of DAT': repoVersions[k]} for k in repoVersions]\n\
+  \    res.append({\"Type\": entryTypes[\"note\"], \"ContentsFormat\": formats[\"\
+  table\"], \"Contents\": tbl})\ndemisto.results(res)\n"
+scripttarget: 0
+subtype: python2
+system: true
+tags:
+- epo
 timeout: 0s
+toversion: 4.1.9
+type: python

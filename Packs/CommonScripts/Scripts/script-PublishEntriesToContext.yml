@@ -1,48 +1,33 @@
+args:
+- default: true
+  description: The entry IDs we want to publish. Accepts comma separated IDs or a
+    list of strings.
+  name: ids
+  required: true
+- description: The name of the context key. Default is "entries".
+  name: out
+comment: Publish entries to incident's context
 commonfields:
   id: PublishEntriesToContext
   version: -1
-name: PublishEntriesToContext
-script: |-
-  var ids = argToList(args.ids);
-  var out = args.out ? args.out : 'entries';
-  var data = [];
-
-  for (var i=0; i<ids.length; i++) {
-      var entryRes = executeCommand('getEntry', {id: ids[i]});
-      if (entryRes && Array.isArray(entryRes)) {
-          if (entryRes[0].Type !== entryTypes.error) {
-              data.push(entryRes[0].Contents);
-          }
-      }
-  }
-  if (data.length > 0) {
-      var ec = {};
-      ec[out] = data;
-      return {
-          Type: entryTypes.note,
-          Contents: data,
-          ContentsFormat: formats.json,
-          HumanReadable: 'Published ' + data.length + ' entries to context under ' + out,
-          EntryContext: ec
-      };
-  }
-  return 'No entries found';
-type: javascript
-tags:
-- Utility
-comment: Publish entries to incident's context
+dependson: {}
 enabled: true
-args:
-- name: ids
-  required: true
-  default: true
-  description: The entry IDs we want to publish. Accepts comma separated IDs or a
-    list of strings.
-- name: out
-  description: The name of the context key. Default is "entries".
+name: PublishEntriesToContext
 outputs:
 - contextPath: entries
   description: The entries published to context if out key was not provided
+script: "var ids = argToList(args.ids);\nvar out = args.out ? args.out : 'entries';\n\
+  var data = [];\n\nfor (var i=0; i<ids.length; i++) {\n    var entryRes = executeCommand('getEntry',\
+  \ {id: ids[i]});\n    if (entryRes && Array.isArray(entryRes)) {\n        if (entryRes[0].Type\
+  \ !== entryTypes.error) {\n            data.push(entryRes[0].Contents);\n      \
+  \  }\n    }\n}\nif (data.length > 0) {\n    var ec = {};\n    ec[out] = data;\n\
+  \    return {\n        Type: entryTypes.note,\n        Contents: data,\n       \
+  \ ContentsFormat: formats.json,\n        HumanReadable: 'Published ' + data.length\
+  \ + ' entries to context under ' + out,\n        EntryContext: ec\n    };\n}\nreturn\
+  \ 'No entries found';"
 scripttarget: 0
-dependson: {}
+tags:
+- Utility
 timeout: 0s
+toversion: 4.1.9
+type: javascript

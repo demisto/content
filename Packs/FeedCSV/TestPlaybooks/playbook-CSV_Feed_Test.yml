@@ -1,199 +1,161 @@
-elasticcommonfields: {}
-id: CSV_Feed_Test
-version: -1
 contentitemfields:
   propagationLabels: []
+elasticcommonfields: {}
+id: CSV_Feed_Test
+inputs: []
 name: CSV_Feed_Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
+system: true
 tasks:
-  "0":
-    id: "0"
-    taskid: 629b23e0-7b34-4e9e-8709-e40d1033914a
-    type: start
+  '0':
+    id: '0'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
+      brand: ''
       elasticcommonfields: {}
       id: 629b23e0-7b34-4e9e-8709-e40d1033914a
-      version: -1
-      name: ""
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "1":
-    id: "1"
-    taskid: 98f6fb64-f10f-43bf-8036-10a293fa6916
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: 98f6fb64-f10f-43bf-8036-10a293fa6916
+      name: ''
       version: -1
-      name: Get Indicators
-      description: Get the feed indicators.
-      script: CSVFeed|||csv-get-indicators
-      type: regular
-      iscommand: true
-      brand: CSVFeed
+    taskid: 629b23e0-7b34-4e9e-8709-e40d1033914a
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
+    quietmode: 0
     scriptarguments:
       extend-context:
         simple: CSVFeed.value=value::CSVFeed.type=type
       indicator_type:
         simple: URL
       limit:
-        simple: "10"
+        simple: '10'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "2":
-    id: "2"
-    taskid: 1190a77d-6173-4014-8380-21768b6146b2
-    type: condition
     task:
+      brand: CSVFeed
+      description: Get the feed indicators.
       elasticcommonfields: {}
-      id: 1190a77d-6173-4014-8380-21768b6146b2
+      id: 98f6fb64-f10f-43bf-8036-10a293fa6916
+      iscommand: true
+      name: Get Indicators
+      script: CSVFeed|||csv-get-indicators
+      type: regular
       version: -1
-      name: Assert Output
-      description: Asserts output.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "3"
-    separatecontext: false
+    taskid: 98f6fb64-f10f-43bf-8036-10a293fa6916
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '2':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: CSVFeed
                 accessor: value
+                root: CSVFeed
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: containsGeneral
-          left:
             value:
               complex:
-                root: CSVFeed
                 accessor: type
-            iscontext: true
+                root: CSVFeed
+          operator: containsGeneral
           right:
             value:
               simple: URL
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
+      label: 'yes'
+    id: '2'
     ignoreworker: false
-    skipunavailable: false
+    nexttasks:
+      'yes':
+      - '3'
+    note: false
     quietmode: 0
-  "3":
-    id: "3"
-    taskid: 012a601e-ed7e-4091-80ee-d9071f0c9937
-    type: title
+    separatecontext: false
+    skipunavailable: false
     task:
+      brand: ''
+      description: Asserts output.
+      elasticcommonfields: {}
+      id: 1190a77d-6173-4014-8380-21768b6146b2
+      iscommand: false
+      name: Assert Output
+      type: condition
+      version: -1
+    taskid: 1190a77d-6173-4014-8380-21768b6146b2
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Done
       elasticcommonfields: {}
       id: 012a601e-ed7e-4091-80ee-d9071f0c9937
-      version: -1
+      iscommand: false
       name: Done
-      description: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "4":
-    id: "4"
-    taskid: 4e5d7a78-4f39-481d-8168-de2e970706e5
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: 4e5d7a78-4f39-481d-8168-de2e970706e5
       version: -1
-      name: Delete Context
-      description: Delete field from context.
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: 012a601e-ed7e-4091-80ee-d9071f0c9937
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-system: true
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 735,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    task:
+      brand: ''
+      description: Delete field from context.
+      elasticcommonfields: {}
+      id: 4e5d7a78-4f39-481d-8168-de2e970706e5
+      iscommand: false
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 4e5d7a78-4f39-481d-8168-de2e970706e5
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 735,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

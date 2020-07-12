@@ -1,89 +1,76 @@
+args:
+- default: true
+  description: Search all fields for the given data
+  name: q
+- description: Search based on actor name
+  name: name
+- description: Search based on description
+  name: description
+- description: Search range from modified date. Dates are formatted as YYYY-MM-DD.
+  name: minLastModifiedDate
+- description: Search range to modified date. Dates are formatted as YYYY-MM-DD.
+  name: maxLastModifiedDate
+- description: Search range from activity date. Dates are formatted as YYYY-MM-DD.
+  name: minLastActivityDate
+- description: Search range to activity date. Dates are formatted as YYYY-MM-DD.
+  name: maxLastActivityDate
+- description: Search by origins - takes a comma-separated list
+  name: origins
+- description: Search by target countries - takes a comma-separated list
+  name: targetCountries
+- description: Search by target industries - takes a comma-separated list
+  name: targetIndustries
+- description: Search by motivations - takes a comma-separated list
+  name: motivations
+- description: Sort is field_name.order, field_name.order where order is either asc
+    or desc.
+  name: sort
+- description: Which page of the results to retrieve. It is 0 based.
+  name: offset
+- description: Number of results for the page
+  name: limit
+comment: Query CrowdStrike actors based on given parameters. For fields like countries
+  and industries, multiple values can be passed separated by ','.
 commonfields:
   id: CSActors
   version: -1
+dependson:
+  must:
+  - cs-actors
+deprecated: true
 name: CSActors
-script: |-
-  import time
-  def formatDate(t):
-      if t:
-          return time.ctime(t)
-      return ''
-  def formatSlugs(slugs):
-      res = ''
-      first = True
-      if slugs:
-          for s in slugs:
-              if first:
-                  first = False
-              else:
-                  res += ', '
-              res += demisto.gets(s, 'value')
-      return res
-  res = '## CrowdStrike Falcon Intelligence'
-  entry = demisto.executeCommand('cs-actors', demisto.args())[0]
-  if entry['Type'] != entryTypes['error'] and entry['ContentsFormat'] == formats['json']:
-      meta = demisto.get(entry, 'Contents.meta')
-      if meta:
-          res += '\n\n### Metadata'
-          res += '\n|Total|Offset|Limit|Time|'
-          res += '\n|-----|------|-----|----|'
-          res += '\n| ' + demisto.gets(meta, 'paging.total') + ' | ' + demisto.gets(meta, 'paging.offset') + ' | ' + demisto.gets(meta, 'paging.limit') + ' | ' + demisto.gets(meta, 'query_time') + ' |'
-      resources = demisto.get(entry, 'Contents.resources')
-      if resources:
-          res += '\n\n### Actors'
-          res += '\n|ID|Name|Short Description|URL|Known As|Create Date|First Date|Last Date|Origins|Target Countries|Target Industries|Motivations|'
-          res += '\n|--|----|-----------------|---|--------|-----------|----------|---------|-------|----------------|-----------------|-----------|'
-          for r in resources:
-              res += '\n| ' + demisto.gets(r, 'id') + ' | ' + demisto.gets(r, 'name') + ' | ' + demisto.gets(r, 'short_description') + ' | ' + demisto.gets(r, 'url') + ' | ' + \
-                     demisto.gets(r, 'known_as') + ' | ' + formatDate(demisto.get(r, 'created_date')) + ' | ' +  formatDate(demisto.get(r, 'first_activity_date')) + ' | ' + \
-                     formatDate(demisto.get(r, 'last_activity_date')) + ' | ' + formatSlugs(demisto.get(r, 'origins')) + ' | ' + formatSlugs(demisto.get(r, 'target_countries')) + ' | ' + \
-                     formatSlugs(demisto.get(r, 'target_industries')) + ' | ' + formatSlugs(demisto.get(r, 'motivations')) + ' |'
-      demisto.results({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': res})
-  else:
-      demisto.results(entry)
-type: python
+script: "import time\ndef formatDate(t):\n    if t:\n        return time.ctime(t)\n\
+  \    return ''\ndef formatSlugs(slugs):\n    res = ''\n    first = True\n    if\
+  \ slugs:\n        for s in slugs:\n            if first:\n                first\
+  \ = False\n            else:\n                res += ', '\n            res += demisto.gets(s,\
+  \ 'value')\n    return res\nres = '## CrowdStrike Falcon Intelligence'\nentry =\
+  \ demisto.executeCommand('cs-actors', demisto.args())[0]\nif entry['Type'] != entryTypes['error']\
+  \ and entry['ContentsFormat'] == formats['json']:\n    meta = demisto.get(entry,\
+  \ 'Contents.meta')\n    if meta:\n        res += '\\n\\n### Metadata'\n        res\
+  \ += '\\n|Total|Offset|Limit|Time|'\n        res += '\\n|-----|------|-----|----|'\n\
+  \        res += '\\n| ' + demisto.gets(meta, 'paging.total') + ' | ' + demisto.gets(meta,\
+  \ 'paging.offset') + ' | ' + demisto.gets(meta, 'paging.limit') + ' | ' + demisto.gets(meta,\
+  \ 'query_time') + ' |'\n    resources = demisto.get(entry, 'Contents.resources')\n\
+  \    if resources:\n        res += '\\n\\n### Actors'\n        res += '\\n|ID|Name|Short\
+  \ Description|URL|Known As|Create Date|First Date|Last Date|Origins|Target Countries|Target\
+  \ Industries|Motivations|'\n        res += '\\n|--|----|-----------------|---|--------|-----------|----------|---------|-------|----------------|-----------------|-----------|'\n\
+  \        for r in resources:\n            res += '\\n| ' + demisto.gets(r, 'id')\
+  \ + ' | ' + demisto.gets(r, 'name') + ' | ' + demisto.gets(r, 'short_description')\
+  \ + ' | ' + demisto.gets(r, 'url') + ' | ' + \\\n                   demisto.gets(r,\
+  \ 'known_as') + ' | ' + formatDate(demisto.get(r, 'created_date')) + ' | ' +  formatDate(demisto.get(r,\
+  \ 'first_activity_date')) + ' | ' + \\\n                   formatDate(demisto.get(r,\
+  \ 'last_activity_date')) + ' | ' + formatSlugs(demisto.get(r, 'origins')) + ' |\
+  \ ' + formatSlugs(demisto.get(r, 'target_countries')) + ' | ' + \\\n           \
+  \        formatSlugs(demisto.get(r, 'target_industries')) + ' | ' + formatSlugs(demisto.get(r,\
+  \ 'motivations')) + ' |'\n    demisto.results({'ContentsFormat': formats['markdown'],\
+  \ 'Type': entryTypes['note'], 'Contents': res})\nelse:\n    demisto.results(entry)"
+scripttarget: 0
 subtype: python2
+system: true
 tags:
 - server
 - threat-intel
 - crowdstrike
-comment: Query CrowdStrike actors based on given parameters. For fields like countries
-  and industries, multiple values can be passed separated by ','.
-system: true
-deprecated: true
-args:
-- name: q
-  default: true
-  description: Search all fields for the given data
-- name: name
-  description: Search based on actor name
-- name: description
-  description: Search based on description
-- name: minLastModifiedDate
-  description: Search range from modified date. Dates are formatted as YYYY-MM-DD.
-- name: maxLastModifiedDate
-  description: Search range to modified date. Dates are formatted as YYYY-MM-DD.
-- name: minLastActivityDate
-  description: Search range from activity date. Dates are formatted as YYYY-MM-DD.
-- name: maxLastActivityDate
-  description: Search range to activity date. Dates are formatted as YYYY-MM-DD.
-- name: origins
-  description: Search by origins - takes a comma-separated list
-- name: targetCountries
-  description: Search by target countries - takes a comma-separated list
-- name: targetIndustries
-  description: Search by target industries - takes a comma-separated list
-- name: motivations
-  description: Search by motivations - takes a comma-separated list
-- name: sort
-  description: Sort is field_name.order, field_name.order where order is either asc
-    or desc.
-- name: offset
-  description: Which page of the results to retrieve. It is 0 based.
-- name: limit
-  description: Number of results for the page
-scripttarget: 0
-dependson:
-  must:
-  - cs-actors
 timeout: 0s
+toversion: 4.1.9
+type: python

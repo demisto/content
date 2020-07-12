@@ -20,6 +20,7 @@ configuration:
 description: Alexa provides website ranking information that can be useful in determining
   if the domain in question has a strong web presence.
 display: Alexa Rank Indicator
+fromversion: 3.5.0
 name: Alexa Rank Indicator
 script:
   commands:
@@ -65,8 +66,8 @@ script:
   isfetch: false
   runonce: false
   script: ''
-  type: python
   subtype: python2
+  type: python
 tests:
 - Alexa Test Playbook
-fromversion: 3.5.0
+toversion: 4.1.9

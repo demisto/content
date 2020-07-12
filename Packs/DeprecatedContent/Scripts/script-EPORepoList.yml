@@ -1,27 +1,23 @@
+comment: List all configured instances of ePO integration.
 commonfields:
   id: EPORepoList
   version: -1
-name: EPORepoList
-script: |-
-  cmds = demisto.getAllSupportedCommands()
-  repos = [x for x in cmds.keys() if cmds[x] and len(cmds[x]) == 1 and cmds[x][0]['name'] == 'epo-command']
-  demisto.setContext('eporepos', repos)
-  if repos:
-      mdText = '### Repositories:'
-      for r in repos:
-          mdText += '\n * ' + r
-  else:
-      mdText = 'No repositories found.'
-  demisto.results({"Type": entryTypes["note"], "ContentsFormat": formats["markdown"], "Contents": mdText})
-type: python
-subtype: python2
-tags:
-- epo
-comment: List all configured instances of ePO integration.
-system: true
-deprecated: true
-scripttarget: 0
 dependson:
   must:
   - epo-command
+deprecated: true
+name: EPORepoList
+script: "cmds = demisto.getAllSupportedCommands()\nrepos = [x for x in cmds.keys()\
+  \ if cmds[x] and len(cmds[x]) == 1 and cmds[x][0]['name'] == 'epo-command']\ndemisto.setContext('eporepos',\
+  \ repos)\nif repos:\n    mdText = '### Repositories:'\n    for r in repos:\n   \
+  \     mdText += '\\n * ' + r\nelse:\n    mdText = 'No repositories found.'\ndemisto.results({\"\
+  Type\": entryTypes[\"note\"], \"ContentsFormat\": formats[\"markdown\"], \"Contents\"\
+  : mdText})"
+scripttarget: 0
+subtype: python2
+system: true
+tags:
+- epo
 timeout: 0s
+toversion: 4.1.9
+type: python

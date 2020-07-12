@@ -76,12 +76,16 @@ args:
   - 'false'
   required: false
   secret: false
-comment: |
-  Find similar incidents by text comparison - the algorithm based on TF-IDF method.
+comment: 'Find similar incidents by text comparison - the algorithm based on TF-IDF
+  method.
+
   To read more about this method: https://en.wikipedia.org/wiki/Tf%E2%80%93idf
+
+  '
 commonfields:
   id: FindSimilarIncidentsByText
   version: -1
+dockerimage: demisto/machine-learning
 enabled: true
 name: FindSimilarIncidentsByText
 outputs:
@@ -97,6 +101,7 @@ outputs:
 - contextPath: similarIncident.name
   description: Similar incident name.
   type: string
+runonce: false
 script: '-'
 subtype: python2
 system: false
@@ -105,9 +110,8 @@ tags:
 - dedup
 - duplicate
 - incidents
-timeout: '0'
-type: python
-dockerimage: demisto/machine-learning
-runonce: false
 tests:
 - Dedup - Generic v2 - Test
+timeout: '0'
+toversion: 4.1.9
+type: python

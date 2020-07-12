@@ -1,183 +1,145 @@
-elasticcommonfields: {}
-id: playbook-feodotrackeripblock_test
-version: -1
 contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
+elasticcommonfields: {}
+id: playbook-feodotrackeripblock_test
+inputs: []
 name: playbook-feodotrackeripblock_test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 14bb43a9-9e79-4da7-8e18-957c9c86d830
-    type: start
-    task:
-      elasticcommonfields: {}
-      id: 14bb43a9-9e79-4da7-8e18-957c9c86d830
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
+      - '1'
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
-    taskid: 552c11db-bbc6-4a76-82b0-53409a0599ed
-    type: regular
+    separatecontext: false
+    skipunavailable: false
     task:
+      brand: ''
+      elasticcommonfields: {}
+      id: 14bb43a9-9e79-4da7-8e18-957c9c86d830
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 14bb43a9-9e79-4da7-8e18-957c9c86d830
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: 'yes'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
       elasticcommonfields: {}
       id: 552c11db-bbc6-4a76-82b0-53409a0599ed
-      version: -1
+      iscommand: true
       name: DeleteContext
       script: DeleteContext
       type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 200
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "2":
-    id: "2"
-    taskid: fce6dade-4763-4e4d-895c-07ac01235ed2
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: fce6dade-4763-4e4d-895c-07ac01235ed2
       version: -1
-      name: feodotracker-ipblocklist-get-indicators
-      script: '|||feodotracker-ipblocklist-get-indicators'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: 552c11db-bbc6-4a76-82b0-53409a0599ed
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 200\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
+    note: false
+    quietmode: 0
     scriptarguments:
       extend-context:
         simple: Indicator=.[0]
       limit:
-        simple: "10"
+        simple: '10'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "3":
-    id: "3"
-    taskid: 15fc1390-b6d9-4562-88cc-c60b1f588747
-    type: title
     task:
+      brand: ''
+      elasticcommonfields: {}
+      id: fce6dade-4763-4e4d-895c-07ac01235ed2
+      iscommand: true
+      name: feodotracker-ipblocklist-get-indicators
+      script: '|||feodotracker-ipblocklist-get-indicators'
+      type: regular
+      version: -1
+    taskid: fce6dade-4763-4e4d-895c-07ac01235ed2
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 400\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
       elasticcommonfields: {}
       id: 15fc1390-b6d9-4562-88cc-c60b1f588747
-      version: -1
+      iscommand: false
       name: Test Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 760
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "4":
-    id: "4"
-    taskid: dec39c57-7633-4774-870e-a6fc56eba266
-    type: condition
-    task:
-      elasticcommonfields: {}
-      id: dec39c57-7633-4774-870e-a6fc56eba266
       version: -1
-      name: Test Indicators
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "3"
-    separatecontext: false
+    taskid: 15fc1390-b6d9-4562-88cc-c60b1f588747
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 760\n  }\n}"
+  '4':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: Indicator.value
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: Indicator.type
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 580
-        }
-      }
-    note: false
-    timertriggers: []
+          operator: isNotEmpty
+      label: 'yes'
+    id: '4'
     ignoreworker: false
-    skipunavailable: false
+    nexttasks:
+      'yes':
+      - '3'
+    note: false
     quietmode: 0
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 775,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      elasticcommonfields: {}
+      id: dec39c57-7633-4774-870e-a6fc56eba266
+      iscommand: false
+      name: Test Indicators
+      type: condition
+      version: -1
+    taskid: dec39c57-7633-4774-870e-a6fc56eba266
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 580\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 775,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

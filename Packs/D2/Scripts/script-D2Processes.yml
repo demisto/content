@@ -1,35 +1,20 @@
+comment: Show running processes
 commonfields:
   id: D2Processes
   version: -1
+dependson: {}
 name: D2Processes
-script: |-
-  function processesUnix() {
-    var output = execute('ps ax');
-    if (output.Success) {
-      pack(output.Stdout);
-    } else {
-      throw output.Error;
-    }
-  }
-  function processesWindows() {
-    var ps = wmi_query('select ProcessId, CommandLine, ThreadCount, WorkingSetSize, Description From Win32_Process');
-    pack(ps, 'table');
-  }
-  try {
-    if (env.OS === 'windows') {
-      processesWindows();
-    } else {
-      processesUnix();
-    }
-  } catch (ex) {
-    pack('Error: ' + ex);
-  }
-type: javascript
+script: "function processesUnix() {\n  var output = execute('ps ax');\n  if (output.Success)\
+  \ {\n    pack(output.Stdout);\n  } else {\n    throw output.Error;\n  }\n}\nfunction\
+  \ processesWindows() {\n  var ps = wmi_query('select ProcessId, CommandLine, ThreadCount,\
+  \ WorkingSetSize, Description From Win32_Process');\n  pack(ps, 'table');\n}\ntry\
+  \ {\n  if (env.OS === 'windows') {\n    processesWindows();\n  } else {\n    processesUnix();\n\
+  \  }\n} catch (ex) {\n  pack('Error: ' + ex);\n}"
+scripttarget: 1
+system: true
 tags:
 - agent
 - endpoint
-comment: Show running processes
-system: true
-scripttarget: 1
-dependson: {}
 timeout: 0s
+toversion: 4.1.9
+type: javascript

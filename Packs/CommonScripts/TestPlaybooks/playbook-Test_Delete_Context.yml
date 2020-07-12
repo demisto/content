@@ -1,45 +1,31 @@
 id: test_delete_context
-version: -1
+inputs: []
 name: Test Delete Context
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 53cc22db-b75a-49ec-8984-4837b9fb833e
+      iscommand: false
+      name: ''
+      version: -1
     taskid: 53cc22db-b75a-49ec-8984-4837b9fb833e
     type: start
-    task:
-      id: 53cc22db-b75a-49ec-8984-4837b9fb833e
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 50
-        }
-      }
+      - '2'
     note: false
-  "1":
-    id: "1"
-    taskid: 916ec910-b609-4fea-8b55-8420c23bb774
-    type: regular
-    task:
-      id: 916ec910-b609-4fea-8b55-8420c23bb774
-      version: -1
-      name: Set A
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
     scriptarguments:
       append: {}
       key:
@@ -47,243 +33,20 @@ tasks:
       value:
         simple: a1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 195
-        }
-      }
-    note: false
-  "2":
-    id: "2"
-    taskid: 78b2c43b-0be5-4fe5-8214-cf356bf5e3aa
-    type: regular
     task:
-      id: 78b2c43b-0be5-4fe5-8214-cf356bf5e3aa
-      version: -1
-      name: Delete A
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      id: 916ec910-b609-4fea-8b55-8420c23bb774
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      all: {}
-      index: {}
-      key:
-        simple: A
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 370
-        }
-      }
-    note: false
-  "3":
-    id: "3"
-    taskid: 18df45e5-31bd-497f-8bd6-63607c7eb666
-    type: condition
-    task:
-      id: 18df45e5-31bd-497f-8bd6-63607c7eb666
-      version: -1
-      name: Ensure A doesn't exists
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "4"
-      "yes":
-      - "5"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotExists
-          left:
-            value:
-              simple: A
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 545
-        }
-      }
-    note: false
-  "4":
-    id: "4"
-    taskid: d55e99af-190e-4530-8372-df25cf3c7a9c
-    type: regular
-    task:
-      id: d55e99af-190e-4530-8372-df25cf3c7a9c
-      version: -1
-      name: Fail
-      scriptName: RaiseError
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      actual:
-        simple: ${A}
-      details: {}
-      error:
-        simple: A should not exists
-      expected:
-        simple: NONE
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-  "5":
-    id: "5"
-    taskid: 54307739-fc73-45d0-8252-54ac8c178770
-    type: regular
-    task:
-      id: 54307739-fc73-45d0-8252-54ac8c178770
-      version: -1
-      name: Set B
+      name: Set A
       scriptName: Set
       type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      append: {}
-      key:
-        simple: B
-      value:
-        simple: b1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 720
-        }
-      }
-    note: false
-  "6":
-    id: "6"
-    taskid: f0f57ad4-f116-4b83-8b25-c04317e0b0df
+      version: -1
+    taskid: 916ec910-b609-4fea-8b55-8420c23bb774
     type: regular
-    task:
-      id: f0f57ad4-f116-4b83-8b25-c04317e0b0df
-      version: -1
-      name: Set C
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      append: {}
-      key:
-        simple: C
-      value:
-        simple: c1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 895
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 195\n  }\n}"
+  '10':
+    id: '10'
     note: false
-  "7":
-    id: "7"
-    taskid: fe4f12cc-e859-4e14-8563-c8e655df01f2
-    type: regular
-    task:
-      id: fe4f12cc-e859-4e14-8563-c8e655df01f2
-      version: -1
-      name: Delete All Context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1070
-        }
-      }
-    note: false
-  "8":
-    id: "8"
-    taskid: 34921238-0bac-4ff6-8d96-b597b513efc2
-    type: condition
-    task:
-      id: 34921238-0bac-4ff6-8d96-b597b513efc2
-      version: -1
-      name: Ensure context is empty
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "10"
-      "yes":
-      - "11"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: .
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1245
-        }
-      }
-    note: false
-  "10":
-    id: "10"
-    taskid: 5da8a333-a199-4b3f-8b5b-a38becd5d2d2
-    type: regular
-    task:
-      id: 5da8a333-a199-4b3f-8b5b-a38becd5d2d2
-      version: -1
-      name: Fail
-      scriptName: RaiseError
-      type: regular
-      iscommand: false
-      brand: ""
     scriptarguments:
       actual:
         simple: ${.}
@@ -293,29 +56,23 @@ tasks:
       expected:
         simple: NONE
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1420
-        }
-      }
-    note: false
-  "11":
-    id: "11"
-    taskid: 3be2bb2d-216f-4d4f-8e05-9eeadf558690
-    type: regular
     task:
-      id: 3be2bb2d-216f-4d4f-8e05-9eeadf558690
-      version: -1
-      name: Set B
-      scriptName: Set
-      type: regular
+      brand: ''
+      id: 5da8a333-a199-4b3f-8b5b-a38becd5d2d2
       iscommand: false
-      brand: ""
+      name: Fail
+      scriptName: RaiseError
+      type: regular
+      version: -1
+    taskid: 5da8a333-a199-4b3f-8b5b-a38becd5d2d2
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1420\n  }\n}"
+  '11':
+    id: '11'
     nexttasks:
       '#none#':
-      - "12"
+      - '12'
+    note: false
     scriptarguments:
       append: {}
       key:
@@ -323,29 +80,23 @@ tasks:
       value:
         simple: b1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1420
-        }
-      }
-    note: false
-  "12":
-    id: "12"
-    taskid: 0ce1c1cb-acee-46fd-8fc0-5e6b8c1d7b2e
-    type: regular
     task:
-      id: 0ce1c1cb-acee-46fd-8fc0-5e6b8c1d7b2e
-      version: -1
-      name: Set C
+      brand: ''
+      id: 3be2bb2d-216f-4d4f-8e05-9eeadf558690
+      iscommand: false
+      name: Set B
       scriptName: Set
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 3be2bb2d-216f-4d4f-8e05-9eeadf558690
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 1420\n  }\n}"
+  '12':
+    id: '12'
     nexttasks:
       '#none#':
-      - "13"
+      - '13'
+    note: false
     scriptarguments:
       append: {}
       key:
@@ -353,96 +104,78 @@ tasks:
       value:
         simple: c1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1595
-        }
-      }
-    note: false
-  "13":
-    id: "13"
-    taskid: 0284c785-4b77-4966-8000-c10c7c6ffd72
-    type: regular
     task:
-      id: 0284c785-4b77-4966-8000-c10c7c6ffd72
-      version: -1
-      name: Delete All Context expect B
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      id: 0ce1c1cb-acee-46fd-8fc0-5e6b8c1d7b2e
       iscommand: false
-      brand: ""
+      name: Set C
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 0ce1c1cb-acee-46fd-8fc0-5e6b8c1d7b2e
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 1595\n  }\n}"
+  '13':
+    id: '13'
     nexttasks:
       '#none#':
-      - "14"
+      - '14'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep:
         simple: B
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1770
-        }
-      }
-    note: false
-  "14":
-    id: "14"
-    taskid: 7d28c7b3-7525-4c7b-8c6c-826e2f6c22ba
-    type: condition
     task:
-      id: 7d28c7b3-7525-4c7b-8c6c-826e2f6c22ba
-      version: -1
-      name: Ensure context is empty expect B
-      type: condition
+      brand: ''
+      id: 0284c785-4b77-4966-8000-c10c7c6ffd72
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "15"
-      "yes":
-      - "16"
-    separatecontext: false
+      name: Delete All Context expect B
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 0284c785-4b77-4966-8000-c10c7c6ffd72
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 1770\n  }\n}"
+  '14':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: C
+          operator: isNotExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: B
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1945
-        }
-      }
+          operator: isExists
+      label: 'yes'
+    id: '14'
+    nexttasks:
+      '#default#':
+      - '15'
+      'yes':
+      - '16'
     note: false
-  "15":
-    id: "15"
-    taskid: dc8e6b46-92eb-4f70-8262-9a36d6b0d521
-    type: regular
+    separatecontext: false
     task:
-      id: dc8e6b46-92eb-4f70-8262-9a36d6b0d521
-      version: -1
-      name: Fail
-      scriptName: RaiseError
-      type: regular
+      brand: ''
+      id: 7d28c7b3-7525-4c7b-8c6c-826e2f6c22ba
       iscommand: false
-      brand: ""
+      name: Ensure context is empty expect B
+      type: condition
+      version: -1
+    taskid: 7d28c7b3-7525-4c7b-8c6c-826e2f6c22ba
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 1945\n  }\n}"
+  '15':
+    id: '15'
+    note: false
     scriptarguments:
       actual:
         simple: B - ${B}, C - ${C}
@@ -451,29 +184,23 @@ tasks:
         simple: Context should be empty expect B
       expected: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 2120
-        }
-      }
-    note: false
-  "16":
-    id: "16"
-    taskid: 32e20439-4b74-42f3-841f-ed68a17112a5
-    type: regular
     task:
-      id: 32e20439-4b74-42f3-841f-ed68a17112a5
-      version: -1
-      name: Set A 1
-      scriptName: Set
-      type: regular
+      brand: ''
+      id: dc8e6b46-92eb-4f70-8262-9a36d6b0d521
       iscommand: false
-      brand: ""
+      name: Fail
+      scriptName: RaiseError
+      type: regular
+      version: -1
+    taskid: dc8e6b46-92eb-4f70-8262-9a36d6b0d521
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 2120\n  }\n}"
+  '16':
+    id: '16'
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
+    note: false
     scriptarguments:
       append: {}
       key:
@@ -481,134 +208,135 @@ tasks:
       value:
         simple: a1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 2120
-        }
-      }
-    note: false
-  "17":
-    id: "17"
-    taskid: fcb117d7-7e19-4aa0-8295-2ac05509d5fc
-    type: regular
     task:
-      id: fcb117d7-7e19-4aa0-8295-2ac05509d5fc
-      version: -1
-      name: Set A 2
+      brand: ''
+      id: 32e20439-4b74-42f3-841f-ed68a17112a5
+      iscommand: false
+      name: Set A 1
       scriptName: Set
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 32e20439-4b74-42f3-841f-ed68a17112a5
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 2120\n  }\n}"
+  '17':
+    id: '17'
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
+    note: false
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: A
       value:
         simple: a2
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 2295
-        }
-      }
-    note: false
-  "18":
-    id: "18"
-    taskid: 87216eb2-2074-45e1-8d8f-d73021235db1
-    type: regular
     task:
-      id: 87216eb2-2074-45e1-8d8f-d73021235db1
-      version: -1
-      name: Delete A at index 1
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      id: fcb117d7-7e19-4aa0-8295-2ac05509d5fc
       iscommand: false
-      brand: ""
+      name: Set A 2
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: fcb117d7-7e19-4aa0-8295-2ac05509d5fc
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 2295\n  }\n}"
+  '18':
+    id: '18'
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
+    note: false
     scriptarguments:
       all:
-        simple: "no"
+        simple: 'no'
       index:
-        simple: "1"
+        simple: '1'
       key:
         simple: A
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 2470
-        }
-      }
-    note: false
-  "19":
-    id: "19"
-    taskid: 113c22af-7834-4d11-814d-cbc09e37996b
-    type: condition
     task:
-      id: 113c22af-7834-4d11-814d-cbc09e37996b
-      version: -1
-      name: Ensure A has been updated
-      type: condition
+      brand: ''
+      id: 87216eb2-2074-45e1-8d8f-d73021235db1
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "20"
-      "yes":
-      - "21"
-    separatecontext: false
+      name: Delete A at index 1
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 87216eb2-2074-45e1-8d8f-d73021235db1
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 2470\n  }\n}"
+  '19':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: hasLength
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: A
-            iscontext: true
+          operator: hasLength
           right:
             value:
-              simple: "1"
-      - - operator: isEqualString
-          left:
+              simple: '1'
+      - - left:
+            iscontext: true
             value:
               simple: A
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: a1
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 2645
-        }
-      }
+      label: 'yes'
+    id: '19'
+    nexttasks:
+      '#default#':
+      - '20'
+      'yes':
+      - '21'
     note: false
-  "20":
-    id: "20"
-    taskid: 3c3af34f-9804-4e08-8638-7c8a2ac9f736
-    type: regular
+    separatecontext: false
     task:
-      id: 3c3af34f-9804-4e08-8638-7c8a2ac9f736
-      version: -1
-      name: Fail
-      scriptName: RaiseError
-      type: regular
+      brand: ''
+      id: 113c22af-7834-4d11-814d-cbc09e37996b
       iscommand: false
-      brand: ""
+      name: Ensure A has been updated
+      type: condition
+      version: -1
+    taskid: 113c22af-7834-4d11-814d-cbc09e37996b
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 2645\n  }\n}"
+  '2':
+    id: '2'
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: A
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    task:
+      brand: ''
+      id: 78b2c43b-0be5-4fe5-8214-cf356bf5e3aa
+      iscommand: false
+      name: Delete A
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 78b2c43b-0be5-4fe5-8214-cf356bf5e3aa
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 370\n  }\n}"
+  '20':
+    id: '20'
+    note: false
     scriptarguments:
       actual:
         simple: B - ${B}, C - ${C}
@@ -617,88 +345,70 @@ tasks:
         simple: Context should be empty expect B
       expected: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 2820
-        }
-      }
-    note: false
-  "21":
-    id: "21"
-    taskid: 1fcf3a3e-8400-4ba7-8869-9523e68e1724
-    type: regular
     task:
-      id: 1fcf3a3e-8400-4ba7-8869-9523e68e1724
-      version: -1
-      name: Delete A at index 1 - should give error
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      id: 3c3af34f-9804-4e08-8638-7c8a2ac9f736
       iscommand: false
-      brand: ""
+      name: Fail
+      scriptName: RaiseError
+      type: regular
+      version: -1
+    taskid: 3c3af34f-9804-4e08-8638-7c8a2ac9f736
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 2820\n  }\n}"
+  '21':
+    continueonerror: true
+    id: '21'
     nexttasks:
       '#none#':
-      - "22"
+      - '22'
+    note: false
     scriptarguments:
       all: {}
       index:
-        simple: "1"
+        simple: '1'
       key:
         simple: A
       keysToKeep: {}
       subplaybook: {}
-    continueonerror: true
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1125,
-          "y": 2820
-        }
-      }
-    note: false
-  "22":
-    id: "22"
-    taskid: dc585d40-58ad-4049-8d7a-c2260997098a
-    type: condition
     task:
-      id: dc585d40-58ad-4049-8d7a-c2260997098a
-      version: -1
-      name: Ensure error occurred
-      scriptName: isError
-      type: condition
+      brand: ''
+      id: 1fcf3a3e-8400-4ba7-8869-9523e68e1724
       iscommand: false
-      brand: ""
+      name: Delete A at index 1 - should give error
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 1fcf3a3e-8400-4ba7-8869-9523e68e1724
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": 2820\n  }\n}"
+  '22':
+    id: '22'
     nexttasks:
-      "no":
-      - "24"
-      "yes":
-      - "25"
+      'no':
+      - '24'
+      'yes':
+      - '25'
+    note: false
     scriptarguments:
       entryId:
         simple: ${lastCompletedTaskEntries}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1125,
-          "y": 2995
-        }
-      }
-    note: false
-  "24":
-    id: "24"
-    taskid: ab4ebfbb-9ded-4dc0-8157-913d33c960bc
-    type: regular
     task:
-      id: ab4ebfbb-9ded-4dc0-8157-913d33c960bc
-      version: -1
-      name: Fail
-      scriptName: RaiseError
-      type: regular
+      brand: ''
+      id: dc585d40-58ad-4049-8d7a-c2260997098a
       iscommand: false
-      brand: ""
+      name: Ensure error occurred
+      scriptName: isError
+      type: condition
+      version: -1
+    taskid: dc585d40-58ad-4049-8d7a-c2260997098a
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": 2995\n  }\n}"
+  '24':
+    id: '24'
+    note: false
     scriptarguments:
       actual:
         simple: B - ${B}, C - ${C}
@@ -707,92 +417,74 @@ tasks:
         simple: Context should be empty expect B
       expected: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 3170
-        }
-      }
-    note: false
-  "25":
-    id: "25"
-    taskid: ccff542e-9b2c-47b9-8456-d2d70cc1c5e6
-    type: regular
     task:
-      id: ccff542e-9b2c-47b9-8456-d2d70cc1c5e6
-      version: -1
-      name: Delete A at index 0
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      id: ab4ebfbb-9ded-4dc0-8157-913d33c960bc
       iscommand: false
-      brand: ""
+      name: Fail
+      scriptName: RaiseError
+      type: regular
+      version: -1
+    taskid: ab4ebfbb-9ded-4dc0-8157-913d33c960bc
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 3170\n  }\n}"
+  '25':
+    continueonerror: true
+    id: '25'
     nexttasks:
       '#none#':
-      - "26"
+      - '26'
+    note: false
     scriptarguments:
       all: {}
       index:
-        simple: "0"
+        simple: '0'
       key:
         simple: A
       keysToKeep: {}
       subplaybook: {}
-    continueonerror: true
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 3170
-        }
-      }
-    note: false
-  "26":
-    id: "26"
-    taskid: 351a5146-0e55-4986-8c99-136db876390e
-    type: condition
     task:
-      id: 351a5146-0e55-4986-8c99-136db876390e
-      version: -1
-      name: Ensure A doesn't exists
-      type: condition
+      brand: ''
+      id: ccff542e-9b2c-47b9-8456-d2d70cc1c5e6
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "27"
-      "yes":
-      - "29"
-    separatecontext: false
+      name: Delete A at index 0
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: ccff542e-9b2c-47b9-8456-d2d70cc1c5e6
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1340,\n    \"y\": 3170\n  }\n}"
+  '26':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: A
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 3345
-        }
-      }
+          operator: isNotExists
+      label: 'yes'
+    id: '26'
+    nexttasks:
+      '#default#':
+      - '27'
+      'yes':
+      - '29'
     note: false
-  "27":
-    id: "27"
-    taskid: 8b332636-8189-43e4-86f2-7551eacdc7db
-    type: regular
+    separatecontext: false
     task:
-      id: 8b332636-8189-43e4-86f2-7551eacdc7db
-      version: -1
-      name: Fail
-      scriptName: RaiseError
-      type: regular
+      brand: ''
+      id: 351a5146-0e55-4986-8c99-136db876390e
       iscommand: false
-      brand: ""
+      name: Ensure A doesn't exists
+      type: condition
+      version: -1
+    taskid: 351a5146-0e55-4986-8c99-136db876390e
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 1340,\n    \"y\": 3345\n  }\n}"
+  '27':
+    id: '27'
+    note: false
     scriptarguments:
       actual:
         simple: B - ${B}, C - ${C}
@@ -801,49 +493,37 @@ tasks:
         simple: Context should be empty expect B
       expected: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1125,
-          "y": 3520
-        }
-      }
-    note: false
-  "28":
-    id: "28"
-    taskid: f598dcab-093b-4e32-8353-a9f88b9ccd74
-    type: title
     task:
-      id: f598dcab-093b-4e32-8353-a9f88b9ccd74
+      brand: ''
+      id: 8b332636-8189-43e4-86f2-7551eacdc7db
+      iscommand: false
+      name: Fail
+      scriptName: RaiseError
+      type: regular
       version: -1
+    taskid: 8b332636-8189-43e4-86f2-7551eacdc7db
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": 3520\n  }\n}"
+  '28':
+    id: '28'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: f598dcab-093b-4e32-8353-a9f88b9ccd74
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1770,
-          "y": 4060
-        }
-      }
-    note: false
-  "29":
-    id: "29"
-    taskid: bbb26e00-a88c-411b-86de-a753eed247b0
-    type: regular
-    task:
-      id: bbb26e00-a88c-411b-86de-a753eed247b0
       version: -1
-      name: Set D.E
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: f598dcab-093b-4e32-8353-a9f88b9ccd74
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 1770,\n    \"y\": 4060\n  }\n}"
+  '29':
+    id: '29'
     nexttasks:
       '#none#':
-      - "30"
+      - '30'
+    note: false
     scriptarguments:
       append: {}
       key:
@@ -851,99 +531,108 @@ tasks:
       value:
         simple: '{"d1":"e1","d2":"e2"}'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1555,
-          "y": 3520
-        }
-      }
-    note: false
-  "30":
-    id: "30"
-    taskid: 3a531066-f796-42b5-8803-75577fcadf7e
-    type: regular
     task:
-      id: 3a531066-f796-42b5-8803-75577fcadf7e
-      version: -1
-      name: Delete All Context expect D.E.d1 (tests trim as well)
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      id: bbb26e00-a88c-411b-86de-a753eed247b0
       iscommand: false
-      brand: ""
+      name: Set D.E
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: bbb26e00-a88c-411b-86de-a753eed247b0
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1555,\n    \"y\": 3520\n  }\n}"
+  '3':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: A
+          operator: isNotExists
+      label: 'yes'
+    id: '3'
+    nexttasks:
+      '#default#':
+      - '4'
+      'yes':
+      - '5'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 18df45e5-31bd-497f-8bd6-63607c7eb666
+      iscommand: false
+      name: Ensure A doesn't exists
+      type: condition
+      version: -1
+    taskid: 18df45e5-31bd-497f-8bd6-63607c7eb666
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 545\n  }\n}"
+  '30':
+    id: '30'
     nexttasks:
       '#none#':
-      - "31"
+      - '31'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep:
         simple: ' D.E.d1'
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1555,
-          "y": 3695
-        }
-      }
-    note: false
-  "31":
-    id: "31"
-    taskid: 50b65b8c-faa0-4db4-8e8e-f19b799fb0b3
-    type: condition
     task:
-      id: 50b65b8c-faa0-4db4-8e8e-f19b799fb0b3
-      version: -1
-      name: Ensure D.E.d2 doesn't exists and D.E.d1 equals e1
-      type: condition
+      brand: ''
+      id: 3a531066-f796-42b5-8803-75577fcadf7e
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "32"
-      "yes":
-      - "28"
-    separatecontext: false
+      name: Delete All Context expect D.E.d1 (tests trim as well)
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 3a531066-f796-42b5-8803-75577fcadf7e
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1555,\n    \"y\": 3695\n  }\n}"
+  '31':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: D.E.d2
+          operator: isNotExists
+      - - left:
             iscontext: true
-      - - operator: isEqualString
-          left:
             value:
               simple: ${D.E.d1}
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: e1
-    view: |-
-      {
-        "position": {
-          "x": 1555,
-          "y": 3870
-        }
-      }
+      label: 'yes'
+    id: '31'
+    nexttasks:
+      '#default#':
+      - '32'
+      'yes':
+      - '28'
     note: false
-  "32":
-    id: "32"
-    taskid: b3b77d3c-ff6b-4cc5-82f4-b80dee795903
-    type: regular
+    separatecontext: false
     task:
-      id: b3b77d3c-ff6b-4cc5-82f4-b80dee795903
-      version: -1
-      name: Fail
-      scriptName: RaiseError
-      type: regular
+      brand: ''
+      id: 50b65b8c-faa0-4db4-8e8e-f19b799fb0b3
       iscommand: false
-      brand: ""
+      name: Ensure D.E.d2 doesn't exists and D.E.d1 equals e1
+      type: condition
+      version: -1
+    taskid: 50b65b8c-faa0-4db4-8e8e-f19b799fb0b3
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 1555,\n    \"y\": 3870\n  }\n}"
+  '32':
+    id: '32'
+    note: false
     scriptarguments:
       actual:
         simple: D.E.d1 - ${D.E.d1}, D.E.d2 - ${D.E.d2}
@@ -952,25 +641,142 @@ tasks:
         simple: Context should be empty expect D.E.d1
       expected: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 4045
-        }
-      }
+    task:
+      brand: ''
+      id: b3b77d3c-ff6b-4cc5-82f4-b80dee795903
+      iscommand: false
+      name: Fail
+      scriptName: RaiseError
+      type: regular
+      version: -1
+    taskid: b3b77d3c-ff6b-4cc5-82f4-b80dee795903
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1340,\n    \"y\": 4045\n  }\n}"
+  '4':
+    id: '4'
     note: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 4090,
-        "width": 2100,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    scriptarguments:
+      actual:
+        simple: ${A}
+      details: {}
+      error:
+        simple: A should not exists
+      expected:
+        simple: NONE
+    separatecontext: false
+    task:
+      brand: ''
+      id: d55e99af-190e-4530-8372-df25cf3c7a9c
+      iscommand: false
+      name: Fail
+      scriptName: RaiseError
+      type: regular
+      version: -1
+    taskid: d55e99af-190e-4530-8372-df25cf3c7a9c
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '5':
+    id: '5'
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    scriptarguments:
+      append: {}
+      key:
+        simple: B
+      value:
+        simple: b1
+    separatecontext: false
+    task:
+      brand: ''
+      id: 54307739-fc73-45d0-8252-54ac8c178770
+      iscommand: false
+      name: Set B
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 54307739-fc73-45d0-8252-54ac8c178770
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 720\n  }\n}"
+  '6':
+    id: '6'
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    scriptarguments:
+      append: {}
+      key:
+        simple: C
+      value:
+        simple: c1
+    separatecontext: false
+    task:
+      brand: ''
+      id: f0f57ad4-f116-4b83-8b25-c04317e0b0df
+      iscommand: false
+      name: Set C
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: f0f57ad4-f116-4b83-8b25-c04317e0b0df
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 895\n  }\n}"
+  '7':
+    id: '7'
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    task:
+      brand: ''
+      id: fe4f12cc-e859-4e14-8563-c8e655df01f2
+      iscommand: false
+      name: Delete All Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: fe4f12cc-e859-4e14-8563-c8e655df01f2
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1070\n  }\n}"
+  '8':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: .
+          operator: isNotEmpty
+      label: 'yes'
+    id: '8'
+    nexttasks:
+      '#default#':
+      - '10'
+      'yes':
+      - '11'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 34921238-0bac-4ff6-8d96-b597b513efc2
+      iscommand: false
+      name: Ensure context is empty
+      type: condition
+      version: -1
+    taskid: 34921238-0bac-4ff6-8d96-b597b513efc2
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1245\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 4090,\n      \"width\": 2100,\n      \"x\": 50,\n      \"y\":\
+  \ 50\n    }\n  }\n}"

@@ -216,7 +216,8 @@ script:
     name: akamai-delete-network-list
   - arguments:
     - default: false
-      description: ' A comma-seprated list of network list IDs to activate. For example: list (list1,list2). '
+      description: ' A comma-seprated list of network list IDs to activate. For example:
+        list (list1,list2). '
       isArray: true
       name: network_list_ids
       required: true
@@ -290,8 +291,8 @@ script:
     name: akamai-remove-element-from-network-list
   - arguments:
     - default: false
-      description: ' A comma-separated list of network list IDs for which to get the activation status. For example: 
-        (support list - list1,list2).'
+      description: ' A comma-separated list of network list IDs for which to get the
+        activation status. For example: (support list - list1,list2).'
       isArray: true
       name: network_list_ids
       required: true
@@ -331,3 +332,4 @@ script:
   type: python
 tests:
 - Akamai_WAF-Test
+toversion: 4.1.9

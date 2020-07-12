@@ -1,70 +1,68 @@
+args:
+- default: true
+  description: Policy/action assigned to the rule - "allow" or "deny" only.
+  name: policy
+  required: true
+- description: The Triton rule type - "dest_domain", "dest_ip", "dest_host" or "url_regex"
+  name: type
+  required: true
+- description: The value to match for this rule (domain, regex, etc. depending on
+    the type)
+  name: value
+  required: true
+- description: "If the Forcepoint Triton instance is configured as a RemoteAccess\
+    \ integration instance \u2010 insert its name here. Replaces argument \"tritonsystem\"\
+    ."
+  name: remoteaccessname
+- description: "System name of the linux host on which Forcepoint Triton is installed.\
+    \ Only use if not working with Triton as a RemoteAccess integration instance \u2010\
+    \ if so, use the \"remoteaccessname\" argument instead."
+  name: tritonsystem
+comment: Adds (or updates existing) rule in Forcepoint Triton. Preserves order of
+  rules and modifies policy in-place if a rule exists with the exact type and value.
 commonfields:
   id: FPSetRule
   version: -1
-name: FPSetRule
-script: |-
-  from re import escape
-  FILTER_CONFIG_PATH = "/opt/WCG/config/filter.config"
-  CMD_SET_RULE_FORMAT = "sed -i '/^{0}={1} action=/{{h;s/{0}={1} action=[A-Za-z]*$/{0}={1} action={2}/}};${{x;/^$/{{s//{0}={1} action={2}/;H}};x}}' {3}"
-  CMD_TRITON_RELOAD_CONFIG = "/opt/WCG/bin/content_line -x" # && /opt/WCG/WCGAdmin runds"
-  policy = demisto.args()["policy"]
-  ruleType = demisto.args()["type"]
-  if not policy in ["allow", "deny"]:
-      demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": 'Policy argument must be "allow" or "deny". Invalid value: ' + policy } )
-  if not ruleType in ["dest_domain", "dest_ip", "dest_host", "url_regex"]:
-      demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": 'Type argument must be "dest_domain", "dest_ip", "dest_host" or "url_regex". Invalid value: ' + ruleType } )
-  else:
-      valueFormat = escape(demisto.args()["value"])
-      if ruleType in ["dest_domain", "url_regex"]:
-          valueFormat = r'\"' + valueFormat + r'\"'
-      # sed command that modifies the action of the rule if found, otherwise it adds it in a new line
-      cmdSetRule = CMD_SET_RULE_FORMAT.format(ruleType, valueFormat, policy, FILTER_CONFIG_PATH)
-      sshArgs = {"cmd": cmdSetRule + " && " + CMD_TRITON_RELOAD_CONFIG}
-      if "tritonsystem" in demisto.args():
-          if "remoteaccessname" in demisto.args():
-              demisto.results({ "Type" : entryTypes["error"], "ContentsFormat": formats["markdown"], "Contents": "You cannot uses both **tritonsystem** and **remoteaccessname**. Please choose one." })
-              sys.exit(0)
-          sshArgs["system"] = demisto.args()["tritonsystem"]
-      elif "remoteaccessname" in demisto.args():
-          sshArgs["using"] = demisto.args()["remoteaccessname"]
-      else:
-          demisto.results({ "Type" : entryTypes["error"], "ContentsFormat": formats["markdown"], "Contents": "You must provide either **tritonsystem** or **remoteaccessname** as arguments." })
-          sys.exit(0)
-      if "using" in sshArgs or "system" in sshArgs:
-          resSSH = demisto.executeCommand("ssh", sshArgs)
-          if not isError(resSSH[0]) and demisto.gets(resSSH[0], "Contents.success"):
-              demisto.results("Command executed successfully.")
-          else:
-              demisto.results(resSSH)
-type: python
-subtype: python2
-tags:
-- forcepoint
-- triton
-comment: Adds (or updates existing) rule in Forcepoint Triton. Preserves order of
-  rules and modifies policy in-place if a rule exists with the exact type and value.
-system: true
-args:
-- name: policy
-  required: true
-  default: true
-  description: Policy/action assigned to the rule - "allow" or "deny" only.
-- name: type
-  required: true
-  description: The Triton rule type - "dest_domain", "dest_ip", "dest_host" or "url_regex"
-- name: value
-  required: true
-  description: The value to match for this rule (domain, regex, etc. depending on
-    the type)
-- name: remoteaccessname
-  description: If the Forcepoint Triton instance is configured as a RemoteAccess integration
-    instance ‐ insert its name here. Replaces argument "tritonsystem".
-- name: tritonsystem
-  description: System name of the linux host on which Forcepoint Triton is installed.
-    Only use if not working with Triton as a RemoteAccess integration instance ‐ if
-    so, use the "remoteaccessname" argument instead.
-scripttarget: 0
 dependson:
   must:
   - ssh
+name: FPSetRule
+script: "from re import escape\nFILTER_CONFIG_PATH = \"/opt/WCG/config/filter.config\"\
+  \nCMD_SET_RULE_FORMAT = \"sed -i '/^{0}={1} action=/{{h;s/{0}={1} action=[A-Za-z]*$/{0}={1}\
+  \ action={2}/}};${{x;/^$/{{s//{0}={1} action={2}/;H}};x}}' {3}\"\nCMD_TRITON_RELOAD_CONFIG\
+  \ = \"/opt/WCG/bin/content_line -x\" # && /opt/WCG/WCGAdmin runds\"\npolicy = demisto.args()[\"\
+  policy\"]\nruleType = demisto.args()[\"type\"]\nif not policy in [\"allow\", \"\
+  deny\"]:\n    demisto.results({\"Type\": entryTypes[\"error\"], \"ContentsFormat\"\
+  : formats[\"text\"], \"Contents\": 'Policy argument must be \"allow\" or \"deny\"\
+  . Invalid value: ' + policy } )\nif not ruleType in [\"dest_domain\", \"dest_ip\"\
+  , \"dest_host\", \"url_regex\"]:\n    demisto.results({\"Type\": entryTypes[\"error\"\
+  ], \"ContentsFormat\": formats[\"text\"], \"Contents\": 'Type argument must be \"\
+  dest_domain\", \"dest_ip\", \"dest_host\" or \"url_regex\". Invalid value: ' + ruleType\
+  \ } )\nelse:\n    valueFormat = escape(demisto.args()[\"value\"])\n    if ruleType\
+  \ in [\"dest_domain\", \"url_regex\"]:\n        valueFormat = r'\\\"' + valueFormat\
+  \ + r'\\\"'\n    # sed command that modifies the action of the rule if found, otherwise\
+  \ it adds it in a new line\n    cmdSetRule = CMD_SET_RULE_FORMAT.format(ruleType,\
+  \ valueFormat, policy, FILTER_CONFIG_PATH)\n    sshArgs = {\"cmd\": cmdSetRule +\
+  \ \" && \" + CMD_TRITON_RELOAD_CONFIG}\n    if \"tritonsystem\" in demisto.args():\n\
+  \        if \"remoteaccessname\" in demisto.args():\n            demisto.results({\
+  \ \"Type\" : entryTypes[\"error\"], \"ContentsFormat\": formats[\"markdown\"], \"\
+  Contents\": \"You cannot uses both **tritonsystem** and **remoteaccessname**. Please\
+  \ choose one.\" })\n            sys.exit(0)\n        sshArgs[\"system\"] = demisto.args()[\"\
+  tritonsystem\"]\n    elif \"remoteaccessname\" in demisto.args():\n        sshArgs[\"\
+  using\"] = demisto.args()[\"remoteaccessname\"]\n    else:\n        demisto.results({\
+  \ \"Type\" : entryTypes[\"error\"], \"ContentsFormat\": formats[\"markdown\"], \"\
+  Contents\": \"You must provide either **tritonsystem** or **remoteaccessname** as\
+  \ arguments.\" })\n        sys.exit(0)\n    if \"using\" in sshArgs or \"system\"\
+  \ in sshArgs:\n        resSSH = demisto.executeCommand(\"ssh\", sshArgs)\n     \
+  \   if not isError(resSSH[0]) and demisto.gets(resSSH[0], \"Contents.success\"):\n\
+  \            demisto.results(\"Command executed successfully.\")\n        else:\n\
+  \            demisto.results(resSSH)"
+scripttarget: 0
+subtype: python2
+system: true
+tags:
+- forcepoint
+- triton
 timeout: 0s
+toversion: 4.1.9
+type: python

@@ -1,42 +1,28 @@
+args:
+- description: The name of the file to create
+  name: name
+  required: true
+- description: The content of the file to create
+  name: text
+  required: true
+comment: A test script to create a word file with a text as content and file name
+  and put it in the context.
 commonfields:
   id: TestCreateWordFile
   version: -1
+dockerimage: demisto/word-parser
+enabled: true
 name: TestCreateWordFile
-script: |
-  from StringIO import StringIO
-  from docx import Document
-
-  res = []
-  errEntry = {
-      "Type": entryTypes["error"],
-      "ContentsFormat": formats["text"],
-      "Contents": ""
-  }
-
-  args = demisto.args()
-  try:
-      document = Document()
-      document.add_paragraph(args['text'])
-      target_stream = StringIO()
-      document.save(target_stream)
-      res = fileResult(args['name'], target_stream.getvalue())
-  except BaseException as e:
-      errEntry["Contents"] = "Error occurred while creating the word file.\nException info: " + str(e)
-      res = errEntry
-
-  demisto.results(res)
-type: python
+script: "from StringIO import StringIO\nfrom docx import Document\n\nres = []\nerrEntry\
+  \ = {\n    \"Type\": entryTypes[\"error\"],\n    \"ContentsFormat\": formats[\"\
+  text\"],\n    \"Contents\": \"\"\n}\n\nargs = demisto.args()\ntry:\n    document\
+  \ = Document()\n    document.add_paragraph(args['text'])\n    target_stream = StringIO()\n\
+  \    document.save(target_stream)\n    res = fileResult(args['name'], target_stream.getvalue())\n\
+  except BaseException as e:\n    errEntry[\"Contents\"] = \"Error occurred while\
+  \ creating the word file.\\nException info: \" + str(e)\n    res = errEntry\n\n\
+  demisto.results(res)\n"
+scripttarget: 0
 subtype: python2
 tags: []
-comment: A test script to create a word file with a text as content and file name
-  and put it in the context.
-enabled: true
-args:
-- name: name
-  required: true
-  description: The name of the file to create
-- name: text
-  required: true
-  description: The content of the file to create
-scripttarget: 0
-dockerimage: demisto/word-parser
+toversion: 4.1.9
+type: python

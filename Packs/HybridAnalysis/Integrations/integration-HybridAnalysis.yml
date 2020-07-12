@@ -1,725 +1,47 @@
+category: Forensics & Malware Analysis
 commonfields:
   id: Hybrid Analysis
   version: -1
-fromversion: 3.6.1
-name: Hybrid Analysis
-display: Hybrid Analysis
-category: Forensics & Malware Analysis
-image: data:image/png;base64,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
-description: Fully automated malware analysis with unique Hybrid Analysis.
 configuration:
-- display: Server URL (e.g. https://216.3.128.82)
+- defaultvalue: https://www.hybrid-analysis.com
+  display: Server URL (e.g. https://216.3.128.82)
   name: serverUrl
-  defaultvalue: https://www.hybrid-analysis.com
-  type: 0
   required: true
-- display: API Key
+  type: 0
+- defaultvalue: ''
+  display: API Key
   name: apiKey
-  defaultvalue: ""
+  required: false
   type: 4
-  required: false
-- display: Trust any certificate (not secure)
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
-  type: 8
   required: false
-- display: Use system proxy settings
+  type: 8
+- defaultvalue: ''
+  display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
+description: Fully automated malware analysis with unique Hybrid Analysis.
+display: Hybrid Analysis
+fromversion: 3.6.1
+image: data:image/png;base64,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
+name: Hybrid Analysis
 script:
-  script: |+
-    var serverUrl = params.serverUrl;
-    var insecure = params.insecure;
-    var proxy = params.proxy;
-    var version = params.version;
-    var apiKey;
-    var integrationContext = getIntegrationContext();
-    var licenseID = getLicenseID();
-    var HEADERS = {
-        'User-Agent': ['Hybrid Analysis'],
-        'accept': ['application/json'],
-        'Content-Type': ['application/x-www-form-urlencoded'],
-        'DemistoLicense': [licenseID]
-    };
-
-    if (params.apiKey) {
-        apiKey = params.apiKey;
-    } else if (integrationContext.apiKey) {
-        apiKey = integrationContext.apiKey;
-    } else {
-        apiKey = generateKey();
-    }
-
-    HEADERS['api-key'] = [apiKey];
-
-    // handle '/' at the end of serverUrl
-    if (serverUrl[serverUrl.length - 1] === '/') {
-        serverUrl = serverUrl.substring(0, serverUrl.length - 1);
-    }
-
-    function generateKey() {
-        HEADERS['api-key'] = [integrationContext.masterApiKey];
-        var cmdUrl = '/api/v2/key/create';
-        var response = sendRequest('POST', cmdUrl, 'uid=DemistoLimitedEdition');
-        key = response.api_key;
-        integrationContext.apiKey = key;
-        setIntegrationContext(integrationContext);
-        return key;
-    }
-
-    function entryError(errorCode, text) {
-        var error = 'Hybrid Analysis returned an error (' + errorCode + ') - ' + text;
-        return {Type: entryTypes.error, ContentsFormat: formats.text, Contents: error};
-    }
-
-    //Originally, there was a mismatch between some context fields and their corresponding YML outputs.
-    //For example: the context field name was 'environment_id' while the corresponding YML output was 'environmentId'.
-    //This function gets a context entry and adds the existing YML outputs into the context, with the values of the original fields from context.
-    //The old context fields are not being deleted in order to prevent braking backwards compatibility.
-    function addYMLOutputsToContext(contextEntry) {
-         Object.keys(contextEntry).forEach(function(key) {
-                switch (key) {
-                    case 'environment_id':
-                        contextEntry.environmentId = contextEntry['environment_id'];
-                        break;
-                    case 'submit_name':
-                        contextEntry.submitname = contextEntry['submit_name'];
-                        break;
-                    case 'vx_family':
-                        contextEntry.vxfamily = contextEntry['vx_family'];
-                        break;
-                    case 'interesting':
-                        contextEntry.isinteresting = contextEntry['interesting'];
-                        break;
-                    case 'url_analysis':
-                        contextEntry.isurlanalysis = contextEntry['url_analysis'];
-                        break;
-                }
-            });
-        return contextEntry;
-    }
-
-     //  get threat level and calculate Dbot score by the following rule: 0=No Threat, 1=Suspicious, 2=Malicious, 3=Unknown
-    function threatLevelToDbotScore(threatLevel, maliciousThreatLevels) {
-        var dbotScore = 0;
-        if (maliciousThreatLevels.indexOf(threatLevel) !== -1){
-            dbotScore = 3;
-        }
-
-        else {
-            switch (threatLevel) {
-                case 0:
-                    dbotScore = 1;
-                    break;
-                case 1:
-                    dbotScore = 2;
-                    break;
-                case 2:
-                    dbotScore = 2;
-                    break;
-                case 3:
-                    dbotScore = 0;
-                    break;
-            }
-        }
-        return dbotScore;
-    }
-
-
-    // return a function that maps object keys by mapper (or capitlize keys if key is not exists in mapper)
-    function mapObject(mapper, isContextMapper, maliciousThreatLevels) {
-        return function(obj) {
-            var res = {};
-            Object.keys(obj).forEach(function(key) {
-                // map key or capitalize if not exists
-                var newKey = mapper[key] || key;
-                res[newKey] = obj[key];
-                if (maliciousThreatLevels && obj.threat_level && maliciousThreatLevels.indexOf(obj.threat_level) !== -1 && isContextMapper) {
-                    res.Malicious = {
-                        Vendor: 'Hybrid Analysis',
-                        Description: 'Score above ' + obj.threat_score
-                    };
-                }
-            });
-            if (isContextMapper)
-                res = addYMLOutputsToContext(res);
-            return res;
-        };
-    }
-
-
-    function createTableEntry(name, rawResponse, table, context, headers) {
-        return {
-            Type: entryTypes.note,
-            ContentsFormat: formats.json,
-            Contents: rawResponse,
-            ReadableContentsFormat: formats.markdown,
-            HumanReadable: tableToMarkdown(name, table, headers, undefined, headerTransform=undefined, removeNull=true),
-            EntryContext: context
-        };
-    }
-
-    function sendRequest(method, endpoint, body) {
-        var requestUrl = serverUrl + endpoint;
-        var res = http(
-            requestUrl,
-            {
-                Method: method,
-                Headers: HEADERS,
-                Body: body
-            },
-            insecure,
-            proxy
-        );
-
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
-        }
-
-        var body;
-        try {
-            body = JSON.parse(res.Body);
-        } catch (ex) {
-            throw 'Error parsing response - ' + res.Body + ' - ' + ex;
-        }
-
-        return body;
-    }
-
-    function scan(hash) {
-       return sendRequest('POST', '/api/v2/search/hash', 'hash='+hash);
-
-    }
-    function scanToEntry(res, hash, maliciousThreatLevels) {
-        var response = res;
-
-        // create table from response
-        var tableMapper = {
-           threatlevel: 'threat level',
-           total_network_connections: 'total network connections',
-           targeturl: 'target url',
-           classification_tags: 'classification tags',
-           threatscore: 'threat score',
-           total_processes: 'total processes',
-           submitname: 'submit name',
-           environmentDescription: 'environment description',
-           isinteresting: 'interesting',
-           environmentId: 'environment id',
-           isurlanalysis: 'url analysis',
-           analysis_start_time: 'analysis start time',
-           total_signatures: 'total signatures'
-        };
-
-        var table = response.map(mapObject(tableMapper, false, maliciousThreatLevels));
-        // create context from response
-        var context = {};
-
-        var contextMapper = {
-            sha1: 'SHA1',
-            sha256: 'SHA256',
-            md5: 'MD5'
-        };
-
-        context[outputPaths.file] = response.map(mapObject(contextMapper, true, maliciousThreatLevels));
-
-        // add DbotScore to context
-        response.forEach(function(res) {
-            var dbotScore = threatLevelToDbotScore(res.threat_level, maliciousThreatLevels);
-            context["DBotScore"] = {
-                "Indicator": hash,
-                "Type": "File",
-                "Vendor": "Hybrid Analysis",
-                "Score": dbotScore
-            };
-        });
-
-        return createTableEntry('Scan Results:', response, table, context);
-    }
-
-    function submitFile (entryId, environmentId) {
-        var requestUrl = serverUrl + '/api/v2/submit/file';
-
-        // submit file
-        var res = httpMultipart(
-                    requestUrl, // URL
-                    entryId, // Optional - FilePath / EntryID
-                    {
-                        Method: 'POST',
-                        Headers: HEADERS
-                    },
-                    { // Multipart Contents
-                        environment_id: environmentId // For API v2
-                    },
-                    insecure,
-                    proxy
-                );
-
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Multipart Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
-        }
-        var body;
-
-        try {
-            body = JSON.parse(res.Body);
-        } catch (ex) {
-            throw 'Error parsing response - ' + res.Body + ' - ' + ex;
-        }
-
-        return body;
-    }
-
-    function submitFileMsg(response) {
-        var result = {
-            'JobID':  response.job_id,
-            'SHA256': response.sha256,
-            'EnvironmentID': response.environment_id
-        };
-        var context = {
-            'HybridAnalysis.Submit(val.JobID && val.JobID == obj.JobID)': result
-        };
-        return createTableEntry('Submission information:', result, result, context);
-    }
-
-    function searchQuery(query, minMaliciousScanners) {
-        body = '';
-            if (args.query) {
-                args.query.split(',').forEach(function(keyValue){
-                   splittedObject = keyValue.split(/:(.+)/); // Split by first ':' only
-                   key = splittedObject[0];
-                   value = splittedObject[1];
-                   body += key + '=' + value + '&'
-                });
-            } else {
-            // Build Crowd Strike query syntax from arguments, i.e. key:value
-                for (var key in args) {
-                    if (key != 'min_malicious_scanners') {
-                        body += key + '=' + args[key] + '&';
-                    }
-                }
-            }
-        var res = sendRequest('POST', '/api/v2/search/terms', body);
-
-        var result = res.result;
-
-        // create table from search result
-        var tableMapper = {
-           environmentDescription: 'environment description',
-           start_time: 'start time',
-           submitname: 'submit name',
-           threatscore: 'threat score',
-           type_short: 'type short',
-        };
-
-        var table = result.map(mapObject(tableMapper, false, null));
-
-        // create context from search result
-        var contextMapper = {
-            job_id: 'JobID',
-            sha256: 'SHA256',
-            environment_id: 'EnvironmentID'
-        };
-
-        var context = {
-            'HybridAnalysis.Search((val.JobID && val.JobID == obj.JobID) || (val.SHA256 && val.SHA256 == obj.SHA256))': result.map(mapObject(contextMapper, true, null))
-        };
-
-        //dbotScore pre-calculation
-        var unknownCounter = 0;
-        var maliciousCounter = 0;
-        result.forEach(function(key) {
-            if (key.verdict == null){
-                unknownCounter++;
-            }
-            else if (key.verdict == 'malicious'){
-                maliciousCounter++;
-            }
-        });
-
-        // add DbotScore to context
-        if (result.length != 0){
-            var dbotScore = calculateDbotScore(unknownCounter, maliciousCounter, minMaliciousScanners, res.count);
-            context["DBotScore"] = {
-              "Indicator": res.search_terms[0].value,
-                "Type": "File",
-                "Vendor": "Hybrid Analysis",
-                "Score": dbotScore
-                };
-        }
-
-        return createTableEntry('Search results:', result, table, context);
-    }
-
-
-    //Return the state of the submission
-    function reportState(){
-
-        var jobID = args.jobID;
-        var sha256 = args.sha256;
-        var environmentID = args.environmentID;
-
-        var hybridAnalysisID = '';
-
-        if (jobID) {
-            hybridAnalysisID = jobID;
-        } else if (sha256 && environmentID) {
-            hybridAnalysisID = '{0}:{1}'.format(sha256, environmentID);
-        } else {
-            throw 'Job ID or SHA-256 and environment ID must be provided.'
-        }
-
-        var commandURL = '/api/v2/report/{0}/state'.format(hybridAnalysisID);
-
-        var response = sendRequest('GET', commandURL);
-
-        var state = response.state
-
-        var output = 'Submission state: ' + state;
-
-        var context = {
-            'HybridAnalysis.Submit(val.JobID && val.JobID == obj.JobID)': {
-                State: state,
-                SHA256: sha256,
-                JobID: jobID,
-                EnvironmentID: environmentID
-            }
-        };
-
-        return {
-            Type: entryTypes.note,
-            ContentsFormat: formats.json,
-            Contents: response,
-            ReadableContentsFormat: formats.markdown,
-            HumanReadable: output,
-            EntryContext: context
-        };
-    }
-
-
-    function detonateFile(entryId, environmentId, malicious_threat_levels, delay, timeout) {
-        var file = submitFile(entryId, environmentId);
-        var hash = file.sha256;
-
-        delayTime = parseInt(delay);
-        timeOut = parseInt(timeout);
-        var waitTime = delayTime;
-
-        wait(delayTime);
-        while (waitTime<timeOut) {
-            var res = scan(hash);
-            if (res.length > 0) {
-                return scanToEntry(res, hash, malicious_threat_levels);
-            } else {
-                waitTime = waitTime + delayTime;
-                wait(delayTime);
-            }
-        }
-        throw ('Timeout due to no answer after ' + timeOut + ' seconds.');
-
-    }
-
-    //Dbot score calculation for a response without 'threat_level' field
-    function calculateDbotScore(unknownCounter, maliciousCounter,minMaliciousScanners, numOfScanners){
-        var dbotScore = 0;
-
-        if (maliciousCounter >= minMaliciousScanners)
-            dbotScore = 3;
-        else if (maliciousCounter >= 1)
-            dbotScore = 2;
-        else if (unknownCounter == numOfScanners)
-            dbotScore = 0;
-        else if (maliciousCounter == 0) // some scanners found it clean and no scanner found it malicious
-            dbotScore = 1;
-
-        return dbotScore;
-    }
-
-
-    function createFileContext (url, response, dbotScore, baseContext, urlContext, DbotContext, maliciousContext){
-        var fileName = url.replace(/^.*[\\\/]/, '');
-        DbotContext.Indicator = fileName;
-        var fileContext = {
-            'Name': fileName,
-            'SHA256': response.sha256
-        };
-        if (dbotScore == 3) {
-            fileContext.Malicious = maliciousContext;
-        }
-
-        context= {
-            'HybridAnalysis.URL(val.ScanID && val.ScanID == obj.ScanID)' : baseContext,
-            'URL(val.Data && val.Data == obj.Data)' : urlContext,
-            'File(val.SHA256 && val.SHA256 == obj.SHA256)' : fileContext,
-            'DBotScore' : DbotContext
-        }
-        return context;
-    }
-
-
-    // create the context, different between file and url context
-    function createQuickScanContext(response, scanners, dbotScore, maliciousDescription){
-
-        var baseContext = {
-            'ScanID': response.id,
-            'SHA256': response.sha256,
-            'Scanner' : scanners,
-            'Finished': response.finished
-        };
-
-        var DbotContext = {
-            'Vendor': 'Hybrid Analysis',
-            'Score': dbotScore,
-            'Type': 'URL'
-        }
-
-        var url = getIntegrationContext()[response.id];
-        var urlContext = {'Data' : url};
-
-        if (dbotScore == 3){
-            var maliciousContext = {
-                Vendor: 'Hybrid Analysis',
-                Description: 'The following scanners reported this URL as malicious: ' + maliciousDescription
-            };
-            urlContext.Malicious = maliciousContext;
-        }
-
-        var context = {};
-
-        if (getIntegrationContext()[url] == 'file_url') {
-            context = createFileContext (url, response, dbotScore, baseContext, urlContext, DbotContext, maliciousContext);
-        }
-
-        else {
-            DbotContext.Indicator = url;
-            context = {
-                'HybridAnalysis.URL(val.ScanID && val.ScanID == obj.ScanID)' : baseContext,
-                'URL(val.Data && val.Data == obj.Data)' : urlContext,
-                'DBotScore' : DbotContext
-            }
-        }
-
-        return context;
-    }
-
-
-    function createQuickScanHumanReadable (response, scannersContext, headers){
-        var mdTable = {
-            'ScanID': response.id,
-            'SHA256': response.sha256,
-            'Finished': response.finished
-        };
-        var md = '### Scan Results:\n' + tableToMarkdown(null, mdTable, ['ScanID', 'SHA256', 'Finished'], undefined, headerTransform=undefined, removeNull=true);
-        var scanTable = '##### scanners:\n' + tableToMarkdown(null, scannersContext, headers, undefined, headerTransform=undefined, removeNull=true);
-        var humanReadable = md + scanTable;
-
-        return humanReadable;
-    }
-
-
-        // create scanners entry context and calculate counters
-    function createScannersContext (response) {
-        var unknownCounter = 0;
-        var maliciousCounter = 0;
-        var maliciousDescription = "";
-        var scannersContext = [];
-
-        response.scanners.forEach(function(key) {
-            scannersContext.push(
-                {
-                    'Name': key.name,
-                    'Status': key.status,
-                    'Positives': key.positives
-                });
-            if (key.status == 'unknown' || key.status =='no-result' || key.status == 'not-supported')
-                unknownCounter++;
-            else if (key.status == 'malicious'){
-                maliciousCounter++;
-                maliciousDescription = maliciousDescription + ', ' + key.name;
-            }
-        });
-
-        maliciousDescription = maliciousDescription.substr(2); // remove the first ", "
-        var res = {
-            'scannersContext' : scannersContext,
-            'unknownCounter' : unknownCounter,
-            'maliciousCounter' : maliciousCounter,
-            'maliciousDescription' : maliciousDescription
-        }
-
-        return res;
-    }
-
-
-    //create table entry from response after 'quick-scan-url-results' command
-    function quickScanResultToEntry(response, minMaliciousScanners) {
-
-        var scannersResult = createScannersContext (response);
-        var scannersContext = scannersResult['scannersContext'];
-        var unknownCounter = scannersResult['unknownCounter'];
-        var maliciousCounter = scannersResult['maliciousCounter'];
-        var maliciousDescription = scannersResult['maliciousDescription'];
-
-        var dbotScore = calculateDbotScore(unknownCounter, maliciousCounter, minMaliciousScanners, response.scanners.lenght);
-
-        var context = createQuickScanContext (response, scannersContext, dbotScore, maliciousDescription);
-        var humanReadable = createQuickScanHumanReadable (response, scannersContext);
-
-        return {
-            Type: entryTypes.note,
-            ContentsFormat: formats.json,
-            Contents: response,
-            ReadableContentsFormat: formats.markdown,
-            HumanReadable: humanReadable,
-            EntryContext: context
-        };
-    }
-
-    function createContext (response, hybridContext) {
-        var url = hybridContext.URL;
-        if (response.submission_type == 'page_url') {
-            var context = {
-                'HybridAnalysis.URL(val.ScanID && val.ScanID == obj.ScanID)': hybridContext,
-                'URL(val.Data && val.Data == obj.Data)':{
-                    'Data': url
-                }
-            }
-        }
-
-        else {
-            var filename = url.replace(/^.*[\\\/]/, '');
-            var context = {
-                'HybridAnalysis.URL(val.ScanID && val.ScanID == obj.ScanID)': hybridContext,
-                'URL(val.Data && val.Data == obj.Data)':{
-                    'Data': url
-                },
-                'File(val.SHA256 && val.SHA256 == obj.SHA256)' : {
-                    'SHA256': response.sha256,
-                    'Name': filename,
-                }
-            }
-        }
-
-        return context;
-    }
-
-
-    //create table entry from response after 'quick-scan-url/file' command
-    function quickScanToEntry(response, url) {
-        var ScanID = response.id;
-        var hybridContext = {
-            'URL': url,
-            'ScanID': response.id,
-            'SHA256': response.sha256,
-            'Finished': response.finished,
-            'SubmissionType' : response.submission_type
-        };
-
-        var context = createContext(response, hybridContext)
-
-        // adding { ScanID : url } to the integration context for future use
-        var addToContext = {};
-        addToContext[ScanID] = url;
-        addToContext[url] = response.submission_type;
-        setIntegrationContext(addToContext);
-
-        var headers = ['ScanID', 'URL', 'Finished', 'SHA256', 'SubmissionType']
-        return createTableEntry('Scan information:', response, hybridContext, context, headers);
-    }
-
-
-    //Quick Scan commands
-    function quickScanUrl(scan_type, url, endpoint) {
-        var body = 'scan_type=' + scan_type + '&url=' + encodeURIComponent(url);
-        return sendRequest('POST', endpoint, body);
-    }
-
-
-    function quickScanId(id) {
-        return sendRequest('GET', '/api/v2/quick-scan/' + id );
-    }
-
-
-    function scanStates(headers) {
-        var result = sendRequest('GET', '/api/v2/quick-scan/state');
-        var scannersContext = [];
-        result.forEach(function(key) {// create scanner entry
-            scannersContext.push(
-                {
-                    'Name': key.name,
-                    'Available': key.available,
-                    'Description': key.description
-                }
-            );
-        });
-
-        return {
-            Type: entryTypes.note,
-            ContentsFormat: formats.json,
-            Contents: result,
-            ReadableContentsFormat: formats.markdown,
-            HumanReadable: '### Scanner:\n' + tableToMarkdown(null, scannersContext, ['Name', 'Available', 'Description'], undefined, headerTransform=undefined, removeNull=true),
-            EntryContext: {'HybridAnalysis.Scanner(val.Name && val.Name == obj.Name) :' : scannersContext}
-        };
-
-    }
-
-
-    //Sandbox Submission commands
-    function submitUrl(url, environment_id, endpoint) {
-        var body= 'url=' + url + '&environment_id=' + environment_id;
-        return sendRequest('POST', endpoint, body);
-    }
-
-
-    switch (command) {
-        case 'test-module':
-            var res = quickScanUrl('all', 'www.google.com', '/api/v2/quick-scan/url');
-            if (res != null && res.submission_type == 'page_url') {
-               return 'ok';
-            }
-            return 'the response is: ' + JSON.stringify(res) ;
-        case 'hybrid-analysis-scan':
-            var res = scan(args.file);
-            return scanToEntry(res, args.file, args.malicious_threat_levels);
-        case 'hybrid-analysis-submit-sample':
-            var response = submitFile(args.entryId, args.environmentID);
-            return submitFileMsg(response);
-        case 'hybrid-analysis-search':
-            return searchQuery(args.query, args.min_malicious_scanners);
-        case 'hybrid-analysis-detonate-file':
-            return detonateFile(args.entryId, args.environmentID, args.malicious_threat_levels, args.delay, args.timeout);
-        case 'hybrid-analysis-get-report-status':
-            return reportState();
-        //Quick Scan commands
-        case 'hybrid-analysis-quick-scan-url':
-            var res = quickScanUrl(args.scan_type, args.url, '/api/v2/quick-scan/url');
-            return quickScanToEntry(res, args.url);
-        case 'hybrid-analysis-quick-scan-url-results':
-            var res = quickScanId(args.scanID);
-            return quickScanResultToEntry(res, args.min_malicious_scanners);
-        case 'hybrid-analysis-list-scanners':
-            return scanStates();
-        //Sandbox Submission commands
-        case 'hybrid-analysis-submit-url':
-            var response = submitUrl(args.url, args.environmentID, '/api/v2/submit/url' );
-            return submitFileMsg(response);
-    }
-
-
-
-  type: javascript
   commands:
-  - name: hybrid-analysis-scan
-    arguments:
-    - name: file
+  - arguments:
+    - description: The MD5, SHA1, or SHA256 hash of the file.
+      name: file
       required: true
-      description: The MD5, SHA1, or SHA256 hash of the file.
-    - name: malicious_threat_levels
+    - defaultValue: '2'
       description: A CSV list of threat level values. Files that have a threat level
         specified in the list will be considered malicious.
       isArray: true
-      defaultValue: "2"
+      name: malicious_threat_levels
+    description: Returns summary information for a given MD5, SHA1 or SHA256 hash,
+      and all reports generated for any environment ID.
+    name: hybrid-analysis-scan
     outputs:
     - contextPath: File.SHA256
       description: SHA256 hash of the file.
@@ -784,18 +106,18 @@ script:
     - contextPath: DBotScore.Score
       description: The DBot score.
       type: number
-    description: Returns summary information for a given MD5, SHA1 or SHA256 hash,
-      and all reports generated for any environment ID.
-  - name: hybrid-analysis-submit-sample
-    arguments:
-    - name: entryId
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: TheWar-room entry ID of sample file
-    - name: environmentID
+      name: entryId
       required: true
-      description: The environment ID to which to submit the file. Run the vx-get-environments
+    - description: The environment ID to which to submit the file. Run the vx-get-environments
         command to get all environment IDs.
+      name: environmentID
+      required: true
+    description: Submits a file from the investigation to the analysis server. The
+      minimum required authorization is "default".
+    name: hybrid-analysis-submit-sample
     outputs:
     - contextPath: HybridAnalysis.Submit.JobID
       description: JobID of the submission
@@ -806,55 +128,58 @@ script:
     - contextPath: HybridAnalysis.Submit.EnvironmentID
       description: 'The environment ID of the submission. '
       type: string
-    description: Submits a file from the investigation to the analysis server. The minimum
-      required authorization is "default".
-  - name: hybrid-analysis-search
-    arguments:
-    - name: query
-      description: 'The query to run, in the Hybrid Analysis query syntax. For more
+  - arguments:
+    - description: 'The query to run, in the Hybrid Analysis query syntax. For more
         information, see `<server url>/faq#advanced-search-options`. For example:
         url:google, host:95.181.53.78.'
-    - name: filename
-      description: The full file name, including the file extension.
-    - name: filetype
-      description: Filetype e.g. docx
-    - name: filetype_desc
-      description: A description of the file type, for example, PE32 executable.
-    - name: env_id
-      description: The environment ID.
-    - name: country
-      description: 'The ISO code of the country by which to filter results, for example: swe'
-    - name: verdict
-      description: 'The verdict by which to filter results. Can be "1- whitelisted", "2- no verdict",
-        "3- "no specific threat", "4- suspicious", or "5- malicious".'
-    - name: av_detect
-      description: 'The AV multi-scan range (0-100) by which to filter results, for example: "50-70".'
-    - name: vx_family
-      description: 'The AV family substring by which to filter results, for example: "nemucod".'
-    - name: tag
-      description: 'The hashtag by which to filter results, for example: "ransomware".'
-    - name: port
-      description: The port by which to filter results.
-    - name: host
-      description: The host (IP address) by which to filter results.
-    - name: domain
-      description: The domain by which to filter results.
-    - name: url
-      description: The HTTP request substring by which to filter results.
-    - name: similar_to
-      description: 'Similar samples, for example: <sha256>.'
-    - name: context
-      description: 'Sample context, for example: <sha256>.'
-    - name: imp_hash
-      description: The import hash.
-    - name: ssdeep
-      description: The ssdeep hash.
-    - name: authentihash
-      description: The authentication hash.
-    - name: min_malicious_scanners
+      name: query
+    - description: The full file name, including the file extension.
+      name: filename
+    - description: Filetype e.g. docx
+      name: filetype
+    - description: A description of the file type, for example, PE32 executable.
+      name: filetype_desc
+    - description: The environment ID.
+      name: env_id
+    - description: 'The ISO code of the country by which to filter results, for example:
+        swe'
+      name: country
+    - description: The verdict by which to filter results. Can be "1- whitelisted",
+        "2- no verdict", "3- "no specific threat", "4- suspicious", or "5- malicious".
+      name: verdict
+    - description: 'The AV multi-scan range (0-100) by which to filter results, for
+        example: "50-70".'
+      name: av_detect
+    - description: 'The AV family substring by which to filter results, for example:
+        "nemucod".'
+      name: vx_family
+    - description: 'The hashtag by which to filter results, for example: "ransomware".'
+      name: tag
+    - description: The port by which to filter results.
+      name: port
+    - description: The host (IP address) by which to filter results.
+      name: host
+    - description: The domain by which to filter results.
+      name: domain
+    - description: The HTTP request substring by which to filter results.
+      name: url
+    - description: 'Similar samples, for example: <sha256>.'
+      name: similar_to
+    - description: 'Sample context, for example: <sha256>.'
+      name: context
+    - description: The import hash.
+      name: imp_hash
+    - description: The ssdeep hash.
+      name: ssdeep
+    - description: The authentication hash.
+      name: authentihash
+    - defaultValue: '2'
       description: The number of scanners that report the file as malicious to determine
         whether the file is malicious. Default is "2".
-      defaultValue: "2"
+      name: min_malicious_scanners
+    description: Performs a search on the database using the Hybrid Analysis search
+      syntax.
+    name: hybrid-analysis-search
     outputs:
     - contextPath: HybridAnalysis.Search.SHA256
       description: The SHA256 hash of the search result.
@@ -909,28 +234,29 @@ script:
       description: The DBotScore vendor.
     - contextPath: DBotScore.Score
       description: The DBot score.
-    description: Performs a search on the database using the Hybrid Analysis search syntax.
-  - name: hybrid-analysis-detonate-file
-    arguments:
-    - name: entryId
+  - arguments:
+    - description: The War Room entry ID of the sample file you want to detonate.
+      name: entryId
       required: true
-      description: The War Room entry ID of the sample file you want to detonate.
-    - name: environmentID
-      required: true
-      description: The environment ID to which to submit the file for detonation.
+    - description: The environment ID to which to submit the file for detonation.
         Run the vx-get-environments command to get all environment IDs. Default is
         100, or other WINDOWS ID.
-    - name: delay
-      description: The amount of time (in seconds) to wait between calls. Default is "3".
-      defaultValue: "3"
-    - name: timeout
+      name: environmentID
+      required: true
+    - defaultValue: '3'
+      description: The amount of time (in seconds) to wait between calls. Default
+        is "3".
+      name: delay
+    - defaultValue: '60'
       description: The total wait time (in seconds) before timeout. Default is "60".
-      defaultValue: "60"
-    - name: malicious_threat_levels
+      name: timeout
+    - defaultValue: '2'
       description: A CSV list of threat level values. Files that have a threat level
         specified in the list will be considered malicious.
       isArray: true
-      defaultValue: "2"
+      name: malicious_threat_levels
+    description: Submits a file for detonation in Hybrid Analysis.
+    name: hybrid-analysis-detonate-file
     outputs:
     - contextPath: File.SHA256
       description: SHA256 hash of the file.
@@ -995,15 +321,15 @@ script:
     - contextPath: DBotScore.Score
       description: The DBot score.
       type: number
-    description: Submits a file for detonation in Hybrid Analysis.
-  - name: hybrid-analysis-get-report-status
-    arguments:
-    - name: jobID
-      description: The Job ID of the submission.
-    - name: sha256
-      description: The submission SHA256.
-    - name: environmentID
-      description: The environmentID of the submission.
+  - arguments:
+    - description: The Job ID of the submission.
+      name: jobID
+    - description: The submission SHA256.
+      name: sha256
+    - description: The environmentID of the submission.
+      name: environmentID
+    description: Returns the state of the file submission.
+    name: hybrid-analysis-get-report-status
     outputs:
     - contextPath: HybridAnalysis.Submit.State
       description: The state of the process.
@@ -1017,16 +343,17 @@ script:
     - contextPath: HybridAnalysis.Submit.EnvironmentID
       description: The environment ID of the submission.
       type: string
-    description: Returns the state of the file submission.
-  - name: hybrid-analysis-quick-scan-url
-    arguments:
-    - name: scan_type
-      description: The type of scan. Run the hybrid-analysis-list-scanners command to view available
-        scanners.
-      defaultValue: all
-    - name: url
+  - arguments:
+    - defaultValue: all
+      description: The type of scan. Run the hybrid-analysis-list-scanners command
+        to view available scanners.
+      name: scan_type
+    - description: The website URL, or the URL that contains the file to submit.
+      name: url
       required: true
-      description: The website URL, or the URL that contains the file to submit.
+    description: Submits the URL of a website, or the URL that contains the file,
+      for analysis.
+    name: hybrid-analysis-quick-scan-url
     outputs:
     - contextPath: HybridAnalysis.URL.Data
       description: The URL.
@@ -1049,16 +376,18 @@ script:
     - contextPath: HybridAnalysis.URL.SubmissionType
       description: The type of the submission. Can be "file" or "url".
       type: string
-    description: Submits the URL of a website, or the URL that contains the file, for analysis.
-  - name: hybrid-analysis-submit-url
-    arguments:
-    - name: url
-      required: true
+  - arguments:
+    - defaultValue: The URL of the website, or the URL that contains the file to submit.
       description: The URL of the file to submit.
-      defaultValue: The URL of the website, or the URL that contains the file to submit.
-    - name: environmentID
+      name: url
       required: true
-      description: The environment ID to which to submit the file. Run the vx-get-environments command to get all environment IDs.
+    - description: The environment ID to which to submit the file. Run the vx-get-environments
+        command to get all environment IDs.
+      name: environmentID
+      required: true
+    description: Submits The URL of a website or the URL that contains the file, for
+      analysis.
+    name: hybrid-analysis-submit-url
     outputs:
     - contextPath: HybridAnalysis.Submit.JobID
       description: The job ID of the submission.
@@ -1072,9 +401,9 @@ script:
     - contextPath: HybridAnalysis.Submit.SubmissionType
       description: The type of the submission. Can be "file" or "url".
       type: string
-    description: Submits The URL of a website or the URL that contains the file, for analysis.
-  - name: hybrid-analysis-list-scanners
-    arguments: []
+  - arguments: []
+    description: ' Returns a list of available scanners.'
+    name: hybrid-analysis-list-scanners
     outputs:
     - contextPath: HybridAnalysis.Scanner.Available
       description: Whether the scanner is available.
@@ -1082,16 +411,17 @@ script:
       description: The scanner name.
     - contextPath: HybridAnalysis.Scanner.Description
       description: The scanner description.
-    description: ' Returns a list of available scanners.'
-  - name: hybrid-analysis-quick-scan-url-results
-    arguments:
-    - name: scanID
+  - arguments:
+    - description: The scan ID of the scanned URL.
+      name: scanID
       required: true
-      description: The scan ID of the scanned URL.
-    - name: min_malicious_scanners
+    - defaultValue: '2'
+      description: The number of scanners that report the file as malicious to determine
+        whether the file is malicious. Default is "2".
+      name: min_malicious_scanners
       required: true
-      description: The number of scanners that report the file as malicious to determine whether the file is malicious. Default is "2".
-      defaultValue: "2"
+    description: Returns the scan results of the given URL ID.
+    name: hybrid-analysis-quick-scan-url-results
     outputs:
     - contextPath: HybridAnalysis.URL.ScanID
       description: The scan ID.
@@ -1114,8 +444,283 @@ script:
     - contextPath: File.SHA256
       description: The SHA256 hash of the file.
       type: string
-    description: Returns the scan results of the given URL ID.
   runonce: false
+  script: "var serverUrl = params.serverUrl;\nvar insecure = params.insecure;\nvar\
+    \ proxy = params.proxy;\nvar version = params.version;\nvar apiKey;\nvar integrationContext\
+    \ = getIntegrationContext();\nvar licenseID = getLicenseID();\nvar HEADERS = {\n\
+    \    'User-Agent': ['Hybrid Analysis'],\n    'accept': ['application/json'],\n\
+    \    'Content-Type': ['application/x-www-form-urlencoded'],\n    'DemistoLicense':\
+    \ [licenseID]\n};\n\nif (params.apiKey) {\n    apiKey = params.apiKey;\n} else\
+    \ if (integrationContext.apiKey) {\n    apiKey = integrationContext.apiKey;\n\
+    } else {\n    apiKey = generateKey();\n}\n\nHEADERS['api-key'] = [apiKey];\n\n\
+    // handle '/' at the end of serverUrl\nif (serverUrl[serverUrl.length - 1] ===\
+    \ '/') {\n    serverUrl = serverUrl.substring(0, serverUrl.length - 1);\n}\n\n\
+    function generateKey() {\n    HEADERS['api-key'] = [integrationContext.masterApiKey];\n\
+    \    var cmdUrl = '/api/v2/key/create';\n    var response = sendRequest('POST',\
+    \ cmdUrl, 'uid=DemistoLimitedEdition');\n    key = response.api_key;\n    integrationContext.apiKey\
+    \ = key;\n    setIntegrationContext(integrationContext);\n    return key;\n}\n\
+    \nfunction entryError(errorCode, text) {\n    var error = 'Hybrid Analysis returned\
+    \ an error (' + errorCode + ') - ' + text;\n    return {Type: entryTypes.error,\
+    \ ContentsFormat: formats.text, Contents: error};\n}\n\n//Originally, there was\
+    \ a mismatch between some context fields and their corresponding YML outputs.\n\
+    //For example: the context field name was 'environment_id' while the corresponding\
+    \ YML output was 'environmentId'.\n//This function gets a context entry and adds\
+    \ the existing YML outputs into the context, with the values of the original fields\
+    \ from context.\n//The old context fields are not being deleted in order to prevent\
+    \ braking backwards compatibility.\nfunction addYMLOutputsToContext(contextEntry)\
+    \ {\n     Object.keys(contextEntry).forEach(function(key) {\n            switch\
+    \ (key) {\n                case 'environment_id':\n                    contextEntry.environmentId\
+    \ = contextEntry['environment_id'];\n                    break;\n            \
+    \    case 'submit_name':\n                    contextEntry.submitname = contextEntry['submit_name'];\n\
+    \                    break;\n                case 'vx_family':\n             \
+    \       contextEntry.vxfamily = contextEntry['vx_family'];\n                 \
+    \   break;\n                case 'interesting':\n                    contextEntry.isinteresting\
+    \ = contextEntry['interesting'];\n                    break;\n               \
+    \ case 'url_analysis':\n                    contextEntry.isurlanalysis = contextEntry['url_analysis'];\n\
+    \                    break;\n            }\n        });\n    return contextEntry;\n\
+    }\n\n //  get threat level and calculate Dbot score by the following rule: 0=No\
+    \ Threat, 1=Suspicious, 2=Malicious, 3=Unknown\nfunction threatLevelToDbotScore(threatLevel,\
+    \ maliciousThreatLevels) {\n    var dbotScore = 0;\n    if (maliciousThreatLevels.indexOf(threatLevel)\
+    \ !== -1){\n        dbotScore = 3;\n    }\n\n    else {\n        switch (threatLevel)\
+    \ {\n            case 0:\n                dbotScore = 1;\n                break;\n\
+    \            case 1:\n                dbotScore = 2;\n                break;\n\
+    \            case 2:\n                dbotScore = 2;\n                break;\n\
+    \            case 3:\n                dbotScore = 0;\n                break;\n\
+    \        }\n    }\n    return dbotScore;\n}\n\n\n// return a function that maps\
+    \ object keys by mapper (or capitlize keys if key is not exists in mapper)\nfunction\
+    \ mapObject(mapper, isContextMapper, maliciousThreatLevels) {\n    return function(obj)\
+    \ {\n        var res = {};\n        Object.keys(obj).forEach(function(key) {\n\
+    \            // map key or capitalize if not exists\n            var newKey =\
+    \ mapper[key] || key;\n            res[newKey] = obj[key];\n            if (maliciousThreatLevels\
+    \ && obj.threat_level && maliciousThreatLevels.indexOf(obj.threat_level) !== -1\
+    \ && isContextMapper) {\n                res.Malicious = {\n                 \
+    \   Vendor: 'Hybrid Analysis',\n                    Description: 'Score above\
+    \ ' + obj.threat_score\n                };\n            }\n        });\n     \
+    \   if (isContextMapper)\n            res = addYMLOutputsToContext(res);\n   \
+    \     return res;\n    };\n}\n\n\nfunction createTableEntry(name, rawResponse,\
+    \ table, context, headers) {\n    return {\n        Type: entryTypes.note,\n \
+    \       ContentsFormat: formats.json,\n        Contents: rawResponse,\n      \
+    \  ReadableContentsFormat: formats.markdown,\n        HumanReadable: tableToMarkdown(name,\
+    \ table, headers, undefined, headerTransform=undefined, removeNull=true),\n  \
+    \      EntryContext: context\n    };\n}\n\nfunction sendRequest(method, endpoint,\
+    \ body) {\n    var requestUrl = serverUrl + endpoint;\n    var res = http(\n \
+    \       requestUrl,\n        {\n            Method: method,\n            Headers:\
+    \ HEADERS,\n            Body: body\n        },\n        insecure,\n        proxy\n\
+    \    );\n\n    if (res.StatusCode < 200 || res.StatusCode >= 300) {\n        throw\
+    \ 'Request Failed.\\nStatus code: ' + res.StatusCode + '.\\nBody: ' + JSON.stringify(res)\
+    \ + '.';\n    }\n\n    var body;\n    try {\n        body = JSON.parse(res.Body);\n\
+    \    } catch (ex) {\n        throw 'Error parsing response - ' + res.Body + '\
+    \ - ' + ex;\n    }\n\n    return body;\n}\n\nfunction scan(hash) {\n   return\
+    \ sendRequest('POST', '/api/v2/search/hash', 'hash='+hash);\n\n}\nfunction scanToEntry(res,\
+    \ hash, maliciousThreatLevels) {\n    var response = res;\n\n    // create table\
+    \ from response\n    var tableMapper = {\n       threatlevel: 'threat level',\n\
+    \       total_network_connections: 'total network connections',\n       targeturl:\
+    \ 'target url',\n       classification_tags: 'classification tags',\n       threatscore:\
+    \ 'threat score',\n       total_processes: 'total processes',\n       submitname:\
+    \ 'submit name',\n       environmentDescription: 'environment description',\n\
+    \       isinteresting: 'interesting',\n       environmentId: 'environment id',\n\
+    \       isurlanalysis: 'url analysis',\n       analysis_start_time: 'analysis\
+    \ start time',\n       total_signatures: 'total signatures'\n    };\n\n    var\
+    \ table = response.map(mapObject(tableMapper, false, maliciousThreatLevels));\n\
+    \    // create context from response\n    var context = {};\n\n    var contextMapper\
+    \ = {\n        sha1: 'SHA1',\n        sha256: 'SHA256',\n        md5: 'MD5'\n\
+    \    };\n\n    context[outputPaths.file] = response.map(mapObject(contextMapper,\
+    \ true, maliciousThreatLevels));\n\n    // add DbotScore to context\n    response.forEach(function(res)\
+    \ {\n        var dbotScore = threatLevelToDbotScore(res.threat_level, maliciousThreatLevels);\n\
+    \        context[\"DBotScore\"] = {\n            \"Indicator\": hash,\n      \
+    \      \"Type\": \"File\",\n            \"Vendor\": \"Hybrid Analysis\",\n   \
+    \         \"Score\": dbotScore\n        };\n    });\n\n    return createTableEntry('Scan\
+    \ Results:', response, table, context);\n}\n\nfunction submitFile (entryId, environmentId)\
+    \ {\n    var requestUrl = serverUrl + '/api/v2/submit/file';\n\n    // submit\
+    \ file\n    var res = httpMultipart(\n                requestUrl, // URL\n   \
+    \             entryId, // Optional - FilePath / EntryID\n                {\n \
+    \                   Method: 'POST',\n                    Headers: HEADERS\n  \
+    \              },\n                { // Multipart Contents\n                 \
+    \   environment_id: environmentId // For API v2\n                },\n        \
+    \        insecure,\n                proxy\n            );\n\n    if (res.StatusCode\
+    \ < 200 || res.StatusCode >= 300) {\n        throw 'Multipart Request Failed.\\\
+    nStatus code: ' + res.StatusCode + '.\\nBody: ' + JSON.stringify(res) + '.';\n\
+    \    }\n    var body;\n\n    try {\n        body = JSON.parse(res.Body);\n   \
+    \ } catch (ex) {\n        throw 'Error parsing response - ' + res.Body + ' - '\
+    \ + ex;\n    }\n\n    return body;\n}\n\nfunction submitFileMsg(response) {\n\
+    \    var result = {\n        'JobID':  response.job_id,\n        'SHA256': response.sha256,\n\
+    \        'EnvironmentID': response.environment_id\n    };\n    var context = {\n\
+    \        'HybridAnalysis.Submit(val.JobID && val.JobID == obj.JobID)': result\n\
+    \    };\n    return createTableEntry('Submission information:', result, result,\
+    \ context);\n}\n\nfunction searchQuery(query, minMaliciousScanners) {\n    body\
+    \ = '';\n        if (args.query) {\n            args.query.split(',').forEach(function(keyValue){\n\
+    \               splittedObject = keyValue.split(/:(.+)/); // Split by first ':'\
+    \ only\n               key = splittedObject[0];\n               value = splittedObject[1];\n\
+    \               body += key + '=' + value + '&'\n            });\n        } else\
+    \ {\n        // Build Crowd Strike query syntax from arguments, i.e. key:value\n\
+    \            for (var key in args) {\n                if (key != 'min_malicious_scanners')\
+    \ {\n                    body += key + '=' + args[key] + '&';\n              \
+    \  }\n            }\n        }\n    var res = sendRequest('POST', '/api/v2/search/terms',\
+    \ body);\n\n    var result = res.result;\n\n    // create table from search result\n\
+    \    var tableMapper = {\n       environmentDescription: 'environment description',\n\
+    \       start_time: 'start time',\n       submitname: 'submit name',\n       threatscore:\
+    \ 'threat score',\n       type_short: 'type short',\n    };\n\n    var table =\
+    \ result.map(mapObject(tableMapper, false, null));\n\n    // create context from\
+    \ search result\n    var contextMapper = {\n        job_id: 'JobID',\n       \
+    \ sha256: 'SHA256',\n        environment_id: 'EnvironmentID'\n    };\n\n    var\
+    \ context = {\n        'HybridAnalysis.Search((val.JobID && val.JobID == obj.JobID)\
+    \ || (val.SHA256 && val.SHA256 == obj.SHA256))': result.map(mapObject(contextMapper,\
+    \ true, null))\n    };\n\n    //dbotScore pre-calculation\n    var unknownCounter\
+    \ = 0;\n    var maliciousCounter = 0;\n    result.forEach(function(key) {\n  \
+    \      if (key.verdict == null){\n            unknownCounter++;\n        }\n \
+    \       else if (key.verdict == 'malicious'){\n            maliciousCounter++;\n\
+    \        }\n    });\n\n    // add DbotScore to context\n    if (result.length\
+    \ != 0){\n        var dbotScore = calculateDbotScore(unknownCounter, maliciousCounter,\
+    \ minMaliciousScanners, res.count);\n        context[\"DBotScore\"] = {\n    \
+    \      \"Indicator\": res.search_terms[0].value,\n            \"Type\": \"File\"\
+    ,\n            \"Vendor\": \"Hybrid Analysis\",\n            \"Score\": dbotScore\n\
+    \            };\n    }\n\n    return createTableEntry('Search results:', result,\
+    \ table, context);\n}\n\n\n//Return the state of the submission\nfunction reportState(){\n\
+    \n    var jobID = args.jobID;\n    var sha256 = args.sha256;\n    var environmentID\
+    \ = args.environmentID;\n\n    var hybridAnalysisID = '';\n\n    if (jobID) {\n\
+    \        hybridAnalysisID = jobID;\n    } else if (sha256 && environmentID) {\n\
+    \        hybridAnalysisID = '{0}:{1}'.format(sha256, environmentID);\n    } else\
+    \ {\n        throw 'Job ID or SHA-256 and environment ID must be provided.'\n\
+    \    }\n\n    var commandURL = '/api/v2/report/{0}/state'.format(hybridAnalysisID);\n\
+    \n    var response = sendRequest('GET', commandURL);\n\n    var state = response.state\n\
+    \n    var output = 'Submission state: ' + state;\n\n    var context = {\n    \
+    \    'HybridAnalysis.Submit(val.JobID && val.JobID == obj.JobID)': {\n       \
+    \     State: state,\n            SHA256: sha256,\n            JobID: jobID,\n\
+    \            EnvironmentID: environmentID\n        }\n    };\n\n    return {\n\
+    \        Type: entryTypes.note,\n        ContentsFormat: formats.json,\n     \
+    \   Contents: response,\n        ReadableContentsFormat: formats.markdown,\n \
+    \       HumanReadable: output,\n        EntryContext: context\n    };\n}\n\n\n\
+    function detonateFile(entryId, environmentId, malicious_threat_levels, delay,\
+    \ timeout) {\n    var file = submitFile(entryId, environmentId);\n    var hash\
+    \ = file.sha256;\n\n    delayTime = parseInt(delay);\n    timeOut = parseInt(timeout);\n\
+    \    var waitTime = delayTime;\n\n    wait(delayTime);\n    while (waitTime<timeOut)\
+    \ {\n        var res = scan(hash);\n        if (res.length > 0) {\n          \
+    \  return scanToEntry(res, hash, malicious_threat_levels);\n        } else {\n\
+    \            waitTime = waitTime + delayTime;\n            wait(delayTime);\n\
+    \        }\n    }\n    throw ('Timeout due to no answer after ' + timeOut + '\
+    \ seconds.');\n\n}\n\n//Dbot score calculation for a response without 'threat_level'\
+    \ field\nfunction calculateDbotScore(unknownCounter, maliciousCounter,minMaliciousScanners,\
+    \ numOfScanners){\n    var dbotScore = 0;\n\n    if (maliciousCounter >= minMaliciousScanners)\n\
+    \        dbotScore = 3;\n    else if (maliciousCounter >= 1)\n        dbotScore\
+    \ = 2;\n    else if (unknownCounter == numOfScanners)\n        dbotScore = 0;\n\
+    \    else if (maliciousCounter == 0) // some scanners found it clean and no scanner\
+    \ found it malicious\n        dbotScore = 1;\n\n    return dbotScore;\n}\n\n\n\
+    function createFileContext (url, response, dbotScore, baseContext, urlContext,\
+    \ DbotContext, maliciousContext){\n    var fileName = url.replace(/^.*[\\\\\\\
+    /]/, '');\n    DbotContext.Indicator = fileName;\n    var fileContext = {\n  \
+    \      'Name': fileName,\n        'SHA256': response.sha256\n    };\n    if (dbotScore\
+    \ == 3) {\n        fileContext.Malicious = maliciousContext;\n    }\n\n    context=\
+    \ {\n        'HybridAnalysis.URL(val.ScanID && val.ScanID == obj.ScanID)' : baseContext,\n\
+    \        'URL(val.Data && val.Data == obj.Data)' : urlContext,\n        'File(val.SHA256\
+    \ && val.SHA256 == obj.SHA256)' : fileContext,\n        'DBotScore' : DbotContext\n\
+    \    }\n    return context;\n}\n\n\n// create the context, different between file\
+    \ and url context\nfunction createQuickScanContext(response, scanners, dbotScore,\
+    \ maliciousDescription){\n\n    var baseContext = {\n        'ScanID': response.id,\n\
+    \        'SHA256': response.sha256,\n        'Scanner' : scanners,\n        'Finished':\
+    \ response.finished\n    };\n\n    var DbotContext = {\n        'Vendor': 'Hybrid\
+    \ Analysis',\n        'Score': dbotScore,\n        'Type': 'URL'\n    }\n\n  \
+    \  var url = getIntegrationContext()[response.id];\n    var urlContext = {'Data'\
+    \ : url};\n\n    if (dbotScore == 3){\n        var maliciousContext = {\n    \
+    \        Vendor: 'Hybrid Analysis',\n            Description: 'The following scanners\
+    \ reported this URL as malicious: ' + maliciousDescription\n        };\n     \
+    \   urlContext.Malicious = maliciousContext;\n    }\n\n    var context = {};\n\
+    \n    if (getIntegrationContext()[url] == 'file_url') {\n        context = createFileContext\
+    \ (url, response, dbotScore, baseContext, urlContext, DbotContext, maliciousContext);\n\
+    \    }\n\n    else {\n        DbotContext.Indicator = url;\n        context =\
+    \ {\n            'HybridAnalysis.URL(val.ScanID && val.ScanID == obj.ScanID)'\
+    \ : baseContext,\n            'URL(val.Data && val.Data == obj.Data)' : urlContext,\n\
+    \            'DBotScore' : DbotContext\n        }\n    }\n\n    return context;\n\
+    }\n\n\nfunction createQuickScanHumanReadable (response, scannersContext, headers){\n\
+    \    var mdTable = {\n        'ScanID': response.id,\n        'SHA256': response.sha256,\n\
+    \        'Finished': response.finished\n    };\n    var md = '### Scan Results:\\\
+    n' + tableToMarkdown(null, mdTable, ['ScanID', 'SHA256', 'Finished'], undefined,\
+    \ headerTransform=undefined, removeNull=true);\n    var scanTable = '##### scanners:\\\
+    n' + tableToMarkdown(null, scannersContext, headers, undefined, headerTransform=undefined,\
+    \ removeNull=true);\n    var humanReadable = md + scanTable;\n\n    return humanReadable;\n\
+    }\n\n\n    // create scanners entry context and calculate counters\nfunction createScannersContext\
+    \ (response) {\n    var unknownCounter = 0;\n    var maliciousCounter = 0;\n \
+    \   var maliciousDescription = \"\";\n    var scannersContext = [];\n\n    response.scanners.forEach(function(key)\
+    \ {\n        scannersContext.push(\n            {\n                'Name': key.name,\n\
+    \                'Status': key.status,\n                'Positives': key.positives\n\
+    \            });\n        if (key.status == 'unknown' || key.status =='no-result'\
+    \ || key.status == 'not-supported')\n            unknownCounter++;\n        else\
+    \ if (key.status == 'malicious'){\n            maliciousCounter++;\n         \
+    \   maliciousDescription = maliciousDescription + ', ' + key.name;\n        }\n\
+    \    });\n\n    maliciousDescription = maliciousDescription.substr(2); // remove\
+    \ the first \", \"\n    var res = {\n        'scannersContext' : scannersContext,\n\
+    \        'unknownCounter' : unknownCounter,\n        'maliciousCounter' : maliciousCounter,\n\
+    \        'maliciousDescription' : maliciousDescription\n    }\n\n    return res;\n\
+    }\n\n\n//create table entry from response after 'quick-scan-url-results' command\n\
+    function quickScanResultToEntry(response, minMaliciousScanners) {\n\n    var scannersResult\
+    \ = createScannersContext (response);\n    var scannersContext = scannersResult['scannersContext'];\n\
+    \    var unknownCounter = scannersResult['unknownCounter'];\n    var maliciousCounter\
+    \ = scannersResult['maliciousCounter'];\n    var maliciousDescription = scannersResult['maliciousDescription'];\n\
+    \n    var dbotScore = calculateDbotScore(unknownCounter, maliciousCounter, minMaliciousScanners,\
+    \ response.scanners.lenght);\n\n    var context = createQuickScanContext (response,\
+    \ scannersContext, dbotScore, maliciousDescription);\n    var humanReadable =\
+    \ createQuickScanHumanReadable (response, scannersContext);\n\n    return {\n\
+    \        Type: entryTypes.note,\n        ContentsFormat: formats.json,\n     \
+    \   Contents: response,\n        ReadableContentsFormat: formats.markdown,\n \
+    \       HumanReadable: humanReadable,\n        EntryContext: context\n    };\n\
+    }\n\nfunction createContext (response, hybridContext) {\n    var url = hybridContext.URL;\n\
+    \    if (response.submission_type == 'page_url') {\n        var context = {\n\
+    \            'HybridAnalysis.URL(val.ScanID && val.ScanID == obj.ScanID)': hybridContext,\n\
+    \            'URL(val.Data && val.Data == obj.Data)':{\n                'Data':\
+    \ url\n            }\n        }\n    }\n\n    else {\n        var filename = url.replace(/^.*[\\\
+    \\\\/]/, '');\n        var context = {\n            'HybridAnalysis.URL(val.ScanID\
+    \ && val.ScanID == obj.ScanID)': hybridContext,\n            'URL(val.Data &&\
+    \ val.Data == obj.Data)':{\n                'Data': url\n            },\n    \
+    \        'File(val.SHA256 && val.SHA256 == obj.SHA256)' : {\n                'SHA256':\
+    \ response.sha256,\n                'Name': filename,\n            }\n       \
+    \ }\n    }\n\n    return context;\n}\n\n\n//create table entry from response after\
+    \ 'quick-scan-url/file' command\nfunction quickScanToEntry(response, url) {\n\
+    \    var ScanID = response.id;\n    var hybridContext = {\n        'URL': url,\n\
+    \        'ScanID': response.id,\n        'SHA256': response.sha256,\n        'Finished':\
+    \ response.finished,\n        'SubmissionType' : response.submission_type\n  \
+    \  };\n\n    var context = createContext(response, hybridContext)\n\n    // adding\
+    \ { ScanID : url } to the integration context for future use\n    var addToContext\
+    \ = {};\n    addToContext[ScanID] = url;\n    addToContext[url] = response.submission_type;\n\
+    \    setIntegrationContext(addToContext);\n\n    var headers = ['ScanID', 'URL',\
+    \ 'Finished', 'SHA256', 'SubmissionType']\n    return createTableEntry('Scan information:',\
+    \ response, hybridContext, context, headers);\n}\n\n\n//Quick Scan commands\n\
+    function quickScanUrl(scan_type, url, endpoint) {\n    var body = 'scan_type='\
+    \ + scan_type + '&url=' + encodeURIComponent(url);\n    return sendRequest('POST',\
+    \ endpoint, body);\n}\n\n\nfunction quickScanId(id) {\n    return sendRequest('GET',\
+    \ '/api/v2/quick-scan/' + id );\n}\n\n\nfunction scanStates(headers) {\n    var\
+    \ result = sendRequest('GET', '/api/v2/quick-scan/state');\n    var scannersContext\
+    \ = [];\n    result.forEach(function(key) {// create scanner entry\n        scannersContext.push(\n\
+    \            {\n                'Name': key.name,\n                'Available':\
+    \ key.available,\n                'Description': key.description\n           \
+    \ }\n        );\n    });\n\n    return {\n        Type: entryTypes.note,\n   \
+    \     ContentsFormat: formats.json,\n        Contents: result,\n        ReadableContentsFormat:\
+    \ formats.markdown,\n        HumanReadable: '### Scanner:\\n' + tableToMarkdown(null,\
+    \ scannersContext, ['Name', 'Available', 'Description'], undefined, headerTransform=undefined,\
+    \ removeNull=true),\n        EntryContext: {'HybridAnalysis.Scanner(val.Name &&\
+    \ val.Name == obj.Name) :' : scannersContext}\n    };\n\n}\n\n\n//Sandbox Submission\
+    \ commands\nfunction submitUrl(url, environment_id, endpoint) {\n    var body=\
+    \ 'url=' + url + '&environment_id=' + environment_id;\n    return sendRequest('POST',\
+    \ endpoint, body);\n}\n\n\nswitch (command) {\n    case 'test-module':\n     \
+    \   var res = quickScanUrl('all', 'www.google.com', '/api/v2/quick-scan/url');\n\
+    \        if (res != null && res.submission_type == 'page_url') {\n           return\
+    \ 'ok';\n        }\n        return 'the response is: ' + JSON.stringify(res) ;\n\
+    \    case 'hybrid-analysis-scan':\n        var res = scan(args.file);\n      \
+    \  return scanToEntry(res, args.file, args.malicious_threat_levels);\n    case\
+    \ 'hybrid-analysis-submit-sample':\n        var response = submitFile(args.entryId,\
+    \ args.environmentID);\n        return submitFileMsg(response);\n    case 'hybrid-analysis-search':\n\
+    \        return searchQuery(args.query, args.min_malicious_scanners);\n    case\
+    \ 'hybrid-analysis-detonate-file':\n        return detonateFile(args.entryId,\
+    \ args.environmentID, args.malicious_threat_levels, args.delay, args.timeout);\n\
+    \    case 'hybrid-analysis-get-report-status':\n        return reportState();\n\
+    \    //Quick Scan commands\n    case 'hybrid-analysis-quick-scan-url':\n     \
+    \   var res = quickScanUrl(args.scan_type, args.url, '/api/v2/quick-scan/url');\n\
+    \        return quickScanToEntry(res, args.url);\n    case 'hybrid-analysis-quick-scan-url-results':\n\
+    \        var res = quickScanId(args.scanID);\n        return quickScanResultToEntry(res,\
+    \ args.min_malicious_scanners);\n    case 'hybrid-analysis-list-scanners':\n \
+    \       return scanStates();\n    //Sandbox Submission commands\n    case 'hybrid-analysis-submit-url':\n\
+    \        var response = submitUrl(args.url, args.environmentID, '/api/v2/submit/url'\
+    \ );\n        return submitFileMsg(response);\n}\n\n\n\n"
+  type: javascript
 tests:
-  - Detonate File - HybridAnalysis - Test
-  - HybridAnalysis-Test
+- Detonate File - HybridAnalysis - Test
+- HybridAnalysis-Test
+toversion: 4.1.9

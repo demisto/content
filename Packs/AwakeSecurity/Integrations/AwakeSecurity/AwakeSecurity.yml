@@ -1,87 +1,85 @@
+category: Network Security
 commonfields:
   id: Awake Security
   version: -1
-name: Awake Security
-display: Awake Security
-category: Network Security
-description: Network Traffic Analysis
-detaileddescription: ""
 configuration:
-- display: Credentials
+- defaultvalue: ''
+  display: Credentials
   name: credentials
-  defaultvalue: ""
+  required: true
   type: 9
-  required: true
-- display: Awake Security server address
+- defaultvalue: https://example.awake.cloud
+  display: Awake Security server address
   name: server
-  defaultvalue: https://example.awake.cloud
-  type: 0
   required: true
-- display: Trust any certificate (not secure)
+  type: 0
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
   name: unsecure
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 - display: Fetch incidents
   name: isFetch
-  type: 8
   required: false
+  type: 8
 - display: Incident type
   name: incidentType
+  required: false
   type: 13
-  required: false
-- display: Use system proxy settings
+- defaultvalue: ''
+  display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
-  type: 8
   required: false
-- display: 'Comma-separated list of threat behaviors to generate incidents for, e.g.,
+  type: 8
+- defaultvalue: ''
+  display: 'Comma-separated list of threat behaviors to generate incidents for, e.g.,
     "Exfiltration: SSL upload from non-browser to notable domain, Lateral Movement:
     Unix-based PSEXEC, C2: Possible ICMP tunnel"'
   name: threat_behaviors
-  defaultvalue: ""
-  type: 0
   required: false
-- display: Period between incident fetch interval (in minutes)
+  type: 0
+- defaultvalue: '1'
+  display: Period between incident fetch interval (in minutes)
   name: fetch_interval
-  defaultvalue: "1"
-  type: 0
   required: true
-- display: Minimum threshold to determine an indicator suspicious in Demisto
+  type: 0
+- defaultvalue: '33'
+  display: Minimum threshold to determine an indicator suspicious in Demisto
   name: suspicious_threshold
-  defaultvalue: "33"
-  type: 0
   required: true
-- display: Minimum threshold to determine an indicator malicious in Demisto
+  type: 0
+- defaultvalue: '66'
+  display: Minimum threshold to determine an indicator malicious in Demisto
   name: malicious_threshold
-  defaultvalue: "66"
-  type: 0
   required: true
+  type: 0
+description: Network Traffic Analysis
+detaileddescription: ''
+display: Awake Security
+name: Awake Security
 script:
-  script: ''
-  type: python
-  subtype: python2
   commands:
-  - name: awake-query-devices
-    arguments:
-    - name: queryExpression
-      description: A query expression in Awake Query Language
-    - name: startTime
+  - arguments:
+    - description: A query expression in Awake Query Language
+      name: queryExpression
+    - description: Query start time ("2000-01-01T00:00:00Z")
+      name: startTime
       required: true
-      description: Query start time ("2000-01-01T00:00:00Z")
-    - name: endTime
+    - description: Query end time ("2000-01-01T00:00:00Z")
+      name: endTime
       required: true
-      description: Query end time ("2000-01-01T00:00:00Z")
-    - name: ipAddress
-      description: IP address to filter by (exact match)
-    - name: deviceName
-      description: Device name to filter by (regular expression)
-    - name: domainName
-      description: Domain name to filter by (regular expression)
-    - name: protocol
-      description: Protocol to filter by (all uppercase, i.e. "TLS")
-    - name: tag
-      description: Tag to filter by (regular expression)
+    - description: IP address to filter by (exact match)
+      name: ipAddress
+    - description: Device name to filter by (regular expression)
+      name: deviceName
+    - description: Domain name to filter by (regular expression)
+      name: domainName
+    - description: Protocol to filter by (all uppercase, i.e. "TLS")
+      name: protocol
+    - description: Tag to filter by (regular expression)
+      name: tag
+    description: Query devices in Awake Security
+    name: awake-query-devices
     outputs:
     - contextPath: AwakeSecurity.Devices.deviceId
       description: Awake Security unique identifier for the specified device
@@ -127,27 +125,27 @@ script:
       description: Is the device associated with the specified email address in the
         white list
       type: bool
-    description: Query devices in Awake Security
-  - name: awake-query-activities
-    arguments:
-    - name: queryExpression
-      description: A query expression in the Awake Query Language
-    - name: startTime
+  - arguments:
+    - description: A query expression in the Awake Query Language
+      name: queryExpression
+    - description: Query start time ("2000-01-01T00:00:00Z")
+      name: startTime
       required: true
-      description: Query start time ("2000-01-01T00:00:00Z")
-    - name: endTime
+    - description: Query end time ("2000-01-01T00:00:00Z")
+      name: endTime
       required: true
-      description: Query end time ("2000-01-01T00:00:00Z")
-    - name: ipAddress
-      description: IP address to filter by (exact match)
-    - name: deviceName
-      description: Device name to filter by (regular expression)
-    - name: domainName
-      description: Domain name to filter by (regular expression)
-    - name: protocol
-      description: Protocol to filter by (all uppercase, i.e. "TLS")
-    - name: tag
-      description: ' Tag to filter by (regular expression)'
+    - description: IP address to filter by (exact match)
+      name: ipAddress
+    - description: Device name to filter by (regular expression)
+      name: deviceName
+    - description: Domain name to filter by (regular expression)
+      name: domainName
+    - description: Protocol to filter by (all uppercase, i.e. "TLS")
+      name: protocol
+    - description: ' Tag to filter by (regular expression)'
+      name: tag
+    description: Query activities in Awake Security
+    name: awake-query-activities
     outputs:
     - contextPath: AwakeSecurity.Activities.activityId
       description: UUID that uniquely identifies the activity
@@ -188,27 +186,27 @@ script:
     - contextPath: AwakeSecurity.Activities.protocols
       description: Protocols that the activity used
       type: string
-    description: Query activities in Awake Security
-  - name: awake-query-domains
-    arguments:
-    - name: queryExpression
-      description: A query expression in the Awake Query Language
-    - name: startTime
+  - arguments:
+    - description: A query expression in the Awake Query Language
+      name: queryExpression
+    - description: Query start time ("2000-01-01T00:00:00Z")
+      name: startTime
       required: true
-      description: Query start time ("2000-01-01T00:00:00Z")
-    - name: endTime
+    - description: Query end time ("2000-01-01T00:00:00Z")
+      name: endTime
       required: true
-      description: Query end time ("2000-01-01T00:00:00Z")
-    - name: ipAddress
-      description: IP address to filter by (exact match)
-    - name: deviceName
-      description: Device name to filter by (regular expression)
-    - name: domainName
-      description: Domain name to filter by (regular expression)
-    - name: protocol
-      description: Protocol to filter by (all uppercase, i.e. "TLS")
-    - name: tag
-      description: ' Tag to filter by (regular expression)'
+    - description: IP address to filter by (exact match)
+      name: ipAddress
+    - description: Device name to filter by (regular expression)
+      name: deviceName
+    - description: Domain name to filter by (regular expression)
+      name: domainName
+    - description: Protocol to filter by (all uppercase, i.e. "TLS")
+      name: protocol
+    - description: ' Tag to filter by (regular expression)'
+      name: tag
+    description: Query domains in Awake Security
+    name: awake-query-domains
     outputs:
     - contextPath: AwakeSecurity.Domains.name
       description: Domain name
@@ -256,23 +254,23 @@ script:
     - contextPath: AwakeSecurity.Domains.whiteListed
       description: Is the specified domain in white list
       type: bool
-    description: Query domains in Awake Security
-  - name: awake-pcap-download
-    arguments:
-    - name: protocol
-      description: Protocol to filter by (all uppercase, e.g., "TLS")
-    - name: hostA
-      description: First host's address
-    - name: portA
-      description: First host's port
-    - name: hostB
-      description: Second host's address
-    - name: portB
-      description: Second host's port
-    - name: startTime
-      description: Query start time ("2000-01-01T00:00:00Z")
-    - name: endTime
-      description: Query end time ("2000-01-01T00:00:00Z")
+  - arguments:
+    - description: Protocol to filter by (all uppercase, e.g., "TLS")
+      name: protocol
+    - description: First host's address
+      name: hostA
+    - description: First host's port
+      name: portA
+    - description: Second host's address
+      name: hostB
+    - description: Second host's port
+      name: portB
+    - description: Query start time ("2000-01-01T00:00:00Z")
+      name: startTime
+    - description: Query end time ("2000-01-01T00:00:00Z")
+      name: endTime
+    description: Download a PCAP
+    name: awake-pcap-download
     outputs:
     - contextPath: File.Size
       description: File size
@@ -304,16 +302,16 @@ script:
     - contextPath: File.Extension
       description: 'File Extension e.g: "pcap"'
       type: string
-    description: Download a PCAP
-  - name: domain
-    arguments:
-    - name: domain
+  - arguments:
+    - description: The domain name
+      name: domain
       required: true
-      description: The domain name
-    - name: lookback_minutes
+    - defaultValue: '480'
       description: How many minutes of history to query from the current time. Default
         is 480
-      defaultValue: "480"
+      name: lookback_minutes
+    description: Lookup and enrich a domain
+    name: domain
     outputs:
     - contextPath: AwakeSecurity.Domains.approxBytesTransferred
       description: Approximate bytes the indicator transferred
@@ -383,16 +381,16 @@ script:
     - contextPath: Domain.Name
       description: The domain name.
       type: String
-    description: Lookup and enrich a domain
-  - name: ip
-    arguments:
-    - name: ip
+  - arguments:
+    - description: The IP address
+      name: ip
       required: true
-      description: The IP address
-    - name: lookback_minutes
+    - defaultValue: '480'
       description: How many minutes of history to query from the current time. Default
         is 480
-      defaultValue: "480"
+      name: lookback_minutes
+    description: Lookup and enrich an IP address
+    name: ip
     outputs:
     - contextPath: AwakeSecurity.IPs.activityCount
       description: Number of activities associated with the specified IP address
@@ -427,15 +425,15 @@ script:
     - contextPath: IP.Address
       description: The IP Address.
       type: String
-    description: Lookup and enrich an IP address
-  - name: email
-    arguments:
-    - name: email
-      description: The email address
-    - name: lookback_minutes
+  - arguments:
+    - description: The email address
+      name: email
+    - defaultValue: '480'
       description: How many minutes of history to query from the current time. Default
         is 480
-      defaultValue: "480"
+      name: lookback_minutes
+    description: Lookup and enrich an email address
+    name: email
     outputs:
     - contextPath: AwakeSecurity.Emails.deviceId
       description: Device ID associated with the specified email address
@@ -502,16 +500,16 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-    description: Lookup and enrich an email address
-  - name: device
-    arguments:
-    - name: device
+  - arguments:
+    - description: The device ID
+      name: device
       required: true
-      description: The device ID
-    - name: lookback_minutes
+    - defaultValue: '480'
       description: How many minutes of history to query from the current time. Default
         is 480
-      defaultValue: "480"
+      name: lookback_minutes
+    description: Lookup and enrich a device
+    name: device
     outputs:
     - contextPath: AwakeSecurity.Devices.deviceScore
       description: Risk score of the specified device
@@ -639,8 +637,11 @@ script:
     - contextPath: AwakeSecurity.Devices.protocols.name
       description: Type of protocol used by the specified device
       type: string
-    description: Lookup and enrich a device
   isfetch: true
   runonce: false
+  script: ''
+  subtype: python2
+  type: python
 tests:
 - awake_security_test_pb
+toversion: 4.1.9

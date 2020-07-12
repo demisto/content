@@ -50,16 +50,17 @@ args:
 comment: This script is an example script of how to update an incident in Cherwell.
   The script wraps the update-business-object command of the cherwell integration.
   When writing your own script to update a business object, follow the instructions
-  found in the configuration section of the script, but do not change the execution section.
+  found in the configuration section of the script, but do not change the execution
+  section.
 commonfields:
   id: CherwellUpdateIncident
   version: -1
-enabled: false
-name: CherwellUpdateIncident
-tags: [Cherwell]
 dependson:
   must:
   - Cherwell|||cherwell-update-business-object
+dockerimage: demisto/python3:3.7.2.214
+enabled: false
+name: CherwellUpdateIncident
 outputs:
 - contextPath: Cherwell.BusinessObjects.PublicId
   description: Incident public ID
@@ -68,10 +69,12 @@ outputs:
   description: Incident record ID
   type: String
 script: '-'
-system: false
-timeout: '0'
-type: python
-dockerimage: demisto/python3:3.7.2.214
 subtype: python3
+system: false
+tags:
+- Cherwell
 tests:
-  - Cherwell Example Scripts - test
+- Cherwell Example Scripts - test
+timeout: '0'
+toversion: 4.1.9
+type: python

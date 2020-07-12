@@ -1,16 +1,18 @@
+comment: Common HTTP feed code that will be appended into each HTTP feed integration
+  when it's deployed
 commonfields:
   id: HTTPFeedApiModule
   version: -1
+dependson: {}
+dockerimage: demisto/jmespath:1.0.0.6980
 name: HTTPFeedApiModule
 script: ''
-type: python
+scripttarget: 0
 subtype: python3
+system: true
 tags:
 - infra
 - server
-comment: Common HTTP feed code that will be appended into each HTTP feed integration when it's deployed
-system: true
-scripttarget: 0
-dependson: {}
 timeout: 0s
-dockerimage: demisto/jmespath:1.0.0.6980
+toversion: 4.1.9
+type: python

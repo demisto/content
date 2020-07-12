@@ -1,38 +1,24 @@
+comment: Show system information
 commonfields:
   id: D2Hardware
   version: -1
+dependson: {}
 name: D2Hardware
-script: |2-
-
-  function hardwareLinux() {
-      packOutput('lshw');
-  }
-  function hardwareDarwin(){
-      packOutput('system_profiler');
-  }
-  function hardwareWindows() {
-      pack(wmi_query('select Name,FileSystem, FreeSpace,Size,VolumeName,VolumeSerialNumber from Win32_LogicalDisk'),'table');
-      pack(wmi_query('select Description, Manufacturer, Name, SMBIOSBIOSVersion,Version from Win32_Bios'),'table');
-      pack(wmi_query('select Version, SerialNumber,SocketDesignation, Name, Description, Manufacturer, AddressWidth from Win32_Processor'),'table');
-      pack(wmi_query('select Manufacturer, Model, SystemType, UserName from Win32_ComputerSystem'),'table');
-  }
-  try {
-      if (env.OS=== "windows") {
-          hardwareWindows();
-      } else if (env.OS==="linux") {
-          hardwareLinux();
-      } else {
-          hardwareDarwin();
-      }
-  } catch (ex) {
-      pack("Error: " + ex);
-  }
-type: javascript
+script: "\nfunction hardwareLinux() {\n    packOutput('lshw');\n}\nfunction hardwareDarwin(){\n\
+  \    packOutput('system_profiler');\n}\nfunction hardwareWindows() {\n    pack(wmi_query('select\
+  \ Name,FileSystem, FreeSpace,Size,VolumeName,VolumeSerialNumber from Win32_LogicalDisk'),'table');\n\
+  \    pack(wmi_query('select Description, Manufacturer, Name, SMBIOSBIOSVersion,Version\
+  \ from Win32_Bios'),'table');\n    pack(wmi_query('select Version, SerialNumber,SocketDesignation,\
+  \ Name, Description, Manufacturer, AddressWidth from Win32_Processor'),'table');\n\
+  \    pack(wmi_query('select Manufacturer, Model, SystemType, UserName from Win32_ComputerSystem'),'table');\n\
+  }\ntry {\n    if (env.OS=== \"windows\") {\n        hardwareWindows();\n    } else\
+  \ if (env.OS===\"linux\") {\n        hardwareLinux();\n    } else {\n        hardwareDarwin();\n\
+  \    }\n} catch (ex) {\n    pack(\"Error: \" + ex);\n}"
+scripttarget: 1
+system: true
 tags:
 - agent
 - endpoint
-comment: Show system information
-system: true
-scripttarget: 1
-dependson: {}
 timeout: 0s
+toversion: 4.1.9
+type: javascript

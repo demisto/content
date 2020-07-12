@@ -1,87 +1,57 @@
+args:
+- default: true
+  description: The string(s) to compare with the input string. (could be multiple
+    strings with a comma separator)
+  name: compareString
+  required: true
+- description: The input string to compare
+  name: inputString
+  required: true
+- defaultValue: '3'
+  description: Distance that is considered close
+  name: distance
+comment: Get the string distance between inputString and compareString (could be a
+  comma separated list) based on Levenshtein Distance algorithm.
 commonfields:
   id: GetStringsDistance
   version: -1
 name: GetStringsDistance
-script: |-
-  import re
-
-  def levenshtein(s1, s2):
-      l1 = len(s1)
-      l2 = len(s2)
-      matrix = [range(l1 + 1)] * (l2 + 1)
-      for zz in range(l2 + 1):
-          matrix[zz] = range(zz,zz + l1 + 1)
-      for zz in range(0,l2):
-          for sz in range(0,l1):
-              if s1[sz] == s2[zz]:
-                  matrix[zz+1][sz+1] = min(matrix[zz+1][sz] + 1, matrix[zz][sz+1] + 1, matrix[zz][sz])
-              else:
-                  matrix[zz+1][sz+1] = min(matrix[zz+1][sz] + 1, matrix[zz][sz+1] + 1, matrix[zz][sz] + 1)
-      return matrix[l2][l1]
-
-  res = []
-  found = False
-
-  close_distance = demisto.get(demisto.args(), 'distance')
-  close_distance_int = int(close_distance) if close_distance else 3
-
-  compare_string = argToList(demisto.get(demisto.args(), 'compareString'))
-  if not compare_string:
-      res.append({'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': 'Unable to extract compareString from arguments'})
-  else:
-      input_string = demisto.get(demisto.args(), 'inputString')
-      if input_string:
-          distances = []
-          for cur_string in compare_string:
-              levenshtein_distance = levenshtein(cur_string, input_string)
-              distances.append(
-                  {
-                      'StringA' : input_string,
-                      'StringB' : cur_string,
-                      'LevenshteinDistance' : levenshtein_distance,
-                      'TooClose' : levenshtein_distance > 0 and levenshtein_distance < close_distance_int
-                  })
-          res.append(
-              {
-                  'Type' : entryTypes['note'],
-                  'Contents': {'Distances' : distances},
-                  'ContentsFormat' : formats['json'],
-                  'HumanReadable': tblToMd('Distances', distances, ['StringA','StringB','LevenshteinDistance','TooClose']),
-                  'ReadableContentsFormat' : formats['markdown']
-              })
-
-      else:
-          res.append(
-              {
-                  'Type': entryTypes['error'],
-                  'ContentsFormat': formats['text'],
-                  'Contents': 'Unable to extract inputString - ' + input_string
-              })
-              
-      demisto.results(res)
-type: python
+outputs:
+- contextPath: LevenshteinDistance
+  description: The closeness of the sender domain to our configured domains
+runonce: false
+script: "import re\n\ndef levenshtein(s1, s2):\n    l1 = len(s1)\n    l2 = len(s2)\n\
+  \    matrix = [range(l1 + 1)] * (l2 + 1)\n    for zz in range(l2 + 1):\n       \
+  \ matrix[zz] = range(zz,zz + l1 + 1)\n    for zz in range(0,l2):\n        for sz\
+  \ in range(0,l1):\n            if s1[sz] == s2[zz]:\n                matrix[zz+1][sz+1]\
+  \ = min(matrix[zz+1][sz] + 1, matrix[zz][sz+1] + 1, matrix[zz][sz])\n          \
+  \  else:\n                matrix[zz+1][sz+1] = min(matrix[zz+1][sz] + 1, matrix[zz][sz+1]\
+  \ + 1, matrix[zz][sz] + 1)\n    return matrix[l2][l1]\n\nres = []\nfound = False\n\
+  \nclose_distance = demisto.get(demisto.args(), 'distance')\nclose_distance_int =\
+  \ int(close_distance) if close_distance else 3\n\ncompare_string = argToList(demisto.get(demisto.args(),\
+  \ 'compareString'))\nif not compare_string:\n    res.append({'Type': entryTypes['error'],\
+  \ 'ContentsFormat': formats['text'], 'Contents': 'Unable to extract compareString\
+  \ from arguments'})\nelse:\n    input_string = demisto.get(demisto.args(), 'inputString')\n\
+  \    if input_string:\n        distances = []\n        for cur_string in compare_string:\n\
+  \            levenshtein_distance = levenshtein(cur_string, input_string)\n    \
+  \        distances.append(\n                {\n                    'StringA' : input_string,\n\
+  \                    'StringB' : cur_string,\n                    'LevenshteinDistance'\
+  \ : levenshtein_distance,\n                    'TooClose' : levenshtein_distance\
+  \ > 0 and levenshtein_distance < close_distance_int\n                })\n      \
+  \  res.append(\n            {\n                'Type' : entryTypes['note'],\n  \
+  \              'Contents': {'Distances' : distances},\n                'ContentsFormat'\
+  \ : formats['json'],\n                'HumanReadable': tblToMd('Distances', distances,\
+  \ ['StringA','StringB','LevenshteinDistance','TooClose']),\n                'ReadableContentsFormat'\
+  \ : formats['markdown']\n            })\n\n    else:\n        res.append(\n    \
+  \        {\n                'Type': entryTypes['error'],\n                'ContentsFormat':\
+  \ formats['text'],\n                'Contents': 'Unable to extract inputString -\
+  \ ' + input_string\n            })\n            \n    demisto.results(res)"
+scripttarget: 0
 subtype: python2
+system: true
 tags:
 - server
 - phishing
 - Condition
-comment: Get the string distance between inputString and compareString (could be a
-  comma separated list) based on Levenshtein Distance algorithm.
-system: true
-args:
-- name: compareString
-  required: true
-  default: true
-  description: The string(s) to compare with the input string. (could be multiple
-    strings with a comma separator)
-- name: inputString
-  required: true
-  description: The input string to compare
-- name: distance
-  description: Distance that is considered close
-  defaultValue: "3"
-outputs:
-- contextPath: LevenshteinDistance
-  description: The closeness of the sender domain to our configured domains
-scripttarget: 0
-runonce: false
+toversion: 4.1.9
+type: python

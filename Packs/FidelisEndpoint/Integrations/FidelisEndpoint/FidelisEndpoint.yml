@@ -38,8 +38,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Fidelis Endpoint integration for advanced endpoint detection and response (EDR)
-  across Windows, Mac and Linux OSes for faster threat remediation.
+description: Use the Fidelis Endpoint integration for advanced endpoint detection
+  and response (EDR) across Windows, Mac and Linux OSes for faster threat remediation.
 display: Fidelis EDR
 name: Fidelis EDR
 script:
@@ -53,10 +53,11 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Sorts the result before applying take and skip.
+      description: 'Sorts the result before applying take and skip.
+
         Can be any property name of the alert object.
-        For example: "insertionDate Descending"
+
+        For example: "insertionDate Descending"'
       isArray: false
       name: sort
       required: false
@@ -214,14 +215,15 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: A comma-separated list of hosts in which to search for the specified file.
+      description: A comma-separated list of hosts in which to search for the specified
+        file.
       isArray: true
       name: host
       required: false
       secret: false
     - default: false
-      description: A comma-separated list MD5 hashes to search for. Get
-        the hashes from the queries commands.
+      description: A comma-separated list MD5 hashes to search for. Get the hashes
+        from the queries commands.
       isArray: true
       name: md5
       required: true
@@ -246,8 +248,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Searches for files on multiple hosts, using file hash, file extension, file
-      size, and other search criteria.
+    description: Searches for files on multiple hosts, using file hash, file extension,
+      file size, and other search criteria.
     execution: false
     name: fidelis-endpoint-file-search
     outputs:
@@ -349,8 +351,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The file name to download (including extension). Get the file name from the file-search-result-metadata command.
-        command).
+      description: The file name to download (including extension). Get the file name
+        from the file-search-result-metadata command. command).
       isArray: false
       name: file_name
       required: true
@@ -828,17 +830,17 @@ script:
       type: String
   - arguments:
     - default: false
-      description: |-
-        The start time of the event in the system in UTC format.
-        Supported values: "2019-10-21T23:45:00" (date).
+      description: 'The start time of the event in the system in UTC format.
+
+        Supported values: "2019-10-21T23:45:00" (date).'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: |-
-        The end time of the event in the system in UTC format.
-        Supported values:"2019-10-21T23:45:00" (date).
+      description: 'The end time of the event in the system in UTC format.
+
+        Supported values:"2019-10-21T23:45:00" (date).'
       isArray: false
       name: end_time
       required: false
@@ -982,17 +984,17 @@ script:
       type: String
   - arguments:
     - default: false
-      description: |-
-        The start time of the event in the system in UTC format.
-        Supported values: "2019-10-21T23:45:00" (date).
+      description: 'The start time of the event in the system in UTC format.
+
+        Supported values: "2019-10-21T23:45:00" (date).'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: |-
-        The end time of the event in the system in UTC format.
-        Supported values:"2019-10-21T23:45:00" (date).
+      description: 'The end time of the event in the system in UTC format.
+
+        Supported values:"2019-10-21T23:45:00" (date).'
       isArray: false
       name: end_time
       required: false
@@ -1072,17 +1074,17 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: |-
-        The start time of the event in the system in UTC format.
-        Supported values: "2019-10-21T23:45:00" (date).
+      description: 'The start time of the event in the system in UTC format.
+
+        Supported values: "2019-10-21T23:45:00" (date).'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: |-
-        The end time of the event in the system in UTC format.
-        Supported values:"2019-10-21T23:45:00" (date).
+      description: 'The end time of the event in the system in UTC format.
+
+        Supported values:"2019-10-21T23:45:00" (date).'
       isArray: false
       name: end_time
       required: false
@@ -1180,17 +1182,17 @@ script:
       type: String
   - arguments:
     - default: false
-      description: |-
-        The start time of the event in the system in UTC format.
-        Supported values: "2019-10-21T23:45:00" (date).
+      description: 'The start time of the event in the system in UTC format.
+
+        Supported values: "2019-10-21T23:45:00" (date).'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: |-
-        The end time of the event in the system in UTC format.
-        Supported values:"2019-10-21T23:45:00" (date).
+      description: 'The end time of the event in the system in UTC format.
+
+        Supported values:"2019-10-21T23:45:00" (date).'
       isArray: false
       name: end_time
       required: false
@@ -1276,17 +1278,17 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: |-
-        The start time of the event in the system in UTC format.
-        Supported values: "2019-10-21T23:45:00" (date).
+      description: 'The start time of the event in the system in UTC format.
+
+        Supported values: "2019-10-21T23:45:00" (date).'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: |-
-        The end time of the event in the system in UTC format.
-        Supported values:"2019-10-21T23:45:00" (date).
+      description: 'The end time of the event in the system in UTC format.
+
+        Supported values:"2019-10-21T23:45:00" (date).'
       isArray: false
       name: end_time
       required: false
@@ -1372,17 +1374,17 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: |-
-        The start time of the event in the system in UTC format.
-        Supported values: "2019-10-21T23:45:00" (date).
+      description: 'The start time of the event in the system in UTC format.
+
+        Supported values: "2019-10-21T23:45:00" (date).'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: |-
-        The end time of the event in the system in UTC format.
-        Supported values:"2019-10-21T23:45:00" (date).
+      description: 'The end time of the event in the system in UTC format.
+
+        Supported values:"2019-10-21T23:45:00" (date).'
       isArray: false
       name: end_time
       required: false
@@ -1474,17 +1476,17 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: |-
-        The start time of the event in the system in UTC format.
-        Supported values: "2019-10-21T23:45:00" (date).
+      description: 'The start time of the event in the system in UTC format.
+
+        Supported values: "2019-10-21T23:45:00" (date).'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: |-
-        The end time of the event in the system in UTC format.
-        Supported values:"2019-10-21T23:45:00" (date).
+      description: 'The end time of the event in the system in UTC format.
+
+        Supported values:"2019-10-21T23:45:00" (date).'
       isArray: false
       name: end_time
       required: false
@@ -1501,7 +1503,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Query entity type. Can be "antiMalware", "dns", "file", "network", "process", "registry", "remoteThread", "script", "usb", or "windowsevent".
+      description: Query entity type. Can be "antiMalware", "dns", "file", "network",
+        "process", "registry", "remoteThread", "script", "usb", or "windowsevent".
       isArray: false
       name: entity_type
       predefined:
@@ -1525,7 +1528,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The value to query. Can be an IP address, file hash, file path, and so on.
+      description: The value to query. Can be an IP address, file hash, file path,
+        and so on.
       isArray: false
       name: value
       required: true
@@ -1545,8 +1549,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'An additional filter to use in the query. For example: pid = 1234, pid
-        > 1233.'
+      description: 'An additional filter to use in the query. For example: pid = 1234,
+        pid > 1233.'
       isArray: false
       name: additional_filter
       required: false
@@ -1631,7 +1635,8 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 tests:
 - no tests test is in non-cricle Fidelis Endpoint - Test
+toversion: 4.1.9

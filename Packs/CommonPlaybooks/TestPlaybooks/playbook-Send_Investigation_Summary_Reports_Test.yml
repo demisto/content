@@ -8,45 +8,39 @@ id: Send Investigation Summary Reports - Test
 inputs: []
 name: Send Investigation Summary Reports - Test
 outputs: []
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: ec1ef6d0-7e70-4fc0-8659-8dc910aad3b4
       iscommand: false
-      name: ""
+      name: ''
       version: -1
     taskid: ec1ef6d0-7e70-4fc0-8659-8dc910aad3b4
     timertriggers: []
     type: start
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
-  "1":
-    id: "1"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     ignoreworker: false
     loop:
-      exitCondition: ""
+      exitCondition: ''
       iscommand: false
       max: 0
       wait: 1
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     note: false
     quietmode: 0
     scriptarguments:
@@ -61,7 +55,7 @@ tasks:
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: 'This playbook iterates over closed incidents, generates a summary
         report for each closed incident, and emails the reports to specified users. '
       id: f833a3ac-e3a6-4391-861b-90fd86652dd7
@@ -73,24 +67,44 @@ tasks:
     taskid: f833a3ac-e3a6-4391-861b-90fd86652dd7
     timertriggers: []
     type: playbook
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 820
-        }
-      }
-  "2":
-    id: "2"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 820\n  }\n}"
+  '10':
+    id: '10'
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "4"
+      - '5'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      seconds:
+        simple: '10'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Sleep for X seconds
+      id: 2d2ef7ad-0b31-4e61-838f-1acba37bc253
+      iscommand: false
+      name: Wait 10 seconds
+      script: Sleep
+      type: regular
+      version: -1
+    taskid: 2d2ef7ad-0b31-4e61-838f-1acba37bc253
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 430\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '4'
     note: false
     quietmode: 0
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
@@ -98,7 +112,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Delete field from context
       id: d586b933-52a3-4f19-8e3d-34d006a753b1
       iscommand: false
@@ -109,15 +123,9 @@ tasks:
     taskid: d586b933-52a3-4f19-8e3d-34d006a753b1
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 190
-        }
-      }
-  "3":
-    id: "3"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 190\n  }\n}"
+  '3':
+    id: '3'
     ignoreworker: false
     note: false
     quietmode: 0
@@ -134,19 +142,13 @@ tasks:
     taskid: acb04428-1d31-4afe-8f7f-d9683f813d18
     timertriggers: []
     type: title
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1300
-        }
-      }
-  "4":
-    id: "4"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1300\n  }\n}"
+  '4':
+    id: '4'
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     note: false
     quietmode: 0
     scriptarguments:
@@ -257,19 +259,13 @@ tasks:
     taskid: aab0ed43-2cfb-4d5f-81a1-59f08159f260
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 350
-        }
-      }
-  "5":
-    id: "5"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 350\n  }\n}"
+  '5':
+    id: '5'
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     note: false
     quietmode: 0
     scriptarguments:
@@ -296,19 +292,13 @@ tasks:
     taskid: 4e359292-c652-4ef5-83c1-42ad4236c8ef
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 510
-        }
-      }
-  "6":
-    id: "6"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 510\n  }\n}"
+  '6':
+    id: '6'
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     note: false
     quietmode: 0
     scriptarguments:
@@ -335,7 +325,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Searches Demisto incidents
       id: 821bfa0a-952b-4066-81fa-34348543fad1
       iscommand: false
@@ -346,21 +336,15 @@ tasks:
     taskid: 821bfa0a-952b-4066-81fa-34348543fad1
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 955
-        }
-      }
-  "7":
-    id: "7"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 955\n  }\n}"
+  '7':
+    id: '7'
     ignoreworker: false
     nexttasks:
-      "no":
-      - "8"
-      "yes":
-      - "3"
+      'no':
+      - '8'
+      'yes':
+      - '3'
     note: false
     quietmode: 0
     scriptarguments:
@@ -369,7 +353,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Check if a given value exists in the context. Will return 'no'
         for empty empty arrays. To be used mostly with DQ and selectors.
       id: bee224c9-9ad9-4b18-8336-153d2b249bcc
@@ -381,15 +365,9 @@ tasks:
     taskid: bee224c9-9ad9-4b18-8336-153d2b249bcc
     timertriggers: []
     type: condition
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1100
-        }
-      }
-  "8":
-    id: "8"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1100\n  }\n}"
+  '8':
+    id: '8'
     ignoreworker: false
     note: false
     quietmode: 0
@@ -399,7 +377,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Prints an error entry with a given message
       id: 9a98c450-9d7e-49c6-8d12-5166ea7684a2
       iscommand: false
@@ -410,28 +388,22 @@ tasks:
     taskid: 9a98c450-9d7e-49c6-8d12-5166ea7684a2
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1270
-        }
-      }
-  "9":
-    id: "9"
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 1270\n  }\n}"
+  '9':
+    id: '9'
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     note: false
     quietmode: 0
     scriptarguments:
       seconds:
-        simple: "10"
+        simple: '10'
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Sleep for X seconds
       id: b14a7f32-337e-4ff6-837e-c710eca31804
       iscommand: false
@@ -442,55 +414,9 @@ tasks:
     taskid: b14a7f32-337e-4ff6-837e-c710eca31804
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 660
-        }
-      }
-  "10":
-    id: "10"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "5"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      seconds:
-        simple: "10"
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Sleep for X seconds
-      id: 2d2ef7ad-0b31-4e61-838f-1acba37bc253
-      iscommand: false
-      name: Wait 10 seconds
-      script: Sleep
-      type: regular
-      version: -1
-    taskid: 2d2ef7ad-0b31-4e61-838f-1acba37bc253
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 430
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 660\n  }\n}"
+toversion: 4.1.9
 version: -1
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1315,
-        "width": 840,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1315,\n      \"width\": 840,\n      \"x\": 450,\n      \"y\":\
+  \ 50\n    }\n  }\n}"

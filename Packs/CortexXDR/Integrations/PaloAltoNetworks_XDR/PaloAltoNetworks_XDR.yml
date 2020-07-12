@@ -39,6 +39,7 @@ configuration:
 description: Cortex XDR is the world's first detection and response app that natively
   integrates network, endpoint and cloud data to stop sophisticated attacks.
 display: Palo Alto Networks Cortex XDR - Investigation and Response
+fromversion: 4.1.0
 name: Cortex XDR - IR
 script:
   commands:
@@ -128,9 +129,12 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: |-
-      Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created.
-      If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported.
+    description: 'Returns a list of incidents, which you can filter by a list of incident
+      IDs (max. 100), the time the incident was last modified, and the time the incident
+      was created.
+
+      If you pass multiple filtering arguments, they will be concatenated using the
+      AND condition. The OR condition is not supported.'
     execution: false
     name: xdr-get-incidents
     outputs:
@@ -169,16 +173,20 @@ script:
       description: Number of users involved in the incident.
       type: number
     - contextPath: PaloAltoNetworksXDR.Incident.severity
-      description: |
-        Calculated severity of the incident
+      description: 'Calculated severity of the incident
+
         "low","medium","high"
+
+        '
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.low_severity_alert_count
       description: Number of alerts with the severity LOW.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.status
-      description: |
-        Current status of the incident. Can be "new","under_investigation","resolved_threat_handled","resolved_known_issue","resolved_duplicate","resolved_false_positive", or "resolved_other".
+      description: 'Current status of the incident. Can be "new","under_investigation","resolved_threat_handled","resolved_known_issue","resolved_duplicate","resolved_false_positive",
+        or "resolved_other".
+
+        '
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.description
       description: Dynamic calculated description of the incident.
@@ -231,9 +239,9 @@ script:
       description: Date and time that the first alert occurred in the incident.
       type: Date
     - contextPath: PaloAltoNetworksXDR.Incident.status
-      description: |-
-        Current status of the incident:
-        "new","under_investigation","resolved_threat_handled","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_other"
+      description: 'Current status of the incident:
+
+        "new","under_investigation","resolved_threat_handled","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_other"'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.severity
       description: Calculated severity of the incident "low","medium","high"
@@ -583,17 +591,17 @@ script:
       required: true
       secret: false
     - default: false
-      description: |-
-        String value of the destination IP
-        address.
+      description: 'String value of the destination IP
+
+        address.'
       isArray: false
       name: remote_ip
       required: true
       secret: false
     - default: false
-      description: |-
-        Integer value for the destination
-        port.
+      description: 'Integer value for the destination
+
+        port.'
       isArray: false
       name: remote_port
       required: true
@@ -608,9 +616,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: |-
-        String value of alert severity:
-        Informational, Low, Medium, High, or Unknown
+      description: 'String value of alert severity:
+
+        Informational, Low, Medium, High, or Unknown'
       isArray: false
       name: severity
       predefined:
@@ -634,10 +642,13 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: |-
-      Upload alert from external alert sources in Cortex XDR format. Cortex XDR displays alerts that are parsed
-      successfully in related incidents and views. You can send 600 alerts per minute. Each request can contain a
-      maximum of 60 alerts.
+    description: 'Upload alert from external alert sources in Cortex XDR format. Cortex
+      XDR displays alerts that are parsed
+
+      successfully in related incidents and views. You can send 600 alerts per minute.
+      Each request can contain a
+
+      maximum of 60 alerts.'
     execution: false
     name: xdr-insert-parsed-alert
   - arguments:
@@ -701,17 +712,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        A comma-separated list of IP addresses.
-        Example: 8.8.8.8,1.1.1.1
+      description: 'A comma-separated list of IP addresses.
+
+        Example: 8.8.8.8,1.1.1.1'
       isArray: true
       name: ip_list
       required: false
       secret: false
     - default: false
-      description: |-
-        The group name to which the agent belongs.
-        Example: group_name1,group_name2
+      description: 'The group name to which the agent belongs.
+
+        Example: group_name1,group_name2'
       isArray: true
       name: group_name
       required: false
@@ -730,9 +741,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        A comma-separated list of alias names.
-        Examples: alias_name1,alias_name2
+      description: 'A comma-separated list of alias names.
+
+        Examples: alias_name1,alias_name2'
       isArray: true
       name: alias_name
       required: false
@@ -749,53 +760,65 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Hostname
-        Example: hostname1,hostname2
+      description: 'Hostname
+
+        Example: hostname1,hostname2'
       isArray: true
       name: hostname
       required: false
       secret: false
     - default: false
-      description: |-
-        All the agents that were first seen after {first_seen_gte}.
+      description: 'All the agents that were first seen after {first_seen_gte}.
+
         Supported values:
+
         1579039377301 (time in milliseconds)
+
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+
+        "2019-10-21T23:45:00" (date)'
       isArray: false
       name: first_seen_gte
       required: false
       secret: false
     - default: false
-      description: |-
-        All the agents that were first seen before {first_seen_lte}.
+      description: 'All the agents that were first seen before {first_seen_lte}.
+
         Supported values:
+
         1579039377301 (time in milliseconds)
+
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+
+        "2019-10-21T23:45:00" (date)'
       isArray: false
       name: first_seen_lte
       required: false
       secret: false
     - default: false
-      description: |-
-        All the agents that were last seen before {last_seen_gte}.
+      description: 'All the agents that were last seen before {last_seen_gte}.
+
         Supported values:
+
         1579039377301 (time in milliseconds)
+
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+
+        "2019-10-21T23:45:00" (date)'
       isArray: false
       name: last_seen_gte
       required: false
       secret: false
     - default: false
-      description: |-
-        All the agents that were last seen before {last_seen_lte}.
+      description: 'All the agents that were last seen before {last_seen_lte}.
+
         Supported values:
+
         1579039377301 (time in milliseconds)
+
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+
+        "2019-10-21T23:45:00" (date)'
       isArray: false
       name: last_seen_lte
       required: false
@@ -925,7 +948,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: "String, valid values are:\n• windows \n• linux\n• macos \n• android"
+      description: "String, valid values are:\n\u2022 windows \n\u2022 linux\n\u2022\
+        \ macos \n\u2022 android"
       isArray: false
       name: platform
       predefined:
@@ -937,10 +961,11 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: |-
-        A string representing the type of package to create.
+      description: 'A string representing the type of package to create.
+
         standalone - An installation for a new agent
-        upgrade - An upgrade of an agent from ESM
+
+        upgrade - An upgrade of an agent from ESM'
       isArray: false
       name: package_type
       predefined:
@@ -986,25 +1011,19 @@ script:
       type: String
   - arguments:
     - default: false
-      description: |-
-        The ID of the installation package.
-        Copy the distribution_id from the "id" field on Endpoints > Agent Installation page.
+      description: 'The ID of the installation package.
+
+        Copy the distribution_id from the "id" field on Endpoints > Agent Installation
+        page.'
       isArray: false
       name: distribution_id
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: |-
-        The installation package type. Valid
-        values are:
-        • upgrade
-        • sh - For Linux
-        • rpm - For Linux
-        • deb - For Linux
-        • pkg - For Mac
-        • x86 - For Windows
-        • x64 - For Windows
+      description: "The installation package type. Valid\nvalues are:\n\u2022 upgrade\n\
+        \u2022 sh - For Linux\n\u2022 rpm - For Linux\n\u2022 deb - For Linux\n\u2022\
+        \ pkg - For Mac\n\u2022 x86 - For Windows\n\u2022 x64 - For Windows"
       isArray: false
       name: package_type
       predefined:
@@ -1048,7 +1067,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: User’s email address.
+      description: "User\u2019s email address."
       isArray: false
       name: email
       required: false
@@ -1101,23 +1120,29 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Return logs for which the timestamp is after 'log_time_after'.
+      description: 'Return logs for which the timestamp is after ''log_time_after''.
+
         Supported values:
+
         1579039377301 (time in milliseconds)
+
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+
+        "2019-10-21T23:45:00" (date)'
       isArray: false
       name: timestamp_gte
       required: false
       secret: false
     - default: false
-      description: |-
-        Return logs for which the timestamp is before the 'log_time_after'.
+      description: 'Return logs for which the timestamp is before the ''log_time_after''.
+
         Supported values:
+
         1579039377301 (time in milliseconds)
+
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+
+        "2019-10-21T23:45:00" (date)'
       isArray: false
       name: timestamp_lte
       required: false
@@ -1290,24 +1315,30 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Return logs that their timestamp is greater than 'log_time_after'.
+      description: 'Return logs that their timestamp is greater than ''log_time_after''.
+
         Supported values:
+
         1579039377301 (time in milliseconds)
+
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+
+        "2019-10-21T23:45:00" (date)'
       isArray: false
       name: timestamp_gte
       required: false
       secret: false
     - default: false
-      description: |-
-        Return logs for which the timestamp is before the 'timestamp_lte'.
+      description: 'Return logs for which the timestamp is before the ''timestamp_lte''.
+
 
         Supported values:
+
         1579039377301 (time in milliseconds)
+
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+
+        "2019-10-21T23:45:00" (date)'
       isArray: false
       name: timestamp_lte
       required: false
@@ -1449,7 +1480,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: String that represents the file’s hash. Must be a valid SHA256 hash.
+      description: "String that represents the file\u2019s hash. Must be a valid SHA256\
+        \ hash."
       isArray: false
       name: file_hash
       required: true
@@ -1484,7 +1516,8 @@ script:
     name: xdr-get-quarantine-status
   - arguments:
     - default: false
-      description: String that represents the file in hash. Must be a valid SHA256 hash.
+      description: String that represents the file in hash. Must be a valid SHA256
+        hash.
       isArray: false
       name: file_hash
       required: true
@@ -1585,8 +1618,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Runs a scan on selected endpoints. To scan all endpoints,
-      run this command with no filters.
+    description: Runs a scan on selected endpoints. To scan all endpoints, run this
+      command with no filters.
     execution: true
     name: xdr-endpoint-scan
   dockerimage: demisto/python3:3.8.3.9324
@@ -1598,6 +1631,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 4.1.0
 tests:
-  - Test XDR Playbook
+- Test XDR Playbook
+toversion: 4.1.9

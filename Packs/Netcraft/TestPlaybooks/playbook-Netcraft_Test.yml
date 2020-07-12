@@ -1,308 +1,246 @@
 id: Netcraft test
-version: -1
+inputs: []
 name: Netcraft test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 14a38052-5da5-4f4a-8721-8395192b7e81
-    type: start
-    task:
-      id: 14a38052-5da5-4f4a-8721-8395192b7e81
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: 6239754b-682e-41fe-8a0e-1b6d2077734d
-    type: regular
-    task:
-      id: 6239754b-682e-41fe-8a0e-1b6d2077734d
-      version: -1
-      name: Delete Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 14a38052-5da5-4f4a-8721-8395192b7e81
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 14a38052-5da5-4f4a-8721-8395192b7e81
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 230
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: eb43210d-a955-4c53-8d93-740d4960357d
-    type: regular
     task:
-      id: eb43210d-a955-4c53-8d93-740d4960357d
-      version: -1
-      name: Get takedown info
-      description: Get information on existing takedowns.
-      script: '|||netcraft-get-takedown-info'
+      brand: ''
+      description: Delete field from context
+      id: 6239754b-682e-41fe-8a0e-1b6d2077734d
+      iscommand: false
+      name: Delete Context
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: 6239754b-682e-41fe-8a0e-1b6d2077734d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
     scriptarguments:
       date_from: {}
       id:
-        simple: "2071408"
+        simple: '2071408'
       ip: {}
       region: {}
       updated_since: {}
       url: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 410
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: dfd5dad7-b8d6-4a3d-88dc-7592d5efd36d
-    type: condition
     task:
-      id: dfd5dad7-b8d6-4a3d-88dc-7592d5efd36d
+      brand: ''
+      description: Get information on existing takedowns.
+      id: eb43210d-a955-4c53-8d93-740d4960357d
+      iscommand: true
+      name: Get takedown info
+      script: '|||netcraft-get-takedown-info'
+      type: regular
       version: -1
-      name: Verify takedown info was received
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "4"
-    separatecontext: false
+    taskid: eb43210d-a955-4c53-8d93-740d4960357d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 410\n  }\n}"
+  '3':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualNumber
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: Netcraft.Takedown.ID
-            iscontext: true
+          operator: isEqualNumber
           right:
             value:
-              simple: "2071408"
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 590
-        }
-      }
-    note: false
-    timertriggers: []
+              simple: '2071408'
+      label: 'yes'
+    id: '3'
     ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 6bf8eea8-5ee0-47ec-841e-7d9d5a208e66
-    type: regular
+    nexttasks:
+      'yes':
+      - '4'
+    note: false
+    separatecontext: false
     task:
-      id: 6bf8eea8-5ee0-47ec-841e-7d9d5a208e66
-      version: -1
-      name: Delete Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      id: dfd5dad7-b8d6-4a3d-88dc-7592d5efd36d
       iscommand: false
-      brand: ""
+      name: Verify takedown info was received
+      type: condition
+      version: -1
+    taskid: dfd5dad7-b8d6-4a3d-88dc-7592d5efd36d
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 590\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 790
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 4b4b952e-cebe-40ec-86b5-80a8604d53dc
-    type: regular
     task:
-      id: 4b4b952e-cebe-40ec-86b5-80a8604d53dc
-      version: -1
-      name: Get takedown notes
-      description: Get notes for takedowns
-      script: '|||netcraft-get-takedown-notes'
+      brand: ''
+      description: Delete field from context
+      id: 6bf8eea8-5ee0-47ec-841e-7d9d5a208e66
+      iscommand: false
+      name: Delete Context
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: 6bf8eea8-5ee0-47ec-841e-7d9d5a208e66
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 790\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
+    note: false
     scriptarguments:
       author: {}
       date_from: {}
       date_to: {}
       group_id: {}
       takedown_id:
-        simple: "493542"
+        simple: '493542'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 970
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 940093e7-647b-44ea-8e15-40d6c51b3439
-    type: condition
     task:
-      id: 940093e7-647b-44ea-8e15-40d6c51b3439
+      brand: ''
+      description: Get notes for takedowns
+      id: 4b4b952e-cebe-40ec-86b5-80a8604d53dc
+      iscommand: true
+      name: Get takedown notes
+      script: '|||netcraft-get-takedown-notes'
+      type: regular
       version: -1
-      name: Verify takedown notes were received
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "7"
-    separatecontext: false
+    taskid: 4b4b952e-cebe-40ec-86b5-80a8604d53dc
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 970\n  }\n}"
+  '6':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualNumber
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: Netcraft.Takedown.Note.NoteID
-            iscontext: true
+          operator: isEqualNumber
           right:
             value:
-              simple: "6011601"
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1150
-        }
-      }
-    note: false
-    timertriggers: []
+              simple: '6011601'
+      label: 'yes'
+    id: '6'
     ignoreworker: false
-  "7":
-    id: "7"
-    taskid: bdde794e-ca38-41ef-873e-a84851b13621
-    type: regular
+    nexttasks:
+      'yes':
+      - '7'
+    note: false
+    separatecontext: false
     task:
-      id: bdde794e-ca38-41ef-873e-a84851b13621
-      version: -1
-      name: Delete Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      id: 940093e7-647b-44ea-8e15-40d6c51b3439
       iscommand: false
-      brand: ""
+      name: Verify takedown notes were received
+      type: condition
+      version: -1
+    taskid: 940093e7-647b-44ea-8e15-40d6c51b3439
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1150\n  }\n}"
+  '7':
+    id: '7'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1330
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "8":
-    id: "8"
-    taskid: 752dce56-5dab-40a1-8e74-c2b4f8390334
-    type: title
     task:
-      id: 752dce56-5dab-40a1-8e74-c2b4f8390334
+      brand: ''
+      description: Delete field from context
+      id: bdde794e-ca38-41ef-873e-a84851b13621
+      iscommand: false
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
       version: -1
+    taskid: bdde794e-ca38-41ef-873e-a84851b13621
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1330\n  }\n}"
+  '8':
+    id: '8'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 752dce56-5dab-40a1-8e74-c2b4f8390334
+      iscommand: false
       name: Success
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1510
-        }
-      }
-    note: false
+      version: -1
+    taskid: 752dce56-5dab-40a1-8e74-c2b4f8390334
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1525,
-        "width": 380,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1510\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1525,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\":\
+  \ 50\n    }\n  }\n}"

@@ -1,112 +1,72 @@
+args:
+- description: Length of the string
+  name: Length
+  required: true
+- auto: PREDEFINED
+  description: If the string will include punctuation.
+  name: Punctuation
+  predefined:
+  - 'True'
+  - 'False'
+  required: true
+- auto: PREDEFINED
+  description: If the string will include letters.
+  name: Lowercase
+  predefined:
+  - 'True'
+  - 'False'
+  required: true
+- auto: PREDEFINED
+  description: if uppercase should be included
+  name: Uppercase
+  predefined:
+  - 'True'
+  - 'False'
+  required: true
+- auto: PREDEFINED
+  description: If digits should be included
+  name: Digits
+  predefined:
+  - 'True'
+  - 'False'
+  required: true
+comment: Generates random string
 commonfields:
   id: GenerateRandomString
   version: -1
-name: GenerateRandomString
-comment: |-
-  Generates random string
-script: |
-  import json
-  import string
-  import time
-  import random
-
-  def create_entry(title,data, ec):
-      return {
-          'ContentsFormat': formats['json'],
-          'Type': entryTypes['note'],
-          'Contents': data,
-          'ReadableContentsFormat': formats['markdown'],
-          'HumanReadable': tableToMarkdown(title, data) if data else 'No result were found',
-          'EntryContext': ec
-      }
-
-
-  def create_error_entry(error):
-      return {
-          'Type' : entryTypes['error'],
-          'ContentsFormat' : formats['text'],
-          'Contents' : str(error)
-      }
-
-
-  length = int(demisto.args()["Length"])
-  punctuation = demisto.args()["Punctuation"]
-  lowercase = demisto.args()["Lowercase"]
-  uppercase = demisto.args()["Uppercase"]
-  digits = demisto.args()["Digits"]
-
-  characters = ""
-  if length > 0:
-      if uppercase == "True" or lowercase == "True" or digits == "True" or punctuation == "True":
-
-          if lowercase == "True":
-              characters += string.ascii_lowercase
-
-          if uppercase == "True":
-              characters += string.ascii_uppercase
-
-          if digits == "True":
-              characters += string.digits
-
-          if punctuation == "True":
-              characters += string.punctuation
-
-      else:
-          demisto.results(create_error_entry("Punctuation,Digits,Uppercase or Lowercase must be True."))
-          sys.exit(0)
-  else:
-      demisto.results(create_error_entry("Length must be grather than 0."))
-      sys.exit(0)
-
-  password = ""
-  for x in range(0,length):
-      password += random.SystemRandom(random.seed(time.time())).choice(characters)
-
-  raw = {"RandomString": password}
-  raw = json.loads(json.dumps(raw))
-  ec = {'RandomString': password }
-  demisto.results(create_entry('RandomString Generated.',raw, ec))
-type: python
-subtype: python2
-tags: []
 enabled: true
-args:
-- name: Length
-  required: true
-  description: Length of the string
-- name: Punctuation
-  required: true
-  auto: PREDEFINED
-  predefined:
-  - "True"
-  - "False"
-  description: If the string will include punctuation.
-- name: Lowercase
-  required: true
-  auto: PREDEFINED
-  predefined:
-  - "True"
-  - "False"
-  description: If the string will include letters.
-- name: Uppercase
-  description: if uppercase should be included
-  required: true
-  auto: PREDEFINED
-  predefined:
-  - "True"
-  - "False"
-- name: Digits
-  required: true
-  description: If digits should be included
-  auto: PREDEFINED
-  predefined:
-  - "True"
-  - "False"
+name: GenerateRandomString
 outputs:
 - contextPath: RandomString
   description: The generated string.
   type: string
-scripttarget: 0
 runonce: false
+script: "import json\nimport string\nimport time\nimport random\n\ndef create_entry(title,data,\
+  \ ec):\n    return {\n        'ContentsFormat': formats['json'],\n        'Type':\
+  \ entryTypes['note'],\n        'Contents': data,\n        'ReadableContentsFormat':\
+  \ formats['markdown'],\n        'HumanReadable': tableToMarkdown(title, data) if\
+  \ data else 'No result were found',\n        'EntryContext': ec\n    }\n\n\ndef\
+  \ create_error_entry(error):\n    return {\n        'Type' : entryTypes['error'],\n\
+  \        'ContentsFormat' : formats['text'],\n        'Contents' : str(error)\n\
+  \    }\n\n\nlength = int(demisto.args()[\"Length\"])\npunctuation = demisto.args()[\"\
+  Punctuation\"]\nlowercase = demisto.args()[\"Lowercase\"]\nuppercase = demisto.args()[\"\
+  Uppercase\"]\ndigits = demisto.args()[\"Digits\"]\n\ncharacters = \"\"\nif length\
+  \ > 0:\n    if uppercase == \"True\" or lowercase == \"True\" or digits == \"True\"\
+  \ or punctuation == \"True\":\n\n        if lowercase == \"True\":\n           \
+  \ characters += string.ascii_lowercase\n\n        if uppercase == \"True\":\n  \
+  \          characters += string.ascii_uppercase\n\n        if digits == \"True\"\
+  :\n            characters += string.digits\n\n        if punctuation == \"True\"\
+  :\n            characters += string.punctuation\n\n    else:\n        demisto.results(create_error_entry(\"\
+  Punctuation,Digits,Uppercase or Lowercase must be True.\"))\n        sys.exit(0)\n\
+  else:\n    demisto.results(create_error_entry(\"Length must be grather than 0.\"\
+  ))\n    sys.exit(0)\n\npassword = \"\"\nfor x in range(0,length):\n    password\
+  \ += random.SystemRandom(random.seed(time.time())).choice(characters)\n\nraw = {\"\
+  RandomString\": password}\nraw = json.loads(json.dumps(raw))\nec = {'RandomString':\
+  \ password }\ndemisto.results(create_entry('RandomString Generated.',raw, ec))\n"
+scripttarget: 0
+subtype: python2
+tags: []
 tests:
-  - RandomStringGenerateTest
+- RandomStringGenerateTest
+toversion: 4.1.9
+type: python

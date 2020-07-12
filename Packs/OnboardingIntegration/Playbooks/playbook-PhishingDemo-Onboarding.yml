@@ -1,120 +1,160 @@
-id: PhishingDemo-Onboarding
-version: -1
-name: PhishingDemo-Onboarding
-fromversion: 4.1.0
 description: This playbook is part of the on-boarding experience, and focuses on phishing
   scenarios. To use this playbook, you'll need to enable the `on-boarding` integration
   and configure incidents of type `Phishing`. For more information, refer to the on-boarding
   walkthroughs in the help section.
-starttaskid: "0"
+fromversion: 4.1.0
+id: PhishingDemo-Onboarding
+inputs: []
+name: PhishingDemo-Onboarding
+outputs: []
+starttaskid: '0'
+system: true
 tasks:
-  "0":
-    id: "0"
-    taskid: dcbd7a1c-40ce-43f8-8081-f65c816abd4b
-    type: start
-    task:
-      id: dcbd7a1c-40ce-43f8-8081-f65c816abd4b
-      version: -1
-      name: ""
-      description: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "1"
-      - "7"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 50
-        }
-      }
+      - '1'
+      - '7'
     note: false
-    timertriggers: []
-  "1":
-    id: "1"
-    taskid: bb7ac632-1e63-40c2-8ba6-d4cc90c4e922
-    type: regular
+    separatecontext: false
     task:
-      id: bb7ac632-1e63-40c2-8ba6-d4cc90c4e922
+      brand: ''
+      description: ''
+      id: dcbd7a1c-40ce-43f8-8081-f65c816abd4b
+      iscommand: false
+      name: ''
       version: -1
-      name: extractIndicators
-      description: Extracts all indicators for the given input.
-      script: Builtin|||extractIndicators
-      type: regular
-      iscommand: true
-      brand: Builtin
+    taskid: dcbd7a1c-40ce-43f8-8081-f65c816abd4b
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
+    reputationcalc: 2
     scriptarguments:
       entryID: {}
       filePath: {}
       investigationID: {}
       text:
         complex:
-          root: incident
           accessor: details
-    reputationcalc: 2
+          root: incident
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-  "2":
-    id: "2"
-    taskid: 615ed3b6-e340-4065-8f4f-26d421eca88a
-    type: regular
     task:
-      id: 615ed3b6-e340-4065-8f4f-26d421eca88a
-      version: -1
-      name: demo-ip (Get Reputation)
-      description: Gets the simulated reputation of the IP address.
-      script: OnboardingIntegration|||demo-ip
-      type: regular
+      brand: Builtin
+      description: Extracts all indicators for the given input.
+      id: bb7ac632-1e63-40c2-8ba6-d4cc90c4e922
       iscommand: true
-      brand: OnboardingIntegration
+      name: extractIndicators
+      script: Builtin|||extractIndicators
+      type: regular
+      version: -1
+    taskid: bb7ac632-1e63-40c2-8ba6-d4cc90c4e922
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '10':
+    id: '10'
     nexttasks:
       '#none#':
-      - "8"
+      - '11'
+    note: false
+    scriptarguments:
+      email:
+        complex:
+          accessor: Email
+          root: ExtractedIndicators
+    separatecontext: false
+    task:
+      brand: OnboardingIntegration
+      description: Gets the simulated reputation of the email address.
+      id: 2c13c3d1-d0c4-4d16-8d8c-e77673777d27
+      iscommand: true
+      name: demo-email (Get Reputation)
+      script: OnboardingIntegration|||demo-email
+      type: regular
+      version: -1
+    taskid: 2c13c3d1-d0c4-4d16-8d8c-e77673777d27
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+  '11':
+    id: '11'
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    scriptarguments:
+      file:
+        complex:
+          accessor: File
+          root: ExtractedIndicators
+    separatecontext: false
+    task:
+      brand: OnboardingIntegration
+      description: Gets the simulated reputation of the MD5 hash.
+      id: 26314fdf-bc84-4f5b-8629-b61387be5130
+      iscommand: true
+      name: demo-file (Get Reputation)
+      script: OnboardingIntegration|||demo-file
+      type: regular
+      version: -1
+    taskid: 26314fdf-bc84-4f5b-8629-b61387be5130
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+  '14':
+    id: '14'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 0a294eb3-a38e-4f38-8725-3048c65df31f
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 0a294eb3-a38e-4f38-8725-3048c65df31f
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1595\n  }\n}"
+  '2':
+    id: '2'
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
     scriptarguments:
       ip:
         complex:
-          root: ExtractedIndicators
           accessor: IP
+          root: ExtractedIndicators
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-  "4":
-    id: "4"
-    taskid: 1d8d7ac8-90d6-4f2a-8f75-7c99eaace2d4
-    type: regular
     task:
-      id: 1d8d7ac8-90d6-4f2a-8f75-7c99eaace2d4
-      version: -1
-      name: Update Incident Severity
-      description: Modify properties of an incident.
-      script: Builtin|||setIncident
-      type: regular
+      brand: OnboardingIntegration
+      description: Gets the simulated reputation of the IP address.
+      id: 615ed3b6-e340-4065-8f4f-26d421eca88a
       iscommand: true
-      brand: Builtin
+      name: demo-ip (Get Reputation)
+      script: OnboardingIntegration|||demo-ip
+      type: regular
+      version: -1
+    taskid: 615ed3b6-e340-4065-8f4f-26d421eca88a
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '4':
+    id: '4'
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
+    note: false
     scriptarguments:
       addLabels: {}
       app: {}
@@ -163,8 +203,8 @@ tasks:
       filepath: {}
       id:
         complex:
-          root: incident
           accessor: id
+          root: incident
       labels: {}
       malwarefamily: {}
       name: {}
@@ -175,19 +215,19 @@ tasks:
       roles: {}
       severity:
         complex:
-          root: DBotScore
           accessor: Score
+          root: DBotScore
           transformers:
-          - operator: sort
-            args:
+          - args:
               descending:
                 value:
-                  simple: "true"
-          - operator: atIndex
-            args:
+                  simple: 'true'
+            operator: sort
+          - args:
               index:
                 value:
-                  simple: "0"
+                  simple: '0'
+            operator: atIndex
       signature: {}
       sla: {}
       slaField: {}
@@ -201,236 +241,122 @@ tasks:
       vendorproduct: {}
       vulnerabilitycategory: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-  "5":
-    id: "5"
-    taskid: 7159b854-7dc5-4a75-8dd2-1f4a5f02939f
-    type: regular
     task:
-      id: 7159b854-7dc5-4a75-8dd2-1f4a5f02939f
-      version: -1
-      name: Investigate the incident
-      description: ""
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-  "7":
-    id: "7"
-    taskid: 20de2d7f-9995-4933-8f15-84ac1dcab747
-    type: regular
-    task:
-      id: 20de2d7f-9995-4933-8f15-84ac1dcab747
-      version: -1
-      name: rasterize-email
-      description: Rasterizes an email body into an image.
-      tags:
-      - email_html_image
-      script: Rasterize|||rasterize-email
-      type: regular
+      brand: Builtin
+      description: Modify properties of an incident.
+      id: 1d8d7ac8-90d6-4f2a-8f75-7c99eaace2d4
       iscommand: true
-      brand: Rasterize
+      name: Update Incident Severity
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 1d8d7ac8-90d6-4f2a-8f75-7c99eaace2d4
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+  '5':
+    id: '5'
     nexttasks:
       '#none#':
-      - "14"
+      - '14'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 7159b854-7dc5-4a75-8dd2-1f4a5f02939f
+      iscommand: false
+      name: Investigate the incident
+      type: regular
+      version: -1
+    taskid: 7159b854-7dc5-4a75-8dd2-1f4a5f02939f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1420\n  }\n}"
+  '7':
+    id: '7'
+    nexttasks:
+      '#none#':
+      - '14'
+    note: false
     scriptarguments:
       height: {}
       htmlBody:
         complex:
-          root: incident
           accessor: labels.Body
+          root: incident
       type: {}
       width: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-  "8":
-    id: "8"
-    taskid: 708bbc37-c4bd-4b18-8076-abbe52577868
-    type: regular
     task:
-      id: 708bbc37-c4bd-4b18-8076-abbe52577868
-      version: -1
-      name: demo-url (Get Reputation)
-      description: Gets the simulated reputation of the URL.
-      script: OnboardingIntegration|||demo-url
-      type: regular
+      brand: Rasterize
+      description: Rasterizes an email body into an image.
+      id: 20de2d7f-9995-4933-8f15-84ac1dcab747
       iscommand: true
-      brand: OnboardingIntegration
+      name: rasterize-email
+      script: Rasterize|||rasterize-email
+      tags:
+      - email_html_image
+      type: regular
+      version: -1
+    taskid: 20de2d7f-9995-4933-8f15-84ac1dcab747
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1420\n  }\n}"
+  '8':
+    id: '8'
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
+    note: false
     scriptarguments:
       url:
         complex:
-          root: ExtractedIndicators
           accessor: URL
+          root: ExtractedIndicators
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-  "9":
-    id: "9"
-    taskid: 5d7cab19-09b6-4d77-8170-5bc092fe5abe
-    type: regular
     task:
-      id: 5d7cab19-09b6-4d77-8170-5bc092fe5abe
-      version: -1
-      name: demo-domain (Get Reputation)
-      description: Gets the simulated reputation of the domain.
-      script: OnboardingIntegration|||demo-domain
-      type: regular
-      iscommand: true
       brand: OnboardingIntegration
+      description: Gets the simulated reputation of the URL.
+      id: 708bbc37-c4bd-4b18-8076-abbe52577868
+      iscommand: true
+      name: demo-url (Get Reputation)
+      script: OnboardingIntegration|||demo-url
+      type: regular
+      version: -1
+    taskid: 708bbc37-c4bd-4b18-8076-abbe52577868
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '9':
+    id: '9'
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
+    note: false
     scriptarguments:
       domain:
         complex:
-          root: ExtractedIndicators
           accessor: Domain
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-  "10":
-    id: "10"
-    taskid: 2c13c3d1-d0c4-4d16-8d8c-e77673777d27
-    type: regular
-    task:
-      id: 2c13c3d1-d0c4-4d16-8d8c-e77673777d27
-      version: -1
-      name: demo-email (Get Reputation)
-      description: Gets the simulated reputation of the email address.
-      script: OnboardingIntegration|||demo-email
-      type: regular
-      iscommand: true
-      brand: OnboardingIntegration
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      email:
-        complex:
           root: ExtractedIndicators
-          accessor: Email
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-  "11":
-    id: "11"
-    taskid: 26314fdf-bc84-4f5b-8629-b61387be5130
-    type: regular
     task:
-      id: 26314fdf-bc84-4f5b-8629-b61387be5130
-      version: -1
-      name: demo-file (Get Reputation)
-      description: Gets the simulated reputation of the MD5 hash.
-      script: OnboardingIntegration|||demo-file
-      type: regular
-      iscommand: true
       brand: OnboardingIntegration
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      file:
-        complex:
-          root: ExtractedIndicators
-          accessor: File
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-  "14":
-    id: "14"
-    taskid: 0a294eb3-a38e-4f38-8725-3048c65df31f
-    type: title
-    task:
-      id: 0a294eb3-a38e-4f38-8725-3048c65df31f
+      description: Gets the simulated reputation of the domain.
+      id: 5d7cab19-09b6-4d77-8170-5bc092fe5abe
+      iscommand: true
+      name: demo-domain (Get Reputation)
+      script: OnboardingIntegration|||demo-domain
+      type: regular
       version: -1
-      name: Done
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1595
-        }
-      }
-    note: false
+    taskid: 5d7cab19-09b6-4d77-8170-5bc092fe5abe
     timertriggers: []
-system: true
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1610,
-        "width": 810,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
 tests:
-  - No Tests
+- No Tests
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1610,\n      \"width\": 810,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

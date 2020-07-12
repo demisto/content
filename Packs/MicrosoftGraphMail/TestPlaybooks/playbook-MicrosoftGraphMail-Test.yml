@@ -1,54 +1,70 @@
+description: Microsoft Graph Mail Test
 elasticcommonfields: {}
 id: MicrosoftGraphMail-Test
-version: -1
+inputs: []
 name: MicrosoftGraphMail-Test
-description: Microsoft Graph Mail Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: b417a9e3-c300-4374-8a5f-79b73097439f
-    type: start
+  '0':
+    id: '0'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
+      brand: ''
       elasticcommonfields: {}
       id: b417a9e3-c300-4374-8a5f-79b73097439f
-      version: -1
-      name: ""
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "2":
-    id: "2"
-    taskid: fc2d6c42-f840-4f51-8d7f-a389ab0ac587
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: fc2d6c42-f840-4f51-8d7f-a389ab0ac587
+      name: ''
       version: -1
-      name: msgraph-mail-get-attachment
-      description: Gets an attachment from the email.
-      script: MicrosoftGraphMail|||msgraph-mail-get-attachment
-      type: regular
-      iscommand: true
-      brand: MicrosoftGraphMail
+    taskid: b417a9e3-c300-4374-8a5f-79b73097439f
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '10':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: MSGraphMail
+          operator: isNotEmpty
+      label: 'yes'
+    id: '10'
+    ignoreworker: false
+    nexttasks:
+      'yes':
+      - '6'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      elasticcommonfields: {}
+      id: 18a42686-92ce-4fbb-8c9e-4252412deca1
+      iscommand: false
+      name: Untitled Task
+      type: condition
+      version: -1
+    taskid: 18a42686-92ce-4fbb-8c9e-4252412deca1
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
+    note: false
+    quietmode: 0
     scriptarguments:
       attachment_id:
         simple: ${MSGraphMailAttachment.Attachment.ID}
@@ -58,35 +74,29 @@ tasks:
       user_id:
         simple: ${MSGraphMail.UserID}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "3":
-    id: "3"
-    taskid: de1dcc6d-670a-41d8-8063-e32ce75a4c2c
-    type: regular
     task:
-      elasticcommonfields: {}
-      id: de1dcc6d-670a-41d8-8063-e32ce75a4c2c
-      version: -1
-      name: msgraph-mail-get-email
-      description: Gets the properties of an email.
-      script: MicrosoftGraphMail|||msgraph-mail-get-email
-      type: regular
-      iscommand: true
       brand: MicrosoftGraphMail
+      description: Gets an attachment from the email.
+      elasticcommonfields: {}
+      id: fc2d6c42-f840-4f51-8d7f-a389ab0ac587
+      iscommand: true
+      name: msgraph-mail-get-attachment
+      script: MicrosoftGraphMail|||msgraph-mail-get-attachment
+      type: regular
+      version: -1
+    taskid: fc2d6c42-f840-4f51-8d7f-a389ab0ac587
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1420\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
+    note: false
+    quietmode: 0
     scriptarguments:
       folder_id: {}
       get_body: {}
@@ -96,35 +106,29 @@ tasks:
       user_id:
         simple: ${MSGraphMail.UserID}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "4":
-    id: "4"
-    taskid: 72076dc8-7c2a-4fe4-8939-f489a2efb97c
-    type: regular
     task:
-      elasticcommonfields: {}
-      id: 72076dc8-7c2a-4fe4-8939-f489a2efb97c
-      version: -1
-      name: msgraph-mail-list-attachments
-      description: Lists all of the attachments of given email
-      script: MicrosoftGraphMail|||msgraph-mail-list-attachments
-      type: regular
-      iscommand: true
       brand: MicrosoftGraphMail
+      description: Gets the properties of an email.
+      elasticcommonfields: {}
+      id: de1dcc6d-670a-41d8-8063-e32ce75a4c2c
+      iscommand: true
+      name: msgraph-mail-get-email
+      script: MicrosoftGraphMail|||msgraph-mail-get-email
+      type: regular
+      version: -1
+    taskid: de1dcc6d-670a-41d8-8063-e32ce75a4c2c
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
+    quietmode: 0
     scriptarguments:
       folder_id: {}
       message_id:
@@ -132,240 +136,168 @@ tasks:
       user_id:
         simple: ${MSGraphMail.UserID}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "5":
-    id: "5"
-    taskid: 6759b662-8984-44bc-8864-beb1b6880953
-    type: regular
     task:
-      elasticcommonfields: {}
-      id: 6759b662-8984-44bc-8864-beb1b6880953
-      version: -1
-      name: msgraph-mail-list-emails
-      description: Get items from the service.
-      script: MicrosoftGraphMail|||msgraph-mail-list-emails
-      type: regular
-      iscommand: true
       brand: MicrosoftGraphMail
+      description: Lists all of the attachments of given email
+      elasticcommonfields: {}
+      id: 72076dc8-7c2a-4fe4-8939-f489a2efb97c
+      iscommand: true
+      name: msgraph-mail-list-attachments
+      script: MicrosoftGraphMail|||msgraph-mail-list-attachments
+      type: regular
+      version: -1
+    taskid: 72076dc8-7c2a-4fe4-8939-f489a2efb97c
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
+    quietmode: 0
     scriptarguments:
       folder_id: {}
       odata: {}
       pages_to_pull: {}
       search:
-        simple: קבל
+        simple: "\u05E7\u05D1\u05DC"
       user_id:
         simple: oren@demistodev.onmicrosoft.com
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "6":
-    id: "6"
-    taskid: 3847a8d5-287c-43b1-8e8e-6492fde3174a
-    type: regular
     task:
+      brand: MicrosoftGraphMail
+      description: Get items from the service.
       elasticcommonfields: {}
-      id: 3847a8d5-287c-43b1-8e8e-6492fde3174a
-      version: -1
-      name: Delete Context
-      description: Delete field from context
-      scriptName: DeleteContext
+      id: 6759b662-8984-44bc-8864-beb1b6880953
+      iscommand: true
+      name: msgraph-mail-list-emails
+      script: MicrosoftGraphMail|||msgraph-mail-list-emails
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 6759b662-8984-44bc-8864-beb1b6880953
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "7":
-    id: "7"
-    taskid: fe2b71b0-a015-48e3-8add-57897ee1337e
-    type: title
     task:
+      brand: ''
+      description: Delete field from context
+      elasticcommonfields: {}
+      id: 3847a8d5-287c-43b1-8e8e-6492fde3174a
+      iscommand: false
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 3847a8d5-287c-43b1-8e8e-6492fde3174a
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '7':
+    id: '7'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
       elasticcommonfields: {}
       id: fe2b71b0-a015-48e3-8add-57897ee1337e
-      version: -1
+      iscommand: false
       name: Finish
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "8":
-    id: "8"
-    taskid: 41e83ea4-4fd7-4db9-8510-13d58425222d
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: 41e83ea4-4fd7-4db9-8510-13d58425222d
       version: -1
-      name: run msgraph-mail-list-emails with more than one page
-      description: Get items from the service.
-      script: MicrosoftGraphMail|||msgraph-mail-list-emails
-      type: regular
-      iscommand: true
-      brand: MicrosoftGraphMail
+    taskid: fe2b71b0-a015-48e3-8add-57897ee1337e
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1595\n  }\n}"
+  '8':
+    id: '8'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
+    note: false
+    quietmode: 0
     scriptarguments:
       folder_id: {}
       odata: {}
       pages_to_pull:
-        simple: "2"
+        simple: '2'
       search: {}
       user_id:
         simple: avishai@demistodev.onmicrosoft.com
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "9":
-    id: "9"
-    taskid: e81e3753-2f9c-40a3-86d6-42e60658833f
-    type: regular
     task:
+      brand: MicrosoftGraphMail
+      description: Get items from the service.
       elasticcommonfields: {}
-      id: e81e3753-2f9c-40a3-86d6-42e60658833f
-      version: -1
-      name: Delete Context
-      description: Delete field from context
-      scriptName: DeleteContext
+      id: 41e83ea4-4fd7-4db9-8510-13d58425222d
+      iscommand: true
+      name: run msgraph-mail-list-emails with more than one page
+      script: MicrosoftGraphMail|||msgraph-mail-list-emails
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: 41e83ea4-4fd7-4db9-8510-13d58425222d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '9':
+    id: '9'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "10":
-    id: "10"
-    taskid: 18a42686-92ce-4fbb-8c9e-4252412deca1
-    type: condition
     task:
+      brand: ''
+      description: Delete field from context
       elasticcommonfields: {}
-      id: 18a42686-92ce-4fbb-8c9e-4252412deca1
-      version: -1
-      name: Untitled Task
-      type: condition
+      id: e81e3753-2f9c-40a3-86d6-42e60658833f
       iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "6"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: MSGraphMail
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: e81e3753-2f9c-40a3-86d6-42e60658833f
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1610,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1610,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

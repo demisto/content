@@ -3,9 +3,9 @@ commonfields:
   id: Forescout
   version: -1
 configuration:
-- display: |-
-    The network address of the Forescout Enterprise Manager or
-    standalone Appliance, e.g., 'https://10.0.0.8'. #disable-secrets-detection
+- display: 'The network address of the Forescout Enterprise Manager or
+
+    standalone Appliance, e.g., ''https://10.0.0.8''. #disable-secrets-detection'
   name: url
   required: true
   type: 0
@@ -38,34 +38,35 @@ script:
     - default: false
       description: Filter hosts by those selected by policies or policy sub-rules.
         Policies and/or rules should be specified by their IDs. To find policy and
-        rule IDs by which you can filter, run the 'forescout-get-policies'
-        command. If multiple policy and/or rule IDs are entered, only hosts that are
-        selected by all of the policies and/or rules specifed will be returned. Multiple
-        policy or rule IDs should be separated by a comma.
+        rule IDs by which you can filter, run the 'forescout-get-policies' command.
+        If multiple policy and/or rule IDs are entered, only hosts that are selected
+        by all of the policies and/or rules specifed will be returned. Multiple policy
+        or rule IDs should be separated by a comma.
       isArray: true
       name: rule_ids
       required: false
       secret: false
     - default: false
-      description: Filter hosts based on host field values. Enter fields with their
-        associated values in the following format, '{field_1}={val_1}&{field_2}={val_2}
-        … &{field_n}={val_n}' where '{field_1}' through '{field_n}' are replaced by
-        actual field names and '{val_1}' through '{val_n}' are replaced by the desired
-        matching values. Note that a list field may be specified with the values separated
-        by commas. Only hosts whose properties match all the specified values will
-        be returned. For a list of potential host fields that may be specified, try
-        executing the 'forescout-get-hostfields' command. A composite property may
-        also be specified. If entered in the format where all the field-value pairs
-        are in a single set of square brackets, for example, '{composite_prop}=[{field_1},{val_1},..,{field_n},{val_n}]'
-        then only hosts for which the specified composite property's fields all match
-        the values entered will be returned. If entered in the format, '{composite_prop}=[{field_1},{val}_1],..,[{field_n},{val_n}]'
-        where each field-value pair is enclosed in its own set of brackets, then hosts
-        for which the composite property contains any of the field-values specified
-        will be returned. Note that for composite properties, sub-fields should be
-        entered as their internal representation in Forescout. To find internal representation
-        for a composite property's sub-fields try executing 'forescout-get-host' command
-        with the host specified in the 'identifier' argument and the name of the composite
-        property entered in the 'fields'  argument of the command.
+      description: "Filter hosts based on host field values. Enter fields with their\
+        \ associated values in the following format, '{field_1}={val_1}&{field_2}={val_2}\
+        \ \u2026 &{field_n}={val_n}' where '{field_1}' through '{field_n}' are replaced\
+        \ by actual field names and '{val_1}' through '{val_n}' are replaced by the\
+        \ desired matching values. Note that a list field may be specified with the\
+        \ values separated by commas. Only hosts whose properties match all the specified\
+        \ values will be returned. For a list of potential host fields that may be\
+        \ specified, try executing the 'forescout-get-hostfields' command. A composite\
+        \ property may also be specified. If entered in the format where all the field-value\
+        \ pairs are in a single set of square brackets, for example, '{composite_prop}=[{field_1},{val_1},..,{field_n},{val_n}]'\
+        \ then only hosts for which the specified composite property's fields all\
+        \ match the values entered will be returned. If entered in the format, '{composite_prop}=[{field_1},{val}_1],..,[{field_n},{val_n}]'\
+        \ where each field-value pair is enclosed in its own set of brackets, then\
+        \ hosts for which the composite property contains any of the field-values\
+        \ specified will be returned. Note that for composite properties, sub-fields\
+        \ should be entered as their internal representation in Forescout. To find\
+        \ internal representation for a composite property's sub-fields try executing\
+        \ 'forescout-get-host' command with the host specified in the 'identifier'\
+        \ argument and the name of the composite property entered in the 'fields'\
+        \  argument of the command."
       isArray: false
       name: fields
       required: false
@@ -96,7 +97,8 @@ script:
       defaultValue: name
       description: Each host field has three searchable parts, the 'name', 'label',
         and 'description'. By default only the 'name' will be searched. If you want
-        to expand the search to include the description, you would enter 'name,description' for this argument.
+        to expand the search to include the description, you would enter 'name,description'
+        for this argument.
       isArray: true
       name: search_in
       predefined:
@@ -130,8 +132,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The term by which to filter host fields. By default, the search will
-        be case insensitive and checked to see if a host field contains the search
+      description: The term by which to filter host fields. By default, the search
+        will be case insensitive and checked to see if a host field contains the search
         term unless otherwise specified in the 'case_sensitive' and 'match_exactly'
         arguments respectively.
       isArray: false
@@ -177,8 +179,8 @@ script:
       description: List of host properties to include in the output for the targeted
         endpoint. If a specified host property is not found, the property is omitted
         from the outputs. For a list of potential host properties that can be specified,
-        run the 'forescout-get-host-fields' command. Requested fields should
-        be comma separated.
+        run the 'forescout-get-host-fields' command. Requested fields should be comma
+        separated.
       isArray: true
       name: fields
       required: false
@@ -191,15 +193,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: MAC address of the endpoint. To get the Endpoint identifiers - IPs,
-        MAC addresses, and object IDs, run the `forescout-get-hosts` command.
+      description: MAC address of the endpoint. To get the Endpoint identifiers -
+        IPs, MAC addresses, and object IDs, run the `forescout-get-hosts` command.
       isArray: false
       name: mac
       required: false
       secret: false
     - default: false
-      description: Forescout ID of the endpoint. To get the Endpoint identifiers - IPs,
-        MAC addresses, and object IDs, run the `forescout-get-hosts` command.
+      description: Forescout ID of the endpoint. To get the Endpoint identifiers -
+        IPs, MAC addresses, and object IDs, run the `forescout-get-hosts` command.
       isArray: false
       name: id
       required: false
@@ -289,8 +291,8 @@ script:
       description: Operating system.
       type: String
     - contextPath: Forescout.Host.ClassificationSourceOS
-      description: Indicates how the OS classification property was
-        determined for this endpoint.
+      description: Indicates how the OS classification property was determined for
+        this endpoint.
       type: String
     - contextPath: Forescout.Host.LastNbtReportTime
       description: Last time the NBT name was reported.
@@ -366,9 +368,10 @@ script:
       description: Domain of the endpoint.
       type: String
   - deprecated: false
-    description: |-
-      Retrieves a list of all policies defined in the Forescout platform and
-      their sub-rules.
+    description: 'Retrieves a list of all policies defined in the Forescout platform
+      and
+
+      their sub-rules.'
     execution: false
     name: forescout-get-policies
     outputs:
@@ -433,10 +436,10 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Update a host's field. If a List field or Composite field
-      has not been defined in Forescout to 'Aggregate new values from each update'
-      then performing an update operation on a field will overwrite previous data
-      written to that field.
+    description: Update a host's field. If a List field or Composite field has not
+      been defined in Forescout to 'Aggregate new values from each update' then performing
+      an update operation on a field will overwrite previous data written to that
+      field.
     execution: false
     name: forescout-update-host-fields
   - arguments:
@@ -479,7 +482,8 @@ script:
   isfetch: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 tests:
 - Forescout-Test
+toversion: 4.1.9

@@ -1,97 +1,71 @@
 id: AWS-Lambda-Test (Read-Only)
-version: -1
+inputs: []
 name: AWS-Lambda-Test (Read-Only)
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: de4c6491-2b88-4edf-89bd-c093c2a4d512
-    type: start
-    task:
-      id: de4c6491-2b88-4edf-89bd-c093c2a4d512
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
+      - '1'
     note: false
-    timertriggers: []
-    ignoreworker: false
-  "1":
-    id: "1"
-    taskid: 233ed168-fe31-4c78-839c-10e9a1e14dc0
-    type: regular
+    separatecontext: false
     task:
-      id: 233ed168-fe31-4c78-839c-10e9a1e14dc0
+      brand: ''
+      id: de4c6491-2b88-4edf-89bd-c093c2a4d512
+      iscommand: false
+      name: ''
       version: -1
-      name: aws-lambda-list-functions
+    taskid: de4c6491-2b88-4edf-89bd-c093c2a4d512
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    separatecontext: false
+    task:
+      brand: AWS - Lambda
       description: Returns a list of your Lambda functions. For each function, the
         response includes the function configuration information. You must use GetFunction
         to retrieve the code for your function.
+      id: 233ed168-fe31-4c78-839c-10e9a1e14dc0
+      iscommand: true
+      name: aws-lambda-list-functions
       script: AWS - Lambda|||aws-lambda-list-functions
       type: regular
-      iscommand: true
-      brand: AWS - Lambda
-    nexttasks:
-      '#none#':
-      - "2"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 190
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 166f0026-3899-4333-8eff-87af678d477b
-    type: regular
-    task:
-      id: 166f0026-3899-4333-8eff-87af678d477b
       version: -1
-      name: aws-lambda-get-account-settings
+    taskid: 233ed168-fe31-4c78-839c-10e9a1e14dc0
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 190\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: AWS - Lambda
       description: Retrieves details about your account's limits and usage in an AWS
         Region.
+      id: 166f0026-3899-4333-8eff-87af678d477b
+      iscommand: true
+      name: aws-lambda-get-account-settings
       script: AWS - Lambda|||aws-lambda-get-account-settings
       type: regular
-      iscommand: true
-      brand: AWS - Lambda
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 370
-        }
-      }
-    note: false
+      version: -1
+    taskid: 166f0026-3899-4333-8eff-87af678d477b
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 415,
-        "width": 380,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 370\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 415,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n\
+  \    }\n  }\n}"

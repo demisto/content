@@ -1,80 +1,62 @@
 id: Prisma_Access-Test
-version: -1
+inputs: []
 name: Prisma_Access-Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 9f289ae7-abb6-4cba-8fdb-bb9d0c0f623a
-    type: start
-    task:
-      id: 9f289ae7-abb6-4cba-8fdb-bb9d0c0f623a
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
+      - '1'
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
-    taskid: 99f3c451-a185-413c-85e4-bf18a574e273
-    type: regular
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 99f3c451-a185-413c-85e4-bf18a574e273
+      brand: ''
+      id: 9f289ae7-abb6-4cba-8fdb-bb9d0c0f623a
+      iscommand: false
+      name: ''
       version: -1
+    taskid: 9f289ae7-abb6-4cba-8fdb-bb9d0c0f623a
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: 'yes'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 99f3c451-a185-413c-85e4-bf18a574e273
+      iscommand: true
       name: DeleteContext
       script: DeleteContext
       type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 200
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "2":
-    id: "2"
-    taskid: 163dc410-2860-45e4-81f7-3b015e38d3a5
-    type: regular
-    task:
-      id: 163dc410-2860-45e4-81f7-3b015e38d3a5
       version: -1
-      name: prisma-access-logout-user
-      script: '|||prisma-access-logout-user'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: 99f3c451-a185-413c-85e4-bf18a574e273
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 200\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
+    quietmode: 0
     scriptarguments:
       computer:
         simple: jsmithPC
@@ -83,252 +65,202 @@ tasks:
       user:
         simple: jsmith
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "3":
-    id: "3"
-    taskid: be48ac9c-d3d3-4232-8146-386521e84328
-    type: condition
     task:
-      id: be48ac9c-d3d3-4232-8146-386521e84328
+      brand: ''
+      id: 163dc410-2860-45e4-81f7-3b015e38d3a5
+      iscommand: true
+      name: prisma-access-logout-user
+      script: '|||prisma-access-logout-user'
+      type: regular
       version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "4"
-    separatecontext: false
+    taskid: 163dc410-2860-45e4-81f7-3b015e38d3a5
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 400\n  }\n}"
+  '3':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: PrismaAccess.LogoutUser
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 600
-        }
-      }
-    note: false
-    timertriggers: []
+          operator: isNotEmpty
+      label: 'yes'
+    id: '3'
     ignoreworker: false
-    skipunavailable: false
+    nexttasks:
+      'yes':
+      - '4'
+    note: false
     quietmode: 0
-  "4":
-    id: "4"
-    taskid: 9e30194a-772b-47e7-8600-2f2b3beaa482
-    type: regular
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 9e30194a-772b-47e7-8600-2f2b3beaa482
+      brand: ''
+      id: be48ac9c-d3d3-4232-8146-386521e84328
+      iscommand: false
+      name: Verify Outputs
+      type: condition
       version: -1
-      name: prisma-access-query
-      script: '|||prisma-access-query'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: be48ac9c-d3d3-4232-8146-386521e84328
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 600\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
+    note: false
+    quietmode: 0
     scriptarguments:
       query:
         simple: querystring limit=2 action getGPaaSActiveUsers
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 800
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "5":
-    id: "5"
-    taskid: 822fce57-0d21-421d-872d-25318fbd2800
-    type: condition
     task:
-      id: 822fce57-0d21-421d-872d-25318fbd2800
+      brand: ''
+      id: 9e30194a-772b-47e7-8600-2f2b3beaa482
+      iscommand: true
+      name: prisma-access-query
+      script: '|||prisma-access-query'
+      type: regular
       version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "6"
-    separatecontext: false
+    taskid: 9e30194a-772b-47e7-8600-2f2b3beaa482
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 800\n  }\n}"
+  '5':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: PrismaAccess.QueryResults
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1000
-        }
-      }
-    note: false
-    timertriggers: []
+          operator: isNotEmpty
+      label: 'yes'
+    id: '5'
     ignoreworker: false
-    skipunavailable: false
+    nexttasks:
+      'yes':
+      - '6'
+    note: false
     quietmode: 0
-  "6":
-    id: "6"
-    taskid: 5f6565eb-83dc-454a-87b0-3fbf4ef15478
-    type: regular
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 5f6565eb-83dc-454a-87b0-3fbf4ef15478
+      brand: ''
+      id: 822fce57-0d21-421d-872d-25318fbd2800
+      iscommand: false
+      name: Verify Outputs
+      type: condition
       version: -1
-      name: prisma-access-cli-command
-      script: '|||prisma-access-cli-command'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: 822fce57-0d21-421d-872d-25318fbd2800
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1000\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
+    note: false
+    quietmode: 0
     scriptarguments:
       cmd:
         simple: show system info | match hostname
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1200
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "7":
-    id: "7"
-    taskid: b8048b03-1c40-4b58-8189-34162c60b19f
-    type: regular
     task:
-      id: b8048b03-1c40-4b58-8189-34162c60b19f
-      version: -1
-      name: prisma-access-active-users
-      script: '|||prisma-access-active-users'
-      type: regular
+      brand: ''
+      id: 5f6565eb-83dc-454a-87b0-3fbf4ef15478
       iscommand: true
-      brand: ""
+      name: prisma-access-cli-command
+      script: '|||prisma-access-cli-command'
+      type: regular
+      version: -1
+    taskid: 5f6565eb-83dc-454a-87b0-3fbf4ef15478
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1200\n  }\n}"
+  '7':
+    id: '7'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
+    note: false
+    quietmode: 0
     scriptarguments:
       limit: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "8":
-    id: "8"
-    taskid: 833d6948-c936-4e7e-83bd-90d599d9d32b
-    type: condition
     task:
-      id: 833d6948-c936-4e7e-83bd-90d599d9d32b
+      brand: ''
+      id: b8048b03-1c40-4b58-8189-34162c60b19f
+      iscommand: true
+      name: prisma-access-active-users
+      script: '|||prisma-access-active-users'
+      type: regular
       version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "9"
-    separatecontext: false
+    taskid: b8048b03-1c40-4b58-8189-34162c60b19f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1400\n  }\n}"
+  '8':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: PrismaAccess.ActiveUsers
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1600
-        }
-      }
-    note: false
-    timertriggers: []
+          operator: isNotEmpty
+      label: 'yes'
+    id: '8'
     ignoreworker: false
-    skipunavailable: false
+    nexttasks:
+      'yes':
+      - '9'
+    note: false
     quietmode: 0
-  "9":
-    id: "9"
-    taskid: 9ba45f41-cae5-4c4c-8e61-b47b7cdffe10
-    type: title
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 9ba45f41-cae5-4c4c-8e61-b47b7cdffe10
+      brand: ''
+      id: 833d6948-c936-4e7e-83bd-90d599d9d32b
+      iscommand: false
+      name: Verify Outputs
+      type: condition
       version: -1
+    taskid: 833d6948-c936-4e7e-83bd-90d599d9d32b
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1600\n  }\n}"
+  '9':
+    id: '9'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 9ba45f41-cae5-4c4c-8e61-b47b7cdffe10
+      iscommand: false
       name: Test Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1800
-        }
-      }
-    note: false
+      version: -1
+    taskid: 9ba45f41-cae5-4c4c-8e61-b47b7cdffe10
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1815,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1800\n  }\n}"
 tests:
 - No tests
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1815,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

@@ -1,234 +1,184 @@
 id: Vertica Test
-version: -1
+inputs: []
 name: Vertica Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 6116b74b-4133-464c-8edc-3ff09bcba4bc
-    type: start
-    task:
-      id: 6116b74b-4133-464c-8edc-3ff09bcba4bc
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: b31903b2-8784-4e53-804c-b6e47fad1a89
-    type: regular
-    task:
-      id: b31903b2-8784-4e53-804c-b6e47fad1a89
-      version: -1
-      name: Delete Context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 6116b74b-4133-464c-8edc-3ff09bcba4bc
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 6116b74b-4133-464c-8edc-3ff09bcba4bc
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 819e14bb-f9b8-4980-88b8-b7b3f0d49261
-    type: regular
     task:
-      id: 819e14bb-f9b8-4980-88b8-b7b3f0d49261
-      version: -1
-      name: Query for system tables
-      script: '|||vertica-query'
+      brand: ''
+      id: b31903b2-8784-4e53-804c-b6e47fad1a89
+      iscommand: false
+      name: Delete Context
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: b31903b2-8784-4e53-804c-b6e47fad1a89
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 195\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "3"
-      - "7"
+      - '3'
+      - '7'
+    note: false
     scriptarguments:
       limit: {}
       query:
         simple: SELECT * FROM system_tables ORDER BY table_schema, table_name LIMIT
           5;
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: 9fcbec3d-651d-4f62-815d-a31f43e8c4cd
-    type: condition
     task:
-      id: 9fcbec3d-651d-4f62-815d-a31f43e8c4cd
+      brand: ''
+      id: 819e14bb-f9b8-4980-88b8-b7b3f0d49261
+      iscommand: true
+      name: Query for system tables
+      script: '|||vertica-query'
+      type: regular
       version: -1
-      name: Verify Context Value
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "4"
-    separatecontext: false
+    taskid: 819e14bb-f9b8-4980-88b8-b7b3f0d49261
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 370\n  }\n}"
+  '3':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: Vertica.Row.TableSchema
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: v_catalog
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
+      label: 'yes'
+    id: '3'
     ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 0919def7-0b1e-4bb9-8292-a69203453846
-    type: title
+    nexttasks:
+      '#default#':
+      - '5'
+      'yes':
+      - '4'
+    note: false
+    separatecontext: false
     task:
-      id: 0919def7-0b1e-4bb9-8292-a69203453846
+      brand: ''
+      id: 9fcbec3d-651d-4f62-815d-a31f43e8c4cd
+      iscommand: false
+      name: Verify Context Value
+      type: condition
       version: -1
+    taskid: 9fcbec3d-651d-4f62-815d-a31f43e8c4cd
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 0919def7-0b1e-4bb9-8292-a69203453846
+      iscommand: false
       name: Query was done successfully
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 735
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 0b7ef8b5-31c2-41e6-88d6-8c48c8eff3bc
-    type: regular
-    task:
-      id: 0b7ef8b5-31c2-41e6-88d6-8c48c8eff3bc
       version: -1
-      name: Context was not found
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: 0919def7-0b1e-4bb9-8292-a69203453846
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 735\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
+    note: false
     scriptarguments:
       message:
         simple: Query failed due to reasons
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 60,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "7":
-    id: "7"
-    taskid: 388dd168-11c2-44a0-8a09-c23df78d228a
-    type: condition
     task:
-      id: 388dd168-11c2-44a0-8a09-c23df78d228a
-      version: -1
-      name: Check if main keys exist in context
-      type: condition
+      brand: ''
+      id: 0b7ef8b5-31c2-41e6-88d6-8c48c8eff3bc
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "4"
-    separatecontext: false
+      name: Context was not found
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 0b7ef8b5-31c2-41e6-88d6-8c48c8eff3bc
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 60,\n    \"y\": 720\n  }\n}"
+  '7':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: Vertica.Query
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: Vertica.Row
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 500,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
+          operator: isExists
+      label: 'yes'
+    id: '7'
     ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 765,
-        "width": 830,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    nexttasks:
+      '#default#':
+      - '5'
+      'yes':
+      - '4'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 388dd168-11c2-44a0-8a09-c23df78d228a
+      iscommand: false
+      name: Check if main keys exist in context
+      type: condition
+      version: -1
+    taskid: 388dd168-11c2-44a0-8a09-c23df78d228a
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 500,\n    \"y\": 545\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 765,\n      \"width\": 830,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

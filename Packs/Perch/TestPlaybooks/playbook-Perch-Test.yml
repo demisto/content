@@ -1,48 +1,34 @@
 id: Perch-Test
-version: -1
+inputs: []
 name: Perch-Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 36ada72a-053d-4de3-80ec-d73c44802f29
-    type: start
-    task:
-      id: 36ada72a-053d-4de3-80ec-d73c44802f29
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: 3341e946-ba8d-4a66-87a3-d3c1500594a3
-    type: regular
-    task:
-      id: 3341e946-ba8d-4a66-87a3-d3c1500594a3
-      version: -1
-      name: perch-search-alerts
-      description: Searches for Alerts in Perch.
-      script: Perch|||perch-search-alerts
-      type: regular
-      iscommand: true
-      brand: Perch
     nexttasks:
       '#none#':
-      - "2"
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 36ada72a-053d-4de3-80ec-d73c44802f29
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 36ada72a-053d-4de3-80ec-d73c44802f29
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
     scriptarguments:
       closed: {}
       closed_at: {}
@@ -58,7 +44,7 @@ tasks:
       ordering: {}
       page: {}
       page_size:
-        simple: "3"
+        simple: '3'
       protocol: {}
       sensor_id: {}
       sensor_name: {}
@@ -71,51 +57,39 @@ tasks:
       title: {}
       ts: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 230
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: de45714d-8af3-489f-8069-7b410bd927be
-    type: regular
     task:
-      id: de45714d-8af3-489f-8069-7b410bd927be
+      brand: Perch
+      description: Searches for Alerts in Perch.
+      id: 3341e946-ba8d-4a66-87a3-d3c1500594a3
+      iscommand: true
+      name: perch-search-alerts
+      script: Perch|||perch-search-alerts
+      type: regular
       version: -1
-      name: perch-list-communities
+    taskid: 3341e946-ba8d-4a66-87a3-d3c1500594a3
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: Perch
       description: Lists all communities.
+      id: de45714d-8af3-489f-8069-7b410bd927be
+      iscommand: true
+      name: perch-list-communities
       script: Perch|||perch-list-communities
       type: regular
-      iscommand: true
-      brand: Perch
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 410
-        }
-      }
-    note: false
+      version: -1
+    taskid: de45714d-8af3-489f-8069-7b410bd927be
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 455,
-        "width": 380,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 410\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 455,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n\
+  \    }\n  }\n}"

@@ -1,39 +1,29 @@
+args:
+- description: Immutable ID of the role assignment.
+  name: roleAssignmentId
+  required: true
+comment: Deletes a role assignment.
 commonfields:
   id: GoogleappsRevokeUserRole
   version: -1
-name: GoogleappsRevokeUserRole
-script: |2
-
-  import re
-
-  args = demisto.args()
-  for key in args.keys():
-      args[re.sub(r'([A-Z])',lambda x:'-'+x.group(1).lower(),key)] = args.pop(key)
-  resp = demisto.executeCommand("googleapps-revoke-user-role", args)
-
-  if isError(resp[0]):
-      demisto.results(resp)
-  else:
-      data = demisto.get(resp[0], "Contents")
-      if data:
-          data = data if isinstance(data, list) else [data]
-          data = [{k: formatCell(row[k]) for k in row} for row in data]
-          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
-      else:
-          demisto.results("No results.")
-type: python
-subtype: python2
-tags:
-- google apps
-comment: Deletes a role assignment.
-system: true
-deprecated: true
-args:
-- name: roleAssignmentId
-  required: true
-  description: Immutable ID of the role assignment.
-scripttarget: 0
 dependson:
   must:
   - googleapps-revoke-user-role
+deprecated: true
+name: GoogleappsRevokeUserRole
+script: "\nimport re\n\nargs = demisto.args()\nfor key in args.keys():\n    args[re.sub(r'([A-Z])',lambda\
+  \ x:'-'+x.group(1).lower(),key)] = args.pop(key)\nresp = demisto.executeCommand(\"\
+  googleapps-revoke-user-role\", args)\n\nif isError(resp[0]):\n    demisto.results(resp)\n\
+  else:\n    data = demisto.get(resp[0], \"Contents\")\n    if data:\n        data\
+  \ = data if isinstance(data, list) else [data]\n        data = [{k: formatCell(row[k])\
+  \ for k in row} for row in data]\n        demisto.results({\"ContentsFormat\": formats[\"\
+  table\"], \"Type\": entryTypes[\"note\"], \"Contents\": data} )\n    else:\n   \
+  \     demisto.results(\"No results.\")\n"
+scripttarget: 0
+subtype: python2
+system: true
+tags:
+- google apps
 timeout: 0s
+toversion: 4.1.9
+type: python

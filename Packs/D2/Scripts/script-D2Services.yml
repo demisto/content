@@ -1,34 +1,21 @@
+comment: Show system services
 commonfields:
   id: D2Services
   version: -1
+dependson: {}
 name: D2Services
-script: |-
-  function servicesLinux() {
-    packOutput('service --status-all');
-  }
-  function servicesDarwin() {
-    packOutput('launchctl list');
-  }
-  function servicesWindows() {
-    pack(wmi_query('select Name,Description,PathName,StartMode,ProcessId,State,StartName from Win32_Service'), 'table');
-  }
-  try {
-    if (env.OS === 'windows') {
-      servicesWindows();
-    } else if (env.OS === 'linux') {
-      servicesLinux();
-    } else {
-      servicesDarwin();
-    }
-  } catch (ex) {
-    pack('Error: ' + ex);
-  }
-type: javascript
+script: "function servicesLinux() {\n  packOutput('service --status-all');\n}\nfunction\
+  \ servicesDarwin() {\n  packOutput('launchctl list');\n}\nfunction servicesWindows()\
+  \ {\n  pack(wmi_query('select Name,Description,PathName,StartMode,ProcessId,State,StartName\
+  \ from Win32_Service'), 'table');\n}\ntry {\n  if (env.OS === 'windows') {\n   \
+  \ servicesWindows();\n  } else if (env.OS === 'linux') {\n    servicesLinux();\n\
+  \  } else {\n    servicesDarwin();\n  }\n} catch (ex) {\n  pack('Error: ' + ex);\n\
+  }"
+scripttarget: 1
+system: true
 tags:
 - agent
 - endpoint
-comment: Show system services
-system: true
-scripttarget: 1
-dependson: {}
 timeout: 0s
+toversion: 4.1.9
+type: javascript

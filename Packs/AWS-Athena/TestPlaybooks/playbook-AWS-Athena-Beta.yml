@@ -1,45 +1,31 @@
 id: Beta-Athena-Test
-version: -1
+inputs: []
 name: Beta-Athena-Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: c8fef65f-4455-4504-8743-1bbea18b650b
-    type: start
-    task:
-      id: c8fef65f-4455-4504-8743-1bbea18b650b
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
+      - '1'
     note: false
-    timertriggers: []
-    ignoreworker: false
-  "1":
-    id: "1"
-    taskid: c5a4913a-9bfe-44f8-8ae7-242e5866d8ce
-    type: regular
+    separatecontext: false
     task:
-      id: c5a4913a-9bfe-44f8-8ae7-242e5866d8ce
+      brand: ''
+      id: c8fef65f-4455-4504-8743-1bbea18b650b
+      iscommand: false
+      name: ''
       version: -1
-      name: aws-athena-start-query
-      description: Start Athena Query.
-      script: '|||aws-athena-start-query'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: c8fef65f-4455-4504-8743-1bbea18b650b
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    note: false
     scriptarguments:
       ClientRequestToken: {}
       Database: {}
@@ -48,43 +34,30 @@ tasks:
       OutputLocation:
         simple: s3://aws-athena-query-results-120785635586-us-east-2.unknown
       QueryString:
-        simple: |-
-          SELECT
-           request_timestamp,
-           elb_name,
-           backend_ip,
-           backend_response_code
-          FROM elb_logs
-          WHERE backend_response_code LIKE '4%' OR
-                backend_response_code LIKE '5%'
-          LIMIT 100;
+        simple: "SELECT\n request_timestamp,\n elb_name,\n backend_ip,\n backend_response_code\n\
+          FROM elb_logs\nWHERE backend_response_code LIKE '4%' OR\n      backend_response_code\
+          \ LIKE '5%'\nLIMIT 100;"
       WorkGroup: {}
       region: {}
       roleArn: {}
       roleSessionDuration: {}
       roleSessionName: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 230
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      description: Start Athena Query.
+      id: c5a4913a-9bfe-44f8-8ae7-242e5866d8ce
+      iscommand: true
+      name: aws-athena-start-query
+      script: '|||aws-athena-start-query'
+      type: regular
+      version: -1
+    taskid: c5a4913a-9bfe-44f8-8ae7-242e5866d8ce
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 275,
-        "width": 380,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 275,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n\
+  \    }\n  }\n}"

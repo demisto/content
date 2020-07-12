@@ -11,9 +11,9 @@ configuration:
   name: useProxy
   required: false
   type: 8
+deprecated: true
 description: Analyzes suspicious domains and IP addresses
 display: Cymon (Deprecated)
-deprecated: true
 name: Cymon
 script:
   commands:
@@ -109,7 +109,8 @@ script:
   isfetch: false
   runonce: false
   script: ''
-  type: python
   subtype: python2
+  type: python
 tests:
-  - No tests
+- No tests
+toversion: 4.1.9

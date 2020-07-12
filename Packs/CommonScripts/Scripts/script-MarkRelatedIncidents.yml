@@ -1,38 +1,31 @@
+args:
+- default: true
+  description: The list of related incident IDs we want to mark
+  isArray: true
+  name: related
+  required: true
+comment: Marks given incidents as related to current incident
 commonfields:
   id: MarkRelatedIncidents
   version: -1
+enabled: true
 name: MarkRelatedIncidents
-script: |
-  var related = argToList(args.related);
-  var openIncidents = [];
-  var md = '### Related incidents found\n';
-  for (var i=0; i<related.length; i++) {
-      var incidentDetails = executeCommand('getIncidents', {id: related[i]});
-      if (isValidRes(incidentDetails)) {
-          md += '- ' + incidentDetails[0].Contents.data[0].name + ' [' + related[i] + '](/#/Details/' + related[i] + ')\n';
-      }
-      if (incidentDetails[0].Contents.data[0].status === 0 || incidentDetails[0].Contents.data[0].status === 1) {
-          openIncidents.push(related[i]);
-      }
-  }
-  var entry = {Type: entryTypes.note, Contents: related, ContentsFormat: formats.json,
-      HumanReadable: '### Related incident found\n- ' + incidents[0].name + ' [' + incidents[0].id + '](/#/Details/' + incidents[0].id + ')\n', Note: true};
-  var entryJson = JSON.stringify([entry]);
-  for (var i=0; i<openIncidents.length; i++) {
-      executeCommand('addEntries', {id: openIncidents[i], entries: entryJson});
-  }
-
-  return {Type: entryTypes.note, Contents: related, ContentsFormat: formats.json, HumanReadable: md, Note: true};
-type: javascript
+script: "var related = argToList(args.related);\nvar openIncidents = [];\nvar md =\
+  \ '### Related incidents found\\n';\nfor (var i=0; i<related.length; i++) {\n  \
+  \  var incidentDetails = executeCommand('getIncidents', {id: related[i]});\n   \
+  \ if (isValidRes(incidentDetails)) {\n        md += '- ' + incidentDetails[0].Contents.data[0].name\
+  \ + ' [' + related[i] + '](/#/Details/' + related[i] + ')\\n';\n    }\n    if (incidentDetails[0].Contents.data[0].status\
+  \ === 0 || incidentDetails[0].Contents.data[0].status === 1) {\n        openIncidents.push(related[i]);\n\
+  \    }\n}\nvar entry = {Type: entryTypes.note, Contents: related, ContentsFormat:\
+  \ formats.json,\n    HumanReadable: '### Related incident found\\n- ' + incidents[0].name\
+  \ + ' [' + incidents[0].id + '](/#/Details/' + incidents[0].id + ')\\n', Note: true};\n\
+  var entryJson = JSON.stringify([entry]);\nfor (var i=0; i<openIncidents.length;\
+  \ i++) {\n    executeCommand('addEntries', {id: openIncidents[i], entries: entryJson});\n\
+  }\n\nreturn {Type: entryTypes.note, Contents: related, ContentsFormat: formats.json,\
+  \ HumanReadable: md, Note: true};\n"
+scripttarget: 0
+system: true
 tags:
 - Utility
-comment: Marks given incidents as related to current incident
-enabled: true
-system: true
-args:
-- name: related
-  required: true
-  default: true
-  description: The list of related incident IDs we want to mark
-  isArray: true
-scripttarget: 0
+toversion: 4.1.9
+type: javascript

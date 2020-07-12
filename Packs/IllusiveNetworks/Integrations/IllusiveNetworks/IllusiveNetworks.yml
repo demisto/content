@@ -45,6 +45,8 @@ configuration:
   - ALL
   required: true
   type: 15
+defaultClassifier: Illusive Networks
+defaultMapperIn: Illusive Networks-mapper
 description: The Illusive Attack Management API allows customers to retrieve detected
   incidents with a forensics timeline, attack surface insights, collect forensics
   on-demand, and manage a variety of operations with regard to deceptive entities,
@@ -354,9 +356,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: |-
-        List of hosts to assign, in the following format: machine@domain.
-        Maximum number of hosts is 1000.
+      description: 'List of hosts to assign, in the following format: machine@domain.
+
+        Maximum number of hosts is 1000.'
       isArray: false
       name: hosts
       required: true
@@ -367,9 +369,10 @@ script:
     name: illusive-assign-host-to-policy
   - arguments:
     - default: false
-      description: |-
-        List of hosts to remove policy assignment from, in the following format: machine@domain.
-        Maximum number of hosts is 1000
+      description: 'List of hosts to remove policy assignment from, in the following
+        format: machine@domain.
+
+        Maximum number of hosts is 1000'
       isArray: false
       name: hosts
       required: true
@@ -396,9 +399,12 @@ script:
       type: String
   - arguments:
     - default: false
-      description: |
-        The desired incident ID to retrieve.
-        If specified - other arguments are ignored and only a single incident can be retrieved
+      description: 'The desired incident ID to retrieve.
+
+        If specified - other arguments are ignored and only a single incident can
+        be retrieved
+
+        '
       isArray: false
       name: incident_id
       required: false
@@ -420,9 +426,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Use offset and limit for pagination.
-        The maximum limit is 100.
+      description: 'Use offset and limit for pagination.
+
+        The maximum limit is 100.'
       isArray: false
       name: limit
       required: false
@@ -448,10 +454,11 @@ script:
       description: Whether the incident has been closed
       type: Boolean
     - contextPath: Illusive.Incident.deceptionFamilies
-      description: |-
-        The deception families of the
+      description: 'The deception families of the
+
         deceptions used to trigger
-        the incident
+
+        the incident'
       type: String
     - contextPath: Illusive.Incident.flagged
       description: Whether the incident has been flagged
@@ -527,5 +534,4 @@ script:
   type: python
 tests:
 - No tests
-defaultClassifier: Illusive Networks
-defaultMapperIn: Illusive Networks-mapper
+toversion: 4.1.9

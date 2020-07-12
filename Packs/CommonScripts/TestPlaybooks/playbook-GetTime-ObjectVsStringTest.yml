@@ -1,91 +1,71 @@
-id: GetTime-ObjectVsStringTest
-version: -1
 contentitemfields:
   propagationLabels: []
+id: GetTime-ObjectVsStringTest
+inputs: []
 name: GetTime-ObjectVsStringTest
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 4db4b6ad-d9bd-47bb-8f34-207af8618710
-    type: start
-    task:
-      id: 4db4b6ad-d9bd-47bb-8f34-207af8618710
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    id: '0'
     ignoreworker: false
-    skipunavailable: false
-  "1":
-    id: "1"
-    taskid: f4738999-6022-4f49-8de5-8d946166a032
-    type: regular
-    task:
-      id: f4738999-6022-4f49-8de5-8d946166a032
-      version: -1
-      name: GetTime - Object
-      description: |
-        Retrieves the current date and time.
-      scriptName: GetTime
-      type: regular
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - '7'
+    note: false
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 4db4b6ad-d9bd-47bb-8f34-207af8618710
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 4db4b6ad-d9bd-47bb-8f34-207af8618710
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
     scriptarguments:
       contextKey: {}
       date:
         complex:
-          root: incident
           accessor: occurred
+          root: incident
       dateFormat: {}
       hoursAgo: {}
       minutesAgo: {}
       monthsAgo: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-  "3":
-    id: "3"
-    taskid: 1d4a734d-3180-47cc-862a-f6ebdcd97f8f
-    type: regular
     task:
-      id: 1d4a734d-3180-47cc-862a-f6ebdcd97f8f
-      version: -1
-      name: GetTime - Time
-      description: |
-        Retrieves the current date and time.
+      brand: ''
+      description: 'Retrieves the current date and time.
+
+        '
+      id: f4738999-6022-4f49-8de5-8d946166a032
+      iscommand: false
+      name: GetTime - Object
       scriptName: GetTime
       type: regular
-      iscommand: false
-      brand: ""
+      version: -1
+    taskid: f4738999-6022-4f49-8de5-8d946166a032
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
+    note: false
     scriptarguments:
       contextKey: {}
       date:
@@ -96,137 +76,115 @@ tasks:
       minutesAgo: {}
       monthsAgo: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-  "4":
-    id: "4"
-    taskid: 2fa8b7cb-5a26-448b-805f-1658fc5ea3ce
-    type: condition
     task:
-      id: 2fa8b7cb-5a26-448b-805f-1658fc5ea3ce
-      version: -1
-      name: Verify Get Time - Object
-      type: condition
+      brand: ''
+      description: 'Retrieves the current date and time.
+
+        '
+      id: 1d4a734d-3180-47cc-862a-f6ebdcd97f8f
       iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "5"
-    separatecontext: false
+      name: GetTime - Time
+      scriptName: GetTime
+      type: regular
+      version: -1
+    taskid: 1d4a734d-3180-47cc-862a-f6ebdcd97f8f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '4':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
                 root: TimeNow
                 transformers:
-                - operator: atIndex
-                  args:
+                - args:
                     index:
                       value:
-                        simple: "0"
-            iscontext: true
+                        simple: '0'
+                  operator: atIndex
+          operator: isEqualString
           right:
+            iscontext: true
             value:
               complex:
                 root: time_str
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
+      label: 'yes'
+    id: '4'
     ignoreworker: false
+    nexttasks:
+      'yes':
+      - '5'
+    note: false
+    separatecontext: false
     skipunavailable: false
-  "5":
-    id: "5"
-    taskid: 14cd909a-e961-4ed1-853d-e90ca58f869d
-    type: title
     task:
-      id: 14cd909a-e961-4ed1-853d-e90ca58f869d
+      brand: ''
+      id: 2fa8b7cb-5a26-448b-805f-1658fc5ea3ce
+      iscommand: false
+      name: Verify Get Time - Object
+      type: condition
       version: -1
+    taskid: 2fa8b7cb-5a26-448b-805f-1658fc5ea3ce
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 14cd909a-e961-4ed1-853d-e90ca58f869d
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  "7":
-    id: "7"
-    taskid: 317589e3-4237-4bf6-831a-f18d35d4fb98
-    type: regular
-    task:
-      id: 317589e3-4237-4bf6-831a-f18d35d4fb98
       version: -1
-      name: Delete Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: 14cd909a-e961-4ed1-853d-e90ca58f869d
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+  '7':
+    id: '7'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-  "8":
-    id: "8"
-    taskid: 1a43f9fe-421c-47c0-8834-9ab6b10f39b9
-    type: regular
     task:
-      id: 1a43f9fe-421c-47c0-8834-9ab6b10f39b9
-      version: -1
-      name: Set Time As Str
-      description: Sets a value into the context with the given context key
-      scriptName: Set
-      type: regular
+      brand: ''
+      description: Delete field from context
+      id: 317589e3-4237-4bf6-831a-f18d35d4fb98
       iscommand: false
-      brand: ""
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 317589e3-4237-4bf6-831a-f18d35d4fb98
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '8':
+    id: '8'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    note: false
     scriptarguments:
       append: {}
       key:
@@ -235,28 +193,22 @@ tasks:
         complex:
           root: TimeNow
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1085,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    task:
+      brand: ''
+      description: Sets a value into the context with the given context key
+      id: 1a43f9fe-421c-47c0-8834-9ab6b10f39b9
+      iscommand: false
+      name: Set Time As Str
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 1a43f9fe-421c-47c0-8834-9ab6b10f39b9
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1085,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

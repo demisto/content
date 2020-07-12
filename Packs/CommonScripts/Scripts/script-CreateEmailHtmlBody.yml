@@ -1,112 +1,80 @@
+args:
+- default: true
+  description: The list where the template is stored
+  name: listTemplate
+  required: true
+- description: Context key to store the HTML body
+  name: key
+  required: true
+- description: Values object provided as stringified JSON
+  isArray: true
+  name: object
+- auto: PREDEFINED
+  defaultValue: 'no'
+  description: if true, replace path not found with empty string, otherwise leave
+    as is
+  name: removeNotFound
+  predefined:
+  - 'yes'
+  - 'no'
+comment: 'This script allows sending an HTML email, using a template stored as a list
+  item under Lists (Settings -> Advanced -> Lists).
+
+  Placeholders are marked in DT format (i.e. ${incident.id} for incident ID).
+
+  Available placeholders for example:
+
+  - ${incident.labels.Email/from}
+
+  - ${incident.name}
+
+  - ${object.value}
+
+  See incident Context Data menu for available placeholders
+
+
+  Note: Sending emails require an active  Mail Sender integration instance.'
 commonfields:
   id: CreateEmailHtmlBody
   version: -1
-name: CreateEmailHtmlBody
-script: |
-  //replace all occurences of textToReplace with replaceWith string
-  String.prototype.replaceAll = function(textToReplace,replaceWith) {
-      return this.split(textToReplace).join(replaceWith);
-  };
-
-  // get a specific label from incident labels
-  var getLabel = function(incident,path) {
-      label = path.split('.')[2];
-      for (var i=0; i<incident.labels.length; i++) {
-          if (incident.labels[i].type == label) {
-              return incident.labels[i].value;
-          }
-      }
-      return null;
-  };
-
-  var res = executeCommand("getList", {"listName": args.listTemplate});
-
-  if (res[0].Type == entryTypes.error) {
-      return res;
-  }
-
-  // Finding all placeholders and creating a map with values
-  var html = res[0].Contents;
-  var reg = /\${(.+?)}/g;
-  var map = {};
-
-  while (found = reg.exec(html)) {
-      var path = found[1];
-
-      if (path.indexOf('incident.labels.') === 0) {
-          map[path] = getLabel(incidents[0], path);
-      } else if (path.indexOf('incident.') === 0) {
-          map[path] = dq({'incident': incidents[0]}, path);
-          // check if this path is actually in custom fields
-          if (!map[path]) {
-              var customFieldPath = path.replace('incident.', 'incident.CustomFields.');
-              map[path] = dq({'incident': incidents[0]}, customFieldPath);
-          }
-      } else if (path.indexOf('object.') === 0) {
-          var obj = (typeof args.object === 'string') ? JSON.parse(args.object) : args.object;
-          map[path] = dq({'object': obj}, path);
-      } else {
-          map[path] = dq(invContext, path);
-      }
-  }
-
-  // replacing all placeholders with values
-  for (var path in map) {
-      // if value found replace. Otherwise will leave placeholder
-      if (map[path]) {
-          html = html.replaceAll('${' + path + '}', map[path]);
-      } else if (args.removeNotFound === 'yes') {
-          html = html.replaceAll('${' + path + '}', '');
-      }
-  }
-
-  // setting to contesxt so it override an oder entry if there is (using EntryContext in the returned object only append)
-  setContext(args.key,html);
-
-  return {
-      ContentsFormat: formats.json,
-      Type: entryTypes.note,
-      Contents: {htmlBody: html},
-      HumanReadable: 'htmlBody set to context key ' + args.key
-  };
-type: javascript
-tags:
-- email
-- communication
-comment: |-
-  This script allows sending an HTML email, using a template stored as a list item under Lists (Settings -> Advanced -> Lists).
-  Placeholders are marked in DT format (i.e. ${incident.id} for incident ID).
-  Available placeholders for example:
-  - ${incident.labels.Email/from}
-  - ${incident.name}
-  - ${object.value}
-  See incident Context Data menu for available placeholders
-
-  Note: Sending emails require an active  Mail Sender integration instance.
 enabled: true
-args:
-- name: listTemplate
-  required: true
-  default: true
-  description: The list where the template is stored
-- name: key
-  required: true
-  description: Context key to store the HTML body
-- name: object
-  description: Values object provided as stringified JSON
-  isArray: true
-- name: removeNotFound
-  auto: PREDEFINED
-  predefined:
-  - "yes"
-  - "no"
-  description: if true, replace path not found with empty string, otherwise leave
-    as is
-  defaultValue: "no"
+name: CreateEmailHtmlBody
 outputs:
 - contextPath: htmlBody
   description: HTML Body
-scripttarget: 0
 runonce: false
+script: "//replace all occurences of textToReplace with replaceWith string\nString.prototype.replaceAll\
+  \ = function(textToReplace,replaceWith) {\n    return this.split(textToReplace).join(replaceWith);\n\
+  };\n\n// get a specific label from incident labels\nvar getLabel = function(incident,path)\
+  \ {\n    label = path.split('.')[2];\n    for (var i=0; i<incident.labels.length;\
+  \ i++) {\n        if (incident.labels[i].type == label) {\n            return incident.labels[i].value;\n\
+  \        }\n    }\n    return null;\n};\n\nvar res = executeCommand(\"getList\"\
+  , {\"listName\": args.listTemplate});\n\nif (res[0].Type == entryTypes.error) {\n\
+  \    return res;\n}\n\n// Finding all placeholders and creating a map with values\n\
+  var html = res[0].Contents;\nvar reg = /\\${(.+?)}/g;\nvar map = {};\n\nwhile (found\
+  \ = reg.exec(html)) {\n    var path = found[1];\n\n    if (path.indexOf('incident.labels.')\
+  \ === 0) {\n        map[path] = getLabel(incidents[0], path);\n    } else if (path.indexOf('incident.')\
+  \ === 0) {\n        map[path] = dq({'incident': incidents[0]}, path);\n        //\
+  \ check if this path is actually in custom fields\n        if (!map[path]) {\n \
+  \           var customFieldPath = path.replace('incident.', 'incident.CustomFields.');\n\
+  \            map[path] = dq({'incident': incidents[0]}, customFieldPath);\n    \
+  \    }\n    } else if (path.indexOf('object.') === 0) {\n        var obj = (typeof\
+  \ args.object === 'string') ? JSON.parse(args.object) : args.object;\n        map[path]\
+  \ = dq({'object': obj}, path);\n    } else {\n        map[path] = dq(invContext,\
+  \ path);\n    }\n}\n\n// replacing all placeholders with values\nfor (var path in\
+  \ map) {\n    // if value found replace. Otherwise will leave placeholder\n    if\
+  \ (map[path]) {\n        html = html.replaceAll('${' + path + '}', map[path]);\n\
+  \    } else if (args.removeNotFound === 'yes') {\n        html = html.replaceAll('${'\
+  \ + path + '}', '');\n    }\n}\n\n// setting to contesxt so it override an oder\
+  \ entry if there is (using EntryContext in the returned object only append)\nsetContext(args.key,html);\n\
+  \nreturn {\n    ContentsFormat: formats.json,\n    Type: entryTypes.note,\n    Contents:\
+  \ {htmlBody: html},\n    HumanReadable: 'htmlBody set to context key ' + args.key\n\
+  };\n"
+scripttarget: 0
+tags:
+- email
+- communication
 tests:
 - CreateEmailHtmlBody_test_pb
+toversion: 4.1.9
+type: javascript

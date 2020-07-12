@@ -1,32 +1,19 @@
+comment: ''
 commonfields:
   id: file_command_enrichment_test_script_helper
   version: -1
+enabled: true
 name: file_command_enrichment_test_script_helper
-script: |
-  # A17 flight plan pdf file
-  hashes_dict = {
-      'MD5': '8cbf90aeab2c93b2819fcfd6262b2cdb',
-      'SHA1': '74eb807ea392650562b43a0e326e5d14b86f43ce',
-      'SHA256': 'fa5953e0c34a4bbf69ac31f3a1360024101c1232bb45cccaad3611b682c92387'
-  }
-
-  result = {
-      'Type': entryTypes['note'],
-      'ContentsFormat': formats['json'],
-      'Contents': hashes_dict,
-      'ReadableContentsFormat': formats['markdown'],
-      'HumanReadable': tableToMarkdown('A17 flight plan hashes',hashes_dict),
-      'EntryContext': {
-          'HashesTest': hashes_dict
-      }
-  }
-
-  demisto.results(result)
-type: python
+runas: DBotWeakRole
+runonce: false
+script: "# A17 flight plan pdf file\nhashes_dict = {\n    'MD5': '8cbf90aeab2c93b2819fcfd6262b2cdb',\n\
+  \    'SHA1': '74eb807ea392650562b43a0e326e5d14b86f43ce',\n    'SHA256': 'fa5953e0c34a4bbf69ac31f3a1360024101c1232bb45cccaad3611b682c92387'\n\
+  }\n\nresult = {\n    'Type': entryTypes['note'],\n    'ContentsFormat': formats['json'],\n\
+  \    'Contents': hashes_dict,\n    'ReadableContentsFormat': formats['markdown'],\n\
+  \    'HumanReadable': tableToMarkdown('A17 flight plan hashes',hashes_dict),\n \
+  \   'EntryContext': {\n        'HashesTest': hashes_dict\n    }\n}\n\ndemisto.results(result)\n"
+scripttarget: 0
 subtype: python2
 tags: []
-enabled: true
-scripttarget: 0
-runonce: false
-comment: ''
-runas: DBotWeakRole
+toversion: 4.1.9
+type: python

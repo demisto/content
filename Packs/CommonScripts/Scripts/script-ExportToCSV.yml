@@ -1,135 +1,69 @@
+args:
+- default: true
+  description: output filename
+  name: fileName
+  required: true
+- description: Array to export
+  isArray: true
+  name: csvArray
+  required: true
+- description: Array to hold the file headers in order.  Also excepts a comma separated
+    list.
+  isArray: true
+  name: headers
+comment: Export given array to csv file
 commonfields:
   id: ExportToCSV
   version: -1
+enabled: true
 name: ExportToCSV
-script: |-
-  function valueToValidString(value) {
-      if (typeof value === 'number' || typeof value === 'boolean' ) {
-          value = value.toString();
-      }
-      else if (typeof value === 'object') {
-          value = JSON.stringify(value);
-      }
-      value = value.trim().replace(/\n/g, '\\n').replace(/"/g, '""');
-      if (value && value.indexOf(',') > -1) {
-          value = '"' + value + '"';
-      }
-      return value;
-  }
-
-  function extractHeaders(objArray) {
-      var headersInOrder = [];
-      var headers = {};
-      for(var i = 0; i < objArray.length; i++){
-          var objHeaders = Object.keys(objArray[i]);
-          for(var j = 0; j < objHeaders.length; j++){
-              header = objHeaders[j];
-              if (!headers.hasOwnProperty(objHeaders[j])) {
-                  headersInOrder.push(objHeaders[j]);
-                  // maintain a map to enable quick check if the header was added before
-                  headers[header] = '';
-              }
-          }
-      }
-
-      return headersInOrder;
-  }
-
-  function convertToCSV(objArray, headers) {
-      // if objArray is an array of strings then return a single line of values
-      if (typeof objArray[0] !== 'object') {
-          // add headrs line
-          if (headers && headers.length >= objArray.length){
-              headers = headers.slice(0, objArray.length);
-              return headers.join() + '\n' + objArray.join();
-          }
-          return objArray.join();
-      }
-      // create file headers
-      if (!headers) {
-          headers = extractHeaders(objArray);
-      }
-      // collect values into rows
-      var rows = [];
-
-      for(var i = 0; i < objArray.length; i++){
-          obj = objArray[i];
-          if (typeof obj !== 'object') {
-              throw "Array contains '" + typeof obj + "' member: '" + obj + "'" ;
-          }
-          var row = [];
-          // loop on headersInOrder to extract values from the object and add to 'row' to match headers order.
-          for(var j = 0; j < headers.length; j++){
-              header = headers[j];
-              var value = '';
-              if (obj.hasOwnProperty(header)) {
-                  value = valueToValidString(obj[header]);
-              }
-              row.push(value);
-          }
-          rows.push(row);
-      }
-
-      // create file content
-      var fileContent = headers.join() + '\r';
-      for (var i = 0; i < rows.length;  i++) {
-          var line = rows[i].join();
-          fileContent += '\n' + line ;
-      }
-      return fileContent;
-  }
-
-  // string was passed as input
-  if (typeof args.csvArray === 'string') {
-      // add array brackets if missing from string
-      args.csvArray = args.csvArray[0] == '[' ? args.csvArray : '[' + args.csvArray + ']'
-      // try to parse string to json
-      try {
-          args.csvArray = JSON.parse(args.csvArray);
-      } catch (err) {
-          return {
-              Type: entryTypes.error,
-              ContentFormat: formats.text,
-              Contents: 'The csvArray that was passed was not array!'
-          };
-      }
-  }
-  // json object passed as input
-  if (!Array.isArray(args.csvArray)) {
-      //wrap in an array
-      args.csvArray = [args.csvArray];
-  }
-  if (args.headers && !Array.isArray(args.headers)){
-      args.headers = args.headers.split(',');
-  }
-
-  var csvString = convertToCSV(args.csvArray, args.headers);
-  var createdFileID = saveFile(csvString);
-
-  return {
-      Type: 3,
-      FileID: createdFileID,
-      File: args.fileName,
-      Contents: args.fileName
-  };
-type: javascript
+runonce: false
+script: "function valueToValidString(value) {\n    if (typeof value === 'number' ||\
+  \ typeof value === 'boolean' ) {\n        value = value.toString();\n    }\n   \
+  \ else if (typeof value === 'object') {\n        value = JSON.stringify(value);\n\
+  \    }\n    value = value.trim().replace(/\\n/g, '\\\\n').replace(/\"/g, '\"\"');\n\
+  \    if (value && value.indexOf(',') > -1) {\n        value = '\"' + value + '\"\
+  ';\n    }\n    return value;\n}\n\nfunction extractHeaders(objArray) {\n    var\
+  \ headersInOrder = [];\n    var headers = {};\n    for(var i = 0; i < objArray.length;\
+  \ i++){\n        var objHeaders = Object.keys(objArray[i]);\n        for(var j =\
+  \ 0; j < objHeaders.length; j++){\n            header = objHeaders[j];\n       \
+  \     if (!headers.hasOwnProperty(objHeaders[j])) {\n                headersInOrder.push(objHeaders[j]);\n\
+  \                // maintain a map to enable quick check if the header was added\
+  \ before\n                headers[header] = '';\n            }\n        }\n    }\n\
+  \n    return headersInOrder;\n}\n\nfunction convertToCSV(objArray, headers) {\n\
+  \    // if objArray is an array of strings then return a single line of values\n\
+  \    if (typeof objArray[0] !== 'object') {\n        // add headrs line\n      \
+  \  if (headers && headers.length >= objArray.length){\n            headers = headers.slice(0,\
+  \ objArray.length);\n            return headers.join() + '\\n' + objArray.join();\n\
+  \        }\n        return objArray.join();\n    }\n    // create file headers\n\
+  \    if (!headers) {\n        headers = extractHeaders(objArray);\n    }\n    //\
+  \ collect values into rows\n    var rows = [];\n\n    for(var i = 0; i < objArray.length;\
+  \ i++){\n        obj = objArray[i];\n        if (typeof obj !== 'object') {\n  \
+  \          throw \"Array contains '\" + typeof obj + \"' member: '\" + obj + \"\
+  '\" ;\n        }\n        var row = [];\n        // loop on headersInOrder to extract\
+  \ values from the object and add to 'row' to match headers order.\n        for(var\
+  \ j = 0; j < headers.length; j++){\n            header = headers[j];\n         \
+  \   var value = '';\n            if (obj.hasOwnProperty(header)) {\n           \
+  \     value = valueToValidString(obj[header]);\n            }\n            row.push(value);\n\
+  \        }\n        rows.push(row);\n    }\n\n    // create file content\n    var\
+  \ fileContent = headers.join() + '\\r';\n    for (var i = 0; i < rows.length;  i++)\
+  \ {\n        var line = rows[i].join();\n        fileContent += '\\n' + line ;\n\
+  \    }\n    return fileContent;\n}\n\n// string was passed as input\nif (typeof\
+  \ args.csvArray === 'string') {\n    // add array brackets if missing from string\n\
+  \    args.csvArray = args.csvArray[0] == '[' ? args.csvArray : '[' + args.csvArray\
+  \ + ']'\n    // try to parse string to json\n    try {\n        args.csvArray =\
+  \ JSON.parse(args.csvArray);\n    } catch (err) {\n        return {\n          \
+  \  Type: entryTypes.error,\n            ContentFormat: formats.text,\n         \
+  \   Contents: 'The csvArray that was passed was not array!'\n        };\n    }\n\
+  }\n// json object passed as input\nif (!Array.isArray(args.csvArray)) {\n    //wrap\
+  \ in an array\n    args.csvArray = [args.csvArray];\n}\nif (args.headers && !Array.isArray(args.headers)){\n\
+  \    args.headers = args.headers.split(',');\n}\n\nvar csvString = convertToCSV(args.csvArray,\
+  \ args.headers);\nvar createdFileID = saveFile(csvString);\n\nreturn {\n    Type:\
+  \ 3,\n    FileID: createdFileID,\n    File: args.fileName,\n    Contents: args.fileName\n\
+  };"
+scripttarget: 0
 tags:
 - Utility
 - csv
-comment: Export given array to csv file
-enabled: true
-args:
-- name: fileName
-  required: true
-  default: true
-  description: output filename
-- name: csvArray
-  required: true
-  description: Array to export
-  isArray: true
-- name: headers
-  description: Array to hold the file headers in order.  Also excepts a comma separated
-    list.
-  isArray: true
-scripttarget: 0
-runonce: false
+toversion: 4.1.9
+type: javascript

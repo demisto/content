@@ -1,28 +1,33 @@
+args:
+- description: value to perfom the transformation on
+  name: value
+  required: true
+- description: DT expression
+  name: dt
+  required: true
+comment: This automation allows the usage of DT scripts within playbooks transformers
 commonfields:
   id: DT
   version: -1
+enabled: true
 name: DT
-script: |
-  value = demisto.args()["value"]
+runonce: false
+script: 'value = demisto.args()["value"]
+
   dt = demisto.args()["dt"]
 
+
   res = demisto.dt(value, dt)
+
   demisto.results(res)
-type: python
+
+  '
+scripttarget: 0
 subtype: python2
 tags:
 - transformer
 - general
-comment: This automation allows the usage of DT scripts within playbooks transformers
-enabled: true
-args:
-- name: value
-  required: true
-  description: value to perfom the transformation on
-- name: dt
-  required: true
-  description: DT expression
-scripttarget: 0
-runonce: false
 tests:
-  - No tests - script used for testing
+- No tests - script used for testing
+toversion: 4.1.9
+type: python

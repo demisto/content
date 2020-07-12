@@ -1,71 +1,47 @@
+args:
+- default: true
+  description: AV Definitions version to check against.
+  name: requiredavdefversion
+  required: true
+comment: Check if any endpoints are using an AV definition that is not the latest
+  version.
 commonfields:
   id: SEPCheckOutdatedEndpoints
   version: -1
-name: SEPCheckOutdatedEndpoints
-script: |
-  import time
-  def parseSepAvDef(s):
-      import re
-      VERSIONS_REGEX = r'([^ ]*) [^\d]*(\d*)'
-      v = -1.0
-      d = ''
-      try:
-          m = re.match(VERSIONS_REGEX, s)
-          d = m.group(1)
-          v = float(m.group(2))
-          return d, v
-      except Exception as ex:
-          res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                        "Contents": "Error occurred while parsing AV Def version. Exception info:\n" + str(ex) + "\n\nInvalid input:\n" + str(s)})
-          demisto.results(res)
-          sys.exit()
-
-  res = []
-  reqAvDef = demisto.get(demisto.args(), 'requiredavdefversion')
-  strReqDate, reqVer = parseSepAvDef(reqAvDef)
-  reqDate = time.strptime(strReqDate,'%m/%d/%Y')
-
-  resp = demisto.executeCommand('sep-client-content',{})
-  if isError(resp[0]):
-      demisto.results(resp)
-  else:
-      data = demisto.get(resp[0], 'Contents.clientDefStatusList')
-      outdated = []
-
-      for row in data:
-          strRowDate, rowVer = parseSepAvDef(row['version'])
-          rowDate = time.strptime(strRowDate,'%Y-%m-%d')
-          if rowDate < reqDate or rowVer < reqVer:
-              outdated.append(row)
-
-      if outdated:
-          res.append("yes")
-          txtSEPOutdatedVersions = 'Outdated versions found:\n' + '\n'.join(['%d endpoints using version %s'%(row['clientsCount'], row['version']) for row in outdated])
-          demisto.setContext('txtSEPOutdatedVersions', txtSEPOutdatedVersions)
-          md = tblToMd('Outdated endpoints', outdated)
-          res.append({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': md})
-      else:
-          res.append("no")
-          demisto.setContext('txtSEPOutdatedVersions', '')
-          res.append({"Type": entryTypes["note"], "ContentsFormat": formats["text"], "Contents": "All endpoints are up to date."})
-  demisto.results(res)
-type: python
-subtype: python2
-tags:
-- sep
-- symantec
-comment: Check if any endpoints are using an AV definition that is not the latest
-  version.
-system: true
-args:
-- name: requiredavdefversion
-  required: true
-  default: true
-  description: AV Definitions version to check against.
-scripttarget: 0
 dependson:
   must:
   - sep-client-content
-timeout: 0s
+name: SEPCheckOutdatedEndpoints
+script: "import time\ndef parseSepAvDef(s):\n    import re\n    VERSIONS_REGEX = r'([^\
+  \ ]*) [^\\d]*(\\d*)'\n    v = -1.0\n    d = ''\n    try:\n        m = re.match(VERSIONS_REGEX,\
+  \ s)\n        d = m.group(1)\n        v = float(m.group(2))\n        return d, v\n\
+  \    except Exception as ex:\n        res.append({\"Type\": entryTypes[\"error\"\
+  ], \"ContentsFormat\": formats[\"text\"],\n                      \"Contents\": \"\
+  Error occurred while parsing AV Def version. Exception info:\\n\" + str(ex) + \"\
+  \\n\\nInvalid input:\\n\" + str(s)})\n        demisto.results(res)\n        sys.exit()\n\
+  \nres = []\nreqAvDef = demisto.get(demisto.args(), 'requiredavdefversion')\nstrReqDate,\
+  \ reqVer = parseSepAvDef(reqAvDef)\nreqDate = time.strptime(strReqDate,'%m/%d/%Y')\n\
+  \nresp = demisto.executeCommand('sep-client-content',{})\nif isError(resp[0]):\n\
+  \    demisto.results(resp)\nelse:\n    data = demisto.get(resp[0], 'Contents.clientDefStatusList')\n\
+  \    outdated = []\n\n    for row in data:\n        strRowDate, rowVer = parseSepAvDef(row['version'])\n\
+  \        rowDate = time.strptime(strRowDate,'%Y-%m-%d')\n        if rowDate < reqDate\
+  \ or rowVer < reqVer:\n            outdated.append(row)\n\n    if outdated:\n  \
+  \      res.append(\"yes\")\n        txtSEPOutdatedVersions = 'Outdated versions\
+  \ found:\\n' + '\\n'.join(['%d endpoints using version %s'%(row['clientsCount'],\
+  \ row['version']) for row in outdated])\n        demisto.setContext('txtSEPOutdatedVersions',\
+  \ txtSEPOutdatedVersions)\n        md = tblToMd('Outdated endpoints', outdated)\n\
+  \        res.append({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'],\
+  \ 'Contents': md})\n    else:\n        res.append(\"no\")\n        demisto.setContext('txtSEPOutdatedVersions',\
+  \ '')\n        res.append({\"Type\": entryTypes[\"note\"], \"ContentsFormat\": formats[\"\
+  text\"], \"Contents\": \"All endpoints are up to date.\"})\ndemisto.results(res)\n"
+scripttarget: 0
+subtype: python2
+system: true
+tags:
+- sep
+- symantec
 tests:
-  - No test - postpone for later
+- No test - postpone for later
+timeout: 0s
+toversion: 4.1.9
+type: python

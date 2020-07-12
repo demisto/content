@@ -40,17 +40,18 @@ comment: Get emails from multiple folders of an account all at once.
 commonfields:
   id: GetEWSFolder
   version: -1
+dockerimage: demisto/python3:3.7.5.4328
 enabled: true
 name: GetEWSFolder
+runas: DBotWeakRole
+runonce: false
 script: '-'
 subtype: python2
 system: false
 tags:
 - ml
-timeout: 6µs
-type: python
-runas: DBotWeakRole
-dockerimage: demisto/python3:3.7.5.4328
-runonce: false
 tests:
 - Get EWS Folder Test
+timeout: "6\xB5s"
+toversion: 4.1.9
+type: python

@@ -60,6 +60,7 @@ comment: Find Security Group rules which allows ::/0 (IPv4) or 0.0.0.0/0.
 commonfields:
   id: AwsEC2GetPublicSGRules
   version: -1
+dockerimage: demisto/python3:3.8.3.8715
 enabled: true
 name: AwsEC2GetPublicSGRules
 outputs:
@@ -84,13 +85,13 @@ outputs:
 - contextPath: AWS.EC2.SecurityGroup.PublicRules.region
   description: Region of the security group
   type: String
+runas: DBotWeakRole
+runonce: false
 script: '-'
+subtype: python3
 system: false
 tags:
 - Amazon Web Services
 timeout: '0'
+toversion: 4.1.9
 type: python
-subtype: python3
-dockerimage: demisto/python3:3.8.3.8715
-runas: DBotWeakRole
-runonce: false

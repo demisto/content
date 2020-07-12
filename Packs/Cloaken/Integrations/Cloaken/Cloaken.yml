@@ -1,42 +1,40 @@
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Cloaken
   version: -1
-name: Cloaken
-display: Cloaken
-category: Data Enrichment & Threat Intelligence
+configuration:
+- defaultvalue: https://cloaken.cypherint.com
+  display: Server URL (e.g., https://cloaken.cypherint.com)
+  name: server_url
+  required: true
+  type: 0
+- defaultvalue: ''
+  display: Username
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: ''
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
 description: Unshorten URLs onsite using the power of a Tor proxy server to prevent
   leaking IP addresses to adversaries.
-configuration:
-- display: Server URL (e.g., https://cloaken.cypherint.com)
-  name: server_url
-  defaultvalue: https://cloaken.cypherint.com
-  type: 0
-  required: true
-- display: Username
-  name: credentials
-  defaultvalue: ""
-  type: 9
-  required: true
-- display: Use system proxy settings
-  name: proxy
-  defaultvalue: ""
-  type: 8
-  required: false
-- display: Trust any certificate (not secure)
-  name: insecure
-  defaultvalue: ""
-  type: 8
-  required: false
+display: Cloaken
+name: Cloaken
 script:
-  script: ''
-  type: python
-  subtype: python3
   commands:
-  - name: cloaken-unshorten-url
-    arguments:
-    - name: url
+  - arguments:
+    - description: URL to unshorten.
+      name: url
       required: true
-      description: URL to unshorten.
+    description: Unshortens a URL.
+    name: cloaken-unshorten-url
     outputs:
     - contextPath: Cloaken.UnshortenedURL
       description: The unshortened URL.
@@ -50,12 +48,12 @@ script:
     - contextPath: Cloaken.Status
       description: 'Status of the response: BADREQUEST or OK.'
       type: number
-    description: Unshortens a URL.
-  - name: cloaken-screenshot-url
-    arguments:
-    - name: url
+  - arguments:
+    - description: The URL for which to take a screenshot.
+      name: url
       required: true
-      description: The URL for which to take a screenshot.
+    description: Creates a screenshot of the specified URL.
+    name: cloaken-screenshot-url
     outputs:
     - contextPath: CloakenScreenshot.Url
       description: Url
@@ -63,6 +61,9 @@ script:
     - contextPath: CloakenScreenshot.Status
       description: Status of the screenshot.
       type: string
-    description: Creates a screenshot of the specified URL.
   dockerimage: demisto/cloaken:1.0.0.1787
   runonce: false
+  script: ''
+  subtype: python3
+  type: python
+toversion: 4.1.9

@@ -1,41 +1,34 @@
+category: Vulnerability Management
 commonfields:
   id: Digital Defense FrontlineVM
   version: -1
-name: Digital Defense FrontlineVM
-display: Digital Defense FrontlineVM
-category: Vulnerability Management
-description: Use the Digital Defense FrontlineVM to identify and evaluate the security
-  and business risks of network devices and applications deployed as premise, cloud,
-  or hybrid network-based implementations.
 configuration:
-- display: Frontline VM URL
+- defaultvalue: https://vm.frontline.cloud
+  display: Frontline VM URL
   name: frontlineURL
-  defaultvalue: https://vm.frontline.cloud
+  required: true
   type: 0
-  required: true
-- display: Trust any certificate (not secure)
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "false"
-  type: 8
   required: false
-- display: API Token to access Frontline VM
+  type: 8
+- defaultvalue: ''
+  display: API Token to access Frontline VM
   name: apiToken
-  defaultvalue: ""
-  type: 4
   required: true
+  type: 4
 - display: Fetch incidents
   name: isFetch
-  type: 8
   required: false
+  type: 8
 - display: Incident type
   name: incidentType
+  required: false
   type: 13
-  required: false
-- display: Minimum vulnerability severity for fetching incidents
+- defaultvalue: medium
+  display: Minimum vulnerability severity for fetching incidents
   name: incidentSeverity
-  defaultvalue: medium
-  type: 15
-  required: false
   options:
   - critical
   - high
@@ -43,11 +36,11 @@ configuration:
   - low
   - trivial
   - info
-- display: Rate at which to check vulnerability events when fetching incidents
-  name: incidentFrequency
-  defaultvalue: 3 hr
+  required: false
   type: 15
-  required: true
+- defaultvalue: 3 hr
+  display: Rate at which to check vulnerability events when fetching incidents
+  name: incidentFrequency
   options:
   - 5 min
   - 15 min
@@ -57,20 +50,27 @@ configuration:
   - 8 hr
   - 12 hr
   - 24 hr
+  required: true
+  type: 15
+description: Use the Digital Defense FrontlineVM to identify and evaluate the security
+  and business risks of network devices and applications deployed as premise, cloud,
+  or hybrid network-based implementations.
+display: Digital Defense FrontlineVM
+fromversion: 4.1.0
+name: Digital Defense FrontlineVM
 script:
-  script: ''
-  type: python
   commands:
-  - name: frontline-get-assets
-    arguments:
-    - name: ip_address
-      description: The IP address for which to return assets.
-    - name: label_name
-      description: The label name for which to return assets.
-    - name: max_days_since_scan
-      description: The number of days (retroactive) since the last scan.
-    - name: hostname
-      description: The hostname for which to return assets.
+  - arguments:
+    - description: The IP address for which to return assets.
+      name: ip_address
+    - description: The label name for which to return assets.
+      name: label_name
+    - description: The number of days (retroactive) since the last scan.
+      name: max_days_since_scan
+    - description: The hostname for which to return assets.
+      name: hostname
+    description: Retrieves the asset's information from Frontline VM.
+    name: frontline-get-assets
     outputs:
     - contextPath: FrontlineVM.Hosts
       description: The host data from Frontline.Cloud.
@@ -91,23 +91,12 @@ script:
       description: The operating system type of the host.
     - contextPath: FrontlineVM.Hosts.CriticalVulnCount
       description: The severity count of critical vulnerabilities.
-    description: Retrieves the asset's information from Frontline VM.
-  - name: frontline-get-vulns
-    arguments:
-    - name: min_severity
-      auto: PREDEFINED
-      predefined:
-      - critical
-      - high
-      - medium
-      - low
-      - trivial
-      - info
+  - arguments:
+    - auto: PREDEFINED
       description: 'The minimum severity level for which to return vulnerabilities.
         This argument overrides the "severity" argument when used together. Can be:
         "critical","high","medium","low","trivial", or "info".'
-    - name: severity
-      auto: PREDEFINED
+      name: min_severity
       predefined:
       - critical
       - high
@@ -115,19 +104,30 @@ script:
       - low
       - trivial
       - info
+    - auto: PREDEFINED
       description: 'Returns all vulnerabilities from Frontline with the specified
         severity level. Can be: "critical","high","medium","low","trivial", or "info".'
-    - name: max_days_since_created
-      description: Retrieves vulnerabilities found prior to the specified date (in
+      name: severity
+      predefined:
+      - critical
+      - high
+      - medium
+      - low
+      - trivial
+      - info
+    - description: Retrieves vulnerabilities found prior to the specified date (in
         days).
-    - name: min_days_since_created
-      description: Retrieves vulnerabilities found after the specified date (in days).
-    - name: host_id
-      description: Retrieves vulnerabilities from a specific host based on the Host
+      name: max_days_since_created
+    - description: Retrieves vulnerabilities found after the specified date (in days).
+      name: min_days_since_created
+    - description: Retrieves vulnerabilities from a specific host based on the Host
         ID.
-    - name: ip_address
-      description: The IP address of the host for which to retrieve the vulnerability
+      name: host_id
+    - description: The IP address of the host for which to retrieve the vulnerability
         data.
+      name: ip_address
+    description: Retrieves vulnerability information from Frontline VM.
+    name: frontline-get-vulns
     outputs:
     - contextPath: FrontlineVM.Vulns
       description: Retrieved vulnerability data pulled from Frontline.Cloud.
@@ -148,21 +148,21 @@ script:
       description: The severity level of the vulnerability.
     - contextPath: FrontlineVM.Vulns.vuln-info
       description: Information related to the vulnerability.
-    description: Retrieves vulnerability information from Frontline VM.
-  - name: frontline-scan-asset
-    arguments:
-    - name: ip_address
-      description: The IP address of the asset to scan.
-    - name: scan_policy
+  - arguments:
+    - description: The IP address of the asset to scan.
+      name: ip_address
+    - defaultValue: Default
       description: The policy of the scan (case sensitive).
-      defaultValue: Default
-    - name: ip_range_start
-      description: The IP address start range of the asset to scan.
-    - name: ip_range_end
-      description: The IP address end range of the asset to scan.
-    - name: scan_name
-      description: A unique name for the scan to run in FrontlineVM. Default value will
-        be "Cortex XSOAR Scan [<asset_ip_address>]. Limited to 100 characters."
+      name: scan_policy
+    - description: The IP address start range of the asset to scan.
+      name: ip_range_start
+    - description: The IP address end range of the asset to scan.
+      name: ip_range_end
+    - description: A unique name for the scan to run in FrontlineVM. Default value
+        will be "Cortex XSOAR Scan [<asset_ip_address>]. Limited to 100 characters."
+      name: scan_name
+    description: Performs a scan on the specified asset.
+    name: frontline-scan-asset
     outputs:
     - contextPath: FrontlineVM.Scan.ID
       description: The ID number of the scan.
@@ -173,11 +173,12 @@ script:
     - contextPath: FrontlineVM.Scan.IP
       description: The IP address of the scan (can be a single IP address or a range
         of IP addresses).
-    description: Performs a scan on the specified asset.
   dockerimage: demisto/python3:3.8.3.9324
   isfetch: true
   runonce: false
+  script: ''
   subtype: python3
-fromversion: 4.1.0
+  type: python
 tests:
 - No tests (auto formatted)
+toversion: 4.1.9

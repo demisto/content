@@ -1,70 +1,50 @@
 id: Active Directory Query V2 configuration with port
-version: -1
+inputs: []
 name: Active Directory Query V2 configuration with port
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 97ad5ed7-060f-41c6-88e2-fc7d69177bc8
-    type: start
-    task:
-      id: 97ad5ed7-060f-41c6-88e2-fc7d69177bc8
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
+      - '1'
     note: false
-    timertriggers: []
-    ignoreworker: false
-  "1":
-    id: "1"
-    taskid: c0c1ffaf-0c25-4a8f-8035-ff68b1c44518
-    type: title
+    separatecontext: false
     task:
-      id: c0c1ffaf-0c25-4a8f-8035-ff68b1c44518
+      brand: ''
+      id: 97ad5ed7-060f-41c6-88e2-fc7d69177bc8
+      iscommand: false
+      name: ''
       version: -1
+    taskid: 97ad5ed7-060f-41c6-88e2-fc7d69177bc8
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: c0c1ffaf-0c25-4a8f-8035-ff68b1c44518
+      iscommand: false
       name: Instance configuration success!
       type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 260
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 661f7226-6769-4774-835a-e33f5fa7b156
-    type: regular
-    task:
-      id: 661f7226-6769-4774-835a-e33f5fa7b156
       version: -1
-      name: Get user
-      description: Run a simple command just to test instance configuration with port
-      script: '|||ad-get-user'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: c0c1ffaf-0c25-4a8f-8035-ff68b1c44518
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 260\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
+    note: false
     scriptarguments:
       attributes: {}
       custom-field-data: {}
@@ -72,33 +52,27 @@ tasks:
       dn: {}
       email: {}
       limit:
-        simple: "10"
+        simple: '10'
       name:
         simple: '*'
       user-account-control-out: {}
       username: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 390
-        }
-      }
-    note: false
+    task:
+      brand: ''
+      description: Run a simple command just to test instance configuration with port
+      id: 661f7226-6769-4774-835a-e33f5fa7b156
+      iscommand: true
+      name: Get user
+      script: '|||ad-get-user'
+      type: regular
+      version: -1
+    taskid: 661f7226-6769-4774-835a-e33f5fa7b156
     timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 435,
-        "width": 380,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 390\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 435,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n\
+  \    }\n  }\n}"

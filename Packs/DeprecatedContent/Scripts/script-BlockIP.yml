@@ -1,69 +1,48 @@
-commonfields:
-  id: BlockIP
-  version: -1
-name: BlockIP
-script: |-
-  var blockPanorama = !!executeCommand('IsIntegrationAvailable',{'brandname': 'panorama'})[0].Contents;
-  var blockCP = !!executeCommand('IsIntegrationAvailable',{'brandname': 'check point'})[0].Contents;
-
-  if (args['using-brand']) {
-      switch (args['using-brand'].toLowerCase()) {
-          case 'panorama':
-              blockCP = false;
-              break;
-          case 'check point':
-              blockPanorama = false;
-              break;
-      }
-  }
-
-  if (!args.rulename) {
-      args.rulename = 'ip' + args.ip + ' blocked in direction ' + args.direction;
-  }
-
-  var entries = [];
-  if (blockPanorama) {
-      entries.push(executeCommand('PanoramaBlockIP', args));
-  }
-
-  if (blockCP) {
-      if (!args.ipname) {
-          args.ipname = + args.ip + ' . ' + args.direction;
-      }
-      entries.push(executeCommand('CPBlockIP', args));
-  }
-
-  return entries;
-type: javascript
-tags:
-- firewall
-- checkpoint
-- panorama
-comment: Blocks IP in configured firewall
-enabled: true
-deprecated: true
 args:
-- name: ip
-  required: true
-  default: true
+- default: true
   description: IP to block
-- name: rulename
-  description: Rule name
-- name: direction
+  name: ip
   required: true
-  auto: PREDEFINED
+- description: Rule name
+  name: rulename
+- auto: PREDEFINED
+  description: Direction to block (to, from or both - default)
+  name: direction
   predefined:
   - to
   - from
   - both
-  description: Direction to block (to, from or both - default)
-- name: ipname
-  description: Base name for added ip/hosts inside checkpoint db
-scripttarget: 0
-runonce: false
+  required: true
+- description: Base name for added ip/hosts inside checkpoint db
+  name: ipname
+comment: Blocks IP in configured firewall
+commonfields:
+  id: BlockIP
+  version: -1
 dependson:
   should:
   - panorama
   - checkpoint
+deprecated: true
+enabled: true
+name: BlockIP
+runonce: false
+script: "var blockPanorama = !!executeCommand('IsIntegrationAvailable',{'brandname':\
+  \ 'panorama'})[0].Contents;\nvar blockCP = !!executeCommand('IsIntegrationAvailable',{'brandname':\
+  \ 'check point'})[0].Contents;\n\nif (args['using-brand']) {\n    switch (args['using-brand'].toLowerCase())\
+  \ {\n        case 'panorama':\n            blockCP = false;\n            break;\n\
+  \        case 'check point':\n            blockPanorama = false;\n            break;\n\
+  \    }\n}\n\nif (!args.rulename) {\n    args.rulename = 'ip' + args.ip + ' blocked\
+  \ in direction ' + args.direction;\n}\n\nvar entries = [];\nif (blockPanorama) {\n\
+  \    entries.push(executeCommand('PanoramaBlockIP', args));\n}\n\nif (blockCP) {\n\
+  \    if (!args.ipname) {\n        args.ipname = + args.ip + ' . ' + args.direction;\n\
+  \    }\n    entries.push(executeCommand('CPBlockIP', args));\n}\n\nreturn entries;"
+scripttarget: 0
+tags:
+- firewall
+- checkpoint
+- panorama
 tests:
 - No tests
+toversion: 4.1.9
+type: javascript

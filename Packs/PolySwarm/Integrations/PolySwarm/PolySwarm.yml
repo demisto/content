@@ -17,7 +17,8 @@ configuration:
   name: polyswarm_community
   required: true
   type: 0
-description: Real-time threat intelligence from a crowd-sourced network of security experts and antivirus companies.
+description: Real-time threat intelligence from a crowd-sourced network of security
+  experts and antivirus companies.
 display: PolySwarm
 name: PolySwarm
 script:
@@ -51,15 +52,15 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'The value of the file hash for which to retrieve the reputation information. The hash type can be: "SHA256",
-        "SHA1", or "MD5".'
+      description: 'The value of the file hash for which to retrieve the reputation
+        information. The hash type can be: "SHA256", "SHA1", or "MD5".'
       isArray: false
       name: hash
       required: false
       secret: false
     - default: true
-      description: 'The type of the file hash for which to retrieve the reputation information. The hash type can be: "SHA256",
-        "SHA1", or "MD5".'
+      description: 'The type of the file hash for which to retrieve the reputation
+        information. The hash type can be: "SHA256", "SHA1", or "MD5".'
       isArray: false
       name: file
       required: false
@@ -194,7 +195,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'The type of the file hash to rescan. The hash type can be: "SHA256", "SHA1", or "MD5".'
+      description: 'The type of the file hash to rescan. The hash type can be: "SHA256",
+        "SHA1", or "MD5".'
       isArray: false
       name: hash
       required: true
@@ -221,7 +223,8 @@ script:
       type: String
   - arguments:
     - default: true
-      description: 'The file hash type to download. The hash type can be: "SHA256", "SHA1", or "MD5".'
+      description: 'The file hash type to download. The hash type can be: "SHA256",
+        "SHA1", or "MD5".'
       isArray: false
       name: hash
       required: true
@@ -299,3 +302,4 @@ script:
   script: '-'
   subtype: python2
   type: python
+toversion: 4.1.9

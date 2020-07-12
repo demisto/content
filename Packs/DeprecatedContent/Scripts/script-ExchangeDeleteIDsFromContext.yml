@@ -1,55 +1,39 @@
+args: []
+comment: Delete Mails with ID's under the context key "ExchangeItemIDs"
 commonfields:
   id: ExchangeDeleteIDsFromContext
   version: -1
-name: ExchangeDeleteIDsFromContext
-script: |-
-  import json
-  resultText = ''
-  resultErr = []
-  res = []
-  found = demisto.get(demisto.context(), 'ExchangeItemIDs')
-  if found and not found == '{}':
-      mbIds = json.loads(found)
-
-      for mb in mbIds.keys():
-          resultText += '**Deleting from {0}:**\n'.format(str(mb))
-          itemids = ','.join(mbIds[mb])
-
-          delres = demisto.executeCommand('ews-delete-items', {'target-mailbox': mb, 'item-ids' :itemids })
-          if isError(delres[0]):
-              resultErr += delres
-          else:
-              delres = delres[0]
-              if delres['Type'] != 4 and delres['ContentsFormat'] == 'json':
-                  delresp = demisto.get(delres, 'Contents.Envelope.Body.DeleteItemResponse.ResponseMessages.DeleteItemResponseMessage')
-                  if delresp:
-                      delresp = delresp if isinstance(delresp, list) else [delresp]
-                      if delresp[0]['-ResponseClass'] == 'Success':
-                          resultText += 'Delete successful.\n'
-                      else:
-                          resultText += "Delete failed: " + delresp['MessageText'] + "\nResponse Code:" + delresp['-ResponseCode']+'\n'
-                  else:
-                      resultText += "Delete failed with missing response\n"
-              else:
-                  resultErr += [delres]
-
-      res += [ { 'Type' : entryTypes['note'], 'ContentsFormat' : formats['markdown'], 'Contents': resultText } ]
-      res += resultErr
-      demisto.setContext('ExchangeItemIDs', '')
-      demisto.results(res)
-  else:
-      demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'No mail ids were found in context. Cannot continue.' } )
-type: python
-subtype: python2
-tags:
-- ews
-- exchange
-comment: Delete Mails with ID's under the context key "ExchangeItemIDs"
-system: true
-scripttarget: 0
-args: []
 dependson:
   must:
   - ews-delete-items
-timeout: 0s
 deprecated: true
+name: ExchangeDeleteIDsFromContext
+script: "import json\nresultText = ''\nresultErr = []\nres = []\nfound = demisto.get(demisto.context(),\
+  \ 'ExchangeItemIDs')\nif found and not found == '{}':\n    mbIds = json.loads(found)\n\
+  \n    for mb in mbIds.keys():\n        resultText += '**Deleting from {0}:**\\n'.format(str(mb))\n\
+  \        itemids = ','.join(mbIds[mb])\n\n        delres = demisto.executeCommand('ews-delete-items',\
+  \ {'target-mailbox': mb, 'item-ids' :itemids })\n        if isError(delres[0]):\n\
+  \            resultErr += delres\n        else:\n            delres = delres[0]\n\
+  \            if delres['Type'] != 4 and delres['ContentsFormat'] == 'json':\n  \
+  \              delresp = demisto.get(delres, 'Contents.Envelope.Body.DeleteItemResponse.ResponseMessages.DeleteItemResponseMessage')\n\
+  \                if delresp:\n                    delresp = delresp if isinstance(delresp,\
+  \ list) else [delresp]\n                    if delresp[0]['-ResponseClass'] == 'Success':\n\
+  \                        resultText += 'Delete successful.\\n'\n               \
+  \     else:\n                        resultText += \"Delete failed: \" + delresp['MessageText']\
+  \ + \"\\nResponse Code:\" + delresp['-ResponseCode']+'\\n'\n                else:\n\
+  \                    resultText += \"Delete failed with missing response\\n\"\n\
+  \            else:\n                resultErr += [delres]\n\n    res += [ { 'Type'\
+  \ : entryTypes['note'], 'ContentsFormat' : formats['markdown'], 'Contents': resultText\
+  \ } ]\n    res += resultErr\n    demisto.setContext('ExchangeItemIDs', '')\n   \
+  \ demisto.results(res)\nelse:\n    demisto.results( { 'Type' : entryTypes['error'],\
+  \ 'ContentsFormat' : formats['text'], 'Contents' : 'No mail ids were found in context.\
+  \ Cannot continue.' } )"
+scripttarget: 0
+subtype: python2
+system: true
+tags:
+- ews
+- exchange
+timeout: 0s
+toversion: 4.1.9
+type: python

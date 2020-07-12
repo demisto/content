@@ -21,7 +21,8 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: Use the Maltiverse integration to analyze suspicious hashes, URLs, domains and IP addresses.
+description: Use the Maltiverse integration to analyze suspicious hashes, URLs, domains
+  and IP addresses.
 display: Maltiverse
 name: Maltiverse
 script:
@@ -44,8 +45,9 @@ script:
       secret: false
     - default: false
       defaultValue: 'false'
-      description: Whether to return all results. Note that there can be thousands of results.
-        It is advised that you do not set to "true" in playbooks. The default value is "false".
+      description: Whether to return all results. Note that there can be thousands
+        of results. It is advised that you do not set to "true" in playbooks. The
+        default value is "false".
       isArray: false
       name: fullResponse
       required: false
@@ -126,8 +128,9 @@ script:
       secret: false
     - default: true
       defaultValue: 'false'
-      description: Whether to return all results. Note that there can be thousands of results.
-        It is advised that you do not set to "true" in playbooks. The default value is "false".
+      description: Whether to return all results. Note that there can be thousands
+        of results. It is advised that you do not set to "true" in playbooks. The
+        default value is "false".
       isArray: false
       name: fullResponse
       required: false
@@ -226,8 +229,9 @@ script:
       secret: false
     - default: true
       defaultValue: 'false'
-      description: Whether to return all results. Note that there can be thousands of results.
-        It is advised that you do not set to "true" in playbooks. The default value is "false".
+      description: Whether to return all results. Note that there can be thousands
+        of results. It is advised that you do not set to "true" in playbooks. The
+        default value is "false".
       isArray: false
       name: fullResponse
       required: false
@@ -325,8 +329,9 @@ script:
       secret: false
     - default: true
       defaultValue: 'false'
-      description: Whether to return all results. Note that there can be thousands of results.
-        It is advised that you do not set to "true" in playbooks. The default value is "false".
+      description: Whether to return all results. Note that there can be thousands
+        of results. It is advised that you do not set to "true" in playbooks. The
+        default value is "false".
       isArray: false
       name: fullResponse
       required: false
@@ -443,3 +448,4 @@ script:
   type: python
 tests:
 - Maltiverse Test
+toversion: 4.1.9

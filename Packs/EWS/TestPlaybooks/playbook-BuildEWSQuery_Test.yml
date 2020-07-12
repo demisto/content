@@ -1,132 +1,100 @@
+description: ''
 id: buildewsquery_test
-version: -1
+inputs: []
 name: BuildEWSQuery Test
-starttaskid: "0"
-description: ""
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 9c8a5ad7-0bf6-4355-8578-26a3d7d23b14
-    type: start
-    task:
-      description: ""
-      id: 9c8a5ad7-0bf6-4355-8578-26a3d7d23b14
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     reputationcalc: 0
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-  "1":
-    id: "1"
-    taskid: ad4f0f93-2d75-4125-8044-195cbaf6466f
-    type: regular
     task:
-      description: ""
-      id: ad4f0f93-2d75-4125-8044-195cbaf6466f
-      version: -1
-      name: Build EWS Query
-      scriptName: BuildEWSQuery
-      type: regular
+      brand: ''
+      description: ''
+      id: 9c8a5ad7-0bf6-4355-8578-26a3d7d23b14
       iscommand: false
-      brand: ""
+      name: ''
+      version: -1
+    taskid: 9c8a5ad7-0bf6-4355-8578-26a3d7d23b14
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    reputationcalc: 0
     scriptarguments:
       attachmentName: {}
       body: {}
       from:
         simple: jondoe@acme.com
       searchThisWeek:
-        simple: "true"
+        simple: 'true'
       stripSubject:
-        simple: "true"
+        simple: 'true'
       subject:
-        simple: 'RE: RE: FWD: hello RE: w’orld'
-    reputationcalc: 0
+        simple: "RE: RE: FWD: hello RE: w\u2019orld"
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-  "2":
-    id: "2"
-    taskid: 77878e94-c11b-415c-8cf7-d0dbaef65626
-    type: regular
     task:
-      description: ""
-      id: 77878e94-c11b-415c-8cf7-d0dbaef65626
-      version: -1
-      name: Verify query
-      scriptName: VerifyContext
-      type: regular
+      brand: ''
+      description: ''
+      id: ad4f0f93-2d75-4125-8044-195cbaf6466f
       iscommand: false
-      brand: ""
+      name: Build EWS Query
+      scriptName: BuildEWSQuery
+      type: regular
+      version: -1
+    taskid: ad4f0f93-2d75-4125-8044-195cbaf6466f
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '2':
+    id: '2'
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
+    reputationcalc: 0
     scriptarguments:
       expectedValue:
-        simple: 'From:"jondoe@acme.com" AND Subject:"hello RE: w’orld" AND Received:"this
-          week"'
+        simple: "From:\"jondoe@acme.com\" AND Subject:\"hello RE: w\u2019orld\" AND\
+          \ Received:\"this week\""
       fields: {}
       path:
         simple: EWS.Query
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 77878e94-c11b-415c-8cf7-d0dbaef65626
+      iscommand: false
+      name: Verify query
+      scriptName: VerifyContext
+      type: regular
+      version: -1
+    taskid: 77878e94-c11b-415c-8cf7-d0dbaef65626
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '3':
+    id: '3'
     reputationcalc: 0
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-  "3":
-    id: "3"
-    taskid: d6e4eb15-eac3-4dab-8ef5-9b00d0a83e38
-    type: title
     task:
-      description: ""
+      brand: ''
+      description: ''
       id: d6e4eb15-eac3-4dab-8ef5-9b00d0a83e38
-      version: -1
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-    reputationcalc: 0
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 560,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+      version: -1
+    taskid: d6e4eb15-eac3-4dab-8ef5-9b00d0a83e38
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 560,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

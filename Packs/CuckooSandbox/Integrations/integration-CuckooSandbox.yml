@@ -1,487 +1,107 @@
+category: Forensics & Malware Analysis
 commonfields:
   id: Cuckoo Sandbox
   version: -1
-name: Cuckoo Sandbox
-display: Cuckoo Sandbox
-category: Forensics & Malware Analysis
-image: data:image/png;base64,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
-description: Malware dynamic analysis sandboxing
 configuration:
-- display: Server URL (e.g. https://192.168.0.1)
+- defaultvalue: ''
+  display: Server URL (e.g. https://192.168.0.1)
   name: server
-  defaultvalue: ""
+  required: false
   type: 0
-  required: false
-- display: Username (Only if your cuckoo service requires HTTP auth)
+- defaultvalue: ''
+  display: Username (Only if your cuckoo service requires HTTP auth)
   name: authentication
-  defaultvalue: ""
+  required: false
   type: 9
-  required: false
-- display: Trust any certificate (not secure)
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
-  type: 8
   required: false
-- display: Use system proxy settings
+  type: 8
+- defaultvalue: ''
+  display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
+description: Malware dynamic analysis sandboxing
+display: Cuckoo Sandbox
+fromversion: 3.5.0
+hidden: false
+image: data:image/png;base64,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
+name: Cuckoo Sandbox
 script:
-  script: |-
-    var entityMap = {
-        Machine:{
-            status :            'Status',
-            locked :            'Locked',
-            name :              'Name',
-            resultserver_ip :   'ResultserverIP',
-            ip :                'IP',
-            label :             'Label',
-            locked_changed_on : 'LockedChangedOn',
-            platform :          'Platform',
-            snapshot :          'Snapshot',
-            interface :         'Interface',
-            status_changed_on : 'StatusChangedOn',
-            id :                'ID',
-            resultserver_port : 'ResultserverPort',
-            tags :              'Tags'
-        },
-        Task: {
-            category  :         'Category',
-            machine :           'Machine',
-            errors :            'Errors',
-            target :            'Target',
-            package :           'Package',
-            sample_id :         'SampleID',
-            guest :             'Guest',
-            custom :            'Custom',
-            owner :             'Owner',
-            priority :          'Priority',
-            platform :          'Platform',
-            options :           'Options',
-            status :            'Status',
-            enforce_timeout :   'EnforceTimeout',
-            timeout :           'Timeout',
-            memory :            'Memory',
-            tags :              'Tags',
-            id :                'ID',
-            added_on :          'AddedOn',
-            completed_on :      'CompletedOn',
-            score :             'Score',
-            monitor :           'Monitor'
-        }
-    };
-
-    var undrscrToCamelCase = function(string){
-        string = '_'+string;
-        return string.replace(/_([a-z])/g, function (g) { return g[1].toUpperCase(); });
-    };
-
-    //returns single object withing entity (i.e. File[0])
-    var jsonToEntityObject = function(origObj, newKeys){
-        var ret = {};
-        var path;
-        var newField;
-        for(var key in newKeys){
-            if(newKeys[key]){
-                ret[newKeys[key]] = dq(origObj, '.'+key);
-            }
-        }
-        return ret;
-    };
-
-    //returns entire entity array (i.e. File)
-    var jsonToEntity = function(origObj, newKeys){
-        var j;
-        var ret;
-        if(!Array.isArray(origObj)){
-            ret = [jsonToEntityObject(origObj, newKeys)];
-            return ret;
-        }
-        else if(origObj.length > 0){ //makes sure no empty arrays are pushed
-            ret = [];
-            for(j=0; j<origObj.length; j++){
-                ret.push(jsonToEntityObject(origObj[j], newKeys));
-            }
-            return ret;
-        }
-    };
-
-    var fixUrl = function(base) {
-        res = base;
-        if (base && base[base.length - 1] != '/') {
-            res = res + '/';
-        }
-        return res;
-    };
-
-    var parseResponse = function(resp) {
-        if (resp.StatusCode === 200) {
-            try {
-                return JSON.parse(resp.Body);
-            } catch (e) {
-                return resp.Body;
-            }
-        } else {
-            err = resp.Status;
-            if (resp.Body) {
-                err += '\n' + resp.Body;
-            }
-            throw err;
-        }
-    };
-
-    var cuckooGet = function(qArgs, qParams, suffix) {
-        url = fixUrl(qParams['server']) + suffix;
-        username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
-        password = qParams['authentication'] ? qParams['authentication']['password'] : '';
-        res = http(
-            url,
-            {
-                Method: 'GET',
-                Username: username,
-                Password: password
-            },
-            qParams['insecure'],
-            qParams['proxy']
-        );
-        return result =  parseResponse(res);
-    };
-
-    var cuckooGetRaw = function(qArgs, qParams, suffix) {
-        url = fixUrl(qParams['server']) + suffix;
-        username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
-        password = qParams['authentication'] ? qParams['authentication']['password'] : '';
-        res = http(
-            url,
-            {
-                Method: 'GET',
-                Username: username,
-                Password: password
-            },
-            qParams['insecure'],
-            qParams['proxy']
-        );
-        return res;
-    };
-
-    var cuckooGetFile = function(qArgs, qParams, suffix, filename) {
-        url = fixUrl(qParams['server']) + suffix;
-        username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
-        password = qParams['authentication'] ? qParams['authentication']['password'] : '';
-        res = http(
-            url,
-            {
-                Method: 'GET',
-                Username: username,
-                Password: password,
-                SaveToFile: true
-            },
-            qParams.insecure,
-            qParams.proxy
-        );
-        if (res.StatusCode !== 200) {
-            err = res.Status;
-            if (res.Body) {
-                err += '\n' + res.Body;
-            }
-            throw err;
-        }
-        return {
-            Type: 3,
-            FileID: res.Path,
-            File: filename,
-            Contents: filename
-        };
-    };
-
-    var cuckooPost = function(qArgs, qParams, suffix) {
-        url = fixUrl(qParams.server) + suffix;
-        username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
-        password = qParams['authentication'] ? qParams['authentication']['password'] : '';
-        res = httpMultipart(
-            url, // URL
-            '', // Optional - FilePath / EntryID
-            { // HTTP Request Headers
-                Method: 'POST',
-                Username: username,
-                Password: password
-            },
-            { // Multipart Contents
-                url: qArgs['url']
-            },
-            qParams['insecure'],
-            qParams['proxy']
-        );
-        return parseResponse(res);
-    };
-
-    var fetchFiles = function(qArgs, qParams) {
-        url = fixUrl(qParams['server']) + 'tasks/create/file';
-        fileParam = qArgs['entryID'] ? qArgs['entryID'] : qArgs['fileID'];
-        username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
-        password = qParams['authentication'] ? qParams['authentication']['password'] : '';
-        delete qArgs.entryID;
-        res = httpMultipart(
-            url,
-            fileParam,
-            { // HTTP Request Headers
-                Method: 'POST',
-                Username: username,
-                Password: password
-            },
-            qArgs,
-            qParams['insecure'],
-            qParams['proxy']
-        );
-        return parseResponse(res);
-    };
-
-    var createTaskFromFile = function(args, params){
-        var res =  fetchFiles(args, params);
-        return {
-            Type: entryTypes.note,
-            Contents: res,
-            ContentsFormat: formats.json,
-            HumanReadable: 'Task was created successfully, task ID = ' + res.task_id,
-            EntryContext: {'Cuckoo.Task' : {ID: res.task_id}}
-        };
-    };
-
-    var createTaskFromURL = function(args, params){
-        var res = cuckooPost(args, params, 'tasks/create/url');
-        return {
-            Type: entryTypes.note,
-            Contents: res,
-            ContentsFormat: formats.json,
-            HumanReadable: 'Task was created successfully, task ID = ' + res.task_id,
-            EntryContext: {'Cuckoo.Task' : {ID: res.task_id}}
-        };
-    };
-
-    var tblToMdWithTransform = function(title, t, transform){
-        return tblToMd(title, t, undefined, undefined, transform);
-    }
-
-    var getTaskReport = function(args, params){
-        var result = cuckooGet(args, params, 'tasks/report/' + args['id']);
-        var md;
-        var context = {};
-
-        context['Cuckoo.Task(val.ID && val.ID == obj.ID)'] = jsonToEntity(result.info, entityMap.Task);
-        md = tblToMdWithTransform('Task Target', result.target, undrscrToCamelCase);
-        md += tblToMdWithTransform('Task Info', result.info, undrscrToCamelCase);
-        md += tblToMdWithTransform('Task Metadata', result.metadata, undrscrToCamelCase);
-        md += tblToMdWithTransform('Task Network Data', result.network);
-        if(result.signatures && result.signatures.length > 0){
-            md += tblToMdWithTransform('Task Signatures', result.signatures, undrscrToCamelCase);
-        }
-        return {
-            Type: entryTypes.note,
-            Contents: result,
-            ContentsFormat: formats.json,
-            HumanReadable: md,
-            EntryContext: context
-        };
-    };
-    var viewTasks = function(args, params){
-        ids = argToList(args['id']);
-        var res = [];
-        for(var i in ids){
-            task_id = ids[i];
-            entry = viewTask(args, params, task_id);
-            res.push(entry);
-        }
-        return res;
-    };
-
-    var viewTask = function(args, params, id){
-        result = cuckooGet(args, params, 'tasks/view/' + id);
-
-        return {
-            Type: entryTypes.note,
-            Contents: result,
-            ContentsFormat: formats.json,
-            HumanReadable: tblToMdWithTransform('Task Table', result.task, undrscrToCamelCase),
-            EntryContext: {'Cuckoo.Task(val.ID === obj.ID)' : jsonToEntity(result.task, entityMap.Task)}
-        };
-    };
-
-    var deleteTask = function(args, params){
-        var res = JSON.parse(cuckooGetRaw(args, params, 'tasks/delete/' + args['id']).Body);
-        return (res.status? res.status : res.message);
-    };
-
-    var listTasks = function(args, params){
-        var result = cuckooGet(args, params, 'tasks/list');
-
-        return {
-            Type: entryTypes.note,
-            Contents: res,
-            ContentsFormat: formats.json,
-            HumanReadable: tblToMdWithTransform('Task Table', result.tasks, undrscrToCamelCase),
-            EntryContext: {'Cuckoo.Task' : jsonToEntity(result.tasks, entityMap.Task)}
-        };
-    };
-
-    var listMachines = function(args, params){
-        var result = cuckooGet(args, params, 'machines/list');
-
-        return {
-            Type: entryTypes.note,
-            Contents: res,
-            ContentsFormat: formats.json,
-            HumanReadable: tblToMdWithTransform('Machines Table', result.machines, undrscrToCamelCase),
-            EntryContext: {'Cuckoo.Machine' : jsonToEntity(result.machines, entityMap.Machine)}
-        };
-    };
-
-    var viewMachine = function(args, params){
-        result = cuckooGet(args, params, 'machines/view/' + args['name']);
-
-        return {
-            Type: entryTypes.note,
-            Contents: res,
-            ContentsFormat: formats.json,
-            HumanReadable: tblToMdWithTransform('Machines Table', result.machine, undrscrToCamelCase),
-            EntryContext: {'Cuckoo.Machine' : jsonToEntity(result.machine, entityMap.Machine)}
-        };
-    };
-
-    var taskScreenshot = function(args ,params){
-        var uri = 'tasks/screenshots/' + args['id'];
-        var filename = 'CuckooScreenshots.zip'
-        if (args['screenshot']) {
-            filename = args['screenshot'];
-            uri += '/'+ args['screenshot'];
-        }
-        return cuckooGetFile(args, params, uri, filename);
-    };
-
-
-
-    // The command input arg holds the command sent from the user.
-    switch (command) {
-        // This is the call made when pressing the integration test button.
-        case 'test-module':
-            var resp = cuckooGetRaw(args, params, 'tasks/list');
-            if (resp.StatusCode === 200) {
-                return 'ok';
-            } else if (resp.Status) {
-                return resp.Status;
-            } else {
-                return resp;
-            }
-            break;
-
-        case 'ck-file'://deprecated
-        case 'cuckoo-create-task-from-file':
-            return createTaskFromFile(args, params);
-
-        case 'ck-url'://deprecated
-        case 'cuckoo-create-task-from-url':
-            return createTaskFromURL(args, params);
-
-        case 'ck-report'://deprecated
-        case 'cuckoo-get-task-report':
-            return getTaskReport(args, params);
-
-        case 'ck-view'://deprecated
-        case 'cuckoo-view-task':
-            return viewTasks(args, params);
-
-        case 'ck-del'://deprecated
-        case 'cuckoo-delete-task':
-            return deleteTask(args, params);
-
-        case 'ck-list'://deprecated
-        case 'cuckoo-list-tasks':
-            return listTasks(args, params);
-
-        case 'ck-machines-list': //deprecated
-        case 'cuckoo-machines-list':
-            return listMachines(args, params);
-
-        case 'ck-machine-view'://deprecated
-        case 'cuckoo-machine-view':
-            return viewMachine(args, params);
-
-        case 'ck-scrshot'://deprecated
-        case 'cuckoo-task-screenshot':   //unchanged
-            return taskScreenshot(args, params);
-    }
-  type: javascript
   commands:
-  - name: ck-file
-    deprecated: true
-    arguments:
-    - name: entryID
-      default: true
+  - arguments:
+    - default: true
       description: commands.server.ckFile.arguments.entryID.description
-    - name: fileID
-      description: commands.server.ckFile.arguments.fileID.description
-    - name: machine
-      description: (optional) Label of the machine to use for analysis
-    - name: package
-      description: (optional) analysis package to be used for the analysis
-    - name: timeout
-      description: (optional)  analysis timeout (in seconds)
-    - name: enforce_timeout
-      description: (optional) enable to enforce the execution for the full timeout
+      name: entryID
+    - description: commands.server.ckFile.arguments.fileID.description
+      name: fileID
+    - description: (optional) Label of the machine to use for analysis
+      name: machine
+    - description: (optional) analysis package to be used for the analysis
+      name: package
+    - description: (optional)  analysis timeout (in seconds)
+      name: timeout
+    - description: (optional) enable to enforce the execution for the full timeout
         value
-    - name: platform
-      description: (optional) - name of the platform to select the analysis machine
-        from (e.g. “windows”)
-    - name: tags
-      description: (optional) - define machine to start by tags. Platform must be
+      name: enforce_timeout
+    - description: "(optional) - name of the platform to select the analysis machine\
+        \ from (e.g. \u201Cwindows\u201D)"
+      name: platform
+    - description: (optional) - define machine to start by tags. Platform must be
         set to use that. Tags are comma separated
-    - name: memory
-      description: (optional) - enable the creation of a full memory dump of the analysis
+      name: tags
+    - description: (optional) - enable the creation of a full memory dump of the analysis
         machine
-    - name: options
-      description: ' (optional) - options to pass to the analysis package'
+      name: memory
+    - description: ' (optional) - options to pass to the analysis package'
+      name: options
+    deprecated: true
+    description: commands.server.ckFile.description
+    name: ck-file
     outputs:
     - contextPath: Cuckoo.Task.ID
       description: ID of task
-    description: commands.server.ckFile.description
-  - name: cuckoo-create-task-from-file
-    arguments:
-    - name: entryID
-      default: true
+  - arguments:
+    - default: true
       description: commands.server.ckFile.arguments.entryID.description
-    - name: fileID
-      description: commands.server.ckFile.arguments.fileID.description
-    - name: machine
-      description: (optional) Label of the machine to use for analysis
-    - name: package
-      description: (optional) analysis package to be used for the analysis
-    - name: timeout
-      description: (optional)  analysis timeout (in seconds)
-    - name: enforce_timeout
-      description: (optional) enable to enforce the execution for the full timeout
+      name: entryID
+    - description: commands.server.ckFile.arguments.fileID.description
+      name: fileID
+    - description: (optional) Label of the machine to use for analysis
+      name: machine
+    - description: (optional) analysis package to be used for the analysis
+      name: package
+    - description: (optional)  analysis timeout (in seconds)
+      name: timeout
+    - description: (optional) enable to enforce the execution for the full timeout
         value
-    - name: platform
-      description: (optional) - name of the platform to select the analysis machine
-        from (e.g. “windows”)
-    - name: tags
-      description: (optional) - define machine to start by tags. Platform must be
+      name: enforce_timeout
+    - description: "(optional) - name of the platform to select the analysis machine\
+        \ from (e.g. \u201Cwindows\u201D)"
+      name: platform
+    - description: (optional) - define machine to start by tags. Platform must be
         set to use that. Tags are comma separated
-    - name: memory
-      description: (optional) - enable the creation of a full memory dump of the analysis
+      name: tags
+    - description: (optional) - enable the creation of a full memory dump of the analysis
         machine
-    - name: options
-      description: ' (optional) - options to pass to the analysis package'
+      name: memory
+    - description: ' (optional) - options to pass to the analysis package'
+      name: options
+    description: commands.server.ckFile.description
+    name: cuckoo-create-task-from-file
     outputs:
     - contextPath: Cuckoo.Task.ID
       description: ID of task
-    description: commands.server.ckFile.description
-  - name: ck-report
-    deprecated: true
-    arguments:
-    - name: id
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: commands.server.ckReport.arguments.id.description
+      name: id
+      required: true
+    deprecated: true
+    description: commands.server.ckReport.description
+    name: ck-report
     outputs:
     - contextPath: Cuckoo.Task.Category
       description: Category of task
@@ -523,13 +143,13 @@ script:
       description: Date on which the task was added
     - contextPath: Cuckoo.Task.CompletedOn
       description: Date on which the task was completed
-    description: commands.server.ckReport.description
-  - name: cuckoo-get-task-report
-    arguments:
-    - name: id
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: commands.server.ckReport.arguments.id.description
+      name: id
+      required: true
+    description: commands.server.ckReport.description
+    name: cuckoo-get-task-report
     outputs:
     - contextPath: Cuckoo.Task.Category
       description: Category of task
@@ -575,10 +195,10 @@ script:
       description: Reported score of the the task
     - contextPath: Cuckoo.Task.Monitor
       description: Monitor of the reported task
-    description: commands.server.ckReport.description
-  - name: ck-list
+  - arguments: []
     deprecated: true
-    arguments: []
+    description: commands.server.ckList.description
+    name: ck-list
     outputs:
     - contextPath: Cuckoo.Task.Category
       description: Category of task
@@ -620,9 +240,9 @@ script:
       description: Date on which the task was added
     - contextPath: Cuckoo.Task.CompletedOn
       description: Date on which the task was completed
+  - arguments: []
     description: commands.server.ckList.description
-  - name: cuckoo-list-tasks
-    arguments: []
+    name: cuckoo-list-tasks
     outputs:
     - contextPath: Cuckoo.Task.Category
       description: Category of task
@@ -664,35 +284,35 @@ script:
       description: Date on which the task was added
     - contextPath: Cuckoo.Task.CompletedOn
       description: Date on which the task was completed
-    description: commands.server.ckList.description
-  - name: ck-url
-    deprecated: true
-    arguments:
-    - name: url
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: URL to analyze
+      name: url
+      required: true
+    deprecated: true
+    description: Submit a URL for analysis
+    name: ck-url
     outputs:
     - contextPath: Cuckoo.Task.ID
       description: ID of task
-    description: Submit a URL for analysis
-  - name: cuckoo-create-task-from-url
-    arguments:
-    - name: url
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: URL to analyze
+      name: url
+      required: true
+    description: Submit a URL for analysis
+    name: cuckoo-create-task-from-url
     outputs:
     - contextPath: Cuckoo.Task.ID
       description: ID of task
-    description: Submit a URL for analysis
-  - name: ck-view
-    deprecated: true
-    arguments:
-    - name: id
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: commands.server.ckView.arguments.id.description
+      name: id
+      required: true
+    deprecated: true
+    description: commands.server.ckView.description
+    name: ck-view
     outputs:
     - contextPath: Cuckoo.Task.Category
       description: Category of task
@@ -734,14 +354,14 @@ script:
       description: Date on which the task was added
     - contextPath: Cuckoo.Task.CompletedOn
       description: Date on which the task was completed
-    description: commands.server.ckView.description
-  - name: cuckoo-view-task
-    arguments:
-    - name: id
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: commands.server.ckView.arguments.id.description
       isArray: true
+      name: id
+      required: true
+    description: commands.server.ckView.description
+    name: cuckoo-view-task
     outputs:
     - contextPath: Cuckoo.Task.Category
       description: Category of task
@@ -783,43 +403,44 @@ script:
       description: Date on which the task was added
     - contextPath: Cuckoo.Task.CompletedOn
       description: Date on which the task was completed
-    description: commands.server.ckView.description
-  - name: ck-del
-    deprecated: true
-    arguments:
-    - name: id
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: commands.server.ckDelete.arguments.id.description
-    description: commands.server.ckDelete.description
-  - name: cuckoo-delete-task
-    arguments:
-    - name: id
+      name: id
       required: true
-      default: true
-      description: commands.server.ckDelete.arguments.id.description
-    description: commands.server.ckDelete.description
-  - name: ck-scrshot
     deprecated: true
-    arguments:
-    - name: id
+    description: commands.server.ckDelete.description
+    name: ck-del
+  - arguments:
+    - default: true
+      description: commands.server.ckDelete.arguments.id.description
+      name: id
       required: true
-      default: true
+    description: commands.server.ckDelete.description
+    name: cuckoo-delete-task
+  - arguments:
+    - default: true
       description: ID of the task that generated the screenshot
-    - name: screenshot
-      description: (optional) - numerical identifier of a single screenshot (e.g.
+      name: id
+      required: true
+    - description: (optional) - numerical identifier of a single screenshot (e.g.
         0001, 0002)
+      name: screenshot
+    deprecated: true
     description: Retrieve screenshots taken during analysis. If the screenshot number
       argument is omitted, retrieves a zip file with all screenshots.
-  - name: cuckoo-task-screenshot
-    arguments:
-    - name: id
-      required: true
-      default: true
+    name: ck-scrshot
+  - arguments:
+    - default: true
       description: ID of the task that generated the screenshot
-    - name: screenshot
-      description: (optional) - numerical identifier of a single screenshot (e.g.
+      name: id
+      required: true
+    - description: (optional) - numerical identifier of a single screenshot (e.g.
         0001, 0002)
+      name: screenshot
+    description: Retrieve screenshots taken during analysis. If the screenshot number
+      argument is omitted, retrieves a zip file with all screenshots.
+    name: cuckoo-task-screenshot
     outputs:
     - contextPath: File.Size
       description: Size of file
@@ -841,44 +462,11 @@ script:
       description: File's MD5
     - contextPath: File.Extension
       description: File's Extension
-    description: Retrieve screenshots taken during analysis. If the screenshot number
-      argument is omitted, retrieves a zip file with all screenshots.
-  - name: ck-machines-list
+  - arguments: []
     deprecated: true
-    arguments: []
-    outputs:
-    - contextPath: Machine.Status
-      description: Status of machine
-    - contextPath: Machine.Locked
-      description: Is the machine locked
-    - contextPath: Machine.Name
-      description: Name of machine
-    - contextPath: Machine.ResultserverIP
-      description: IP address of machine's result server
-    - contextPath: Machine.IP
-      description: IP address of machine
-    - contextPath: Machine.Label
-      description: Label of machine
-    - contextPath: Machine.LockedChangedOn
-      description: last update time of machine lock status
-    - contextPath: Machine.Platform
-      description: Platform of machine
-    - contextPath: Machine.Snapshot
-      description: Snapshot
-    - contextPath: Machine.Interface
-      description: Interface of machine
-    - contextPath: Machine.StatusChangedOn
-      description: Last update time of machine status
-    - contextPath: Machine.ID
-      description: ID of machine
-    - contextPath: Machine.ResultserverPort
-      description: Port address of machine's result server
-    - contextPath: Machine.Tags
-      description: Machine tags
     description: Returns a list with details on the analysis machines available to
       Cuckoo.
-  - name: cuckoo-machines-list
-    arguments: []
+    name: ck-machines-list
     outputs:
     - contextPath: Machine.Status
       description: Status of machine
@@ -908,14 +496,47 @@ script:
       description: Port address of machine's result server
     - contextPath: Machine.Tags
       description: Machine tags
+  - arguments: []
     description: Returns a list with details on the analysis machines available to
       Cuckoo.
-  - name: ck-machine-view
+    name: cuckoo-machines-list
+    outputs:
+    - contextPath: Machine.Status
+      description: Status of machine
+    - contextPath: Machine.Locked
+      description: Is the machine locked
+    - contextPath: Machine.Name
+      description: Name of machine
+    - contextPath: Machine.ResultserverIP
+      description: IP address of machine's result server
+    - contextPath: Machine.IP
+      description: IP address of machine
+    - contextPath: Machine.Label
+      description: Label of machine
+    - contextPath: Machine.LockedChangedOn
+      description: last update time of machine lock status
+    - contextPath: Machine.Platform
+      description: Platform of machine
+    - contextPath: Machine.Snapshot
+      description: Snapshot
+    - contextPath: Machine.Interface
+      description: Interface of machine
+    - contextPath: Machine.StatusChangedOn
+      description: Last update time of machine status
+    - contextPath: Machine.ID
+      description: ID of machine
+    - contextPath: Machine.ResultserverPort
+      description: Port address of machine's result server
+    - contextPath: Machine.Tags
+      description: Machine tags
+  - arguments:
+    - description: Machine name to view
+      name: name
+      required: true
     deprecated: true
-    arguments:
-    - name: name
-      required: true
-      description: Machine name to view
+    description: Returns details on the analysis machine associated with the given
+      name.
+    name: ck-machine-view
     outputs:
     - contextPath: Machine.Status
       description: Status of machine
@@ -945,13 +566,13 @@ script:
       description: Port address of machine's result server
     - contextPath: Machine.Tags
       description: Machine tags
+  - arguments:
+    - description: Machine name to view
+      name: name
+      required: true
     description: Returns details on the analysis machine associated with the given
       name.
-  - name: cuckoo-machine-view
-    arguments:
-    - name: name
-      required: true
-      description: Machine name to view
+    name: cuckoo-machine-view
     outputs:
     - contextPath: Machine.Status
       description: Status of machine
@@ -981,9 +602,154 @@ script:
       description: Port address of machine's result server
     - contextPath: Machine.Tags
       description: Machine tags
-    description: Returns details on the analysis machine associated with the given
-      name.
-hidden: false
-fromversion: 3.5.0
+  script: "var entityMap = {\n    Machine:{\n        status :            'Status',\n\
+    \        locked :            'Locked',\n        name :              'Name',\n\
+    \        resultserver_ip :   'ResultserverIP',\n        ip :                'IP',\n\
+    \        label :             'Label',\n        locked_changed_on : 'LockedChangedOn',\n\
+    \        platform :          'Platform',\n        snapshot :          'Snapshot',\n\
+    \        interface :         'Interface',\n        status_changed_on : 'StatusChangedOn',\n\
+    \        id :                'ID',\n        resultserver_port : 'ResultserverPort',\n\
+    \        tags :              'Tags'\n    },\n    Task: {\n        category  :\
+    \         'Category',\n        machine :           'Machine',\n        errors\
+    \ :            'Errors',\n        target :            'Target',\n        package\
+    \ :           'Package',\n        sample_id :         'SampleID',\n        guest\
+    \ :             'Guest',\n        custom :            'Custom',\n        owner\
+    \ :             'Owner',\n        priority :          'Priority',\n        platform\
+    \ :          'Platform',\n        options :           'Options',\n        status\
+    \ :            'Status',\n        enforce_timeout :   'EnforceTimeout',\n    \
+    \    timeout :           'Timeout',\n        memory :            'Memory',\n \
+    \       tags :              'Tags',\n        id :                'ID',\n     \
+    \   added_on :          'AddedOn',\n        completed_on :      'CompletedOn',\n\
+    \        score :             'Score',\n        monitor :           'Monitor'\n\
+    \    }\n};\n\nvar undrscrToCamelCase = function(string){\n    string = '_'+string;\n\
+    \    return string.replace(/_([a-z])/g, function (g) { return g[1].toUpperCase();\
+    \ });\n};\n\n//returns single object withing entity (i.e. File[0])\nvar jsonToEntityObject\
+    \ = function(origObj, newKeys){\n    var ret = {};\n    var path;\n    var newField;\n\
+    \    for(var key in newKeys){\n        if(newKeys[key]){\n            ret[newKeys[key]]\
+    \ = dq(origObj, '.'+key);\n        }\n    }\n    return ret;\n};\n\n//returns\
+    \ entire entity array (i.e. File)\nvar jsonToEntity = function(origObj, newKeys){\n\
+    \    var j;\n    var ret;\n    if(!Array.isArray(origObj)){\n        ret = [jsonToEntityObject(origObj,\
+    \ newKeys)];\n        return ret;\n    }\n    else if(origObj.length > 0){ //makes\
+    \ sure no empty arrays are pushed\n        ret = [];\n        for(j=0; j<origObj.length;\
+    \ j++){\n            ret.push(jsonToEntityObject(origObj[j], newKeys));\n    \
+    \    }\n        return ret;\n    }\n};\n\nvar fixUrl = function(base) {\n    res\
+    \ = base;\n    if (base && base[base.length - 1] != '/') {\n        res = res\
+    \ + '/';\n    }\n    return res;\n};\n\nvar parseResponse = function(resp) {\n\
+    \    if (resp.StatusCode === 200) {\n        try {\n            return JSON.parse(resp.Body);\n\
+    \        } catch (e) {\n            return resp.Body;\n        }\n    } else {\n\
+    \        err = resp.Status;\n        if (resp.Body) {\n            err += '\\\
+    n' + resp.Body;\n        }\n        throw err;\n    }\n};\n\nvar cuckooGet = function(qArgs,\
+    \ qParams, suffix) {\n    url = fixUrl(qParams['server']) + suffix;\n    username\
+    \ = qParams['authentication'] ? qParams['authentication']['identifier'] : '';\n\
+    \    password = qParams['authentication'] ? qParams['authentication']['password']\
+    \ : '';\n    res = http(\n        url,\n        {\n            Method: 'GET',\n\
+    \            Username: username,\n            Password: password\n        },\n\
+    \        qParams['insecure'],\n        qParams['proxy']\n    );\n    return result\
+    \ =  parseResponse(res);\n};\n\nvar cuckooGetRaw = function(qArgs, qParams, suffix)\
+    \ {\n    url = fixUrl(qParams['server']) + suffix;\n    username = qParams['authentication']\
+    \ ? qParams['authentication']['identifier'] : '';\n    password = qParams['authentication']\
+    \ ? qParams['authentication']['password'] : '';\n    res = http(\n        url,\n\
+    \        {\n            Method: 'GET',\n            Username: username,\n    \
+    \        Password: password\n        },\n        qParams['insecure'],\n      \
+    \  qParams['proxy']\n    );\n    return res;\n};\n\nvar cuckooGetFile = function(qArgs,\
+    \ qParams, suffix, filename) {\n    url = fixUrl(qParams['server']) + suffix;\n\
+    \    username = qParams['authentication'] ? qParams['authentication']['identifier']\
+    \ : '';\n    password = qParams['authentication'] ? qParams['authentication']['password']\
+    \ : '';\n    res = http(\n        url,\n        {\n            Method: 'GET',\n\
+    \            Username: username,\n            Password: password,\n          \
+    \  SaveToFile: true\n        },\n        qParams.insecure,\n        qParams.proxy\n\
+    \    );\n    if (res.StatusCode !== 200) {\n        err = res.Status;\n      \
+    \  if (res.Body) {\n            err += '\\n' + res.Body;\n        }\n        throw\
+    \ err;\n    }\n    return {\n        Type: 3,\n        FileID: res.Path,\n   \
+    \     File: filename,\n        Contents: filename\n    };\n};\n\nvar cuckooPost\
+    \ = function(qArgs, qParams, suffix) {\n    url = fixUrl(qParams.server) + suffix;\n\
+    \    username = qParams['authentication'] ? qParams['authentication']['identifier']\
+    \ : '';\n    password = qParams['authentication'] ? qParams['authentication']['password']\
+    \ : '';\n    res = httpMultipart(\n        url, // URL\n        '', // Optional\
+    \ - FilePath / EntryID\n        { // HTTP Request Headers\n            Method:\
+    \ 'POST',\n            Username: username,\n            Password: password\n \
+    \       },\n        { // Multipart Contents\n            url: qArgs['url']\n \
+    \       },\n        qParams['insecure'],\n        qParams['proxy']\n    );\n \
+    \   return parseResponse(res);\n};\n\nvar fetchFiles = function(qArgs, qParams)\
+    \ {\n    url = fixUrl(qParams['server']) + 'tasks/create/file';\n    fileParam\
+    \ = qArgs['entryID'] ? qArgs['entryID'] : qArgs['fileID'];\n    username = qParams['authentication']\
+    \ ? qParams['authentication']['identifier'] : '';\n    password = qParams['authentication']\
+    \ ? qParams['authentication']['password'] : '';\n    delete qArgs.entryID;\n \
+    \   res = httpMultipart(\n        url,\n        fileParam,\n        { // HTTP\
+    \ Request Headers\n            Method: 'POST',\n            Username: username,\n\
+    \            Password: password\n        },\n        qArgs,\n        qParams['insecure'],\n\
+    \        qParams['proxy']\n    );\n    return parseResponse(res);\n};\n\nvar createTaskFromFile\
+    \ = function(args, params){\n    var res =  fetchFiles(args, params);\n    return\
+    \ {\n        Type: entryTypes.note,\n        Contents: res,\n        ContentsFormat:\
+    \ formats.json,\n        HumanReadable: 'Task was created successfully, task ID\
+    \ = ' + res.task_id,\n        EntryContext: {'Cuckoo.Task' : {ID: res.task_id}}\n\
+    \    };\n};\n\nvar createTaskFromURL = function(args, params){\n    var res =\
+    \ cuckooPost(args, params, 'tasks/create/url');\n    return {\n        Type: entryTypes.note,\n\
+    \        Contents: res,\n        ContentsFormat: formats.json,\n        HumanReadable:\
+    \ 'Task was created successfully, task ID = ' + res.task_id,\n        EntryContext:\
+    \ {'Cuckoo.Task' : {ID: res.task_id}}\n    };\n};\n\nvar tblToMdWithTransform\
+    \ = function(title, t, transform){\n    return tblToMd(title, t, undefined, undefined,\
+    \ transform);\n}\n\nvar getTaskReport = function(args, params){\n    var result\
+    \ = cuckooGet(args, params, 'tasks/report/' + args['id']);\n    var md;\n    var\
+    \ context = {};\n\n    context['Cuckoo.Task(val.ID && val.ID == obj.ID)'] = jsonToEntity(result.info,\
+    \ entityMap.Task);\n    md = tblToMdWithTransform('Task Target', result.target,\
+    \ undrscrToCamelCase);\n    md += tblToMdWithTransform('Task Info', result.info,\
+    \ undrscrToCamelCase);\n    md += tblToMdWithTransform('Task Metadata', result.metadata,\
+    \ undrscrToCamelCase);\n    md += tblToMdWithTransform('Task Network Data', result.network);\n\
+    \    if(result.signatures && result.signatures.length > 0){\n        md += tblToMdWithTransform('Task\
+    \ Signatures', result.signatures, undrscrToCamelCase);\n    }\n    return {\n\
+    \        Type: entryTypes.note,\n        Contents: result,\n        ContentsFormat:\
+    \ formats.json,\n        HumanReadable: md,\n        EntryContext: context\n \
+    \   };\n};\nvar viewTasks = function(args, params){\n    ids = argToList(args['id']);\n\
+    \    var res = [];\n    for(var i in ids){\n        task_id = ids[i];\n      \
+    \  entry = viewTask(args, params, task_id);\n        res.push(entry);\n    }\n\
+    \    return res;\n};\n\nvar viewTask = function(args, params, id){\n    result\
+    \ = cuckooGet(args, params, 'tasks/view/' + id);\n\n    return {\n        Type:\
+    \ entryTypes.note,\n        Contents: result,\n        ContentsFormat: formats.json,\n\
+    \        HumanReadable: tblToMdWithTransform('Task Table', result.task, undrscrToCamelCase),\n\
+    \        EntryContext: {'Cuckoo.Task(val.ID === obj.ID)' : jsonToEntity(result.task,\
+    \ entityMap.Task)}\n    };\n};\n\nvar deleteTask = function(args, params){\n \
+    \   var res = JSON.parse(cuckooGetRaw(args, params, 'tasks/delete/' + args['id']).Body);\n\
+    \    return (res.status? res.status : res.message);\n};\n\nvar listTasks = function(args,\
+    \ params){\n    var result = cuckooGet(args, params, 'tasks/list');\n\n    return\
+    \ {\n        Type: entryTypes.note,\n        Contents: res,\n        ContentsFormat:\
+    \ formats.json,\n        HumanReadable: tblToMdWithTransform('Task Table', result.tasks,\
+    \ undrscrToCamelCase),\n        EntryContext: {'Cuckoo.Task' : jsonToEntity(result.tasks,\
+    \ entityMap.Task)}\n    };\n};\n\nvar listMachines = function(args, params){\n\
+    \    var result = cuckooGet(args, params, 'machines/list');\n\n    return {\n\
+    \        Type: entryTypes.note,\n        Contents: res,\n        ContentsFormat:\
+    \ formats.json,\n        HumanReadable: tblToMdWithTransform('Machines Table',\
+    \ result.machines, undrscrToCamelCase),\n        EntryContext: {'Cuckoo.Machine'\
+    \ : jsonToEntity(result.machines, entityMap.Machine)}\n    };\n};\n\nvar viewMachine\
+    \ = function(args, params){\n    result = cuckooGet(args, params, 'machines/view/'\
+    \ + args['name']);\n\n    return {\n        Type: entryTypes.note,\n        Contents:\
+    \ res,\n        ContentsFormat: formats.json,\n        HumanReadable: tblToMdWithTransform('Machines\
+    \ Table', result.machine, undrscrToCamelCase),\n        EntryContext: {'Cuckoo.Machine'\
+    \ : jsonToEntity(result.machine, entityMap.Machine)}\n    };\n};\n\nvar taskScreenshot\
+    \ = function(args ,params){\n    var uri = 'tasks/screenshots/' + args['id'];\n\
+    \    var filename = 'CuckooScreenshots.zip'\n    if (args['screenshot']) {\n \
+    \       filename = args['screenshot'];\n        uri += '/'+ args['screenshot'];\n\
+    \    }\n    return cuckooGetFile(args, params, uri, filename);\n};\n\n\n\n// The\
+    \ command input arg holds the command sent from the user.\nswitch (command) {\n\
+    \    // This is the call made when pressing the integration test button.\n   \
+    \ case 'test-module':\n        var resp = cuckooGetRaw(args, params, 'tasks/list');\n\
+    \        if (resp.StatusCode === 200) {\n            return 'ok';\n        } else\
+    \ if (resp.Status) {\n            return resp.Status;\n        } else {\n    \
+    \        return resp;\n        }\n        break;\n\n    case 'ck-file'://deprecated\n\
+    \    case 'cuckoo-create-task-from-file':\n        return createTaskFromFile(args,\
+    \ params);\n\n    case 'ck-url'://deprecated\n    case 'cuckoo-create-task-from-url':\n\
+    \        return createTaskFromURL(args, params);\n\n    case 'ck-report'://deprecated\n\
+    \    case 'cuckoo-get-task-report':\n        return getTaskReport(args, params);\n\
+    \n    case 'ck-view'://deprecated\n    case 'cuckoo-view-task':\n        return\
+    \ viewTasks(args, params);\n\n    case 'ck-del'://deprecated\n    case 'cuckoo-delete-task':\n\
+    \        return deleteTask(args, params);\n\n    case 'ck-list'://deprecated\n\
+    \    case 'cuckoo-list-tasks':\n        return listTasks(args, params);\n\n  \
+    \  case 'ck-machines-list': //deprecated\n    case 'cuckoo-machines-list':\n \
+    \       return listMachines(args, params);\n\n    case 'ck-machine-view'://deprecated\n\
+    \    case 'cuckoo-machine-view':\n        return viewMachine(args, params);\n\n\
+    \    case 'ck-scrshot'://deprecated\n    case 'cuckoo-task-screenshot':   //unchanged\n\
+    \        return taskScreenshot(args, params);\n}"
+  type: javascript
 tests:
-  - CuckooTest
+- CuckooTest
+toversion: 4.1.9

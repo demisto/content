@@ -1,494 +1,159 @@
 id: Cylance Protect v2 Test
-version: -1
+inputs: []
 name: Cylance Protect v2 Test
-starttaskid: "0"
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 3644e4f5-e3b6-47f9-8328-79da4d72df74
-    type: start
-    task:
-      id: 3644e4f5-e3b6-47f9-8328-79da4d72df74
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
     nexttasks:
       '#none#':
-      - "11"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
+      - '11'
     note: false
-  "1":
-    id: "1"
-    taskid: 23730283-bf3f-4308-8673-cd9a4e94d76d
-    type: regular
+    separatecontext: false
     task:
-      id: 23730283-bf3f-4308-8673-cd9a4e94d76d
+      brand: ''
+      id: 3644e4f5-e3b6-47f9-8328-79da4d72df74
+      iscommand: false
+      name: ''
       version: -1
-      name: cylance-protect-get-devices
+    taskid: 3644e4f5-e3b6-47f9-8328-79da4d72df74
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    scriptarguments:
+      pageNumber: {}
+      pageSize: {}
+    separatecontext: false
+    task:
+      brand: ''
       description: Allows a caller to request a page with a list of Console device
         resources belongings to a Tenant, sorted by registration (created) date in
         descending order (most recent device registered listed first)
+      id: 23730283-bf3f-4308-8673-cd9a4e94d76d
+      iscommand: true
+      name: cylance-protect-get-devices
       script: '|||cylance-protect-get-devices'
       type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      pageNumber: {}
-      pageSize: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-  "2":
-    id: "2"
-    taskid: cef538aa-1852-47ed-8bc9-0f0505b69d2b
-    type: regular
-    task:
-      id: cef538aa-1852-47ed-8bc9-0f0505b69d2b
       version: -1
-      name: cylance-protect-get-device-threats
-      description: Allows a caller to request a page with a list of threats found
-        on a specific device
-      script: '|||cylance-protect-get-device-threats'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      id:
-        complex:
-          root: CylanceProtect
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: CylanceProtect.Device.State
-                iscontext: true
-              right:
-                value:
-                  simple: Online
-          accessor: Device.ID
-      pageNumber: {}
-      pageSize: {}
-      threshold: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-  "3":
-    id: "3"
-    taskid: be5f9fdf-4ef1-4bdd-8ee9-6f25b6581522
+    taskid: 23730283-bf3f-4308-8673-cd9a4e94d76d
     type: regular
-    task:
-      id: be5f9fdf-4ef1-4bdd-8ee9-6f25b6581522
-      version: -1
-      name: cylance-protect-get-list
-      description: Gets a list of global list resources for a tenant
-      script: '|||cylance-protect-get-list'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      listTypeId:
-        simple: GlobalQuarantine
-      page: {}
-      page_size: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '10':
+    id: '10'
     note: false
-  "4":
-    id: "4"
-    taskid: bd96cd9a-9b13-47e7-8bba-19db5f6f476b
-    type: regular
-    task:
-      id: bd96cd9a-9b13-47e7-8bba-19db5f6f476b
-      version: -1
-      name: cylance-protect-get-policies
-      description: Allows the caller to get a list of tenant policies
-      script: '|||cylance-protect-get-policies'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      pageItems: {}
-      pageNumber: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1595
-        }
-      }
-    note: false
-  "5":
-    id: "5"
-    taskid: 76546d6f-1c33-44bd-8dde-db457eeba6a7
-    type: regular
     task:
-      id: 76546d6f-1c33-44bd-8dde-db457eeba6a7
-      version: -1
-      name: cylance-protect-get-zones
-      description: Request zone information for your organization. This will return
-        the top 100 records
-      script: '|||cylance-protect-get-zones'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      pageItems: {}
-      pageNumber: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-  "6":
-    id: "6"
-    taskid: 0e459a16-e6df-41b4-8e7f-db8d2f860ebf
-    type: regular
-    task:
-      id: 0e459a16-e6df-41b4-8e7f-db8d2f860ebf
-      version: -1
-      name: cylance-protect-get-threat
-      description: Request threat details for a specific threat
-      script: '|||cylance-protect-get-threat'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      sha256:
-        complex:
-          root: File
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: File.Classification
-                iscontext: true
-              right:
-                value:
-                  simple: Malware
-          - - operator: lessThan
-              left:
-                value:
-                  simple: File.CylanceScore
-                iscontext: true
-              right:
-                value:
-                  simple: "90"
-          accessor: Sha256
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "0"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-  "7":
-    id: "7"
-    taskid: 03012a7a-81f9-4154-8938-d1dcab6ab930
-    type: regular
-    task:
-      id: 03012a7a-81f9-4154-8938-d1dcab6ab930
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: Classification,SubClassification,Name,Sha256
-      path:
-        simple: File
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-  "8":
-    id: "8"
-    taskid: caecfbe9-2f35-4568-8c80-827fc9bac0f3
-    type: regular
-    task:
-      id: caecfbe9-2f35-4568-8c80-827fc9bac0f3
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: DateAdded,DateModified,DeviceCount,Id,Name,ZoneCount
-      path:
-        simple: CylanceProtect.Policies
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1770
-        }
-      }
-    note: false
-  "9":
-    id: "9"
-    taskid: 06289097-7762-4e25-8101-dc8e0027f4e0
-    type: regular
-    task:
-      id: 06289097-7762-4e25-8101-dc8e0027f4e0
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: Criticality,DateCreated,DateModified,Id,Name,PolicyId,UpdateType
-      path:
-        simple: CylanceProtect.Zones
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-    note: false
-  "10":
-    id: "10"
-    taskid: 519f6dd9-3e8a-48e1-8555-1b14054b1cbc
-    type: title
-    task:
+      brand: ''
       id: 519f6dd9-3e8a-48e1-8555-1b14054b1cbc
-      version: -1
+      iscommand: false
       name: Success
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2995
-        }
-      }
-    note: false
-  "11":
-    id: "11"
-    taskid: c42b5733-418f-4049-833d-9266f0c6599e
-    type: regular
-    task:
-      id: c42b5733-418f-4049-833d-9266f0c6599e
       version: -1
-      name: Delete Context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: 519f6dd9-3e8a-48e1-8555-1b14054b1cbc
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2995\n  }\n}"
+  '11':
+    id: '11'
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
+    note: false
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-  "12":
-    id: "12"
-    taskid: a31df2c3-15b5-4f5d-8fe9-9e10bd075034
-    type: regular
     task:
-      id: a31df2c3-15b5-4f5d-8fe9-9e10bd075034
-      version: -1
-      name: cylance-protect-download-threat
-      script: '|||cylance-protect-download-threat'
+      brand: ''
+      id: c42b5733-418f-4049-833d-9266f0c6599e
+      iscommand: false
+      name: Delete Context
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: ""
+      version: -1
+    taskid: c42b5733-418f-4049-833d-9266f0c6599e
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '12':
+    id: '12'
     nexttasks:
       '#none#':
-      - "13"
+      - '13'
+    note: false
     scriptarguments:
       sha256:
         simple: 0f427b33b824110427b2ba7be20740b45ea4da41bc1416dd55771edfb0c18f09
       threshold: {}
       unzip:
-        simple: "yes"
+        simple: 'yes'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1945
-        }
-      }
-    note: false
-  "13":
-    id: "13"
-    taskid: bf9913e5-e9c8-4cdc-87d3-5baeca19ed10
-    type: condition
     task:
-      id: bf9913e5-e9c8-4cdc-87d3-5baeca19ed10
+      brand: ''
+      id: a31df2c3-15b5-4f5d-8fe9-9e10bd075034
+      iscommand: true
+      name: cylance-protect-download-threat
+      script: '|||cylance-protect-download-threat'
+      type: regular
       version: -1
-      name: Check if file was downloaded
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "14"
-    separatecontext: false
+    taskid: a31df2c3-15b5-4f5d-8fe9-9e10bd075034
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1945\n  }\n}"
+  '13':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: File
+                accessor: SHA256
                 filters:
-                - - operator: containsGeneral
-                    left:
+                - - left:
+                      iscontext: true
                       value:
                         simple: File.SHA256
-                      iscontext: true
+                    operator: containsGeneral
                     right:
                       value:
                         simple: 0f427b33b824110427b2ba7be20740b45ea4da41bc1416dd55771edfb0c18f09
-                accessor: SHA256
+                root: File
                 transformers:
                 - operator: toUpperCase
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: 0F427B33B824110427B2BA7BE20740B45EA4DA41BC1416DD55771EDFB0C18F09
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2120
-        }
-      }
+      label: 'yes'
+    id: '13'
+    nexttasks:
+      'yes':
+      - '14'
     note: false
-  "14":
-    id: "14"
-    taskid: 78afc8a3-23cf-4e54-8a1c-7d71f15ca442
-    type: regular
+    separatecontext: false
     task:
-      id: 78afc8a3-23cf-4e54-8a1c-7d71f15ca442
+      brand: ''
+      id: bf9913e5-e9c8-4cdc-87d3-5baeca19ed10
+      iscommand: false
+      name: Check if file was downloaded
+      type: condition
       version: -1
-      name: cylance-protect-add-hash-to-list
-      script: '|||cylance-protect-add-hash-to-list'
-      type: regular
-      iscommand: true
-      brand: ""
+    taskid: bf9913e5-e9c8-4cdc-87d3-5baeca19ed10
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2120\n  }\n}"
+  '14':
+    id: '14'
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
+    note: false
     scriptarguments:
       category: {}
       listType:
@@ -497,123 +162,357 @@ tasks:
       sha256:
         simple: 9ACD45F5F3F2C7629E51FE3123D31296EF763F6ABC1F895CDD1BF1AFB9A7453B
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2295
-        }
-      }
-    note: false
-  "15":
-    id: "15"
-    taskid: b9cd16c1-c004-4c13-8d44-ef25c730f3bf
-    type: regular
     task:
-      id: b9cd16c1-c004-4c13-8d44-ef25c730f3bf
-      version: -1
-      name: 'cylance-protect-delete-hash-from-lists '
-      script: '|||cylance-protect-delete-hash-from-lists'
-      type: regular
+      brand: ''
+      id: 78afc8a3-23cf-4e54-8a1c-7d71f15ca442
       iscommand: true
-      brand: ""
+      name: cylance-protect-add-hash-to-list
+      script: '|||cylance-protect-add-hash-to-list'
+      type: regular
+      version: -1
+    taskid: 78afc8a3-23cf-4e54-8a1c-7d71f15ca442
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2295\n  }\n}"
+  '15':
+    id: '15'
     nexttasks:
       '#none#':
-      - "16"
+      - '16'
+    note: false
     scriptarguments:
       listType:
         simple: GlobalQuarantine
       sha256:
         simple: 9ACD45F5F3F2C7629E51FE3123D31296EF763F6ABC1F895CDD1BF1AFB9A7453B
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2470
-        }
-      }
-    note: false
-  "16":
-    id: "16"
-    taskid: 9490e14b-571f-49fc-8b20-a421341f3cc6
-    type: regular
     task:
-      id: 9490e14b-571f-49fc-8b20-a421341f3cc6
-      version: -1
-      name: cylance-protect-get-policy-details
-      script: '|||cylance-protect-get-policy-details'
-      type: regular
+      brand: ''
+      id: b9cd16c1-c004-4c13-8d44-ef25c730f3bf
       iscommand: true
-      brand: ""
+      name: 'cylance-protect-delete-hash-from-lists '
+      script: '|||cylance-protect-delete-hash-from-lists'
+      type: regular
+      version: -1
+    taskid: b9cd16c1-c004-4c13-8d44-ef25c730f3bf
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2470\n  }\n}"
+  '16':
+    id: '16'
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
+    note: false
     scriptarguments:
       policyID:
         simple: 7bcb0817-e9c9-444d-96e2-be9b59f429cb
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2645
-        }
-      }
-    note: false
-  "17":
-    id: "17"
-    taskid: 9f27c661-3171-4a45-895f-cb8e97d9f4d2
-    type: condition
     task:
-      id: 9f27c661-3171-4a45-895f-cb8e97d9f4d2
+      brand: ''
+      id: 9490e14b-571f-49fc-8b20-a421341f3cc6
+      iscommand: true
+      name: cylance-protect-get-policy-details
+      script: '|||cylance-protect-get-policy-details'
+      type: regular
       version: -1
-      name: Test if policy was recieved
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "10"
-    separatecontext: false
+    taskid: 9490e14b-571f-49fc-8b20-a421341f3cc6
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2645\n  }\n}"
+  '17':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: Cylance
+                accessor: Policy.ID
                 filters:
-                - - operator: isEqualString
-                    left:
+                - - left:
+                      iscontext: true
                       value:
                         simple: Cylance.Policy.ID
-                      iscontext: true
+                    operator: isEqualString
                     right:
                       value:
                         simple: 7bcb0817-e9c9-444d-96e2-be9b59f429cb
-                accessor: Policy.ID
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2820
-        }
-      }
+                root: Cylance
+          operator: isExists
+      label: 'yes'
+    id: '17'
+    nexttasks:
+      'yes':
+      - '10'
     note: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 3010,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
-inputs: []
-outputs: []
+    separatecontext: false
+    task:
+      brand: ''
+      id: 9f27c661-3171-4a45-895f-cb8e97d9f4d2
+      iscommand: false
+      name: Test if policy was recieved
+      type: condition
+      version: -1
+    taskid: 9f27c661-3171-4a45-895f-cb8e97d9f4d2
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2820\n  }\n}"
+  '2':
+    id: '2'
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    scriptarguments:
+      id:
+        complex:
+          accessor: Device.ID
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: CylanceProtect.Device.State
+              operator: isEqualString
+              right:
+                value:
+                  simple: Online
+          root: CylanceProtect
+      pageNumber: {}
+      pageSize: {}
+      threshold: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Allows a caller to request a page with a list of threats found
+        on a specific device
+      id: cef538aa-1852-47ed-8bc9-0f0505b69d2b
+      iscommand: true
+      name: cylance-protect-get-device-threats
+      script: '|||cylance-protect-get-device-threats'
+      type: regular
+      version: -1
+    taskid: cef538aa-1852-47ed-8bc9-0f0505b69d2b
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '3':
+    id: '3'
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    scriptarguments:
+      listTypeId:
+        simple: GlobalQuarantine
+      page: {}
+      page_size: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Gets a list of global list resources for a tenant
+      id: be5f9fdf-4ef1-4bdd-8ee9-6f25b6581522
+      iscommand: true
+      name: cylance-protect-get-list
+      script: '|||cylance-protect-get-list'
+      type: regular
+      version: -1
+    taskid: be5f9fdf-4ef1-4bdd-8ee9-6f25b6581522
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+  '4':
+    id: '4'
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    scriptarguments:
+      pageItems: {}
+      pageNumber: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Allows the caller to get a list of tenant policies
+      id: bd96cd9a-9b13-47e7-8bba-19db5f6f476b
+      iscommand: true
+      name: cylance-protect-get-policies
+      script: '|||cylance-protect-get-policies'
+      type: regular
+      version: -1
+    taskid: bd96cd9a-9b13-47e7-8bba-19db5f6f476b
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1595\n  }\n}"
+  '5':
+    id: '5'
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
+    scriptarguments:
+      pageItems: {}
+      pageNumber: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Request zone information for your organization. This will return
+        the top 100 records
+      id: 76546d6f-1c33-44bd-8dde-db457eeba6a7
+      iscommand: true
+      name: cylance-protect-get-zones
+      script: '|||cylance-protect-get-zones'
+      type: regular
+      version: -1
+    taskid: 76546d6f-1c33-44bd-8dde-db457eeba6a7
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+  '6':
+    id: '6'
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    scriptarguments:
+      sha256:
+        complex:
+          accessor: Sha256
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: File.Classification
+              operator: isEqualString
+              right:
+                value:
+                  simple: Malware
+          - - left:
+                iscontext: true
+                value:
+                  simple: File.CylanceScore
+              operator: lessThan
+              right:
+                value:
+                  simple: '90'
+          root: File
+          transformers:
+          - args:
+              index:
+                value:
+                  simple: '0'
+            operator: atIndex
+    separatecontext: false
+    task:
+      brand: ''
+      description: Request threat details for a specific threat
+      id: 0e459a16-e6df-41b4-8e7f-db8d2f860ebf
+      iscommand: true
+      name: cylance-protect-get-threat
+      script: '|||cylance-protect-get-threat'
+      type: regular
+      version: -1
+    taskid: 0e459a16-e6df-41b4-8e7f-db8d2f860ebf
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '7':
+    id: '7'
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Classification,SubClassification,Name,Sha256
+      path:
+        simple: File
+    separatecontext: false
+    task:
+      brand: ''
+      description: 'Verifies path in context:
+
+        - Verifies path existence
+
+        - If matching object is an array: verify fields exists in each of the objects
+        in the array
+
+        - If matching object is not an array: verify fields exists in matching object
+
+        - if ''expectedValue'' is given: ensure that the given value is equal to the
+        context path'
+      id: 03012a7a-81f9-4154-8938-d1dcab6ab930
+      iscommand: false
+      name: VerifyContext
+      scriptName: VerifyContext
+      type: regular
+      version: -1
+    taskid: 03012a7a-81f9-4154-8938-d1dcab6ab930
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+  '8':
+    id: '8'
+    nexttasks:
+      '#none#':
+      - '12'
+    note: false
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: DateAdded,DateModified,DeviceCount,Id,Name,ZoneCount
+      path:
+        simple: CylanceProtect.Policies
+    separatecontext: false
+    task:
+      brand: ''
+      description: 'Verifies path in context:
+
+        - Verifies path existence
+
+        - If matching object is an array: verify fields exists in each of the objects
+        in the array
+
+        - If matching object is not an array: verify fields exists in matching object
+
+        - if ''expectedValue'' is given: ensure that the given value is equal to the
+        context path'
+      id: caecfbe9-2f35-4568-8c80-827fc9bac0f3
+      iscommand: false
+      name: VerifyContext
+      scriptName: VerifyContext
+      type: regular
+      version: -1
+    taskid: caecfbe9-2f35-4568-8c80-827fc9bac0f3
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1770\n  }\n}"
+  '9':
+    id: '9'
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Criticality,DateCreated,DateModified,Id,Name,PolicyId,UpdateType
+      path:
+        simple: CylanceProtect.Zones
+    separatecontext: false
+    task:
+      brand: ''
+      description: 'Verifies path in context:
+
+        - Verifies path existence
+
+        - If matching object is an array: verify fields exists in each of the objects
+        in the array
+
+        - If matching object is not an array: verify fields exists in matching object
+
+        - if ''expectedValue'' is given: ensure that the given value is equal to the
+        context path'
+      id: 06289097-7762-4e25-8101-dc8e0027f4e0
+      iscommand: false
+      name: VerifyContext
+      scriptName: VerifyContext
+      type: regular
+      version: -1
+    taskid: 06289097-7762-4e25-8101-dc8e0027f4e0
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1420\n  }\n}"
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 3010,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"

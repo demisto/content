@@ -1,227 +1,48 @@
-id: 'QRadar - Get offense correlations '
-version: -1
-name: QRadar - Get offense correlations
+description: 'DEPRECATED - Use the `QRadar - Get offense correlations v2` instead."
+
+  Run on a QRadar offense to get more information
+
+
+  * Get all correlations relevant to the offense
+
+  * Get all logs relevant to the correlations (not done by default, set "GetCorrelationLogs"
+  to "True")
+
+
+  Inputs:
+
+  * GetCorrelationLogs (default: False)
+
+  * MaxLogsCount (default: 20)'
 fromversion: 3.5.0
-description: "DEPRECATED - Use the `QRadar - Get offense correlations v2` instead.\"\nRun on a\
-  \ QRadar offense to get more information\n\n* Get all correlations relevant to the\
-  \ offense\n* Get all logs relevant to the correlations (not done by default, set\
-  \ \"GetCorrelationLogs\" to \"True\")\n\nInputs:\n* GetCorrelationLogs (default:\
-  \ False)\n* MaxLogsCount (default: 20)"
 hidden: true
-starttaskid: '0'
-tasks:
-  '0':
-    id: '0'
-    taskid: 608f0ec1-4001-4e68-8ead-e160f7802b35
-    type: start
-    task:
-      id: 608f0ec1-4001-4e68-8ead-e160f7802b35
-      version: -1
-      name: ''
-      description: ''
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '1'
-    separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 51\n  }\n}"
-  '1':
-    id: '1'
-    taskid: e403a36f-c0fd-4ef0-8ec7-8a6683a5b0a5
-    type: condition
-    task:
-      id: e403a36f-c0fd-4ef0-8ec7-8a6683a5b0a5
-      version: -1
-      name: Is this a QRadar offense?
-      description: ''
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#default#':
-      - '2'
-      'yes':
-      - '5'
-    separatecontext: false
-    conditions:
-    - label: 'yes'
-      condition:
-      - - operator: general.isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: string.isEqual
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: QRadar
-                    ignorecase: true
-                accessor: brand
-            iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
-  '2':
-    id: '2'
-    taskid: edc69a27-88bc-4edb-8fca-8a111d2b6785
-    type: title
-    task:
-      id: edc69a27-88bc-4edb-8fca-8a111d2b6785
-      version: -1
-      name: Done
-      description: ''
-      type: title
-      iscommand: false
-      brand: ''
-    separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1040\n  }\n}"
-  '3':
-    id: '3'
-    taskid: bbe06f8f-78a7-4de5-81ff-ff16aa98f5b6
-    type: regular
-    task:
-      id: bbe06f8f-78a7-4de5-81ff-ff16aa98f5b6
-      version: -1
-      name: Get Offense correlations
-      description: Query QRadar for the offense correlations using the QRadar API
-      scriptName: QRadarGetOffenseCorrelations
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '6'
-    scriptarguments:
-      fields: {}
-      headers: {}
-      interval: {}
-      offenseID:
-        complex:
-          root: inputs.ID
-      range: {}
-      startTime:
-        complex:
-          root: inputs.StartTime
-      timeout: {}
-    separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 515\n  }\n}"
-  '4':
-    id: '4'
-    taskid: 324f9756-1ddb-4d58-8d45-26f892ba6759
-    type: regular
-    task:
-      id: 324f9756-1ddb-4d58-8d45-26f892ba6759
-      version: -1
-      name: Get correlations' logs
-      description: ''
-      scriptName: QRadarGetCorrelationLogs
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '2'
-    scriptarguments:
-      additionalQueryFields: {}
-      fields: {}
-      headers: {}
-      interval: {}
-      offenseID:
-        complex:
-          root: inputs.ID
-      qid:
-        complex:
-          root: QRadar
-          accessor: Correlation.QID
-      range:
-        simple: 0-${inputs.MaxLogsCount}
-      startTime:
-        complex:
-          root: inputs.StartTime
-      timeout: {}
-    separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 865\n  }\n}"
-  '5':
-    id: '5'
-    taskid: d05103bc-af8a-4d0b-80e2-a1637c45aa9c
-    type: title
-    task:
-      id: d05103bc-af8a-4d0b-80e2-a1637c45aa9c
-      version: -1
-      name: Get offense information
-      description: ''
-      type: title
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '3'
-    separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 370\n  }\n}"
-  '6':
-    id: '6'
-    taskid: 8dfe1ea9-0c27-4ff9-8892-ae66f014ec4b
-    type: condition
-    task:
-      id: 8dfe1ea9-0c27-4ff9-8892-ae66f014ec4b
-      version: -1
-      name: Should query for the correlations' logs?
-      description: ''
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#default#':
-      - '2'
-      'yes':
-      - '4'
-    separatecontext: false
-    conditions:
-    - label: 'yes'
-      condition:
-      - - operator: string.isEqual
-          left:
-            value:
-              complex:
-                root: inputs.GetCorrelationLogs
-            iscontext: true
-          right:
-            value:
-              simple: 'True'
-          ignorecase: true
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 690\n  }\n}"
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 1054,\n      \"width\": 605,\n      \"x\": 50,\n      \"y\": 51\n\
-  \    }\n  }\n}"
+id: 'QRadar - Get offense correlations '
 inputs:
-- key: GetCorrelationLogs
+- description: If "True" will get all of the offense's correlations logs
+  key: GetCorrelationLogs
+  required: false
   value:
     simple: 'False'
+- description: 'Maximum number of log entires to query from QRadar (default: 20)'
+  key: MaxLogsCount
   required: false
-  description: If "True" will get all of the offense's correlations logs
-- key: MaxLogsCount
   value:
     simple: '20'
-  required: false
-  description: 'Maximum number of log entires to query from QRadar (default: 20)'
-- key: ID
+- description: 'The QRadar offense ID '
+  key: ID
+  required: true
   value:
     complex:
-      root: incident
       accessor: labels.id
+      root: incident
+- description: The QRadar offense start time
+  key: StartTime
   required: true
-  description: 'The QRadar offense ID '
-- key: StartTime
   value:
     complex:
-      root: incident
       accessor: labels.start_time
-  required: true
-  description: The QRadar offense start time
+      root: incident
+name: QRadar - Get offense correlations
 outputs:
 - contextPath: QRadar.Correlation.StartTime
   description: The correlation start time
@@ -269,5 +90,196 @@ outputs:
   description: The log's magnitude
 - contextPath: QRadar.Log.ProtocolName
   description: The log's protocol name
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 608f0ec1-4001-4e68-8ead-e160f7802b35
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 608f0ec1-4001-4e68-8ead-e160f7802b35
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 51\n  }\n}"
+  '1':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: string.isEqual
+                    right:
+                      value:
+                        simple: QRadar
+                root: modules
+          operator: general.isExists
+      label: 'yes'
+    id: '1'
+    nexttasks:
+      '#default#':
+      - '2'
+      'yes':
+      - '5'
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: e403a36f-c0fd-4ef0-8ec7-8a6683a5b0a5
+      iscommand: false
+      name: Is this a QRadar offense?
+      type: condition
+      version: -1
+    taskid: e403a36f-c0fd-4ef0-8ec7-8a6683a5b0a5
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '2':
+    id: '2'
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: edc69a27-88bc-4edb-8fca-8a111d2b6785
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: edc69a27-88bc-4edb-8fca-8a111d2b6785
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1040\n  }\n}"
+  '3':
+    id: '3'
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      fields: {}
+      headers: {}
+      interval: {}
+      offenseID:
+        complex:
+          root: inputs.ID
+      range: {}
+      startTime:
+        complex:
+          root: inputs.StartTime
+      timeout: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Query QRadar for the offense correlations using the QRadar API
+      id: bbe06f8f-78a7-4de5-81ff-ff16aa98f5b6
+      iscommand: false
+      name: Get Offense correlations
+      scriptName: QRadarGetOffenseCorrelations
+      type: regular
+      version: -1
+    taskid: bbe06f8f-78a7-4de5-81ff-ff16aa98f5b6
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 515\n  }\n}"
+  '4':
+    id: '4'
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      additionalQueryFields: {}
+      fields: {}
+      headers: {}
+      interval: {}
+      offenseID:
+        complex:
+          root: inputs.ID
+      qid:
+        complex:
+          accessor: Correlation.QID
+          root: QRadar
+      range:
+        simple: 0-${inputs.MaxLogsCount}
+      startTime:
+        complex:
+          root: inputs.StartTime
+      timeout: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 324f9756-1ddb-4d58-8d45-26f892ba6759
+      iscommand: false
+      name: Get correlations' logs
+      scriptName: QRadarGetCorrelationLogs
+      type: regular
+      version: -1
+    taskid: 324f9756-1ddb-4d58-8d45-26f892ba6759
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 865\n  }\n}"
+  '5':
+    id: '5'
+    nexttasks:
+      '#none#':
+      - '3'
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: d05103bc-af8a-4d0b-80e2-a1637c45aa9c
+      iscommand: false
+      name: Get offense information
+      type: title
+      version: -1
+    taskid: d05103bc-af8a-4d0b-80e2-a1637c45aa9c
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 370\n  }\n}"
+  '6':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.GetCorrelationLogs
+          operator: string.isEqual
+          right:
+            value:
+              simple: 'True'
+      label: 'yes'
+    id: '6'
+    nexttasks:
+      '#default#':
+      - '2'
+      'yes':
+      - '4'
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 8dfe1ea9-0c27-4ff9-8892-ae66f014ec4b
+      iscommand: false
+      name: Should query for the correlations' logs?
+      type: condition
+      version: -1
+    taskid: 8dfe1ea9-0c27-4ff9-8892-ae66f014ec4b
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 690\n  }\n}"
 tests:
 - no tests
+toversion: 4.1.9
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1054,\n      \"width\": 605,\n      \"x\": 50,\n      \"y\": 51\n\
+  \    }\n  }\n}"

@@ -1,69 +1,24 @@
+args:
+- default: true
+  description: The email address to check
+  name: email
+  required: true
+- description: List of internal domains to check, comma separated
+  isArray: true
+  name: domain
+- auto: PREDEFINED
+  defaultValue: 'no'
+  description: Include subdomains of the domain list?
+  name: include_subdomains
+  predefined:
+  - 'yes'
+  - 'no'
+comment: Checks if the email address is part of the internal domains
 commonfields:
   id: IsEmailAddressInternal
   version: -1
-name: IsEmailAddressInternal
-script: |-
-  import re
-  from distutils.util import strtobool
-
-  email = demisto.args()['email']
-  domains = [x.lower() for x in argToList(demisto.get(demisto.args(),'domain'))]
-  include_subdomains = strtobool(demisto.getArg('include_subdomains') or 'no')
-
-  parts = email.split('@',1)
-
-  network_type = "Unknown"
-  in_domain = "no"
-
-  if len(parts) > 1:
-      if parts[1].lower() in domains or include_subdomains and re.match("^(.*\\.)?({})".format('|'.join([re.escape(d) for d in domains])), parts[1].lower()):
-          in_domain = "yes"
-          network_type = "Internal"
-      else:
-          network_type = "External"
-
-      email_dict = {
-          "Address" : email,
-          "Domain" : parts[1],
-          "Username": parts[0],
-          "NetworkType" : network_type
-      }
-
-      email_obj = {
-          "Account.Email(val.Address && val.Address == obj.Address)": email_dict
-      }
-      demisto.results({
-          "Type" : entryTypes["note"],
-          "ContentsFormat" : formats["json"],
-          "Contents" : in_domain,
-          "HumanReadable" : in_domain,
-          "EntryContext" : email_obj
-      })
-
-  else:
-      demisto.results({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Email address "{0}" is not valid' })
-      sys.exit(0)
-type: python
-subtype: python2
-tags:
-- email
-comment: Checks if the email address is part of the internal domains
 enabled: true
-args:
-- name: email
-  required: true
-  default: true
-  description: The email address to check
-- name: domain
-  description: List of internal domains to check, comma separated
-  isArray: true
-- name: include_subdomains
-  auto: PREDEFINED
-  predefined:
-  - "yes"
-  - "no"
-  description: Include subdomains of the domain list?
-  defaultValue: "no"
+name: IsEmailAddressInternal
 outputs:
 - contextPath: Account.Email.Address
   description: The Email account full address
@@ -77,5 +32,26 @@ outputs:
 - contextPath: Account.Email.NetworkType
   description: The Email account NetworkType (could be Internal/External)
   type: string
-scripttarget: 0
 runonce: false
+script: "import re\nfrom distutils.util import strtobool\n\nemail = demisto.args()['email']\n\
+  domains = [x.lower() for x in argToList(demisto.get(demisto.args(),'domain'))]\n\
+  include_subdomains = strtobool(demisto.getArg('include_subdomains') or 'no')\n\n\
+  parts = email.split('@',1)\n\nnetwork_type = \"Unknown\"\nin_domain = \"no\"\n\n\
+  if len(parts) > 1:\n    if parts[1].lower() in domains or include_subdomains and\
+  \ re.match(\"^(.*\\\\.)?({})\".format('|'.join([re.escape(d) for d in domains])),\
+  \ parts[1].lower()):\n        in_domain = \"yes\"\n        network_type = \"Internal\"\
+  \n    else:\n        network_type = \"External\"\n\n    email_dict = {\n       \
+  \ \"Address\" : email,\n        \"Domain\" : parts[1],\n        \"Username\": parts[0],\n\
+  \        \"NetworkType\" : network_type\n    }\n\n    email_obj = {\n        \"\
+  Account.Email(val.Address && val.Address == obj.Address)\": email_dict\n    }\n\
+  \    demisto.results({\n        \"Type\" : entryTypes[\"note\"],\n        \"ContentsFormat\"\
+  \ : formats[\"json\"],\n        \"Contents\" : in_domain,\n        \"HumanReadable\"\
+  \ : in_domain,\n        \"EntryContext\" : email_obj\n    })\n\nelse:\n    demisto.results({\
+  \ \"Type\" : entryTypes[\"error\"], \"ContentsFormat\" : formats[\"text\"], \"Contents\"\
+  \ : 'Email address \"{0}\" is not valid' })\n    sys.exit(0)"
+scripttarget: 0
+subtype: python2
+tags:
+- email
+toversion: 4.1.9
+type: python

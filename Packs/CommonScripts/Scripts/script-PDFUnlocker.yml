@@ -1,40 +1,29 @@
+args:
+- default: true
+  description: Entry ID with PDF file
+  name: entryID
+  required: true
+- description: Password of PDF file
+  name: password
+  required: true
+  secret: true
+comment: Removing the password protection from a PDF file and adding a new file entry
+  with the unlocked PDF.
 commonfields:
   id: PDFUnlocker
   version: -1
+dockerimage: demisto/pypdf2
+enabled: true
 name: PDFUnlocker
-script: |
-  from PyPDF2 import PdfFileWriter, PdfFileReader
-
-  res = demisto.executeCommand("getFilePath", {"id":demisto.args()["entryID"]})
-  originPath = res[0]['Contents']['path']
-  outputName = "UNLOCKED_" + res[0]['Contents']['name']
-
-  input1 = PdfFileReader(open(originPath, "rb"))
-  input1.decrypt(str(demisto.args()["password"]))
-
-  output = PdfFileWriter()
-  for pageNum in range(0, input1.getNumPages()):
-      output.addPage(input1.getPage(pageNum))
-  outputStream = file(outputName, "wb")
-  output.write(outputStream)
-  outputStream.close()
-  
-  demisto.results(file_result_existing_file(outputName))
-
-type: python
+script: "from PyPDF2 import PdfFileWriter, PdfFileReader\n\nres = demisto.executeCommand(\"\
+  getFilePath\", {\"id\":demisto.args()[\"entryID\"]})\noriginPath = res[0]['Contents']['path']\n\
+  outputName = \"UNLOCKED_\" + res[0]['Contents']['name']\n\ninput1 = PdfFileReader(open(originPath,\
+  \ \"rb\"))\ninput1.decrypt(str(demisto.args()[\"password\"]))\n\noutput = PdfFileWriter()\n\
+  for pageNum in range(0, input1.getNumPages()):\n    output.addPage(input1.getPage(pageNum))\n\
+  outputStream = file(outputName, \"wb\")\noutput.write(outputStream)\noutputStream.close()\n\
+  \ndemisto.results(file_result_existing_file(outputName))\n"
+scripttarget: 0
 subtype: python2
 tags: []
-comment: Removing the password protection from a PDF file and adding a new file entry
-  with the unlocked PDF.
-enabled: true
-args:
-- name: entryID
-  required: true
-  default: true
-  description: Entry ID with PDF file
-- name: password
-  required: true
-  secret: true
-  description: Password of PDF file
-scripttarget: 0
-dockerimage: demisto/pypdf2
+toversion: 4.1.9
+type: python
