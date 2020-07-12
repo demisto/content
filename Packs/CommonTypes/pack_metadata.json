@@ -96,6 +96,10 @@
             "mandatory": false,
             "display_name": "AlienVault OTX"
         },
+        "PAN-OS": {
+            "mandatory": false,
+            "display_name": "Recorded Future"
+        },
         "Recorded_Future": {
             "mandatory": false,
             "display_name": "Recorded Future"
