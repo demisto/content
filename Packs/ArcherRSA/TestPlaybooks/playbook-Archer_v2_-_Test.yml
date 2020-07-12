@@ -463,6 +463,8 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
+      retry-count:
+        simple: "4"
       applicationId:
         simple: "75"
       contentId:
@@ -1160,6 +1162,8 @@ tasks:
       '#none#':
       - "31"
     scriptarguments:
+      retry-count:
+        simple: "4"
       applicationId:
         simple: "75"
       contentId:
