@@ -577,7 +577,7 @@
         {
             "integrations": "SNDBOX",
             "playbookID": "Detonate File - SNDBOX - Test",
-            "timeout": 600,
+            "timeout": 1000,
             "nightly": true
         },
         {
