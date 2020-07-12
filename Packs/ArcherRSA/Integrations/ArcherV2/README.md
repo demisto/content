@@ -39,7 +39,7 @@ Gets application details or list of all applications.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| application-id | Get application by ID (leave empty to get all applications) | Optional | 
+| applicationId | Get application by ID (leave empty to get all applications) | Optional | 
 
 
 #### Context Output
@@ -54,7 +54,7 @@ Gets application details or list of all applications.
 
 
 #### Command Example
-```!archer-search-applications application-id=75```
+```!archer-search-applications applicationId=75```
 
 #### Context Example
 ```
@@ -92,7 +92,7 @@ Gets all application fields by application ID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| application-id | ID of the application to search fields in | Required | 
+| applicationId | ID of the application to search fields in | Required | 
 
 
 #### Context Output
@@ -106,7 +106,7 @@ Gets all application fields by application ID
 
 
 #### Command Example
-```!archer-get-application-fields application-id=75```
+```!archer-get-application-fields applicationId=75```
 
 #### Context Example
 ```
@@ -179,7 +179,7 @@ Returns mapping from list value name to list value id
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| field-id | Id of the field | Required | 
+| fieldID | Id of the field | Required | 
 
 
 #### Context Output
@@ -193,7 +193,7 @@ Returns mapping from list value name to list value id
 
 
 #### Command Example
-```!archer-get-field field-id=350```
+```!archer-get-field fieldID=350```
 
 #### Context Example
 ```
@@ -301,8 +301,8 @@ Gets information about a content record in the given application
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| record-id | The record id | Required | 
-| application-id | The application Id | Required | 
+| contentId | The record id | Required | 
+| applicationId | The application Id | Required | 
 
 
 #### Context Output
@@ -313,7 +313,7 @@ Gets information about a content record in the given application
 
 
 #### Command Example
-```!archer-get-record application-id=75 record-id=227602```
+```!archer-get-record applicationId=75 contentId=227602```
 
 #### Context Example
 ```
@@ -414,8 +414,8 @@ Creates a new content record in the given application.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| application-id | The application Id | Required | 
-| fields-to-values | Record fields in JSON format: { "Name1": Value1, "Name2": Value2 }. Field name is case sensitive | Required | 
+| applicationId | The application Id | Required | 
+| fieldsToValues | Record fields in JSON format: { "Name1": Value1, "Name2": Value2 }. Field name is case sensitive | Required | 
 
 
 #### Context Output
@@ -426,7 +426,7 @@ Creates a new content record in the given application.
 
 
 #### Command Example
-`!archer-create-record application-id=75 fields-to-values={"Incident Summary":"This is the incident summary","Priority":{"ValuesListIds":[473]}}`
+`!archer-create-record applicationId=75 fieldsToValues={"Incident Summary":"This is the incident summary","Priority":["High"]}`
 
 #### Context Example
 ```
@@ -455,7 +455,7 @@ Delete existing content record in the given application
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| record-id | The record Id to delete | Required | 
+| contentId | The record Id to delete | Required | 
 
 
 #### Context Output
@@ -463,7 +463,7 @@ Delete existing content record in the given application
 There is no context output for this command.
 
 #### Command Example
-```!archer-delete-record record-id=239642```
+```!archer-delete-record contentId=239642```
 
 #### Context Example
 ```
@@ -488,9 +488,9 @@ Updates existing content record in the given application
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| application-id | The application Id | Required | 
-| fields-to-values | Record fields in JSON format: { "Name1": Value1, "Name2": Value2 }. Field name is case sensitive | Required | 
-| record-id | The record Id to update | Required | 
+| applicationId | The application Id | Required | 
+| fieldsToValues | Record fields in JSON format: { "Name1": Value1, "Name2": Value2 }. Field name is case sensitive | Required | 
+| contentId | The record Id to update | Required | 
 
 
 #### Context Output
@@ -498,7 +498,7 @@ Updates existing content record in the given application
 There is no context output for this command.
 
 #### Command Example
-`!archer-update-record application-id=75 record-id=239326 fields-to-values={"Priority":{"ValuesListIds":[472]}}`
+`!archer-update-record applicationId=75 contentId=239326 fieldsToValues={"Priority":["High"]}`
 
 #### Context Example
 ```
@@ -521,8 +521,8 @@ Performs statistic search by report Guid
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| report-guid | The report GUID | Required | 
-| max-results | Maximum pages of the reports | Required | 
+| reportGuid | The report GUID | Required | 
+| maxResults | Maximum pages of the reports | Required | 
 
 
 #### Context Output
@@ -530,7 +530,7 @@ Performs statistic search by report Guid
 There is no context output for this command.
 
 #### Command Example
-```!archer-execute-statistic-search-by-report max-results=100 report-guid=e4b18575-52c0-4f70-b41b-3ff8b6f13b1c```
+```!archer-execute-statistic-search-by-report maxResults=100 reportGuid=e4b18575-52c0-4f70-b41b-3ff8b6f13b1c```
 
 #### Context Example
 ```
@@ -619,7 +619,7 @@ Returns search criteria by report GUID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| report-guid | The report GUID | Required | 
+| reportGuid | The report GUID | Required | 
 
 
 #### Context Output
@@ -627,7 +627,7 @@ Returns search criteria by report GUID
 There is no context output for this command.
 
 #### Command Example
-```!archer-get-search-options-by-guid report-guid=bce4222c-ecfe-4cef-a556-fe746e959f12```
+```!archer-get-search-options-by-guid reportGuid=bce4222c-ecfe-4cef-a556-fe746e959f12```
 
 #### Context Example
 ```
@@ -720,7 +720,7 @@ Returns a list of values for a specified field, e.g., fieldID=16114. This comman
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| field-id | The field Id | Required | 
+| fieldID | The field Id | Required | 
 
 
 #### Context Output
@@ -733,7 +733,7 @@ Returns a list of values for a specified field, e.g., fieldID=16114. This comman
 
 
 #### Command Example
-```!archer-get-valuelist field-id=302```
+```!archer-get-valuelist fieldID=302```
 
 #### Context Example
 ```
@@ -797,7 +797,7 @@ Uploads a file to Archer
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entry-id | The entry id of the file in Demisto's context | Required | 
+| entryId | The entry id of the file in Demisto's context | Required | 
 
 
 #### Context Output
@@ -805,7 +805,7 @@ Uploads a file to Archer
 There is no context output for this command.
 
 #### Command Example
-```!archer-upload-file applicationId=84 entry-id=16695@b32fdf18-1c65-43af-8918-7f85a1fab951```
+```!archer-upload-file entryId=16695@b32fdf18-1c65-43af-8918-7f85a1fab951```
 
 #### Context Example
 ```
@@ -829,7 +829,7 @@ Downloads file from Archer to Demisto's war room context
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| attachment-id | The attachment Id | Required | 
+| fileId | The attachment Id | Required | 
 
 
 #### Context Output
@@ -837,7 +837,7 @@ Downloads file from Archer to Demisto's war room context
 There is no context output for this command.
 
 #### Command Example
-```!archer-get-file attachment-id=125```
+```!archer-get-file fileId=125```
 
 #### Context Example
 ```
@@ -874,7 +874,7 @@ Gets user details or list of all users.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-id | Get user by ID (leave empty to get all users) | Optional | 
+| userId | Get user by ID (leave empty to get all users) | Optional | 
 
 
 #### Context Output
@@ -932,15 +932,15 @@ Search for records inside the given application
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| application-id | Id of the application to search records in | Required | 
-| field-to-search-on | Name of field to search on (leave empty to search for all) | Optional | 
-| search-value | Search value (leave empty to search for all) | Optional | 
-| max-results | Maximum results to return from the search (default is 10) | Optional | 
-| fields-to-display | Fields to present in the search results in array format (for example: "Title,Incident Summary") | Optional | 
-| numeric-operator | Numeric search operator | Optional | 
-| date-operator | Date search operator | Optional | 
-| fields-to-get | Fields to fetch from the the application | Optional | 
-| full-data | Get an extended responses with all of the data regarding this search. For example, "fullData=true" | Required | 
+| applicationId | Id of the application to search records in | Required | 
+| fieldToSearchOn | Name of field to search on (leave empty to search for all) | Optional | 
+| searchValue | Search value (leave empty to search for all) | Optional | 
+| maxResults | Maximum results to return from the search (default is 10) | Optional | 
+| fieldsToDisplay | Fields to present in the search results in array format (for example: "Title,Incident Summary") | Optional | 
+| numericOperator | Numeric search operator | Optional | 
+| dateOperator | Date search operator | Optional | 
+| fieldsToGet | Fields to fetch from the the application | Optional | 
+| fullData | Get an extended responses with all of the data regarding this search. For example, "fullData=true" | Required | 
 
 
 #### Context Output
@@ -952,7 +952,7 @@ Search for records inside the given application
 
 
 #### Command Example
-```!archer-search-records application-id=75 full-data=False fields-to-display=`Date/Time Occurred,Days Open` fields-to-get=`Date/Time Occurred,Days Open` field-to-search-on=`Date/Time Occurred` date-operator=GreaterThan search-value=2018-06-23T07:00:00Z max-results=100```
+```!archer-search-records applicationId=75 fullData=False fieldsToDisplay=`Date/Time Occurred,Days Open` fieldsToGet=`Date/Time Occurred,Days Open` fieldToSearchOn=`Date/Time Occurred` dateOperator=GreaterThan searchValue=2018-06-23T07:00:00Z maxResults=100```
 
 #### Context Example
 ```
@@ -987,7 +987,7 @@ Search records by report Guid
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| report-guid | The report GUID | Required | 
+| reportGuid | The report GUID | Required | 
 
 
 #### Context Output
@@ -1000,7 +1000,7 @@ Search records by report Guid
 
 
 #### Command Example
-```!archer-search-records-by-report report-guid=bce4222c-ecfe-4cef-a556-fe746e959f12```
+```!archer-search-records-by-report reportGuid=bce4222c-ecfe-4cef-a556-fe746e959f12```
 
 #### Context Example
 ```
@@ -1053,3 +1053,100 @@ Search records by report Guid
 >| <p> test_procedure_1</p> | 227529 | test_procedure_1 | Malware | 227529 |
 >| <p>test_procedure_2 </p> | 227531 | test_procedure_2 | Malware | 227531 |
 >| <p>test_procedure_3</p> | 227532 | test_procedure_3 | Malware | 227532 |
+
+
+### archer-print-cache
+***
+prints Archer's integration cache.
+
+
+#### Base Command
+
+`archer-print-cache`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!archer-print-cache```
+
+#### Context Example
+```
+{}
+```
+
+#### Human Readable Output
+
+>{
+>  "75": [
+>    {
+>      "level": 67,
+>      "mapping": {
+>        "10052": {
+>          "FieldId": "10052",
+>          "IsRequired": false,
+>          "Name": "Related Incidents (2)",
+>          "RelatedValuesListId": null,
+>          "Type": 23
+>        },
+>        "10172": {
+>          "FieldId": "10172",
+>          "IsRequired": false,
+>          "Name": "Source",
+>          "RelatedValuesListId": 1176,
+>          "Type": 4
+>        },
+>        "10183": {
+>          "FieldId": "10183",
+>          "IsRequired": false,
+>          "Name": "Is BSA (Bank Secrecy Act) reporting required in the US?",
+>          "RelatedValuesListId": 152,
+>          "Type": 4
+>        },
+>        "10188": {
+>          "FieldId": "10188",
+>          "IsRequired": false,
+>          "Name": "Batch File Format",
+>          "RelatedValuesListId": 1183,
+>          "Type": 4
+>        }
+>      }
+>    }
+>  ],
+>  "fieldValueList": {
+>    "7782": {
+>      "FieldId": "7782",
+>      "ValuesList": [
+>        {
+>          "Id": 6412,
+>          "IsSelectable": true,
+>          "Name": "New"
+>        },
+>        {
+>          "Id": 6413,
+>          "IsSelectable": true,
+>          "Name": "Assigned"
+>        },
+>        {
+>          "Id": 6414,
+>          "IsSelectable": true,
+>          "Name": "In Progress"
+>        },
+>        {
+>          "Id": 6415,
+>          "IsSelectable": true,
+>          "Name": "On Hold"
+>        },
+>        {
+>          "Id": 6416,
+>          "IsSelectable": true,
+>          "Name": "Closed"
+>        }
+>      ]
+>    }
+>  }
+>}
