@@ -231,4 +231,4 @@ inputs:
   description: The Name of the miner
 outputs: []
 tests:
-  - block_indicators_-_generic_-_test
+  - No test - Deprecated playbook

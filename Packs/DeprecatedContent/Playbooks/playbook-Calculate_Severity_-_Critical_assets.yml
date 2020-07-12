@@ -478,4 +478,4 @@ outputs:
   description: The output severity
   type: string
 tests:
-  - calculate_severity_-_critical_assets_-_test
+  - No test - Deprecated playbook

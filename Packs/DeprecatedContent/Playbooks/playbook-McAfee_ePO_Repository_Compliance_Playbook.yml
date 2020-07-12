@@ -434,4 +434,4 @@ view: |-
 inputs: []
 outputs: []
 tests:
-- Test Playbook McAfee ePO
+- No test - Deprecated playbook
