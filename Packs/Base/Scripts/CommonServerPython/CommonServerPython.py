@@ -2672,9 +2672,11 @@ def return_results(results):
 
     if isinstance(results, AllSchemesTypesMappingObject):
         demisto.results(results.extract_mapping())
+        return
 
     if isinstance(results, ObjectMirror):
         demisto.results(results.extract_for_local())
+        return
 
     demisto.results(results)
 
