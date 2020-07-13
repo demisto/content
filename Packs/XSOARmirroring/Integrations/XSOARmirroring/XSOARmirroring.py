@@ -437,7 +437,7 @@ def get_incident_command(client: Client, args: Dict[str, Any]) -> CommandResults
     )
 
 
-def get_mapping_fields_command(client: Client) -> Dict[str, dict]:
+def get_mapping_fields_command(client: Client) -> AllSchemesTypesMappingObject:
     """get-mapping-fields command: Returns the list of fields for an incident type
 
     :type client: ``Client``
@@ -680,8 +680,7 @@ def main() -> None:
         )
 
         if demisto.command() == 'test-module':
-            result = test_module(client, first_fetch_time)
-            return_results(result)
+            return_results(test_module(client, first_fetch_time))
 
         elif demisto.command() == 'fetch-incidents':
             query = demisto.params().get('query', None)
@@ -709,14 +708,13 @@ def main() -> None:
             return_results(get_incident_command(client, demisto.args()))
 
         elif demisto.command() == 'get-mapping-fields':
-            demisto.results(get_mapping_fields_command(client))
+            return_results(get_mapping_fields_command(client))
 
         elif demisto.command() == 'get-remote-data':
-            mirror_data = get_remote_data_command(client, demisto.args(), demisto.params())
-            mirror_data.update_local()
+            return_results(get_remote_data_command(client, demisto.args(), demisto.params()))
 
         elif demisto.command() == 'update-remote-system':
-            demisto.results(update_remote_system_command(client, demisto.args()))
+            return_results(update_remote_system_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:

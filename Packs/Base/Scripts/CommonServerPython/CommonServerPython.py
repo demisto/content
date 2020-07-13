@@ -2673,6 +2673,9 @@ def return_results(results):
     if isinstance(results, AllSchemesTypesMappingObject):
         demisto.results(results.extract_mapping())
 
+    if isinstance(results, ObjectMirror):
+        demisto.results(results.extract_for_local())
+
     demisto.results(results)
 
 
@@ -4049,11 +4052,10 @@ class ObjectMirror(object):
         self.object = object
         self.entries = entries
 
-    def update_local(self):
+    def extract_for_local(self):
         if self.object:
             demisto.info(f'Updating object {self.object["id"]}')
-            return_list = [self.object] + self.entries
-            demisto.results(return_list)
+            return [self.object] + self.entries
 
 
 class SchemeMappingField:
