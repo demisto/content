@@ -1238,7 +1238,8 @@
             "playbookID": "strings-test"
         },
         {
-            "playbookID": "TestCommonPython"
+            "playbookID": "TestCommonPython",
+            "timeout": 500
         },
         {
             "playbookID": "TestFileCreateAndUpload"
