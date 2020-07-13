@@ -62,8 +62,7 @@ class GCPConfig(object):
                        "HelloWorld",
                        "ExportIndicators",
                        "Malware",
-                       "DefaultPlaybook",
-                       "CalculateTimeDifference"
+                       "DefaultPlaybook"
                        ]  # cores packs list
 
 
