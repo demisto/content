@@ -58,7 +58,7 @@ class ElasticsearchClient:
         es = Elasticsearch(hosts=[self._server], connection_class=RequestsHttpConnection, http_auth=self._http_auth,
                            verify_certs=self._insecure, proxies=self._proxy, api_key=self._api_key)
         # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
-        if hasattr(es, 'transport'):
+        if self._api_key and hasattr(es, 'transport'):
             es.transport.get_connection().session.headers['authorization'] = self._get_api_key_header_val(self._api_key)
         return es
 
