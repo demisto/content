@@ -65,7 +65,7 @@ def parse_list(parse_all, header, value, list_name):
     }
     validate_list_exists(list_data)
     headers, lines = list_to_headers_and_lines(list_data)
-    if parse_all.lower() == "true":
+    if parse_all.lower() == 'true':
         command_results = parse_relevant_rows(headers, lines, header, value, context, parse_all=True)
     else:
         validate_header_exists(headers, header)
