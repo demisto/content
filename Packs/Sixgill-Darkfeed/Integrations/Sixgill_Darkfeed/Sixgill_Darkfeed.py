@@ -44,6 +44,11 @@ HASH_MAPPING = {"hashes.md5": "md5", "hashes.\'sha-1\'": "sha1", "hashes.\'sha-2
 stix_regex_parser = re.compile(r"([\w-]+?):(\w.+?) (?:[!><]?=|IN|MATCHES|LIKE) '(.*?)' *[OR|AND|FOLLOWEDBY]?")
 
 
+class ExternalReferenceSourceTypes:
+    MITRE_ATTACK = 'mitre-attack'
+    VIRUS_TOTAL = 'VirusTotal'
+
+
 def strip_http(url):
     return url.split('://')[-1]
 
@@ -85,6 +90,16 @@ def get_description(stix_obj):
     return description_string
 
 
+def extract_external_reference_field(stix2obj, source_name, field_to_extract):
+    for reference in stix2obj.get("external_reference", []):
+        if reference.get("source_name") == source_name:
+            return reference.get(field_to_extract, None)
+
+
+def post_id_to_full_url(post_id):
+    return f'https://portal.cybersixgill.com/#/search?q=_id:{post_id}'
+
+
 def to_demisto_indicator(value, indicators_name, stix2obj):
     return {
         "value": value,
@@ -95,7 +110,29 @@ def to_demisto_indicator(value, indicators_name, stix2obj):
             "actor": stix2obj.get("sixgill_actor"),
             "tags": stix2obj.get("labels"),
             "firstseenbysource": stix2obj.get("created"),
-            "description": get_description(stix2obj)},
+            "description": get_description(stix2obj),
+            "sixgillactor": stix2obj.get("sixgill_actor"),
+            "sixgillfeedname": stix2obj.get("sixgill_feedname"),
+            "sixgillsource": stix2obj.get("sixgill_source"),
+            "sixgilllanguage": stix2obj.get("lang"),
+            "sixgillposttitle": stix2obj.get("sixgill_posttitle"),
+            "sixgillfeedid": stix2obj.get("sixgill_feedid"),
+            "sixgillpostreference": post_id_to_full_url(stix2obj.get("sixgill_postid", "")),
+            "sixgillindicatorid": stix2obj.get("id"),
+            "sixgilldescription": stix2obj.get("description"),
+            "sixgillvirustotaldetectionrate": extract_external_reference_field(stix2obj,
+                                                                               ExternalReferenceSourceTypes.VIRUS_TOTAL,
+                                                                               "positive_rate"),
+            "sixgillvirustotalurl": extract_external_reference_field(stix2obj,
+                                                                     ExternalReferenceSourceTypes.VIRUS_TOTAL,
+                                                                     "url"),
+            "sixgillmitreattcktactic": extract_external_reference_field(stix2obj,
+                                                                        ExternalReferenceSourceTypes.MITRE_ATTACK,
+                                                                        "mitre_attack_tactic"),
+            "sixgillmitreattcktechnique": extract_external_reference_field(stix2obj,
+                                                                           ExternalReferenceSourceTypes.MITRE_ATTACK,
+                                                                           "mitre_attack_technique"),
+        },
         "score": to_demisto_score(stix2obj.get("sixgill_feedid"), stix2obj.get("revoked", False))}
 
 
@@ -150,6 +187,7 @@ demisto_mapping: Dict[str, Dict[str, Any]] = {
     'darkfeed_008': {'name': FeedIndicatorType.IP, 'pipeline': []},
     'darkfeed_009': {'name': FeedIndicatorType.IP, 'pipeline': []},
     'darkfeed_010': {'name': FeedIndicatorType.URL, 'pipeline': [url_to_rfc3986, clean_url]},
+    'darkfeed_011': {'name': FeedIndicatorType.File, 'pipeline': []},
     'darkfeed_012': {'name': FeedIndicatorType.File, 'pipeline': []},
 
 }

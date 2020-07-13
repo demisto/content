@@ -78,6 +78,12 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: ''
+  defaultvalue: 'true'
+  hidden: true
+  name: feedIncremental
+  required: false
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
@@ -101,7 +107,7 @@ script:
     description: Fetching Sixgill DarkFeed indicators
     execution: true
     name: sixgill-get-indicators
-  dockerimage: demisto/sixgill:1.0.0.7092
+  dockerimage: demisto/sixgill:1.0.0.8958
   feed: true
   isfetch: false
   longRunning: false

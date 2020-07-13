@@ -1,0 +1,1845 @@
+id: Darkfeed Threat hunting-research
+version: -1
+name: Darkfeed Threat hunting-research
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 77149510-61f4-4d63-856c-4cf10eccbf26
+    type: start
+    task:
+      id: 77149510-61f4-4d63-856c-4cf10eccbf26
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "42"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 5fd3d6b3-db1d-40c2-8a38-aab2dc28932c
+    type: condition
+    task:
+      id: 5fd3d6b3-db1d-40c2-8a38-aab2dc28932c
+      version: -1
+      name: Are there SHA-256 hashes?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.File
+                accessor: SHA256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 0782082c-e037-4d71-87f4-43e33ba0a6e3
+    type: condition
+    task:
+      id: 0782082c-e037-4d71-87f4-43e33ba0a6e3
+      version: -1
+      name: Are there SHA-1 hashes?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.File
+                accessor: SHA1
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 1b022849-29d3-437b-81d3-ec5e3141ca92
+    type: condition
+    task:
+      id: 1b022849-29d3-437b-81d3-ec5e3141ca92
+      version: -1
+      name: Are there URLs?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.URL
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: d073e949-4d92-4790-8d55-71a8e60ed070
+    type: regular
+    task:
+      id: d073e949-4d92-4790-8d55-71a8e60ed070
+      version: -1
+      name: Find indicators with same actor
+      description: Search for Indicators
+      scriptName: SearchIndicators
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      query:
+        complex:
+          root: Sixgill_Actor
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: sixgillactor:"
+              suffix:
+                value:
+                  simple: '"'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' or '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'sourceBrands:Sixgill_Darkfeed and '
+              suffix:
+                value:
+                  simple: ${Querystarttime}
+                iscontext: true
+      size: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 021725a3-8b3c-4610-84a4-826e389ba001
+    type: condition
+    task:
+      id: 021725a3-8b3c-4610-84a4-826e389ba001
+      version: -1
+      name: Are there MD5 hashes?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.File
+                accessor: MD5
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 9d5ae90b-ef8d-4be7-88db-93be6ae41a52
+    type: condition
+    task:
+      id: 9d5ae90b-ef8d-4be7-88db-93be6ae41a52
+      version: -1
+      name: Are there IPs?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.IP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: e0027483-814f-480e-816e-016deba56c97
+    type: title
+    task:
+      id: e0027483-814f-480e-816e-016deba56c97
+      version: -1
+      name: Find indicators with same actor
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "49"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 58388e2f-7a78-4d7c-84ab-6f8f1cf6f7d1
+    type: regular
+    task:
+      id: 58388e2f-7a78-4d7c-84ab-6f8f1cf6f7d1
+      version: -1
+      name: Extract actor
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Sixgill_Actor
+      stringify: {}
+      value:
+        complex:
+          root: FoundIndicators
+          accessor: CustomFields.sixgillactor
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 96dd1067-d5ac-4193-875e-3473649198eb
+    type: regular
+    task:
+      id: 96dd1067-d5ac-4193-875e-3473649198eb
+      version: -1
+      name: Extract source
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Sixgill_Source
+      stringify: {}
+      value:
+        complex:
+          root: FoundIndicators
+          accessor: CustomFields.sixgillsource
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 3285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: b1e14267-3665-490b-8ffc-019371f70b25
+    type: title
+    task:
+      id: b1e14267-3665-490b-8ffc-019371f70b25
+      version: -1
+      name: Find indicators with same source
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 0a0cb027-b7d4-4bfc-85e0-6643a54025cf
+    type: condition
+    task:
+      id: 0a0cb027-b7d4-4bfc-85e0-6643a54025cf
+      version: -1
+      name: Is there an actor?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Sixgill_Actor
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: aba974ff-6665-446d-82d5-bd9f2388e394
+    type: title
+    task:
+      id: aba974ff-6665-446d-82d5-bd9f2388e394
+      version: -1
+      name: Extract all malicious indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 3810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 49b97f08-2279-4e52-815c-ae5fc2464e2e
+    type: regular
+    task:
+      id: 49b97f08-2279-4e52-815c-ae5fc2464e2e
+      version: -1
+      name: Extract malicious indicators
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+      - "32"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Malicious_indicators
+      stringify: {}
+      value:
+        complex:
+          root: FoundIndicators
+          filters:
+          - - operator: isEqualNumber
+              left:
+                value:
+                  simple: FoundIndicators.score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 3955
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 00984638-3fb7-4704-8836-ccb0ae90ba2b
+    type: playbook
+    task:
+      id: 00984638-3fb7-4704-8836-ccb0ae90ba2b
+      version: -1
+      name: Entity Enrichment - Generic v2
+      playbookName: Entity Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "34"
+      - "41"
+    scriptarguments:
+      Domain:
+        complex:
+          root: Malicious_indicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Malicious_indicators.type
+                iscontext: true
+              right:
+                value:
+                  simple: domain
+          accessor: value
+          transformers:
+          - operator: uniq
+      Email: {}
+      Hostname: {}
+      IP:
+        complex:
+          root: Malicious_indicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Malicious_indicators.type
+                iscontext: true
+              right:
+                value:
+                  simple: ip
+          accessor: value
+          transformers:
+          - operator: uniq
+      InternalDomains: {}
+      InternalRange: {}
+      MD5:
+        complex:
+          root: Malicious_indicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Malicious_indicators.type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Malicious_indicators.CustomFields.md5
+                iscontext: true
+          accessor: CustomFields.md5
+          transformers:
+          - operator: uniq
+      ResolveIP:
+        simple: "False"
+      SHA1:
+        complex:
+          root: Malicious_indicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Malicious_indicators.type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Malicious_indicators.CustomFields.sha1
+                iscontext: true
+          accessor: CustomFields.sha1
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: Malicious_indicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Malicious_indicators.type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Malicious_indicators.CustomFields.sha256
+                iscontext: true
+          accessor: CustomFields.sha256
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: Malicious_indicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Malicious_indicators.type
+                iscontext: true
+              right:
+                value:
+                  simple: url
+          accessor: value
+          transformers:
+          - operator: uniq
+      Username: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1145,
+          "y": 4130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: fe621374-36da-4262-8aa5-aad7d735c627
+    type: playbook
+    task:
+      id: fe621374-36da-4262-8aa5-aad7d735c627
+      version: -1
+      name: Block Indicators - Generic v2
+      playbookName: Block Indicators - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      CustomURLCategory:
+        simple: Demisto Remediation - Malicious URLs
+      DAG: {}
+      EDLServerIP: {}
+      IP:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: ip
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      IPBlacklistMiner: {}
+      IPListName: {}
+      LogForwarding: {}
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+      StaticAddressGroup: {}
+      URL:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: url
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      URLBlacklistMiner: {}
+      URLListName:
+        simple: Demisto Remediation - URL EDL
+      Username:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: username
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+      categories: {}
+      device-group: {}
+      type: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1482.5,
+          "y": 5005
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 397b2678-7686-4836-8400-385ed77d56ba
+    type: playbook
+    task:
+      id: 397b2678-7686-4836-8400-385ed77d56ba
+      version: -1
+      name: Search Endpoints By Hash - Generic
+      description: Hunt using available tools
+      playbookName: Search Endpoints By Hash - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      MD5Hash:
+        complex:
+          root: File
+          accessor: MD5
+      SHA1Hash:
+        complex:
+          root: File
+          accessor: SHA1
+      SHA256Hash:
+        complex:
+          root: File
+          accessor: SHA256
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 4305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 334ccc26-4d48-4cc9-8600-80ce3d0a6c54
+    type: regular
+    task:
+      id: 334ccc26-4d48-4cc9-8600-80ce3d0a6c54
+      version: -1
+      name: Print Sixgill post URL
+      description: Convert an array to a nice table display. Usually, from the context.
+      scriptName: ToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      columns:
+        simple: value,CustomFields.sixgillpostreference
+      data:
+        complex:
+          root: Malicious_indicators
+          filters:
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: Malicious_indicators.score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Malicious_indicators.CustomFields.sixgillpostreference
+                iscontext: true
+          transformers:
+          - operator: uniq
+      title:
+        simple: Sixgill Post URLs
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5005
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: link to post in Sixgill portal
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 99d60bcf-7511-47bf-84f0-83bd8a38d985
+    type: regular
+    task:
+      id: 99d60bcf-7511-47bf-84f0-83bd8a38d985
+      version: -1
+      name: Additional investigation
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "53"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5005
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: b14bdafb-3946-4bd5-83a0-86ba5fb59ead
+    type: regular
+    task:
+      id: b14bdafb-3946-4bd5-83a0-86ba5fb59ead
+      version: -1
+      name: Remediate discovered indicators
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "53"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 5005
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 9342002b-1b99-4d1f-8746-9553c16ab265
+    type: playbook
+    task:
+      id: 9342002b-1b99-4d1f-8746-9553c16ab265
+      version: -1
+      name: Isolate Endpoint - Generic
+      playbookName: Isolate Endpoint - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      EndpointId: {}
+      Hostname: {}
+      xdr_endpoint_id:
+        complex:
+          root: PaloAltoNetworksXDR
+          accessor: Endpoint.endpoint_id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1042.5,
+          "y": 4830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 47079437-3197-44e2-8097-ef9e74f745a7
+    type: condition
+    task:
+      id: 47079437-3197-44e2-8097-ef9e74f745a7
+      version: -1
+      name: Are there endpoints?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "37"
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Endpoint
+                accessor: Hostname
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 4480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: d330a109-42ed-45df-8472-b360c603d7fa
+    type: condition
+    task:
+      id: d330a109-42ed-45df-8472-b360c603d7fa
+      version: -1
+      name: Is automatic endpoint isolation activated?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "37"
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.Is automated endpoint isolation activated?
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 4655
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 5e9e3f86-f5f0-40d4-88f1-6a5b30668325
+    type: condition
+    task:
+      id: 5e9e3f86-f5f0-40d4-88f1-6a5b30668325
+      version: -1
+      name: Is automatic blocking activated?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "37"
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.Is automated blocking activated?
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 1472.5,
+          "y": 4830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 1cc0ddf3-ba37-45b9-88c0-a7a2a2d260c4
+    type: condition
+    task:
+      id: 1cc0ddf3-ba37-45b9-88c0-a7a2a2d260c4
+      version: -1
+      name: Are there domains?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Domain
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: 6f8c2cb2-c154-4f7b-8ee4-b5e93c3c697a
+    type: regular
+    task:
+      id: 6f8c2cb2-c154-4f7b-8ee4-b5e93c3c697a
+      version: -1
+      name: Find indicators
+      description: Search for Indicators
+      scriptName: SearchIndicators
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      query:
+        complex:
+          root: inputs.Domain
+          accessor: Name
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: value:"
+              suffix:
+                value:
+                  simple: '"'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' or '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: sourceBrands:Sixgill_Darkfeed  and (
+              suffix:
+                value:
+                  simple: )
+      size: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 827.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: da9eea60-2f60-4b5f-8639-90293f8fe429
+    type: regular
+    task:
+      id: da9eea60-2f60-4b5f-8639-90293f8fe429
+      version: -1
+      name: Find indicators
+      description: Search for Indicators
+      scriptName: SearchIndicators
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      query:
+        complex:
+          root: inputs.File
+          accessor: MD5
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: value:"
+              suffix:
+                value:
+                  simple: '"'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' or '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: sourceBrands:Sixgill_Darkfeed  and (
+              suffix:
+                value:
+                  simple: )
+      size: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 827.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: 454ecf70-fed4-4daa-8666-2b084dbb9da7
+    type: regular
+    task:
+      id: 454ecf70-fed4-4daa-8666-2b084dbb9da7
+      version: -1
+      name: Find indicators
+      description: Search for Indicators
+      scriptName: SearchIndicators
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      query:
+        complex:
+          root: inputs.File
+          accessor: SHA256
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: value:"
+              suffix:
+                value:
+                  simple: '"'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' or '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: sourceBrands:Sixgill_Darkfeed  and (
+              suffix:
+                value:
+                  simple: )
+      size: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 827.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: 2f6e1749-6d07-4b58-8ae4-14dcc539c892
+    type: regular
+    task:
+      id: 2f6e1749-6d07-4b58-8ae4-14dcc539c892
+      version: -1
+      name: Find indicators
+      description: Search for Indicators
+      scriptName: SearchIndicators
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      query:
+        complex:
+          root: inputs.IP
+          accessor: Address
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: value:"
+              suffix:
+                value:
+                  simple: '"'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' or '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: sourceBrands:Sixgill_Darkfeed  and (
+              suffix:
+                value:
+                  simple: )
+      size: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 827.5,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: efe5e415-5b69-4639-8c60-0592a4f9bf56
+    type: regular
+    task:
+      id: efe5e415-5b69-4639-8c60-0592a4f9bf56
+      version: -1
+      name: Find indicators
+      description: Search for Indicators
+      scriptName: SearchIndicators
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      query:
+        complex:
+          root: inputs.URL
+          accessor: Data
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: value:"
+              suffix:
+                value:
+                  simple: '"'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' or '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: sourceBrands:Sixgill_Darkfeed  and (
+              suffix:
+                value:
+                  simple: )
+      size: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 827.5,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: 57f1f256-466d-4677-8ebd-c0ae3c2471b4
+    type: regular
+    task:
+      id: 57f1f256-466d-4677-8ebd-c0ae3c2471b4
+      version: -1
+      name: Find indicators
+      description: Search for Indicators
+      scriptName: SearchIndicators
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      query:
+        complex:
+          root: inputs.File
+          accessor: SHA1
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: value:"
+              suffix:
+                value:
+                  simple: '"'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' or '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: sourceBrands:Sixgill_Darkfeed  and (
+              suffix:
+                value:
+                  simple: )
+      size: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 827.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: b91505ed-dbaa-452b-89a8-b2d51685502d
+    type: regular
+    task:
+      id: b91505ed-dbaa-452b-89a8-b2d51685502d
+      version: -1
+      name: Set start time
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Querystarttime
+      stringify: {}
+      value:
+        simple: ' and firstseenbysource:>="${inputs.Query time lookup}"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: eae90526-483b-4020-8b47-632632d042df
+    type: regular
+    task:
+      id: eae90526-483b-4020-8b47-632632d042df
+      version: -1
+      name: Find indicators with same source
+      description: Search for Indicators
+      scriptName: SearchIndicators
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      query:
+        complex:
+          root: Sixgill_Source
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: sixgillsource:"
+              suffix:
+                value:
+                  simple: '"'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' or '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'sourceBrands:Sixgill_Darkfeed and '
+              suffix:
+                value:
+                  simple: ${Querystarttime}
+                iscontext: true
+      size: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 3635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: dd23abb5-0734-4724-8ea6-9a6646cd18ef
+    type: condition
+    task:
+      id: dd23abb5-0734-4724-8ea6-9a6646cd18ef
+      version: -1
+      name: Is there an source?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Sixgill_Source
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 3460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: af6aad21-d3c4-42f2-8700-9bef9f035cb0
+    type: condition
+    task:
+      id: af6aad21-d3c4-42f2-8700-9bef9f035cb0
+      version: -1
+      name: Are there malicious indicators?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "53"
+      "yes":
+      - "35"
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Malicious_indicators
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 255,
+          "y": 4830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: 2c2a2d0a-0f3b-4728-8828-c2285c574e1a
+    type: title
+    task:
+      id: 2c2a2d0a-0f3b-4728-8828-c2285c574e1a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 5180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 5195,
+        "width": 1812.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: File
+  value:
+    complex:
+      root: File
+  required: false
+  description: File hash (MD5, SHA-1, SHA-256) from Darkfeed
+  playbookInputQuery:
+- key: URL
+  value:
+    complex:
+      root: URL
+      filters:
+      - - operator: notContainsString
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+          right:
+            value:
+              simple: cybersixgill.com
+      - - operator: notContainsString
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+          right:
+            value:
+              simple: virustotal.com
+      - - operator: notContainsString
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+          right:
+            value:
+              simple: mitre.org
+  required: false
+  description: URL from Darkfeed
+  playbookInputQuery:
+- key: Maximum number of IOCs
+  value:
+    simple: "50"
+  required: false
+  description: Set value to the maximum number of IOCs you would like returned in
+    searches for items from the same source and same actor
+  playbookInputQuery:
+- key: Query time lookup
+  value:
+    simple: 3 day ago
+  required: false
+  description: Set value to the number of days back in searches for IOCs with the
+    same source and same actor
+  playbookInputQuery:
+- key: IP
+  value:
+    complex:
+      root: IP
+  required: false
+  description: IP address from Darkfeed
+  playbookInputQuery:
+- key: Is automated endpoint isolation activated?
+  value:
+    simple: "no"
+  required: false
+  description: Set "yes" if you would like to automatically isolate endpoints on which
+    malicious indicators were detected
+  playbookInputQuery:
+- key: Is automated blocking activated?
+  value:
+    simple: "no"
+  required: false
+  description: Set "yes" if you would like to automatically block discovered malicious
+    indicators.
+  playbookInputQuery:
+- key: Domain
+  value:
+    complex:
+      root: Domain
+      filters:
+      - - operator: notContainsString
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+          right:
+            value:
+              simple: cybersixgill.com
+      - - operator: notContainsString
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+          right:
+            value:
+              simple: mitre.org
+      - - operator: notContainsString
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+          right:
+            value:
+              simple: virustotal.com
+      accessor: Name
+  required: false
+  description: Domain from Darkfeed
+  playbookInputQuery:
+outputs: []
+description: ''
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
