@@ -73,8 +73,7 @@ class Client(BaseClient):
             layer (str): Layer that the rule belongs to identified by the name or UID.
             ignore_warnings(bool):Apply changes ignoring warnings.
             ignore_errors(bool): Apply changes ignoring errors. You won't be able to publish such
-                                 a changes. If ignore-warnings flag was omitted- warnings will also
-                                 be ignored
+            a changes. If ignore-warnings flag was omitted- warnings will also be ignored
             enabled(bool): Enable/Disable the rule
             action (str): the action to set. available options:
                                         "Accept", "Drop", "Ask", "Inform", "Reject", "User Auth",
@@ -319,7 +318,7 @@ class Client(BaseClient):
     def checkpoint_update_address_range_command(self, identifier: str, ignore_warnings: bool,
                                                 ignore_errors: bool, ip_address_first: str = None,
                                                 ip_address_last: str = None, new_name: str = None,
-                                                comments: str = None, groups = None):
+                                                comments: str = None, groups=None):
         """
         Edit existing address_range object using object name or uid.
 
@@ -342,7 +341,8 @@ class Client(BaseClient):
                 'comments': comments,
                 'ignore-warnings': ignore_warnings,
                 'ignore-errors': ignore_errors,
-                'groups': groups,}
+                'groups': groups,
+                }
 
         response = self._http_request(method='POST', url_suffix='set-address-range',
                                       headers=self.headers, json_data=body)
@@ -530,10 +530,10 @@ class Client(BaseClient):
         body = {
             'policy-package': policy_package,
             'targets': targets,
+            'access': access,
         }
         response = self._http_request(method='POST', url_suffix='install-policy',
                                       headers=self.headers, json_data=body)
-        print(response)
 
         return format_task_id(response, 'install-policy')
 
@@ -560,7 +560,6 @@ class Client(BaseClient):
         """
         response = self._http_request(method='POST', url_suffix='show-task',
                                       headers=self.headers, json_data={"task-id": task_id})
-        print(response)
 
         if polling:
             return response.get('tasks')[0].get('progress-percentage')
@@ -843,8 +842,9 @@ def format_update_object(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
             'domain-type': domain_data.get('type'),
         })
     if endpoint == 'host' or endpoint == 'address-range':
-        groups_data = result.get('groups')[0]
+        groups_data = result.get('groups')
         if groups_data:
+            groups_data = groups_data[0]
             readable_output.update({'groups': groups_data.get('name')})
 
     outputs = {f'CheckPoint.{endpoint}(val.uid && val.uid == obj.uid)': readable_output}
