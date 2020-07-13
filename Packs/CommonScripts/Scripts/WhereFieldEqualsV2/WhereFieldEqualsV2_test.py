@@ -63,16 +63,17 @@ class WhereFieldEquals(unittest.TestCase):
             "field": "type",
             "equalTo": "IP"
         }
-        expected_result = ("[{'name': 'Testing', 'type': 'IP'}, {'name': '172.0.0.2', 'type': 'IP'}]",
+        expected_result = (
+        "[{'name': 'Testing', 'type': 'IP'}, {'name': '172.0.0.2', 'type': 'IP'}]",
 
-                           dict(WhereFieldEquals={'SearchedField': 'type', 'FieldReturned': None,
-                                                  'EqualTo': 'IP', 'OriginalValues': [
-                                   {'name': 'Testing', 'type': 'IP'},
-                                   {'name': 'myFile.txt', 'type': 'File'},
-                                   {'name': '172.0.0.2', 'type': 'IP'}],
-                                                  'Results': [{'name': 'Testing', 'type': 'IP'},
-                                                              {'name': '172.0.0.2',
-                                                               'type': 'IP'}]}))
+        dict(WhereFieldEquals={'SearchedField': 'type', 'FieldReturned': None,
+                               'EqualTo': 'IP', 'OriginalValues': [
+                {'name': 'Testing', 'type': 'IP'},
+                {'name': 'myFile.txt', 'type': 'File'},
+                {'name': '172.0.0.2', 'type': 'IP'}],
+                               'Results': [{'name': 'Testing', 'type': 'IP'},
+                                           {'name': '172.0.0.2',
+                                            'type': 'IP'}]}))
 
         recieved_result = where_field_equals(args)
         assert expected_result == recieved_result
