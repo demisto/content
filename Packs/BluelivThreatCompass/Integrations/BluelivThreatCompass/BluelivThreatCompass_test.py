@@ -1,7 +1,8 @@
 import demistomock as demisto
 import re
-from BluelivThreatCompass import search_resource, search_resource_by_id, set_resource_status, resource_add_label
-from BluelivThreatCompass import Client, resource_set_tlp, resource_fav, set_resource_rating, set_resource_read_status
+from BluelivThreatCompass import Client, resource_set_tlp, resource_fav, set_resource_rating
+from BluelivThreatCompass import search_resource, search_resource_by_id, set_resource_status
+from BluelivThreatCompass import module_get_labels, resource_add_label, set_resource_read_status
 
 
 def test_blueliv_search_resource(mocker, requests_mock):
@@ -346,3 +347,60 @@ def test_blueliv_resource_set_label(mocker, requests_mock):
     results = demisto.results.call_args[0][0]
 
     assert results.get('Contents', "") == "Label 1306 correctly added."
+
+
+def test_blueliv_module_get_labels(mocker, requests_mock):
+    server_url = "https://demisto.blueliv.com/api/v2"
+    organization = 1
+    module = 1
+    module_type = ("DataLeakage", "data_leakage")
+
+    url = '{}/organization/{}/module/{}/{}'.format(server_url, organization, module, module_type[1])
+    matcher = re.compile('{}.*'.format(url))
+
+    blueliv_response = [
+        {
+            "bgColorHex": "#0093B2",
+            "id": 1303,
+            "label": "Botnet Credentials",
+            "labelProtected": True,
+            "labelTypeId": 9,
+            "labelTypeName": "Credentials Type",
+            "moduleId": None,
+            "moduleName": None,
+            "moduleTypeId": None,
+            "organizationId": None,
+            "organizationName": None,
+            "prioritized": True,
+            "textColorHex": "#FFFFFF"
+        },
+        {
+            "bgColorHex": "#00B388",
+            "id": 1310,
+            "label": "Brand Abuse Profile",
+            "labelProtected": True,
+            "labelTypeId": 12,
+            "labelTypeName": "ThreatOrigin",
+            "moduleId": None,
+            "moduleName": None,
+            "moduleTypeId": None,
+            "organizationId": None,
+            "organizationName": None,
+            "prioritized": True,
+            "textColorHex": "#FFFFFF"
+        }
+    ]
+
+    mocker.patch.object(demisto, 'results')
+    requests_mock.register_uri('GET', matcher, json=blueliv_response)
+
+    client = Client(server_url, False, False, headers={'Accept': 'application/json'},
+                    organization=organization, module=module, module_type=module_type[0])
+
+    module_get_labels(client)
+
+    results = demisto.results.call_args[0][0]
+
+    assert len(results.get('Contents', [])) == 2
+    assert results.get('Contents', [])[0].get("id", 0) == 1303
+    assert results.get('Contents', [])[1].get("bgColorHex", "") == "#0093B2"

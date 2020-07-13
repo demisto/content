@@ -117,7 +117,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "18"
     scriptarguments:
       id:
         complex:
@@ -145,10 +145,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 7e92b1d1-647d-45d1-84e7-92e2f72e38d9
+    taskid: b558c043-d5aa-46d7-842e-2775b2bc20ed
     type: regular
     task:
-      id: 7e92b1d1-647d-45d1-84e7-92e2f72e38d9
+      id: b558c043-d5aa-46d7-842e-2775b2bc20ed
       version: -1
       name: blueliv-resource-set-label
       description: Adds a label to the given resource
@@ -174,13 +174,17 @@ tasks:
       labelID:
         simple: "1321"
       labelId:
-        simple: "1306"
+        complex:
+          root: BluelivThreatCompass
+          accessor: Label.Id
+          transformers:
+          - operator: FirstArrayElement
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 710
+          "y": 895
         }
       }
     note: false
@@ -223,7 +227,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 890
+          "y": 1070
         }
       }
     note: false
@@ -266,7 +270,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1245
         }
       }
     note: false
@@ -309,7 +313,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1250
+          "y": 1420
         }
       }
     note: false
@@ -319,14 +323,14 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 8f0f967e-f370-437c-8d76-ac8f1d2bd7b0
+    taskid: 1bdc273b-6214-43c8-85b8-c6f33d6eab9a
     type: regular
     task:
-      id: 8f0f967e-f370-437c-8d76-ac8f1d2bd7b0
+      id: 1bdc273b-6214-43c8-85b8-c6f33d6eab9a
       version: -1
       name: blueliv-resource-fav
       description: Changes the favourite status of a resource.
-      script: '|||blueliv-resource-fav'
+      script: '|||blueliv-resource-favourite'
       type: regular
       iscommand: true
       brand: ""
@@ -334,7 +338,7 @@ tasks:
       '#none#':
       - "16"
     scriptarguments:
-      fav:
+      favourite:
         simple: User
       id:
         complex:
@@ -352,7 +356,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1430
+          "y": 1595
         }
       }
     note: false
@@ -373,6 +377,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
     scriptarguments:
       id:
         complex:
@@ -392,7 +399,70 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1610
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 6e3f0949-079a-42f7-802e-39691b9ee4a9
+    type: regular
+    task:
+      id: 6e3f0949-079a-42f7-802e-39691b9ee4a9
+      version: -1
+      name: Fetch incidents
+      description: Execute FetchIncident for a given instance
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      add_to_context: {}
+      brand_name:
+        simple: Blueliv ThreatCompass
+      error_msg_in_incident: {}
+      expect_data: {}
+      instance_name:
+        simple: TCompass_TrustOylo
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 49e5519f-956b-48d2-8065-69f8f620b720
+    type: regular
+    task:
+      id: 49e5519f-956b-48d2-8065-69f8f620b720
+      version: -1
+      name: blueliv-module-get-labels
+      description: Gets the label list of the module.
+      script: '|||blueliv-module-get-labels'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -405,7 +475,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1655,
+        "height": 1990,
         "width": 380,
         "x": 50,
         "y": 50

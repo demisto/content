@@ -6,10 +6,7 @@ import json
 import urllib3
 from datetime import datetime
 
-urllib3.disable_warnings()
-
 ''' PARAM DEFINITION '''
-TYPE = demisto.params().get('type')
 MAX_RESOURCES = 100
 STATUS_VALUES = ["NOT_AVAILABLE", "NOT_IMPORTANT", "NOT_PROCESSABLE", "POSITIVE", "NEGATIVE",
                  "INFORMATIVE", "IMPORTANT"]
@@ -19,8 +16,6 @@ MODULES = {"Hacktivism": "hacktivism", "MobileApps": "mobile_apps", "Credentials
 
 '''FETCH PARAMETERS'''
 BLUELIV_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
-
-urllib3.disable_warnings()
 
 
 class Client(BaseClient):
@@ -44,14 +39,20 @@ class Client(BaseClient):
 
     def resource_select(self, args):
         params = create_search_query(args)
-        path = "/resource?{}".format("&".join(params))
+        path = "/resource"
 
-        res = self._http_request(method='GET', url_suffix=self._module_url + path)
+        res = self._http_request(method='GET', url_suffix=self._module_url + path, params=params)
         return res
 
     def resource_get(self, args):
         resource_id = args.get("id", "")
         path = "/resource/{}".format(resource_id)
+
+        res = self._http_request(method='GET', url_suffix=self._module_url + path)
+        return res
+
+    def module_get_labels(self):
+        path = "/resource/label"
 
         res = self._http_request(method='GET', url_suffix=self._module_url + path)
         return res
@@ -94,7 +95,7 @@ class Client(BaseClient):
 
     def resource_fav(self, args):
         resource_id = args.get("id", 0)
-        fav = args.get("fav", "group")
+        fav = args.get("favourite", "group")
         fav = fav + "_STARRED"
 
         data = {"resource": resource_id, "status": fav.upper()}
@@ -119,51 +120,52 @@ class Client(BaseClient):
 
 
 def create_search_query(args):
-    params = []
+    params = {}
 
     # Pagination
     limit = int(args.get("limit", MAX_RESOURCES))
     limit = min(limit, MAX_RESOURCES)
     page = int(args.get("page", 1)) if int(args.get("page", 0)) != 0 else 1
-    params.append("page=" + str(page))
-    params.append("maxRows=" + str(limit))
+
+    params["page"] = str(page)
+    params["maxRows"] = str(limit)
 
     # Time filter
     ini_date = args.get("iniDate", "")
     fin_date = args.get("finDate", "")
-    params.append("granularity=DAY")
+    params["granularity"] = "DAY"
 
     if fin_date:
-        params.append("to=" + blueliv_date_to_timestamp(fin_date))
+        params["to"] = blueliv_date_to_timestamp(fin_date)
     if ini_date:
-        params.append("to=" + blueliv_date_to_timestamp(ini_date))
+        params["since"] = blueliv_date_to_timestamp(ini_date)
 
     # Search parameters
     if "read" in args and args["read"].lower() in ["both", "read", "unread"]:
         number = {"both": "0", "read": "1", "unread": "2"}
-        params.append("read=" + number[args['read'].lower()])
+        params["read"] = number[args['read'].lower()]
     if "search" in args:
-        params.append("q=" + args['search'])
+        params["q"] = args['search']
     if "since" in args:
-        params.append("since=" + str(args['since']))
+        params["since"] = args['since']
     if "to" in args:
-        params.append("to=" + str(args['to']))
+        params["to"] = args['to']
     if "rows" in args:
-        params.append("maxRows=" + str(args['rows']))
+        params["maxRows"] = args['rows']
     if "page" in args:
-        params.append("page=" + str(args['page']))
+        params["page"] = args['page']
 
     if "status" in args and all(status in STATUS_VALUES for status in args["status"].split(",")):
-        params.append("analysisCalcResult=" + args['status'])
+        params["analysisCalcResult"] = args['status']
 
-    params.append("o=IDASC")
+    params["o"] = "IDASC"
 
     return params
 
 
 # This function return false when there are no results to display
 def not_found():
-    demisto.results({
+    return_results({
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
         'Contents': 'No results found.',
@@ -221,6 +223,17 @@ def parse_resource(result):
     return result
 
 
+def parse_label(result):
+    labels = []
+
+    for l in result:
+        labels.append({"BackgroundColor": l["bgColorHex"], "Id": l["id"], "Name": l["label"],
+                     "Protected": l["labelProtected"], "TypeId": l["labelTypeId"], "TypeName": l["labelTypeName"],
+                     "Prioritized": l["prioritized"], "TextColor": l["textColorHex"]})
+
+    return labels
+
+
 def get_all_resources(client: Client, args):
     result = client.resource_select(args)
     total_resources = result['total_resources']
@@ -231,14 +244,14 @@ def get_all_resources(client: Client, args):
             resource = parse_resource(r)
             resources_array.append(resource)
 
-        demisto.results({
+        return_results({
             'ContentsFormat': formats['json'],
             'Type': entryTypes['note'],
             'Contents': resources_array,
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown("Blueliv " + client.module_type + " info", resources_array),
             'EntryContext': {'BluelivThreatCompass.' + client.module_type + '(val.id && val.id == obj.id)':
-                             resources_array
+                                 resources_array
                              }
         })
     else:
@@ -247,7 +260,7 @@ def get_all_resources(client: Client, args):
 
 def set_resource_read_status(client: Client, args):
     client.resource_read_result(args)
-    demisto.results({
+    return_results({
         'ContentsFormat': formats['text'],
         'Type': entryTypes['note'],
         'Contents': "Read status changed to {}.".format(args.get("read", 0)),
@@ -258,7 +271,7 @@ def set_resource_read_status(client: Client, args):
 
 def set_resource_rating(client: Client, args):
     client.resource_rating(args)
-    demisto.results({
+    return_results({
         'ContentsFormat': formats['text'],
         'Type': entryTypes['note'],
         'Contents': "Rating changed to {}.".format(args.get("rating", 0)),
@@ -318,14 +331,14 @@ def search_resource(client: Client, args):
     if total_resources > 0:
         resource = parse_resource(result)
 
-        demisto.results({
+        return_results({
             'ContentsFormat': formats['json'],
             'Type': entryTypes['note'],
             'Contents': resource["list"],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown("Blueliv " + client.module_type + " info", resource),
             'EntryContext': {'BluelivThreatCompass.' + client.module_type + '(val.id && val.id == obj.id)':
-                             resource["list"]
+                                 resource["list"]
                              }
         })
     else:
@@ -337,12 +350,12 @@ def search_resource_by_id(client: Client, args):
     resource = parse_resource(result)
 
     if demisto.get(resource, "id"):
-        demisto.results({
+        return_results({
             'ContentsFormat': formats['json'],
             'Type': entryTypes['note'],
             'Contents': resource,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown("Blueliv " + client.module_type + "info", resource),
+            'HumanReadable': tableToMarkdown("Blueliv " + client.module_type + " info", resource),
             'EntryContext': {'BluelivThreatCompass.' + client.module_type + '(val.id && val.id == obj.id)': resource}
         })
     else:
@@ -351,7 +364,7 @@ def search_resource_by_id(client: Client, args):
 
 def resource_set_tlp(client: Client, args):
     client.resource_set_tlp(args)
-    demisto.results({
+    return_results({
         'ContentsFormat': formats['text'],
         'Type': entryTypes['note'],
         'Contents': "TLP changed to {}.".format(args.get("tlp")),
@@ -362,7 +375,7 @@ def resource_set_tlp(client: Client, args):
 
 def set_resource_status(client: Client, args):
     client.resource_user_result(args)
-    demisto.results({
+    return_results({
         'ContentsFormat': formats['text'],
         'Type': entryTypes['note'],
         'Contents': "Status changed to {}.".format(args.get("status")),
@@ -373,7 +386,7 @@ def set_resource_status(client: Client, args):
 
 def resource_add_label(client: Client, args):
     client.resource_label(args)
-    demisto.results({
+    return_results({
         'ContentsFormat': formats['text'],
         'Type': entryTypes['note'],
         'Contents': "Label {} correctly added.".format(args.get("labelId", 0)),
@@ -384,27 +397,43 @@ def resource_add_label(client: Client, args):
 
 def resource_fav(client: Client, args):
     client.resource_fav(args)
-    demisto.results({
+    return_results({
         'ContentsFormat': formats['text'],
         'Type': entryTypes['note'],
-        'Contents': "Resource fav masked as {} correctly.".format(args.get("fav", "group")),
+        'Contents': "Resource favourite masked as {} correctly.".format(args.get("favourite", "group")),
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': "Resource fav masked as **{}** correctly.".format(args.get("fav", "group")),
+        'HumanReadable': "Resource favourite masked as **{}** correctly.".format(args.get("favourite", "group")),
     })
+
+
+def module_get_labels(client: Client):
+    res = client.module_get_labels()
+    label_array = parse_label(res)
+
+    return_results({
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown("Blueliv " + client.module_type + " labels", label_array),
+            'EntryContext': {'BluelivThreatCompass.Label(val.Id && val.Id == obj.Id)': label_array}
+        })
 
 
 def test_module(client: Client):
     try:
         res = client.test_module_connection()
         if 'total_resources' not in res:
-            demisto.results("Error connecting to module.")
-    except DemistoException:
-        demisto.results("Error connecting to module.\nPlease check that organization ID, "
-                        + "module ID and module type matches.")
+            return_error(message="Error connecting to module.")
+    except DemistoException as ex:
+        return_error(message="Error connecting to module.\nPlease check that organization ID, "
+                             + "module ID and module type matches.", error=ex)
 
 
 # DEMISTO command evaluation
 def main():
+    urllib3.disable_warnings()
+
     params = demisto.params()
     server_url = params.get('url').rstrip("/")
     verify_ssl = not params.get('unsecure', False)
@@ -423,7 +452,7 @@ def main():
     if demisto.command() == 'test-module':
         # Checks if the user is correctly authenticated and organization, module & module_type are correct
         test_module(client)
-        demisto.results("ok")
+        return_results("ok")
 
     elif demisto.command() == 'fetch-incidents':
         last_run = demisto.getLastRun()
@@ -457,11 +486,14 @@ def main():
     elif demisto.command() == 'blueliv-resource-assign-rating':
         set_resource_rating(client, args)
 
-    elif demisto.command() == 'blueliv-resource-fav':
+    elif demisto.command() == 'blueliv-resource-favourite':
         resource_fav(client, args)
 
     elif demisto.command() == 'blueliv-resource-set-tlp':
         resource_set_tlp(client, args)
+
+    elif demisto.command() == 'blueliv-module-get-labels':
+        module_get_labels(client)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
