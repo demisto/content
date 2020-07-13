@@ -4,13 +4,12 @@ import tempfile
 from typing import List, Optional, Set, Union
 
 import magic
-
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 
 class InclusiveExclusive:
-    INCLUSIVE = 'inclusive'
-    EXCLUSIVE = 'exclusive'
+    INCLUSIVE: str = 'inclusive'
+    EXCLUSIVE: str = 'exclusive'
 
 
 def get_file_path_from_id(entry_id: Optional[str] = None):
@@ -76,6 +75,8 @@ def upload_files(
         types: Optional[Set[str]] = None, extensions: Optional[Set[str]] = None,
         types_inclusive_or_exclusive: Optional[str] = None,
         extensions_inclusive_or_exclusive: Optional[str] = None,
+        wpa_pwd: Optional[str] = None,
+        rsa_path: Optional[str] = None,
         limit: int = 5
 ) -> Union[CommandResults, str]:
     """
@@ -93,9 +94,20 @@ def upload_files(
         Extracted files to download
 
     """
-    run_command(['tshark', '-r', f'{file_path}', '--export-objects', f'http,{dir_path}',
-                 '--export-objects', f'smb,{dir_path}', '--export-objects', f'imf,{dir_path}',
-                 '--export-objects', f'tftp,{dir_path}', '--export-objects', f'dicom,{dir_path}'])
+    command = ['tshark', '-r', f'{file_path}', '--export-objects', f'http,{dir_path}',
+               '--export-objects', f'smb,{dir_path}', '--export-objects', f'imf,{dir_path}',
+               '--export-objects', f'tftp,{dir_path}', '--export-objects', f'dicom,{dir_path}']
+
+    if wpa_pwd:
+        command.extend([
+            '-o', 'wlan.enable_decryption:TRUE',
+            '-o', f'uat:80211_keys:"wpa-pwd","{wpa_pwd}"'
+        ])
+
+    if rsa_path:
+        command.extend(['-o', f'uat:rsa_keys:"{rsa_path}",""'])
+
+    run_command(command)
 
     context = []
     md5 = hashlib.md5()
@@ -148,13 +160,10 @@ def upload_files(
 
 def decrypt(
         file_path: str,
-        temp_file: str,
         password: Optional[str] = None,
         rsa_key_path: Optional[str] = None
-) -> str:
-    if not password and not rsa_key_path:
-        return file_path
-    command = ['tshark', '-r', file_path, '-w', temp_file]
+) -> List[str]:
+    command = []
 
     if password:
         command.extend([
@@ -164,8 +173,7 @@ def decrypt(
 
     if rsa_key_path:
         command.extend(['-o', f'uat:rsa_keys:"{rsa_key_path}",""'])
-    run_command(command)
-    return temp_file
+    return command
 
 
 def main(
@@ -181,24 +189,19 @@ def main(
     with tempfile.TemporaryDirectory() as dir_path:
         try:
             file_path, file_name = get_file_path_from_id(entry_id)
-            file_extension = os.path.splitext(file_name)[1]
-            with tempfile.NamedTemporaryFile(suffix=file_extension) as temp_file:
-                cert, _ = get_file_path_from_id(rsa_decrypt_key_entry_id)
-                file_path = decrypt(
-                    file_path, temp_file.name,
-                    wpa_password, None
-                )
-
-                return_results(upload_files(
-                    file_path, dir_path,
-                    types=set(argToList(types)),
-                    extensions=set(argToList(extensions)),
-                    types_inclusive_or_exclusive=types_inclusive_or_exclusive,
-                    extensions_inclusive_or_exclusive=extensions_inclusive_or_exclusive,
-                    limit=int(limit) if limit else 5
-                ))
+            cert_path, _ = get_file_path_from_id(rsa_decrypt_key_entry_id)
+            return_results(upload_files(
+                file_path, dir_path,
+                types=set(argToList(types)),
+                extensions=set(argToList(extensions)),
+                types_inclusive_or_exclusive=types_inclusive_or_exclusive,
+                extensions_inclusive_or_exclusive=extensions_inclusive_or_exclusive,
+                wpa_pwd=wpa_password,
+                rsa_path=cert_path,
+                limit=int(limit) if limit else 5
+            ))
         except Exception as e:
-            return_error(f'Failed to execute PcapFileExtracor. Error: {str(e)}')
+            return_error(f'Failed to execute PcapFileExtractor. Error: {str(e)}')
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):

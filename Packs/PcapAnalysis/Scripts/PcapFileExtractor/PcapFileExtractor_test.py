@@ -1,10 +1,10 @@
 import os
+from typing import Optional, Tuple
 
 import pytest
 from magic import Magic
 
-from PcapFileExtractor import (InclusiveExclusive, filter_files, main,
-                               upload_files)
+from PcapFileExtractor import InclusiveExclusive, filter_files, upload_files
 
 OUTPUTS = [
     {
@@ -59,9 +59,9 @@ class TestFilter:
 
     @pytest.mark.parametrize(
         'files, extensions, exclusive_or_inclusive, expected', [
-            (['./png_file.png'], ['.png'], InclusiveExclusive.EXCLUSIVE, []),
-            (['./png_file.png'], ['.png'], InclusiveExclusive.INCLUSIVE, ['./png_file.png']),
-            (['./png_file.mp3'], ['sound/mp3'], InclusiveExclusive.INCLUSIVE, [])
+            (['./png_file.png'], {'.png'}, InclusiveExclusive.EXCLUSIVE, []),
+            (['./png_file.png'], {'.png'}, InclusiveExclusive.INCLUSIVE, ['./png_file.png']),
+            (['./png_file.mp3'], {'sound/mp3'}, InclusiveExclusive.INCLUSIVE, [])
         ])
     def test_extensions(self, files, extensions, exclusive_or_inclusive, expected):
         """
@@ -78,9 +78,43 @@ class TestFilter:
                                         extensions_inclusive_or_exclusive=exclusive_or_inclusive)
 
 
-@pytest.mark.skip('Problem with the docker')
-def test_decryption(mocker):
+def get_file_path_from_id(entry_id: str) -> Tuple[Optional[str], Optional[str]]:
+    if not entry_id:
+        return None, None
+    return entry_id, entry_id.split('/')[-1]
+
+
+def test_decryption_wpa_pwd(tmpdir):
+    """
+    Given:
+    - A PCAP file protected with WPA-PWD
+    - A password to the file
+
+    When:
+    - Running PcapFileExtractor with WPA-PWD protected file
+
+    Then:
+    - Validate results output that the files are exported and returned to CortexSOAR
+    """
     file_path = './TestData/wpa-Induction.pcap'
     password = 'Induction'
-    mocker.patch('PcapFileExtractor.get_file_path_from_id', return_value=(file_path, 'wpa-Induction.pcap'))
-    main('111', wpa_password=password)
+    results = upload_files(file_path, tmpdir, wpa_pwd=password)
+    assert 5 == len(results.outputs)
+
+
+def test_decryption_rsa(tmpdir):
+    """
+    Given:
+    - A PCAP file with ssl encryption
+    - A Key file for the pcap
+
+    When:
+    - Running PcapFileExtractor with TLS protected file and key
+
+    Then:
+    - Validate results output that the files are exported and returned to CortexSOAR
+    """
+    file_path = './TestData/rsa.cap'
+    key_path = './TestData/rsa.key'
+    results = upload_files(file_path, tmpdir, rsa_path=key_path)
+    assert 5 == len(results.outputs)

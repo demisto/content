@@ -6,7 +6,7 @@ args:
   required: true
   secret: false
 - default: false
-  description: The entry ID for the RSA decryption key.
+  description: The entry ID of the RSA private key.
   isArray: false
   name: rsa_decrypt_key_entry_id
   required: false
