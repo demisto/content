@@ -148,7 +148,7 @@ def main():
         }
     }
     version = args.get('version')
-    values_map = values_map_options.get(version)
+    values_map = values_map_options[version]
 
     value_list = list()
     for k, v in args.items():
@@ -168,13 +168,15 @@ def main():
     modified_integrity = integrity if modified_integrity == "X" else values_map['CIA'].get(modified_integrity)
     availability = values_map["CIA"].get(args.get('A'))
     modified_availability = args.get('MA', "X")
-    modified_availability = availability if modified_availability == "X" else values_map['CIA'].get(modified_availability)
+    modified_availability = availability if modified_availability == "X"\
+        else values_map['CIA'].get(modified_availability)
     exploit_code_maturity = values_map["E"].get(args.get('E'), "X")
     scope_changed = True if args.get('S') == "C" else False
     modified_scope_changed = True if args.get('MS') == "C" else False
     atack_vector = values_map['AV'].get(args.get('AV'))
     modified_attack_vector = args.get('MAV', "X")
-    modified_attack_vector = atack_vector if modified_attack_vector == "X" else values_map['AV'].get(modified_attack_vector)
+    modified_attack_vector = atack_vector if modified_attack_vector == "X"\
+        else values_map['AV'].get(modified_attack_vector)
     attack_complexity = values_map['AC'].get(args.get('AC'))
     modified_attack_complexity = args.get('MAC', "X")
     modified_attack_complexity = attack_complexity if modified_attack_complexity == "X"\
@@ -206,12 +208,12 @@ def main():
     ###########################################
 
     # Impact Sub-Score
-    iss = None
+    iss = 0
     if version in ['3.0', '3.1']:
         iss = 1 - ((1 - confidentiality) * (1 - integrity) * (1 - availability))
 
     # Impact
-    impact = None
+    impact = 0
     if version in ['3.0', '3.1']:
         if not scope_changed:
             impact = 6.42 * iss
@@ -219,12 +221,12 @@ def main():
             impact = 7.52 * (iss - 0.029) - 3.25 * (iss - 0.02) ** 15
 
     # Exploitability
-    exploitability = None
+    exploitability = 0
     if version in ['3.0', '3.1']:
         exploitability = 8.22 * atack_vector * attack_complexity * privileges_required * user_interaction
 
     # Base Score
-    base_score = None
+    base_score = 0
     if version in ['3.0', '3.1']:
         base_score = 0
         if impact > 0:
@@ -238,23 +240,24 @@ def main():
     ###########################################
     # Temporal Metric calculations
     ###########################################
-    temporal_score_roundup = None
+    temporal_score_roundup = 0
     if version in ['3.0', '3.1']:
         temporal_score_roundup = base_score * exploit_code_maturity * remediation_level * report_confidence
 
     # Environmental Metrics
-    modified_impact_sub_score = None
-    modified_impact = None
-    modified_exploitability = None
+    modified_impact_sub_score = 0
+    modified_impact = 0
+    modified_exploitability = 0
     if version in ['3.0', '3.1']:
         calculatedmodified_impact_sub_score = (
-                1 - (
-                        (1 - confidentiality_requirement * modified_confidentiality) *
-                        (1 - integrity_requirement * modified_integrity) *
-                        (1 - availability_requirement * modified_availability)
-                )
+            1 - (
+                    (1 - confidentiality_requirement * modified_confidentiality) *
+                    (1 - integrity_requirement * modified_integrity) *
+                    (1 - availability_requirement * modified_availability)
+            )
         )
-        modified_impact_sub_score = calculatedmodified_impact_sub_score if calculatedmodified_impact_sub_score < 0.915 else 0.915
+        modified_impact_sub_score = calculatedmodified_impact_sub_score if calculatedmodified_impact_sub_score < 0.915\
+            else 0.915
 
     if version in ['3.0', '3.1']:
         if modified_scope_changed:
@@ -270,7 +273,7 @@ def main():
                                   modified_attack_complexity * modified_privileges_required * modified_user_interaction
 
     # Environmental Score
-    environmental_score = None
+    environmental_score = 0
     if version in ['3.0', '3.1']:
         environmental_score = 0
         if modified_impact > 0:
