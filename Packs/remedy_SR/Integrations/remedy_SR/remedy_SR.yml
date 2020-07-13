@@ -220,7 +220,7 @@ script:
     - contextPath: Remedy.Ticket.ContactPhone
       description: Contact Phone
       type: string
-  - deprecated: false
+  - deprecated: true
     description: Update a ticket
     execution: false
     name: remedy-update-ticket
