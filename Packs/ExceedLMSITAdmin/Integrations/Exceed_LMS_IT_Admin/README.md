@@ -1,5 +1,5 @@
-Exceed LMS Integration consists of a set of API endpoints that allow customers to perform CRUD operation on their user profiles. 
-This integration was integrated and tested with version xx of Exceed LMS IT Admin
+Exceed LMS Integration consists of a set of API endpoints that allow customers to perform CRUD operation on their user profiles.
+This integration was integrated and tested with version v2 of Exceed LMS IT Admin
 ## Configure Exceed LMS IT Admin on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -39,15 +39,15 @@ Get a user detail
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | GetUser | unknown | Command context path | 
-| GetUser.active | boolean | Gives the active status of user. Can be true of false.  | 
+| GetUser.active | boolean | Gives the active status of user. Can be true of false | 
 | GetUser.brand | string | Name of the Integration | 
 | GetUser.details | string | Gives the user Profile information if the API is success else error message | 
 | GetUser.email | string | Value of email ID passed as argument | 
-| GetUser.errorCode | number |  HTTP error response code  | 
+| GetUser.errorCode | number | HTTP error response code | 
 | GetUser.errorMessage | string | Reason why the API is failed | 
 | GetUser.id | string | Value of id passed as argument | 
 | GetUser.instanceName | string | Name of the instance used for testing | 
-| GetUser.success | boolean | Status of the result. Can be true or false. | 
+| GetUser.success | boolean | Status of the result. Can be true or false | 
 | GetUser.userName | string | Value of username passed as argument | 
 
 
@@ -94,8 +94,8 @@ Get a user detail
             "external_avatar_url": null,
             "facebook_as_id": null,
             "facebook_id": null,
-            "first_name": "testMydesmisto7",
-            "full_name": "testmydesmisto7 test",
+            "first_name": "demistouser",
+            "full_name": "demistouser test",
             "google_auth": null,
             "hide_welcome_page": false,
             "hired_on": null,
@@ -125,8 +125,8 @@ Get a user detail
             "state": null,
             "tzid": null,
             "uid": null,
-            "updated_by": null,
-            "updated_on": "2020-07-07T11:24:43+00:00",
+            "updated_by": "API",
+            "updated_on": "2020-07-07T14:32:39+00:00",
             "verified_at": null,
             "zip": null
         },
@@ -146,7 +146,7 @@ Get a user detail
 >### Get EXCEED LMS User:
 >|active|brand|details|email|errorCode|errorMessage|id|instanceName|success|username|
 >|---|---|---|---|---|---|---|---|---|---|
->| true | Exceed LMS IT Admin | account_id: 1193<br/>address_one: null<br/>address_two: null<br/>authority: student<br/>city: null<br/>code: i-4917005<br/>country: null<br/>created_on: 2020-07-07T11:24:43+00:00<br/>custom_a: null<br/>custom_b: null<br/>custom_c: null<br/>custom_d: null<br/>custom_e: null<br/>custom_f: null<br/>custom_g: null<br/>custom_h: null<br/>custom_i: null<br/>custom_j: null<br/>custom_k: null<br/>custom_l: null<br/>custom_m: null<br/>custom_n: null<br/>custom_o: null<br/>custom_p: null<br/>custom_q: null<br/>custom_r: null<br/>custom_s: null<br/>custom_t: null<br/>custom_u: null<br/>email: testdemistouser@paloaltonetworks.com<br/>external_avatar_url: null<br/>facebook_id: null<br/>first_name: testMydesmisto7<br/>full_name: testmydesmisto7 test<br/>google_auth: null<br/>hide_welcome_page: false<br/>hired_on: null<br/>rehired_on: null<br/>id: 4917005<br/>integration_id: null<br/>is_account_owner: false<br/>is_active: true<br/>is_pass_reset_required: false<br/>last_login_at: null<br/>last_name: test<br/>locale: en<br/>login: testxoar7july@paloaltonetworks.com<br/>manager_id: null<br/>organization_id: 2702<br/>phone_fax: null<br/>phone_home: null<br/>phone_mobile: null<br/>phone_work: null<br/>picture_id: null<br/>position_id: null<br/>position_name: null<br/>provider: null<br/>registration_code: null<br/>registration_id: null<br/>state: null<br/>tzid: null<br/>uid: null<br/>updated_by: null<br/>updated_on: 2020-07-07T11:24:43+00:00<br/>zip: null<br/>registered_at: null<br/>verified_at: null<br/>facebook_as_id: null | testdemistouser@paloaltonetworks.com |  |  | 4917005 | ExceedLMSITAdmin | true | testxoar7july@paloaltonetworks.com |
+>| true | Exceed LMS IT Admin | account_id: 1193<br/>address_one: null<br/>address_two: null<br/>authority: student<br/>city: null<br/>code: i-4917005<br/>country: null<br/>created_on: 2020-07-07T11:24:43+00:00<br/>custom_a: null<br/>custom_b: null<br/>custom_c: null<br/>custom_d: null<br/>custom_e: null<br/>custom_f: null<br/>custom_g: null<br/>custom_h: null<br/>custom_i: null<br/>custom_j: null<br/>custom_k: null<br/>custom_l: null<br/>custom_m: null<br/>custom_n: null<br/>custom_o: null<br/>custom_p: null<br/>custom_q: null<br/>custom_r: null<br/>custom_s: null<br/>custom_t: null<br/>custom_u: null<br/>email: testdemistouser@paloaltonetworks.com<br/>external_avatar_url: null<br/>facebook_id: null<br/>first_name: demistouser<br/>full_name: demistouser test<br/>google_auth: null<br/>hide_welcome_page: false<br/>hired_on: null<br/>rehired_on: null<br/>id: 4917005<br/>integration_id: null<br/>is_account_owner: false<br/>is_active: true<br/>is_pass_reset_required: false<br/>last_login_at: null<br/>last_name: test<br/>locale: en<br/>login: testxoar7july@paloaltonetworks.com<br/>manager_id: null<br/>organization_id: 2702<br/>phone_fax: null<br/>phone_home: null<br/>phone_mobile: null<br/>phone_work: null<br/>picture_id: null<br/>position_id: null<br/>position_name: null<br/>provider: null<br/>registration_code: null<br/>registration_id: null<br/>state: null<br/>tzid: null<br/>uid: null<br/>updated_by: API<br/>updated_on: 2020-07-07T14:32:39+00:00<br/>zip: null<br/>registered_at: null<br/>verified_at: null<br/>facebook_as_id: null | testdemistouser@paloaltonetworks.com |  |  | 4917005 | ExceedLMSITAdmin | true | testxoar7july@paloaltonetworks.com |
 
 
 ### create-user
@@ -172,18 +172,18 @@ Creates a user
 | CreateUser | unknown | Command context path | 
 | CreateUser.brand | string | Name of the Integration | 
 | CreateUser.instanceName | string | Name of the instance used for testing | 
-| CreateUser.success | boolean | Status of the result. Can be true or false. | 
-| CreateUser.active | boolean | Gives the active status of user. Can be true of false.  | 
+| CreateUser.success | boolean | Status of the result. Can be true or false | 
+| CreateUser.active | boolean | Gives the active status of user. Can be true of false | 
 | CreateUser.id | string | Value of id passed as argument | 
 | CreateUser.username | string | Value of username passed as argument | 
 | CreateUser.email | string | Value of email ID passed as argument | 
-| CreateUser.errorCode | number | HTTP error response code  | 
+| CreateUser.errorCode | number | HTTP error response code | 
 | CreateUser.errorMessage | string | Reason why the API is failed | 
 | CreateUser.details | string | Gives the raw response from API | 
 
 
 #### Command Example
-```!create-user scim={"name":{"familyName":"test","givenName":"demisto"},"emails":[{"type":"work","primary":true,"value":"testdemistouser9@paloaltonetworks.com"}],"userName":"testXoar9July@paloaltonetworks.com","urn:scim:schemas:extension:custom:1.0:user":{"firstname":"testMydesmisto9"}} using=ExceedLMSITAdmin```
+```!create-user scim={"name":{"familyName":"test","givenName":"demisto"},"emails":[{"type":"work","primary":true,"value":"testdemistouser13@paloaltonetworks.com"}],"userName":"testXoar13July@paloaltonetworks.com","urn:scim:schemas:extension:custom:1.0:user":{"firstname":"testMydesmisto9"}} using=ExceedLMSITAdmin```
 
 #### Context Example
 ```
@@ -199,10 +199,10 @@ Creates a user
             "address_two": null,
             "authority": "student",
             "city": null,
-            "code": "i-4917123",
+            "code": "i-4919412",
             "company_name": null,
             "country": null,
-            "created_on": "2020-07-07T13:06:32+00:00",
+            "created_on": "2020-07-13T12:29:47+00:00",
             "custom_a": null,
             "custom_b": null,
             "custom_c": null,
@@ -227,7 +227,7 @@ Creates a user
             "deletion_requested_at": null,
             "description": null,
             "dismissed_in_app_callouts": [],
-            "email": "testdemistouser9@paloaltonetworks.com",
+            "email": "testdemistouser13@paloaltonetworks.com",
             "external_avatar_url": null,
             "facebook_as_id": null,
             "facebook_id": null,
@@ -237,7 +237,7 @@ Creates a user
             "hero_picture_id": null,
             "hide_welcome_page": false,
             "hired_on": null,
-            "id": 4917123,
+            "id": 4919412,
             "integration_id": null,
             "is_account_owner": false,
             "is_active": true,
@@ -250,7 +250,7 @@ Creates a user
             "latitude": null,
             "linkedin_url": null,
             "locale": "en",
-            "login": "testxoar9july@paloaltonetworks.com",
+            "login": "testxoar13july@paloaltonetworks.com",
             "login_disabled_at": null,
             "longitude": null,
             "manager_id": null,
@@ -264,7 +264,7 @@ Creates a user
             "phone_work": null,
             "picture_id": null,
             "position_id": null,
-            "profile_url": "testmydesmisto9testb6dcb9ef",
+            "profile_url": "testmydesmisto9test2f021b22",
             "provider": null,
             "public_profile": false,
             "recovery_email": null,
@@ -273,7 +273,7 @@ Creates a user
             "registration_code": null,
             "registration_id": null,
             "rehired_on": null,
-            "remember_me_token": "dRhvKG8MNgHRvzYk46un2fo8",
+            "remember_me_token": "gqkEYyCnFEBghDUhhVhJXUim",
             "state": null,
             "twitter_handle": null,
             "tzid": null,
@@ -282,18 +282,18 @@ Creates a user
             "unsubscribe_mentor_digest_email": null,
             "unsubscribed_from_letters": null,
             "updated_by": "API",
-            "updated_on": "2020-07-07T13:06:32+00:00",
+            "updated_on": "2020-07-13T12:29:47+00:00",
             "verified_at": null,
             "website_url": null,
             "zip": null
         },
-        "email": "testdemistouser9@paloaltonetworks.com",
+        "email": "testdemistouser13@paloaltonetworks.com",
         "errorCode": null,
         "errorMessage": null,
-        "id": 4917123,
+        "id": 4919412,
         "instanceName": "ExceedLMSITAdmin",
         "success": true,
-        "username": "testXoar9July@paloaltonetworks.com"
+        "username": "testXoar13July@paloaltonetworks.com"
     }
 }
 ```
@@ -303,7 +303,7 @@ Creates a user
 >### Create Exceed LMS User:
 >|active|brand|details|email|errorCode|errorMessage|id|instanceName|success|username|
 >|---|---|---|---|---|---|---|---|---|---|
->| true | Exceed LMS IT Admin | id: 4917123<br/>account_id: 1193<br/>position_id: null<br/>picture_id: null<br/>is_active: true<br/>authority: student<br/>full_name: testmydesmisto9 test<br/>first_name: testMydesmisto9<br/>last_name: test<br/>login: testxoar9july@paloaltonetworks.com<br/>code: i-4917123<br/>tzid: null<br/>hired_on: null<br/>manager_id: null<br/>custom_a: null<br/>custom_b: null<br/>custom_c: null<br/>custom_d: null<br/>custom_e: null<br/>custom_f: null<br/>custom_g: null<br/>custom_h: null<br/>custom_i: null<br/>custom_j: null<br/>email: testdemistouser9@paloaltonetworks.com<br/>phone_work: null<br/>phone_mobile: null<br/>phone_fax: null<br/>phone_home: null<br/>address_one: null<br/>address_two: null<br/>city: null<br/>state: null<br/>zip: null<br/>updated_by: API<br/>updated_on: 2020-07-07T13:06:32+00:00<br/>is_pass_reset_required: false<br/>registration_id: null<br/>hide_welcome_page: false<br/>country: null<br/>is_account_owner: false<br/>integration_id: null<br/>last_login_at: null<br/>locale: en<br/>remember_me_token: dRhvKG8MNgHRvzYk46un2fo8<br/>registration_code: null<br/>password_hash: null<br/>password_salt: null<br/>organization_id: 2702<br/>google_auth: null<br/>created_on: 2020-07-07T13:06:32+00:00<br/>custom_k: null<br/>custom_l: null<br/>custom_m: null<br/>custom_n: null<br/>custom_o: null<br/>custom_p: null<br/>custom_q: null<br/>custom_r: null<br/>custom_s: null<br/>custom_t: null<br/>custom_u: null<br/>facebook_id: null<br/>provider: null<br/>uid: null<br/>external_avatar_url: null<br/>unread_notifications_count: 0<br/>recovery_email: null<br/>recovery_token: null<br/>is_onboarded: false<br/>hero_picture_id: null<br/>latitude: null<br/>longitude: null<br/>registered_at: null<br/>public_profile: false<br/>company_name: null<br/>description: null<br/>profile_url: testmydesmisto9testb6dcb9ef<br/>deletion_requested_at: null<br/>accepted_catcat_terms_of_service: null<br/>is_topic_onboarded: null<br/>onet_occupation_id: null<br/>unsubscribed_from_letters: null<br/>rehired_on: null<br/>unsubscribe_mentor_digest_email: null<br/>login_disabled_at: null<br/>twitter_handle: null<br/>website_url: null<br/>linkedin_url: null<br/>verified_at: null<br/>facebook_as_id: null<br/>dismissed_in_app_callouts: <br/>address_three: null<br/>job_title: null | testdemistouser9@paloaltonetworks.com |  |  | 4917123 | ExceedLMSITAdmin | true | testXoar9July@paloaltonetworks.com |
+>| true | Exceed LMS IT Admin | id: 4919412<br/>account_id: 1193<br/>position_id: null<br/>picture_id: null<br/>is_active: true<br/>authority: student<br/>full_name: testmydesmisto9 test<br/>first_name: testMydesmisto9<br/>last_name: test<br/>login: testxoar13july@paloaltonetworks.com<br/>code: i-4919412<br/>tzid: null<br/>hired_on: null<br/>manager_id: null<br/>custom_a: null<br/>custom_b: null<br/>custom_c: null<br/>custom_d: null<br/>custom_e: null<br/>custom_f: null<br/>custom_g: null<br/>custom_h: null<br/>custom_i: null<br/>custom_j: null<br/>email: testdemistouser13@paloaltonetworks.com<br/>phone_work: null<br/>phone_mobile: null<br/>phone_fax: null<br/>phone_home: null<br/>address_one: null<br/>address_two: null<br/>city: null<br/>state: null<br/>zip: null<br/>updated_by: API<br/>updated_on: 2020-07-13T12:29:47+00:00<br/>is_pass_reset_required: false<br/>registration_id: null<br/>hide_welcome_page: false<br/>country: null<br/>is_account_owner: false<br/>integration_id: null<br/>last_login_at: null<br/>locale: en<br/>remember_me_token: gqkEYyCnFEBghDUhhVhJXUim<br/>registration_code: null<br/>password_hash: null<br/>password_salt: null<br/>organization_id: 2702<br/>google_auth: null<br/>created_on: 2020-07-13T12:29:47+00:00<br/>custom_k: null<br/>custom_l: null<br/>custom_m: null<br/>custom_n: null<br/>custom_o: null<br/>custom_p: null<br/>custom_q: null<br/>custom_r: null<br/>custom_s: null<br/>custom_t: null<br/>custom_u: null<br/>facebook_id: null<br/>provider: null<br/>uid: null<br/>external_avatar_url: null<br/>unread_notifications_count: 0<br/>recovery_email: null<br/>recovery_token: null<br/>is_onboarded: false<br/>hero_picture_id: null<br/>latitude: null<br/>longitude: null<br/>registered_at: null<br/>public_profile: false<br/>company_name: null<br/>description: null<br/>profile_url: testmydesmisto9test2f021b22<br/>deletion_requested_at: null<br/>accepted_catcat_terms_of_service: null<br/>is_topic_onboarded: null<br/>onet_occupation_id: null<br/>unsubscribed_from_letters: null<br/>rehired_on: null<br/>unsubscribe_mentor_digest_email: null<br/>login_disabled_at: null<br/>twitter_handle: null<br/>website_url: null<br/>linkedin_url: null<br/>verified_at: null<br/>facebook_as_id: null<br/>dismissed_in_app_callouts: <br/>address_three: null<br/>job_title: null | testdemistouser13@paloaltonetworks.com |  |  | 4919412 | ExceedLMSITAdmin | true | testXoar13July@paloaltonetworks.com |
 
 
 ### update-user
@@ -330,18 +330,18 @@ Update a user
 | UpdateUser | unknown | Command context path | 
 | UpdateUser.brand | string | Name of the Integration | 
 | UpdateUser.instanceName | string | Name of the instance used for testing | 
-| UpdateUser.success | boolean | Status of the result. Can be true or false. | 
-| UpdateUser.active | boolean | Gives the active status of user. Can be true of false.  | 
+| UpdateUser.success | boolean | Status of the result. Can be true or false | 
+| UpdateUser.active | boolean | Gives the active status of user. Can be true of false | 
 | UpdateUser.id | string | Value of id passed as argument | 
 | UpdateUser.username | string | Value of username passed as argument | 
 | UpdateUser.email | string | Value of email ID passed as argument | 
 | UpdateUser.errorCode | number | HTTP error response code | 
-| UpdateUser.errorMessage | string |  Reason why the API is failed | 
+| UpdateUser.errorMessage | string | Reason why the API is failed | 
 | UpdateUser.details | string | Gives the raw response from API | 
 
 
 #### Command Example
-```!update-user oldScim={"id":"4917005"} newScim={"name":{"familyName":"test","givenName":"demistouser"},"emails":[{"type":"work","primary":true,"value":"testdemistouser@paloaltonetworks.com"}],"urn:scim:schemas:extension:custom:1.0:user":{"userName":"testxsoar1239@paloaltonetworks.com"}} using=ExceedLMSITAdmin```
+```!update-user oldScim={"id":"4917005"} newScim={"name":{"familyName":"test","givenName":"demistouser"},"emails":[{"type":"work","primary":true,"value":"testdemistouser99@paloaltonetworks.com"}],"urn:scim:schemas:extension:custom:1.0:user":{"userName":"testxsoar9999@paloaltonetworks.com"}} using=ExceedLMSITAdmin```
 
 #### Context Example
 ```
@@ -391,8 +391,8 @@ Enable a disabled user
 | EnableUser | unknown | Command context path | 
 | EnableUser.brand | string | Name of the Integration | 
 | EnableUser.instanceName | string | Name the instance used for testing | 
-| EnableUser.success | boolean | Status of the result. Can be true or false. | 
-| EnableUser.active | boolean | Gives the active status of user. Can be true of false.  | 
+| EnableUser.success | boolean | Status of the result. Can be true or false | 
+| EnableUser.active | boolean | Gives the active status of user. Can be true of false | 
 | EnableUser.id | string | Value of id passed as argument | 
 | EnableUser.username | string | Value of username passed as argument | 
 | EnableUser.email | string | Value of email ID passed as argument | 
@@ -451,12 +451,12 @@ Disable a user
 | --- | --- | --- |
 | DisableUser | unknown | Command context path | 
 | DisableUser.instanceName | string | Name the instance used for testing | 
-| DisableUser.success | boolean | Status of the result. Can be true or false. | 
-| DisableUser.active | boolean | Gives the active status of user. Can be true of false.  | 
+| DisableUser.success | boolean | Status of the result. Can be true or false | 
+| DisableUser.active | boolean | Gives the active status of user. Can be true of false | 
 | DisableUser.id | string | Value of id passed as argument | 
 | DisableUser.username | string | Value of username passed as argument | 
 | DisableUser.email | string | Value of email ID passed as argument | 
-| DisableUser.errorCode | number | HTTP error response code  | 
+| DisableUser.errorCode | number | HTTP error response code | 
 | DisableUser.errorMessage | string | Reason why the API is failed | 
 | DisableUser.details | string | Gives the raw response from API in case of error | 
 | DisableUser.brand | string | Name of the Integration | 

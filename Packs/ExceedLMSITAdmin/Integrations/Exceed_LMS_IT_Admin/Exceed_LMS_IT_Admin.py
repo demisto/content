@@ -1,15 +1,12 @@
-import json
-import traceback
-
-import requests
-
 import demistomock as demisto
 from CommonServerPython import *
 
 ''' IMPORTS '''
 
+import json
+import traceback
 
-''' IMPORTS '''
+import requests
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -17,6 +14,8 @@ requests.packages.urllib3.disable_warnings()
 ''' CONSTANTS '''
 SCIM_EXTENSION_SCHEMA = "urn:scim:schemas:extension:custom:1.0:user"
 USER_NOT_FOUND = "User not found"
+CUSTOM_MAPPING_CREATE = demisto.params().get('customMappingCreateUser')
+CUSTOM_MAPPING_UPDATE = demisto.params().get('customMappingUpdateUser')
 
 
 class Client(BaseClient):
@@ -92,7 +91,7 @@ class Client(BaseClient):
         )
 
     # Builds a new user exceedlms_user dict with pre-defined keys and custom mapping (for user)
-    def build_exceedlms_create_user(self, args, scim, custom_mapping):
+    def build_exceedlms_create_user(self, args, scim):
         parsed_scim_data = map_scim(scim)
         extension_schema = scim.get(SCIM_EXTENSION_SCHEMA)
 
@@ -104,7 +103,7 @@ class Client(BaseClient):
         if extension_schema and extension_schema.get('manageremail') is not None:
             manageremail = extension_schema.get('manageremail')
 
-        manager_term = ''
+        manager_term = None
 
         if manager_id:
             manager_term = manager_id
@@ -133,10 +132,11 @@ class Client(BaseClient):
             "zip": parsed_scim_data.get('zip'),
         }
 
+        custom_mapping = None
         if args.get('customMapping'):
             custom_mapping = json.loads(args.get('customMapping'))
-        elif custom_mapping:
-            custom_mapping = json.loads(custom_mapping)
+        elif CUSTOM_MAPPING_CREATE:
+            custom_mapping = json.loads(CUSTOM_MAPPING_CREATE)
 
         if custom_mapping and extension_schema:
             for key, value in custom_mapping.items():
@@ -144,11 +144,12 @@ class Client(BaseClient):
                 user_extension_data = extension_schema.get(key)
                 if user_extension_data:
                     exceedlms_user[value] = user_extension_data
+
         return exceedlms_user
 
-    # Builds a new user prisma profile dict with pre-defined keys and custom mapping (for user)
+    # Builds a new user ExceedLMS profile dict with pre-defined keys and custom mapping (for user)
 
-    def build_exceedlms_update_user(self, args, scim, custom_mapping):
+    def build_exceedlms_update_user(self, args, scim):
         parsed_scim_data = map_scim(scim)
         extension_schema = scim.get(SCIM_EXTENSION_SCHEMA)
 
@@ -187,10 +188,12 @@ class Client(BaseClient):
             "state": parsed_scim_data.get('state'),
             "zip": parsed_scim_data.get('zip'),
         }
+
+        custom_mapping = None
         if args.get('customMapping'):
             custom_mapping = json.loads(args.get('customMapping'))
-        elif custom_mapping:
-            custom_mapping = json.loads(custom_mapping)
+        elif CUSTOM_MAPPING_UPDATE:
+            custom_mapping = json.loads(CUSTOM_MAPPING_UPDATE)
 
         extension_schema = scim.get(SCIM_EXTENSION_SCHEMA)
         if custom_mapping and extension_schema:
@@ -309,17 +312,18 @@ def test_module(client, args):
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
 
     Args:
-        client: HelloWorld client
+        client: ExceedLMSITAdmin client
+        args  : ExceedLMSITAdmin arguments passed
 
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
 
-    """result = client.say_hello('DBot')
-    if 'Hello DBot' == result:
+    """res = client.http_request(method, url, param)
+    if res.status_code ==200:
         return 'ok'
     else:
-        return 'Test failed because ......'"""
+        raise Exception"""
     args
     uri = '/api/v2/users.json/'
     params = {
@@ -416,12 +420,10 @@ def create_user_command(client, args):
             fail : success=False, id, login as username, errorCode, errorMessage, details
     """
 
-    custom_mapping = demisto.params().get('customMappingCreateUser')
-
     scim = verify_and_load_scim_data(args.get('scim'))
     parsed_scim = map_scim(scim)
 
-    exceedlms_user = client.build_exceedlms_create_user(args, scim, custom_mapping)
+    exceedlms_user = client.build_exceedlms_create_user(args, scim)
 
     # Removing Elements from exceed lms dictionary which was not sent as part of scim
     exceedlms_user = {key: value for key, value in exceedlms_user.items() if value is not None}
@@ -473,7 +475,6 @@ def update_user_command(client, args):
             success : success=True, id, email, login as username, details, active status
             fail : success=False, id, login as username, errorCod, errorMessage, details
     """
-    custom_mapping = demisto.params().get('customMappingUpdateUser')
 
     old_scim = verify_and_load_scim_data(args.get('oldScim'))
     new_scim = verify_and_load_scim_data(args.get('newScim'))
@@ -484,9 +485,9 @@ def update_user_command(client, args):
     if not (user_id):
         raise Exception('You must provide id of the user')
 
-    exceedlms_user = client.build_exceedlms_update_user(args, new_scim, custom_mapping)
+    exceedlms_user = client.build_exceedlms_update_user(args, new_scim)
 
-    # Removing Elements from prisma_user dictionary which was not sent as part of scim
+    # Removing Elements from Exceedlms user dictionary which was not sent as part of scim
     exceedlms_user = {key: value for key, value in exceedlms_user.items() if value is not None}
 
     res = client.update_user(user_term=user_id, data=exceedlms_user)

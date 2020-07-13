@@ -37,8 +37,8 @@ configuration:
   name: customMappingUpdateUser
   required: false
   type: 12
-description: 'Exceed LMS Integration consists of a set of API endpoints that allow
-  customers to perform CRUD operation on their user profiles. '
+description: Exceed LMS Integration consists of a set of API endpoints that allow
+  customers to perform CRUD operation on their user profiles.
 display: Exceed LMS IT Admin
 name: Exceed LMS IT Admin
 script:
@@ -54,7 +54,7 @@ script:
       description: Command context path
       type: unknown
     - contextPath: GetUser.active
-      description: 'Gives the active status of user. Can be true of false. '
+      description: Gives the active status of user. Can be true of false
       type: boolean
     - contextPath: GetUser.brand
       description: Name of the Integration
@@ -67,7 +67,7 @@ script:
       description: Value of email ID passed as argument
       type: string
     - contextPath: GetUser.errorCode
-      description: ' HTTP error response code '
+      description: HTTP error response code
       type: number
     - contextPath: GetUser.errorMessage
       description: Reason why the API is failed
@@ -79,7 +79,7 @@ script:
       description: Name of the instance used for testing
       type: string
     - contextPath: GetUser.success
-      description: Status of the result. Can be true or false.
+      description: Status of the result. Can be true or false
       type: boolean
     - contextPath: GetUser.userName
       description: Value of username passed as argument
@@ -103,10 +103,10 @@ script:
       description: Name of the instance used for testing
       type: string
     - contextPath: CreateUser.success
-      description: Status of the result. Can be true or false.
+      description: Status of the result. Can be true or false
       type: boolean
     - contextPath: CreateUser.active
-      description: 'Gives the active status of user. Can be true of false. '
+      description: Gives the active status of user. Can be true of false
       type: boolean
     - contextPath: CreateUser.id
       description: Value of id passed as argument
@@ -118,7 +118,7 @@ script:
       description: Value of email ID passed as argument
       type: string
     - contextPath: CreateUser.errorCode
-      description: 'HTTP error response code '
+      description: HTTP error response code
       type: number
     - contextPath: CreateUser.errorMessage
       description: Reason why the API is failed
@@ -148,10 +148,10 @@ script:
       description: Name of the instance used for testing
       type: string
     - contextPath: UpdateUser.success
-      description: Status of the result. Can be true or false.
+      description: Status of the result. Can be true or false
       type: boolean
     - contextPath: UpdateUser.active
-      description: 'Gives the active status of user. Can be true of false. '
+      description: Gives the active status of user. Can be true of false
       type: boolean
     - contextPath: UpdateUser.id
       description: Value of id passed as argument
@@ -166,7 +166,7 @@ script:
       description: HTTP error response code
       type: number
     - contextPath: UpdateUser.errorMessage
-      description: ' Reason why the API is failed'
+      description: Reason why the API is failed
       type: string
     - contextPath: UpdateUser.details
       description: Gives the raw response from API
@@ -187,10 +187,10 @@ script:
       description: Name the instance used for testing
       type: string
     - contextPath: EnableUser.success
-      description: Status of the result. Can be true or false.
+      description: Status of the result. Can be true or false
       type: boolean
     - contextPath: EnableUser.active
-      description: 'Gives the active status of user. Can be true of false. '
+      description: Gives the active status of user. Can be true of false
       type: boolean
     - contextPath: EnableUser.id
       description: Value of id passed as argument
@@ -223,10 +223,10 @@ script:
       description: Name the instance used for testing
       type: string
     - contextPath: DisableUser.success
-      description: Status of the result. Can be true or false.
+      description: Status of the result. Can be true or false
       type: boolean
     - contextPath: DisableUser.active
-      description: 'Gives the active status of user. Can be true of false. '
+      description: Gives the active status of user. Can be true of false
       type: boolean
     - contextPath: DisableUser.id
       description: Value of id passed as argument
@@ -238,7 +238,7 @@ script:
       description: Value of email ID passed as argument
       type: string
     - contextPath: DisableUser.errorCode
-      description: 'HTTP error response code '
+      description: HTTP error response code
       type: number
     - contextPath: DisableUser.errorMessage
       description: Reason why the API is failed
