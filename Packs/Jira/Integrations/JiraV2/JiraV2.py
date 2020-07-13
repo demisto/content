@@ -1,8 +1,9 @@
-from CommonServerPython import *
-
 import json
+
 import requests
 from requests_oauthlib import OAuth1
+
+from CommonServerPython import *
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -237,7 +238,7 @@ def generate_md_context_create_issue(data, project_name=None, project_key=None):
         data["projectKey"] = demisto.getParam('projectKey')
 
     create_issue_obj['md'].append(data)  # type: ignore
-    create_issue_obj['context']['Ticket'].append(
+    create_issue_obj['context']['Ticket'].append(  # type: ignore
         {"Id": demisto.get(data, 'id'), "Key": demisto.get(data, 'key')})  # type: ignore
     return create_issue_obj
 
