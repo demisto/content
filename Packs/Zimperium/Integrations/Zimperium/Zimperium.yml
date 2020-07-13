@@ -45,8 +45,9 @@ configuration:
   type: 8
 description: Zimperium is a mobile security platform that generates alerts based on
   anomalous or unauthorized activities detected on a user's mobile device.
-display: Zimperium
 name: Zimperium
+fromversion: 5.0.0
+display: Zimperium
 script:
   commands:
   - arguments:
@@ -1070,6 +1071,6 @@ script:
   type: python
 tests:
 - Zimperium_Test
-fromversion: 5.0.0
+- Test Convert file hash to corresponding hashes
 defaultMapperIn: Zimperium-mapper
 defaultClassifier: Zimperium
