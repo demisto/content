@@ -308,4 +308,4 @@ script:
   isfetch: true
   runonce: false
 tests:
-  - Jira-v2-Test
+- Jira-v2-Test
