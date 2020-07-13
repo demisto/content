@@ -158,24 +158,6 @@ def upload_files(
         raise DemistoException('No files found in path.')
 
 
-def decrypt(
-        file_path: str,
-        password: Optional[str] = None,
-        rsa_key_path: Optional[str] = None
-) -> List[str]:
-    command = []
-
-    if password:
-        command.extend([
-            '-o', 'wlan.enable_decryption:TRUE',
-            '-o', f'uat:80211_keys:"wpa-pwd","{password}"'
-        ])
-
-    if rsa_key_path:
-        command.extend(['-o', f'uat:rsa_keys:"{rsa_key_path}",""'])
-    return command
-
-
 def main(
         entry_id: str,
         wpa_password: Optional[str] = None,
