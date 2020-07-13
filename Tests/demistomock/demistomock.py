@@ -385,23 +385,61 @@ callingContext = {}  # type: dict
 
 
 def params():
+    """(Integration only)
+    Retrieves the integration parameters object
+
+    :return: Integrations parameters object
+    :rtype: ``dict``
+    """
     return {}
 
 
 def args():
+    """
+    Retrieves a command / script arguments object
+
+    :return: Arguments object
+    :rtype: ``dict``
+    """
     return {}
 
 
 def command():
+    """(Integration only)
+       Retrieves the integration command that is being ran
+
+       :return: Integrations command name
+       :rtype: ``str``
+    """
     return ""
 
 
 def log(msg):
+    """
+    Prints a message to the server logs
+
+    :type msg: ``str``
+    :param msg: The message to be logged
+
+    :return: No data returned
+    :rtype: ``None``
+    """
     logging.getLogger().info(msg)
 
 
 def get(obj, field):
-    """ Get the field from the given dict using dot notation """
+    """
+    Extracts field value from nested object
+
+    :type obj: ``dict``
+    :param obj: The object to extract the field from
+
+    :type field: ``str``
+    :param field: The field to extract from the object, given in dot notation
+
+    :return: The value of the extracted field
+    :rtype: ``str``
+    """
     parts = field.split(".")
     for part in parts:
         if obj and part in obj:
@@ -412,61 +450,184 @@ def get(obj, field):
 
 
 def gets(obj, field):
+    """
+    Extracts field value from nested object
+
+    :type obj: ``dict``
+    :param obj: The object to extract the field from
+
+    :type field: ``str``
+    :param field: The field to extract from the object, given in dot notation
+
+    :return: The value of the extracted field
+    :rtype: ``str``
+    """
     return str(get(obj, field))
 
 
 def context():
+    """
+    Retrieves the context data object of the incident ran in
+
+    :return: Context data object
+    :rtype: ``dict``
+    """
     return {}
 
 
 def uniqueFile():
+    """
+    Generate a random UUID
+
+    :return: Random UUID
+    :rtype: ``str``
+    """
     return str(uuid.uuid4())
 
 
 def getLastRun():
+    """(Integration only)
+    Retrieves the LastRun object
+
+    :return: LastRun object
+    :rtype: ``dict``
+    """
     return {"lastRun": "2018-10-24T14:13:20+00:00"}
 
 
 def setLastRun(obj):
+    """(Integration only)
+    Stores given object in the LastRun object
+
+    :type obj: ``dict``
+    :param obj: The object to store
+
+    :return: No data returned
+    :rtype: ``None``
+    """
     return None
 
 
 def info(msg, *args):
+    """
+    Prints a message to the server logs in info level
+
+    :type msg: ``str``
+    :param msg: The message to be logged
+
+    :type args: ``dict``
+    :param args: Additional arguments to log
+
+    :return: No data returned
+    :rtype: ``None``
+    """
     logging.getLogger().info(msg, *args)
 
 
 def error(msg, *args):
+    """
+    Prints a message to the server logs in error level
+
+    :type msg: ``str``
+    :param msg: The message to be logged
+
+    :type args: ``dict``
+    :param args: Additional arguments to log
+
+    :return: No data returned
+    :rtype: ``None``
+    """
     # print to stdout so pytest fail if not mocked
     print(msg, *args)
 
 
 def debug(msg, *args):
+    """
+    Prints a message to the server logs in debug level
+
+    :type msg: ``str``
+    :param msg: The message to be logged
+
+    :type args: ``dict``
+    :param args: Additional arguments to log
+
+    :return: No data returned
+    :rtype: ``None``
+    """
     logging.getLogger().info(msg, *args)
 
 
 def getAllSupportedCommands():
+    """(Script only)
+    Retrieves all available integration commands and scripts
+
+    :return: Object of all available integrations and scripts
+    :rtype: ``dict``
+    """
     return {}
 
 
 def results(results):
+    """
+    Outputs entries to the war-room
+
+    :type results: ``list`` or ``dict``
+    :param results: The entry object or array of entry objects to output
+
+    :return: No data returned
+    :rtype: ``None``
+    """
     if type(results) is dict and results.get("contents"):
         results = results.get("contents")
     log("demisto results: {}".format(json.dumps(results, indent=4, sort_keys=True)))
 
 
 def credentials(credentials):
+    """(Integration only)
+    Retrieves authentication parameter object
+
+    :return: Credentials object
+    :rtype: ``dict``
+    """
     log("credentials: {}".format(credentials))
 
 
 def getFilePath(id):
+    """
+    Retrieves file path and name, given file entry ID
+
+    :type id: ``str``
+    :param id: File entry ID to get details of
+
+    :return: Object contains file ID, path and name
+    :rtype: ``dict``
+    """
     return {'id': id, 'path': 'test/test.txt', 'name': 'test.txt'}
 
 
 def investigation():
+    """
+    Retrieves the ID of the investigation in which being ran in
+
+    :return: Object contains the investigation ID
+    :rtype: ``dict``
+    """
     return {"id": "1"}
 
 
 def executeCommand(command, args):
+    """(Script only)
+    Executes given integration command / script and arguments
+
+    :type command: ``str``
+    :param command: Integration command name or script name to run
+
+    :type args: ``args``
+    :param args: Integration command / script arguments
+
+    :return: Command execution response wrapped in Demisto entry object
+    :rtype: ``dict`` or  ``list``
+    """
     commands = {
         "getIncidents": exampleIncidents,
         "getContext": exampleContext,
@@ -479,59 +640,99 @@ def executeCommand(command, args):
 
 
 def getParam(param):
+    """(Integration only)
+    Extracts given parameter from the integration parameters object
+
+    :type param: ``str``
+    :param param: Integration parameter to get value of
+
+    :return: Integration parameter value
+    :rtype: ``str``
+    """
     return params().get(param)
 
 
 def getArg(arg):
+    """
+    Extracts given argument from the arguments object
+
+    :type param: ``str``
+    :param param: Argument to get value of
+
+    :return: Argument value
+    :rtype: ``str``
+    """
     return args().get(arg)
 
 
 def setIntegrationContext(context):
+    """(Integration only)
+    Stores given object in the IntegrationContext object
+
+    :type obj: ``dict``
+    :param obj: The object to store
+
+    :return: No data returned
+    :rtype: ``None``
+    """
     global integrationContext
     integrationContext = context
 
 
 def getIntegrationContext():
+    """(Integration only)
+    Retrieves the IntegrationContext object
+
+    :return: IntegrationContext object
+    :rtype: ``dict``
+    """
     return integrationContext
 
 
 def setIntegrationContextVersioned(context, version=-1, sync=False):
-    """
-    Set the integration context with a version.
-    Args:
-        context: The context to set.
-        version: The context version to set. If the version is older than the current, an error will be thrown.
-        sync: Whether to save the context to the DB right away. If false,
-         the context will be saved at the end of the command.
+    """(Integration only)
+    Stores given object in the IntegrationContext object in given version
 
+    :type context: ``dict``
+    :param context: The object to store
+
+    :type version: ``int``
+    :param version: The context version to set. If the version is older than the current, an error will be thrown.
+
+    :type sync: ``bool``
+    :param sync: Whether to save the context to the DB right away.
+    If false, the context will be saved at the end of the command.
+
+    :return: No data returned
+    :rtype: ``None``
     """
     global integrationContext
     integrationContext = context
 
 
 def getIntegrationContextVersioned(refresh=False):
-    """
-    Get the integration context with a version
-    Args:
-        refresh: Whether to get the integration context straight from the DB and not from the instance memory.
+    """(Integration only)
+    Retrieves the versioned IntegrationContext object
 
-    Returns:
-        Dict with a key of context and a key of version.
+    :type refresh: ``bool``
+    :param refresh: Whether to get the integration context straight from the DB and not from the instance memory.
+
+    :return: IntegrationContext versioned object
+    :rtype: ``dict``
     """
     return integrationContext
 
 
 def incidents(incidents=None):
-    """
-    In Scripts this returns the `Incidents` list from the context
+    """(Integration only)
+    In script, retrieves the `Incidents` list from the context
+    In integration, used to return incidents to the server
 
-    In integrations this is used to return incidents to the server
+    :type incidents: ``list``
+    :param incidents: List of incident objects
 
-    Arguments:
-        incidents {list with objects} -- List with incident objects
-
-    Returns:
-        [type] -- [description]
+    :return: List of incident objects
+    :rtype: ``list``
     """
     if incidents is None:
         return exampleIncidents[0]['Contents']['data']
@@ -542,10 +743,28 @@ def incidents(incidents=None):
 
 
 def setContext(contextPath, value):
+    """(Script only)
+    Sets given value in path in the context data
+
+    :type contextPath: ``str``
+    :param contextPath: The context data path to set the value in
+
+    :type value: ``str``
+    :param value: The value to set in the context data path
+
+    :return: Object contains operation result status
+    :rtype: ``dict``
+    """
     return {"status": True}
 
 
 def demistoUrls():
+    """
+    Retrieves Demisto server URLs of incident ran in
+
+    :return: Object contains server URLs with page as key and URL as value
+    :rtype: ``dict``
+    """
     return exampleDemistoUrls
 
 
