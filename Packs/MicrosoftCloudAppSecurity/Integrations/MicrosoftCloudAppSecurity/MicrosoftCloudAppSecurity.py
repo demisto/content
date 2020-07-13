@@ -25,16 +25,39 @@ class Client(BaseClient):
     def say_hello(self, name):
         return f'Hello {name}'
 
-    def say_hello_http_request(self, name):
-        """
-        initiates a http request to a test url
-        """
+    def alert_list(self, alert_id, customer_filter, skip, limit, severity, service, instance, resolution_status,
+                   username):
+        url_suffix = '/alerts/'
+        request_data = {'limit': int(limit)}
+        filters = {}
+        if alert_id:
+            url_suffix = f'{url_suffix}{alert_id}'
+        elif customer_filter:
+            request_data['filters'] = json.loads(customer_filter)
+        else:
+            if skip:
+                request_data['skip'] = skip
+            if severity:
+                filters['severity'] = {'eq': convert_severity(severity)}
+            if service:
+                service = {'eq': service}
+                filters.update(service)
+            if instance:
+                instance = {'eq': instance}
+                filters.update(instance)
+            if resolution_status:
+                resolution_status = {'eq': resolution_status}
+                filters.update(resolution_status)
+            if username:
+                username = {'eq': username}
+                filters.update(username)
+            request_data['filters'] = filters
         data = self._http_request(
             method='GET',
-            url_suffix='/hello/' + name
+            url_suffix=url_suffix,
+            json_data=request_data
         )
-        return data.get('result')
-
+        return data
 
     def list_incidents(self):
         """
@@ -52,6 +75,16 @@ class Client(BaseClient):
                 'created_time': datetime.utcnow().strftime(DATE_FORMAT)
             }
         ]
+
+
+def convert_severity(severity):
+
+    severity_dict = {
+        'Low': 0,  # low severity
+        'Medium': 1,  # medium severity
+        'High': 2  # high severity
+    }
+    return severity_dict[severity]
 
 
 def test_module(client):
@@ -107,17 +140,23 @@ def say_hello_command(client, args):
 
 
 def alerts_list_command(client, args):
-    id
-
-    # skip
-    # limit
-    # severity: low / medium / high / all
-    # service
-    # instance
-    # resolutionStatus
-    # Open / Dismissed / Resolved
-    # username
-    # filters
+    alert_id = args.get('alert_id')
+    customer_filter = args.get('customer_filter')
+    skip = args.get('skip')
+    limit = args.get('limit')
+    severity = args.get('severity')
+    service = args.get('service')
+    instance = args.get('instance')
+    resolution_status = args.get('resolution_status')
+    username = args.get('username')
+    alerts = client.alert_list(alert_id, customer_filter, skip, limit, severity, service, instance, resolution_status,
+                               username)
+    return CommandResults(
+        readable_output=alerts,
+        outputs_prefix='MicrosoftCloudAppSecurity.Alert',
+        outputs_key_field='alert_id',
+        outputs=alerts
+    )
 
 
 def say_hello_over_http_command(client, args):
@@ -188,7 +227,7 @@ def main():
     token = demisto.params().get('token')
 
     # get the service API url
-    base_url = urljoin(demisto.params().get('url'))
+    base_url = f'{urljoin(demisto.params().get("url"))}api/v1'
 
     verify_certificate = not demisto.params().get('insecure', False)
 
@@ -202,7 +241,7 @@ def main():
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
-            headers={'Authorization': f'Token{token}'},
+            headers={'Authorization': f'Token {token}'},
             proxy=proxy)
 
         if demisto.command() == 'test-module':
@@ -221,8 +260,7 @@ def main():
             demisto.incidents(incidents)
 
         elif demisto.command() == 'microsoft-cas-alerts-list':
-            return_outputs(*alerts_list_command(client, demisto.args()))
-
+            return_results(alerts_list_command(client, demisto.args()))
 
     # Log exceptions
     except Exception as e:

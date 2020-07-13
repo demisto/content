@@ -63,8 +63,6 @@ script:
     - contextPath: hello
       description: Should be Hello **something** here
       type: String
-  - deprecated: false
-    execution: false
   - arguments:
     - default: false
       description: Skips the specified number of records.
@@ -85,7 +83,7 @@ script:
       isArray: false
       name: severity
       predefined:
-      - Law
+      - Low
       - Medium
       - High
       - All
@@ -107,7 +105,7 @@ script:
       default: false
       description: Filter by alert resolution status.
       isArray: false
-      name: resolutionStatus
+      name: resolution_status
       predefined:
       - Open
       - Dismissed
@@ -117,13 +115,13 @@ script:
     - default: false
       description: Filter that the customer chooses for himself.
       isArray: false
-      name: Customer filter
+      name: customer_filter
       required: false
       secret: false
     - default: false
       description: alert id
       isArray: false
-      name: id
+      name: alert_id
       required: false
       secret: false
     deprecated: false
