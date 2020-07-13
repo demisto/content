@@ -15,12 +15,12 @@ configuration:
 - display: Access Key
   name: access_key
   defaultvalue: ""
-  type: 0
+  type: 4
   required: true
 - display: Private Key
   name: private_key
   defaultvalue: ""
-  type: 12
+  type: 4
   required: true
 - display: Server URL (e.g. https://console.infinipoint.io)
   name: url
@@ -52,11 +52,6 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-- display: Use system proxy settings
-  name: proxy
-  defaultvalue: "false"
-  type: 8
-  required: false
 - display: page size
   name: page_size
   defaultvalue: "100"
@@ -64,8 +59,6 @@ configuration:
   required: false
 script:
   script: |-
-    #
-    #
     from typing import Any, Dict, List, Optional, cast
 
 
@@ -147,7 +140,7 @@ script:
             BASE_URL + route,
             data=body,
             headers=headers,
-            verify=INSECURE
+            verify=False
         )
         if r.status_code != 200:
             return_error('Error in API call [%d] - %s' % (r.status_code, r.reason))
@@ -163,8 +156,9 @@ script:
         try:
             return current_results_array + request_result['items']
         except Exception as e:
-            print(f"Failed to add results!\nError message:\n{e}")
-            sys.exit(1)
+            # print(f"Failed to add results!\nError message:\n{e}")
+            return_error(f"Failed to add results!\nError message:\n{e}")
+            # sys.exit(1)
 
 
     def call_api(method, route, client, rules, use_pagination=True, condition='AND'):
@@ -204,14 +198,12 @@ script:
                 "iat": int(time.time()),
                 "sub": access_key
             }
-            print('access_key: %s' % access_key + "\n" + 'secret: %s' % secret )
 
-            # print(access_key)
-            # print(secret)
-            return jwt.encode(jwt_payload, secret, 'ES256')# .decode("utf-8")
+            return jwt.encode(jwt_payload, secret.replace('\\n', '\n'), 'ES256').decode("utf-8")
         except Exception as e:
-            print(f"Error while signing JWT token - check your private/access keys!\nError message:\n{e}")
-            sys.exit(1)
+            # print(f"Error while signing JWT token - check your private/access keys!\nError message:\n{e}")
+            # sys.exit(1)
+            return_error(f"Error while signing JWT token - check your private/access keys!\nError message:\n{e}")
 
 
     def convert_string_to_ip(ip):
@@ -249,36 +241,29 @@ script:
 
         alerts = get_non_compliance_device_command(token, args)
 
-        for alert in alerts.outputs:
-            # If no created_time set is as epoch (0). We use time in ms so we must
-            # convert it from the HelloWorld API response
-            incident_created_time = int(alert.get('timestamp', '0'))
-            incident_created_time_ms = incident_created_time * 1000
+        if not isinstance(alerts, List):
+            for alert in alerts.outputs:
+                # If no created_time set is as epoch (0). We use time in ms so we must
+                # convert it from the HelloWorld API response
+                incident_created_time = int(alert.get('timestamp', '0'))
+                incident_created_time_ms = incident_created_time * 1000
 
-            # If no name is present it will throw an exception
-            incident_name = "infinipoint - non compliance device"
+                # If no name is present it will throw an exception
+                incident_name = "infinipoint - non compliant device"
 
-            incident = {
-                'name': incident_name,
-                'details': ', '.join([d.get('issueType', None) for d in alert['issues']]),
-                'occurred': timestamp_to_datestring(incident_created_time_ms),
-                'rawJSON': json.dumps(alert),
-                # 'type': alert.get('hostname'),
-                'severity': 2,
-                'CustomFields': {  # Map specific XSOAR Custom Fields
-                    'hostname': alert.get('hostname'),
-                    'policyName': alert.get('policyName'),
-                    'policyVersion': alert.get('policyVersion')
-                    # 'issue Type': alert['issues'].get('issueType')
-                    # 'issue First Seen': alert['issues'].get('issueFirstSeen'),
+                incident = {
+                    'name': incident_name + " - " + alert.get('hostname'),
+                    'details': ', '.join([d.get('issueType', None) for d in alert['issues']]),
+                    'occurred': timestamp_to_datestring(incident_created_time_ms),
+                    'rawJSON': json.dumps(alert),
+                    'severity': 2
                 }
-            }
 
-            incidents.append(incident)
+                incidents.append(incident)
 
-            # Update last run and add incident if the incident is newer than last fetch
-            if incident_created_time > latest_created_time:
-                latest_created_time = incident_created_time
+                # Update last run and add incident if the incident is newer than last fetch
+                if incident_created_time > latest_created_time:
+                    latest_created_time = incident_created_time
 
         # Save the next_run as a dict with the last_fetch key to be stored
         next_run = {'last_fetch': latest_created_time}
@@ -287,18 +272,16 @@ script:
 
     ''' GLOBALS/PARAMS '''
 
-    # PAGE_SIZE = int(demisto.params().get('page_size'))
     PAGE_SIZE = arg_to_int(arg=demisto.params().get('page_size'), arg_name='page_size', required=False)
     PROXY = demisto.params().get('proxy')
-    INSECURE = demisto.params().get('insecure')
+    INSECURE = demisto.params().get('insecure', False)
     BASE_URL = demisto.params().get('url')
     ACCESS_KEY = demisto.params().get('access_key')
     PRIVATE_KEY = demisto.params().get('private_key')
     FIRST_FETCH_TIME = arg_to_timestamp(arg=demisto.params().get('first_fetch', '3 days'), \
-                                        arg_name='First fetch time',required=True)
+                                        arg_name='First fetch time', required=True)
+    MAX_INCIDENTS_TO_FETCH = 1000
 
-    MAX_INCIDENTS_TO_FETCH = 100
-    # INFINIPOINT_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
 
     '''MAIN FUNCTIONS'''
 
@@ -308,8 +291,8 @@ script:
         Returning '200' indicates that the integration works like it is supposed to.
         Connection to the service is successful.
         """
-        route = "/health"
-        method = "GET"
+        route = "/auth/health/"
+        method = "POST"
         headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {token}",
@@ -759,44 +742,7 @@ script:
             return command_results
 
         return res
-        # ex = [
-        #     {
-        #         "timestamp": 1593442099,
-        #         "hostname": "et",
-        #         "deviceID": "45edb141-fa9b-4c9c-9233-cda73aeefd0b",
-        #         "policyName": "fsct - Bitlocker",
-        #         "policyVersion": 1,
-        #         "issues": [{
-        #             "policyIdx": 0,
-        #             "issueType": "bitlocker status",
-        #             "issueID": "45edb141-fa9b-4c9c-9233-cda73aeefd0d"
-        #         },
-        #             {
-        #                 "policyIdx": 0,
-        #                 "issueType": "Logged in users",
-        #                 "issueID": "45edb141-fa9b-4c9c-9233-cda73aeef111"
-        #             },
-        #         ]
-        #     }
-        # ]
-        # return ex
-        # id = args.get('id')
-        # target = args.get('target')
-        # method = "POST"
-        # route = "/all-scripts/execute"
-        # node = {'id': id}
-        #
-        # if target:
-        #     node['target'] = {'ids': target}
-        #
-        # res = call_api(method, route, token, node, False)
-        # LOG('res %s' % (res,))
-        # if res:
-        #     command_results = CommandResults(
-        #         outputs_prefix='Infinipoint.Scripts.execute',
-        #         outputs_key_field='actionId',
-        #         outputs=res)
-        #     return command_results
+
 
     ''' EXECUTION '''
 

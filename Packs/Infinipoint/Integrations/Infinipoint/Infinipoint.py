@@ -213,7 +213,6 @@ def fetch_incidents(token: Any, max_results: int, last_run: Dict[str, int],
 ''' GLOBALS/PARAMS '''
 
 PAGE_SIZE = arg_to_int(arg=demisto.params().get('page_size'), arg_name='page_size', required=False)
-PROXY = demisto.params().get('proxy')
 INSECURE = demisto.params().get('insecure', False)
 BASE_URL = demisto.params().get('url')
 ACCESS_KEY = demisto.params().get('access_key')
@@ -688,12 +687,6 @@ def get_non_compliance_device_command(token, args):
 
 
 def main():
-
-    # if not demisto.params().get('proxy', False):
-    #     del os.environ['HTTP_PROXY']
-    #     del os.environ['HTTPS_PROXY']
-    #     del os.environ['http_proxy']
-    #     del os.environ['https_proxy']
 
     demisto.info('command is %s' % (demisto.command(), ))
 
