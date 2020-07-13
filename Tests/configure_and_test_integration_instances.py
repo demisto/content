@@ -830,7 +830,7 @@ def main():
             if LooseVersion(server_numeric_version) >= LooseVersion('6.0.0'):
                 set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number)
             restart_server(server, prints_manager)
-        prints_manager.add_print_job('Done restarting servers.', print_color, 0, LOG_COLORS.GREEN)
+        prints_manager.add_print_job('Done restarting servers', print_color, 0, LOG_COLORS.GREEN)
 
     tests = conf['tests']
     skipped_integrations_conf = conf['skipped_integrations']
