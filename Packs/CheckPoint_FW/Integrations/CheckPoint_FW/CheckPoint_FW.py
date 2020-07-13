@@ -1,5 +1,6 @@
-import requests
 from typing import Tuple
+import time
+import requests
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -24,11 +25,6 @@ class Client(BaseClient):
         self.headers = {'Content-Type': 'application/json',
                         'X-chkp-sid': sid}
         self.verify = use_ssl
-
-    def logout(self):
-        """logout from current session """
-        return self._http_request(method='POST', url_suffix='logout', headers=self.headers,
-                                  json_data={})
 
     def checkpoint_show_access_rule_command(self, identifier: str, limit: int, offset: int):
         """
@@ -142,7 +138,7 @@ class Client(BaseClient):
                                       json_data=body)
         return format_get_object(response, 'host')
 
-    def checkpoint_add_host_command(self, name: str, ip_address: str, groups):
+    def checkpoint_add_host_command(self, name: str, ip_address: str, groups=None):
         """
         Add host objects.
 
@@ -150,7 +146,6 @@ class Client(BaseClient):
             name(str): Object name. Must be unique in the domain.
             ip_address(str): IPv4 or IPv6 address.
             groups(str or list): Collection of group identifiers.
-
         """
         response = self._http_request(method='POST', url_suffix='add-host', headers=self.headers,
                                       json_data={"name": name, "ip-address": ip_address,
@@ -159,7 +154,8 @@ class Client(BaseClient):
 
     def checkpoint_update_host_command(self, identifier: str, ignore_warnings: bool,
                                        ignore_errors: bool, ip_address: str = None,
-                                       new_name: str = None, comments: str = None):
+                                       new_name: str = None, comments: str = None,
+                                       groups=None):
         """
         Edit existing host object using object name or uid.
 
@@ -172,6 +168,7 @@ class Client(BaseClient):
                                  be ignored
             new_name(str): New name of the object.
             comments(str): Comments string.
+            groups (str or list): Collection of group identifiers.
 
         """
         body = {'name': identifier,
@@ -179,7 +176,8 @@ class Client(BaseClient):
                 'new-name': new_name,
                 'comments': comments,
                 'ignore-warnings': ignore_warnings,
-                'ignore-errors': ignore_errors
+                'ignore-errors': ignore_errors,
+                'groups': groups,
                 }
         response = self._http_request(method='POST', url_suffix='set-host', headers=self.headers,
                                       json_data=body)
@@ -321,7 +319,7 @@ class Client(BaseClient):
     def checkpoint_update_address_range_command(self, identifier: str, ignore_warnings: bool,
                                                 ignore_errors: bool, ip_address_first: str = None,
                                                 ip_address_last: str = None, new_name: str = None,
-                                                comments: str = None):
+                                                comments: str = None, groups = None):
         """
         Edit existing address_range object using object name or uid.
 
@@ -335,6 +333,7 @@ class Client(BaseClient):
             ip_address_last(str): Last IP address in the range. IPv4 or IPv6 address.
             new_name(str): New name of the object.
             comments(str): Comments string.
+            groups(str or list): Collection of group identifiers.
         """
         body = {'name': identifier,
                 'ip-address-first': ip_address_first,
@@ -342,7 +341,8 @@ class Client(BaseClient):
                 'new-name': new_name,
                 'comments': comments,
                 'ignore-warnings': ignore_warnings,
-                'ignore-errors': ignore_errors}
+                'ignore-errors': ignore_errors,
+                'groups': groups,}
 
         response = self._http_request(method='POST', url_suffix='set-address-range',
                                       headers=self.headers, json_data=body)
@@ -515,14 +515,6 @@ class Client(BaseClient):
                                       headers=self.headers, json_data={'name': identifier})
         return format_delete_object(response, 'application-site')
 
-    def checkpoint_publish_command(self):
-        """
-        publish changes.
-        All the changes done by this user will be seen by all users only after publish is called.
-        """
-        return self._http_request(method='POST', url_suffix='publish', headers=self.headers,
-                                  json_data={})
-
     def install_policy_command(self, policy_package: str, targets, access: bool):
         """
         installing policy.
@@ -538,10 +530,12 @@ class Client(BaseClient):
         body = {
             'policy-package': policy_package,
             'targets': targets,
-            'access': access
         }
-        return self._http_request(method='POST', url_suffix='install-policy',
-                                  headers=self.headers, json_data=body)
+        response = self._http_request(method='POST', url_suffix='install-policy',
+                                      headers=self.headers, json_data=body)
+        print(response)
+
+        return format_task_id(response, 'install-policy')
 
     def verify_policy_command(self, policy_package: str):
         """
@@ -551,17 +545,58 @@ class Client(BaseClient):
             policy_package(str): The name of the Policy Package to be installed.
         """
         body = {'policy-package': policy_package, }
-        return self._http_request(method='POST', url_suffix='verify-policy',
-                                  headers=self.headers, json_data=body)
+        response = self._http_request(method='POST', url_suffix='verify-policy',
+                                      headers=self.headers, json_data=body)
+        return format_task_id(response, 'verify-policy')
+
+    def checkpoint_show_task_command(self, task_id, polling: bool = False):
+        """
+        Show task progress and details.
+
+        ARGs:
+            task_id(str): Unique identifier of one or more tasks.
+            polling(bool): mark True if this function is used for the publish_command function
+                    to poll task status.
+        """
+        response = self._http_request(method='POST', url_suffix='show-task',
+                                      headers=self.headers, json_data={"task-id": task_id})
+        print(response)
+
+        if polling:
+            return response.get('tasks')[0].get('progress-percentage')
+        return format_show_task(response)
+
+    def checkpoint_publish_command(self):
+        """
+        publish changes. All the changes done by this user will be seen by all users only
+        after publish is called.
+        """
+        response = self._http_request(method='POST', url_suffix='publish', headers=self.headers,
+                                      json_data={})
+        while self.checkpoint_show_task_command(response.get('task-id'), True) != 100:
+            time.sleep(2)
+        self.logout()
+        return format_task_id(response, 'publish')
+
+    def logout(self):
+        """logout from current session """
+        response = self._http_request(method='POST', url_suffix='logout', headers=self.headers,
+                                      json_data={})
+        demisto.setIntegrationContext({})
+        return response
 
 
-def login(base_url: str, username: str, password: str, verify_certificate: bool) -> str:
-    """
-    login to checkpoint admin account using username and password.
-    """
-    return requests.post(base_url + 'login', verify=verify_certificate,
-                         headers={'Content-Type': 'application/json'},
-                         json={'user': username, 'password': password}).json().get('sid')
+def login(base_url: str, username: str, password: str, verify_certificate: bool):
+    """login to checkpoint admin account using username and password."""
+    response = requests.post(base_url + 'login', verify=verify_certificate,
+                             headers={'Content-Type': 'application/json'},
+                             json={'user': username, 'password': password}).json()
+
+    sid = response.get('sid')
+    if sid:
+        demisto.setIntegrationContext({'cp_sid': sid})
+        return
+    demisto.setIntegrationContext({})
 
 
 def test_module(base_url: str, sid: str, verify_certificate) -> str:
@@ -573,9 +608,10 @@ def test_module(base_url: str, sid: str, verify_certificate) -> str:
                              headers={'Content-Type': 'application/json', 'X-chkp-sid': sid},
                              verify=verify_certificate, json={})
     reason = ''
-    if response.json().get('message') == 'Missing header: [X-chkp-sid]':
-        reason = ' Wrong credentials.'
-    return 'ok' if response else f'Connection failed.{reason}\nFull response:\n{response.json()}'
+    if response.json().get('message') == "Missing header: [X-chkp-sid]":
+        reason = '\nWrong credentials! Please check the username and password you entered and try' \
+                 ' again\n'
+    return 'ok' if response else f'Connection failed.{reason}\nFull response: {response.json()}'
 
 
 def format_list_objects(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
@@ -624,18 +660,17 @@ def format_get_object(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
     """
     if not result:
         return 'No data to show.', {}, result
-
-    outputs = {f'checkpoint.{endpoint}(val.uid && val.uid == obj.uid)': {
+    printable_result = {
         'name': result.get('name'),
         'uid': result.get('uid'),
         'type': result.get('type'),
         'ipv4_address': result.get('ipv4-address'),
         'ipv6_address': result.get('ipv4-address'),
         'read_only': result.get('read-only'),
-    }}
+    }
     domain_data = result.get('domain')
     if domain_data:
-        outputs.update({
+        printable_result.update({
             'domain-name': domain_data.get('name'),
             'domain-uid': domain_data.get('uid'),
             'domain-type': domain_data.get('type'),
@@ -643,15 +678,54 @@ def format_get_object(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
 
     meta_info = result.get('meta-info')
     if meta_info:
-        outputs.update({
+        printable_result.update({
             'creator': meta_info.get('creator'),
             'last_modifier': meta_info.get('last-modifier')
         })
-
-    table_data = outputs[f'CheckPoint.{endpoint}(val.uid && val.uid == obj.uid)']
-    readable_output = tableToMarkdown(f'CheckPoint Data for Getting {endpoint}:', table_data,
+    readable_output = tableToMarkdown(f'CheckPoint data for getting {endpoint}:', printable_result,
                                       removeNull=True)
 
+    # add new table for group objects related to current object
+    groups_printable_result = []
+    groups_info = result.get('groups')
+    if groups_info:
+        for group in groups_info:
+            current_object_data = {'name': group.get('name'),
+                                   'uid': group.get('uid'),
+                                   }
+            groups_printable_result.append(current_object_data)
+        printable_result['groups'] = groups_printable_result
+        groups_readable_output = tableToMarkdown(f'CheckPoint data for {endpoint} groups:',
+                                                 groups_printable_result, removeNull=True)
+        readable_output = readable_output + groups_readable_output
+
+    # add new table for group members objects
+    if endpoint == 'group':
+        members = result.get('members')
+        members_printable_result = []
+        if members:
+            for member in members:
+                current_object_data = {'member-name': member.get('name'),
+                                       'member-uid': member.get('uid'),
+                                       'member-type': member.get('type'),
+                                       }
+                member_domain = member.get('domain')
+                if member_domain:
+                    current_object_data.update({'member-domain-name': member_domain.get('name'),
+                                                'member-domain-uid': member_domain.get('uid'),
+                                                'member-domain-type': member_domain.get('type'),
+                                                })
+                members_printable_result.append(current_object_data)
+            printable_result['members'] = members_printable_result
+
+        member_readable_output = tableToMarkdown('CheckPoint member data:',
+                                                 members_printable_result,
+                                                 ['member-name', 'member-uid', 'member-type',
+                                                  'member-domain-name', 'member-domain-uid'],
+                                                 removeNull=True)
+        readable_output = readable_output + member_readable_output
+
+    outputs = {f'CheckPoint.{endpoint}(val.uid && val.uid == obj.uid)': printable_result}
     return readable_output, outputs, result
 
 
@@ -670,7 +744,7 @@ def format_add_object(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
     if not result:
         return 'No data to show.', {}, result
 
-    common_output = {
+    readable_output = {
         'name': result.get('name'),
         'uid': result.get('uid'),
         'type': result.get('type'),
@@ -678,7 +752,7 @@ def format_add_object(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
 
     domain_data = result.get('domain')
     if domain_data:
-        common_output.update({
+        readable_output.update({
             'domain-name': domain_data.get('name'),
             'domain-uid': domain_data.get('uid'),
             'domain-type': domain_data.get('type'),
@@ -686,7 +760,7 @@ def format_add_object(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
 
     meta_info = result.get('meta-info')
     if meta_info:
-        common_output.update({
+        readable_output.update({
             'creator': meta_info.get('creator'),
             'last_modifier': meta_info.get('last-modifier'),
         })
@@ -695,7 +769,7 @@ def format_add_object(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
         group_list = []
         for group in groups:
             group_list.append(group.get('name'))
-        common_output['groups'] = group_list
+        readable_output['groups'] = group_list
 
     unique_outputs = {}
     if endpoint == 'application-site':
@@ -728,10 +802,10 @@ def format_add_object(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
             'read-only': result.get('read-only')
         }
 
-    common_output.update(unique_outputs)
+    readable_output.update(unique_outputs)
 
-    outputs = {f'CheckPoint.{endpoint}(val.uid && val.uid == obj.uid)': common_output}
-    readable_output = tableToMarkdown(f'CheckPoint data for adding {endpoint}:', common_output,
+    outputs = {f'CheckPoint.{endpoint}(val.uid && val.uid == obj.uid)': readable_output}
+    readable_output = tableToMarkdown(f'CheckPoint data for adding {endpoint}:', readable_output,
                                       removeNull=True)
     return readable_output, outputs, result
 
@@ -752,7 +826,7 @@ def format_update_object(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
     if not result:
         return 'No data to show.', {}, result
 
-    output = {
+    readable_output = {
         'name': result.get('name'),
         'uid': result.get('uid'),
         'type': result.get('type'),
@@ -763,14 +837,18 @@ def format_update_object(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
 
     domain_data = result.get('domain')
     if domain_data:
-        output.update({
+        readable_output.update({
             'domain-name': domain_data.get('name'),
             'domain-uid': domain_data.get('uid'),
             'domain-type': domain_data.get('type'),
         })
+    if endpoint == 'host' or endpoint == 'address-range':
+        groups_data = result.get('groups')[0]
+        if groups_data:
+            readable_output.update({'groups': groups_data.get('name')})
 
-    outputs = {f'CheckPoint.{endpoint}(val.uid && val.uid == obj.uid)': output}
-    readable_output = tableToMarkdown(f'CheckPoint Data for updating {endpoint}:', output,
+    outputs = {f'CheckPoint.{endpoint}(val.uid && val.uid == obj.uid)': readable_output}
+    readable_output = tableToMarkdown(f'CheckPoint Data for updating {endpoint}:', readable_output,
                                       removeNull=True)
     return readable_output, outputs, result
 
@@ -799,6 +877,62 @@ def format_delete_object(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
     return readable_output, outputs, result
 
 
+def format_show_task(result: dict) -> Tuple[str, dict, dict]:
+    """
+        Formats show task command from CheckPoint into Demisto's outputs.
+
+    Args:
+        result (dict): the report from CheckPoint.
+        endpoint (str): The endpoint that needs to be formatted.
+    Returns:
+        str: the markdown to display inside Demisto.
+        dict: the context to return into Demisto.
+        dict: the report from CheckPoint (used for debugging).
+    """
+    printable_result = []
+    task_list = result.get('tasks')
+    if not task_list:
+        return 'No data to show.', {}, result
+
+    for task in task_list:
+        current_object_data = {'task-id': task.get('task-id'),
+                               'task-name': task.get('task-name'),
+                               'status': task.get('status'),
+                               'suppressed': task.get('suppressed'),
+                               'progress-percentage': task.get('progress-percentage'),
+                               }
+        printable_result.append(current_object_data)
+
+    outputs = {'CheckPoint.show-task(val.uid && val.uid == obj.uid)': printable_result}
+    readable_output = tableToMarkdown('CheckPoint data for listing tasks:', printable_result,
+                                      ['task-name', 'task-id', 'status', 'suppressed',
+                                       'progress-percentage'], removeNull=True)
+    return readable_output, outputs, result
+
+
+def format_task_id(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
+    """
+        Formats task ID into Demisto's outputs.
+
+    Args:
+        result (dict): the report from CheckPoint.
+        endpoint (str): The endpoint that needs to be formatted.
+    Returns:
+        str: the markdown to display inside Demisto.
+        dict: the context to return into Demisto.
+        dict: the report from CheckPoint (used for debugging).
+    """
+    if not result:
+        return 'No data to show.', {}, result
+
+    printable_result = {'task-id': result.get('task-id'), }
+
+    outputs = {f'CheckPoint.{endpoint}(val.uid && val.uid == obj.uid)': printable_result}
+    readable_output = tableToMarkdown(f'CheckPoint data for {endpoint}:', printable_result,
+                                      removeNull=True)
+    return readable_output, outputs, result
+
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -814,7 +948,11 @@ def main():
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
-    sid = login(base_url, username, password, verify_certificate)
+    sid = demisto.getIntegrationContext().get('cp_sid')
+    if sid is None:
+        login(base_url, username, password, verify_certificate)
+        sid = demisto.getIntegrationContext().get('cp_sid')
+
     demisto.info(f'Command being called is {demisto.command()}')
 
     client = Client(
@@ -858,34 +996,41 @@ def main():
         'checkpoint-application-site-add': client.checkpoint_add_application_site_command,
         'checkpoint-application-site-update': client.checkpoint_update_application_site_command,
         'checkpoint-application-site-delete': client.checkpoint_delete_application_site_command,
+
+        'checkpoint-show-task': client.checkpoint_show_task_command,
+        'checkpoint-install-policy': client.install_policy_command,
+        'checkpoint-verify-policy': client.verify_policy_command,
+        'checkpoint-publish': client.checkpoint_publish_command,
     }
 
-    is_test_module_command = False
     try:
         if demisto.command() == 'test-module':
-            is_test_module_command = True
             demisto.results(test_module(base_url, sid, verify_certificate))
-
-        elif command == 'checkpoint-publish':
-            return_outputs(client.checkpoint_publish_command())
-
-        elif command == 'checkpoint-install-policy':
-            return_outputs(client.install_policy_command(**demisto.args()))
-
-        elif command == 'checkpoint-verify-policy':
-            return_outputs(client.verify_policy_command(**demisto.args()))
 
         elif command in commands:
             readable_output, outputs, result = \
                 (commands[demisto.command()](**demisto.args()))  # type: ignore
             return_outputs(readable_output, outputs, result)
 
+    except DemistoException as e:
+        if "[401] - Unauthorized" in e.args[0]:
+            demisto.setIntegrationContext({})
+            return_error(f'Failed to execute {demisto.command()} command.\n'
+                         f'The current session is unreachable. All changes done after last publish'
+                         f'are saved in a different session. Please contact IT for more '
+                         f'information.\n\nError: {str(e)}')
+
+        elif "Missing header: [X-chkp-sid]" in e.args[0]:
+            demisto.setIntegrationContext({})
+            return_error(f'Failed to execute {demisto.command()} command.\n'
+                         f'Wrong credentials! Please check the username and password you entered'
+                         f' and try again.\n{str(e)}')
+
+        else:
+            return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
-
-    finally:
-        if not is_test_module_command:
-            demisto.debug("logging out...", client.logout())
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

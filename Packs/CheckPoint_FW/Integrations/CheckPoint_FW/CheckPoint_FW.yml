@@ -102,6 +102,12 @@ script:
     - contextPath: CheckPoint.host.last-modifier
       description: indicates the last user modified the object
       type: Unknown
+    - contextPath: CheckPoint.host.groups-name
+      description: Group object name linked to current host object.
+      type: String
+    - contextPath: CheckPoint.host.groups-uid
+      description: Group object uid linked to current host object.
+      type: Unknown
   - arguments:
     - default: false
       description: name of the new host
@@ -203,6 +209,12 @@ script:
       name: ignore_errors
       required: false
       secret: false
+    - default: false
+      description: Collection of group identifiers.
+      isArray: false
+      name: groups
+      required: false
+      secret: false
     deprecated: false
     description: update host changes
     execution: false
@@ -238,6 +250,12 @@ script:
     - contextPath: CheckPoint.host.read-only
       description: IP address
       type: Boolean
+    - contextPath: CheckPoint.host.group-name
+      description: Group object name linked to the host.
+      type: String
+    - contextPath: CheckPoint.host.group-uid
+      description: Group object name linked to the host
+      type: String
   - arguments:
     - default: false
       description: uid or name.
@@ -602,6 +620,12 @@ script:
       name: ignore_errors
       required: false
       secret: false
+    - default: false
+      description: Collection of group identifiers.
+      isArray: false
+      name: groups
+      required: false
+      secret: false
     deprecated: false
     description: Update an address range object
     execution: false
@@ -640,6 +664,9 @@ script:
     - contextPath: CheckPoint.address-range.read-only
       description: Indicates whether the object is read-only.
       type: Boolean
+    - contextPath: CheckPoint.address-range.groups
+      description: List of all groups the address range is linked to
+      type: String
   - arguments:
     - default: false
       description: object name or uid
@@ -657,6 +684,7 @@ script:
       type: String
   - arguments:
     - default: false
+      defaultValue: '50'
       description: The maximal number of returned results.
       isArray: false
       name: limit
@@ -833,6 +861,12 @@ script:
       type: String
     - contextPath: CheckPoint.address-range.domain-type
       description: domain type
+      type: String
+    - contextPath: CheckPoint.address-range.groups-name
+      description: Group object name linked to current host object
+      type: String
+    - contextPath: CheckPoint.address-range.groups-uid
+      description: Group object uid linked to current host object
       type: String
   - arguments:
     - default: false
@@ -1293,6 +1327,33 @@ script:
     - contextPath: CheckPoint.instal-policy.task-id
       description: Operation task ID.
       type: String
+  - arguments:
+    - default: false
+      description: Unique identifier of one or more tasks.
+      isArray: false
+      name: task_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Show task progress and details.
+    execution: false
+    name: checkpoint-show-task
+    outputs:
+    - contextPath: CheckPoint.show-task.task-id
+      description: Task ID
+      type: String
+    - contextPath: CheckPoint.show-task.task-name
+      description: Task name
+      type: String
+    - contextPath: CheckPoint.show-task.status
+      description: Task status
+      type: String
+    - contextPath: CheckPoint.show-task.progress-percentage
+      description: Task prograss in percentage
+      type: Unknown
+    - contextPath: CheckPoint.show-task.suppressed
+      description: Indicates if the task is suppressed
+      type: Boolean
   dockerimage: demisto/python3:3.8.2.6981
   feed: false
   isfetch: false

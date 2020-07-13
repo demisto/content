@@ -1,37 +1,39 @@
 !checkpoint-host-list
-!checkpoint-host-add identifier='test_host' ip_address='8.8.8.8'
-!checkpoint-host-get identifier='test_host'
-!checkpoint-host-update identifier='test_host'
-!checkpoint-host-delete identifier='test_host'
+!checkpoint-host-get identifier=test_host
+!checkpoint-host-update identifier=test_host
+!checkpoint-host-delete identifier=test_host
+!checkpoint-host-add name=host_test ip_address=8.8.8.8
 
 !checkpoint-group-list
-!checkpoint-group-add identifier='test_group'
-!checkpoint-group-get identifier='test_group'
-!checkpoint-group-update identifier='test_group'
-!checkpoint-group-delete identifier='test_group'
+!checkpoint-group-get identifier=test_group
+!checkpoint-group-update identifier=test_group
+!checkpoint-group-delete identifier=test_group
+!checkpoint-group-add name=test_group_2
 
 !checkpoint-address-range-list 
-!checkpoint-address-range-add identifier='test_address_range' ip_address_first='8.8.8.8' ip_address_last='9.9.9.9'
-!checkpoint-address-range-get identifier='test_address_range'
-!checkpoint-address-range-update identifier='test_address_range'
-!checkpoint-address-range-delete identifier='test_address_range'
+!checkpoint-address-range-get identifier=address_range_test
+!checkpoint-address-range-update identifier=address_range_test layer=Network
+!checkpoint-address-range-delete identifier=address_range_test
+!checkpoint-address-range-add name=address_range_test_2 ip_address_first=8.8.8.8 ip_address_last=9.9.9.9
 
-!checkpoint-access-rule-add layer='Network' position='top' name='test_access_rule'
-!checkpoint-access-rule-list identifier='test_access_rule'
-!checkpoint-access-rule-update identifier='test_access_rule' layer='Network'
-!checkpoint-access-rule-delete identifier='test_access_rule'
+!checkpoint-access-rule-list identifier=test_access_rule
+!checkpoint-access-rule-update identifier=test_access_rule
+!checkpoint-access-rule-delete identifier=test_access_rule
+!checkpoint-access-rule-add name=test_access_rule_2 layer=Network position=top
+
+!checkpoint-application-site-list limit=5
+!checkpoint-application-site-update identifier=test_application_site
+!checkpoint-application-site-delete name=test_application_site
+!checkpoint-application-site-add name=test_application_site_2 primary_category='Test Category' url-list='www.stackoverflow.com'
 
 !checkpoint-threat-indicator-list
-!checkpoint-threat-indicator-add name='test_threat_indicators' observables = [{"name": "My_Observable", "mail-to": "someone@somewhere.com"}]
-!checkpoint-threat-indicator-get name='test_threat_indicators'
-!checkpoint-threat-indicator-update name='test_threat_indicators'
-!checkpoint-threat-indicator-delete name='test_threat_indicators'
+!checkpoint-threat-indicator-get identifier=Threat_test1
+!checkpoint-threat-indicator-update identifier=Threat_test1
+!checkpoint-threat-indicator-delete identifier=Threat_test1
+!checkpoint-threat-indicator-add name=threat_test2 observables=observables
 
-!checkpoint-application-site-list 
-!checkpoint-application-site-add name='test_application_site' primary_category='Test Category'
-!checkpoint-application-site-update identifier='test_application_site'
-!checkpoint-application-site-delete name='test_application_site' primary_category='Test Category' identifier='www.cnet.com'
 
 !checkpoint-publish
-!checkpoint-install-policy policy_package='standard' targets='LAN-TEST'
-!checkpoint-policy-verify policy_package='standard'
+!checkpoint-install-policy policy_package=standard targets=LAN-TEST
+!checkpoint-policy-verify policy_package=standard
+!checkpoint-show-task task_id=01234567-89ab-cdef-8462-535e125c3879
