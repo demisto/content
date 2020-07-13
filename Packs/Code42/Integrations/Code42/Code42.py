@@ -330,7 +330,7 @@ class Code42Client(BaseClient):
             page_json = json.loads(org_page.text)
             orgs = page_json.get("orgs")
             for org in orgs:
-                if org.get("orgName") == org_name:
+                if org.get("orgName", "") == org_name:
                     return org
         raise Code42OrgNotFoundError(org_name)
 
