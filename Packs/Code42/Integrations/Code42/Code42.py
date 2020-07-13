@@ -168,13 +168,13 @@ class Code42Client(BaseClient):
         )
 
         if not proxy:
-            del os.environ['HTTP_PROXY']
-            del os.environ['HTTPS_PROXY']
-            del os.environ['http_proxy']
-            del os.environ['https_proxy']
+            _clear_env_var_if_exists('HTTP_PROXY')
+            _clear_env_var_if_exists('HTTPS_PROXY')
+            _clear_env_var_if_exists('http_proxy')
+            _clear_env_var_if_exists('https_proxy')
 
         py42.settings.set_user_agent_suffix("Cortex XSOAR")
-        py42.settings.verify_ssl_certs = verify
+        # py42.settings.verify_ssl_certs = verify
 
     def _get_sdk(self):
         if self._sdk is None:
@@ -659,6 +659,11 @@ def _convert_date_arg_to_epoch(date_arg):
     return (
         datetime.strptime(date_arg, "%Y-%m-%dT%H:%M:%S.%f") - datetime.utcfromtimestamp(0)
     ).total_seconds()
+
+
+def _clear_env_var_if_exists(var):
+    if os.environ.get(var):
+        del os.environ[var]
 
 
 @logger
