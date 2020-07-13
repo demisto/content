@@ -201,7 +201,7 @@ def test_module_command(*args):
     Performs basic Auth request
     """
     response = SESSION.send(request=SixgillAuthRequest(demisto.params()['client_id'],
-                                                       demisto.params()['client_secret']).prepare(), verify=VERIFY)
+                                                       demisto.params()['client_secret'], CHANNEL_CODE).prepare(), verify=VERIFY)
     if not response.ok:
         raise Exception("Auth request failed - please verify client_id, and client_secret.")
     return 'ok', None, 'ok'
