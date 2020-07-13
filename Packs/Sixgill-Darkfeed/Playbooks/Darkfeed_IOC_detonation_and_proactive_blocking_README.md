@@ -36,4 +36,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Darkfeed IOC detonation and proactive blocking](Insert the link to your image here)
+![Darkfeed IOC detonation and proactive blocking](https://raw.githubusercontent.com/demisto/content/master/Packs/Sixgill-Darkfeed/doc_files/Darkfeed_IOC_detonation_and_proactive_blocking_Tue_Jul_07_2020.png)

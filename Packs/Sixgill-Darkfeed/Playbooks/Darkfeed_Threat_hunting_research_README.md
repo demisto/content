@@ -41,4 +41,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Darkfeed Threat hunting-research](Insert the link to your image here)
+![Darkfeed Threat hunting-research](https://raw.githubusercontent.com/demisto/content/master/Packs/Sixgill-Darkfeed/doc_files/Darkfeed_Threat_hunting_research_Mon_Jul_13_2020.png)
