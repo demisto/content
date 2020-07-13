@@ -413,7 +413,7 @@ script:
   - arguments:
     - default: false
       defaultValue: deviceId==*
-      description: Search users query.
+      description: Search devices query.
       isArray: false
       name: query
       required: false
