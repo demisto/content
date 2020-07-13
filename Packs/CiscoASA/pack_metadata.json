@@ -10,7 +10,9 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Recommended by Cortex XSOAR"
+    ],
     "useCases": [],
     "keywords": []
 }
