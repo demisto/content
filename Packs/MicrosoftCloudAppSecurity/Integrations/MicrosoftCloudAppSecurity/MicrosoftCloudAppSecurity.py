@@ -35,6 +35,7 @@ class Client(BaseClient):
         )
         return data.get('result')
 
+
     def list_incidents(self):
         """
         returns dummy incident data, just for the example.
@@ -105,6 +106,20 @@ def say_hello_command(client, args):
     )
 
 
+def alerts_list_command(client, args):
+    id
+
+    # skip
+    # limit
+    # severity: low / medium / high / all
+    # service
+    # instance
+    # resolutionStatus
+    # Open / Dismissed / Resolved
+    # username
+    # filters
+
+
 def say_hello_over_http_command(client, args):
     name = args.get('name')
 
@@ -170,11 +185,10 @@ def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    username = demisto.params().get('credentials').get('identifier')
-    password = demisto.params().get('credentials').get('password')
+    token = demisto.params().get('token')
 
     # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1/suffix')
+    base_url = urljoin(demisto.params().get('url'))
 
     verify_certificate = not demisto.params().get('insecure', False)
 
@@ -188,7 +202,7 @@ def main():
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
-            auth=(username, password),
+            headers={'Authorization': f'Token{token}'},
             proxy=proxy)
 
         if demisto.command() == 'test-module':
@@ -206,8 +220,9 @@ def main():
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
-        elif demisto.command() == 'helloworld-say-hello':
-            return_outputs(*say_hello_command(client, demisto.args()))
+        elif demisto.command() == 'microsoft-cas-alerts-list':
+            return_outputs(*alerts_list_command(client, demisto.args()))
+
 
     # Log exceptions
     except Exception as e:

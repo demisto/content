@@ -8,10 +8,10 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Username
-  name: credentials
+- display: token
+  name: token
   required: true
-  type: 9
+  type: 4
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -120,10 +120,16 @@ script:
       name: Customer filter
       required: false
       secret: false
+    - default: false
+      description: alert id
+      isArray: false
+      name: id
+      required: false
+      secret: false
     deprecated: false
-    description: List alerts command - prints list alerts by id
+    description: List alerts command - prints list alerts
     execution: false
-    name: microsoft-cas-alerts-list-by-id
+    name: microsoft-cas-alerts-list
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: true
