@@ -1223,10 +1223,6 @@
             "nightly": true
         },
         {
-            "integrations": "jira",
-            "playbookID": "Jira-Test"
-        },
-        {
             "integrations": "jira-v2",
             "playbookID": "Jira-v2-Test",
             "timeout": 500
@@ -1236,14 +1232,14 @@
             "playbookID": "IPInfoTest"
         },
         {
-            "integrations": "jira",
             "playbookID": "VerifyHumanReadableFormat"
         },
         {
             "playbookID": "strings-test"
         },
         {
-            "playbookID": "TestCommonPython"
+            "playbookID": "TestCommonPython",
+            "timeout": 500
         },
         {
             "playbookID": "TestFileCreateAndUpload"
