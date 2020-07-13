@@ -293,3 +293,63 @@ def test_search_command_using_regex_operator_with_filter_and_change_result_range
     )
 
     assert expected_result == context
+
+
+def test_email_command_malicious_dbot_score(mocker):
+    """
+    Given:
+        - The email address to check and that user defined the default dbot score to be 'MALICIOUS'.
+    When:
+        - Searching an object that contains the given email address.
+    Then:
+        - Return the demisto outputs and validate that the dbot score is malicious.
+    """
+    from DeHashed import Client, email_command
+
+    test_data = load_test_data('test_data/search.json')
+    expected_result = {
+        'DeHashed.Search(val.Id==obj.Id)': test_data['expected_results'][
+            'full_results'
+        ],
+        'DBotScore': {
+            'Indicator': 'testgamil.com',
+            'Type': 'email',
+            'Vendor': 'DeHashed',
+            'Score': 3
+        }
+    }
+    client = Client(base_url=f'{DEHASHED_URL}', email_dbot_score='MALICIOUS')
+    mocker.patch.object(client, 'dehashed_search', return_value=test_data['api_response'])
+    markdown, context, raw = email_command(client, test_data['email_command'])
+
+    assert expected_result == context
+
+
+def test_email_command_suspicious_dbot_score(mocker):
+    """
+    Given:
+        - The email address to check and that user defined the default dbot score to be 'SUSPICIOUS'.
+    When:
+        - Searching an object that contains the given email address.
+    Then:
+        - Return the demisto outputs and validate that the dbot score is suspicious.
+    """
+    from DeHashed import Client, email_command
+
+    test_data = load_test_data('test_data/search.json')
+    expected_result = {
+        'DeHashed.Search(val.Id==obj.Id)': test_data['expected_results'][
+            'full_results'
+        ],
+        'DBotScore': {
+            'Indicator': 'testgamil.com',
+            'Type': 'email',
+            'Vendor': 'DeHashed',
+            'Score': 2
+        }
+    }
+    client = Client(base_url=f'{DEHASHED_URL}', email_dbot_score='SUSPICIOUS')
+    mocker.patch.object(client, 'dehashed_search', return_value=test_data['api_response'])
+    markdown, context, raw = email_command(client, test_data['email_command'])
+
+    assert expected_result == context

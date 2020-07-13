@@ -9,7 +9,6 @@ INTEGRATION_CONTEXT_BRAND = "DeHashed"
 BASE_URL = "https://api.dehashed.com/"
 RESULTS_FROM = 1
 RESULTS_TO = 50
-DEFAULT_DBOT_SCORE_EMAIL = 2 if demisto.params().get('default_dbot_score_email') == 'SUSPICIOUS' else 3
 
 
 class Client(BaseClient):
@@ -23,6 +22,7 @@ class Client(BaseClient):
         auth=None,
         email=None,
         api_key=None,
+        email_dbot_score='SUSPICIOUS'
     ):
         super().__init__(
             base_url,
@@ -34,6 +34,7 @@ class Client(BaseClient):
         )
         self.email = email
         self.api_key = api_key
+        self.email_dbot_score = email_dbot_score
 
     def dehashed_search(self, asset_type: Optional[str], value: List[str], operation: Optional[str],
                         results_page_number: Optional[int] = None) -> dict:
@@ -250,22 +251,21 @@ def email_command(client: Client, args: Dict[str, str]) -> tuple:
 
     query_data = result.get("entries")
     if not query_data:
+        # todo: In such a case, should I output a DBot_score to the context with score 0?
         return "No matching results found", None, None
     else:
-        # todo: should the results be filtered or can all the results be returned?
-        # filtered_results, results_from, results_to = filter_results(query_data, results_from, results_to)
+        default_dbot_score_email = 2 if client.email_dbot_score == 'SUSPICIOUS' else 3
         query_entries = createContext(query_data, keyTransform=underscoreToCamelCase)
         sources = [entry.get('obtained_from') for entry in query_data if entry.get('obtained_from')]
         headers = [key.replace("_", " ") for key in [*query_data[0].keys()]]
 
         hr = tableToMarkdown(f'DeHashed Search - got total results: {result.get("total")}', query_data, headers=headers,
                              headerTransform=pascalToSpace)
-        dbot_score = DEFAULT_DBOT_SCORE_EMAIL if len(sources) > 0 else 0
+        dbot_score = default_dbot_score_email if len(sources) > 0 else 0
         context = {
             f'{INTEGRATION_CONTEXT_BRAND}.Search(val.Id==obj.Id)': query_entries,
             'DBotScore': create_dbot_score_dictionary(email_address[0], 'email', dbot_score)
         }
-        # todo: in case the dbot score is malicious, should a context path be added with the sources?
         return hr, context, query_data
 
 
@@ -278,6 +278,7 @@ def main():
     base_url = BASE_URL
     verify_certificate = not demisto.params().get("insecure", False)
     proxy = demisto.params().get("proxy", False)
+    email_dbot_score = demisto.params().get('email_dbot_score', 'SUSPICIOUS')
 
     LOG(f"Command being called is {demisto.command()}")
     try:
@@ -288,6 +289,7 @@ def main():
             api_key=api_key,
             proxy=proxy,
             headers={"accept": "application/json"},
+            email_dbot_score=email_dbot_score
         )
 
         if demisto.command() == "test-module":

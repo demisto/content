@@ -25,7 +25,7 @@ configuration:
   display: 'Email Severity: The DBot reputation for compromised emails (SUSPICIOUS
     or MALICIOUS)'
   hidden: false
-  name: default_dbot_score_email
+  name: email_dbot_score
   required: false
   type: 0
 description: This integration allows you to check if your personal information such
