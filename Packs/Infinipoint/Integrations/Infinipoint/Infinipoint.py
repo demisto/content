@@ -747,20 +747,11 @@ def main():
         elif demisto.command() == "infinipoint-get-networks":
             return_results(get_networks_command(token, demisto.args()))
 
-        # elif demisto.command() == "infinipoint-get-osquery":
-        #     return_results(get_osquery_command(token, demisto.args()))
-
-        # elif demisto.command() == "infinipoint-run-osquery":
-        #     return_results(run_osquery_command(token, demisto.args()))
-
         elif demisto.command() == "infinipoint-get-queries":
             return_results(get_queries_command(token, demisto.args()))
 
         elif demisto.command() == "infinipoint-run-queries":
             return_results(run_queries_command(token, demisto.args()))
-
-        # elif demisto.command() == "infinipoint-run-script":
-        #     return_results(run_script_command(token, demisto.args()))
 
         elif demisto.command() == "infinipoint-get-action":
             return_results(get_action_command(token, demisto.args()))
