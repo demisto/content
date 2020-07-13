@@ -22,33 +22,8 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def alert_list(self, alert_id, customer_filters, skip, limit, severity, service, instance, resolution_status,
-                   username):
-        url_suffix = '/alerts/'
-        request_data = {'limit': int(limit)}
-        filters = {}
-        if alert_id:
-            url_suffix = f'{url_suffix}{alert_id}'
-        elif customer_filters:
-            request_data['filters'] = json.loads(customer_filters)
-        else:
-            if skip:
-                request_data['skip'] = skip
-            if severity:
-                filters['severity'] = {'eq': convert_severity(severity)}
-            if service:
-                service = {'eq': service}
-                filters.update(service)
-            if instance:
-                instance = {'eq': instance}
-                filters.update(instance)
-            if resolution_status:
-                resolution_status = {'eq': resolution_status}
-                filters.update(resolution_status)
-            if username:
-                username = {'eq': username}
-                filters.update(username)
-            request_data['filters'] = filters
+    def alert_list(self, url_suffix, request_data):
+
         data = self._http_request(
             method='GET',
             url_suffix=url_suffix,
@@ -76,12 +51,22 @@ class Client(BaseClient):
 
 def convert_severity(severity):
 
-    severity_dict = {
+    severity_options = {
         'Low': 0,  # low severity
         'Medium': 1,  # medium severity
         'High': 2  # high severity
     }
-    return severity_dict[severity]
+    return severity_options[severity]
+
+
+def convert_resolution_status(resolution_status):
+
+    resolution_status_options = {
+        'Low': 0,  # low severity
+        'Medium': 1,  # medium severity
+        'High': 2  # high severity
+    }
+    return resolution_status_options[resolution_status]
 
 
 def test_module(client):
@@ -99,15 +84,30 @@ def test_module(client):
 def alerts_list_command(client, args):
     alert_id = args.get('alert_id')
     customer_filters = args.get('customer_filters')
-    skip = args.get('skip')
-    limit = args.get('limit')
-    severity = args.get('severity')
-    service = args.get('service')
-    instance = args.get('instance')
-    resolution_status = args.get('resolution_status')
-    username = args.get('username')
-    alerts = client.alert_list(alert_id, customer_filters, skip, limit, severity, service, instance, resolution_status,
-                               username)
+    all_params = assign_params(skip=args.get('skip'), limit=args.get('limit'), severity=args.get('severity'),
+                               service=args.get('service'), instance=args.get('instance'),
+                               resolution_status=args.get('resolution_status'))
+    request_data = {}
+    filters = {}
+    url_suffix = '/alerts/'
+    if alert_id:
+        url_suffix += alert_id
+    elif customer_filters:
+        request_data['filters'] = json.loads(customer_filters)
+    else:
+        for key, value in all_params.items():
+            if key in ['skip', 'limit']:
+                request_data[key] = int(value)
+            if key in ['service', 'instance']:
+                filters[f'entity.{key}'] = {'eq': int(value)}
+            if key == 'severity':
+                filters[key] = {'eq': convert_severity(value)}
+            if key == 'resolution_status':
+                filters[key] = {'eq': convert_resolution_status(value)}
+        request_data['filters'] = filters
+
+    alerts = client.alert_list(url_suffix, request_data)
+
     return CommandResults(
         readable_output=alerts,
         outputs_prefix='MicrosoftCloudAppSecurity.Alert',
