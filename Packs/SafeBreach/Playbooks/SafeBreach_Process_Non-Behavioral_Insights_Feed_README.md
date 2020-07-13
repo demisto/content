@@ -1,22 +1,23 @@
-This playbook triggers automated remediation for all non-behavioral  indicators generated from SafeBreach Insights. Then it reruns related insights and classifies the indicators as Remediated or Not Remediated post validation.
+This playbook automatically remediates all non-behavioral indicators generated from SafeBreach Insights. To validate the remediation, it reruns the related insights and classifies the indicators as Remediated or Not Remediated.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* SafeBreach - Compare and Validate Insight Indicators (draft)
 * Block Indicators - Generic v2
+* SafeBreach Compare and Tag Insight Indicators (draft)
 * SafeBreach - Rerun Insights (draft)
 
 ### Integrations
-This playbook does not use any integrations.
+* SafeBreach_v2
 
 ### Scripts
 * Set
 * Sleep
 
 ### Commands
-This playbook does not use any commands.
+* safebreach-get-insights
+* safebreach-get-remediation-data
 
 ## Playbook Inputs
 ---
@@ -31,4 +32,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![SafeBreach - Process Non-Behavioral Insights Feed (draft)](Insert the link to your image here)
+![SafeBreach - Process Non-Behavioral Insights Feed](Insert the link to your image here)

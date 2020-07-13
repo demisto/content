@@ -1,49 +1,28 @@
-description: This playbook receives an Insight and it's indicators before validation.
-  Updated indicators fetched to perform the validation. Indicators are classified
-  as Remediated or Not Remediated based on their validated status and the appropriate
-  field (SafeBreach Remediation Status) is updated.
-id: SafeBreach - Compare and Validate Insight Indicators (draft)
-inputs:
-- description: Indicators extracted before remediation
-  key: IndicatorsBefore
-  playbookInputQuery:
-  required: true
-  value: {}
-- description: Insight to verify remediation for
-  key: Insight
-  playbookInputQuery:
-  required: true
-  value: {}
-name: SafeBreach - Compare and Validate Insight Indicators (draft)
-outputs:
-- contextPath: RemediatedIndicators
-  description: List of indicators that were remediated
-  type: unknown
-- contextPath: NotRemediatedIndicators
-  description: List of indicators that were not remediated
-  type: unknown
+id: SafeBreach - Compare and Validate Insight Indicators
+version: -1
+name: SafeBreach - Compare and Validate Insight Indicators
+description: This playbook compares Insight indicators before and after being processed.
+  It receives an Insight and it's indicators before validation, fetches updated indicators
+  after rerunning the Insight, and then compares the results to validate mitigation.
+  Indicators are classified as Remediated or Not Remediated based on their validated
+  status and the appropriate field (SafeBreach Remediation Status) is updated.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    ignoreworker: false
+    taskid: 89e3fa5b-8365-4fe1-839e-1582e2bf8d10
+    type: start
+    task:
+      id: 89e3fa5b-8365-4fe1-839e-1582e2bf8d10
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 89e3fa5b-8365-4fe1-839e-1582e2bf8d10
-      iscommand: false
-      name: ""
-      version: -1
-      description: ''
-    taskid: 89e3fa5b-8365-4fe1-839e-1582e2bf8d10
-    timertriggers: []
-    type: start
     view: |-
       {
         "position": {
@@ -51,24 +30,24 @@ tasks:
           "y": -510
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    ignoreworker: false
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
+    taskid: b4d9deb2-20a0-41c6-8468-28a787ee6576
+    type: title
     task:
-      brand: ""
       id: b4d9deb2-20a0-41c6-8468-28a787ee6576
-      iscommand: false
+      version: -1
       name: Done
       type: title
-      version: -1
+      iscommand: false
+      brand: ""
       description: ''
-    taskid: b4d9deb2-20a0-41c6-8468-28a787ee6576
-    timertriggers: []
-    type: title
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -76,15 +55,28 @@ tasks:
           "y": 1210
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    ignoreworker: false
+    taskid: 008fe8bb-93c2-4d8a-803b-76b01b27be7c
+    type: regular
+    task:
+      id: 008fe8bb-93c2-4d8a-803b-76b01b27be7c
+      version: -1
+      name: Set Indicators After Validation
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "6"
-    note: false
-    quietmode: 0
-    reputationcalc: 1
     scriptarguments:
       append: {}
       key:
@@ -92,22 +84,10 @@ tasks:
       stringify: {}
       value:
         complex:
-          accessor: Insight.RawRemediationData
           root: SafeBreach
+          accessor: Insight.RawRemediationData
+    reputationcalc: 1
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Sets a value into the context with the given context key
-      id: f50255ef-074f-4663-86e1-b8c62a8232a4
-      iscommand: false
-      name: Set Indicators After Validation
-      script: Set
-      type: regular
-      version: -1
-    taskid: f50255ef-074f-4663-86e1-b8c62a8232a4
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -115,15 +95,27 @@ tasks:
           "y": 200
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    ignoreworker: false
+    taskid: f4f0abbb-2b90-4c85-8758-01e154a6cf79
+    type: regular
+    task:
+      id: f4f0abbb-2b90-4c85-8758-01e154a6cf79
+      version: -1
+      name: Filter for the Remediation Indicators
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "14"
-    note: false
-    quietmode: 0
-    reputationcalc: 1
     scriptarguments:
       append: {}
       key:
@@ -131,22 +123,10 @@ tasks:
       stringify: {}
       value:
         complex:
-          accessor: value
           root: IndicatorsAfterValidation
+          accessor: value
+    reputationcalc: 1
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Sets a value into the context with the given context key
-      id: f4f0abbb-2b90-4c85-8758-01e154a6cf79
-      iscommand: false
-      name: Filter for the Remediation Indicators
-      script: Set
-      type: regular
-      version: -1
-    taskid: f4f0abbb-2b90-4c85-8758-01e154a6cf79
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -154,15 +134,27 @@ tasks:
           "y": 390
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    ignoreworker: false
+    taskid: e713d385-5f75-4871-8e47-f34d9c75cd7e
+    type: regular
+    task:
+      id: e713d385-5f75-4871-8e47-f34d9c75cd7e
+      version: -1
+      name: Extract the Remediated Indicators
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "9"
-    note: false
-    quietmode: 0
-    reputationcalc: 1
     scriptarguments:
       append: {}
       key:
@@ -170,31 +162,19 @@ tasks:
       stringify: {}
       value:
         complex:
+          root: IndicatorsBeforeValidationFiltered
           filters:
-          - - left:
-                iscontext: true
+          - - operator: notIn
+              left:
                 value:
                   simple: IndicatorsBeforeValidationFiltered
-              operator: notIn
-              right:
                 iscontext: true
+              right:
                 value:
                   simple: IndicatorsAfterValidationFiltered
-          root: IndicatorsBeforeValidationFiltered
+                iscontext: true
+    reputationcalc: 1
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Sets a value into the context with the given context key
-      id: e713d385-5f75-4871-8e47-f34d9c75cd7e
-      iscommand: false
-      name: Extract the Remediated Indicators
-      script: Set
-      type: regular
-      version: -1
-    taskid: e713d385-5f75-4871-8e47-f34d9c75cd7e
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -202,15 +182,27 @@ tasks:
           "y": 830
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    ignoreworker: false
+    taskid: 82588205-5aee-4ab8-8ebc-21cdb735ac61
+    type: regular
+    task:
+      id: 82588205-5aee-4ab8-8ebc-21cdb735ac61
+      version: -1
+      name: Extract the Not Remediated Indicators
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "10"
-    note: false
-    quietmode: 0
-    reputationcalc: 1
     scriptarguments:
       append: {}
       key:
@@ -218,31 +210,19 @@ tasks:
       stringify: {}
       value:
         complex:
+          root: IndicatorsBeforeValidationFiltered
           filters:
-          - - left:
-                iscontext: true
+          - - operator: in
+              left:
                 value:
                   simple: IndicatorsBeforeValidationFiltered
-              operator: in
-              right:
                 iscontext: true
+              right:
                 value:
                   simple: IndicatorsAfterValidationFiltered
-          root: IndicatorsBeforeValidationFiltered
+                iscontext: true
+    reputationcalc: 1
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Sets a value into the context with the given context key
-      id: 82588205-5aee-4ab8-8ebc-21cdb735ac61
-      iscommand: false
-      name: Extract the Not Remediated Indicators
-      script: Set
-      type: regular
-      version: -1
-    taskid: 82588205-5aee-4ab8-8ebc-21cdb735ac61
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -250,14 +230,27 @@ tasks:
           "y": 830
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    ignoreworker: false
+    taskid: 1c0d89fc-e7cd-4e6e-84f2-681b7a61e68f
+    type: regular
+    task:
+      id: 1c0d89fc-e7cd-4e6e-84f2-681b7a61e68f
+      version: -1
+      name: Set Indicator Remediation Status as Remediated
+      description: commands.local.cmd.set.indicator
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "4"
-    note: false
-    quietmode: 0
     scriptarguments:
       accounttype: {}
       actor: {}
@@ -385,19 +378,6 @@ tasks:
         complex:
           root: RemediatedIndicators
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: commands.local.cmd.set.indicator
-      id: 1c0d89fc-e7cd-4e6e-84f2-681b7a61e68f
-      iscommand: true
-      name: Set Indicator Remediation Status as Remediated
-      script: Builtin|||setIndicator
-      type: regular
-      version: -1
-    taskid: 1c0d89fc-e7cd-4e6e-84f2-681b7a61e68f
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -405,14 +385,27 @@ tasks:
           "y": 1000
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    ignoreworker: false
+    taskid: 43dc6ce5-7ed1-4198-8cb5-1ed903b3e0f6
+    type: regular
+    task:
+      id: 43dc6ce5-7ed1-4198-8cb5-1ed903b3e0f6
+      version: -1
+      name: Set Indicator Remediation Status as Not Remediated
+      description: commands.local.cmd.set.indicator
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "4"
-    note: false
-    quietmode: 0
     scriptarguments:
       accounttype: {}
       actor: {}
@@ -540,19 +533,6 @@ tasks:
         complex:
           root: NotRemediatedIndicators
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: commands.local.cmd.set.indicator
-      id: 43dc6ce5-7ed1-4198-8cb5-1ed903b3e0f6
-      iscommand: true
-      name: Set Indicator Remediation Status as Not Remediated
-      script: Builtin|||setIndicator
-      type: regular
-      version: -1
-    taskid: 43dc6ce5-7ed1-4198-8cb5-1ed903b3e0f6
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -560,33 +540,33 @@ tasks:
           "y": 1000
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    ignoreworker: false
+    taskid: 66f9c4d1-33af-4f19-8680-81b91ec88844
+    type: regular
+    task:
+      id: 66f9c4d1-33af-4f19-8680-81b91ec88844
+      version: -1
+      name: Get Insight Remediation Data
+      description: Gets remediation data for a specific SafeBreach Insight.
+      script: '|||safebreach-get-remediation-data'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
-    note: false
-    quietmode: 0
     scriptarguments:
       insightId:
         complex:
-          accessor: Insight.Id
           root: SafeBreach
+          accessor: Insight.Id
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Gets remediation data for a specific SafeBreach Insight.
-      id: 66f9c4d1-33af-4f19-8680-81b91ec88844
-      iscommand: true
-      name: Get Insight Remediation Data
-      script: '|||safebreach-get-remediation-data'
-      type: regular
-      version: -1
-    taskid: 66f9c4d1-33af-4f19-8680-81b91ec88844
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -594,14 +574,29 @@ tasks:
           "y": 20
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
-    ignoreworker: false
+    taskid: 993d9910-6e55-4e9b-8fab-147b9db63678
+    type: regular
+    task:
+      id: 993d9910-6e55-4e9b-8fab-147b9db63678
+      version: -1
+      name: 'Map Input Insight to Context '
+      description: 'Enables changing context in two ways. The first is to capitalize
+        the first letter of each key in following level of the context key entered.
+        The second is to change context keys to new values. '
+      scriptName: ChangeContext
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "13"
-    note: false
-    quietmode: 0
     scriptarguments:
       capitalize: {}
       inplace: {}
@@ -612,21 +607,6 @@ tasks:
         simple: SafeBreach.Insight
       replace_dict: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: 'Enables changing context in two ways. The first is to capitalize
-        the first letter of each key in following level of the context key entered.
-        The second is to change context keys to new values. '
-      id: 993d9910-6e55-4e9b-8fab-147b9db63678
-      iscommand: false
-      name: 'Map Input Insight to Context '
-      script: ChangeContext
-      type: regular
-      version: -1
-    taskid: 993d9910-6e55-4e9b-8fab-147b9db63678
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -634,15 +614,27 @@ tasks:
           "y": -350
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    ignoreworker: false
+    taskid: f734e7ef-7033-4032-8faa-a4c2e46e6707
+    type: regular
+    task:
+      id: f734e7ef-7033-4032-8faa-a4c2e46e6707
+      version: -1
+      name: Filter for the Before Indicators
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "11"
-    note: false
-    quietmode: 0
-    reputationcalc: 1
     scriptarguments:
       append: {}
       key:
@@ -651,20 +643,8 @@ tasks:
       value:
         complex:
           root: inputs.IndicatorsBefore
+    reputationcalc: 1
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Sets a value into the context with the given context key
-      id: f734e7ef-7033-4032-8faa-a4c2e46e6707
-      iscommand: false
-      name: Filter for the Before Indicators
-      script: Set
-      type: regular
-      version: -1
-    taskid: f734e7ef-7033-4032-8faa-a4c2e46e6707
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -672,66 +652,66 @@ tasks:
           "y": -160
         }
       }
-  "14":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                filters:
-                - - left:
-                      iscontext: true
-                      value:
-                        simple: IndicatorsBeforeValidationFiltered
-                    operator: notIn
-                    right:
-                      iscontext: true
-                      value:
-                        simple: IndicatorsAfterValidationFiltered
-                root: IndicatorsBeforeValidationFiltered
-          operator: isExists
-      label: Remediated Indicators Exist
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                filters:
-                - - left:
-                      iscontext: true
-                      value:
-                        simple: IndicatorsBeforeValidationFiltered
-                    operator: in
-                    right:
-                      iscontext: true
-                      value:
-                        simple: IndicatorsAfterValidationFiltered
-                root: IndicatorsBeforeValidationFiltered
-          operator: isExists
-      label: Not Remediated Indicators Exist
-    id: "14"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 9cc51531-beb9-40b9-81c3-2102edb95768
+    type: condition
+    task:
+      id: 9cc51531-beb9-40b9-81c3-2102edb95768
+      version: -1
+      name: Were Indicators Remediated?
+      description: Were Indicators Remediated?
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       Not Remediated Indicators Exist:
       - "8"
       Remediated Indicators Exist:
       - "7"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 9cc51531-beb9-40b9-81c3-2102edb95768
-      iscommand: false
-      name: Were Indicators Remediated?
-      type: condition
-      version: -1
-      description: Check if the indicators was remediated.
-    taskid: 9cc51531-beb9-40b9-81c3-2102edb95768
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: Remediated Indicators Exist
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IndicatorsBeforeValidationFiltered
+                filters:
+                - - operator: notIn
+                    left:
+                      value:
+                        simple: IndicatorsBeforeValidationFiltered
+                      iscontext: true
+                    right:
+                      value:
+                        simple: IndicatorsAfterValidationFiltered
+                      iscontext: true
+            iscontext: true
+    - label: Not Remediated Indicators Exist
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IndicatorsBeforeValidationFiltered
+                filters:
+                - - operator: in
+                    left:
+                      value:
+                        simple: IndicatorsBeforeValidationFiltered
+                      iscontext: true
+                    right:
+                      value:
+                        simple: IndicatorsAfterValidationFiltered
+                      iscontext: true
+            iscontext: true
     view: |-
       {
         "position": {
@@ -739,7 +719,11 @@ tasks:
           "y": 590
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -752,6 +736,25 @@ view: |-
       }
     }
   }
+inputs:
+- key: IndicatorsBefore
+  value: {}
+  required: true
+  description: Indicators extracted before remediation
+  playbookInputQuery:
+- key: Insight
+  value: {}
+  required: true
+  description: Insight to verify remediation for
+  playbookInputQuery:
+outputs:
+- contextPath: RemediatedIndicators
+  description: List of indicators that were remediated
+  type: unknown
+- contextPath: NotRemediatedIndicators
+  description: List of indicators that were not remediated
+  type: unknown
+quiet: true
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

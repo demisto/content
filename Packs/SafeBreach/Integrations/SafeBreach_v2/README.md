@@ -17,6 +17,7 @@ Add a new one by typing: **config apikeys add --name <key_name>**
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for SafeBreach v2 Phase 2.
 3. Click **Add instance** to create and configure a new integration instance.
+4. Click **Test** to validate the URLs, token, and connection.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -37,7 +38,36 @@ Add a new one by typing: **config apikeys add --name <key_name>**
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+
+
+## SafeBreach Insights
+Table below summaries all available SafeBreach insights and their relative ids that should be used when calling the related commands.
+Every customer environment might have some of the insights depending on the simulation results that were not blocked in the environment.
+
+| **Insight Id** | **Category** | **Data Type** | **Description** |
+| --- | --- | --- | --- |
+| 1 |  Network Access | Port | Outbound traffic over non-standard ports
+| 2 |  Network Access | Protocol | Outbound traffic over non-standard protocols
+| 3 |  Network Access | Port | Outbound traffic over non-SSL protocols using secured ports
+| 4 |  Network Access | Port | Outbound traffic over not matching ports and protocols
+| 19 |  Network Access | Port | Inbound traffic over non-standard ports
+| 20 |  Network Access | Protocol | Inbound traffic over non-standard protocols
+| 21 |  Network Access | Port | Inbound traffic over non-SSL protocols using secured ports
+| 22 |  Network Access | Port | Inbound traffic over not matching ports and protocols
+| 5 |  Web | Domain | Malicious domain resolution
+| 6 |  Web | URI  | Malicious URL requests
+| 7 |  Network Inspection | Hash | Malware transfer over standard ports
+| 10 |  Network Inspection | Protocol | Brute force
+| 11 |  Network Inspection | Other  | Inbound C&C communication
+| 12 |  Network Inspection | Other  | Outbound C&C communication
+| 8 |  Endpoint | Other | Execution of malware or code
+| 9 |  Endpoint | Hash | Malware drop to disk
+| 13 |  Endpoint | Other  | Malicious host actions
+| 14 |  Endpoint | Command  | Data and host information gathering
+| 16 |  Data Leak | Other  | Exfiltration of sensitive data assets
+| 15 |  Email | Hash  | Email with encrypted malicious attachments
+| 24 |  Email |Hash  | Email with non-encrypted malicious attachment 
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -394,10 +424,31 @@ Gets the status of a SafeBreach test for tracking progress of a run.
 | SafeBreach.Test.TotalSimulationNumber | Number | Number of simulations for the test. | 
 
 
-#### Command Example
-``` ```
+##### Command Example
+```!safebreach-get-test-status testId=1585757174467.23```
 
-#### Human Readable Output
+##### Context Example
+```
+{
+    "SafeBreach": {
+        "Test": {
+            "EndTime": "2020-04-01T16:10:36.389Z",
+            "Id": "1585757174467.23",
+            "Name": "Rerun (Demisto) - #(2122) Write SamSam Malware (AA18-337A) to Disk",
+            "StartTime": "2020-04-01T16:06:14.471Z",
+            "Status": "CANCELED",
+            "TotalSimulationNumber": 9
+        }
+    }
+}
+```
+
+##### Human Readable Output
+### Test Status
+|Test Id|Name|Status|Start Time|End Time|Total Simulation Number|
+|---|---|---|---|---|---|
+| 1585757174467.23 | Rerun (Demisto) - #(2122) Write SamSam Malware (AA18-337A) to Disk | CANCELED | 2020-04-01T16:06:14.471Z | 2020-04-01T16:10:36.389Z | 9 |
+
 
 
 
@@ -458,10 +509,183 @@ Get SafeBreach simulation
 | SafeBreach.Simulation.Parameters | JSON | Parameters of the simulation. | 
 
 
-#### Command Example
-``` ```
+##### Command Example
+```!safebreach-get-simulation simulationId=d937cd0e5fd4e2c9266801b7bd17e097```
 
-#### Human Readable Output
+##### Context Example
+```
+{
+    "SafeBreach": {
+        "Simulation": {
+            "Attack": {
+                "Description": "**Goal**\n\n1. Verify whether the malware can be written to disk.\n\n**Actions**\n\n1. **Malware Drop**  \n    **Action:** [wannacry](https://attack.mitre.org/software/S0366) malware is written to disk on the target simulator.  \n    **Expected behavior:** The malware written to disk is identified and removed after a pre-defined time period.  \n\n**More Info**  \n",
+                "Id": 3055,
+                "IndicatorBased": "False",
+                "Name": "Write wannacry malware to disk",
+                "Phase": "Host Level",
+                "SecurityControl": [
+                    "Endpoint"
+                ],
+                "Type": [
+                    "Malware Drop"
+                ]
+            },
+            "Attacker": {
+                "ExternalIp": "172.31.42.76",
+                "InternalIp": "172.31.42.76",
+                "Name": "Win10 - Cylance",
+                "OS": "WINDOWS",
+                "SimulationDetails": {
+                    "DETAILS": "Task finished running because of an exception. Traceback: \r\nTraceback (most recent call last):\n  File \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\lib\\site-packages\\sbsimulation\\task_action_runner.py\", line 89, in run\n    pythonect_result_object = pythonect_runner(full_pythonect_string, self.pythonect_params)\n  File \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\lib\\site-packages\\sbsimulation\\runners\\runner_classes.py\", line 187, in __call__\n    return pythonect.eval(self.pythonect_string, locals_=self.pythonect_params)\n  File \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\lib\\site-packages\\pythonect\\internal\\eval.py\", line 938, in eval\n    result = _run(graph, root_nodes[0], globals_, locals_, {}, pool, False)\n  File \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\lib\\site-packages\\pythonect\\internal\\eval.py\", line 738, in _run\n    return_value = _run_next_virtual_nodes(graph, node, globals_, locals_, flags, pool, result)\n  File \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\lib\\site-packages\\pythonect\\internal\\eval.py\", line 224, in _run_next_virtual_nodes\n    return_value = __resolve_and_merge_results(_run(graph, node, tmp_globals, tmp_locals, {}, pool, True))\n  File \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\lib\\site-packages\\pythonect\\internal\\eval.py\", line 660, in _run\n    return_value = _run_next_graph_nodes(graph, node, globals_, locals_, pool)\n  File \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\lib\\site-packages\\pythonect\\internal\\eval.py\", line 610, in _run_next_graph_nodes\n    nodes_return_value.insert(0, _run(graph, next_nodes[0], globals_, locals_, {}, pool, False))\n  File \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\lib\\site-packages\\pythonect\\internal\\eval.py\", line 738, in _run\n    return_value = _run_next_virtual_nodes(graph, node, globals_, locals_, flags, pool, result)\n  File \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\lib\\site-packages\\pythonect\\internal\\eval.py\", line 224, in _run_next_virtual_nodes\n    return_value = __resolve_and_merge_results(_run(graph, node, tmp_globals, tmp_locals, {}, pool, True))\n  File \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\lib\\site-packages\\pythonect\\internal\\eval.py\", line 660, in _run\n    return_value = _run_next_graph_nodes(graph, node, globals_, locals_, pool)\n  File \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\lib\\site-packages\\pythonect\\internal\\eval.py\", line 610, in _run_next_graph_nodes\n    nodes_return_value.insert(0, _run(graph, next_nodes[0], globals_, locals_, {}, pool, False))\n  File \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\lib\\site-packages\\pythonect\\internal\\eval.py\", line 734, in _run\n    result = runner(__node_main, args=(input_value, last_value, globals_, locals_))\n  File \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\lib\\site-packages\\pythonect\\internal\\eval.py\", line 629, in __apply_current\n    return func(*args, **kwds)\n  File \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\lib\\site-packages\\pythonect\\internal\\eval.py\", line 440, in __node_main\n    return_value = python.eval(current_value, globals_, locals_)\n  File \"<string>\", line 1, in <module>\n  File \"c:\\jenkins\\workspace\\multi-branch_master-NLIC56DSK443DP5KDJGAEKHQDPZ2GF\\agent\\project\\dependencies\\framework\\src\\build\\lib\\framework\\__init__.py\", line 285, in wrapper\n  File \"c:\\jenkins\\workspace\\multi-branch_master-NLIC56DSK443DP5KDJGAEKHQDPZ2GF\\agent\\project\\dependencies\\framework\\src\\build\\lib\\framework\\endpoint\\utils\\file_utils.py\", line 121, in open_or_die\nSBFileNotFoundException: ('File (%s) was removed', 'c:\\\\windows\\\\temp\\\\sb-sim-temp-jvu_fk\\\\sb_107985_bs_9vrn0e\\\\bdata.bin')\n",
+                    "ERROR": "",
+                    "METADATA": {
+                        "executable": [
+                            "C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\Scripts\\python.exe",
+                            "C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\Scripts\\safebreach_simulation.py"
+                        ],
+                        "hostname": "Cylance-Win10-Demisto",
+                        "pid": 5584,
+                        "ret_code": 0
+                    },
+                    "OUTPUT": "",
+                    "SIMULATION_STEPS": [
+                        {
+                            "level": "INFO",
+                            "message": "File opened",
+                            "params": {
+                                "mode": "wb",
+                                "path": "c:\\windows\\temp\\sb-sim-temp-jvu_fk\\sb_107985_bs_9vrn0e\\bdata.bin"
+                            },
+                            "time": "2020-04-02T09:47:01.500000"
+                        },
+                        {
+                            "level": "INFO",
+                            "message": "File written",
+                            "params": {
+                                "path": "c:\\windows\\temp\\sb-sim-temp-jvu_fk\\sb_107985_bs_9vrn0e\\bdata.bin"
+                            },
+                            "time": "2020-04-02T09:47:01.500000"
+                        }
+                    ]
+                }
+            },
+            "Classifications": {
+                "MITREGroups": [
+                    "Lazarus Group"
+                ],
+                "MITRESoftware": [
+                    "(S0366) wannacry"
+                ],
+                "MITRETechniques": [
+                    "(T1107) File Deletion"
+                ]
+            },
+            "DetectedAction": "Prevent",
+            "FinalStatus": "Prevented",
+            "Id": "d937cd0e5fd4e2c9266801b7bd17e097",
+            "Labels": [],
+            "LastChangeTime": "2020-03-10T15:13:51.900Z",
+            "Network": {
+                "DestinationIp": "",
+                "DestinationPort": null,
+                "Direction": null,
+                "Protocol": "N/A",
+                "Proxy": null,
+                "SourceIp": "",
+                "SourcePort": []
+            },
+            "Parameters": {
+                "BINARY": [
+                    {
+                        "displayName": "Sample binaries",
+                        "displayType": "Hash",
+                        "displayValue": "sha256",
+                        "md5": "246c2781b88f58bc6b0da24ec71dd028",
+                        "name": "buffer",
+                        "sha256": "16493ecc4c4bc5746acbe96bd8af001f733114070d694db76ea7b5a0de7ad0ab",
+                        "value": "16493ecc4c4bc5746acbe96bd8af001f733114070d694db76ea7b5a0de7ad0ab"
+                    }
+                ],
+                "NOT_CLASSIFIED": [
+                    {
+                        "displayName": "Simulation wait",
+                        "displayType": "Not Classified",
+                        "displayValue": "10 seconds",
+                        "name": "timeout",
+                        "value": "10"
+                    }
+                ],
+                "PATH": [
+                    {
+                        "displayName": "Drop paths",
+                        "displayType": "Path",
+                        "displayValue": "Temporary folder",
+                        "name": "drop_path",
+                        "value": "%temp%\\\\\\\\bdata.bin"
+                    }
+                ],
+                "SIMULATION_USER_DESTINATION": [
+                    {
+                        "displayName": "Impersonated User - Target",
+                        "displayValue": "SYSTEM",
+                        "name": "Impersonated User - Target",
+                        "value": "SYSTEM"
+                    }
+                ]
+            },
+            "Result": "Blocked",
+            "SimulationRunId": 107985,
+            "Target": {
+                "ExternalIp": "172.31.42.76",
+                "InternalIp": "172.31.42.76",
+                "Name": "Win10 - Cylance",
+                "OS": "WINDOWS",
+                "SimulationDetails": {
+                    "DETAILS": "Task finished running because of an exception. Traceback: \r\nTraceback (most recent call last):\n  File \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\lib\\site-packages\\sbsimulation\\task_action_runner.py\", line 89, in run\n    pythonect_result_object = pythonect_runner(full_pythonect_string, self.pythonect_params)\n  File \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\lib\\site-packages\\sbsimulation\\runners\\runner_classes.py\", line 187, in __call__\n    return pythonect.eval(self.pythonect_string, locals_=self.pythonect_params)\n  File \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\lib\\site-packages\\pythonect\\internal\\eval.py\", line 938, in eval\n    result = _run(graph, root_nodes[0], globals_, locals_, {}, pool, False)\n  File \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\lib\\site-packages\\pythonect\\internal\\eval.py\", line 738, in _run\n    return_value = _run_next_virtual_nodes(graph, node, globals_, locals_, flags, pool, result)\n  File \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\lib\\site-packages\\pythonect\\internal\\eval.py\", line 224, in _run_next_virtual_nodes\n    return_value = __resolve_and_merge_results(_run(graph, node, tmp_globals, tmp_locals, {}, pool, True))\n  File \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\lib\\site-packages\\pythonect\\internal\\eval.py\", line 660, in _run\n    return_value = _run_next_graph_nodes(graph, node, globals_, locals_, pool)\n  File \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\lib\\site-packages\\pythonect\\internal\\eval.py\", line 610, in _run_next_graph_nodes\n    nodes_return_value.insert(0, _run(graph, next_nodes[0], globals_, locals_, {}, pool, False))\n  File \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\lib\\site-packages\\pythonect\\internal\\eval.py\", line 738, in _run\n    return_value = _run_next_virtual_nodes(graph, node, globals_, locals_, flags, pool, result)\n  File \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\lib\\site-packages\\pythonect\\internal\\eval.py\", line 224, in _run_next_virtual_nodes\n    return_value = __resolve_and_merge_results(_run(graph, node, tmp_globals, tmp_locals, {}, pool, True))\n  File \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\lib\\site-packages\\pythonect\\internal\\eval.py\", line 660, in _run\n    return_value = _run_next_graph_nodes(graph, node, globals_, locals_, pool)\n  File \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\lib\\site-packages\\pythonect\\internal\\eval.py\", line 610, in _run_next_graph_nodes\n    nodes_return_value.insert(0, _run(graph, next_nodes[0], globals_, locals_, {}, pool, False))\n  File \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\lib\\site-packages\\pythonect\\internal\\eval.py\", line 734, in _run\n    result = runner(__node_main, args=(input_value, last_value, globals_, locals_))\n  File \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\lib\\site-packages\\pythonect\\internal\\eval.py\", line 629, in __apply_current\n    return func(*args, **kwds)\n  File \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\lib\\site-packages\\pythonect\\internal\\eval.py\", line 440, in __node_main\n    return_value = python.eval(current_value, globals_, locals_)\n  File \"<string>\", line 1, in <module>\n  File \"c:\\jenkins\\workspace\\multi-branch_master-NLIC56DSK443DP5KDJGAEKHQDPZ2GF\\agent\\project\\dependencies\\framework\\src\\build\\lib\\framework\\__init__.py\", line 285, in wrapper\n  File \"c:\\jenkins\\workspace\\multi-branch_master-NLIC56DSK443DP5KDJGAEKHQDPZ2GF\\agent\\project\\dependencies\\framework\\src\\build\\lib\\framework\\endpoint\\utils\\file_utils.py\", line 121, in open_or_die\nSBFileNotFoundException: ('File (%s) was removed', 'c:\\\\windows\\\\temp\\\\sb-sim-temp-jvu_fk\\\\sb_107985_bs_9vrn0e\\\\bdata.bin')\n",
+                    "ERROR": "",
+                    "METADATA": {
+                        "executable": [
+                            "C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\Scripts\\python.exe",
+                            "C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\20.1.13\\simvenv\\Scripts\\safebreach_simulation.py"
+                        ],
+                        "hostname": "Cylance-Win10-Demisto",
+                        "pid": 5584,
+                        "ret_code": 0
+                    },
+                    "OUTPUT": "",
+                    "SIMULATION_STEPS": [
+                        {
+                            "level": "INFO",
+                            "message": "File opened",
+                            "params": {
+                                "mode": "wb",
+                                "path": "c:\\windows\\temp\\sb-sim-temp-jvu_fk\\sb_107985_bs_9vrn0e\\bdata.bin"
+                            },
+                            "time": "2020-04-02T09:47:01.500000"
+                        },
+                        {
+                            "level": "INFO",
+                            "message": "File written",
+                            "params": {
+                                "path": "c:\\windows\\temp\\sb-sim-temp-jvu_fk\\sb_107985_bs_9vrn0e\\bdata.bin"
+                            },
+                            "time": "2020-04-02T09:47:01.500000"
+                        }
+                    ]
+                }
+            },
+            "Time": "2020-04-02T09:47:12.506Z"
+        }
+    }
+}
+```
+
+##### Human Readable Output
+### SafeBreach Simulation
+|Id|Name|Status|Result|Detected Action|Attacker|Target|
+|---|---|---|---|---|---|---|
+| d937cd0e5fd4e2c9266801b7bd17e097 | (#3055) Write wannacry malware to disk | Prevented | Fail | Prevent | Win10 - Cylance (172.31.42.76,172.31.42.76) | Win10 - Cylance (172.31.42.76,172.31.42.76) |
+
 
 
 
@@ -495,9 +719,80 @@ Reruns a specific SafeBreach simulation in your environment.
 | SafeBreach.Test.ScheduledTime | Datetime | Time when the test was triggered. | 
 
 
-#### Command Example
-``` ```
+##### Command Example
+```!safebreach-rerun-simulation simulationId=d937cd0e5fd4e2c9266801b7bd17e097```
 
-#### Human Readable Output
+##### Context Example
+```
+{
+    "SafeBreach": {
+        "Simulation": {
+            "Id": "d937cd0e5fd4e2c9266801b7bd17e097",
+            "Rerun": {
+                "Id": "1586684466634.76",
+                "Name": "Rerun (Demisto) - #(3055) Write wannacry malware to disk",
+                "ScheduledTime": "2020-04-12T09:41:06.643609"
+            }
+        },
+        "Test": {
+            "AttacksCount": 1,
+            "Id": "1586684466634.76",
+            "Name": "Rerun (Demisto) - #(3055) Write wannacry malware to disk",
+            "Status": "PENDING"
+        }
+    }
+}
+```
+
+##### Human Readable Output
+### SafeBreach Rerun Simualtion
+|Simulation Id|Test Id|Name|
+|---|---|---|
+| d937cd0e5fd4e2c9266801b7bd17e097 | 1586684466634.76 | Rerun (Demisto) - #(3055) Write wannacry malware to disk |
+
+
+### safebreach-get-indicators
+***
+Fetches SafeBreach Insights from which indicators are extracted, creating new indicators or updating existing indicators.
+
+
+##### Base Command
+
+`safebreach-get-indicators`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The maximum number of indicators to generate. The default is 1000. | Optional | 
+| insightCategory | Multi-select option for the category of the insights to get remediation data for:<br/>Network Access, Network Inspection, Endpoint, Email, Web, Data Leak | Optional | 
+| insightDataType | Multi-select option for the remediation data type to get:<br/>Hash, Domain, URI, Command, Port, Protocol, Registry | Optional | 
+
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+```!safebreach-get-indicators limit=10```
+
+##### Context Example
+```
+None
+```
+
+##### Human Readable Output
+### Indicators:
+|Fields|Rawjson|Score|Type|Value|
+|---|---|---|---|---|
+| description: SafeBreach Insight - Prevent malware network transfer<br />sha256: 0a2076b9d288411486a0c6367bccf75ea0fd6ba9aaaa9ff046ff3959f60ff35f<br />tags: SafeBreachInsightId: 7 | value: 0a2076b9d288411486a0c6367bccf75ea0fd6ba9aaaa9ff046ff3959f60ff35f<br />dataType: SHA256<br />insightId: 7<br />insightTime: 2020-04-07T15:54:01.256Z | 3 | File | 0a2076b9d288411486a0c6367bccf75ea0fd6ba9aaaa9ff046ff3959f60ff35f |
+| description: SafeBreach Insight - Prevent malware network transfer<br />sha256: 0dcbb073b62f9ec1783d98d826bbfd1f938feb59e8e70180c00ecdfd903c0fe1<br />tags: SafeBreachInsightId: 7 | value: 0dcbb073b62f9ec1783d98d826bbfd1f938feb59e8e70180c00ecdfd903c0fe1<br />dataType: SHA256<br />insightId: 7<br />insightTime: 2020-04-07T15:54:01.256Z | 3 | File | 0dcbb073b62f9ec1783d98d826bbfd1f938feb59e8e70180c00ecdfd903c0fe1 |
+| description: SafeBreach Insight - Prevent malware network transfer<br />sha256: f456baa4593272686b9e07c8d902868991423dddeb5587734985d676c06dc730<br />tags: SafeBreachInsightId: 7 | value: f456baa4593272686b9e07c8d902868991423dddeb5587734985d676c06dc730<br />dataType: SHA256<br />insightId: 7<br />insightTime: 2020-04-07T15:54:01.256Z | 3 | File | f456baa4593272686b9e07c8d902868991423dddeb5587734985d676c06dc730 |
+| description: SafeBreach Insight - Prevent malware network transfer<br />sha256: e3c6ce5a57623cb0ea51f70322c312ccf23b9e4a7342680fd18f0cce556aaa0f<br />tags: SafeBreachInsightId: 7 | value: e3c6ce5a57623cb0ea51f70322c312ccf23b9e4a7342680fd18f0cce556aaa0f<br />dataType: SHA256<br />insightId: 7<br />insightTime: 2020-04-07T15:54:01.256Z | 3 | File | e3c6ce5a57623cb0ea51f70322c312ccf23b9e4a7342680fd18f0cce556aaa0f |
+| description: SafeBreach Insight - Prevent malware network transfer<br />sha256: 327c968b4c381d7c8f051c78720610cbb115515a370924c0d414c403524d7a03<br />tags: SafeBreachInsightId: 7 | value: 327c968b4c381d7c8f051c78720610cbb115515a370924c0d414c403524d7a03<br />dataType: SHA256<br />insightId: 7<br />insightTime: 2020-04-07T15:54:01.256Z | 3 | File | 327c968b4c381d7c8f051c78720610cbb115515a370924c0d414c403524d7a03 |
+| description: SafeBreach Insight - Prevent malware network transfer<br />sha256: 566ef062b86cc505fac48c50a80c65ae5f8bd19cdf6dc2a9d935045d08a37e60<br />tags: SafeBreachInsightId: 7 | value: 566ef062b86cc505fac48c50a80c65ae5f8bd19cdf6dc2a9d935045d08a37e60<br />dataType: SHA256<br />insightId: 7<br />insightTime: 2020-04-07T15:54:01.256Z | 3 | File | 566ef062b86cc505fac48c50a80c65ae5f8bd19cdf6dc2a9d935045d08a37e60 |
+| description: SafeBreach Insight - Prevent malware network transfer<br />sha256: 620f756be7815e24dfb2724839dc616fe46b545fa13fd3a7e063db661e21d596<br />tags: SafeBreachInsightId: 7 | value: 620f756be7815e24dfb2724839dc616fe46b545fa13fd3a7e063db661e21d596<br />dataType: SHA256<br />insightId: 7<br />insightTime: 2020-04-07T15:54:01.256Z | 3 | File | 620f756be7815e24dfb2724839dc616fe46b545fa13fd3a7e063db661e21d596 |
+| description: SafeBreach Insight - Prevent malware network transfer<br />sha256: 500f7f7b858b4bb4e4172361327ee8c340bc95442ebf713d60f892347e02af2f<br />tags: SafeBreachInsightId: 7 | value: 500f7f7b858b4bb4e4172361327ee8c340bc95442ebf713d60f892347e02af2f<br />dataType: SHA256<br />insightId: 7<br />insightTime: 2020-04-07T15:54:01.256Z | 3 | File | 500f7f7b858b4bb4e4172361327ee8c340bc95442ebf713d60f892347e02af2f |
+| description: SafeBreach Insight - Prevent malware network transfer<br />sha256: 5fd54218d1c68562e0a98985f79cb03526aa97e95be020a2b8ceaa9c083f9c19<br />tags: SafeBreachInsightId: 7 | value: 5fd54218d1c68562e0a98985f79cb03526aa97e95be020a2b8ceaa9c083f9c19<br />dataType: SHA256<br />insightId: 7<br />insightTime: 2020-04-07T15:54:01.256Z | 3 | File | 5fd54218d1c68562e0a98985f79cb03526aa97e95be020a2b8ceaa9c083f9c19 |
+| description: SafeBreach Insight - Prevent malware network transfer<br />sha256: 1711fbb363aebfe66f2d8dcbf8cddca8d2fd9fa9a6952da5873b7825e57f542d<br />tags: SafeBreachInsightId: 7 | value: 1711fbb363aebfe66f2d8dcbf8cddca8d2fd9fa9a6952da5873b7825e57f542d<br />dataType: SHA256<br />insightId: 7<br />insightTime: 2020-04-07T15:54:01.256Z | 3 | File | 1711fbb363aebfe66f2d8dcbf8cddca8d2fd9fa9a6952da5873b7825e57f542d |
 
 

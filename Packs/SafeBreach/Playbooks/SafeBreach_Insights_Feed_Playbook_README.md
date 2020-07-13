@@ -4,15 +4,15 @@ This playbook triggers automated remediation for all SafeBreach generated indica
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Block Indicators - Generic v2
 * SafeBreach Rerun Insights
+* Block Indicators - Generic v2
 
 ### Integrations
-* Builtin
+* SafeBreach_v2
 
 ### Scripts
-* Sleep
 * Set
+* Sleep
 
 ### Commands
 * appendIndicatorField
@@ -21,12 +21,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ## Playbook Inputs
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-|  |  |  |  | Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| Indicator Query | Indicators matching the indicator query will be used as playbook input | type:[File,Domain,IP,URL] and sourceBrands:"SafeBreach v2" | Optional |
 
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
 
-<!-- Playbook PNG image comes here -->
+## Playbook Image
+---
+![SafeBreach Insights Feed Playbook](Insert the link to your image here)

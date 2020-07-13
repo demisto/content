@@ -4,6 +4,8 @@ from itertools import groupby
 
 
 def find_value_by_key(k, d):
+    if not isinstance(d, dict):
+        raise Exception("{} d is not a dictionary".format(d))
     if k.startswith('CustomFields.'):
         if 'CustomFields' not in d:
             return
@@ -21,10 +23,15 @@ def find_value_by_key(k, d):
 
 
 def group_by(args):
-    list1 = args.get('value')
+    values = args.get('value')
     keys = argToList(args.get('keys'))
     outputkey = args.get('outputkey')
     separator = args.get('separator')
+
+    if values is None or values == [None]:
+        raise Exception("Value parameter is None!")
+    if not isinstance(values, list):
+        values = [values]
 
     def getkey(x):
         ok = dict()
@@ -33,7 +40,7 @@ def group_by(args):
         return json.dumps(ok)
 
     s = {}
-    for k, v in groupby(sorted(list1, key=getkey), key=getkey):
+    for k, v in groupby(sorted(values, key=getkey), key=getkey):
         s[k] = separator.join([find_value_by_key(outputkey, e) for e in v])
 
     ret = []

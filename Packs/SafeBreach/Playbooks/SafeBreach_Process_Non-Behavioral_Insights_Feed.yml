@@ -1,9 +1,9 @@
-id: SafeBreach - Process Non-Behavioral Insights Feed (draft)
+id: SafeBreach - Process Non-Behavioral Insights Feed
 version: -1
-name: SafeBreach - Process Non-Behavioral Insights Feed (draft)
-description: This playbook triggers automated remediation for all non-behavioral  indicators
-  generated from SafeBreach Insights. Then it reruns related insights and classifies
-  the indicators as Remediated or Not Remediated post validation.
+name: SafeBreach - Process Non-Behavioral Insights Feed
+description: This playbook automatically remediates all non-behavioral indicators
+  generated from SafeBreach Insights. To validate the remediation, it reruns the related
+  insights and classifies the indicators as Remediated or Not Remediated.
 starttaskid: "0"
 tasks:
   "0":
@@ -25,7 +25,7 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": -310
+          "y": -680
         }
       }
     note: false
@@ -60,10 +60,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: f7d96026-4bef-48b2-8b8f-eb3ca340918e
+    taskid: 010260ad-edf5-41f4-8041-df4c1c0185f3
     type: regular
     task:
-      id: f7d96026-4bef-48b2-8b8f-eb3ca340918e
+      id: 010260ad-edf5-41f4-8041-df4c1c0185f3
       version: -1
       name: Extract List of Insight Ids
       description: Sets a value into the context with the given context key
@@ -73,11 +73,11 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "20"
     scriptarguments:
       append: {}
       key:
-        simple: InsightIDs
+        simple: InsightIds
       stringify: {}
       value:
         complex:
@@ -96,7 +96,7 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": 255
+          "y": -65
         }
       }
     note: false
@@ -229,7 +229,7 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": -115
+          "y": -500
         }
       }
     note: false
@@ -261,7 +261,7 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": 60
+          "y": -300
         }
       }
     note: false
@@ -271,15 +271,17 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: bcc453c0-9b4e-45c8-8673-310cf38c85b5
+    taskid: a68cdd3e-0c25-44d9-8122-acc76b10654a
     type: playbook
     task:
-      id: bcc453c0-9b4e-45c8-8673-310cf38c85b5
+      id: a68cdd3e-0c25-44d9-8122-acc76b10654a
       version: -1
-      name: SafeBreach - Compare and Validate Insight Indicators (draft)
-      description: This playbook reruns a SafeBreach insight based on id and waits
-        until it completes. Returns the updated insight object after post rerun.
-      playbookName: SafeBreach - Compare and Validate Insight Indicators (draft)
+      name: SafeBreach - Compare and Validate Insight Indicators
+      description: This playbook receives an Insight and it's indicators before validation.
+        Updated indicators fetched to perform the validation. Indicators are classified
+        as Remediated or Not Remediated based on their validated status and the appropriate
+        field (SafeBreach Remediation Status) is updated.
+      playbookName: SafeBreach - Compare and Validate Insight Indicators
       type: playbook
       iscommand: false
       brand: ""
@@ -315,24 +317,25 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: f67928ca-4ff0-4c51-8e5c-9ffbe56b22da
+    taskid: 34bdde74-e30d-4f6e-8da0-3ecede6f3e25
     type: playbook
     task:
-      id: f67928ca-4ff0-4c51-8e5c-9ffbe56b22da
+      id: 34bdde74-e30d-4f6e-8da0-3ecede6f3e25
       version: -1
-      name: SafeBreach - Rerun Insights (draft)
-      playbookName: SafeBreach - Rerun Insights (draft)
+      name: SafeBreach - Rerun Insights
+      description: 'This playbook reruns a SafeBreach insight based on id and waits
+        until it completes. '
+      playbookName: SafeBreach - Rerun Insights
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "18"
     scriptarguments:
-      InsightId:
+      InsightIds:
         complex:
-          root: InsightIDs
+          root: InsightIds
     separatecontext: true
     loop:
       iscommand: false
@@ -343,7 +346,73 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": 450
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: a6d2d12a-5d5d-468f-8472-5c934b07c6f8
+    type: regular
+    task:
+      id: a6d2d12a-5d5d-468f-8472-5c934b07c6f8
+      version: -1
+      name: Get Insight Info
+      description: Gets SafeBreach Insights for all security control categories.
+      script: '|||safebreach-get-insights'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      insightIds:
+        complex:
+          root: InsightIds
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 4f69b1bd-18c9-4fe7-83e7-9f39ded9cb91
+    type: regular
+    task:
+      id: 4f69b1bd-18c9-4fe7-83e7-9f39ded9cb91
+      version: -1
+      name: Get Insight Remediation Data
+      description: Gets remediation data for a specific SafeBreach Insight.
+      script: '|||safebreach-get-remediation-data'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      insightId:
+        complex:
+          root: InsightIds
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 300
         }
       }
     note: false
@@ -356,10 +425,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1295,
+        "height": 1665,
         "width": 380,
         "x": 490,
-        "y": -310
+        "y": -680
       }
     }
   }

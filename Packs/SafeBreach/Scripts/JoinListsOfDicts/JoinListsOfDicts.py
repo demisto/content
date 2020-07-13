@@ -1,9 +1,10 @@
 import demistomock as demisto
-from CommonServerPython import *
 from itertools import product
 
 
 def find_value_by_key(k, d):
+    if not isinstance(d, dict):
+        raise Exception("{} d is not a dictionary".format(d))
     if k.startswith('CustomFields.'):
         if 'CustomFields' not in d:
             return
@@ -21,30 +22,31 @@ def find_value_by_key(k, d):
 
 
 def do_merge(left, right, leftkey, rightkey):
-
+    if not isinstance(left, list):
+        left = [left]
+    if not isinstance(right, list):
+        right = [right]
     ret = list()
     for p in product(left, right):
         l, r = p
-        #leftkey = "CustomFields.safebreachinsightids"
-        lv = find_value_by_key(leftkey, l)  # [13,14]
+
+        lv = find_value_by_key(leftkey, l)
         rv = find_value_by_key(rightkey, r)
 
         if not lv or not rv:
             continue
         if not isinstance(lv, list):
             lv = [lv]
-        demisto.info("lv: {}, rv: {}".format(lv, str(rv)))
         if str(rv) in lv:
-            demisto.info("matched: lv-{} and rv-{}".format(lv, str(rv)))
             ret.append({**l, **r})
     return ret
 
 
 def merge(args):
-    left = args.get('value')
-    right = args.get('right')
-    leftkey = args.get('key')
-    rightkey = args.get('rightkey', leftkey)
+    left = args.get('value')  # left list of dicts / single dict
+    right = args.get('right')  # right list of dicts / single dict
+    leftkey = args.get('key')  # key of the join from the left dict
+    rightkey = args.get('rightkey', leftkey)  # key of the join from the right dict
 
     if not left or not right or not leftkey or not rightkey:
         raise ValueError('Invalid inputs')
@@ -53,7 +55,6 @@ def merge(args):
 
 def main(args):
     x = merge(args)
-    demisto.info("result: {}".format(x))
     demisto.results(x)
 
 

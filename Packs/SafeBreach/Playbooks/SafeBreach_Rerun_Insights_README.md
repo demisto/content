@@ -1,27 +1,27 @@
-This playbook reruns a SafeBreach insight based on id and waits until it completes. Returns the updated insight object after post rerun.
+This playbook reruns a SafeBreach insight based on Insight Id and waits until it completes.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+* SafeBreach Rerun Insights with Sleep in Between
 * GenericPolling
 
 ### Integrations
-* SafeBreach v2
+This playbook does not use any integrations.
 
 ### Scripts
 * Sleep
 
 ### Commands
-* safebreach-get-insights
-* safebreach-rerun-insight
+This playbook does not use any commands.
 
 ## Playbook Inputs
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-| InsightId | SafeBreach Insight Id to rerun | Insight.Id | SafeBreach | Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| InsightIds | SafeBreach Insight Ids to rerun | SafeBreach.Insight.Id | Required |
 
 ## Playbook Outputs
 ---
@@ -44,4 +44,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | SafeBreach.Insight.NetworkDirection | Communication direction of Insight, relative to the target \(inbound/outbound\) | unknown |
 | SafeBreach.Insight.AttacksCount | List of all insight related SafeBreach attack ids | unknown |
 
-<!-- Playbook PNG image comes here -->
+## Playbook Image
+---
+![SafeBreach - Rerun Insights](Insert the link to your image here)

@@ -1,6 +1,6 @@
 import json
 import demistomock as demisto
-from CommonServerPython import handle_proxy
+from CommonServerPython import *
 from SafeBreach_v2 import get_insights_command, get_remediation_data_command, rerun_simulation_command, \
     get_safebreach_simulation_command, get_indicators_command, insight_rerun_command, Client
 
@@ -74,12 +74,14 @@ def test_get_remediation_data(requests_mock, mocker):
     context = outputs['EntryContext']
     sha256_to_check = '109c702578b261d0eda01506625423f5a2b8cc107b0d8dfad84d39fb02bfa5cb'
     assert context['SafeBreach.Insight(val.Id == obj.Id)'][0]['Id'] == INSIGHT_ID
+    assert context['SafeBreach.Insight(val.Id == obj.Id)'][0]['RawRemediationData'][0]['type'] == 'SHA256'
+    assert context['SafeBreach.Insight(val.Id == obj.Id)'][0]['RawRemediationData'][0]['value'] == sha256_to_check
     assert context['File(val.SHA256 == obj.SHA256)'][0]['SHA256'] == sha256_to_check
     assert context['DBotScore(val.Indicator == obj.Indicator)'][0]['Indicator'] == sha256_to_check
 
 
 def test_rerun_insight(requests_mock, mocker):
-    mocker.patch.object(demisto, 'args', return_value={'insightId': '9'})
+    mocker.patch.object(demisto, 'args', return_value={'insightIds': '9'})
     mocker.patch.object(demisto, 'results')
 
     response = {
@@ -114,7 +116,7 @@ def test_rerun_insight(requests_mock, mocker):
     assert demisto.results.call_count == 1
     outputs = demisto.results.call_args[0][0]
     context = outputs['EntryContext']
-    assert context['SafeBreach.Insight(val.Id == obj.Id)']['Id'] == INSIGHT_ID
+    assert context['SafeBreach.Insight(val.Id == obj.Id)']['Id'] == int(INSIGHT_ID)
     assert context['SafeBreach.Insight(val.Id == obj.Id)']['Rerun'][0]['Id'] == response['data']['runId']
 
 

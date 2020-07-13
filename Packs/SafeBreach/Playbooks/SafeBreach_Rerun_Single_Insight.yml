@@ -1,0 +1,139 @@
+id: SafeBreach Rerun Single Insight
+version: -1
+name: SafeBreach Rerun Single Insight
+description: This is an auxiliary sub-playbook that reruns a single insight using
+  a specified Insight Id as an input. It is used to loop over insights as part of
+  the main rerun playbook - "SafeBreach Rerun Insights".
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 65f703f9-9ef0-4393-8396-ac27fc84e3ae
+    type: start
+    task:
+      id: 65f703f9-9ef0-4393-8396-ac27fc84e3ae
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: e43cdac6-1a1a-4d7a-800b-06cd83b151ca
+    type: regular
+    task:
+      id: e43cdac6-1a1a-4d7a-800b-06cd83b151ca
+      version: -1
+      name: Rerun Insight
+      description: Reruns a specific SafeBreach Insight related simulations in your
+        environment.
+      script: SafeBreach v2|||safebreach-rerun-insight
+      type: regular
+      iscommand: true
+      brand: SafeBreach v2
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      insightId: {}
+      insightIds:
+        complex:
+          root: inputs.InsightIds
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 23e5cece-bc30-4ccb-8d45-b95362a8667e
+    type: title
+    task:
+      id: 23e5cece-bc30-4ccb-8d45-b95362a8667e
+      version: -1
+      name: End
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 425,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: InsightIds
+  value:
+    complex:
+      root: SafeBreach
+      accessor: Insight.Id
+  required: true
+  description: SafeBreach Insight Ids
+  playbookInputQuery:
+outputs:
+- contextPath: SafeBreach.Insight.Id
+  description: Insight unique ID.
+- contextPath: SafeBreach.Insight.Rerun.Name
+  description: Insight rerun test name.
+- contextPath: SafeBreach.Insight.Rerun.Id
+  description: ID of the rerun insight test.
+- contextPath: SafeBreach.Insight.Rerun.AttacksCount
+  description: Count of the attacks executed in the insight rerun test.
+- contextPath: SafeBreach.Test.Id
+  description: ID of the test.
+- contextPath: SafeBreach.Test.Name
+  description: Name of the test.
+- contextPath: SafeBreach.Test.AttacksCount
+  description: The number of attacks executed in the insight rerun test.
+- contextPath: SafeBreach.Test.Status
+  description: Test run status. For insight rerun, starts from PENDING.
+- contextPath: SafeBreach.Test.ScheduledTime
+  description: Time when the test was triggered.
+quiet: true
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

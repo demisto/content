@@ -1,16 +1,212 @@
-description: 'This playbook reruns a SafeBreach insight based on id and waits until
-  it completes. '
-id: SafeBreach - Rerun Insights (draft)
+id: SafeBreach - Rerun Insights
+version: -1
+name: SafeBreach - Rerun Insights
+description: This playbook reruns a SafeBreach insight based on Insight Id and waits
+  until it completes.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 89e3fa5b-8365-4fe1-839e-1582e2bf8d10
+    type: start
+    task:
+      id: 89e3fa5b-8365-4fe1-839e-1582e2bf8d10
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 9b1f0474-ce52-413f-8038-43d18c1dfb5d
+    type: playbook
+    task:
+      id: 9b1f0474-ce52-413f-8038-43d18c1dfb5d
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${SafeBreach.Test.Id}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: testId
+      PollingCommandName:
+        simple: safebreach-get-test-status
+      Timeout:
+        simple: "1440"
+      dt:
+        simple: SafeBreach.Test(val.Status == "PENDING" || val.Status == "RUNNING").Id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: b4d9deb2-20a0-41c6-8468-28a787ee6576
+    type: title
+    task:
+      id: b4d9deb2-20a0-41c6-8468-28a787ee6576
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 9c745b64-bb29-4e0d-8519-6c7d378efdcb
+    type: regular
+    task:
+      id: 9c745b64-bb29-4e0d-8519-6c7d378efdcb
+      version: -1
+      name: Sleep before starting the polling
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      seconds:
+        simple: "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 4554e76c-0487-4366-88ad-dfd83860422a
+    type: playbook
+    task:
+      id: 4554e76c-0487-4366-88ad-dfd83860422a
+      version: -1
+      name: SafeBreach Rerun Single Insight
+      description: This is an auxiliary sub-playbook that reruns a single insight
+        using specified insight id as an input. It is used to loop over insights as
+        part of the main rerun playbook - "SafeBreach Rerun Insights".
+      playbookName: SafeBreach Rerun Single Insight
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      InsightIds:
+        complex:
+          root: inputs.InsightIds
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 5
+      max: 0
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 835,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
 inputs:
-- description: SafeBreach Insight Ids to rerun
-  key: InsightIds
-  playbookInputQuery:
-  required: false
+- key: InsightIds
   value:
     complex:
-      accessor: Insight.Id
       root: SafeBreach
-name: SafeBreach - Rerun Insights (draft)
+      accessor: Insight.Id
+  required: true
+  description: SafeBreach Insight Ids to rerun
+  playbookInputQuery:
 outputs:
 - contextPath: SafeBreach.Insight.Name
   description: Insight name representing the action required to be taken
@@ -42,194 +238,7 @@ outputs:
   description: Communication direction of Insight, relative to the target (inbound/outbound)
 - contextPath: SafeBreach.Insight.AttacksCount
   description: List of all insight related SafeBreach attack ids
-starttaskid: "0"
-tasks:
-  "0":
-    id: "0"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "1"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 89e3fa5b-8365-4fe1-839e-1582e2bf8d10
-      iscommand: false
-      name: ""
-      version: -1
-      description: ''
-    taskid: 89e3fa5b-8365-4fe1-839e-1582e2bf8d10
-    timertriggers: []
-    type: start
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
-  "1":
-    id: "1"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "5"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      insightId:
-        simple: ${inputs.InsightId}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Reruns a specific SafeBreach Insight related simulations in your
-        environment.
-      id: bfa93836-5985-4991-8063-101d47b44531
-      iscommand: true
-      name: Rerun a SafeBreach Insight
-      script: '|||safebreach-rerun-insight'
-      type: regular
-      version: -1
-    taskid: bfa93836-5985-4991-8063-101d47b44531
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 230
-        }
-      }
-  "2":
-    id: "2"
-    ignoreworker: false
-    loop:
-      exitCondition: ""
-      iscommand: false
-      max: 100
-      wait: 1
-    nexttasks:
-      '#none#':
-      - "4"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      AdditionalPollingCommandArgNames: {}
-      AdditionalPollingCommandArgValues: {}
-      Ids:
-        simple: ${SafeBreach.Test.Id}
-      Interval:
-        simple: "1"
-      PollingCommandArgName:
-        simple: testId
-      PollingCommandName:
-        simple: safebreach-get-test-status
-      Timeout:
-        simple: "1440"
-      dt:
-        simple: SafeBreach.Test(val.Status == "PENDING" || val.Status == "RUNNING").Id
-    separatecontext: true
-    skipunavailable: false
-    task:
-      brand: ""
-      description: |-
-        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
-      id: 9b1f0474-ce52-413f-8038-43d18c1dfb5d
-      iscommand: false
-      name: GenericPolling
-      playbookId: GenericPolling
-      type: playbook
-      version: -1
-    taskid: 9b1f0474-ce52-413f-8038-43d18c1dfb5d
-    timertriggers: []
-    type: playbook
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 580
-        }
-      }
-  "4":
-    id: "4"
-    ignoreworker: false
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: b4d9deb2-20a0-41c6-8468-28a787ee6576
-      iscommand: false
-      name: Done
-      type: title
-      version: -1
-      description: ''
-    taskid: b4d9deb2-20a0-41c6-8468-28a787ee6576
-    timertriggers: []
-    type: title
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 820
-        }
-      }
-  "5":
-    id: "5"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "2"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      seconds:
-        simple: "30"
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Sleep for X seconds
-      id: 9c745b64-bb29-4e0d-8519-6c7d378efdcb
-      iscommand: false
-      name: Sleep before starting the polling
-      script: Sleep
-      type: regular
-      version: -1
-    taskid: 9c745b64-bb29-4e0d-8519-6c7d378efdcb
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 400
-        }
-      }
-version: -1
+quiet: true
 fromversion: 5.5.0
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 835,
-        "width": 380,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
 tests:
 - No Test

@@ -1,7 +1,7 @@
 """ IMPORTS """
 import traceback
 from ast import literal_eval
-from typing import List, Dict, AnyStr, Optional, Any, Union
+from typing import List, Dict, Optional, Any, Union
 from CommonServerPython import *
 
 # disable insecure warnings
@@ -25,7 +25,7 @@ SAFEBREACH_TO_DEMISTO_MAPPER = {
     'URI': 'URI'
 }
 
-INDICATOR_TYPE_MAPPER = {
+INDICATOR_TYPE_MAPPER: Any = {
     'FQDN/IP': FeedIndicatorType.Domain,
     'SHA256': FeedIndicatorType.File,
     'Domain': FeedIndicatorType.Domain,
@@ -139,8 +139,7 @@ def is_ip(value):
 def fix_url(url):
     if url and url.endswith('/'):
         return url[0:-1]
-    else:
-        return url
+    return url
 
 
 def contains(list_a, list_b):
@@ -151,37 +150,16 @@ def unescape_string(string):
     return string.encode('utf-8').decode('unicode_escape')
 
 
-def extract_data(data):
-    parent_key = list(data.keys())[0]
-    output: dict = {"RawRemediationData": {}}
-    first_level_data = list(data[parent_key].keys())
-    output[parent_key] = first_level_data
-    for indicator in data[parent_key]:
-        if contains(SAFEBREACH_TYPES, list(data[parent_key][indicator].keys())):
-            for inner_type in data[parent_key][indicator]:
-                formated_inner_type = inner_type.replace(' ', '')
-                for item in data[parent_key][indicator][inner_type]:
-                    if item == 'N/A':
-                        continue
-                    if isinstance(item, str):
-                        item = unescape_string(item)
-                    if not output.get(formated_inner_type):
-                        output[formated_inner_type] = []
-                    if item not in output[formated_inner_type]:
-                        output[formated_inner_type].append(item)
-    return output
-
-
 def generate_readable_output(data):
     output = []
     types = list(set(map(lambda i: i['type'], data)))
     for type in types:
-        same_type = list(set(x["value"] for x in data if x["type"] == type))
+        same_type = list(set(x['value'] for x in data if x['type'] == type))
         output.append({f'{type} ({len(same_type)})': ', '.join(map(str, same_type))})
     return output
 
 
-def extract_data_v2(data):
+def extract_data(data) -> List[Dict[str, Any]]:
     output: list = []
     list_of_seen_items = []
 
@@ -189,7 +167,7 @@ def extract_data_v2(data):
     first_level_data = list(data[parent_key].keys())
     list_of_seen_items.extend(first_level_data)
     if parent_key != 'Attack':
-        output.extend(list(map(lambda o: {"type": parent_key, "value": o}, first_level_data)))
+        output.extend(list(map(lambda o: {'type': parent_key, "value": o}, first_level_data)))
 
     for indicator in data[parent_key]:
         if contains(SAFEBREACH_TYPES, list(data[parent_key][indicator].keys())):
@@ -202,7 +180,7 @@ def extract_data_v2(data):
                         item = unescape_string(item)
                     if item not in list_of_seen_items:
                         list_of_seen_items.append(item)
-                        output.append({"type": formated_inner_type, "value": item})
+                        output.append({'type': formated_inner_type, "value": item})
     return output
 
 
@@ -343,42 +321,42 @@ def get_indicators_command(client: Client, insight_category: list, insight_data_
                 List[Dict] -- List of insights from SafeBreach
             """
     limit: int = int(args.get('limit') or demisto.params().get('indicatorLimit'))
-    insights_ids: Any = []
     indicators: List[Dict] = []
     count: int = 0
     # These variable be filled directly from the integration configuration or as arguments.
     insight_category, insight_data_type = get_category_and_data_type_filters(args, insight_category,
                                                                              insight_data_type)
     # Convert category into insight id
-    insights_ids = get_insights_ids_by_category(insight_category)
+    insights_ids: Any = get_insights_ids_by_category(insight_category)
     raw_insights: Any = client.get_insights().json()
 
     # Filter insight by category
-    insight = None
     insights: Any = list([item for item in raw_insights if int(item.get('ruleId')) in insights_ids])
     for insight in insights:
         # Fetch remediation data for each insight
-        processed_data = get_remediation_data_command(client, {'insightId': insight.get('ruleId')}, False)
+        processed_data: List[Dict[str, Any]] = get_remediation_data_command(client,
+                                                                            {'insightId': insight.get('ruleId')}, False)
         for item in processed_data:
             # if the data type is not in the filter data types continue,
-            if INDICATOR_TYPE_SB_TO_DEMISTO_MAPPER.get(item["type"]) not in insight_data_type:
+            if INDICATOR_TYPE_SB_TO_DEMISTO_MAPPER.get(item['type']) not in insight_data_type:
                 continue
-            # demisto_indicator_type: Any = safebreach_to_demisto_type_mapper.get(data_type)
+            if not INDICATOR_TYPE_MAPPER.get(str(item['type'])) or item["value"] == 'N/A':
+                continue
+            if isinstance(item['type'], int):
+                print('Data type is int', item['type'], insight['ruleId'])
 
-            if not INDICATOR_TYPE_MAPPER.get(str(item["type"])) or item["value"] == 'N/A':
-                continue
-            if isinstance(item["type"], int):
-                print('data type is int', item["type"], insight['ruleId'])
-            is_behaveioral = item["type"] in ['Port', 'Protocol', 'Command', 'Registry', 'Process']
+            is_behaveioral = item['type'] in ['Port', 'Protocol', 'Command', 'Registry', 'Process']
+            reputation_score = DEMISTO_INDICATOR_REPUTATION.get(demisto.params().get('feedReputation'))
+
             raw_json = {
                 'value': str(item["value"]),
-                'dataType': item["type"],
+                'dataType': item['type'],
                 'insightId': insight.get('ruleId'),
                 'insightTime': insight.get('maxExecutionTime'),
             }
             mapping = {
                 'description': 'SafeBreach Insight - {0}'.format(insight['actionBasedTitle']),
-                item["type"].lower(): item["value"],
+                item['type'].lower(): item["value"],
                 "safebreachinsightids": str(insight.get('ruleId')),
                 "safebreachseverity": insight.get('severity'),
                 "safebreachseverityscore": str(insight.get('severityScore')),
@@ -388,17 +366,12 @@ def get_indicators_command(client: Client, insight_category: list, insight_data_
                     f"SafeBreachInsightId: {insight.get('ruleId')}",
                 ]
             }
-
-            score_behavioral_reputation = DEMISTO_INDICATOR_REPUTATION.get(
-                demisto.params().get('behavioralReputation'))
-            score_non_behavioral_reputation = DEMISTO_INDICATOR_REPUTATION.get(
-                demisto.params().get('nonBehavioralReputation'))
             indicator = {
                 'value': str(item["value"]),
-                'type': INDICATOR_TYPE_MAPPER.get(str(item["type"])),
+                'type': INDICATOR_TYPE_MAPPER.get(str(item['type'])),
                 'rawJSON': raw_json,
                 'fields': mapping,
-                'score': int(score_behavioral_reputation) if is_behaveioral else int(score_non_behavioral_reputation)
+                'score': reputation_score
             }
 
             if is_ip(item["value"]):
@@ -411,7 +384,7 @@ def get_indicators_command(client: Client, insight_category: list, insight_data_
     return indicators
 
 
-def get_remediation_data_command(client: Client, args: dict, no_output_mode: bool) -> Dict[str, List[AnyStr]]:
+def get_remediation_data_command(client: Client, args: dict, no_output_mode: bool) -> List[Dict[str, Any]]:
     """Get SafeBreach remediation data.
 
             Arguments:
@@ -429,6 +402,7 @@ def get_remediation_data_command(client: Client, args: dict, no_output_mode: boo
     insight_id: Optional[int] = args.get('insightId')
     response = client.get_remediation_data(insight_id)
     insight: Any = get_insights_command(client, {'insightIds': [insight_id]}, False)
+
     if insight:
         insight = insight[0]
 
@@ -436,10 +410,10 @@ def get_remediation_data_command(client: Client, args: dict, no_output_mode: boo
         raise DemistoException(f'Failed to fetch remediation data for insight id {insight_id}')
 
     sb_remediation_data = response.json().get('remediationData')
-    processed_data = extract_data_v2(sb_remediation_data)
+    processed_data = extract_data(sb_remediation_data)
     readable_output_list = generate_readable_output(processed_data)
-    # processed_data["RemediationData"]['Splunk'] = get_splunk_remedation_query(response)
-    # processed_data["RemediationData"]['Raw'] = [get_splunk_remedation_query(response)]
+    vendor_remediation_data = list(filter(lambda o: o['value'],
+                                          [{'type': "Splunk", "value": get_splunk_remedation_query(response)}]))
     # Demisto Context:
     dbot_score_list = []
     standard_context_dict = {}
@@ -447,8 +421,6 @@ def get_remediation_data_command(client: Client, args: dict, no_output_mode: boo
     secondary_standard_context_dict: Any = {}
     secondary_standard_context_list = []
     secondary_path = ''
-    vendor_remediation_data = list(filter(lambda o: o['value'],
-                                          [{"type": "Splunk", "value": get_splunk_remedation_query(response)}]))
 
     # SafeBreach Context:
     safebreach_context_list = []
@@ -460,21 +432,20 @@ def get_remediation_data_command(client: Client, args: dict, no_output_mode: boo
     safebreach_context_list.append(safebreach_context)
 
     for item in processed_data:
-        if item["type"].startswith('Attack') or len(processed_data) == 0:
+        if item['type'].startswith('Attack') or len(processed_data) == 0:
             continue
-        if item["type"] == 'Drop Paths':
-            item["type"] = 'DropPaths'
-        standard_context_list: Any = []
 
-        demisto_standard_path = get_demisto_context_path(item["type"])  # e.g URL(val.Data == obj.Data)
-        demisto_data_type = SAFEBREACH_TO_DEMISTO_MAPPER.get(item["type"])  # SHA256,Port,Protocol,Data,Command,URI
-        # for value in processed_data[item]:
-        if item["type"] in ['DropPaths', 'URIs', 'URI', 'Command']:
+        standard_context_list: Any = []
+        demisto_standard_path = get_demisto_context_path(item['type'])  # e.g URL(val.Data == obj.Data)
+        demisto_data_type = SAFEBREACH_TO_DEMISTO_MAPPER.get(item['type'])  # SHA256,Port,Protocol,Data,Command,URI
+
+        if item['type'] in ['DropPaths', 'URIs', 'URI', 'Command']:
             item["value"] = item["value"].encode('utf-8').decode('unicode_escape').encode('latin1').decode('utf-8')
+
         if demisto_data_type:
             dbot_score = {
                 "Indicator": item["value"],
-                "Type": get_dbot_type(item["type"], item["value"]),  # TODO: maybe change it to SB_Indicator?
+                'type': get_dbot_type(item['type'], item["value"]),  # TODO: maybe change it to SB_Indicator?
                 "Vendor": "SafeBreach",
                 "Score": 3  # TODO: Change to is behaviroal set to defaults
             }
@@ -485,7 +456,7 @@ def get_remediation_data_command(client: Client, args: dict, no_output_mode: boo
                     "Vendor": "SafeBreach"
                 }
             }
-            if item["type"] in ['FQDNs/IPs', 'FQDN/IP']:
+            if item['type'] in ['FQDNs/IPs', 'FQDN/IP']:
                 if re.match(IP_REGEX, item["value"]):
                     secondary_path = 'IP(val.Address == obj.Address)'
                     secondary_standard_context_dict = {
@@ -538,9 +509,8 @@ def insight_rerun_command(client: Client, args: dict):
                 outputs
             """
 
-    insights = client.get_insights().json()
-    insight_ids = args.get('insightIds')
-    insights: Any
+    insights: Any = client.get_insights().json()
+    insight_ids: Any = args.get('insightIds')
 
     if isinstance(insight_ids, str):
         insight_ids = literal_eval(insight_ids)
@@ -630,7 +600,7 @@ def get_insights_command(client: Client, args: Dict, no_output_mode: bool) -> Li
 
     try:
         insights = sorted(response.json(), key=lambda i: i.get('ruleId'))
-    except TypeError as e:
+    except TypeError:
         print('Failed to sort SafeBreach insights, skip')
         demisto.info('Failed to sort SafeBreach insights, skip')
 
