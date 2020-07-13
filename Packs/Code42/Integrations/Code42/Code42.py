@@ -149,12 +149,6 @@ def _get_all_high_risk_employees_from_page(page, risk_tags):
     return res
 
 
-def _try_convert_str_list_to_list(str_list):
-    if isinstance(str_list, str):
-        return str_list.split(",")
-    return str_list
-
-
 class Code42Client(BaseClient):
     """
     Client will implement the service API, should not contain Cortex XSOAR logic.
@@ -219,19 +213,19 @@ class Code42Client(BaseClient):
         return user_id
 
     def add_user_risk_tags(self, username, risk_tags):
-        risk_tags = _try_convert_str_list_to_list(risk_tags)
+        risk_tags = argToList(risk_tags)
         user_id = self._get_user_id(username)
         self._get_sdk().detectionlists.add_user_risk_tags(user_id, risk_tags)
         return user_id
 
     def remove_user_risk_tags(self, username, risk_tags):
-        risk_tags = _try_convert_str_list_to_list(risk_tags)
+        risk_tags = argToList(risk_tags)
         user_id = self._get_user_id(username)
         self._get_sdk().detectionlists.remove_user_risk_tags(user_id, risk_tags)
         return user_id
 
     def get_all_high_risk_employees(self, risk_tags, results, filter_type):
-        risk_tags = _try_convert_str_list_to_list(risk_tags)
+        risk_tags = argToList(risk_tags)
         results = int(results) if results else 50
         filter_type = filter_type if filter_type else "OPEN"
         res = []
@@ -529,7 +523,7 @@ def _create_hash_filter(hash_arg):
 
 def _create_exposure_filter(exposure_arg):
     # Because the CLI can't accept lists, convert the args to a list if the type is string.
-    exposure_arg = [arg.strip() for arg in exposure_arg.split(",")]
+    exposure_arg = argToList(exposure_arg)
     if "All" in exposure_arg:
         return ExposureType.exists()
     return ExposureType.is_in(exposure_arg)
@@ -1354,7 +1348,7 @@ def create_client():
     )
 
 
-def run_code42_integration():
+def main():
     client = create_client()
     commands = get_command_map()
     command_key = demisto.command()
@@ -1365,10 +1359,6 @@ def run_code42_integration():
         handle_fetch_command(client)
     elif command_key in commands:
         run_command(lambda: commands[command_key](client, demisto.args()))
-
-
-def main():
-    run_code42_integration()
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
