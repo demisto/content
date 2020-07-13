@@ -196,4 +196,4 @@ outputs:
 - contextPath: isSimilarIncidentFound
   description: Is similar incident found? (true\false)
 tests:
-  - test_similar_incidents
+  - No tests
