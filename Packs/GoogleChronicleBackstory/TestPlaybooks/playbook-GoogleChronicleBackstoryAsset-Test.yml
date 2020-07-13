@@ -228,7 +228,7 @@ tasks:
         simple: www.google.com
       end_time: {}
       page_size:
-        simple: "1"
+        simple: "0"
       start_time: {}
     continueonerror: true
     separatecontext: false
