@@ -1,7 +1,6 @@
 from CommonServerPython import *
 from typing import Any, Dict, List, Optional, cast
 
-from CommonServerPython import *
 
 ''' IMPORTS '''
 import jwt
@@ -217,7 +216,7 @@ INSECURE = demisto.params().get('insecure', False)
 BASE_URL = demisto.params().get('url')
 ACCESS_KEY = demisto.params().get('access_key')
 PRIVATE_KEY = demisto.params().get('private_key')
-FIRST_FETCH_TIME = arg_to_timestamp(arg=demisto.params().get('first_fetch', '3 days'), \
+FIRST_FETCH_TIME = arg_to_timestamp(arg=demisto.params().get('first_fetch', '3 days'),
                                     arg_name='First fetch time', required=True)
 MAX_INCIDENTS_TO_FETCH = 1000
 
