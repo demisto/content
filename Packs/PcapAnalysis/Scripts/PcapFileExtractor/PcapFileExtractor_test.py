@@ -1,10 +1,8 @@
 import os
-from typing import Optional, Tuple
 
 import pytest
-from magic import Magic
-
 from PcapFileExtractor import InclusiveExclusive, filter_files, upload_files
+from magic import Magic
 
 OUTPUTS = [
     {

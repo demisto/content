@@ -90,7 +90,8 @@ def upload_files(
         extensions_inclusive_or_exclusive: Optional[str] = None,
         wpa_pwd: Optional[str] = None,
         rsa_path: Optional[str] = None,
-        limit: int = 5
+        limit: int = 5,
+        **kwargs
 ) -> Union[CommandResults, str]:
     """Extracts files and delivers it to CortexSOAR
 
@@ -109,6 +110,8 @@ def upload_files(
         Extracted files to download
 
     """
+    if kwargs is not None:
+        demisto.debug(f'PcapFileExtractor: Got extra arguments in upload_files:\n{kwargs}')
     command = ['tshark', '-r', f'{file_path}', '--export-objects', f'http,{dir_path}',
                '--export-objects', f'smb,{dir_path}', '--export-objects', f'imf,{dir_path}',
                '--export-objects', f'tftp,{dir_path}', '--export-objects', f'dicom,{dir_path}']
