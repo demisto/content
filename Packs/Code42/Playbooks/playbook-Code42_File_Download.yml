@@ -304,3 +304,4 @@ outputs:
 - contextPath: File.Extension
   description: The file extension.
 sourceplaybookid: Code42 File Search
+fromversion: 5.0.0
