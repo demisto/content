@@ -305,3 +305,5 @@ outputs:
   description: The file extension.
 sourceplaybookid: Code42 File Search
 fromversion: 5.0.0
+tests:
+- No Test
