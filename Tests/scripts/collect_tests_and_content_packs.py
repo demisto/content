@@ -115,7 +115,7 @@ def get_modified_files_for_testing(files_string):
     is_indicator_json = False
 
     sample_tests = []
-    pack_sample_tests = []
+    pack_tests = []
     changed_common = []
     modified_files_list = []
     modified_tests_list = []
@@ -173,12 +173,12 @@ def get_modified_files_for_testing(files_string):
                 continue
 
             elif any(file in file_path for file in (PACKS_PACK_META_FILE_NAME, PACKS_WHITELIST_FILE_NAME)):
-                pack_sample_tests.append(file_path)
+                pack_tests.append(file_path)
 
             elif SECRETS_WHITE_LIST not in file_path:
                 sample_tests.append(file_path)
 
-    return (modified_files_list, modified_tests_list, changed_common, is_conf_json, sample_tests, pack_sample_tests,
+    return (modified_files_list, modified_tests_list, changed_common, is_conf_json, sample_tests, pack_tests,
             is_reputations_json, is_indicator_json)
 
 
@@ -1135,18 +1135,17 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     """Create a test list that should run"""
 
     (modified_files_with_relevant_tests, modified_tests_list, changed_common, is_conf_json, sample_tests,
-     pack_sample_tests, is_reputations_json, is_indicator_json) = get_modified_files_for_testing(files_string)
+     pack_tests, is_reputations_json, is_indicator_json) = get_modified_files_for_testing(files_string)
 
     tests = set([])
     packs_to_install = set([])
     if modified_files_with_relevant_tests:
         tests, packs_to_install = find_tests_and_content_packs_for_modified_files(modified_files_with_relevant_tests,
                                                                                   conf, id_set)
-    for file_path in pack_sample_tests:
-        pack_tests = get_tests_for_pack(file_path)
+    for file_path in pack_tests:
+        _pack_tests = get_tests_for_pack(file_path)
         packs_to_install.add(tools.get_pack_name(file_path))
-        for test in pack_tests:
-            tests.add(test)
+        tests = tests.union(_pack_tests)
 
     # Adding a unique test for a json file.
     if is_reputations_json:
@@ -1239,6 +1238,7 @@ def create_test_file(is_nightly, skip_save=False):
             commit_string = commit_string.replace("'", "")
             last_commit, second_last_commit = commit_string.split()
             files_string = tools.run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
+
         with open('./Tests/ami_builds.json', 'r') as ami_builds:
             # get versions to check if tests are runnable on those envs
             ami_builds = json.load(ami_builds)
