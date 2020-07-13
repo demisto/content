@@ -1,8 +1,5 @@
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
-''' IMPORTS '''
 import json
 import requests
 from requests_oauthlib import OAuth1
@@ -134,11 +131,13 @@ def run_query(query, start_at='', max_results=None):
             return rj
 
         errors = ",".join(rj.get("errorMessages", ['could not fetch any issues, please check your query']))
-        return_error(f'No issues were found, error message from Jira: {errors}')
+        if 'could not fetch any issues, please check your query' in errors:
+            return {}
+        raise Exception(f'No issues were found, error message from Jira: {errors}')
 
     except ValueError as ve:
         demisto.debug(str(ve))
-        return_error(f'Failed to send request, reason: {result.reason}')
+        raise Exception(f'Failed to send request, reason: {result.reason}')
 
 
 def get_id_offset():
@@ -238,7 +237,8 @@ def generate_md_context_create_issue(data, project_name=None, project_key=None):
         data["projectKey"] = demisto.getParam('projectKey')
 
     create_issue_obj['md'].append(data)  # type: ignore
-    create_issue_obj['context']['Ticket'].append({"Id": demisto.get(data, 'id'), "Key": demisto.get(data, 'key')})  # type: ignore
+    create_issue_obj['context']['Ticket'].append(
+        {"Id": demisto.get(data, 'id'), "Key": demisto.get(data, 'key')})  # type: ignore
     return create_issue_obj
 
 
@@ -418,12 +418,17 @@ def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_a
 
 def issue_query_command(query, start_at='', max_results=None, headers=''):
     j_res = run_query(query, start_at, max_results)
-    issues = demisto.get(j_res, 'issues')
-    md_and_context = generate_md_context_get_issue(issues)
-    human_readable = tableToMarkdown(demisto.command(), md_and_context['md'], argToList(headers))
-    contents = j_res
-    outputs = {'Ticket(val.Id == obj.Id)': md_and_context['context']}
-    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
+    if not j_res:
+        outputs = contents = {}
+        human_readable = 'No issues matched the query.'
+    else:
+        issues = demisto.get(j_res, 'issues')
+        md_and_context = generate_md_context_get_issue(issues)
+        human_readable = tableToMarkdown(demisto.command(), md_and_context['md'], argToList(headers))
+        contents = j_res
+        outputs = {'Ticket(val.Id == obj.Id)': md_and_context['context']}
+
+    return human_readable, outputs, contents
 
 
 def create_issue_command():
@@ -610,6 +615,7 @@ def test_module():
     """
     req_res = jira_req('GET', 'rest/api/latest/myself')
     run_query(demisto.getParam('query'), max_results=1)
+
     if req_res.ok:
         demisto.results('ok')
 
@@ -627,15 +633,16 @@ def fetch_incidents(query, id_offset, fetch_by_created=None, **_):
         query = f'{query} AND id >= {id_offset}'
     if fetch_by_created:
         query = f'{query} AND created>-1m'
-    res = run_query(query, '', max_results)
-    curr_id = id_offset
-    for ticket in res.get('issues'):
-        ticket_id = int(ticket.get("id"))
-        if ticket_id == curr_id:
-            continue
 
-        id_offset = max(int(id_offset), ticket_id)
-        incidents.append(create_incident_from_ticket(ticket))
+    res = run_query(query, '', max_results)
+    if res:
+        curr_id = id_offset
+        for ticket in res.get('issues'):
+            ticket_id = int(ticket.get("id"))
+            if ticket_id == curr_id:
+                continue
+            id_offset = max(int(id_offset), ticket_id)
+            incidents.append(create_incident_from_ticket(ticket))
 
     demisto.setLastRun({"idOffset": id_offset})
     demisto.incidents(incidents)
@@ -659,7 +666,7 @@ try:
         get_issue(**snakify(demisto.args()))
 
     elif demisto.command() == 'jira-issue-query':
-        issue_query_command(**snakify(demisto.args()))
+        return_outputs(issue_query_command(**snakify(demisto.args())))
 
     elif demisto.command() == 'jira-create-issue':
         create_issue_command()
@@ -686,8 +693,8 @@ try:
         get_id_offset()
 
 
-except Exception as ex:
-    return_error(str(ex))
+except Exception as err:
+    return_error(str(err))
 
 finally:
     LOG.print_log()
