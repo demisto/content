@@ -53,3 +53,4 @@ args:
   description: Optional - field to extract from each item
 scripttarget: 0
 runonce: false
+deprecated: true

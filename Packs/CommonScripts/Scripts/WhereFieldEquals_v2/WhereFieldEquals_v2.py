@@ -1,0 +1,44 @@
+from CommonServerPython import *
+
+
+def where_field_equals(args):
+    """
+    Handles the operation of finding a list of objects where the given field is present under the
+    specified location.
+    :param args: dictionary containing the Demisto arguments object.
+    :return: hr_string as a human readable string. entry_context as a dictionary containing the
+    results.
+    """
+    values_to_search = argToList(args.get('value'))
+    field = args.get('field')
+    equal_to = args.get('equalTo')
+    get_field = args.get('getField')
+    found_matches = []
+    for dict_item in values_to_search:
+        if dict_item.get(field, None) == equal_to:
+            if get_field:
+                found_matches.append(dict_item[get_field])
+            else:
+                found_matches.append(dict_item)
+    hr_string = str(found_matches)
+    entry_context = {
+        "WhereFieldEquals": {
+            "SearchedField": field,
+            "FieldReturned": get_field,
+            "EqualTo": equal_to,
+            "OriginalValues": values_to_search,
+            "Results": found_matches
+        }
+    }
+    return hr_string, entry_context
+
+
+def main():
+    args = demisto.args()
+    hr_string, entry_context = where_field_equals(args)
+    return_outputs(readable_output=hr_string, outputs=entry_context)
+
+
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()
