@@ -251,8 +251,16 @@ def email_command(client: Client, args: Dict[str, str]) -> tuple:
 
     query_data = result.get("entries")
     if not query_data:
-        # todo: In such a case, should I output a DBot_score to the context with score 0?
-        return "No matching results found", None, None
+        context = {
+            'DBotScore':
+                {
+                    'Indicator': email_address[0],
+                    'Type': 'email',
+                    'Vendor': INTEGRATION_CONTEXT_BRAND,
+                    'Score': 0
+                }
+        }
+        return "No matching results found", context, None
     else:
         default_dbot_score_email = 2 if client.email_dbot_score == 'SUSPICIOUS' else 3
         query_entries = createContext(query_data, keyTransform=underscoreToCamelCase)
