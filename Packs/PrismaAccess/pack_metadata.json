@@ -10,16 +10,7 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [
-        "prisma",
-        "prisma-access",
-        "paloaltonetworks",
-        "vpn",
-        "globalprotect",
-        "netsec",
-        "netops",
-        "networksecurity"
-    ],
+    "tags": [],
     "useCases": [],
     "keywords": []
 }

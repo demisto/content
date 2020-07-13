@@ -10,10 +10,7 @@
     "categories": [
         "Endpoint"
     ],
-    "tags": [
-        "Recommended by Cortex XSOAR",
-        "xdr"
-    ],
+    "tags": [],
     "useCases": [
         "Malware"
     ],
