@@ -33,6 +33,26 @@ def test_issue_query_command_no_issues(mocker):
     assert 'No issues matched the query' in human_readable
 
 
+def test_issue_query_command_with_results(mocker):
+    """
+    Given
+    - Jira issue query command
+
+    When
+    - Sending HTTP request and getting one issues from the query
+
+    Then
+    - Verify outputs
+    """
+    from JiraV2 import issue_query_command
+    from test_data.raw_response import QUERY_ISSUE_RESPONSE
+    from test_data.expected_results import QUERY_ISSUE_RESULT
+
+    mocker.patch('JiraV2.run_query', return_value=QUERY_ISSUE_RESPONSE)
+    _, outputs, _ = issue_query_command('status!=Open', max_results=1)
+    assert outputs == QUERY_ISSUE_RESULT
+
+
 def test_fetch_incidents_no_incidents(mocker):
     """
     Given

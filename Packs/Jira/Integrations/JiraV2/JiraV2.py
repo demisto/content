@@ -1,6 +1,3 @@
-import json
-
-import requests
 from requests_oauthlib import OAuth1
 
 from CommonServerPython import *
@@ -425,7 +422,7 @@ def issue_query_command(query, start_at='', max_results=None, headers=''):
     else:
         issues = demisto.get(j_res, 'issues')
         md_and_context = generate_md_context_get_issue(issues)
-        human_readable = tableToMarkdown(demisto.command(), md_and_context['md'], argToList(headers))
+        human_readable = tableToMarkdown(demisto.command(), t=md_and_context['md'], headers=argToList(headers))
         contents = j_res
         outputs = {'Ticket(val.Id == obj.Id)': md_and_context['context']}
 
@@ -649,53 +646,57 @@ def fetch_incidents(query, id_offset, fetch_by_created=None, **_):
     return incidents
 
 
-''' COMMANDS MANAGER / SWITCH PANEL '''
-demisto.debug('Command being called is %s' % (demisto.command()))
-try:
-    # Remove proxy if not set to true in params
-    handle_proxy()
+def main():
+    demisto.debug(f'Command being called is {demisto.command()}')
+    try:
+        # Remove proxy if not set to true in params
+        handle_proxy()
 
-    if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
-        test_module()
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            test_module()
 
-    elif demisto.command() == 'fetch-incidents':
-        # Set and define the fetch incidents command to run after activated via integration settings.
-        incidents = fetch_incidents(**snakify(demisto.params()))
-        demisto.incidents(incidents)
-    elif demisto.command() == 'jira-get-issue':
-        get_issue(**snakify(demisto.args()))
+        elif demisto.command() == 'fetch-incidents':
+            # Set and define the fetch incidents command to run after activated via integration settings.
+            incidents = fetch_incidents(**snakify(demisto.params()))
+            demisto.incidents(incidents)
+        elif demisto.command() == 'jira-get-issue':
+            get_issue(**snakify(demisto.args()))
 
-    elif demisto.command() == 'jira-issue-query':
-        return_outputs(issue_query_command(**snakify(demisto.args())))
+        elif demisto.command() == 'jira-issue-query':
+            human_readable, outputs, raw_response = issue_query_command(**snakify(demisto.args()))
+            return_outputs(human_readable, outputs, raw_response)
 
-    elif demisto.command() == 'jira-create-issue':
-        create_issue_command()
+        elif demisto.command() == 'jira-create-issue':
+            create_issue_command()
 
-    elif demisto.command() == 'jira-edit-issue':
-        edit_issue_command(**snakify(demisto.args()))
+        elif demisto.command() == 'jira-edit-issue':
+            edit_issue_command(**snakify(demisto.args()))
 
-    elif demisto.command() == 'jira-get-comments':
-        get_comments_command(**snakify(demisto.args()))
+        elif demisto.command() == 'jira-get-comments':
+            get_comments_command(**snakify(demisto.args()))
 
-    elif demisto.command() == 'jira-issue-add-comment':
-        add_comment_command(**snakify(demisto.args()))
+        elif demisto.command() == 'jira-issue-add-comment':
+            add_comment_command(**snakify(demisto.args()))
 
-    elif demisto.command() == 'jira-issue-upload-file':
-        issue_upload_command(**snakify(demisto.args()))
+        elif demisto.command() == 'jira-issue-upload-file':
+            issue_upload_command(**snakify(demisto.args()))
 
-    elif demisto.command() == 'jira-issue-add-link':
-        add_link_command(**snakify(demisto.args()))
+        elif demisto.command() == 'jira-issue-add-link':
+            add_link_command(**snakify(demisto.args()))
 
-    elif demisto.command() == 'jira-delete-issue':
-        delete_issue_command(**snakify(demisto.args()))
+        elif demisto.command() == 'jira-delete-issue':
+            delete_issue_command(**snakify(demisto.args()))
 
-    elif demisto.command() == 'jira-get-id-offset':
-        get_id_offset()
+        elif demisto.command() == 'jira-get-id-offset':
+            get_id_offset()
+
+    except Exception as err:
+        return_error(str(err))
+
+    finally:
+        LOG.print_log()
 
 
-except Exception as err:
-    return_error(str(err))
-
-finally:
-    LOG.print_log()
+if __name__ in ["__builtin__", "builtins", '__main__']:
+    main()
