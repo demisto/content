@@ -645,7 +645,7 @@ def fetch_incidents(query, id_offset, fetch_by_created=None, **_):
             incidents.append(create_incident_from_ticket(ticket))
 
     demisto.setLastRun({"idOffset": id_offset})
-    demisto.incidents(incidents)
+    return incidents
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -660,8 +660,8 @@ try:
 
     elif demisto.command() == 'fetch-incidents':
         # Set and define the fetch incidents command to run after activated via integration settings.
-        fetch_incidents(**snakify(demisto.params()))
-
+        incidents = fetch_incidents(**snakify(demisto.params()))
+        demisto.incidents(incidents)
     elif demisto.command() == 'jira-get-issue':
         get_issue(**snakify(demisto.args()))
 

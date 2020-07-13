@@ -16,7 +16,7 @@ def set_params(mocker):
     mocker.patch.object(demisto, 'params', return_value=integration_params)
 
 
-def test_issue_query_command(mocker):
+def test_issue_query_command_no_issues(mocker):
     """
     Given
     - Jira issue query command
@@ -31,3 +31,20 @@ def test_issue_query_command(mocker):
     mocker.patch('JiraV2.run_query', return_value={})
     human_readable, _, _ = issue_query_command('status=Open AND labels=lies')
     assert 'No issues matched the query' in human_readable
+
+
+def test_fetch_incidents_no_incidents(mocker):
+    """
+    Given
+    - Jira fetch incidents command
+
+    When
+    - Sending HTTP request and getting no issues from the query
+
+    Then
+    - Verify no incidents are returned
+    """
+    from JiraV2 import fetch_incidents
+    mocker.patch('JiraV2.run_query', return_value={})
+    incidents = fetch_incidents('status=Open AND labels=lies', id_offset=1)
+    assert incidents == []
