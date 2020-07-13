@@ -955,11 +955,11 @@ script:
       description: The number of SMS messages.
       type: Number
     - contextPath: Zimperium.Reports.behavior.network.http_requests
-      description: TODO
+      description: Network related data.
       type: Unknown
     - contextPath: Zimperium.Reports.behavior.telephony
       description: Standard permissions of the application.
-      type: Unknown
+      type: Telephony related data.
     - contextPath: Zimperium.Reports.certificate.app_signature
       description: Application signature.
       type: String
@@ -976,16 +976,16 @@ script:
       description: Application md5 hash.
       type: String
     - contextPath: Zimperium.Reports.risk_profile.detection_rate
-      description: TODO
+      description: Detection rate of the application.
       type: String
     - contextPath: Zimperium.Reports.risk_profile.intell_privacy
-      description: TODO
+      description: Privacy intelligence,
       type: String
     - contextPath: Zimperium.Reports.risk_profile.intell_security
-      description: TODO.
+      description: Security intelligence.
       type: String
     - contextPath: Zimperium.Reports.risk_profile.overall_risk
-      description: Overall  risk.
+      description: Overall risk.
       type: String
     - contextPath: Zimperium.Reports.risk_profile.privacy.Category
       description: Privacy category
@@ -1015,7 +1015,7 @@ script:
       description: Threats detected.
       type: Number
     - contextPath: Zimperium.Reports.threats.detected_skip
-      description: TODO
+      description: Number of Skipped detected threats.
       type: Number
     - contextPath: Zimperium.Reports.threats.status
       description: Threats status.
