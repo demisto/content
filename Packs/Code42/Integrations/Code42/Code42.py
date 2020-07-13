@@ -3,6 +3,7 @@ from CommonServerPython import *
 
 """ IMPORTS """
 import json
+import os
 import requests
 import py42.sdk
 import py42.settings
@@ -165,7 +166,15 @@ class Code42Client(BaseClient):
             if not self._sdk
             else None
         )
+
+        if not proxy:
+            del os.environ['HTTP_PROXY']
+            del os.environ['HTTPS_PROXY']
+            del os.environ['http_proxy']
+            del os.environ['https_proxy']
+
         py42.settings.set_user_agent_suffix("Cortex XSOAR")
+        py42.settings.verify_ssl_certs = verify
 
     def _get_sdk(self):
         if self._sdk is None:
