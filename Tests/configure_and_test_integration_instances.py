@@ -23,6 +23,7 @@ from Tests.test_content import load_conf_files, extract_filtered_tests, Parallel
 from Tests.update_content_data import update_content
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
     install_all_content_packs
+from Tests.tools import update_server_configuration
 
 MARKET_PLACE_MACHINES = ('master',)
 
@@ -740,45 +741,6 @@ def set_docker_hardening_for_build(client, prints_manager):
     error_msg = "Failed to set docker hardening server config - with status code "
 
     return update_server_configuration(client, server_configuration, error_msg)
-
-
-def update_server_configuration(client, server_configuration, error_msg):
-    """updates server configuration
-
-    Args:
-        client (demisto_client): The configured client to use.
-        server_configuration (dict): The server configuration to be added
-        error_msg (str): The error message
-
-    Returns:
-        response_data: The response data
-        status_code: The response status code
-    """
-    system_conf_response = demisto_client.generic_request_func(
-        self=client,
-        path='/system/config',
-        method='GET'
-    )
-    system_conf = ast.literal_eval(system_conf_response[0]).get('sysConf', {})
-    system_conf.update(server_configuration)
-    data = {
-        'data': system_conf,
-        'version': -1
-    }
-    response_data, status_code, _ = demisto_client.generic_request_func(self=client, path='/system/config',
-                                                                        method='POST', body=data)
-
-    try:
-        result_object = ast.literal_eval(response_data)
-    except ValueError as err:
-        print_error('failed to parse response from demisto. response is {}.\nError:\n{}'.format(response_data, err))
-        return
-
-    if status_code >= 300 or status_code < 200:
-        message = result_object.get('message', '')
-        msg = f'{error_msg} {status_code}\n{message}'
-        print_error(msg)
-    return response_data, status_code
 
 
 def get_pack_ids_to_install():

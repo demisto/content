@@ -12,7 +12,7 @@ import requests.exceptions
 from demisto_client.demisto_api.rest import ApiException
 import demisto_client
 import json
-from Tests.configure_and_test_integration_instances import update_server_configuration
+from Tests.tools import update_server_configuration
 
 from demisto_sdk.commands.common.tools import print_error, print_warning, print_color, LOG_COLORS
 from demisto_sdk.commands.common.constants import PB_Status
