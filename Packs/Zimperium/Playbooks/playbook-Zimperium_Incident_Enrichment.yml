@@ -39,7 +39,7 @@ tasks:
     task:
       id: df4f2e79-a148-4be4-8e20-a6f1f7508b74
       version: -1
-      name: Get Device details by zdid
+      name: Get device details by zimperium ID
       description: Retrieve details for a single device.
       script: '|||zimperium-device-get-by-id'
       type: regular
@@ -74,7 +74,7 @@ tasks:
     task:
       id: cef0f8eb-e0ec-4e4c-89df-b068136369b5
       version: -1
-      name: Get User Details by email
+      name: Get user details by email
       description: Search users.
       script: '|||zimperium-users-search'
       type: regular
