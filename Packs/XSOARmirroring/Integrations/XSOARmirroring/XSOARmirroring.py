@@ -453,38 +453,39 @@ def get_mapping_fields_command(client: Client) -> Dict[str, dict]:
 
     :rtype: ``Dict[str, Any]``
     """
+    all_mappings = AllSchemesTypesMappingObject()
     incident_fields: List[dict] = client.get_incident_fields()
-    res: Dict[str, dict] = {}
+
     types = client.get_incident_types()
     for incident_type_obj in types:
-        incident_type = incident_type_obj.get('name')  # type: ignore
-        demisto.info(f'Collecting incident mapping for incident type - "{incident_type}"')
-        fields = {}
+        incident_type_name = incident_type_obj.get('name')  # type: ignore
+        incident_type_scheme = SchemeTypeMapping(type_name=incident_type_name)
+        demisto.debug(f'Collecting incident mapping for incident type - "{incident_type_name}"')
+
         for field in incident_fields:
             if field.get('group') == 0 and (field.get('associatedToAll')
-                                            or incident_type in field.get('associatedTypes')):  # type: ignore
-                fields[field.get('cliName')] = f"{field.get('name')} - {field.get('type')} - {field.get('description')}"
+                                            or incident_type_name in field.get('associatedTypes')):  # type: ignore
+                incident_field = SchemeMappingField(name=field.get('cliName'),
+                                                    description=f"{field.get('name')} - "
+                                                                f"{field.get('type')} - {field.get('description')}")
+                incident_type_scheme.add_field(incident_field)
 
-        res[incident_type] = fields  # type: ignore
+        all_mappings.add_scheme_type(incident_type_scheme)
 
-    default_fields = {}
+    default_scheme = SchemeTypeMapping(type_name="Default Schema")
     demisto.debug('Collecting the default incident scheme')
     for field in incident_fields:
         if field.get('group') == 0 and field.get('associatedToAll'):
-            default_fields[field.get('cliName')] = f"{field.get('name')} - {field.get('type')} - " \
-                                                   f"{field.get('description')}"
+            incident_field = SchemeMappingField(name=field.get('cliName'),
+                                                description=f"{field.get('name')} - "
+                                                            f"{field.get('type')} - {field.get('description')}")
+            default_scheme.add_field(incident_field)
 
-    res["Default Schema"] = default_fields
-    return res
-
-
-class SchemeTypeMapping:
-    def __init__(self, type, fields):
-        self.type = type
-        self.fields = fields
+    all_mappings.add_scheme_type(default_scheme)
+    return all_mappings
 
 
-def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> IncidentMirror:
+def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> ObjectMirror:
     """get-remote-data command: Returns an updated incident and entries
 
     :type client: ``Client``
@@ -572,8 +573,8 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
         demisto.debug(f'Nothing new in the incident, incident id {incident_id}')
         incident = {}  # this empties out the incident, which will result in not updating the local one
 
-    mirror_data = IncidentMirror(
-        incident=incident,
+    mirror_data = ObjectMirror(
+        object=incident,
         entries=formatted_entries
     )
     return mirror_data
