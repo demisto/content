@@ -1,7 +1,7 @@
 ## [Unreleased]
-- Respect configured page limit when fetching new incidents.
-- Added support for the ***expanse-get-domains-for-certificate*** command.
-- Support Cloud Exposure types for incident fetching.
+  - The configured page limit when fetching new incidents is now respected.
+  - Added the ***expanse-get-domains-for-certificate*** command.
+  - Added support for Cloud Exposure types for incident fetching.
 
 ## [20.5.2] - 2020-05-26
 - Added support for filtering incident creation by Expanse Exposure severity level.
