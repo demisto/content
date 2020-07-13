@@ -78,12 +78,6 @@ class TestFilter:
                                         extensions_inclusive_or_exclusive=exclusive_or_inclusive)
 
 
-def get_file_path_from_id(entry_id: str) -> Tuple[Optional[str], Optional[str]]:
-    if not entry_id:
-        return None, None
-    return entry_id, entry_id.split('/')[-1]
-
-
 def test_decryption_wpa_pwd(tmpdir):
     """
     Given:
