@@ -79,14 +79,13 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The severity of the aler.
+      description: The severity of the alert.
       isArray: false
       name: severity
       predefined:
       - Low
       - Medium
       - High
-      - All
       required: false
       secret: false
     - default: false
@@ -113,9 +112,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filter that the customer chooses for himself.
+      description: Filter that the customer builds himself. (If the customer use "customer_filters"
+        other filters will not work)
       isArray: false
-      name: customer_filter
+      name: customer_filters
       required: false
       secret: false
     - default: false

@@ -22,18 +22,15 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def say_hello(self, name):
-        return f'Hello {name}'
-
-    def alert_list(self, alert_id, customer_filter, skip, limit, severity, service, instance, resolution_status,
+    def alert_list(self, alert_id, customer_filters, skip, limit, severity, service, instance, resolution_status,
                    username):
         url_suffix = '/alerts/'
         request_data = {'limit': int(limit)}
         filters = {}
         if alert_id:
             url_suffix = f'{url_suffix}{alert_id}'
-        elif customer_filter:
-            request_data['filters'] = json.loads(customer_filter)
+        elif customer_filters:
+            request_data['filters'] = json.loads(customer_filters)
         else:
             if skip:
                 request_data['skip'] = skip
@@ -88,60 +85,20 @@ def convert_severity(severity):
 
 
 def test_module(client):
-    """
-    Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
-
-    Args:
-        client: HelloWorld client
-
-    Returns:
-        'ok' if test passed, anything else will fail the test.
-    """
-
-    result = client.say_hello('DBot')
-    if 'Hello DBot' == result:
-        return 'ok'
-    else:
-        return 'Test failed because ......'
-
-
-def say_hello_command(client, args):
-    """
-    Returns Hello {somename}
-
-    Args:
-        client (Client): HelloWorld client.
-        args (dict): all command arguments.
-
-    Returns:
-        Hello {someone}
-
-        readable_output (str): This will be presented in the war room - should be in markdown syntax - human readable
-        outputs (dict): Dictionary/JSON - saved in the incident context in order to be used as inputs
-                        for other tasks in the playbook
-        raw_response (dict): Used for debugging/troubleshooting purposes -
-                            will be shown only if the command executed with raw-response=true
-    """
-    name = args.get('name')
-
-    result = client.say_hello(name)
-
-    # readable output will be in markdown format - https://www.markdownguide.org/basic-syntax/
-    readable_output = f'## {result}'
-    outputs = {
-        'hello': result
-    }
-
-    return (
-        readable_output,
-        outputs,
-        result  # raw response - the original response
-    )
+    try:
+        client.alert_list(alert_id='5f06d71dba4289d0602ba5ac', customer_filters='', skip='', limit='', severity='',
+                          service='', instance='', resolution_status='', username='')
+    except DemistoException as e:
+        if 'Forbidden' in str(e):
+            return 'Authorization Error: make sure API Key is correctly set'
+        else:
+            raise e
+    return 'ok'
 
 
 def alerts_list_command(client, args):
     alert_id = args.get('alert_id')
-    customer_filter = args.get('customer_filter')
+    customer_filters = args.get('customer_filters')
     skip = args.get('skip')
     limit = args.get('limit')
     severity = args.get('severity')
@@ -149,31 +106,13 @@ def alerts_list_command(client, args):
     instance = args.get('instance')
     resolution_status = args.get('resolution_status')
     username = args.get('username')
-    alerts = client.alert_list(alert_id, customer_filter, skip, limit, severity, service, instance, resolution_status,
+    alerts = client.alert_list(alert_id, customer_filters, skip, limit, severity, service, instance, resolution_status,
                                username)
     return CommandResults(
         readable_output=alerts,
         outputs_prefix='MicrosoftCloudAppSecurity.Alert',
         outputs_key_field='alert_id',
         outputs=alerts
-    )
-
-
-def say_hello_over_http_command(client, args):
-    name = args.get('name')
-
-    result = client.say_hello_http_request(name)
-
-    # readable output will be in markdown format - https://www.markdownguide.org/basic-syntax/
-    readable_output = f'## {result}'
-    outputs = {
-        'hello': result
-    }
-
-    return (
-        readable_output,
-        outputs,
-        result  # raw response - the original response
     )
 
 
