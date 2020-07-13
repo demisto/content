@@ -35,8 +35,8 @@ Search events.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | Search events query. | Optional | 
-| verbose | Retreive event full details. | Optional | 
-| size | Maximum number of events to retreive in each page. Default is 10. | Optional | 
+| verbose | Retrieve event full details. | Optional | 
+| size | Maximum number of events to retrieve in each page. Default is 10. | Optional | 
 | page | Page number. | Optional | 
 
 
@@ -428,7 +428,7 @@ Search devices.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | Search devices query. | Optional | 
-| size | Maximum number of users to retreive in each page. Default is 10. | Optional | 
+| size | Maximum number of users to retrieve in each page. Default is 10. | Optional | 
 | page | Page number. | Optional | 
 
 
@@ -684,7 +684,7 @@ Retrieves devices from Greater than Last Updated.
 | --- | --- | --- |
 | from_last_update | &lt;number&gt; &lt;time unit&gt;, e.g., 7 days, 3 months, 1 year | Optional | 
 | exclude_deleted | Whether to exclude deleted devices. Default is True. | Optional | 
-| size | Number of devices to retreive in each page. | Optional | 
+| size | Number of devices to retrieve in each page. | Optional | 
 | page | Page number. | Optional | 
 
 

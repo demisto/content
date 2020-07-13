@@ -60,7 +60,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Retreive event full details.
+      description: Retrieve event full details.
       isArray: false
       name: verbose
       predefined:
@@ -70,7 +70,7 @@ script:
       secret: false
     - default: false
       defaultValue: '10'
-      description: Maximum number of events to retreive in each page. Default is 10.
+      description: Maximum number of events to retrieve in each page. Default is 10.
       isArray: false
       name: size
       required: false
@@ -420,7 +420,7 @@ script:
       secret: false
     - default: false
       defaultValue: '10'
-      description: Maximum number of users to retreive in each page. Default is 10.
+      description: Maximum number of users to retrieve in each page. Default is 10.
       isArray: false
       name: size
       required: false
@@ -710,7 +710,7 @@ script:
       secret: false
     - default: false
       defaultValue: '10'
-      description: Number of devices to retreive in each page.
+      description: Number of devices to retrieve in each page.
       isArray: false
       name: size
       required: false
