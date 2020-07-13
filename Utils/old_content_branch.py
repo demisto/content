@@ -7,6 +7,7 @@ from ruamel.yaml import YAML
 from ruamel.yaml.scalarstring import FoldedScalarString
 import json
 from pkg_resources import parse_version
+import shutil
 
 ryaml = YAML()
 ryaml.preserve_quotes = True
@@ -14,16 +15,16 @@ ryaml.width = 50000  # make sure long lines will not break (relevant for code se
 
 
 def should_keep_yml_file(yml_content, new_to_version):
-    if parse_version(yml_content.get('toversion', '99.99.99')) < parse_version(new_to_version) or \
-            parse_version(yml_content.get('fromversion', '0.0.0')) > parse_version(new_to_version):
+    if parse_version(yml_content.get('toversion', '99.99.99')) <= parse_version(new_to_version) or \
+            parse_version(yml_content.get('fromversion', '0.0.0')) >= parse_version(new_to_version):
         return False
 
     return True
 
 
 def should_keep_json_file(json_content, new_to_version):
-    if parse_version(json_content.get('toVersion', '99.99.99')) < parse_version(new_to_version) or \
-            parse_version(json_content.get('fromVersion', '0.0.0')) > parse_version(new_to_version):
+    if parse_version(json_content.get('toVersion', '99.99.99')) <= parse_version(new_to_version) or \
+            parse_version(json_content.get('fromVersion', '0.0.0')) >= parse_version(new_to_version):
         return False
 
     return True
@@ -46,11 +47,14 @@ def delete_script_or_integration(path):
     if os.path.isfile(path):
         os.remove(path)
         changelog_file = os.path.splitext(path)[0] + '_CHANGELOG.md'
+        readme_file = os.path.join(os.path.splitext(path)[0] + '_README.md')
         if os.path.isfile(changelog_file):
             os.remove(changelog_file)
+        if os.path.isfile(readme_file):
+            os.remove(readme_file)
 
     else:
-        subprocess.call(["rm", "-rf", path])
+        shutil.rmtree(path)
     print(f" - Deleting {path}")
 
 
@@ -213,8 +217,7 @@ def edit_reputations_json(new_to_version):
         rep_content = ujson.load(f)
 
     for reputation in rep_content.get('reputations', []):
-        if parse_version(reputation.get('toVersion', "99.99.99")) > parse_version(new_to_version) > \
-                parse_version(reputation.get("fromVersion", "0.0.0")):
+        if parse_version(reputation.get('toVersion', "99.99.99")) > parse_version(new_to_version):
             reputation['toVersion'] = new_to_version
 
     with open(rep_json_path, 'w') as f:
