@@ -1,5 +1,5 @@
 import unittest
-from WhereFieldEquals_v2 import where_field_equals
+from WhereFieldEqualsV2 import where_field_equals
 
 
 class WhereFieldEquals(unittest.TestCase):

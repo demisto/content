@@ -32,10 +32,10 @@ comment: "Return all items from the list where their given 'field' attribute is 
   \ - equalTo='IP'\n - getField='name' \n\nWill return all items names where field\
   \ 'type' equals 'IP' - ['192.1,0.82', '172.0.0.2']"
 commonfields:
-  id: WhereFieldEquals_v2
+  id: WhereFieldEqualsV2
   version: -1
 enabled: true
-name: WhereFieldEquals_v2
+name: WhereFieldEqualsV2
 outputs:
 - contextPath: WhereFieldEquals.SearchedField
   description: Attribute in the collection's items where equality was checked.
@@ -61,5 +61,5 @@ tags:
 - entirelist
 timeout: '0'
 type: python
-dockerimage: demisto/python3
+dockerimage: demisto/python3:3.8.3.9324
 runonce: false
