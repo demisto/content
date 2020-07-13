@@ -45,6 +45,19 @@ def filter_files(root: str, files: List[str], /,
                  extensions: Optional[Set[str]] = None,
                  types_inclusive_or_exclusive: Optional[str] = None,
                  extensions_inclusive_or_exclusive: Optional[str] = None):
+    """Filtering files by its MIME type and file extension.
+
+    Args:
+        root: file's root
+        files: files to filter
+        types: types to filter by.
+        extensions: extensions to filter by.
+        types_inclusive_or_exclusive: should types set be inclusive or exclusive
+        extensions_inclusive_or_exclusive: should extensions set be inclusive or exclusive
+
+    Returns:
+        Filtered file list.
+    """
     magic_mime = magic.Magic(mime=True)
     for file in files:
         # types list supplied,
@@ -79,16 +92,18 @@ def upload_files(
         rsa_path: Optional[str] = None,
         limit: int = 5
 ) -> Union[CommandResults, str]:
-    """
+    """Extracts files and delivers it to CortexSOAR
 
     Args:
         file_path: the path to the PCAP file
         dir_path: dir path for the files
-        types:
-        extensions:
-        types_inclusive_or_exclusive:
-        extensions_inclusive_or_exclusive:
-        limit:
+        types: types to filter by.
+        extensions: extensions to filter by.
+        types_inclusive_or_exclusive: should types set be inclusive or exclusive
+        extensions_inclusive_or_exclusive: should extensions set be inclusive or exclusive
+        wpa_pwd: password to the file (if WPA-PWD protected)
+        rsa_path: path to a private key file (if TLS encrypted)
+        limit: maximum files to extract (default 5)
 
     Returns:
         Extracted files to download
@@ -97,13 +112,13 @@ def upload_files(
     command = ['tshark', '-r', f'{file_path}', '--export-objects', f'http,{dir_path}',
                '--export-objects', f'smb,{dir_path}', '--export-objects', f'imf,{dir_path}',
                '--export-objects', f'tftp,{dir_path}', '--export-objects', f'dicom,{dir_path}']
-
+    # If WPA-PWD protected
     if wpa_pwd:
         command.extend([
             '-o', 'wlan.enable_decryption:TRUE',
             '-o', f'uat:80211_keys:"wpa-pwd","{wpa_pwd}"'
         ])
-
+    # If need to decrypt the file using a RSA key
     if rsa_path:
         command.extend(['-o', f'uat:rsa_keys:"{rsa_path}",""'])
 
