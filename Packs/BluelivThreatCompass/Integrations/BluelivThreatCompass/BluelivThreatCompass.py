@@ -228,8 +228,8 @@ def parse_label(result):
 
     for l in result:
         labels.append({"BackgroundColor": l["bgColorHex"], "Id": l["id"], "Name": l["label"],
-                     "Protected": l["labelProtected"], "TypeId": l["labelTypeId"], "TypeName": l["labelTypeName"],
-                     "Prioritized": l["prioritized"], "TextColor": l["textColorHex"]})
+                       "Protected": l["labelProtected"], "TypeId": l["labelTypeId"], "TypeName": l["labelTypeName"],
+                       "Prioritized": l["prioritized"], "TextColor": l["textColorHex"]})
 
     return labels
 
@@ -251,7 +251,7 @@ def get_all_resources(client: Client, args):
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown("Blueliv " + client.module_type + " info", resources_array),
             'EntryContext': {'BluelivThreatCompass.' + client.module_type + '(val.id && val.id == obj.id)':
-                                 resources_array
+                             resources_array
                              }
         })
     else:
@@ -338,7 +338,7 @@ def search_resource(client: Client, args):
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown("Blueliv " + client.module_type + " info", resource),
             'EntryContext': {'BluelivThreatCompass.' + client.module_type + '(val.id && val.id == obj.id)':
-                                 resource["list"]
+                             resource["list"]
                              }
         })
     else:
@@ -411,13 +411,13 @@ def module_get_labels(client: Client):
     label_array = parse_label(res)
 
     return_results({
-            'ContentsFormat': formats['json'],
-            'Type': entryTypes['note'],
-            'Contents': res,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown("Blueliv " + client.module_type + " labels", label_array),
-            'EntryContext': {'BluelivThreatCompass.Label(val.Id && val.Id == obj.Id)': label_array}
-        })
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': res,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown("Blueliv " + client.module_type + " labels", label_array),
+        'EntryContext': {'BluelivThreatCompass.Label(val.Id && val.Id == obj.Id)': label_array}
+    })
 
 
 def test_module(client: Client):

@@ -281,12 +281,12 @@ def test_blueliv_resource_fav(mocker, requests_mock):
     client = Client(server_url, False, False, headers={'Accept': 'application/json'},
                     organization=organization, module=module, module_type=module_type[0])
 
-    args = {"id": 10712044, "fav": "User"}
+    args = {"id": 10712044, "favourite": "User"}
     resource_fav(client, args)
 
     results = demisto.results.call_args[0][0]
 
-    assert results.get('Contents', "") == "Resource fav masked as User correctly."
+    assert results.get('Contents', "") == "Resource favourite masked as User correctly."
 
 
 def test_blueliv_resource_set_tlp(mocker, requests_mock):
@@ -403,4 +403,4 @@ def test_blueliv_module_get_labels(mocker, requests_mock):
 
     assert len(results.get('Contents', [])) == 2
     assert results.get('Contents', [])[0].get("id", 0) == 1303
-    assert results.get('Contents', [])[1].get("bgColorHex", "") == "#0093B2"
+    assert results.get('Contents', [])[1].get("bgColorHex", "") == "#00B388"

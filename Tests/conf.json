@@ -2815,6 +2815,46 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Azure AD Connect Health Feed",
+            "playbookID": "FeedAzureADConnectHealth_Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Zoom Feed",
+            "playbookID": "FeedZoom_Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "PCAP Search test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "VirusTotal",
+            "instance_names": "virus_total_general",
+            "playbookID": "PCAP Parsing And Indicator Enrichment Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Workday",
+            "playbookID": "Workday - Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Unit42 Feed",
+            "playbookID": "Unit42 Feed - Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "hashIncidentFields-test",
+            "fromversion": "4.5.0",
+            "timeout": 60000
+        },
+        {
+            "integrations": "TruSTAR v2",
+            "playbookID": "TruSTAR v2-Test",
+            "timeout": 500
+        },
+        {
             "integrations": "Blueliv ThreatCompass",
             "playbookID": "Blueliv_ThreatCompass_test",
             "fromversion": "5.0.0"
