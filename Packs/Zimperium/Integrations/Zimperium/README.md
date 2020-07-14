@@ -8213,7 +8213,7 @@ Gets a report.
 >### Report:
 >|behavior|md5|threats|
 >|---|---|---|
->| sms: network: {"http_requests": null} count_sms: 0 telephony: null broadcast_receivers:  | f26cf1135f9d2ea60532a5a13c6fbed5 | total: null status: Waiting in the queue<br>detected: null scan_details: detected_skip: 0 |
+>| sms: network: {"http_requests": null} count_sms: 0 telephony: null broadcast_receivers:  | f26cf1135f9d2ea60532a5a13c6fbed5 | total: null status: Waiting in the queue detected: null scan_details: detected_skip: 0 |
 
 
 ### file
