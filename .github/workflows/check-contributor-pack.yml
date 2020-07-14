@@ -25,5 +25,5 @@ jobs:
         run: |
           echo "New PR number is $PR_NUMBER"
           echo "Starting check of contributor packs"
-          python .github/workflows/helper_scripts/request_contributor_review.py --pr_number $PR_NUMBER --github_token $GITHUB_TOKEN
+          python Utils/request_contributor_review.py --pr_number $PR_NUMBER --github_token $GITHUB_TOKEN
           echo "Finished check of contributor packs"
