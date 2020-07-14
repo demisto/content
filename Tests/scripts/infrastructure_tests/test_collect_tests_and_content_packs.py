@@ -8,7 +8,7 @@ from ruamel.yaml import YAML
 from Tests.scripts.collect_tests_and_content_packs import (
     RANDOM_TESTS_NUM, TestConf, create_filter_envs_file, get_modified_files_for_testing,
     get_test_list_and_content_packs_to_install, collect_content_packs_to_install,
-    get_from_version_and_to_version_from_modified_files)
+    get_from_version_and_to_version_bounderies)
 
 with open('Tests/scripts/infrastructure_tests/tests_data/mock_id_set.json', 'r') as mock_id_set_f:
     MOCK_ID_SET = json.load(mock_id_set_f)
@@ -247,12 +247,12 @@ class TestChangedTestPlaybook:
         one_before_ga = '4.0.1'
         ga = '4.1.0'
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml'
-        modified_files_list, modified_tests_list, changed_common, _, sample_tests, _, _ = \
+        modified_files_list, modified_tests_list, changed_common, _, sample_tests, modified_metadata_list, _, _ = \
             create_get_modified_files_ret(modified_files_list=[test_path], modified_tests_list=[test_path])
 
         all_modified_files_paths = set(modified_files_list + modified_tests_list + changed_common + sample_tests)
-        from_version, to_version = get_from_version_and_to_version_from_modified_files(all_modified_files_paths,
-                                                                                       MOCK_ID_SET)
+        from_version, to_version = get_from_version_and_to_version_bounderies(all_modified_files_paths,
+                                                                              MOCK_ID_SET)
 
         create_filter_envs_file(from_version, to_version, two_before_ga, one_before_ga, ga)
         with open("./Tests/filter_envs.json", "r") as filter_envs_file:

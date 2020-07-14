@@ -12,6 +12,7 @@ import argparse
 import coloredlogs
 import logging
 from distutils.version import LooseVersion
+from copy import deepcopy
 from typing import Dict, Tuple
 from Tests.Marketplace.marketplace_services import IGNORED_FILES
 import demisto_sdk.commands.common.tools as tools
@@ -21,10 +22,9 @@ coloredlogs.install(level=logging.DEBUG, fmt='[%(asctime)s] - [%(threadName)s] -
 
 
 class TestConf(object):
-    __test__ = False  # pytest will not try to run it just because it has Test prefix
+    __test__ = False  # required because otherwise pytest will try to run it as it has Test prefix
 
-    def __init__(self, conf):
-        #  (dict) -> None
+    def __init__(self, conf: dict) -> None:
 
         self._conf = conf
 
@@ -301,8 +301,8 @@ def collect_tests_and_content_packs(
         catched_scripts,
         catched_playbooks,
         tests_set,
-        id_set=ID_SET,
-        conf=CONF
+        id_set=deepcopy(ID_SET),
+        conf=deepcopy(CONF)
 ):
     """Collect tests for the affected script_ids,playbook_ids,integration_ids.
 
@@ -463,7 +463,7 @@ def check_if_fetch_incidents_is_tested(missing_ids, integration_ids, id_set, con
     return missing_ids, tests_set
 
 
-def find_tests_and_content_packs_for_modified_files(modified_files, conf=CONF, id_set=ID_SET):
+def find_tests_and_content_packs_for_modified_files(modified_files, conf=deepcopy(CONF), id_set=deepcopy(ID_SET)):
     script_names = set([])
     playbook_names = set([])
     integration_ids = set([])
@@ -585,7 +585,7 @@ def get_api_module_integrations(changed_api_modules, integration_set):
     return integration_ids_to_test, integration_to_version
 
 
-def collect_changed_ids(integration_ids, playbook_names, script_names, modified_files, id_set=ID_SET):
+def collect_changed_ids(integration_ids, playbook_names, script_names, modified_files, id_set=deepcopy(ID_SET)):
     tests_set = set([])
     updated_script_names = set([])
     updated_playbook_names = set([])
@@ -885,7 +885,7 @@ def update_test_set(tests, tests_set):
         tests_set.add(test)
 
 
-def get_test_conf_from_conf(test_id, server_version, conf=CONF):
+def get_test_conf_from_conf(test_id, server_version, conf=deepcopy(CONF)):
     """Gets first occurrence of test conf with matching playbookID value to test_id with a valid from/to version"""
     test_conf_lst = conf.get_tests()
     # return None if nothing is found
@@ -921,7 +921,7 @@ def extract_matching_object_from_id_set(obj_id, obj_set, server_version='0'):
     return None
 
 
-def get_test_from_conf(branch_name, conf=CONF):
+def get_test_from_conf(branch_name, conf=deepcopy(CONF)):
     tests = set([])
     changed = set([])
     change_string = tools.run_command("git diff origin/master...{} Tests/conf.json".format(branch_name))
@@ -1020,7 +1020,7 @@ def is_test_integrations_available(server_version, test_conf, conf, id_set):
     return True
 
 
-def is_test_uses_active_integration(integration_ids, conf=CONF):
+def is_test_uses_active_integration(integration_ids, conf=deepcopy(CONF)):
     """Checks whether there's an an integration in test_integration_ids that's not skipped"""
     skipped_integrations = conf.get_skipped_integrations()
     # check if all integrations are skipped
@@ -1030,7 +1030,7 @@ def is_test_uses_active_integration(integration_ids, conf=CONF):
     return True
 
 
-def get_random_tests(tests_num, rand, conf=CONF, id_set=ID_SET, server_version='0'):
+def get_random_tests(tests_num, rand, conf=deepcopy(CONF), id_set=deepcopy(ID_SET), server_version='0'):
     """Gets runnable tests for the server version"""
     tests = set([])
     test_ids = conf.get_test_playbook_ids()
@@ -1098,8 +1098,8 @@ def get_modified_packs(files_string):
     return modified_packs
 
 
-def get_test_list_and_content_packs_to_install(files_string, branch_name, two_before_ga_ver='0', conf=CONF,
-                                               id_set=ID_SET):
+def get_test_list_and_content_packs_to_install(files_string, branch_name, two_before_ga_ver='0', conf=deepcopy(CONF),
+                                               id_set=deepcopy(ID_SET)):
     """Create a test list that should run"""
 
     (modified_files_with_relevant_tests, modified_tests_list, changed_common, is_conf_json, sample_tests,
@@ -1107,7 +1107,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     all_modified_files_paths = set(
         modified_files_with_relevant_tests + modified_tests_list + changed_common + sample_tests
     ).union(modified_metadata_list)
-    from_version, to_version = get_from_version_and_to_version_from_modified_files(all_modified_files_paths, id_set)
+    from_version, to_version = get_from_version_and_to_version_bounderies(all_modified_files_paths, id_set)
 
     create_filter_envs_file(from_version, to_version)
 
@@ -1146,11 +1146,11 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
             tests_num=RANDOM_TESTS_NUM, rand=rand, conf=conf, id_set=id_set, server_version=two_before_ga_ver)
         packs_to_install = get_content_pack_name_of_test(tests, id_set)
         if changed_common:
-            logging.warning('Adding 3 random tests due to: {}'.format(','.join(changed_common)))
+            logging.debug('Adding 3 random tests due to: {}'.format(','.join(changed_common)))
         elif sample_tests:  # Choosing 3 random tests for infrastructure testing
-            logging.warning('Collecting sample tests due to: {}'.format(','.join(sample_tests)))
+            logging.debug('Collecting sample tests due to: {}'.format(','.join(sample_tests)))
         else:
-            logging.warning("Running Sanity check only")
+            logging.debug("Running Sanity check only")
 
             tests.add('TestCommonPython')  # test with no integration configured
             tests.add('HelloWorld-Test')  # test with integration configured
@@ -1174,22 +1174,21 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     return tests, packs_to_install
 
 
-def get_from_version_and_to_version_from_modified_files(all_modified_files_paths: set, id_set: dict) -> Tuple[str, str]:
-    """
-    computes the lowest from version of the modified files and the highest to version of the modified files
-    If no limitation is found- default will be 0.0.0 - 99.99.99
+def get_from_version_and_to_version_bounderies(all_modified_files_paths: set, id_set: dict) -> Tuple[str, str]:
+    """Computes the lowest from version of the modified files and the highest to version of the modified files
     Args:
         all_modified_files_paths: All modified files
         id_set: the content of the id.set_json
 
     Returns:
-        The string representation of the lowest from version and highest to version
+        (string, string). The boundaries of the lowest from version (defaults to 0.0.0)
+         and highest to version (defaults to 99.99.99)
     """
     max_to_version = LooseVersion('0.0.0')
     min_from_version = LooseVersion('99.99.99')
-    for _, artifacts in id_set.items():
+    for artifacts in id_set.values():
         for artifact_dict in artifacts:
-            for _, artifact_details in artifact_dict.items():
+            for artifact_details in artifact_dict.values():
                 if artifact_details.get('file_path') in all_modified_files_paths:
                     from_version = artifact_details.get('fromversion')
                     to_version = artifact_details.get('toversion')
