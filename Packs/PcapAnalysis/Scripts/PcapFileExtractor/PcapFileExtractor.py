@@ -40,7 +40,7 @@ def run_command(args: list, stdout=subprocess.PIPE, stderr=subprocess.PIPE):
     return stdout_data, stderr_data
 
 
-def filter_files(root: str, files: List[str],
+def filter_files(root: str, files: List[str], /,
                  types: Optional[Set[str]] = None,
                  extensions: Optional[Set[str]] = None,
                  types_inclusive_or_exclusive: Optional[str] = None,
@@ -84,7 +84,7 @@ def filter_files(root: str, files: List[str],
 
 
 def upload_files(
-        file_path: str, dir_path: str,
+        file_path: str, dir_path: str, /,
         types: Optional[Set[str]] = None, extensions: Optional[Set[str]] = None,
         types_inclusive_or_exclusive: Optional[str] = None,
         extensions_inclusive_or_exclusive: Optional[str] = None,
