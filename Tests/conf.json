@@ -639,7 +639,7 @@
         },
         {
             "integrations": "Generic SQL",
-            "playbookID": "generic-sql",
+            "playbookID": "generic-sql-oracle",
             "instance_names": "Oracle instance",
             "fromversion": "5.0.0"
         },
