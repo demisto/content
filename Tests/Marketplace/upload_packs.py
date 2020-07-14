@@ -116,6 +116,16 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
         sys.exit(1)
 
 
+def update_private_index(private_index_path, unified_index_path):
+    private_packs_names = [d for d in os.listdir(private_index_path) if
+                           os.path.isdir(os.path.join(private_index_path, d))]
+
+    for private_pack_name in private_packs_names:
+        path_to_pack_on_private_index = os.path.join(unified_index_path, private_pack_name)
+        path_to_pack_on_unified_index = os.path.join(unified_index_path, private_pack_name)
+        shutil.copy(path_to_pack_on_unified_index, path_to_pack_on_private_index)
+
+
 def update_index_folder(index_folder_path, pack_name, pack_path, pack_version='', hidden_pack=False):
     """Copies pack folder into index folder.
 
@@ -393,8 +403,8 @@ def update_index_with_priced_packs(private_storage_bucket, extract_destination_p
     private_packs = []
 
     try:
-        private_index_path, _ = download_and_extract_index(private_storage_bucket,
-                                                           os.path.join(extract_destination_path, 'private'))
+        private_index_path, private_index_blob = download_and_extract_index(private_storage_bucket,
+                                                                            os.path.join(extract_destination_path, 'private'))
         private_packs = get_private_packs(private_index_path)
         add_private_packs_to_index(index_folder_path, private_index_path)
         print("Finished updating index with priced packs")
@@ -403,7 +413,7 @@ def update_index_with_priced_packs(private_storage_bucket, extract_destination_p
     finally:
         if private_index_path:
             shutil.rmtree(os.path.dirname(private_index_path), ignore_errors=True)
-        return private_packs
+        return private_packs, private_index_path, private_index_blob
 
 
 def _build_summary_table(packs_input_list, include_pack_status=False):
@@ -614,8 +624,9 @@ def main():
 
     if private_bucket_name:  # Add private packs to the index
         # TODO : maybe remove this line - private_storage_bucket = storage_client.bucket(private_bucket_name)
-        private_packs = update_index_with_priced_packs(private_storage_bucket, extract_destination_path,
-                                                       index_folder_path)
+        private_packs, private_index_path, private_index_blob = update_index_with_priced_packs(private_storage_bucket,
+                                                                                               extract_destination_path,
+                                                                                               index_folder_path)
     else:  # skipping private packs
         print("Skipping index update of priced packs")
         private_packs = []
@@ -739,7 +750,13 @@ def main():
         upload_core_packs_config(default_storage_bucket, build_number, index_folder_path)
     print_error(f'packs_list length: {len(packs_list)}')
     # finished iteration over content packs
-    upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs)
+    if is_private_build:
+
+        upload_index_to_storage(private_index_path, extract_destination_path, private_index_blob, build_number,
+                                private_packs)
+    else:
+        upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number,
+                                private_packs)
 
     # upload id_set.json to bucket
     upload_id_set(default_storage_bucket, id_set_path)
