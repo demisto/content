@@ -2932,6 +2932,11 @@
             "integrations": "TruSTAR v2",
             "playbookID": "TruSTAR v2-Test",
             "timeout": 500
+        },
+        {
+            "integrations": "Blueliv ThreatCompass",
+            "playbookID": "Blueliv_ThreatCompass_test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
