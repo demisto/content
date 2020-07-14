@@ -769,38 +769,167 @@ def demistoUrls():
 
 
 def dt(obj=None, trnsfrm=None):
+    """
+    Extracts field from object using DT language syntax
+
+    :type obj: ``dict``
+    :param obj: The object to look in for the requested field
+
+    :type trnsfrm: ``str``
+    :param trnsfrm: The field to get value of
+
+    :return: The field value in the object
+    :rtype: ``str``
+    """
     return ""
 
 
 def addEntry(id, entry, username=None, email=None, footer=None):
+    """(Integration only)
+    Adds an entry to a mirrored investigation war room
+
+    :type id: ``str``
+    :param id: Incident ID to add the entry in
+
+    :type entry: ``str``
+    :param entry: The text to add in the entry
+
+    :type username: ``str``
+    :param username: The username of the user to be the entry creator
+
+    :type email: ``str``
+    :param email: The email address of the user to be the entry creator
+
+    :type footer: ``str``
+    :param footer: The email address of the user to be the entry creator
+
+    :return: No data returned
+    :rtype: ``None``
+    """
     return ""
 
 
 def mirrorInvestigation(id, mirrorType, autoClose=False):
+    """(Integration only)
+    Marks an investigation as mirrored
+
+    :type id: ``str``
+    :param id: Incident ID to mirror
+
+    :type mirrorType: ``str``
+    :param mirrorType: Contains mirror type and mirror direction separated by colon, e.g. all:both
+
+    :type autoClose: ``bool``
+    :param autoClose: Whether to close the investigation when the mirrored channel is closed/archived
+
+    :return: No data returned
+    :rtype: ``None``
+    """
     return ""
 
 
 def updateModuleHealth(error):
+    """(Integration only)
+    Updated integration module health with given error message
+
+    :type error: ``str``
+    :param error: The error message to display in the integration module health
+
+    :return: No data returned
+    :rtype: ``None``
+    """
     return ""
 
 
 def directMessage(message, username=None, email=None, anyoneCanOpenIncidents=None):
+    """(Integration only)
+    Executes command provided in direct message to messaging bot
+
+    :type message: ``str``
+    :param message: The message sent in personal context
+
+    :type username: ``str``
+    :param username: The username of the user that sent the direct message
+
+    :type email: ``str``
+    :param email: The email address of the user that sent the direct message
+
+    :type anyoneCanOpenIncidents: ``bool``
+    :param anyoneCanOpenIncidents: Whether external users can create incidents or not
+
+    :return: Server response to command executed in the direct message
+    :rtype: ``str``
+    """
     return ""
 
 
 def createIncidents(incidents, lastRun=None, userID=None):
+    """(Integration only)
+    Creates incident in long running execution
+
+    :type incidents: ``list``
+    :param incidents: List of incident objects to create
+
+    :type lastRun: ``dict``
+    :param lastRun: the LastRun object to set
+
+    :type userID: ``str``
+    :param userID: The user associated with the request
+
+    :return: Created incident object
+    :rtype: ``list`` or ``dict``
+    """
     return []
 
 
 def findUser(username=None, email=None):
+    """(Integration only)
+    Looks up for a user in the system
+
+    :type username: ``str``
+    :param username: The username of the user to search for
+
+    :type email: ``str``
+    :param email: The email address of the user to search for
+
+    :return: Object representing the user found
+    :rtype: ``dict``
+    """
     return {}
 
 
 def handleEntitlementForUser(incidentID, guid, email, content, taskID=""):
+    """(Integration only)
+    Sends request to server to process entitlement response given from messaging client
+
+    :type incidentID: ``str``
+    :param incidentID: The incident ID in which the question was sent in
+
+    :type guid: ``str``
+    :param guid: The entitlement UUID which identifies the question
+
+    :type email: ``str``
+    :param email: The email address of the user that responded
+
+    :type content: ``str``
+    :param content: The content of the response
+
+    :type taskID: ``str``
+    :param taskID: The playbook task ID to mark as complete
+
+    :return: No data returned
+    :rtype: ``None``
+    """
     return {}
 
 
 def demistoVersion():
+    """
+    Retrieves server version and build number
+
+    :return: Objects contains server version and build number
+    :rtype: ``dict``
+    """
     return {
         'version': '5.5.0',
         'buildNumber': '12345'
@@ -808,20 +937,71 @@ def demistoVersion():
 
 
 def integrationInstance():
+    """(Integration only)
+    Retrieves the integration instance name in which ran in
+
+    :return: The integration instance name
+    :rtype: ``str``
+    """
     return ""
 
 
 def createIndicators(indicators_batch):
+    """(Integration only)
+    Creates indicators from given indicator objects batch
+
+    :type indicators_batch: ``list``
+    :param indicators_batch: List of indicators objects to create
+
+    :return: No data returned
+    :rtype: ``None``
+    """
     return ""
 
 
 def searchIndicators(fromdate='', query='', size=100, page=0, todate='', value=''):
+    """
+    Searches for indicators according to given query
+
+    :type fromdate: ``str``
+    :param fromdate: The start date to search from
+
+    :type query: ``str``
+    :param query: Indicator search query
+
+    :type size: ``int``
+    :param size: Limit the number of returned results
+
+    :type page: ``int``
+    :param page: Response paging
+
+    :type todate: ``str``
+    :param todate: The end date to search until to
+
+    :type value: ``str``
+    :param value: The indicator value to search
+
+    :return: Object contains the search results
+    :rtype: ``dict``
+    """
     return {}
 
 
 def getIndexHash():
+    """(Integration only)
+    Retrieves the hashed value of the tenant in which ran in
+
+    :return: Hashed value of tenant name
+    :rtype: ``str``
+    """
     return ''
 
 
 def getLicenseID():
+    """
+    Retrieves the ID of the license used in the server
+
+    :return: The license ID
+    :rtype: ``str``
+    """
     return ''
