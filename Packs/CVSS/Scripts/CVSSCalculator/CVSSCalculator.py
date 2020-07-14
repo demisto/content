@@ -160,7 +160,7 @@ def main():
     ###########################################
     # Get all required values for calculations
     ###########################################
-    confidentiality = values_map['CIA'][args.get('C')]
+    confidentiality = values_map.get('CIA').get(args.get('C'))
     modified_confidentiality = args.get('MC', "X")
     modified_confidentiality = confidentiality if\
         modified_confidentiality == "X" else values_map['CIA'].get(modified_confidentiality)
