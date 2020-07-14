@@ -432,7 +432,7 @@ def get_remediation_data_command(client: Client, args: dict, no_output_mode: boo
     safebreach_context_list.append(safebreach_context)
 
     for item in processed_data:
-        if item.get('type').startswith('Attack') or len(processed_data) == 0:
+        if item.get('type', '').startswith('Attack') or len(processed_data) == 0:
             continue
 
         standard_context_list: Any = []
