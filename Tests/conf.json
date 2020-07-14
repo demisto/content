@@ -8,6 +8,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Zimperium",
+            "playbookID": "Zimperium_Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "ServiceDeskPlus",
             "playbookID": "Service Desk Plus Test"
         },
