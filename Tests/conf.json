@@ -3056,7 +3056,7 @@
         "Image OCR": "Does not perform network traffic",
         "Server Message Block (SMB)": "Does not perform http communication",
         "Active Directory Query v2": "Does not perform http communication",
-        "dnstwist": "Does not peform http communication",
+        "dnstwist": "Does not perform http communication",
         "VxStream": "Issue 15544",
         "PagerDuty v2": "Integration requires SSL",
         "TCPIPUtils": "Integration requires SSL",
@@ -3123,7 +3123,7 @@
         "Google Cloud Storage": "SDK",
         "Syslog Sender": "syslog",
         "syslog": "syslog",
-        "Generic SQL": "Does not peform http communication",
+        "Generic SQL": "Does not perform http communication",
         "MongoDB Log": "Our instance not using SSL",
         "MongoDB Key Value Store": "Our instance not using SSL",
         "GoogleKubernetesEngine": "SDK"
