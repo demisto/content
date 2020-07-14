@@ -487,7 +487,7 @@ def get_remediation_data_command(client: Client, args: dict, no_output_mode: boo
 
     output_context = {
         "DBotScore(val.Indicator == obj.Indicator)": dbot_score_list,
-        "SafeBreach.Insight(val.Id == obj.Id)": safebreach_context_list,
+        "SafeBreach.Insight(val.Id == obj.Id)": safebreach_context_list
     }
     merged_context = {**output_context, **standard_context_dict}
     readable_output = tableToMarkdown(name="Remediation Data", t=readable_output_list, removeNull=True)
