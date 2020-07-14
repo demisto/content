@@ -22,12 +22,10 @@ class Client(BaseClient):
         data = {'grant_type': 'client_credentials', 'scope': 'read'}
         response = self._http_request(method='POST', url_suffix='/token', headers=headers, data=data,
                                       resp_type='response')
-        statusCode = response.status_code
-        if (statusCode == 200):
-            responseJson = response.json()
-            access_token = responseJson.get('access_token')
-            headers = {'Authorization': 'Bearer' + " " + access_token}
-            self._headers = headers
+        responseJson = response.json()
+        access_token = responseJson.get('access_token')
+        headers = {'Authorization': 'Bearer' + " " + access_token}
+        self._headers = headers
 
     def get_quarantineRanges(self):
         return self._http_request(method='GET', url_suffix='/realize/ransomwarerecovery/v1/quarantineranges',
@@ -95,8 +93,7 @@ def Druva_ListQuarantineRanges_Command(clientObj):
         return (readable_output, outputs, raw_response)
 
     else:
-        demisto.log('Error: ' + str(response.status_code))
-        return None
+        raise RuntimeError('Error: ' + str(response.status_code))
 
 
 def Druva_FindDevice_Command(clientObj, search_string):
@@ -110,8 +107,7 @@ def Druva_FindDevice_Command(clientObj, search_string):
         return (readable_output, outputs, raw_response)
 
     else:
-        demisto.log('Error: ' + str(response.status_code))
-        return None
+        raise RuntimeError('Error: ' + str(response.status_code))
 
 
 def Druva_QuarantineResource_Command(clientObj, resource_id, resource_type, from_date, to_date):
@@ -126,8 +122,7 @@ def Druva_QuarantineResource_Command(clientObj, resource_id, resource_type, from
         raw_response = responseJson
         return (readable_output, outputs, raw_response)
     else:
-        demisto.log('Error: ' + str(response.status_code))
-        return None
+        raise RuntimeError('Error: ' + str(response.status_code))
 
 
 def Druva_DeleteQuarantineRange_Command(clientObj, resource_id, range_id):
@@ -138,11 +133,9 @@ def Druva_DeleteQuarantineRange_Command(clientObj, resource_id, range_id):
         headers = ['RangeID']
         readable_output = tableToMarkdown('Quarantine Range Deleted Successfully', str(range_id), headers=headers)
         raw_response = responseJson
-        outputs = {"Druva.deletedQuarantineRange(val.rangeID == obj.rangeID)": str(range_id)}
-        return (readable_output, outputs, raw_response)
+        return (readable_output, {}, raw_response)
     else:
-        demisto.log('Error: ' + str(response.status_code))
-        return None
+        raise RuntimeError('Error: ' + str(response.status_code))
 
 
 def Druva_ViewQurantineRange_Command(clientObj, resource_id, range_id):
@@ -167,8 +160,7 @@ def Druva_UpdateQuarantineRange_Command(clientObj, resource_id, resource_type, r
         raw_response = responseJson
         return (readable_output, outputs, raw_response)
     else:
-        demisto.log('Error: ' + str(response.status_code))
-        return None
+        raise RuntimeError('Error: ' + str(response.status_code))
 
 
 def Druva_ListQuarantine_Snapshots_Command(clientObj, resource_id, range_id):
@@ -181,8 +173,7 @@ def Druva_ListQuarantine_Snapshots_Command(clientObj, resource_id, range_id):
         raw_response = responseJson
         return (readable_output, outputs, raw_response)
     else:
-        demisto.log('Error: ' + str(response.status_code))
-        return None
+        raise RuntimeError('Error: ' + str(response.status_code))
 
 
 def Druva_DeleteQuarantined_Snapshots_Command(clientObj, resource_id, range_id, snapshot_id):
@@ -192,12 +183,10 @@ def Druva_DeleteQuarantined_Snapshots_Command(clientObj, resource_id, range_id, 
         responseJson = response.json()
         headers = ['Snapshot ID']
         readable_output = tableToMarkdown('Snapshot Deleted successfully', str(snapshot_id), headers=headers)
-        outputs = {"Druva.deletedSnapshots(val.snapshotID == obj.snapshotID)": str(snapshot_id)}
         raw_response = responseJson
-        return (readable_output, outputs, raw_response)
+        return (readable_output, {}, raw_response)
     else:
-        demisto.log('Error: ' + str(response.status_code))
-        return None
+        raise RuntimeError('Error: ' + str(response.status_code))
 
 
 def Druva_SearchbyFileHash_Command(clientObj, sha1_checksum):
@@ -210,8 +199,7 @@ def Druva_SearchbyFileHash_Command(clientObj, sha1_checksum):
         raw_response = responseJson
         return (readable_output, outputs, raw_response)
     else:
-        demisto.log('Error: ' + str(response.status_code))
-        return None
+        raise RuntimeError('Error: ' + str(response.status_code))
 
 
 def Druva_Restore_Endpoint(clientObj, source_resourceid, target_resourceid, restore_location):
@@ -225,8 +213,7 @@ def Druva_Restore_Endpoint(clientObj, source_resourceid, target_resourceid, rest
         raw_response = responseJson
         return (readable_output, outputs, raw_response)
     else:
-        demisto.log('Error: ' + str(response.status_code))
-        return None
+        raise RuntimeError('Error: ' + str(response.status_code))
 
 
 def Druva_Restore_Status(clientObj, restore_id):
@@ -240,8 +227,7 @@ def Druva_Restore_Status(clientObj, restore_id):
         raw_response = responseJson
         return (readable_output, outputs, raw_response)
     else:
-        demisto.log('Error: ' + str(response.status_code))
-        return None
+        raise RuntimeError('Error: ' + str(response.status_code))
 
 
 def Druva_Decommission(clientObj, resource_id):
@@ -249,15 +235,13 @@ def Druva_Decommission(clientObj, resource_id):
     statusCode = response.status_code
     responseJson = response.json()
     if (statusCode == 200):
-        responseJson = response.json()
         headers = ['Resource ID']
         readable_output = tableToMarkdown('Device Decomission Request', str(resource_id), headers=headers)
         outputs = {"Druva.decomissionedResource(val.resource_id == obj.resource_id)": str(resource_id)}
         raw_response = responseJson
         return (readable_output, outputs, raw_response)
     else:
-        demisto.log('Error: ' + str(response.status_code))
-        return None
+        raise RuntimeError('Error: ' + str(response.status_code))
 
 
 def main():

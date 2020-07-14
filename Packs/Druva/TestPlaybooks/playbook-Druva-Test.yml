@@ -1,7 +1,7 @@
 id: Druva-Test
 version: -1
 name: Druva-Test
-description: "Test playbook for Druva Integration"
+description: ''
 starttaskid: "0"
 tasks:
   "0":
@@ -11,10 +11,10 @@ tasks:
     task:
       id: 2ab013a8-3bc1-43e0-8c5d-04d396a6d2af
       version: -1
+      description: ''
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 65
         }
       }
@@ -36,11 +36,11 @@ tasks:
     task:
       id: a7f3222b-1d93-47ec-816e-a1a0bc2c63ea
       version: -1
+      description: ''
       name: DeleteContext
       script: DeleteContext
       type: regular
       iscommand: true
-      description: ''
       brand: ""
     nexttasks:
       '#none#':
@@ -52,7 +52,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 225
         }
       }
@@ -61,28 +61,28 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 091d1092-26d3-4a12-8360-838818925846
+    taskid: 08199c6c-e15c-4f44-8de3-e9063d1df4a4
     type: regular
     task:
-      id: 091d1092-26d3-4a12-8360-838818925846
+      id: 08199c6c-e15c-4f44-8de3-e9063d1df4a4
       version: -1
+      description: ''
       name: druva-find-device
       script: '|||druva-find-device'
       type: regular
       iscommand: true
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "3"
     scriptarguments:
       search_string:
-        simple: sah
+        simple: sgoyal
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 400
         }
       }
@@ -96,14 +96,14 @@ tasks:
     task:
       id: a8bcaa7f-8b9c-4df1-88f7-0cfe7617297d
       version: -1
+      description: ''
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
       brand: ""
     nexttasks:
       "yes":
-      - "4"
+      - "6"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -131,7 +131,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 575
         }
       }
@@ -145,12 +145,12 @@ tasks:
     task:
       id: 8b68113f-c084-422b-8d26-868b7c1bb248
       version: -1
+      description: ''
       name: druva-list-quarantine-ranges
       script: '|||druva-list-quarantine-ranges'
       type: regular
       iscommand: true
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -158,8 +158,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 750
+          "x": 265,
+          "y": 1100
         }
       }
     note: false
@@ -173,13 +173,13 @@ tasks:
       id: 19816bb5-8314-4b98-8d88-f4f35b3a67d7
       version: -1
       name: Verify Outputs
+      description: ''
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       "yes":
-      - "6"
+      - "8"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -222,8 +222,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 925
+          "x": 265,
+          "y": 1275
         }
       }
     note: false
@@ -231,23 +231,23 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: f19d39b4-f07c-41c1-8bd2-3d2e3f6f3a0a
+    taskid: 89eae452-4911-4d9c-8378-3e4910dc762a
     type: regular
     task:
-      id: f19d39b4-f07c-41c1-8bd2-3d2e3f6f3a0a
+      id: 89eae452-4911-4d9c-8378-3e4910dc762a
       version: -1
       name: druva-quarantine-resource
+      description: ''
       script: '|||druva-quarantine-resource'
       type: regular
       iscommand: true
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "18"
     scriptarguments:
       from_date:
-        simple: 2020-02-01
+        simple: 2020-07-13
       resource_id:
         complex:
           root: Druva
@@ -257,13 +257,13 @@ tasks:
       resource_type:
         simple: Endpoint
       to_date:
-        simple: 2020-02-10
+        simple: 2020-07-13
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1100
+          "x": 265,
+          "y": 750
         }
       }
     note: false
@@ -277,11 +277,11 @@ tasks:
       id: 2dd653d4-0ee3-4f91-8f22-dbcf6f767715
       version: -1
       name: druva-delete-quarantine-range
+      description: ''
       script: '|||druva-delete-quarantine-range'
       type: regular
       iscommand: true
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "23"
@@ -298,8 +298,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2850
+          "x": 265,
+          "y": 2820
         }
       }
     note: false
@@ -313,11 +313,11 @@ tasks:
       id: 3862c996-6a88-4d13-84e3-9d90081c2a3d
       version: -1
       name: druva-view-quarantine-range
+      description: ''
       script: '|||druva-view-quarantine-range'
       type: regular
       iscommand: true
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "19"
@@ -334,7 +334,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1450
         }
       }
@@ -343,23 +343,23 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 5e3f81d1-00c5-483c-8e9e-8602530eba05
+    taskid: a0f7213a-2401-4717-8eee-2d255db79f89
     type: regular
     task:
-      id: 5e3f81d1-00c5-483c-8e9e-8602530eba05
+      id: a0f7213a-2401-4717-8eee-2d255db79f89
       version: -1
       name: druva-update-quarantine-range
+      description: ''
       script: '|||druva-update-quarantine-range'
       type: regular
       iscommand: true
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "20"
     scriptarguments:
       from_date:
-        simple: 2020-03-01
+        simple: 2020-07-13
       range_id:
         complex:
           root: Druva
@@ -377,12 +377,12 @@ tasks:
           transformers:
           - operator: FirstArrayElement
       to_date:
-        simple: 2020-03-10
+        simple: 2020-07-13
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1800
         }
       }
@@ -397,11 +397,11 @@ tasks:
       id: 2ebda119-284b-4bdb-8ad2-1efd9aff0137
       version: -1
       name: druva-list-quarantine-snapshots
+      description: ''
       script: '|||druva-list-quarantine-snapshots'
       type: regular
       iscommand: true
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "21"
@@ -419,7 +419,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 2150
         }
       }
@@ -428,20 +428,20 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: bc72a8ef-fb7f-41c9-812f-c5202c6fdb9f
+    taskid: 23804c14-7036-4efe-8ef8-1c0b34087a2d
     type: regular
     task:
-      id: bc72a8ef-fb7f-41c9-812f-c5202c6fdb9f
+      id: 23804c14-7036-4efe-8ef8-1c0b34087a2d
       version: -1
       name: druva-delete-quarantined-snapshot
+      description: ''
       script: '|||druva-delete-quarantined-snapshot'
       type: regular
       iscommand: true
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "22"
+      - "7"
     scriptarguments:
       range_id:
         simple: ${Druva.updatedQuarantineRange}
@@ -459,7 +459,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2500
+          "y": 2645
         }
       }
     note: false
@@ -467,29 +467,29 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 5c51b233-a6a0-4a2b-81ae-aebdde268cfc
+    taskid: 2e05d20e-e1fc-49f6-87ae-55a78bacba0e
     type: regular
     task:
-      id: 5c51b233-a6a0-4a2b-81ae-aebdde268cfc
+      id: 2e05d20e-e1fc-49f6-87ae-55a78bacba0e
       version: -1
       name: druva-endpoint-search-file-hash
+      description: ''
       script: '|||druva-endpoint-search-file-hash'
       type: regular
       iscommand: true
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "24"
     scriptarguments:
       sha1_checksum:
-        simple: ea00a57fc80d1e288f625ad365cc69061bbcb6dc
+        simple: cec8ad914b1e9db83626b98e8d98512616975fdf
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3200
+          "x": 265,
+          "y": 3170
         }
       }
     note: false
@@ -503,11 +503,11 @@ tasks:
       id: eecf8313-ae52-47c4-87e9-8ea1a3dad53a
       version: -1
       name: druva-endpoint-initiate-restore
+      description: ''
       script: '|||druva-endpoint-initiate-restore'
       type: regular
       iscommand: true
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -515,7 +515,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 50
         }
       }
@@ -530,11 +530,11 @@ tasks:
       id: e203c7c5-e12e-4830-804b-bcb258228540
       version: -1
       name: druva-endpoint-check-restore-status
+      description: ''
       script: '|||druva-endpoint-check-restore-status'
       type: regular
       iscommand: true
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -542,7 +542,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 225
         }
       }
@@ -557,16 +557,16 @@ tasks:
       id: 8ebe4a10-9d72-442e-853d-18ed9e39f78d
       version: -1
       name: druva-endpoint-decommission
+      description: ''
       script: '|||druva-endpoint-decommission'
       type: regular
       iscommand: true
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 400
         }
       }
@@ -589,8 +589,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3550
+          "x": 265,
+          "y": 3590
         }
       }
     note: false
@@ -598,19 +598,19 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: a49b6a6d-ba9b-4dea-8780-5b8c81253c0d
+    taskid: 0734a132-e70d-406a-895a-1b104017d726
     type: condition
     task:
-      id: a49b6a6d-ba9b-4dea-8780-5b8c81253c0d
+      id: 0734a132-e70d-406a-895a-1b104017d726
       version: -1
       name: Verify Outputs
+      description: ''
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       "yes":
-      - "8"
+      - "4"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -618,13 +618,13 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Druva.activeQuarantineRanges.rangeID
+              simple: Druva.QuarantinedRangeID
             iscontext: true
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1275
+          "x": 265,
+          "y": 925
         }
       }
     note: false
@@ -638,10 +638,10 @@ tasks:
       id: 32566349-3f56-48e6-8db8-f27d337eae4c
       version: -1
       name: Verify Outputs
+      description: ''
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       "yes":
       - "9"
@@ -657,7 +657,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1625
         }
       }
@@ -666,16 +666,16 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: 1bb5ff63-a1db-4f4b-8aa6-3dfd9771db39
+    taskid: d7affc45-1754-4dc0-81d7-97e333660f3c
     type: condition
     task:
-      id: 1bb5ff63-a1db-4f4b-8aa6-3dfd9771db39
+      id: d7affc45-1754-4dc0-81d7-97e333660f3c
       version: -1
       name: Verify Outputs
+      description: ''
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       "yes":
       - "10"
@@ -691,7 +691,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1975
         }
       }
@@ -700,67 +700,46 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: c18238e1-cc78-4f0f-813c-07cc83b064d9
+    taskid: 7277170e-a002-4a8e-851d-bb0edb7dcc8f
     type: condition
     task:
-      id: c18238e1-cc78-4f0f-813c-07cc83b064d9
+      id: 7277170e-a002-4a8e-851d-bb0edb7dcc8f
       version: -1
       name: Verify Outputs
+      description: ''
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
-      "yes":
-      - "11"
+      NO QSNAPSHOTS:
+      - "25"
+      QSNAPSHOTS:
+      - "26"
     separatecontext: false
     conditions:
-    - label: condition-1
+    - label: QSNAPSHOTS
       condition:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Druva.quarantinedSnapshots.snapshotID
+              complex:
+                root: Druva
+                accessor: quarantinedSnapshots.snapshotID
+            iscontext: true
+    - label: NO QSNAPSHOTS
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              complex:
+                root: Druva
+                accessor: quarantinedSnapshots
             iscontext: true
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 2325
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "22":
-    id: "22"
-    taskid: 4ebb1529-5210-465e-8f0a-51544947908b
-    type: condition
-    task:
-      id: 4ebb1529-5210-465e-8f0a-51544947908b
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      "yes":
-      - "7"
-    separatecontext: false
-    conditions:
-    - label: condition-1
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Druva.quarantinedSnapshots.snapshotID
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2675
         }
       }
     note: false
@@ -774,10 +753,10 @@ tasks:
       id: 350b7ed4-a0e9-4eac-8801-c3d8b69e9fd4
       version: -1
       name: Verify Outputs
+      description: ''
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       "yes":
       - "12"
@@ -793,8 +772,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3025
+          "x": 265,
+          "y": 2995
         }
       }
     note: false
@@ -802,35 +781,98 @@ tasks:
     ignoreworker: false
   "24":
     id: "24"
-    taskid: b0295583-6d08-44d8-8089-a1af5fe2a047
+    taskid: cd9b4e8c-b27f-4559-8d24-16d9ab855faf
     type: condition
     task:
-      id: b0295583-6d08-44d8-8089-a1af5fe2a047
+      id: cd9b4e8c-b27f-4559-8d24-16d9ab855faf
       version: -1
       name: Verify Outputs
+      description: ''
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
-      "yes":
+      "YES":
       - "16"
     separatecontext: false
     conditions:
-    - label: condition-1
+    - label: "YES"
       condition:
-      - - operator: isNotEmpty
+      - - operator: greaterThan
           left:
             value:
               complex:
                 root: Druva
-                accessor: searchEndpointsFileHashResults.deviceID
+                accessor: searchEndpointsFileHashResults
+                transformers:
+                - operator: FirstArrayElement
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: objectID
+                - operator: strLength
             iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: f84116ea-31b4-488b-84f3-6cdcea12cc8d
+    type: title
+    task:
+      id: f84116ea-31b4-488b-84f3-6cdcea12cc8d
+      version: -1
+      name: No Quarantine Snapshots
+      description: ''
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: 73f6136e-ecf9-42d0-85d1-3d3d08866abb
+    type: title
+    task:
+      id: 73f6136e-ecf9-42d0-85d1-3d3d08866abb
+      version: -1
+      name: Quarantine Snapshots
+      description: ''
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3375
+          "y": 2500
         }
       }
     note: false
@@ -838,11 +880,14 @@ tasks:
     ignoreworker: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "3_6_yes": 0.76,
+      "5_8_yes": 0.36
+    },
     "paper": {
       "dimensions": {
-        "height": 3565,
-        "width": 810,
+        "height": 3605,
+        "width": 1025,
         "x": 50,
         "y": 50
       }

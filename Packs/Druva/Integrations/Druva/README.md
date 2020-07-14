@@ -1,5 +1,5 @@
 Druva Ransomware Response Playbook
-This integration was integrated and tested with version xx of Druva Ransomware Response
+This integration was integrated and tested with Druva Ransomware Response module on Druva Public Cloud
 ## Configure Druva Ransomware Response on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
