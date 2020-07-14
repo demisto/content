@@ -3,7 +3,7 @@ version: -1
 system: true
 fromversion: 2.5.0
 name: McAfee ePO Endpoint Connectivity Diagnostics Playbook
-description: Perform a check on ePO endpoints to see if any endpoints are unmanaged
+description: DEPRECATED. Use "McAfee ePO Endpoint Connectivity Diagnostics Playbook V2" playbook instead. Perform a check on ePO endpoints to see if any endpoints are unmanaged
   or lost connectivity with ePO and take steps to return to valid state.
 starttaskid: "0"
 tasks:
