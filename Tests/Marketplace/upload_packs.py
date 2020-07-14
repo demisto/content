@@ -751,7 +751,7 @@ def main():
     print_error(f'packs_list length: {len(packs_list)}')
     # finished iteration over content packs
     if is_private_build:
-
+        update_private_index(private_index_path, index_folder_path)
         upload_index_to_storage(private_index_path, extract_destination_path, private_index_blob, build_number,
                                 private_packs)
     else:
