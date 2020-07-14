@@ -556,6 +556,14 @@ class MsClient:
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
     def list_indicators(self, indicator_id: Optional[str] = None) -> Dict:
+        """
+
+        Args:
+            indicator_id: if provided, will get only this specific id.
+
+        Returns:
+            json of a response.
+        """
         cmd_url = 'beta/security/tiIndicators'
         if indicator_id is not None:
             cmd_url = urljoin(cmd_url, indicator_id)
