@@ -13,11 +13,11 @@ script: |
 
   if query == "Confirm":
       color = 'red'
-      html = "<div style='color:red;'><h2>Confirm</h2></div>"
+      html = "<div style='color:red;'><h2>Confirmed</h2></div>"
 
   elif query == "Not Confirm":
       color = 'red'
-      html = "<div style='color:blue;'><h2>Not Confirm</h2></div>"
+      html = "<div style='color:blue;'><h2>Not Confirmed</h2></div>"
 
   else:
       html = "<div style='color:green;'><h2>Pending Confirmation</h2></div>"
