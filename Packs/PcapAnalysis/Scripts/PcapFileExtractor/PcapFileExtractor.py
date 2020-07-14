@@ -16,7 +16,7 @@ class InclusiveExclusive(Enum):
 
 
 def get_file_path_from_id(entry_id: str) -> Tuple[str, str]:
-    """
+    """Gets a file path and name from entry_id.
 
     Args:
         entry_id: ID of the file from context.
@@ -189,6 +189,21 @@ def main(
         extensions_inclusive_or_exclusive: str = 'inclusive',
         limit: str = '5',
 ):
+    """Exports a PCAP file and returns them to the context.
+
+    Args:
+        entry_id: Entry ID of the PCAP file
+        wpa_password: password for WPA-PWD protected files. <password> or <host>:<password>
+        rsa_decrypt_key_entry_id: Entry ID of a RSA key.
+        types: A CSV list of types.
+        types_inclusive_or_exclusive: Should types be inclusive or exclusive
+        extensions: A CSV list of extensions.
+        extensions_inclusive_or_exclusive: Should extensions be inclusive or exclusive
+        limit: Maximum of files to export from PCAP file
+
+    Raises:
+        SystemExit if error occurred.
+    """
     with tempfile.TemporaryDirectory() as dir_path:
         try:
             file_path, file_name = get_file_path_from_id(entry_id)
