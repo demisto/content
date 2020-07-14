@@ -3261,7 +3261,6 @@ def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_o
     email_data = recursive_convert_to_unicode(email_data)
     email_file_name = recursive_convert_to_unicode(email_file_name)
     parent_email_file = recursive_convert_to_unicode(parent_email_file)
-    return_error(email_data)
 
     md = u"### Results:\n"
     if email_file_name:
