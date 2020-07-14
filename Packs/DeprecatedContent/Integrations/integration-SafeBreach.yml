@@ -170,6 +170,7 @@ script:
     - name: rerunData
       description: The rerun command to execute. By default taken from the incident
     description: Rerun the simulation/s related to the incident
+    deprecated: true
   - name: safebreach-get-simulation
     arguments:
     - name: simulationId
@@ -197,6 +198,7 @@ script:
       description: Port
       type: number
     description: Fetch the breach simulation results
+    deprecated: true
   runonce: false
 tests:
   - No tests - deprecated. Test was moved to NonCircleTests folder.

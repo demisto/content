@@ -33,6 +33,7 @@ configuration:
   - Data Leak
   required: false
   type: 16
+  defaultvalue: Network Access,Network Inspection,Endpoint,Email,Web,Data Leak
 - display: Insight Data Type
   hidden: false
   name: insightDataType
@@ -45,6 +46,7 @@ configuration:
   - Protocol
   required: false
   type: 16
+  defaultvalue: Hash,Domain,URI,Command,Port,Protocol
 - additionalinfo: The maximum number of indicators to generate. The default is 1000.
   display: Indicators Limit
   hidden: false
@@ -86,7 +88,6 @@ configuration:
   - suddenDeath
   required: false
   type: 17
-  display: ''
 - display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
@@ -101,7 +102,6 @@ configuration:
 - name: feedExpirationInterval
   required: false
   type: 1
-  display: ''
 - display: Trust any certificate (not secure)
   name: insecure
   required: false

@@ -15,7 +15,7 @@ Add a new one by typing: **config apikeys add --name <key_name>**
 ## Configure SafeBreach on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for SafeBreach v2 Phase 2.
+2. Search for SafeBreach v2.
 3. Click **Add instance** to create and configure a new integration instance.
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -67,6 +67,29 @@ Every customer environment might have some of the insights depending on the simu
 | 16 |  Data Leak | Other  | Exfiltration of sensitive data assets
 | 15 |  Email | Hash  | Email with encrypted malicious attachments
 | 24 |  Email |Hash  | Email with non-encrypted malicious attachment 
+
+## Playbooks
+
+#### SafeBreach - Rerun Insights 
+- This playbook reruns a SafeBreach insight based on id and waits until
+it completes. Returns the updated insight object after post rerun.
+
+#### SafeBreach - Compare and Validate Insight Indicators
+- This playbook compares Insight indicators before and after being processed.
+  It receives an Insight and it's indicators before validation, fetches updated indicators
+  after rerunning the Insight, and then compares the results to validate mitigation.
+  Indicators are classified as Remediated or Not Remediated based on their validated
+  status and the appropriate field (SafeBreach Remediation Status) is updated.
+  
+#### SafeBreach - Process Non-Behavioral Insights Feed  
+- This playbook automatically remediates all non-behavioral indicators
+  generated from SafeBreach Insights. To validate the remediation, it reruns the related
+  insights and classifies the indicators as Remediated or Not Remediated.
+  
+#### SafeBreach - Rerun Single Insight 
+- This is an auxiliary sub-playbook that reruns a single insight using
+  a specified Insight Id as an input. It is used to loop over insights as part of
+  the main rerun playbook - "SafeBreach Rerun Insights".
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.

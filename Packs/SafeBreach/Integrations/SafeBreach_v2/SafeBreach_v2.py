@@ -432,7 +432,7 @@ def get_remediation_data_command(client: Client, args: dict, no_output_mode: boo
     safebreach_context_list.append(safebreach_context)
 
     for item in processed_data:
-        if item['type'].startswith('Attack') or len(processed_data) == 0:
+        if item.get('type').startswith('Attack') or len(processed_data) == 0:
             continue
 
         standard_context_list: Any = []
@@ -601,7 +601,6 @@ def get_insights_command(client: Client, args: Dict, no_output_mode: bool) -> Li
     try:
         insights = sorted(response.json(), key=lambda i: i.get('ruleId'))
     except TypeError:
-        print('Failed to sort SafeBreach insights, skip')
         demisto.info('Failed to sort SafeBreach insights, skip')
 
     if insight_ids and len(insight_ids) > 0:
@@ -615,7 +614,6 @@ def get_insights_command(client: Client, args: Dict, no_output_mode: bool) -> Li
 
     for insight in insights:
         affected_targets = extract_affected_targets(client, insight)
-        # threatGroup = list(filter(lambda o: o != 'N/A', insight.get('threatActors')))
         context_insight = {
             'Name': insight['actionBasedTitle'],
             'Id': insight['ruleId'],
@@ -894,8 +892,6 @@ def main():
     params = demisto.params()
     account_id = params.get('accountId')
     api_key = params.get('apiKey')
-    if not api_key:
-        raise ValueError('API Key is empty!')
     url = fix_url(params.get('url'))
     insight_category_filter = params.get('insightCategory')
     insight_data_type_filter = params.get('insightDataType')

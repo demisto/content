@@ -48,8 +48,6 @@ def merge(args):
     leftkey = args.get('key')  # key of the join from the left dict
     rightkey = args.get('rightkey', leftkey)  # key of the join from the right dict
 
-    if not left or not right or not leftkey or not rightkey:
-        raise ValueError('Invalid inputs')
     return do_merge(left, right, leftkey, rightkey)
 
 
