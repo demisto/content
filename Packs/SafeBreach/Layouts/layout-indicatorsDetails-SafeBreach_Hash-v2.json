@@ -1,12 +1,12 @@
 {
-    "typeId": "e691ed83-fedc-40c6-861a-17b7e1a67618",
+    "typeId": "SafeBreach Hash",
     "version": -1,
-    "TypeName": "e691ed83-fedc-40c6-861a-17b7e1a67618",
+    "TypeName": "SafeBreach Hash",
     "kind": "indicatorsDetails",
     "fromVersion": "5.0.0",
     "layout": {
-        "TypeName": "SafeBreach Registry",
-        "id": "e691ed83-fedc-40c6-861a-17b7e1a67618",
+        "TypeName": "SafeBreach Hash",
+        "id": "SafeBreach Hash",
         "kind": "indicatorsDetails",
         "name": "",
         "system": false,
@@ -290,7 +290,7 @@
                 "type": "custom"
             }
         ],
-        "typeId": "e691ed83-fedc-40c6-861a-17b7e1a67618",
+        "typeId": "SafeBreach Hash",
         "version": -1
     }
 }

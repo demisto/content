@@ -1,12 +1,12 @@
 {
-    "typeId": "9e9cf173-9943-4f40-823f-62ee8e6e5804",
+    "typeId": "SafeBreach IP",
     "version": -1,
-    "TypeName": "9e9cf173-9943-4f40-823f-62ee8e6e5804",
+    "TypeName": "SafeBreach IP",
     "kind": "indicatorsDetails",
     "fromVersion": "5.0.0",
     "layout": {
-        "TypeName": "SafeBreach Domain",
-        "id": "9e9cf173-9943-4f40-823f-62ee8e6e5804",
+        "TypeName": "SafeBreach IP",
+        "id": "SafeBreach IP",
         "kind": "indicatorsDetails",
         "name": "",
         "system": false,
@@ -290,7 +290,7 @@
                 "type": "custom"
             }
         ],
-        "typeId": "9e9cf173-9943-4f40-823f-62ee8e6e5804",
+        "typeId": "SafeBreach IP",
         "version": -1
     }
 }

@@ -686,5 +686,5 @@ view: |-
   }
 inputs: []
 outputs: []
-description:SafeBreach test playbook
+description: SafeBreach test playbook
 fromversion: 5.5.0

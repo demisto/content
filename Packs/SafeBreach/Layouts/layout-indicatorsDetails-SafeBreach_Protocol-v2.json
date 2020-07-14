@@ -1,12 +1,12 @@
 {
-    "typeId": "8ac574e8-a2ad-422a-8d68-d8d6b8bfacd5",
+    "typeId": "SafeBreach Protocol",
     "version": -1,
-    "TypeName": "8ac574e8-a2ad-422a-8d68-d8d6b8bfacd5",
+    "TypeName": "SafeBreach Protocol",
     "kind": "indicatorsDetails",
     "fromVersion": "5.0.0",
     "layout": {
         "TypeName": "SafeBreach Protocol",
-        "id": "8ac574e8-a2ad-422a-8d68-d8d6b8bfacd5",
+        "id": "SafeBreach Protocol",
         "kind": "indicatorsDetails",
         "name": "",
         "system": false,
@@ -290,7 +290,7 @@
                 "type": "custom"
             }
         ],
-        "typeId": "8ac574e8-a2ad-422a-8d68-d8d6b8bfacd5",
+        "typeId": "SafeBreach Protocol",
         "version": -1
     }
 }

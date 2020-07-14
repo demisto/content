@@ -1,12 +1,12 @@
 {
-    "typeId": "72cfe27e-988c-4b75-8f49-2416b3c23e6c",
+    "typeId": "SafeBreach URL",
     "version": -1,
-    "TypeName": "72cfe27e-988c-4b75-8f49-2416b3c23e6c",
+    "TypeName": "SafeBreach URL",
     "kind": "indicatorsDetails",
     "fromVersion": "5.0.0",
     "layout": {
-        "TypeName": "SafeBreach Hash",
-        "id": "72cfe27e-988c-4b75-8f49-2416b3c23e6c",
+        "TypeName": "SafeBreach URL",
+        "id": "SafeBreach URL",
         "kind": "indicatorsDetails",
         "name": "",
         "system": false,
@@ -290,7 +290,7 @@
                 "type": "custom"
             }
         ],
-        "typeId": "72cfe27e-988c-4b75-8f49-2416b3c23e6c",
+        "typeId": "SafeBreach URL",
         "version": -1
     }
 }

@@ -1,12 +1,12 @@
 {
-    "typeId": "3174ea29-aa2f-4919-8edf-473d1b4db216",
+    "typeId": "SafeBreach Command",
     "version": -1,
-    "TypeName": "3174ea29-aa2f-4919-8edf-473d1b4db216",
+    "TypeName": "SafeBreach Command",
     "kind": "indicatorsDetails",
     "fromVersion": "5.0.0",
     "layout": {
-        "TypeName": "SafeBreach URL",
-        "id": "3174ea29-aa2f-4919-8edf-473d1b4db216",
+        "TypeName": "SafeBreach Command",
+        "id": "SafeBreach Command",
         "kind": "indicatorsDetails",
         "name": "",
         "system": false,
@@ -290,7 +290,7 @@
                 "type": "custom"
             }
         ],
-        "typeId": "3174ea29-aa2f-4919-8edf-473d1b4db216",
+        "typeId": "SafeBreach Command",
         "version": -1
     }
 }

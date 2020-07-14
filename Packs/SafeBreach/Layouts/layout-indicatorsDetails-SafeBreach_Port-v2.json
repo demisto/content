@@ -1,12 +1,12 @@
 {
-    "typeId": "5069eb3e-1c86-4e74-855f-19d681b727dd",
+    "typeId": "SafeBreach Port",
     "version": -1,
-    "TypeName": "5069eb3e-1c86-4e74-855f-19d681b727dd",
+    "TypeName": "SafeBreach Port",
     "kind": "indicatorsDetails",
     "fromVersion": "5.0.0",
     "layout": {
         "TypeName": "SafeBreach Port",
-        "id": "5069eb3e-1c86-4e74-855f-19d681b727dd",
+        "id": "SafeBreach Port",
         "kind": "indicatorsDetails",
         "name": "",
         "system": false,
@@ -290,7 +290,7 @@
                 "type": "custom"
             }
         ],
-        "typeId": "5069eb3e-1c86-4e74-855f-19d681b727dd",
+        "typeId": "SafeBreach Port",
         "version": -1
     }
 }

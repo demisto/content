@@ -1,12 +1,12 @@
 {
-    "typeId": "12653ddd-228e-4235-89b4-407192d49e43",
+    "typeId": "SafeBreach Process",
     "version": -1,
-    "TypeName": "12653ddd-228e-4235-89b4-407192d49e43",
+    "TypeName": "SafeBreach Process",
     "kind": "indicatorsDetails",
     "fromVersion": "5.0.0",
     "layout": {
         "TypeName": "SafeBreach Process",
-        "id": "12653ddd-228e-4235-89b4-407192d49e43",
+        "id": "SafeBreach Process",
         "kind": "indicatorsDetails",
         "name": "",
         "system": false,
@@ -290,7 +290,7 @@
                 "type": "custom"
             }
         ],
-        "typeId": "12653ddd-228e-4235-89b4-407192d49e43",
+        "typeId": "SafeBreach Process",
         "version": -1
     }
 }

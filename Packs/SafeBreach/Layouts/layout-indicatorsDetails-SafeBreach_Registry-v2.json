@@ -1,12 +1,12 @@
 {
-    "typeId": "53c5bf77-40f5-45ea-80ac-5bb9c2c0b37b",
+    "typeId": "SafeBreach Registry",
     "version": -1,
-    "TypeName": "53c5bf77-40f5-45ea-80ac-5bb9c2c0b37b",
+    "TypeName": "SafeBreach Registry",
     "kind": "indicatorsDetails",
     "fromVersion": "5.0.0",
     "layout": {
-        "TypeName": "SafeBreach Command",
-        "id": "53c5bf77-40f5-45ea-80ac-5bb9c2c0b37b",
+        "TypeName": "SafeBreach Registry",
+        "id": "SafeBreach Registry",
         "kind": "indicatorsDetails",
         "name": "",
         "system": false,
@@ -290,7 +290,7 @@
                 "type": "custom"
             }
         ],
-        "typeId": "53c5bf77-40f5-45ea-80ac-5bb9c2c0b37b",
+        "typeId": "SafeBreach Registry",
         "version": -1
     }
 }
