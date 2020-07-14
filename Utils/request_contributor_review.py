@@ -124,8 +124,7 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True)
         with open(pack_metadata_path, 'r') as pack_metadata_file:
             pack_metadata = json.load(pack_metadata_file)
 
-        if pack_metadata.get('support') != XSOAR_SUPPORT and PACK_METADATA_GITHUB_USER_FIELD in pack_metadata \
-                and pack_metadata[PACK_METADATA_GITHUB_USER_FIELD]:
+        if pack_metadata.get('support') != XSOAR_SUPPORT and pack_metadata.get(PACK_METADATA_GITHUB_USER_FIELD):
             pack_reviewers = pack_metadata[PACK_METADATA_GITHUB_USER_FIELD]
             pack_reviewers = pack_reviewers if isinstance(pack_reviewers, list) else pack_reviewers.split(",")
             github_users = [u.lower() for u in pack_reviewers]
