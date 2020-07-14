@@ -186,7 +186,7 @@ def main(
         types_inclusive_or_exclusive: Optional[str] = 'inclusive',
         extensions: Optional[str] = None,
         extensions_inclusive_or_exclusive: str = 'inclusive',
-        limit: Optional[str] = '5',
+        limit: str = '5',
 ):
     with tempfile.TemporaryDirectory() as dir_path:
         try:
