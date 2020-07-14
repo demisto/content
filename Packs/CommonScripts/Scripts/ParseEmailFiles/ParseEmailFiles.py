@@ -3261,6 +3261,7 @@ def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_o
     email_data = recursive_convert_to_unicode(email_data)
     email_file_name = recursive_convert_to_unicode(email_file_name)
     parent_email_file = recursive_convert_to_unicode(parent_email_file)
+    return_error(email_data)
 
     md = u"### Results:\n"
     if email_file_name:
@@ -3276,7 +3277,7 @@ def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_o
     md += u"* {0}:\t{1}\n".format('To', email_data.get('To') or "")
     md += u"* {0}:\t{1}\n".format('CC', email_data.get('CC') or "")
     md += u"* {0}:\t{1}\n".format('Subject', email_data.get('Subject') or "")
-    if 'Text' in email_data:
+    if 'Text' in email_data and email_data['Text']:
         text = email_data['Text'].replace('<', '[').replace('>', ']')
         md += u"* {0}:\t{1}\n".format('Body/Text', text or "")
     if 'HTML' in email_data:

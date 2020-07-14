@@ -1,4 +1,5 @@
 ## [Unreleased]
+- Fixed an issue where the body text of the email was None.
 
 
 ## [20.5.2] - 2020-05-26
