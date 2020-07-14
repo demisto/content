@@ -71,11 +71,13 @@ references:
   attach_workspace: &attach_workspace
     attach_workspace:
       at: *workspace_root
+
   add_ssh_keys: &add_ssh_keys
     add_ssh_keys:
       fingerprints:
         - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
         - "f5:25:6a:e5:ac:4b:84:fb:60:54:14:82:f1:e9:6c:f9" # disable-secrets-detection
+
   prepare_environment: &prepare_environment
     run:
       name: Prepare Environment
@@ -143,9 +145,11 @@ references:
         unzip -q "$CIRCLE_ARTIFACTS/content_test.zip" -d "test_content_dir"
         zip -j "$CIRCLE_ARTIFACTS/all_content.zip" test_content_dir/*
         rm -r test_content_dir
+
   restore_cache: &restore_cache
     restore_cache:
       key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
+
   destroy_instances: &destroy_instances
     run:
       name: Destroy Instances
@@ -180,12 +184,13 @@ references:
       paths:
         - project
 
-  Secrets: &Secrets
+  secrets: &secrets
     run:
       name: Secrets
       when: always
       command: |
         demisto-sdk secrets --post-commit --ignore-entropy
+
   validate_files_and_yaml: &validate_files_and_yaml
     run:
       name: Validate Files and Yaml
@@ -202,6 +207,7 @@ references:
 
         [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD="false" || CHECK_BACKWARD="true"
         ./Tests/scripts/validate.sh
+
   run_unit_testing_and_lint: &run_unit_testing_and_lint
     run:
       name: Run Unit Testing and Lint
@@ -224,6 +230,7 @@ references:
         else
           demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
         fi
+
   infrastructure_testing: &infrastructure_testing
     run:
       name: Infrastructure testing
@@ -235,12 +242,14 @@ references:
         if [ -n "${DEMISTO_SDK_NIGHTLY}" ] ; then
           ./Tests/scripts/sdk_pylint_check.sh
         fi
+
   create_id_set: &create_id_set
     run:
       name: Create ID Set
       when: always
       command: |
         demisto-sdk create-id-set -o ./Tests/id_set.json
+
   build_content_descriptor: &build_content_descriptor
     run:
       name: Build Content Descriptor
@@ -254,12 +263,14 @@ references:
             # new release notes summary generator in packs format
             python3 Utils/release_notes_generator.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM --output $CIRCLE_ARTIFACTS/packs-release-notes.md
         fi
+
   common_server_documentation: &common_server_documentation
     run:
       name: Common Server Documentation
       when: always
       command: |
         ./Documentation/commonServerDocs.sh
+
   collect_test_list_and_content_packs: &collect_test_list_and_content_packs
     run:
       name: Collect Test List And Content Packs
@@ -273,12 +284,14 @@ references:
 
         [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
         python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY
+
   calculate_packs_dependencies: &calculate_packs_dependencies
     run:
       name: Calculate Packs Dependencies
       when: always
       command: |
         python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/id_set.json -o $CIRCLE_ARTIFACTS/packs_dependencies.json
+
   update_tests_step: &update_tests_step
     run:
       name: Update Tests step
@@ -360,7 +373,7 @@ jobs:
             - *restore_cache
             - *add_ssh_keys
             - *prepare_environment
-            - *Secrets
+            - *secrets
             - *validate_files_and_yaml
             - run:
                 name: Content Docs Site
@@ -838,7 +851,7 @@ jobs:
       - setup_remote_docker
       - *restore_cache
       - *prepare_environment
-      - *Secrets
+      - *secrets
       - *validate_files_and_yaml
       - *run_unit_testing_and_lint
       - *infrastructure_testing
