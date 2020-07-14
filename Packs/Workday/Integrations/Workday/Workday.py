@@ -7,7 +7,6 @@ from CommonServerPython import *
 
 requests.packages.urllib3.disable_warnings()
 
-
 # CONSTANTS
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 API_VERSION = "v34.0"
@@ -95,9 +94,9 @@ def create_worker_context(workers, num_of_managers):
         # Common Paths for fields
         name_detail_data_path = worker.get('Personal_Data', {}).get('Name_Data', {}).get('Legal_Name_Data', {}). \
             get('Name_Detail_Data')
-        position_data_path = worker.get('Employment_Data', {}).get('Worker_Job_Data', {}).get('Position_Data')
-        worker_status_data = worker.get('Employment_Data', {}).get('Worker_Status_Data')
-        business_site_address_data = position_data_path.get('Business_Site_Summary_Data', {}).get('Address_Data')
+        position_data_path = worker.get('Employment_Data', {}).get('Worker_Job_Data', {}).get('Position_Data', {})
+        worker_status_data = worker.get('Employment_Data', {}).get('Worker_Status_Data', {})
+        business_site_address_data = position_data_path.get('Business_Site_Summary_Data', {}).get('Address_Data', {})
         if isinstance(business_site_address_data, list):
             business_site_address_data = business_site_address_data[-1]
 
@@ -109,54 +108,67 @@ def create_worker_context(workers, num_of_managers):
             "Legal_Last_Name": name_detail_data_path.get('Last_Name'),
             "Preferred_First_Name": name_detail_data_path.get('First_Name'),
             "Preferred_Last_Name": name_detail_data_path.get('Last_Name'),
-            "Position_ID": position_data_path.get('Position_ID'),
-            "Position_Title": position_data_path.get('Position_Title'),
-            "Business_Title": position_data_path.get('Business_Title'),
-            "Start_Date": position_data_path.get('Start_Date'),
-            "End_Employment_Reason_Reference": position_data_path['End_Employment_Reason_Reference']['ID'][1]['#text']
-            if position_data_path.get('End_Employment_Reason_Reference') else "",
-            "Worker_Type": position_data_path['Worker_Type_Reference']['ID'][1]['#text'],
-            "Position_Time_Type": position_data_path['Position_Time_Type_Reference']['ID'][1]['#text'],
-            "Scheduled_Weekly_Hours": position_data_path.get('Scheduled_Weekly_Hours'),
-            "Default_Weekly_Hours": position_data_path.get('Default_Weekly_Hours'),
-            "Full_Time_Equivalent_Percentage": position_data_path.get('Full_Time_Equivalent_Percentage'),
-            "Exclude_from_Headcount": position_data_path.get('Exclude_from_Headcount'),
-            "Pay_Rate_Type": position_data_path['Pay_Rate_Type_Reference']['ID'][1]['#text']
-            if position_data_path.get('Pay_Rate_Type_Reference') else "",
-            "Job_Profile_Name": position_data_path.get('Job_Profile_Summary_Data', {}).get('Job_Profile_Name'),
-            "Work_Shift_Required": position_data_path.get('Job_Profile_Summary_Data', {}).get('Work_Shift_Required'),
-            "Critical_Job": position_data_path.get('Job_Profile_Summary_Data', {}).get('Critical_Job'),
-            "Business_Site_id": position_data_path.get('Business_Site_Summary_Data', {}).get('Location_Reference', {}).
-            get('ID')[1]['#text'],
-            "Business_Site_Name": position_data_path.get('Business_Site_Summary_Data', {}).get('Name'),
-            "Business_Site_Type": position_data_path.get('Business_Site_Summary_Data', {}).
-            get('Location_Type_Reference').get('ID')[1]['#text'],
-            "Business_Site_Address": {
-                "Address_ID": business_site_address_data.get('Address_ID'),
-                "Formatted_Address": business_site_address_data.get("@{urn:com.workday/bsvc}Formatted_Address"),
-                "Country": business_site_address_data.get('Country_Reference', {}).get('ID')[1]['#text'],
-                "Postal_Code": business_site_address_data.get('Postal_Code'),
-            },
-            "End_Date": position_data_path.get('End_Date'),
-            "Pay_Through_Date": position_data_path.get('Pay_Through_Date'),
-            "Active": bool(int(worker_status_data.get('Active'))),
-            "Hire_Date": worker_status_data.get('Hire_Date'),
-            "Hire_Reason": worker_status_data.get('Hire_Reason_Reference', {}).get('ID')[2]['#text'],
-            "First_Day_of_Work": worker_status_data.get('First_Day_of_Work'),
-            "Retired": worker_status_data.get('Retired'),
-            # Number of days unemployed since the employee first joined the work force. Used only for China:
-            "Days_Unemployed": worker_status_data.get('Days_Unemployed'),
-            "Terminated": bool(int(worker_status_data.get('Terminated'))),
-            "Rehire": worker_status_data.get('Rehire'),
-            "Resignation_Date": worker_status_data.get('Resignation_Date'),
-            "Has_International_Assignment": worker.get('Employment_Data', {}).
-            get('International_Assignment_Summary_Data', {}).get('Has_International_Assignment'),
+            "Has_International_Assignment": worker.get('Employment_Data', {}).get(
+                'International_Assignment_Summary_Data', {}).get('Has_International_Assignment'),
             "Home_Country_Reference":
                 worker.get('Employment_Data', {}).get('International_Assignment_Summary_Data', {}).get(
-                    'Home_Country_Reference', {})['ID'][1]['#text'],
-            "Photo": worker.get('Photo_Data', {}).get('Image')
+                    'Home_Country_Reference', {})['ID'][1]['#text'] if worker.get('Employment_Data', {}).get(
+                    'International_Assignment_Summary_Data', {}).get('Home_Country_Reference') else None,
+            "Photo": worker.get('Photo_Data', {}).get('Image')}
 
-        }
+        if position_data_path:
+            position_context = {
+                "Position_ID": position_data_path.get('Position_ID'),
+                "Position_Title": position_data_path.get('Position_Title'),
+                "Business_Title": position_data_path.get('Business_Title'),
+                "Start_Date": position_data_path.get('Start_Date'),
+                "End_Employment_Reason_Reference": position_data_path['End_Employment_Reason_Reference']['ID'][1][
+                    '#text']
+                if position_data_path.get('End_Employment_Reason_Reference') else "",
+                "Worker_Type": position_data_path['Worker_Type_Reference']['ID'][1]['#text'],
+                "Position_Time_Type": position_data_path['Position_Time_Type_Reference']['ID'][1]['#text'],
+                "Scheduled_Weekly_Hours": position_data_path.get('Scheduled_Weekly_Hours'),
+                "Default_Weekly_Hours": position_data_path.get('Default_Weekly_Hours'),
+                "Full_Time_Equivalent_Percentage": position_data_path.get('Full_Time_Equivalent_Percentage'),
+                "Exclude_from_Headcount": position_data_path.get('Exclude_from_Headcount'),
+                "Pay_Rate_Type": position_data_path['Pay_Rate_Type_Reference']['ID'][1]['#text']
+                if position_data_path.get('Pay_Rate_Type_Reference') else "",
+                "Job_Profile_Name": position_data_path.get('Job_Profile_Summary_Data', {}).get('Job_Profile_Name'),
+                "Work_Shift_Required": position_data_path.get('Job_Profile_Summary_Data', {}).get(
+                    'Work_Shift_Required'),
+                "Critical_Job": position_data_path.get('Job_Profile_Summary_Data', {}).get('Critical_Job'),
+                "Business_Site_id":
+                    position_data_path.get('Business_Site_Summary_Data', {}).get('Location_Reference', {}).get('ID')[1][
+                        '#text'],
+                "Business_Site_Name": position_data_path.get('Business_Site_Summary_Data', {}).get('Name'),
+                "Business_Site_Type": position_data_path.get('Business_Site_Summary_Data', {}).
+                    get('Location_Type_Reference').get('ID')[1]['#text'],
+                "Business_Site_Address": {
+                    "Address_ID": business_site_address_data.get('Address_ID'),
+                    "Formatted_Address": business_site_address_data.get("@{urn:com.workday/bsvc}Formatted_Address"),
+                    "Country": business_site_address_data.get('Country_Reference', {}).get('ID')[1]['#text'],
+                    "Postal_Code": business_site_address_data.get('Postal_Code'),
+                },
+                "End_Date": position_data_path.get('End_Date'),
+                "Pay_Through_Date": position_data_path.get('Pay_Through_Date'),
+            }
+            worker_context.update(position_context)
+        if worker_status_data:
+            status_data_context = {
+                "Active": bool(int(worker_status_data.get('Active'))) if worker_status_data.get('Active') else None,
+                "Hire_Date": worker_status_data.get('Hire_Date'),
+                "Hire_Reason": worker_status_data.get('Hire_Reason_Reference', {}).get('ID')[2]['#text'],
+                "First_Day_of_Work": worker_status_data.get('First_Day_of_Work'),
+                "Retired": worker_status_data.get('Retired'),
+                # Number of days unemployed since the employee first joined the work force. Used only for China:
+                "Days_Unemployed": worker_status_data.get('Days_Unemployed'),
+                "Terminated": bool(int(worker_status_data.get('Terminated'))) if worker_status_data.get('Terminated')
+                else None,
+                "Rehire": worker_status_data.get('Rehire'),
+                "Resignation_Date": worker_status_data.get('Resignation_Date')
+            }
+            worker_context.update(status_data_context)
+
         if worker_status_data.get('Terminated') == '1':
             worker_context["Termination_Date"] = worker_status_data.get("Termination_Date")
             worker_context["Primary_Termination_Reason"] = \
@@ -248,7 +260,7 @@ class Client(BaseClient):
             body = GET_EMPLOYEES_REQ.format(
                 token=self.token, username=self.username, password=self.password, api_version=API_VERSION, page=page,
                 count=count)
-        raw_response = self._http_request(method="POST", url_suffix="", data=body, resp_type='text', timeout=30)
+        raw_response = self._http_request(method="POST", url_suffix="", data=body, resp_type='text', timeout=120)
         return convert_to_json(raw_response)
 
 
