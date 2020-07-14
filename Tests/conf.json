@@ -8,6 +8,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Zimperium",
+            "playbookID": "Zimperium_Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "ServiceDeskPlus",
             "playbookID": "Service Desk Plus Test"
         },
@@ -1223,10 +1228,6 @@
             "nightly": true
         },
         {
-            "integrations": "jira",
-            "playbookID": "Jira-Test"
-        },
-        {
             "integrations": "jira-v2",
             "playbookID": "Jira-v2-Test",
             "timeout": 500
@@ -1236,14 +1237,14 @@
             "playbookID": "IPInfoTest"
         },
         {
-            "integrations": "jira",
             "playbookID": "VerifyHumanReadableFormat"
         },
         {
             "playbookID": "strings-test"
         },
         {
-            "playbookID": "TestCommonPython"
+            "playbookID": "TestCommonPython",
+            "timeout": 500
         },
         {
             "playbookID": "TestFileCreateAndUpload"
@@ -2836,7 +2837,8 @@
         {
             "integrations": "Workday",
             "playbookID": "Workday - Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 600
         },
         {
             "integrations": "Unit42 Feed",
@@ -2857,7 +2859,6 @@
     "skipped_tests": {
         "PAN-OS DAG Configuration Test": "Issue 60693",
         "Phishing Classifier V2 ML Test": "Issue 26066",
-        "Workday - Test": "Issue 25896",
         "CuckooTest": "Issue 25601",
         "RedLockTest": "Issue 24600",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 25477",
@@ -2937,7 +2938,6 @@
         "Cisco CloudLock": "No instance",
         "SentinelOne": "No instance",
         "Vectra v2": "No instance",
-        "Trend Micro Apex": "Issue 23632",
         "Awake Security": "Issue 23376",
         "ExtraHop": "No license, issue 23731",
         "RiskSense": "We should get an instance talk to Francesco",
