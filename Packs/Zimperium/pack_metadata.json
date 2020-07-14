@@ -1,0 +1,15 @@
+{
+    "name": "Zimperium",
+    "description": "Mobile Threat Defense",
+    "support": "xsoar",
+    "serverMinVersion": "5.0.0",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-06-08T07:42:46Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": ["Mobile"]
+}
