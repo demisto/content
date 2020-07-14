@@ -9,6 +9,7 @@ import json
 import glob
 import random
 import argparse
+from distutils.version import LooseVersion
 from typing import Dict
 from Tests.Marketplace.marketplace_services import IGNORED_FILES
 import demisto_sdk.commands.common.tools as tools
@@ -1108,6 +1109,12 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
 
     (modified_files_with_relevant_tests, modified_tests_list, changed_common, is_conf_json, sample_tests,
      modified_metadata_list, is_reputations_json, is_indicator_json) = get_modified_files_for_testing(files_string)
+    all_modified_files_paths = set(
+        modified_files_with_relevant_tests + modified_tests_list + changed_common + sample_tests
+    ).union(modified_metadata_list)
+    from_version, to_version = get_from_version_and_to_version_from_modified_files(all_modified_files_paths, id_set)
+
+    create_filter_envs_file(from_version, to_version)
 
     tests = set([])
     packs_to_install = set([])
@@ -1172,17 +1179,41 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     return tests, packs_to_install
 
 
-def create_filter_envs_file(tests, two_before_ga, one_before_ga, ga, conf, id_set):
+def get_from_version_and_to_version_from_modified_files(all_modified_files_paths, id_set):
+    max_to_version = LooseVersion('0.0.0')
+    min_from_version = LooseVersion('99.99.99')
+    for _, artifacts in id_set.items():
+        for artifact_dict in artifacts:
+            for _, artifact_details in artifact_dict.items():
+                if artifact_details.get('file_path') in all_modified_files_paths:
+                    from_version = artifact_details.get('fromversion')
+                    to_version = artifact_details.get('toversion')
+                    if from_version:
+                        min_from_version = min(min_from_version, LooseVersion(from_version))
+                    if to_version:
+                        max_to_version = max(max_to_version, LooseVersion(to_version))
+    if max_to_version.vstring == '0.0.0':
+        max_to_version = LooseVersion('99.99.99')
+    if min_from_version.vstring == '99.99.99':
+        min_from_version = LooseVersion('0.0.0')
+    print(f'modified files are {all_modified_files_paths}')
+    print(f'lowest from version found is {min_from_version}')
+    print(f'highest to version found is {max_to_version}')
+    return min_from_version, max_to_version
+
+
+def create_filter_envs_file(from_version, to_version):
     """Create a file containing all the envs we need to run for the CI"""
     # always run master and PreGA
+    two_before_ga = AMI_BUILDS.get('TwoBefore-GA', '0').split('-')[0]
+    one_before_ga = AMI_BUILDS.get('OneBefore-GA', '0').split('-')[0]
+    ga = AMI_BUILDS.get('GA', '0').split('-')[0]
     envs_to_test = {
         'Demisto PreGA': True,
         'Demisto Marketplace': True,
-        'Demisto two before GA': is_any_test_runnable(test_ids=tests, server_version=two_before_ga, conf=conf,
-                                                      id_set=id_set),
-        'Demisto one before GA': is_any_test_runnable(test_ids=tests, server_version=one_before_ga, conf=conf,
-                                                      id_set=id_set),
-        'Demisto GA': is_any_test_runnable(test_ids=tests, server_version=ga, conf=conf, id_set=id_set),
+        'Demisto two before GA': is_runnable_in_server_version(from_version.vstring, two_before_ga, to_version.vstring),
+        'Demisto one before GA': is_runnable_in_server_version(from_version.vstring, one_before_ga, to_version.vstring),
+        'Demisto GA': is_runnable_in_server_version(from_version.vstring, ga, to_version.vstring),
     }
     print("Creating filter_envs.json with the following envs: {}".format(envs_to_test))
     with open("./Tests/filter_envs.json", "w") as filter_envs_file:
@@ -1216,7 +1247,6 @@ def create_test_file(is_nightly, skip_save=False):
         ga = AMI_BUILDS.get('GA', '0').split('-')[0]
 
         tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name, two_before_ga)
-        create_filter_envs_file(tests, two_before_ga, one_before_ga, ga, CONF, ID_SET)
 
         tests_string = '\n'.join(tests)
         if tests_string:
