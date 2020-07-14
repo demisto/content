@@ -1,7 +1,7 @@
 {
     "id": "unifiedFileRep",
     "group": "indicator",
-    "name": "File Indicator Layout",
+    "name": "File Indicator",
     "version": -1,
     "fromVersion": "6.0.0",
     "indicatorsDetails": {

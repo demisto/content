@@ -1,7 +1,7 @@
 {
 	"id": "cveRep",
 	"group": "indicator",
-	"name": "CVE Indicator Layout",
+	"name": "CVE Indicator",
 	"version": -1,
 	"fromVersion": "6.0.0",
 	"indicatorsDetails": {

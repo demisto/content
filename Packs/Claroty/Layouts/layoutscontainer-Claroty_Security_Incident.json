@@ -1,7 +1,7 @@
 {
     "id": "Claroty Security Incident",
     "group": "incident",
-    "name": "Claroty Security Incident Layout",
+    "name": "Claroty Security Incident",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {

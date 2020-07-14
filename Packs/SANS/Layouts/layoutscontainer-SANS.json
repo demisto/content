@@ -1,7 +1,7 @@
 {
     "id": "SANS",
     "group": "incident",
-    "name": "SANS Incident Layout",
+    "name": "SANS Incident",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {

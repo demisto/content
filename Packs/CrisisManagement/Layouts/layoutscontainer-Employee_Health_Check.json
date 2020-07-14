@@ -1,7 +1,7 @@
 {
     "id": "Employee Health Check",
     "group": "incident",
-    "name": "Employee Health Check Incident Layout",
+    "name": "Employee Health Check Incident",
     "version": -1,
     "fromVersion": "6.0.0",
     "edit": {

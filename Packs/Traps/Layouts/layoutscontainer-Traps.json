@@ -1,7 +1,7 @@
 {
     "id": "Traps",
     "group": "incident",
-    "name": "Traps Incident Layout",
+    "name": "Traps Incident",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {

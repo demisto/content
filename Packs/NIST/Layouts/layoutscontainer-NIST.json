@@ -1,7 +1,7 @@
 {
     "id": "NIST",
     "group": "incident",
-    "name": "NIST Incident Layout",
+    "name": "NIST Incident",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {

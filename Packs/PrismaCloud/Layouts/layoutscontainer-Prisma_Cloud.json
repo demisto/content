@@ -1,7 +1,7 @@
 {
     "id": "Prisma Cloud",
     "group": "incident",
-    "name": "Prisma Cloud Incident Layout",
+    "name": "Prisma Cloud Incident",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {

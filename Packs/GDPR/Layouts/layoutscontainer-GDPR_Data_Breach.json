@@ -1,7 +1,7 @@
 {
     "id": "GDPR Data Breach",
     "group": "incident",
-    "name": "GDPR Data Breach Incident Layout",
+    "name": "GDPR Data Breach Incident",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {

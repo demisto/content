@@ -1,7 +1,7 @@
 {
     "id": "Panorama Best Practice Assessment",
     "group": "incident",
-    "name": "Panorama Best Practice Assessment Incident Layout",
+    "name": "Panorama Best Practice Assessment Incident",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {

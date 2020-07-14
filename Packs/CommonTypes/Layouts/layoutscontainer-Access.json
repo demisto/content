@@ -1,7 +1,7 @@
 {
     "id": "Access",
     "group": "incident",
-    "name": "Access Incident Layout",
+    "name": "Access Incident",
     "version": -1,
     "fromVersion": "6.0.0",
     "details": {

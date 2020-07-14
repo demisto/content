@@ -1,7 +1,7 @@
 {
     "id": "Sixgill Threat",
     "group": "incident",
-    "name": "Sixgill Threat Incident Layout",
+    "name": "Sixgill Threat",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {

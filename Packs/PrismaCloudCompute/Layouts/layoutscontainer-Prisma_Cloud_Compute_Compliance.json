@@ -1,7 +1,7 @@
 {
     "id": "Prisma Cloud Compute Compliance",
     "group": "incident",
-    "name": "Prisma Cloud Compute Compliance Incident Layout",
+    "name": "Prisma Cloud Compute Compliance Incident",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {

@@ -1,7 +1,7 @@
 {
     "id": "urlRep",
     "group": "indicator",
-    "name": "URL Indicator Layout",
+    "name": "URL Indicator",
     "version": -1,
     "fromVersion": "6.0.0",
     "indicatorsDetails": {

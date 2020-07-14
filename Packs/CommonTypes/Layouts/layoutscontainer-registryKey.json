@@ -1,7 +1,7 @@
 {
     "id": "registryKey",
     "group": "indicator",
-    "name": "Registry Key Indicator Layout",
+    "name": "Registry Key Indicator",
     "version": -1,
     "fromVersion": "6.0.0",
     "indicatorsDetails": {

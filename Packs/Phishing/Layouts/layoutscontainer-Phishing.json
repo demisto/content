@@ -1,7 +1,7 @@
 {
     "id": "Phishing",
     "group": "incident",
-    "name": "Phishing Incident Layout",
+    "name": "Phishing Incident",
     "version": -1,
     "fromVersion": "6.0.0",
     "edit": {

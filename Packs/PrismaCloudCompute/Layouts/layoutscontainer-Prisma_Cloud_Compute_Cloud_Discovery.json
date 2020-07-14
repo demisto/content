@@ -1,7 +1,7 @@
 {
     "id": "Prisma Cloud Compute Cloud Discovery",
     "group": "incident",
-    "name": "Prisma Cloud Compute Cloud Discovery Incident Layout",
+    "name": "Prisma Cloud Compute Cloud Discovery Incident",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {

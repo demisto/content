@@ -1,7 +1,7 @@
 {
     "id": "Logz.io Alert",
     "group": "incident",
-    "name": "Logz.io Alert Incident Layout",
+    "name": "Logz.io Alert",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {

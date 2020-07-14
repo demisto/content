@@ -1,7 +1,7 @@
 {
     "id": "Review Indicators Manually",
     "group": "incident",
-    "name": "Review Indicators Manually Incident Layout",
+    "name": "Review Indicators Manually Incident",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {

@@ -1,7 +1,7 @@
 {
     "id": "AWS EC2 Instance Misconfiguration",
     "group": "incident",
-    "name": "AWS EC2 Instance Misconfiguration Incident Layout",
+    "name": "AWS EC2 Instance Misconfiguration Incident",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {
