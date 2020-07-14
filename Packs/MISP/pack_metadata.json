@@ -2,7 +2,7 @@
   "name": "MISP",
   "description": "Malware information sharing platform and threat sharing.",
   "support": "none",
-  "currentVersion": "1.0.0",
+  "currentVersion": "1.0.1",
   "author": "lala",
   "url": "",
   "certification": "none",

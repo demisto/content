@@ -5,7 +5,7 @@
 		"TypeName": "",
 		"id": "urlRep",
 		"kind": "indicatorsDetails",
-		"modified": "2020-03-26T12:56:24.850115+02:00",
+		"modified": "2020-07-02T10:22:48.067031+03:00",
 		"name": "",
 		"system": false,
 		"tabs": [
@@ -125,14 +125,14 @@
 								"startCol": 0
 							},
 							{
-                                "index": 7,
-                                "endCol": 2,
-                                "height": 24,
-                                "startCol": 0,
+								"endCol": 2,
+								"fieldId": "aggregatedreliability",
+								"height": 24,
+								"id": "b49a3ba0-6f8d-11ea-aeac-6dbd1bcce63e",
+								"index": 7,
 								"sectionItemType": "field",
-                                "fieldId": "aggregatedreliability",
-                                "id": "b49a3ba0-6f8d-11ea-aeac-6dbd1bcce63e"
-                            }
+								"startCol": 0
+							}
 						],
 						"moved": false,
 						"name": "URL Info",
@@ -308,12 +308,12 @@
 						"minH": 1,
 						"minW": 1,
 						"moved": false,
-						"name": "Custom Details",
+						"name": "Feed Related Indicators",
 						"static": false,
 						"type": "customDetails",
-						"w": 1,
+						"w": 3,
 						"x": 0,
-						"y": 10
+						"y": 12
 					},
 					{
 						"displayType": "CARD",
@@ -346,8 +346,8 @@
 						"name": "Extended Details",
 						"static": false,
 						"type": "extendedDetails",
-						"w": 2,
-						"x": 1,
+						"w": 3,
+						"x": 0,
 						"y": 10
 					}
 				],
@@ -359,5 +359,5 @@
 	},
 	"typeId": "urlRep",
 	"version": -1,
-    "fromversion": "5.5.0"
+	"fromversion": "5.5.0"
 }

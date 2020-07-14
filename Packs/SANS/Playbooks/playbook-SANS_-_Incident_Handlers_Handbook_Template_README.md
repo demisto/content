@@ -33,7 +33,7 @@ There are no outputs for this playbook.
 
 ## Playbook Demo Video
 <video controls>
-    <source src="https://github.com/demisto/content/raw/8b4bf17c361d470ce5974b26a7ff6b6be4b1d45e/Packs/SANS/doc_files/SANS-Demo.mp4"
+    <source src="https://github.com/demisto/content-assets/raw/7982404664dc68c2035b7c701d093ec026628802/Assets/SANS/SANS-Demo.mp4"
             type="video/mp4"/>
-    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content/blob/8b4bf17c361d470ce5974b26a7ff6b6be4b1d45e/Packs/SANS/doc_files/SANS-Demo.mp4
+    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content-assets/blob/7982404664dc68c2035b7c701d093ec026628802/Assets/SANS/SANS-Demo.mp4
 </video>
