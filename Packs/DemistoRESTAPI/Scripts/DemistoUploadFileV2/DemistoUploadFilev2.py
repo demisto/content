@@ -55,12 +55,12 @@ def upload_file_command(args: dict) -> Tuple[str, str]:
 
     response = upload_file(incident_id, entry_id, body)
     if isError(response[0]):
-        raise Exception("There was an issue uploading file. Check API key and input arguments.")
+        raise Exception("There was an issue uploading the file. Check your API key and input arguments.")
 
     uploaded_entry_id = demisto.dt(response, 'Contents.response.entries.id')
     readable = f'File uploaded successfully. Entry ID is {uploaded_entry_id}'
     if body:
-        readable += '. Comment is:' + args.body;
+        readable += f'. Comment is:{body}'
 
     return readable, response
 
