@@ -36,13 +36,13 @@ def run_command(args: list, stdout=subprocess.PIPE, stderr=subprocess.PIPE):
     process = subprocess.Popen(args, stdout=stdout, stderr=stderr)
     stdout_data, stderr_data = process.communicate()
     if process.returncode != 0:
-        raise DemistoException(f'Error returned from tshark command: {process.returncode=}\n {stderr_data=}')
+        raise DemistoException(f'Error returned from tshark command: {process.returncode}\n {stderr_data!r}')
 
     # For debugging purposes
     return stdout_data, stderr_data
 
 
-def filter_files(root: str, files: List[str], /,
+def filter_files(root: str, files: List[str],
                  types: Optional[Set[str]] = None,
                  extensions: Optional[Set[str]] = None,
                  types_inclusive_or_exclusive: Optional[str] = None,
@@ -86,7 +86,7 @@ def filter_files(root: str, files: List[str], /,
 
 
 def upload_files(
-        file_path: str, dir_path: str, /,
+        file_path: str, dir_path: str,
         types: Optional[Set[str]] = None, extensions: Optional[Set[str]] = None,
         types_inclusive_or_exclusive: Optional[str] = None,
         extensions_inclusive_or_exclusive: Optional[str] = None,
