@@ -82,22 +82,29 @@ configuration:
   type: 0
   required: false
 script:
-  script: |-
+  script: >-
     // handle '/' at the end of the url
+
     if (params.url[params.url.length - 1] != '/') {
         params.url = params.url + '/';
     }
 
+
     // backward compatibility
+
     if(!(params.proxy)){
         params.proxy = false;
     }
 
+
     var isOAuth = params.consumerKey && params.accessToken && params.privateKey;
+
     // if not OAuth, check for valid parameters for basic auth, i.e. username & pass, or just APItoken
+
     if(!isOAuth && !(params.username && (params.password || params.APItoken))) {
         throw 'Provide Authorization information, Basic(userName & password / API-token) or OAuth1.0'
     }
+
 
 
     var sendRequest = function (method, resourceUrl, body) {
@@ -124,12 +131,14 @@ script:
     }
 
 
+
     var addQueryParam = function(urlSuffix, paramName, value){
         if (value && value.length > 0){
             urlSuffix = urlSuffix + '&' + paramName + '=' + value;
         }
         return urlSuffix;
     };
+
 
     var uploadFile = function(entryId, issueId) {
         var res = httpMultipart(
@@ -151,6 +160,7 @@ script:
         return JSON.parse(res.Body);
     };
 
+
     var runQuery = function(query, startAt, maxResults) {
         var url = 'rest/api/latest/search?jql='+encodeURIComponent(query);
         url = addQueryParam(url,'startAt',startAt);
@@ -160,6 +170,7 @@ script:
     };
 
 
+
     var cleanNullFields = function(obj) {
         for(prop in obj){
             if(obj[prop] === null || obj[prop] === undefined || obj[prop] ==="" )
@@ -167,6 +178,7 @@ script:
         }
         return obj;
     }
+
 
 
     var generateMDContextGetIssue = function(data) {
@@ -226,6 +238,7 @@ script:
         return getIssueObj;
     }
 
+
     var generateMdContextCreateIssue = function(data) {
         var createIssueObj = {md: [] , context: {Ticket: []}};
         if (args.projectName && args.projectName.length > 0 ){
@@ -245,6 +258,7 @@ script:
     }
 
 
+
     var generateMdCommentOrLinkIssue = function(data) {
         var commentOrLinkMd = [];
         if(!Array.isArray(data)) {
@@ -261,6 +275,7 @@ script:
         return commentOrLinkMd;
     }
 
+
     var generateMdUploadIssue = function(data) {
         var uploadMd = [];
         if(!Array.isArray(data)) {
@@ -276,6 +291,7 @@ script:
         });
         return uploadMd;
     }
+
 
 
     var createIncidentFromTicket = function(issue) {
@@ -346,6 +362,7 @@ script:
         };
     };
 
+
     function getProjectID(projectKey, projectName) {
         var result = sendRequest('GET', 'rest/api/latest/issue/createmeta')
         var jRes = JSON.parse(result.Body);
@@ -359,6 +376,7 @@ script:
         throw 'Project not found';
 
     }
+
 
     var getIssueFields = function(){
         var issue = {};
@@ -442,6 +460,7 @@ script:
         return issue;
     };
 
+
     var GetIssue = function(flag){
         var flag = flag || 0 ;
         var result = sendRequest('GET', 'rest/api/latest/issue/'+args.issueId)
@@ -463,6 +482,7 @@ script:
     }
 
 
+
     var EditStatus = function(){
         // check for all authorized transitions available for this user
         // if the requested transition is availabe, execute it.
@@ -482,7 +502,9 @@ script:
           throw 'Status ' + args.status + ' not found';
     }
 
+
     // The command input arg holds the command sent from the user.
+
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
@@ -651,10 +673,7 @@ script:
     - name: startAt
       description: The index of the first issue to return (0-based) - format int
     - name: maxResults
-      description: the maximum number of issues to return (defaults to 50). The maximum
-        allowable value is dictated by the JIRA property 'jira.search.views.default.max'.
-        If you specify a value that is higher than this number, your search results
-        will be truncated.
+      description: the maximum number of issues to return (defaults to 50). The maximum allowable value is dictated by the JIRA property 'jira.search.views.default.max'. If you specify a value that is higher than this number, your search results will be truncated.
     - name: headers
       description: Headers to display in Human readable format
     outputs:
@@ -758,8 +777,7 @@ script:
     deprecated: true
     arguments:
     - name: globalId
-      description: If a globalId is provided and a remote issue link exists with that
-        globalId, the remote issue link is updated
+      description: If a globalId is provided and a remote issue link exists with that globalId, the remote issue link is updated
     - name: relationship
       description: object relationship to issue , like - causes
     - name: url
@@ -836,3 +854,4 @@ script:
     description: deletes an issue (Deprecated)
   isfetch: true
   runonce: false
+toversion: 4.1.9

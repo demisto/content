@@ -72,8 +72,7 @@ script:
       - year
       - login
       - epoch
-      description: The search unit. login and epoch are only available if timeRangeValue
-        is not provided.
+      description: The search unit. login and epoch are only available if timeRangeValue is not provided.
     - name: policy-name
       auto: PREDEFINED
       predefined:
@@ -361,8 +360,7 @@ script:
     - contextPath: Redlock.DismissedAlert.ID
       description: The IDs of the dismissed alerts
       type: string
-    description: Dismiss the alerts matching the given filter. Must provide either
-      policy IDs or alert IDs.
+    description: Dismiss the alerts matching the given filter. Must provide either policy IDs or alert IDs.
     execution: true
   - name: redlock-reopen-alerts
     arguments:
@@ -476,8 +474,7 @@ script:
     - contextPath: Redlock.ReopenedAlert.ID
       description: IDs of the re-opened alerts
       type: string
-    description: Re-open the alerts matching the given filter.  Must provide either
-      policy IDs or alert IDs.
+    description: Re-open the alerts matching the given filter.  Must provide either policy IDs or alert IDs.
     execution: true
   - name: redlock-list-alert-filters
     arguments: []
@@ -501,3 +498,4 @@ script:
   runonce: false
 defaultClassifier: RedLock
 defaultMapperIn: RedLock-mapper
+toversion: 4.1.9

@@ -2,10 +2,13 @@ commonfields:
   id: StringContains
   version: -1
 name: StringContains
-script: |
+script: >
   var str = args.string;
+
   var substring = args.substring;
+
   var substringSeperator = args.substringSeperator;
+
 
   if (Array.isArray(substring) || substringSeperator) {
       var arr = Array.isArray(substring) ? substring : substring.split(substringSeperator);
@@ -19,6 +22,7 @@ script: |
           return 'yes';
       }
   }
+
   return 'no';
 type: javascript
 tags:
@@ -50,4 +54,5 @@ outputs:
   description: if string does not contain substring
 scripttarget: 0
 tests:
-  - No test - deprecated, didn't have a test prior
+- No test - deprecated, didn't have a test prior
+toversion: 4.1.9

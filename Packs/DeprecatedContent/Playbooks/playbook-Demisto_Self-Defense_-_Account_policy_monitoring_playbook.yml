@@ -64,9 +64,7 @@ tasks:
       id: 4d440741-9f52-4625-8b31-ad0de970fe0b
       version: -1
       name: Any non-SSO users?
-      description: Check if there are any users that weren't created through a SAML
-        login i.e. users created locally in Demisto. In an all-SSO setup there shouldn't
-        be any.
+      description: Check if there are any users that weren't created through a SAML login i.e. users created locally in Demisto. In an all-SSO setup there shouldn't be any.
       type: condition
       iscommand: false
       brand: ""
@@ -347,4 +345,5 @@ view: |-
 inputs: []
 outputs: []
 tests:
-  - No test
+- No test
+toversion: 4.1.9

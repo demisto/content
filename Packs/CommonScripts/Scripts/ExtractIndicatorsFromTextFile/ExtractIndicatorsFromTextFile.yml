@@ -57,3 +57,4 @@ tests:
 - Extract Indicators From File - test
 fromversion: 4.1.0
 tags: []
+toversion: 4.1.9

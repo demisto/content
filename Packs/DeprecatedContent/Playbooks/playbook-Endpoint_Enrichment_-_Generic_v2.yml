@@ -223,8 +223,7 @@ tasks:
       id: 9cee85fe-c940-400e-88e8-b0afb46fbb36
       version: -1
       name: Is Carbon Black Enterprise Response enabled?
-      description: Checks if there is any active instance of the Carbon Black Enterprise integration enabled.
-        Response.
+      description: Checks if there is any active instance of the Carbon Black Enterprise integration enabled. Response.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -804,4 +803,5 @@ outputs:
   description: The domain names of the endpoints that were enriched.
   type: string
 tests:
-  - No Tests
+- No Tests
+toversion: 4.1.9

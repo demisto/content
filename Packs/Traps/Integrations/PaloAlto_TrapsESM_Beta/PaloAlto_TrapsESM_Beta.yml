@@ -60,4 +60,5 @@ script:
   subtype: python3
   dockerimage: demisto/btfl-soup:1.0.0.925
 tests:
-  - no test
+- no test
+toversion: 4.1.9

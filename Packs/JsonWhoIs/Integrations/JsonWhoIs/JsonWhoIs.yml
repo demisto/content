@@ -87,3 +87,4 @@ script:
   subtype: python3
 tests:
 - JsonWhoIs-Test
+toversion: 4.1.9

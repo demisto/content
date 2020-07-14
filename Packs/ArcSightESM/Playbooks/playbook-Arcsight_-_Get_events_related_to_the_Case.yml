@@ -464,4 +464,5 @@ view: |-
 inputs: []
 outputs: []
 tests:
-  - test Arcsight - Get events related to the Case
+- test Arcsight - Get events related to the Case
+toversion: 4.1.9

@@ -2,8 +2,7 @@ id: Intezer - Analyze Uploaded file
 version: -1
 name: Intezer - Analyze Uploaded file
 fromversion: 4.0.0
-description: Upload a file to Intezer Analyze to analyze and enrich the file reputation.
-  (up to 32mb)
+description: Upload a file to Intezer Analyze to analyze and enrich the file reputation. (up to 32mb)
 starttaskid: "0"
 tasks:
   "0":
@@ -348,4 +347,5 @@ outputs:
   description: The actual score.
   type: number
 tests:
-  - No Tests
+- No Tests
+toversion: 4.1.9

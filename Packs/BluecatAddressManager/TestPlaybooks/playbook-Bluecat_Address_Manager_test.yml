@@ -69,8 +69,7 @@ tasks:
       id: 4cf04659-b716-4a9d-8c58-ab2e16d1619a
       version: -1
       name: Query ipv4
-      description: Enriches an ipv4 with data about IP networks and blocks that it
-        belongs to, linked IPs and mac addresses, etc.
+      description: Enriches an ipv4 with data about IP networks and blocks that it belongs to, linked IPs and mac addresses, etc.
       script: '|||bluecat-am-query-ip'
       type: regular
       iscommand: true
@@ -166,8 +165,7 @@ tasks:
       id: 86204ec0-cea4-45be-89ee-1ba7e8777ed0
       version: -1
       name: Query ipv6
-      description: Enriches an ipv4 with data about IP networks and blocks that it
-        belongs to, linked IPs and mac addresses, etc.
+      description: Enriches an ipv4 with data about IP networks and blocks that it belongs to, linked IPs and mac addresses, etc.
       script: '|||bluecat-am-query-ip'
       type: regular
       iscommand: true
@@ -611,3 +609,4 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.1.9

@@ -286,4 +286,5 @@ outputs:
   description: The endpoint
   type: unknown
 tests:
-  - no test
+- no test
+toversion: 4.1.9

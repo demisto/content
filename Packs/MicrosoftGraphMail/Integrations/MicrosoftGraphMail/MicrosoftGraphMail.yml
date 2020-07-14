@@ -12,8 +12,7 @@ configuration:
   name: auth_id
   required: true
   type: 4
-- display: Token (received from the admin consent - see Detailed Instructions (?)
-    section)
+- display: Token (received from the admin consent - see Detailed Instructions (?) section)
   name: tenant_id
   required: true
   type: 4
@@ -30,8 +29,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: Inbox
-  display: Name of the folder from which to fetch incidents (supports Folder ID and
-    sub-folders e.g. Inbox/Phishing)
+  display: Name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g. Inbox/Phishing)
   name: folder_to_fetch
   required: false
   type: 0
@@ -61,8 +59,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: Microsoft Graph lets your app get authorized access to a user's Outlook
-  mail data in a personal or organization account.
+description: Microsoft Graph lets your app get authorized access to a user's Outlook mail data in a personal or organization account.
 display: Microsoft Graph Mail
 name: MicrosoftGraphMail
 script:
@@ -87,16 +84,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The term for which to search. This argument cannot contain reserved
-        characters such as !, $, #, @, etc. For further information, see https://tools.ietf.org/html/rfc3986#section-2.2'
+      description: 'The term for which to search. This argument cannot contain reserved characters such as !, $, #, @, etc. For further information, see https://tools.ietf.org/html/rfc3986#section-2.2'
       isArray: false
       name: search
       required: false
       secret: false
     - default: true
       defaultValue: '1'
-      description: The number of pages of emails to return (maximum is 10 emails per
-        page).
+      description: The number of pages of emails to return (maximum is 10 emails per page).
       isArray: false
       name: pages_to_pull
       required: false
@@ -171,8 +166,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: User ID or principal ID (usually an email address in the format
-        someuser@example.com).
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
@@ -275,8 +269,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: User ID or principal ID (usually an email address in the format
-        someuser@example.com).
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
@@ -299,8 +292,7 @@ script:
     name: msgraph-mail-delete-email
   - arguments:
     - default: false
-      description: User ID or principal ID (usually an email address in the format
-        someuser@example.com).
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
@@ -339,8 +331,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: User ID or principal ID (usually an email address in the format
-        someuser@example.com).
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
@@ -400,8 +391,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: User ID or principal ID (usually an email address in the format
-        someuser@example.com).
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
@@ -438,8 +428,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: User ID or principal ID (usually an email address in the format
-        someuser@example.com).
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
@@ -482,8 +471,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: User ID or principal ID (usually an email address in the format
-        someuser@example.com).
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
@@ -525,8 +513,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: User ID or principal ID (usually an email address in the format
-        someuser@example.com).
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
@@ -568,8 +555,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: User ID or principal ID (usually an email address in the format
-        someuser@example.com).
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
@@ -598,8 +584,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: User ID or principal ID (usually an email address in the format
-        someuser@example.com).
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
@@ -620,8 +605,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: User ID or principal ID (usually an email address in the format
-        someuser@example.com).
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
@@ -633,8 +617,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieves an email message by message ID and uploads the content
-      as an EML file.
+    description: Retrieves an email message by message ID and uploads the content as an EML file.
     execution: false
     name: msgraph-mail-get-email-as-eml
     outputs:
@@ -716,8 +699,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: notFlagged
-      description: 'The flag value that indicates the status of the draft. Can be:
-        "notFlagged", "complete", or "flagged".'
+      description: 'The flag value that indicates the status of the draft. Can be: "notFlagged", "complete", or "flagged".'
       isArray: false
       name: flag
       predefined:
@@ -739,29 +721,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of additional headers in the format, headerName:headerValue.
-        For example, "headerName1:headerValue1,headerName2:headerValue2".
+      description: A comma-separated list of additional headers in the format, headerName:headerValue. For example, "headerName1:headerValue1,headerName2:headerValue2".
       isArray: true
       name: headers
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of War Room entry IDs that contain files,
-        which are used to attach files to the draft. For example, attachIDs=15@8,19@8.
+      description: A comma-separated list of War Room entry IDs that contain files, which are used to attach files to the draft. For example, attachIDs=15@8,19@8.
       isArray: true
       name: attachIDs
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of names of attachments to be displayed
-        in the draft. Must be the same number of elements as attachIDs.
+      description: A comma-separated list of names of attachments to be displayed in the draft. Must be the same number of elements as attachIDs.
       isArray: true
       name: attachNames
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of CIDs to embed attachments within the
-        actual email.
+      description: A comma-separated list of CIDs to embed attachments within the actual email.
       isArray: true
       name: attachCIDs
       required: false
@@ -878,8 +856,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: notFlagged
-      description: 'The flag value that indicates the status for the email. Can be:
-        "notFlagged", "complete", or "flagged".'
+      description: 'The flag value that indicates the status for the email. Can be: "notFlagged", "complete", or "flagged".'
       isArray: false
       name: flag
       predefined:
@@ -901,29 +878,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of additional headers in the format: headerName:headerValue.
-        For example: "headerName1:headerValue1,headerName2:headerValue2".'
+      description: 'A comma-separated list of additional headers in the format: headerName:headerValue. For example: "headerName1:headerValue1,headerName2:headerValue2".'
       isArray: true
       name: headers
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of War Room entry IDs that contain files,
-        which are used to attach files for the email to send. For example, attachIDs=15@8,19@8.
+      description: A comma-separated list of War Room entry IDs that contain files, which are used to attach files for the email to send. For example, attachIDs=15@8,19@8.
       isArray: true
       name: attachIDs
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of names of attachments to display in the
-        email to send. Must be the same number of elements as attachIDs.
+      description: A comma-separated list of names of attachments to display in the email to send. Must be the same number of elements as attachIDs.
       isArray: true
       name: attachNames
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of CIDs to embed attachments within the
-        actual email.
+      description: A comma-separated list of CIDs to embed attachments within the actual email.
       isArray: true
       name: attachCIDs
       required: false
@@ -1023,3 +996,4 @@ script:
   type: python
 tests:
 - MicrosoftGraphMail-Test
+toversion: 4.1.9

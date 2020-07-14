@@ -231,4 +231,5 @@ inputs:
   description: The Name of the miner
 outputs: []
 tests:
-  - block_indicators_-_generic_-_test
+- block_indicators_-_generic_-_test
+toversion: 4.1.9

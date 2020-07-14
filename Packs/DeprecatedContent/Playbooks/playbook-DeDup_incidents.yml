@@ -172,15 +172,11 @@ inputs:
 - key: similarLabels
   value: {}
   required: false
-  description: "Identical\\Similar labels keys.\nYou allow difference in X words between
-    labels. For example, the input:\nEmail\\subject:2,Email\\from\nWill demand:\n1.
-    Email\\from to be identical \n2. Email\\subject to be similar with 2 max words
-    difference\n"
+  description: "Identical\\Similar labels keys.\nYou allow difference in X words between labels. For example, the input:\nEmail\\subject:2,Email\\from\nWill demand:\n1. Email\\from to be identical \n2. Email\\subject to be similar with 2 max words difference\n"
 - key: similarContextKeys
   value: {}
   required: false
-  description: "Identical\\Similar context keys.\nYou allow difference in X words
-    between values. "
+  description: "Identical\\Similar context keys.\nYou allow difference in X words between values. "
 - key: similarCustomFields
   value: {}
   required: false
@@ -196,4 +192,5 @@ outputs:
 - contextPath: isSimilarIncidentFound
   description: Is similar incident found? (true\false)
 tests:
-  - No tests
+- No tests
+toversion: 4.1.9
