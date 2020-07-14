@@ -1,0 +1,209 @@
+id: b9d4fc2d-760f-46e9-88aa-cf324c0df772
+version: -1
+name: trendmicro-cas-email-take-action-and-result
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a27c43fe-4a1a-4e80-8af3-58c0b4da26c2
+    type: start
+    task:
+      id: a27c43fe-4a1a-4e80-8af3-58c0b4da26c2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 9e703140-4b3c-4b68-80bd-a4740a677d7d
+    type: regular
+    task:
+      id: 9e703140-4b3c-4b68-80bd-a4740a677d7d
+      version: -1
+      name: email-take-action
+      script: TrendMicroCAS|||trendmicro-cas-email-take-action
+      type: regular
+      iscommand: true
+      brand: TrendMicroCAS
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      action_type:
+        simple: ${inputs.action_type}
+      mail_message_delivery_time:
+        simple: ${inputs.mail_message_delivery_time}
+      mail_messge_id:
+        simple: ${inputs.mail_messge_id}
+      mail_unique_id:
+        simple: ${inputs.mail_unique_id}
+      mailbox:
+        simple: ${inputs.mailbox}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 7e482f8b-eaa1-4121-8b13-d5a09d43e9f6
+    type: playbook
+    task:
+      id: 7e482f8b-eaa1-4121-8b13-d5a09d43e9f6
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: TrendMicroCAS
+          accessor: EmailTakeAction.batch_id
+          transformers:
+          - operator: LastArrayElement
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: batch_id
+      PollingCommandName:
+        simple: trendmicro-cas-email-action-result-query
+      Timeout:
+        simple: "16"
+      dt:
+        simple: TrendMicroCAS.EmailActionResult(val.status!=='Success'&&val.status!=='Failed'&&val.status!=='Skipped').batch_id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: a3c6c090-db44-469b-8bcc-e854aed5f659
+    type: regular
+    task:
+      id: a3c6c090-db44-469b-8bcc-e854aed5f659
+      version: -1
+      name: trendmicro-cas-email-action-result-query
+      description: Queries the results of actions on email messages
+      script: TrendMicroCAS|||trendmicro-cas-email-action-result-query
+      type: regular
+      iscommand: true
+      brand: TrendMicroCAS
+    scriptarguments:
+      batch_id:
+        complex:
+          root: TrendMicroCAS
+          accessor: EmailTakeAction.batch_id
+          transformers:
+          - operator: LastArrayElement
+      end: {}
+      limit: {}
+      start: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 605,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: action_type
+  value: {}
+  required: true
+  description: 'Action to take on an email message. Options include: MAIL_DELETE:
+    deletes an email message MAIL_QUARANTINE: quarantines an email message.'
+  playbookInputQuery: null
+- key: mailbox
+  value: {}
+  required: true
+  description: Email address of an email message to take action on.
+  playbookInputQuery: null
+- key: mail_messge_id
+  value: {}
+  required: true
+  description: Internet message ID of an email message to take action on It can be
+    obtained from "trendmicro-cas-email-sweep" command.
+  playbookInputQuery: null
+- key: mail_unique_id
+  value: {}
+  required: true
+  description: Unique ID of an email message to take action on It can be obtained
+    from "trendmicro-cas-email-sweep" command.
+  playbookInputQuery: null
+- key: mail_message_delivery_time
+  value: {}
+  required: true
+  description: Date and time when an email message to take action on is sent It can
+    be obtained from "trendmicro-cas-email-sweep" command.
+  playbookInputQuery: null
+outputs: []

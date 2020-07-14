@@ -191,20 +191,24 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        SHA-1 hash value of the attachment file to search for Cloud App Security uses exact match. Type a complete and valid SHA-1 hash value.
+      description: SHA-1 hash value of the attachment file to search for Cloud App
+        Security uses exact match. Type a complete and valid SHA-1 hash value.
       isArray: false
       name: file_sha1
       required: false
       secret: false
     - default: false
-      description: 'Name of the attachment file to search for Type the file name you want to search for, with or without a filename extension. Non-prefix wildcard is supported. Example: ex*ample'
+      description: 'Name of the attachment file to search for Type the file name you
+        want to search for, with or without a filename extension. Non-prefix wildcard
+        is supported. Example: ex*ample'
       isArray: false
       name: file_name
       required: false
       secret: false
     - default: false
-      description: 'Filename extension of attachment files to search for Type the filename extension you want to search for, without a dot ".". Non-prefix wildcard is supported. Example: do*'
+      description: 'Filename extension of attachment files to search for Type the
+        filename extension you want to search for, without a dot ".". Non-prefix wildcard
+        is supported. Example: do*'
       isArray: false
       name: file_extension
       required: false
@@ -218,49 +222,51 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Sender email address of email messages to search for Type a complete email address. Non-prefix wildcard is supported. Example: u*ser@example.com
+      description: 'Sender email address of email messages to search for Type a complete
+        email address. Non-prefix wildcard is supported. Example: u*ser@example.com'
       isArray: false
       name: sender
       required: false
       secret: false
     - default: false
-      description: |-
-        Recipient email address of email messages to search for Type a complete email address. Non-prefix wildcard is supported. Example: u*ser@example.com
+      description: 'Recipient email address of email messages to search for Type a
+        complete email address. Non-prefix wildcard is supported. Example: u*ser@example.com'
       isArray: false
       name: recipient
       required: false
       secret: false
     - default: false
-      description: |-
-        Internet message ID of the email message to search for It can be obtained from Microsoft Graph API or EWS API.
+      description: Internet message ID of the email message to search for It can be
+        obtained from Microsoft Graph API or EWS API.
       isArray: false
       name: message_id
       required: false
       secret: false
     - default: false
-      description: |-
-        Source IP address of email messages to search for An IP address with or without subnet mask is supported. Example: xx.yy.zz.ww or xx.yy.zz.ww/16
+      description: 'Source IP address of email messages to search for An IP address
+        with or without subnet mask is supported. Example: xx.yy.zz.ww or xx.yy.zz.ww/16'
       isArray: false
       name: source_ip
       required: false
       secret: false
     - default: false
-      description: |-
-        Source domain of email messages to search for Type a complete domain name. Non-prefix wildcard is supported. Example:ex*ample.com
+      description: Source domain of email messages to search for Type a complete domain
+        name. Non-prefix wildcard is supported. Example:ex*ample.com
       isArray: false
       name: source_domain
       required: false
       secret: false
     - default: false
-      description: |-
-        Number of email messages whose meta information is to display at a time. A maximum of 1,000 email messages are allowed. If not specified, the value is set to 20 by default.
+      description: Number of email messages whose meta information is to display at
+        a time. A maximum of 1,000 email messages are allowed. If not specified, the
+        value is set to 20 by default.
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: Searches email messages in Cloud App Security protected mailboxes for those that match meta information search criteria.
+    description: Searches email messages in Cloud App Security protected mailboxes
+      for those that match meta information search criteria.
     execution: false
     name: trendmicro-cas-email-sweep
   - arguments:
@@ -290,6 +296,20 @@ script:
       user account, and requesting to reset password for a user account.
     execution: false
     name: trendmicro-cas-user-take-action
+    outputs:
+    - contextPath: TrendMicroCAS.UserTakeAction.action_type
+      description: the action type.
+      type: String
+    - contextPath: TrendMicroCAS.UserTakeAction.account_user_email
+      description: list of account user email.
+      type: String
+    - contextPath: TrendMicroCAS.UserTakeAction.batch_id
+      description: Unique ID of the API request, including all actions to take on
+        user accounts specified within this request.
+      type: String
+    - contextPath: TrendMicroCAS.UserTakeAction.traceId
+      description: Randomly generated identity to uniquely trace the request.
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -337,10 +357,23 @@ script:
     deprecated: false
     execution: false
     name: trendmicro-cas-email-take-action
+    outputs:
+    - contextPath: TrendMicroCAS.EmailTakeAction.action_type
+      description: action on an email message.
+      type: String
+    - contextPath: TrendMicroCAS.EmailTakeAction.batch_id
+      description: Unique ID of the API request, including all actions to take on
+        email messages specified within this request.
+      type: String
+    - contextPath: TrendMicroCAS.EmailTakeAction.mailbox
+      description: Email address of an email message to take action on.
+      type: String
+    - contextPath: TrendMicroCAS.EmailTakeAction.traceId
+      description: Randomly generated identity to uniquely trace the request.
+      type: String
   - arguments:
     - default: false
-      description: batch_id from the "trendmicro-cas-email-take-action" or "trendmicro-cas-user-take-action"
-        commands
+      description: batch_id from the "trendmicro-cas-user-take-action" command
       isArray: false
       name: batch_id
       required: false
@@ -370,21 +403,134 @@ script:
       name: limit
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: the query type to search
+    deprecated: false
+    description: Queries the results of actions on user accounts
+    execution: false
+    name: trendmicro-cas-user-action-result-query
+    outputs:
+    - contextPath: TrendMicroCAS.UserActionResult.account_provider
+      description: Provider of the protected service
+      type: String
+    - contextPath: TrendMicroCAS.UserActionResult.account_user_email
+      description: Email address used to create the user account on which an action
+        was taken
+      type: String
+    - contextPath: TrendMicroCAS.UserActionResult.action_executed_at
+      description: Date and time when the action was processed
+      type: Date
+    - contextPath: TrendMicroCAS.UserActionResult.action_id
+      description: Unique ID of a threat mitigation task
+      type: String
+    - contextPath: TrendMicroCAS.UserActionResult.action_requested_at
+      description: Date and time when the API request containing the action was received
+      type: Date
+    - contextPath: TrendMicroCAS.UserActionResult.action_type
+      description: Action taken on an email message or user account
+      type: String
+    - contextPath: TrendMicroCAS.UserActionResult.batch_id
+      description: Unique ID of a Threat Mitigation API request
+      type: String
+    - contextPath: TrendMicroCAS.UserActionResult.error_code
+      description: "\t\nResult code of the action."
+      type: Number
+    - contextPath: TrendMicroCAS.UserActionResult.error_message
+      description: String describing the result code.
+      type: String
+    - contextPath: TrendMicroCAS.UserActionResult.service
+      description: Name of the protected service
+      type: String
+    - contextPath: TrendMicroCAS.UserActionResult.status
+      description: 'Status of an action taken. Options include: Created: The API request
+        containing the action is received. Executing: The action is being processed.
+        Success: The action is successfully taken. Skipped: The action is skipped
+        for certain reason. For example, the same action was requested twice. Failed:
+        The action fails'
+      type: String
+  - arguments:
+    - default: false
+      description: batch_id from the "trendmicro-cas-email-take-action" command
       isArray: false
-      name: query_type
-      predefined:
-      - email
-      - user
+      name: batch_id
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Start and end time during which action results are to retrieve. Format: ISO 8601 timestamp to the second or millisecond in UTC, yyyy-mm-ddThh:mm:ss[.mmm]Z. For example, 2016-07-22T01:51:31Z or 2016-07-22T01:51:31.001Z.
+        Both start and end are required. Make sure the end time is no earlier than the start time.
+        To query actions taken within a time period, use these parameters.
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Start and end time during which action results are to retrieve. Format: ISO 8601 timestamp to the second or millisecond in UTC, yyyy-mm-ddThh:mm:ss[.mmm]Z. For example, 2016-07-22T01:51:31Z or 2016-07-22T01:51:31.001Z.
+        Both start and end are required. Make sure the end time is no earlier than the start time.
+        To query actions taken within a time period, use these parameters.
+      isArray: false
+      name: end
+      required: false
+      secret: false
+    - default: false
+      description: Number of action results to display at a time. A maximum of 500
+        are allowed
+      isArray: false
+      name: limit
       required: false
       secret: false
     deprecated: false
-    description: Queries the results of actions on specified email messages or user
-      accounts
+    description: Queries the results of actions on email messages
     execution: false
-    name: trendmicro-cas-action-result-query
+    name: trendmicro-cas-email-action-result-query
+    outputs:
+    - contextPath: TrendMicroCAS.EmailActionResult.account_provider
+      description: Provider of the protected service
+      type: String
+    - contextPath: TrendMicroCAS.EmailActionResult.account_user_email
+      description: Email address used to create the user account on which an action
+        was taken
+      type: String
+    - contextPath: TrendMicroCAS.EmailActionResult.action_executed_at
+      description: Date and time when the action was processed
+      type: Date
+    - contextPath: TrendMicroCAS.EmailActionResult.action_id
+      description: Unique ID of a threat mitigation task
+      type: String
+    - contextPath: TrendMicroCAS.EmailActionResult.action_requested_at
+      description: Date and time when the API request containing the action was received
+      type: Date
+    - contextPath: TrendMicroCAS.EmailActionResult.action_type
+      description: Action taken on an email message or user account
+      type: String
+    - contextPath: TrendMicroCAS.EmailActionResult.batch_id
+      description: Unique ID of a Threat Mitigation API request
+      type: String
+    - contextPath: TrendMicroCAS.EmailActionResult.error_code
+      description: "\t\nResult code of the action."
+      type: Number
+    - contextPath: TrendMicroCAS.EmailActionResult.error_message
+      description: String describing the result code.
+      type: String
+    - contextPath: TrendMicroCAS.EmailActionResult.service
+      description: Name of the protected service
+      type: String
+    - contextPath: TrendMicroCAS.EmailActionResult.status
+      description: 'Status of an action taken. Options include: Created: The API request
+        containing the action is received. Executing: The action is being processed.
+        Success: The action is successfully taken. Skipped: The action is skipped
+        for certain reason. For example, the same action was requested twice. Failed:
+        The action fails'
+      type: String
+    - contextPath: TrendMicroCAS.EmailActionResult.mail_unique_id
+      description: Unique ID of an email message on which an action was taken.
+      type: String
+    - contextPath: TrendMicroCAS.EmailActionResult.mail_message_id
+      description: Internet message ID of an email message on which an action was
+        taken
+      type: String
+    - contextPath: TrendMicroCAS.EmailActionResult.mailbox
+      description: Email address of an email message on which an action was taken.
+      type: String
   - deprecated: false
     description: Retrieves all blocked senders, URLs, and SHA-1 hash values that the
       administrator has configured to quarantine Exchange Online email messages.

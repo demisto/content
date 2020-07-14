@@ -1,0 +1,191 @@
+id: 165587ad-7fca-460e-89e5-5888d13f7a22
+version: -1
+name: trendmicro-cas-user-take-action-and-result
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1575fb03-79e5-451d-8286-7002fcfab7c1
+    type: start
+    task:
+      id: 1575fb03-79e5-451d-8286-7002fcfab7c1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 16d172e7-f809-4048-83b5-cf6001ef3d42
+    type: regular
+    task:
+      id: 16d172e7-f809-4048-83b5-cf6001ef3d42
+      version: -1
+      name: user-take-action
+      description: Takes actions on a batch of specified user accounts, including
+        disabling a user account, requesting to enable multi-factor authentication
+        (MFA) for a user account, and requesting to reset password for a user account.
+      script: TrendMicroCAS|||trendmicro-cas-user-take-action
+      type: regular
+      iscommand: true
+      brand: TrendMicroCAS
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      account_user_email:
+        simple: ${inputs.account_user_email}
+      action_type:
+        simple: ${inputs.action_type}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: b26b4c60-f8eb-4791-86e0-d9e57ce37759
+    type: playbook
+    task:
+      id: b26b4c60-f8eb-4791-86e0-d9e57ce37759
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: TrendMicroCAS
+          accessor: UserTakeAction.batch_id
+          transformers:
+          - operator: LastArrayElement
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: batch_id
+      PollingCommandName:
+        simple: trendmicro-cas-user-action-result-query
+      Timeout:
+        simple: "16"
+      dt:
+        simple: TrendMicroCAS.UserActionResult(val.status!=='Success'&&val.status!=='Failed'&&val.status!=='Skipped').batch_id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 2f185299-03e0-4762-83ec-ae284adc5646
+    type: regular
+    task:
+      id: 2f185299-03e0-4762-83ec-ae284adc5646
+      version: -1
+      name: user-take-action-result
+      description: Queries the results of actions on user accounts
+      script: TrendMicroCAS|||trendmicro-cas-user-action-result-query
+      type: regular
+      iscommand: true
+      brand: TrendMicroCAS
+    scriptarguments:
+      batch_id:
+        complex:
+          root: TrendMicroCAS
+          accessor: UserTakeAction.batch_id
+          transformers:
+          - operator: LastArrayElement
+      end: {}
+      limit: {}
+      start: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 575,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: action_type
+  value: {}
+  required: true
+  description: |-
+    ACCOUNT_DISABLE: disables a user account
+    ACCOUNT_ENABLE_MFA: enforces a user to perform a multi-factor authentication before being forced to change their password
+    ACCOUNT_RESET_PASSWORD: requests to reset the password for a user account
+  playbookInputQuery: null
+- key: account_user_email
+  value: {}
+  required: true
+  description: Account user email to take action on.
+  playbookInputQuery: null
+outputs: []
+sourceplaybookid: b9d4fc2d-760f-46e9-88aa-cf324c0df772

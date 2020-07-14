@@ -83,12 +83,20 @@ class Client(BaseClient):
         )
         return result
 
-    def action_result_query(self, query_type: str, batch_id: str, start: str, end: str, limit: str) -> dict:
+    def user_action_result_query(self, batch_id: str, start: str, end: str, limit: str) -> dict:
         params = assign_params(batch_id=batch_id, start=start, end=end, limit=limit)
-        suffix = {'email': 'mails', 'user': 'accounts'}
         data = self._http_request(
             method='GET',
-            url_suffix=f'mitigation/{suffix[query_type]}',
+            url_suffix='mitigation/accounts',
+            params=params
+        )
+        return data
+
+    def email_action_result_query(self, batch_id: str, start: str, end: str, limit: str) -> dict:
+        params = assign_params(batch_id=batch_id, start=start, end=end, limit=limit)
+        data = self._http_request(
+            method='GET',
+            url_suffix='mitigation/mails',
             params=params
         )
         return data
@@ -260,7 +268,7 @@ def email_sweep_command(client, args):
 
         return CommandResults(
             readable_output=readable_output,
-            outputs_prefix='TrendMicroCAS.Sweep',
+            outputs_prefix='TrendMicroCAS.EmailSweep',
             outputs_key_field='mail_unique_id',
             outputs=value,
             raw_response=result
@@ -275,7 +283,7 @@ def user_take_action_command(client, args):
         'action_type': action_type,
         'account_user_email': argToList(account_user_email),
         'batch_id': result.get('batch_id'),
-        'tracdId': result.get('tracdId')
+        'traceId': result.get('traceId')
     }
     readable_output = tableToMarkdown(f'{action_type} started ', output)
     return CommandResults(
@@ -298,33 +306,50 @@ def email_take_action_command(client, args):
     result = client.email_take_action(action_type, mailbox, mail_messge_id, mail_unique_id, mail_message_delivery_time)
     output = {
         'action_type': action_type,
-        'mailbox': argToList('mailbox'),
+        'mailbox': argToList(mailbox),
         'batch_id': result.get('batch_id'),
-        'tracdId': result.get('tracdId')
+        'traceId': result.get('traceId')
     }
     readable_output = tableToMarkdown(f'{action_type} started ', output)
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='TrendMicroCAS.UserTakeAction',
+        outputs_prefix='TrendMicroCAS.EmailTakeAction',
         outputs_key_field='batch_id',
         outputs=output,
         raw_response=result
     )
 
 
-def action_result_query_command(client, args):
-    query_type = args.get('query_type')
+def user_action_result_command(client, args):
     batch_id = args.get('batch_id')
     start = args.get('start')
     end = args.get('end')
     limit = args.get('limit')
-    result = client.action_result_query(query_type, batch_id, start, end, limit)
+    result = client.user_action_result_query(batch_id, start, end, limit)
 
     actions = result.get('actions')
     readable_output = tableToMarkdown('action result: ', actions)
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='TrendMicroCAS.ActionResult',
+        outputs_prefix='TrendMicroCAS.UserActionResult',
+        outputs_key_field='batch_id',
+        outputs=actions,
+        raw_response=result
+    )
+
+
+def email_action_result_command(client, args):
+    batch_id = args.get('batch_id')
+    start = args.get('start')
+    end = args.get('end')
+    limit = args.get('limit')
+    result = client.email_action_result_query(batch_id, start, end, limit)
+
+    actions = result.get('actions')
+    readable_output = tableToMarkdown('action result: ', actions)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='TrendMicroCAS.EmailActionResult',
         outputs_key_field='batch_id',
         outputs=actions,
         raw_response=result
@@ -341,8 +366,8 @@ def blocked_lists_get_command(client):
 
         return CommandResults(
             readable_output=readable_output,
-            outputs_prefix='TrendMicroCAS.Rules',
-            outputs_key_field='rules',
+            outputs_prefix='TrendMicroCAS.BlockedList',
+            outputs_key_field='BlockedList',
             outputs=rules,
             raw_response=result
         )
@@ -360,8 +385,8 @@ def blocked_lists_update_command(client, args):
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='TrendMicroCAS.Rules',
-        outputs_key_field='rules',
+        outputs_prefix='TrendMicroCAS.BlockedList',
+        outputs_key_field='BlockedList',
         outputs=rules,
         raw_response=result
     )
@@ -426,8 +451,10 @@ def main() -> None:
             return_results(user_take_action_command(client, demisto.args()))
         elif demisto.command() == 'trendmicro-cas-email-take-action':
             return_results(email_take_action_command(client, demisto.args()))
-        elif demisto.command() == 'trendmicro-cas-action-result-query':
-            return_results(action_result_query_command(client, demisto.args()))
+        elif demisto.command() == 'trendmicro-cas-user-action-result-query':
+            return_results(user_action_result_command(client, demisto.args()))
+        elif demisto.command() == 'trendmicro-cas-email-action-result-query':
+            return_results(email_action_result_command(client, demisto.args()))
         elif demisto.command() == 'trendmicro-cas-blocked-lists-get':
             return_results(blocked_lists_get_command(client))
         elif demisto.command() == 'trendmicro-cas-blocked-lists-update':
