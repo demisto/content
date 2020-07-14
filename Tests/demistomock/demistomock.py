@@ -381,7 +381,7 @@ exampleDemistoUrls = {
     "workPlan": "https://test-address:8443/#/WorkPlan/7ab2ac46-4142-4af8-8cbe-538efb4e63d6",
 }
 
-callingContext = {}
+callingContext = {}  # type: dict
 
 
 def params():
@@ -495,6 +495,32 @@ def getIntegrationContext():
     return integrationContext
 
 
+def setIntegrationContextVersioned(context, version=-1, sync=False):
+    """
+    Set the integration context with a version.
+    Args:
+        context: The context to set.
+        version: The context version to set. If the version is older than the current, an error will be thrown.
+        sync: Whether to save the context to the DB right away. If false,
+         the context will be saved at the end of the command.
+
+    """
+    global integrationContext
+    integrationContext = context
+
+
+def getIntegrationContextVersioned(refresh=False):
+    """
+    Get the integration context with a version
+    Args:
+        refresh: Whether to get the integration context straight from the DB and not from the instance memory.
+
+    Returns:
+        Dict with a key of context and a key of version.
+    """
+    return integrationContext
+
+
 def incidents(incidents=None):
     """
     In Scripts this returns the `Incidents` list from the context
@@ -542,17 +568,22 @@ def mirrorInvestigation(id, mirrorType, autoClose=False):
 def updateModuleHealth(error):
     return ""
 
-def directMessage(message, username = None, email = None, anyoneCanOpenIncidents = None):
+
+def directMessage(message, username=None, email=None, anyoneCanOpenIncidents=None):
     return ""
 
-def createIncidents(incidents, lastRun = None, userID = None):
+
+def createIncidents(incidents, lastRun=None, userID=None):
     return []
 
-def findUser(username = None, email = None):
+
+def findUser(username=None, email=None):
     return {}
+
 
 def handleEntitlementForUser(incidentID, guid, email, content, taskID=""):
     return {}
+
 
 def demistoVersion():
     return {
@@ -560,17 +591,22 @@ def demistoVersion():
         'buildNumber': '12345'
     }
 
+
 def integrationInstance():
     return ""
+
 
 def createIndicators(indicators_batch):
     return ""
 
-def searchIndicators(fromdate = '', query = '', size = 100, page = 0, todate = '', value = ''):
+
+def searchIndicators(fromdate='', query='', size=100, page=0, todate='', value=''):
     return {}
+
 
 def getIndexHash():
     return ''
+
 
 def getLicenseID():
     return ''

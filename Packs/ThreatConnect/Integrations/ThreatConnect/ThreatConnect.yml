@@ -2,6 +2,7 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: ThreatConnect
   version: -1
+deprecated: true
 configuration:
 - display: Access ID
   name: accessId
@@ -2377,4 +2378,4 @@ script:
   type: python
   subtype: python2
 tests:
-- test-ThreatConnect
+- No tests - deprecated

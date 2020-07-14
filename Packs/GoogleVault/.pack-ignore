@@ -6,3 +6,6 @@ ignore=BA101
 
 [file:playbook-GVault_-_Search_Mail.yml]
 ignore=BA101
+
+[file:playbook-Display_Results_-_GVault.yml]
+ignore=BA101

@@ -2,6 +2,7 @@ id: DuoAdmin API test playbook
 version: -1
 name: DuoAdmin API test playbook
 starttaskid: "0"
+description: Test playbook for DuoAdmin Integration
 tasks:
   "0":
     id: "0"
@@ -13,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "13"
@@ -20,8 +22,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -160
+          "x": 50,
+          "y": 50
         }
       }
     note: false
@@ -44,15 +46,12 @@ tasks:
     nexttasks:
       '#none#':
       - "16"
-      - "17"
-      - "19"
-      - "30"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 120
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -85,8 +84,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 970,
-          "y": 470
+          "x": 1200,
+          "y": 1390
         }
       }
     note: false
@@ -105,6 +104,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "40"
@@ -112,8 +112,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1500
+          "x": 890,
+          "y": 1905
         }
       }
     note: false
@@ -147,8 +147,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -40
+          "x": 50,
+          "y": 195
         }
       }
     note: false
@@ -169,7 +169,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "9"
+      - "30"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -184,8 +184,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 970,
-          "y": 910
+          "x": 1200,
+          "y": 1565
         }
       }
     note: false
@@ -204,6 +204,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "36"
@@ -211,8 +212,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -100,
-          "y": 315
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -231,6 +232,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -238,8 +240,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 970,
-          "y": 315
+          "x": 1200,
+          "y": 1230
         }
       }
     note: false
@@ -258,6 +260,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -265,8 +268,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 315
+          "x": 650,
+          "y": 1230
         }
       }
     note: false
@@ -293,8 +296,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 470
+          "x": 650,
+          "y": 1390
         }
       }
     note: false
@@ -315,7 +318,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "9"
+      - "17"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -347,8 +350,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 920
+          "x": 650,
+          "y": 1565
         }
       }
     note: false
@@ -378,8 +381,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -100,
-          "y": 635
+          "x": 50,
+          "y": 865
         }
       }
     note: false
@@ -435,8 +438,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -100,
-          "y": 800
+          "x": 50,
+          "y": 1040
         }
       }
     note: false
@@ -466,8 +469,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -100,
-          "y": 1140
+          "x": 50,
+          "y": 1390
         }
       }
     note: false
@@ -499,8 +502,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -100,
-          "y": 980
+          "x": 50,
+          "y": 1215
         }
       }
     note: false
@@ -521,7 +524,7 @@ tasks:
       brand: ""
     nexttasks:
       "no":
-      - "9"
+      - "19"
     separatecontext: false
     conditions:
     - label: "no"
@@ -556,8 +559,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -100,
-          "y": 1330
+          "x": 50,
+          "y": 1565
         }
       }
     note: false
@@ -576,6 +579,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "31"
@@ -583,8 +587,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1410,
-          "y": 315
+          "x": 1740,
+          "y": 1230
         }
       }
     note: false
@@ -618,8 +622,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1410,
-          "y": 470
+          "x": 1750,
+          "y": 1390
         }
       }
     note: false
@@ -677,8 +681,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1410,
-          "y": 635
+          "x": 1750,
+          "y": 1565
         }
       }
     note: false
@@ -735,8 +739,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1410,
-          "y": 860
+          "x": 1750,
+          "y": 1765
         }
       }
     note: false
@@ -792,8 +796,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1410,
-          "y": 1235
+          "x": 1750,
+          "y": 2170
         }
       }
     note: false
@@ -827,8 +831,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1410,
-          "y": 1055
+          "x": 1750,
+          "y": 1970
         }
       }
     note: false
@@ -860,8 +864,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -100,
-          "y": 470
+          "x": 50,
+          "y": 690
         }
       }
     note: false
@@ -897,8 +901,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1650
+          "x": 890,
+          "y": 2075
         }
       }
     note: false
@@ -917,12 +921,13 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2030
+          "x": 890,
+          "y": 2640
         }
       }
     note: false
@@ -966,8 +971,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1830
+          "x": 890,
+          "y": 2265
         }
       }
     note: false
@@ -999,8 +1004,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 940,
-          "y": 1920
+          "x": 650,
+          "y": 2460
         }
       }
     note: false
@@ -1008,17 +1013,21 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+system: true
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "29_19_no": 0.68
+    },
     "paper": {
       "dimensions": {
-        "height": 2255,
-        "width": 1890,
-        "x": -100,
-        "y": -160
+        "height": 2655,
+        "width": 2080,
+        "x": 50,
+        "y": 50
       }
     }
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

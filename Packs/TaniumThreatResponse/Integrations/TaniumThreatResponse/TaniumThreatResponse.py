@@ -742,13 +742,13 @@ def create_connection(client, data_args):
     if conn_timeout:
         body['connTimeout'] = int(data_args.get('connection-timeout'))
 
-    client.do_request('POST', f'/plugin/products/trace/conns/', data=body, resp_type='content')
+    client.do_request('POST', '/plugin/products/trace/conns/', data=body, resp_type='content')
     return f"Initiated connection request to {dst}.", {}, {}
 
 
 def delete_connection(client, data_args):
     conn_name = validate_connection_name(client, data_args.get('connection-name'))
-    client.do_request('DELETE', f'/plugin/products/trace/conns/{conn_name}', resp_type='text')
+    client.do_request('DELETE', '/plugin/products/trace/conns/{conn_name}', resp_type='text')
     context = {
         'Name': conn_name,
         'Deleted': True
@@ -878,7 +878,7 @@ def get_file_download_info(client, data_args):
 
     data_args = {key: val for key, val in data_args.items() if val is not None}
 
-    raw_response = client.do_request('GET', f'/plugin/products/trace/filedownloads/', params=data_args)
+    raw_response = client.do_request('GET', '/plugin/products/trace/filedownloads/', params=data_args)
     if not raw_response:
         raise ValueError('File download does not exist.')
 
@@ -983,7 +983,7 @@ def get_parent_process_tree(client, data_args):
 
         human_readable = tableToMarkdown(f'{PARENT_PROCESS_TEXT} {ptid}', process_tree, headers=headers,
                                          headerTransform=pascalToSpace, removeNull=True)
-        human_readable += tableToMarkdown(f'Processes with the same parent', children_item, headers=headers,
+        human_readable += tableToMarkdown('Processes with the same parent', children_item, headers=headers,
                                           headerTransform=pascalToSpace, removeNull=True)
     else:
         human_readable = tableToMarkdown(f'{PARENT_PROCESS_TEXT} {ptid}', readable_output, headers=headers,
@@ -1117,7 +1117,7 @@ def request_file_download(client, data_args):
         'path': path,
         'connId': con_name
     }
-    client.do_request('POST', f'/plugin/products/trace/filedownloads', data=data, resp_type='text')
+    client.do_request('POST', '/plugin/products/trace/filedownloads', data=data, resp_type='text')
     filename = os.path.basename(path)
     return f"Download request of file {filename} has been sent successfully.", outputs, {}
 
@@ -1133,7 +1133,7 @@ def get_file_download_request_status(client, data_args):
     if path:
         params['path'] = path
 
-    raw_response = client.do_request('GET', f'/plugin/products/trace/filedownloads', params=params)
+    raw_response = client.do_request('GET', '/plugin/products/trace/filedownloads', params=params)
     if raw_response:
         file_id = raw_response[0].get('id')
         status = 'Completed'
@@ -1303,43 +1303,43 @@ def main():
     demisto.info(f'Command being called is {command}')
 
     commands = {
-        f'test-module': test_module,
-        f'tanium-tr-get-intel-doc-by-id': get_intel_doc,
-        f'tanium-tr-list-intel-docs': get_intel_docs,
-        f'tanium-tr-list-alerts': get_alerts,
-        f'tanium-tr-get-alert-by-id': get_alert,
-        f'tanium-tr-alert-update-state': alert_update_state,
-        f'tanium-tr-list-snapshots-by-connection': get_snapshots,
-        f'tanium-tr-create-snapshot': create_snapshot,
-        f'tanium-tr-delete-snapshot': delete_snapshot,
-        f'tanium-tr-list-local-snapshots-by-connection': get_local_snapshots,
-        f'tanium-tr-delete-local-snapshot': delete_local_snapshot,
-        f'tanium-tr-list-connections': get_connections,
-        f'tanium-tr-get-connection-by-name': get_connection,
-        f'tanium-tr-create-connection': create_connection,
-        f'tanium-tr-delete-connection': delete_connection,
-        f'tanium-tr-list-labels': get_labels,
-        f'tanium-tr-get-label-by-id': get_label,
-        f'tanium-tr-list-events-by-connection': get_events_by_connection,
-        f'tanium-tr-get-process-info': get_process_info,
-        f'tanium-tr-get-events-by-process': get_events_by_process,
-        f'tanium-tr-get-process-children': get_process_children,
-        f'tanium-tr-get-parent-process': get_parent_process,
-        f'tanium-tr-get-parent-process-tree': get_parent_process_tree,
-        f'tanium-tr-get-process-tree': get_process_tree,
-        f'tanium-tr-list-evidence': list_evidence,
-        f'tanium-tr-get-evidence-by-id': get_evidence,
-        f'tanium-tr-create-evidence': create_evidence,
-        f'tanium-tr-delete-evidence': delete_evidence,
-        f'tanium-tr-list-file-downloads': get_file_downloads,
-        f'tanium-tr-get-file-download-info': get_file_download_info,
-        f'tanium-tr-request-file-download': request_file_download,
-        f'tanium-tr-get-download-file-request-status': get_file_download_request_status,
-        f'tanium-tr-delete-file-download': delete_file_download,
-        f'tanium-tr-list-files-in-directory': list_files_in_dir,
-        f'tanium-tr-get-file-info': get_file_info,
-        f'tanium-tr-delete-file-from-endpoint': delete_file_from_endpoint,
-        f'tanium-tr-get-process-timeline': get_process_timeline
+        'test-module': test_module,
+        'tanium-tr-get-intel-doc-by-id': get_intel_doc,
+        'tanium-tr-list-intel-docs': get_intel_docs,
+        'tanium-tr-list-alerts': get_alerts,
+        'tanium-tr-get-alert-by-id': get_alert,
+        'tanium-tr-alert-update-state': alert_update_state,
+        'tanium-tr-list-snapshots-by-connection': get_snapshots,
+        'tanium-tr-create-snapshot': create_snapshot,
+        'tanium-tr-delete-snapshot': delete_snapshot,
+        'tanium-tr-list-local-snapshots-by-connection': get_local_snapshots,
+        'tanium-tr-delete-local-snapshot': delete_local_snapshot,
+        'tanium-tr-list-connections': get_connections,
+        'tanium-tr-get-connection-by-name': get_connection,
+        'tanium-tr-create-connection': create_connection,
+        'tanium-tr-delete-connection': delete_connection,
+        'tanium-tr-list-labels': get_labels,
+        'tanium-tr-get-label-by-id': get_label,
+        'tanium-tr-list-events-by-connection': get_events_by_connection,
+        'tanium-tr-get-process-info': get_process_info,
+        'tanium-tr-get-events-by-process': get_events_by_process,
+        'tanium-tr-get-process-children': get_process_children,
+        'tanium-tr-get-parent-process': get_parent_process,
+        'tanium-tr-get-parent-process-tree': get_parent_process_tree,
+        'tanium-tr-get-process-tree': get_process_tree,
+        'tanium-tr-list-evidence': list_evidence,
+        'tanium-tr-get-evidence-by-id': get_evidence,
+        'tanium-tr-create-evidence': create_evidence,
+        'tanium-tr-delete-evidence': delete_evidence,
+        'tanium-tr-list-file-downloads': get_file_downloads,
+        'tanium-tr-get-file-download-info': get_file_download_info,
+        'tanium-tr-request-file-download': request_file_download,
+        'tanium-tr-get-download-file-request-status': get_file_download_request_status,
+        'tanium-tr-delete-file-download': delete_file_download,
+        'tanium-tr-list-files-in-directory': list_files_in_dir,
+        'tanium-tr-get-file-info': get_file_info,
+        'tanium-tr-delete-file-from-endpoint': delete_file_from_endpoint,
+        'tanium-tr-get-process-timeline': get_process_timeline
     }
 
     try:
