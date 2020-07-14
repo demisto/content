@@ -6,6 +6,8 @@ from typing import List, Optional, Set, Union
 import magic
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
+import demistomock as demisto
+
 
 class InclusiveExclusive:
     INCLUSIVE: str = 'inclusive'
