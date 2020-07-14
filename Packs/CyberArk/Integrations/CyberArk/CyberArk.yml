@@ -28,10 +28,6 @@ configuration:
   required: false
   type: 8
 description: This is the Hello World integration for getting started.
-detaileddescription: |-
-  ## Hello World
-  - This text is markdown
-  - Here you should explain how to configure the instance in Demisto
 display: CyberArk
 name: CyberArk
 script:
@@ -831,6 +827,7 @@ script:
       secret: false
     - default: false
       isArray: false
+      description: Whether or not the CPM will change the credentials in all the accounts that belong to the same group.
       name: change_creds_for_group
       required: false
       secret: false
@@ -897,5 +894,9 @@ script:
   longRunning: false
   longRunningPort: false
   runonce: false
-  script: |-
-    from typing import Dict, Tuple, List
+  script: '-'
+  type: python
+  subtype: python3
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

@@ -16,12 +16,10 @@ class Client(BaseClient):
     Client to use in the CrowdStrikeFalconX integration. Uses BaseClient
     """
 
-    def __init__(self, server_url: str, username: str, password: str, use_ssl: bool, proxy: bool,
-                 concurrent_session: bool):
+    def __init__(self, server_url: str, username: str, password: str, use_ssl: bool, proxy: bool):
         super().__init__(base_url=server_url, verify=use_ssl, proxy=proxy)
         self._username = username
         self._password = password
-        self._concurrent_session = concurrent_session
         self._token = self._generate_token()
         self._headers = {'Authorization': self._token, 'Content-Type': 'application/json'}
 
@@ -32,7 +30,6 @@ class Client(BaseClient):
         body = {
             "username": self._username,
             "password": self._password,
-            "concurrentSession": self._concurrent_session
         }
 
         headers = {
@@ -80,7 +77,7 @@ class Client(BaseClient):
             "internet":
                 {
                     "businessEmail": email,
-                },
+            },
             "personalDetails": {
                 "profession": profession,
                 "firstName": first_name,
@@ -471,7 +468,7 @@ def test_module(
     :return: ok if got a valid accesses token and not all the quota is used at the moment
     """
     client._logout()
-    return 'ok', {}, []
+    return_results("ok")
 
 
 def add_user_command(
@@ -888,7 +885,6 @@ def main():
     url = params.get('url')
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    concurrent_session = params.get('concurrent_session', False)
 
     command = demisto.command()
     LOG(f'Command being called in CyberArk is: {command}')
@@ -929,8 +925,7 @@ def main():
     }
 
     try:
-        client = Client(server_url=url, username=username, password=password, use_ssl=use_ssl, proxy=proxy,
-                        concurrent_session=concurrent_session)
+        client = Client(server_url=url, username=username, password=password, use_ssl=use_ssl, proxy=proxy)
 
         if command in commands:
             commands[command](client, **demisto.args())  # type: ignore[operator]
