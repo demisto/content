@@ -1,7 +1,8 @@
 import hashlib
 import subprocess
 import tempfile
-from typing import List, Optional, Set, Union, Tuple
+from enum import Enum
+from typing import List, Optional, Set, Tuple, Union
 
 import magic
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
@@ -9,7 +10,7 @@ from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 import demistomock as demisto
 
 
-class InclusiveExclusive:
+class InclusiveExclusive(Enum):
     INCLUSIVE: str = 'inclusive'
     EXCLUSIVE: str = 'exclusive'
 
