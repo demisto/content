@@ -115,7 +115,7 @@ def get_modified_files_for_testing(files_string):
     is_indicator_json = False
 
     sample_tests = []
-    pack_tests = []
+    modified_metadata_list = []
     changed_common = []
     modified_files_list = []
     modified_tests_list = []
@@ -173,13 +173,13 @@ def get_modified_files_for_testing(files_string):
                 continue
 
             elif any(file in file_path for file in (PACKS_PACK_META_FILE_NAME, PACKS_WHITELIST_FILE_NAME)):
-                pack_tests.append(file_path)
+                modified_metadata_list.append(file_path)
 
             elif SECRETS_WHITE_LIST not in file_path:
                 sample_tests.append(file_path)
 
-    return (modified_files_list, modified_tests_list, changed_common, is_conf_json, sample_tests, pack_tests,
-            is_reputations_json, is_indicator_json)
+    return (modified_files_list, modified_tests_list, changed_common, is_conf_json, sample_tests,
+            modified_metadata_list, is_reputations_json, is_indicator_json)
 
 
 def get_name(file_path):
@@ -893,10 +893,10 @@ def get_test_conf_from_conf(test_id, server_version, conf=None):
     test_conf_lst = conf.get_tests()
     # return None if nothing is found
     test_conf = next((test_conf for test_conf in test_conf_lst if (
-        test_conf.get('playbookID') == test_id
-        and is_runnable_in_server_version(from_v=test_conf.get('fromversion', '0.0'),
-                                          server_v=server_version,
-                                          to_v=test_conf.get('toversion', '99.99.99')))), None)
+            test_conf.get('playbookID') == test_id
+            and is_runnable_in_server_version(from_v=test_conf.get('fromversion', '0.0'),
+                                              server_v=server_version,
+                                              to_v=test_conf.get('toversion', '99.99.99')))), None)
     return test_conf
 
 
@@ -1135,17 +1135,17 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     """Create a test list that should run"""
 
     (modified_files_with_relevant_tests, modified_tests_list, changed_common, is_conf_json, sample_tests,
-     pack_tests, is_reputations_json, is_indicator_json) = get_modified_files_for_testing(files_string)
+     modified_metadata_list, is_reputations_json, is_indicator_json) = get_modified_files_for_testing(files_string)
 
     tests = set([])
     packs_to_install = set([])
     if modified_files_with_relevant_tests:
         tests, packs_to_install = find_tests_and_content_packs_for_modified_files(modified_files_with_relevant_tests,
                                                                                   conf, id_set)
-    for file_path in pack_tests:
-        _pack_tests = get_tests_for_pack(file_path)
+    for file_path in modified_metadata_list:
+        pack_tests = get_tests_for_pack(file_path)
         packs_to_install.add(tools.get_pack_name(file_path))
-        tests = tests.union(_pack_tests)
+        tests = tests.union(pack_tests)
 
     # Adding a unique test for a json file.
     if is_reputations_json:
