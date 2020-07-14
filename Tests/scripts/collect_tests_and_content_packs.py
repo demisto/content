@@ -115,7 +115,7 @@ def get_modified_files_for_testing(files_string):
     is_indicator_json = False
 
     sample_tests = []
-    modified_metadata_list = []
+    modified_metadata_list = set([])
     changed_common = []
     modified_files_list = []
     modified_tests_list = []
@@ -173,7 +173,7 @@ def get_modified_files_for_testing(files_string):
                 continue
 
             elif any(file in file_path for file in (PACKS_PACK_META_FILE_NAME, PACKS_WHITELIST_FILE_NAME)):
-                modified_metadata_list.append(file_path)
+                modified_metadata_list.add(tools.get_pack_name(file_path))
 
             elif SECRETS_WHITE_LIST not in file_path:
                 sample_tests.append(file_path)
@@ -1069,8 +1069,7 @@ def get_random_tests(tests_num, rand, conf=None, id_set=None, server_version='0'
     return tests
 
 
-def get_tests_for_pack(file_path):
-    pack_path = os.path.dirname(file_path)
+def get_tests_for_pack(pack_path):
     pack_yml_files = tools.get_files_in_dir(pack_path, ['yml'])
     pack_test_playbooks = [tools.collect_ids(file) for file in pack_yml_files if
                            checked_type(file, YML_TEST_PLAYBOOKS_REGEXES)]
@@ -1142,9 +1141,9 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     if modified_files_with_relevant_tests:
         tests, packs_to_install = find_tests_and_content_packs_for_modified_files(modified_files_with_relevant_tests,
                                                                                   conf, id_set)
-    for file_path in modified_metadata_list:
-        pack_tests = get_tests_for_pack(file_path)
-        packs_to_install.add(tools.get_pack_name(file_path))
+    for pack in modified_metadata_list:
+        pack_tests = get_tests_for_pack(tools.pack_name_to_path(pack))
+        packs_to_install.add(pack)
         tests = tests.union(pack_tests)
 
     # Adding a unique test for a json file.
