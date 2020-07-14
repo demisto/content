@@ -44,10 +44,17 @@ args:
   required: false
   secret: false
 - default: false
+  description: 'A comma-separated list of MIME file types to include/exclude (example:
+    image/png)'
+  isArray: false
+  name: types
+  required: false
+  secret: false
+- default: false
   description: 'A comma-separated list of file extension to include/exclude (example:
     .gif)'
   isArray: false
-  name: types
+  name: extensions
   required: false
   secret: false
 - auto: PREDEFINED

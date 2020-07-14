@@ -1,7 +1,7 @@
 import hashlib
 import subprocess
 import tempfile
-from typing import List, Optional, Set, Union
+from typing import List, Optional, Set, Union, Tuple
 
 import magic
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
@@ -14,12 +14,17 @@ class InclusiveExclusive:
     EXCLUSIVE: str = 'exclusive'
 
 
-def get_file_path_from_id(entry_id: Optional[str] = None):
-    if entry_id:
-        file_obj = demisto.getFilePath(entry_id)
-        return file_obj.get('path'), file_obj.get('name')
-    else:
-        return None, None
+def get_file_path_from_id(entry_id: str) -> Tuple[str, str]:
+    """
+
+    Args:
+        entry_id: ID of the file from context.
+
+    Returns:
+        file path, name of file
+    """
+    file_obj = demisto.getFilePath(entry_id)
+    return file_obj.get('path'), file_obj.get('name')
 
 
 def run_command(args: list, stdout=subprocess.PIPE, stderr=subprocess.PIPE):
@@ -38,15 +43,14 @@ def run_command(args: list, stdout=subprocess.PIPE, stderr=subprocess.PIPE):
     if process.returncode != 0:
         raise DemistoException(f'Error returned from tshark command: {process.returncode}\n {stderr_data!r}')
 
-    # For debugging purposes
-    return stdout_data, stderr_data
 
-
-def filter_files(root: str, files: List[str],
-                 types: Optional[Set[str]] = None,
-                 extensions: Optional[Set[str]] = None,
-                 types_inclusive_or_exclusive: Optional[str] = None,
-                 extensions_inclusive_or_exclusive: Optional[str] = None):
+def filter_files(
+        root: str, files: List[str],
+        types: Optional[Set[str]] = None,
+        extensions: Optional[Set[str]] = None,
+        types_inclusive_or_exclusive: Optional[str] = None,
+        extensions_inclusive_or_exclusive: Optional[str] = None
+) -> List[str]:
     """Filtering files by its MIME type and file extension.
 
     Args:
@@ -73,7 +77,7 @@ def filter_files(root: str, files: List[str],
                 files.remove(file)
         if extensions:
             # strip `.` from extension
-            extensions = set([extension.split(".")[-1] for extension in extensions])
+            extensions = set([extension.split('.')[-1] for extension in extensions])
             # Get file extension without a leading point.
             f_ext = os.path.splitext(file)[1].split('.')[-1]
             # Inclusive extensions, take only the types in the list.
@@ -92,8 +96,7 @@ def upload_files(
         extensions_inclusive_or_exclusive: Optional[str] = None,
         wpa_pwd: Optional[str] = None,
         rsa_path: Optional[str] = None,
-        limit: int = 5,
-        **kwargs
+        limit: int = 5
 ) -> Union[CommandResults, str]:
     """Extracts files and delivers it to CortexSOAR
 
@@ -112,8 +115,6 @@ def upload_files(
         Extracted files to download
 
     """
-    if kwargs is not None:
-        demisto.debug(f'PcapFileExtractor: Got extra arguments in upload_files:\n{kwargs}')
     command = ['tshark', '-r', f'{file_path}', '--export-objects', f'http,{dir_path}',
                '--export-objects', f'smb,{dir_path}', '--export-objects', f'imf,{dir_path}',
                '--export-objects', f'tftp,{dir_path}', '--export-objects', f'dicom,{dir_path}']
@@ -134,7 +135,7 @@ def upload_files(
     sha1 = hashlib.sha1()
     sha256 = hashlib.sha256()
     for root, _, files in os.walk(dir_path):
-        # Limit the files list to minimum
+        # Limit the files list to the limit provided by the user
         files = files[: limit]
         if not files:
             return 'No files found.'
@@ -174,8 +175,7 @@ def upload_files(
             readable_output=readable_output
         )
         return results
-    else:
-        raise DemistoException('No files found in path.')
+    return 'No files found in path.'
 
 
 def main(
@@ -191,7 +191,7 @@ def main(
     with tempfile.TemporaryDirectory() as dir_path:
         try:
             file_path, file_name = get_file_path_from_id(entry_id)
-            cert_path, _ = get_file_path_from_id(rsa_decrypt_key_entry_id)
+            cert_path, _ = get_file_path_from_id(rsa_decrypt_key_entry_id) if rsa_decrypt_key_entry_id else (None, None)
             return_results(upload_files(
                 file_path, dir_path,
                 types=set(argToList(types)),
