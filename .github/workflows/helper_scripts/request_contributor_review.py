@@ -14,6 +14,7 @@ PACKS_FULL_PATH = os.path.join(CONTENT_REPO_FULL_PATH, PACKS_FOLDER)
 PACK_METADATA = "pack_metadata.json"
 XSOAR_SUPPORT = "xsoar"
 PACK_METADATA_GITHUB_USER_FIELD = "githubUser"
+PR_COMMENT_PREFIX = "### Contributor packs were modified, please review the changes.\n"
 
 
 def check_if_user_exists(github_user, github_token=None, verify_ssl=True):
@@ -71,9 +72,9 @@ def tag_user_on_pr(reviewers, pr_number, github_token=None, verify_ssl=True):
     review_endpoint = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/issues/{pr_number}/comments"
     headers = {"Authorization": "Bearer " + github_token} if github_token else {}
 
-    comment = "\n".join({f"- @{r}" for r in reviewers})
+    reviewers_comment = "\n".join({f"- @{r}" for r in reviewers})
     comment_body = {
-        "body": comment
+        "body": f"{PR_COMMENT_PREFIX}{reviewers_comment}"
     }
 
     response = requests.post(review_endpoint, headers=headers, verify=verify_ssl, json=comment_body)
