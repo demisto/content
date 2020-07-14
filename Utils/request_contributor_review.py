@@ -101,7 +101,8 @@ def get_pr_tagged_reviewers(pr_number, github_token, verify_ssl):
         'login') == "github-actions[bot]" and PR_COMMENT_PREFIX in c.get('body', '')]
 
     for comment in github_actions_bot_comments:
-        tagged_reviewers = [l.lstrip("- @").rstrip("\n").lower() for l in comment.split('\n') if l.startswith("- @")]
+        tagged_reviewers = [line.lstrip("- @").rstrip("\n").lower() for line in comment.split('\n') if
+                            line.startswith("- @")]
         result_tagged_reviewers.update(tagged_reviewers)
 
     return result_tagged_reviewers
