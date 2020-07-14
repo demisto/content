@@ -69,7 +69,7 @@ def get_pr_modified_packs(pr_number, github_token, verify_ssl):
 
 
 def tag_user_on_pr(reviewers, pr_number, github_token=None, verify_ssl=True):
-    review_endpoint = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/issues/{pr_number}/comments"
+    comments_endpoint = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/issues/{pr_number}/comments"
     headers = {"Authorization": "Bearer " + github_token} if github_token else {}
 
     reviewers_comment = "\n".join({f"- @{r}" for r in reviewers})
@@ -77,16 +77,35 @@ def tag_user_on_pr(reviewers, pr_number, github_token=None, verify_ssl=True):
         "body": f"{PR_COMMENT_PREFIX}{reviewers_comment}"
     }
 
-    response = requests.post(review_endpoint, headers=headers, verify=verify_ssl, json=comment_body)
+    response = requests.post(comments_endpoint, headers=headers, verify=verify_ssl, json=comment_body)
 
     if response.status_code not in [200, 201]:
         print(f"Failed posting comment on PR {pr_number}")
         sys.exit(1)
 
 
+def get_pr_tagged_reviewers(pr_number, github_token, verify_ssl):
+    tagged_reviewers = set()
+
+    comments_endpoint = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/issues/{pr_number}/comments"
+    headers = {"Authorization": "Bearer " + github_token} if github_token else {}
+
+    response = requests.get(comments_endpoint, headers=headers, verify_ssl=verify_ssl)
+
+    if response.status_code != requests.codes.ok:
+        print(f"Failed requesting PR {pr_number} comments")
+        sys.exit(1)
+
+    comments_info = response.json()
+
+    return tagged_reviewers
+
+
 def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True):
     modified_packs = get_pr_modified_packs(pr_number=pr_number, github_token=github_token, verify_ssl=verify_ssl)
     pr_author = get_pr_author(pr_number=pr_number, github_token=github_token, verify_ssl=verify_ssl)
+    tagged_packs_reviewers = get_pr_tagged_reviewers(pr_number=pr_number, github_token=github_token,
+                                                     verify_ssl=verify_ssl)
     reviewers = set()
 
     for pack in modified_packs:
