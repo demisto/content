@@ -484,4 +484,4 @@ inputs:
     Panorama.
 outputs: []
 tests:
-- palo_alto_firewall_test_pb
+  - No test - Deprecated playbook

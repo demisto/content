@@ -651,13 +651,6 @@
         },
         {
             "integrations": "Panorama",
-            "instance_names": "palo_alto_firewall",
-            "playbookID": "palo_alto_firewall_test_pb",
-            "timeout": 1000,
-            "nightly": true
-        },
-        {
-            "integrations": "Panorama",
             "instance_names": "palo_alto_panorama",
             "playbookID": "palo_alto_panorama_test_pb",
             "timeout": 1000,
@@ -908,16 +901,8 @@
             "nightly": true
         },
         {
-            "integrations": "epo",
-            "playbookID": "Test Playbook McAfee ePO"
-        },
-        {
             "integrations": "McAfee DXL",
             "playbookID": "McAfee DXL - Test"
-        },
-        {
-            "integrations": "activedir",
-            "playbookID": "calculate_severity_-_critical_assets_-_test"
         },
         {
             "playbookID": "TextFromHTML_test_playbook"
