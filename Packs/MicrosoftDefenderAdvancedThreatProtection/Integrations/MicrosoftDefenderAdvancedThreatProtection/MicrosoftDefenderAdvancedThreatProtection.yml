@@ -1313,8 +1313,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Restrict the execution of all applications on the machine except a predefined
-      set.
+    description: Restrict the execution of all applications on the machine except
+      a predefined set.
     execution: false
     name: microsoft-atp-restrict-app-execution
     outputs:
@@ -2252,6 +2252,115 @@ script:
     - contextPath: MicrosoftATP.Machine.MachineTags
       description: Set of machine tags
       type: String
+  - deprecated: false
+    description: Lists all indicators by ID
+    execution: false
+    name: microsoft-atp-indicators-list
+  - arguments:
+    - default: true
+      description: The id of the indicator to get,
+      isArray: false
+      name: indicator_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets an indicator by its ID.
+    execution: false
+    name: microsoft-atp-get-indicator-by-id
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The action to apply if the indicator is matched from within the
+        targetProduct security tool.
+      isArray: false
+      name: action
+      predefined:
+      - unknown
+      - allow
+      - block
+      - alert
+      required: true
+      secret: false
+    - default: false
+      description: Brief description (100 characters or less) of the threat represented
+        by the indicator.
+      isArray: false
+      name: description
+      required: true
+      secret: false
+    - default: false
+      description: 'DateTime string indicating when the Indicator expires. Format:
+        (<number> <time unit>, e.g., 12 hours, 7 days).'
+      isArray: false
+      name: expiration_time
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Each indicator must have a valid Indicator Threat Type
+      isArray: false
+      name: threat_type
+      predefined:
+      - Botnet
+      - C2
+      - CryptoMining
+      - Darknet
+      - DDoS
+      - MaliciousUrl
+      - Malware
+      - Phishing
+      - Proxy
+      - PUA
+      - WatchList
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Traffic Light Protocol value for the indicator.
+      isArray: false
+      name: tlp_level
+      predefined:
+      - unknown
+      - white
+      - green
+      - amber
+      required: false
+      secret: false
+    - default: false
+      description: An integer representing the confidence the data within the indicator
+        accurately identifies malicious behavior. Acceptable values are 0 – 100 with
+        100 being the highest.
+      isArray: false
+      name: confidence
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: '3'
+      description: An integer representing the severity of the malicious behavior
+        identified by the data within the indicator. Acceptable values are 0 – 5 where
+        5 is the most severe and zero is not severe at all.
+      isArray: false
+      name: severity
+      predefined:
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list that stores arbitrary tags/keywords.
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a file indicator
+    execution: false
+    name: microsoft-atp-file-indicator-create
   dockerimage: demisto/crypto:1.0.0.8854
   feed: false
   isfetch: true

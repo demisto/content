@@ -1,11 +1,11 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+from typing import Optional, Dict, Tuple, List
+
+import urllib3
 from dateutil.parser import parse
 
 # Disable insecure warnings
 
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 APP_NAME = 'ms-defender-atp'
@@ -554,6 +554,41 @@ class MsClient:
         """
         cmd_url = f'/files/{file_hash}'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+
+    def list_indicators(self, indicator_id: Optional[str] = None) -> Dict:
+        cmd_url = 'beta/security/tiIndicators'
+        if indicator_id is not None:
+            cmd_url = urljoin(cmd_url, indicator_id)
+        params = {'$filter': 'targetProduct eq \'Microsoft Defender ATP\''}
+        return self.ms_client.http_request('GET', url_suffix=cmd_url, params=params)
+
+    def create_file_indicator(
+            self,
+            action: str,
+            description: str,
+            expiration_time: str,
+            threat_type: str,
+            tlp_level: int,
+            confidence: Optional[int] = None,
+            severity: Optional[int] = None,
+            tags: Optional[List[str]] = None
+    ):
+        body = assign_params(
+            action=action,
+            description=description,
+            expirationDateTime=expiration_time,
+            targetProduct='Microsoft Defender ATP',
+            threatType=threat_type,
+            tlpLevel=tlp_level,
+            confidence=confidence,
+            severity=severity,
+            tags=tags
+        )
+        return self._post_indicators(body)
+
+    def _post_indicators(self, body) -> Dict:
+        cmd_url = 'beta/security/tiIndicators'
+        return self.ms_client.http_request('POST', cmd_url, json_data=body)
 
 
 ''' Commands '''
@@ -1775,6 +1810,104 @@ def get_last_alert_fetched_time(last_run, alert_time_to_fetch):
     return last_alert_fetched_time
 
 
+def list_indicators_command(client: MsClient, args: Dict[str, str]) -> Tuple[str, Optional[Dict], Optional[Dict]]:
+    """
+
+    Args:
+        client: MsClient
+        args: arguments from CortexSOAR. May include 'indicator_id'
+
+    Returns:
+        human_readable, outputs.
+    """
+    response = client.list_indicators(args.get('indicator_id'))
+    indicators = response.get('value')
+    if indicators:
+        human_readable = tableToMarkdown(
+            'Indicators from Microsoft ATP:',
+            indicators,
+            headers=[
+                'indicator_id',
+                'action',
+                'threatType',
+                'severity',
+                'fileName',
+                'fileHashType',
+                'fileHashValue',
+                'domainName',
+                'networkIPv4',
+                'url'
+            ]
+        )
+        return human_readable, {'MicrosoftATP.Indicators(val.id == obj.id)': indicators}, response
+    else:
+        return 'No indicators found', None, None
+
+
+def get_future_time(expiration_time):
+    start, end = parse_date_range(
+        expiration_time
+    )
+    future_time: datetime = end + (end - start)
+    return future_time.strftime('%Y-%m-%dT%H:%M:%SZ')
+
+
+def create_file_indicator_command(client: MsClient, args: Dict) -> Tuple[str, Optional[Dict]]:
+    """
+
+    Args:
+        client: MsClient
+        args: arguments from CortexSOAR.
+        Must include the following keys:
+        - action
+        - description
+        - expiration_time
+        - threat_type
+
+    Returns:
+        human readable, outputs, raw response
+    """
+    # Get arguments and assertions
+    action = args.get('action', '')
+    description = args.get('description', '')
+    assert 1 <= len(description) <= 100, 'The description argument must contain at least 1 letter and less than 100.'
+    expiration_time = get_future_time(args.get('expiration_time'))
+    threat_type = args.get('threat_type', '')
+    tlp_level = args.get('tlp_level', '')
+    confidence = args.get('confidence', None)
+    if confidence is not None:
+        confidence = int(confidence)
+        assert 0 <= confidence <= 100, 'The confidence argument must be between 0 and 100'
+    severity = args.get('severity', 3)
+    try:
+        severity = int(severity)
+        assert 0 <= severity <= 5, 'The severity argument must be between 0 and 5'
+    except ValueError:
+        raise DemistoException('The severity argument must be an integer.')
+    tags = argToList(args.get('tags'))
+    indicator = client.create_file_indicator(
+        action, description, expiration_time,
+        threat_type, tlp_level, confidence,
+        severity, tags)
+    human_readable = tableToMarkdown(
+        'Indicators from Microsoft ATP:',
+        indicator,
+        headers=[
+            'indicator_id',
+            'action',
+            'threatType',
+            'severity',
+            'fileName',
+            'fileHashType',
+            'fileHashValue',
+            'domainName',
+            'networkIPv4',
+            'url'
+        ]
+    )
+    return human_readable, {'MicrosoftATP.Indicators(val.id == obj.id)': indicators}
+
+
 def test_module(client: MsClient):
     try:
         client.ms_client.http_request(method='GET', url_suffix='/alerts', params={'$top': '1'})
@@ -1801,7 +1934,9 @@ def main():
     alert_time_to_fetch = params.get('first_fetch_timestamp', '3 days')
     last_run = demisto.getLastRun()
 
-    LOG('command is %s' % (demisto.command()))
+    command = demisto.command()
+    args = demisto.args()
+    LOG(f'command is {command}')
 
     try:
         client = MsClient(
@@ -1809,107 +1944,110 @@ def main():
             proxy=proxy, self_deployed=self_deployed, alert_severities_to_fetch=alert_severities_to_fetch,
             alert_status_to_fetch=alert_status_to_fetch, alert_time_to_fetch=alert_time_to_fetch)
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             test_module(client)
 
-        elif demisto.command() == 'fetch-incidents':
+        elif command == 'fetch-incidents':
             fetch_incidents(client, last_run)
 
-        elif demisto.command() == 'microsoft-atp-isolate-machine':
-            return_outputs(*isolate_machine_command(client, demisto.args()))
+        elif command == 'microsoft-atp-isolate-machine':
+            return_outputs(*isolate_machine_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-unisolate-machine':
-            return_outputs(*unisolate_machine_command(client, demisto.args()))
+        elif command == 'microsoft-atp-unisolate-machine':
+            return_outputs(*unisolate_machine_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-machines':
-            return_outputs(*get_machines_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-machines':
+            return_outputs(*get_machines_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-file-related-machines':
-            return_outputs(*get_file_related_machines_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-file-related-machines':
+            return_outputs(*get_file_related_machines_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-machine-details':
-            return_outputs(*get_machine_details_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-machine-details':
+            return_outputs(*get_machine_details_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-run-antivirus-scan':
-            return_outputs(*run_antivirus_scan_command(client, demisto.args()))
+        elif command == 'microsoft-atp-run-antivirus-scan':
+            return_outputs(*run_antivirus_scan_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-list-alerts':
-            return_outputs(*list_alerts_command(client, demisto.args()))
+        elif command == 'microsoft-atp-list-alerts':
+            return_outputs(*list_alerts_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-update-alert':
-            return_outputs(*update_alert_command(client, demisto.args()))
+        elif command == 'microsoft-atp-update-alert':
+            return_outputs(*update_alert_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-advanced-hunting':
-            return_outputs(*get_advanced_hunting_command(client, demisto.args()))
+        elif command == 'microsoft-atp-advanced-hunting':
+            return_outputs(*get_advanced_hunting_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-create-alert':
-            return_outputs(*create_alert_command(client, demisto.args()))
+        elif command == 'microsoft-atp-create-alert':
+            return_outputs(*create_alert_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-alert-related-user':
-            return_outputs(*get_alert_related_user_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-alert-related-user':
+            return_outputs(*get_alert_related_user_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-alert-related-files':
-            return_outputs(*get_alert_related_files_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-alert-related-files':
+            return_outputs(*get_alert_related_files_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-alert-related-ips':
-            return_outputs(*get_alert_related_ips_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-alert-related-ips':
+            return_outputs(*get_alert_related_ips_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-alert-related-domains':
-            return_outputs(*get_alert_related_domains_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-alert-related-domains':
+            return_outputs(*get_alert_related_domains_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-list-machine-actions-details':
-            return_outputs(*get_machine_action_by_id_command(client, demisto.args()))
+        elif command == 'microsoft-atp-list-machine-actions-details':
+            return_outputs(*get_machine_action_by_id_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-collect-investigation-package':
-            return_outputs(*get_machine_investigation_package_command(client, demisto.args()))
+        elif command == 'microsoft-atp-collect-investigation-package':
+            return_outputs(*get_machine_investigation_package_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-investigation-package-sas-uri':
-            return_outputs(*get_investigation_package_sas_uri_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-investigation-package-sas-uri':
+            return_outputs(*get_investigation_package_sas_uri_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-restrict-app-execution':
-            return_outputs(*restrict_app_execution_command(client, demisto.args()))
+        elif command == 'microsoft-atp-restrict-app-execution':
+            return_outputs(*restrict_app_execution_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-remove-app-restriction':
-            return_outputs(*remove_app_restriction_command(client, demisto.args()))
+        elif command == 'microsoft-atp-remove-app-restriction':
+            return_outputs(*remove_app_restriction_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-stop-and-quarantine-file':
-            return_outputs(*stop_and_quarantine_file_command(client, demisto.args()))
+        elif command == 'microsoft-atp-stop-and-quarantine-file':
+            return_outputs(*stop_and_quarantine_file_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-list-investigations':
-            return_outputs(*get_investigations_by_id_command(client, demisto.args()))
+        elif command == 'microsoft-atp-list-investigations':
+            return_outputs(*get_investigations_by_id_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-start-investigation':
-            return_outputs(*start_investigation_command(client, demisto.args()))
+        elif command == 'microsoft-atp-start-investigation':
+            return_outputs(*start_investigation_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-domain-statistics':
-            return_outputs(*get_domain_statistics_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-domain-statistics':
+            return_outputs(*get_domain_statistics_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-domain-alerts':
-            return_outputs(*get_domain_alerts_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-domain-alerts':
+            return_outputs(*get_domain_alerts_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-domain-machines':
-            return_outputs(*get_domain_machine_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-domain-machines':
+            return_outputs(*get_domain_machine_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-file-statistics':
-            return_outputs(*get_file_statistics_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-file-statistics':
+            return_outputs(*get_file_statistics_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-file-alerts':
-            return_outputs(*get_file_alerts_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-file-alerts':
+            return_outputs(*get_file_alerts_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-ip-statistics':
-            return_outputs(*get_ip_statistics_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-ip-statistics':
+            return_outputs(*get_ip_statistics_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-ip-alerts':
-            return_outputs(*get_ip_alerts_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-ip-alerts':
+            return_outputs(*get_ip_alerts_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-user-alerts':
-            return_outputs(*get_user_alerts_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-user-alerts':
+            return_outputs(*get_user_alerts_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-get-user-machines':
-            return_outputs(*get_user_machine_command(client, demisto.args()))
+        elif command == 'microsoft-atp-get-user-machines':
+            return_outputs(*get_user_machine_command(client, args))
 
-        elif demisto.command() == 'microsoft-atp-add-remove-machine-tag':
-            return_outputs(*add_remove_machine_tag_command(client, demisto.args()))
+        elif command == 'microsoft-atp-add-remove-machine-tag':
+            return_outputs(*add_remove_machine_tag_command(client, args))
+
+        elif command in ('microsoft-atp-list-indicators', 'microsoft-atp-get-indicator-by-id'):
+            return_outputs(*list_indicators_command(client, args))
     except Exception as err:
         return_error(str(err))
 

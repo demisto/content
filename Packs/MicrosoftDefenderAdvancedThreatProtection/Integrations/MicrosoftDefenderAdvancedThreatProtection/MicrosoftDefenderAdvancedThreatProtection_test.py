@@ -1,7 +1,7 @@
 import demistomock as demisto
 import json
 import pytest
-from MicrosoftDefenderAdvancedThreatProtection import MsClient
+from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time
 
 ARGS = {'id': '123', 'limit': '2', 'offset': '0'}
 
@@ -647,3 +647,11 @@ MACHINE_DATA = {
     'AADDeviceID': '12ab34cd',
     'ExposureLevel': "Medium"
 }
+
+
+def tests_get_future_time(mocker):
+    from datetime import datetime
+    mocker.patch(
+        'MicrosoftDefenderAdvancedThreatProtection.parse_date_range',
+        return_value=(datetime(1992, 3, 18), datetime(1992, 3, 21)))
+    assert '1992-03-24T00:00:00Z' == get_future_time('3 days')
