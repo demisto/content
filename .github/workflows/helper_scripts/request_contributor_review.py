@@ -90,14 +90,18 @@ def get_pr_tagged_reviewers(pr_number, github_token, verify_ssl):
     comments_endpoint = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/issues/{pr_number}/comments"
     headers = {"Authorization": "Bearer " + github_token} if github_token else {}
 
-    response = requests.get(comments_endpoint, headers=headers, verify_ssl=verify_ssl)
+    response = requests.get(comments_endpoint, headers=headers, verify=verify_ssl)
 
     if response.status_code != requests.codes.ok:
         print(f"Failed requesting PR {pr_number} comments")
         sys.exit(1)
 
     comments_info = response.json()
+    github_actions_bot_comments = [c.get('body', '') for c in comments_info if c.get('user', {}).get(
+        'login') == "github-actions[bot]" and PR_COMMENT_PREFIX in c.get('body', '')]
 
+    print(github_actions_bot_comments)
+    sys.exit()
     return tagged_reviewers
 
 
