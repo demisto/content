@@ -1,7 +1,8 @@
 {
     "id": "Prisma Cloud Compute Audit",
     "group": "incident",
-    "name": "Prisma Cloud Compute Audit Incident",
+    "name": "Prisma Cloud Compute Audit",
+    "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {

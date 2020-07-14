@@ -2,6 +2,7 @@
     "id": "Employee Offboarding",
     "group": "incident",
     "name": "Employee Offboarding Incident",
+    "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {

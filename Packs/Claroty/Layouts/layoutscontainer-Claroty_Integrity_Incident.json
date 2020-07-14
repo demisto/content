@@ -2,6 +2,7 @@
     "id": "Claroty Integrity Incident",
     "group": "incident",
     "name": "Claroty Integrity Incident",
+    "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {

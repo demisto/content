@@ -2,6 +2,7 @@
     "id": "Impossible Traveler",
     "group": "incident",
     "name": "Impossible Traveler Incident",
+    "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {

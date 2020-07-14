@@ -2,6 +2,7 @@
     "id": "MITRE ATT&CK",
     "group": "indicator",
     "name": "MITRE ATT&CK Indicator",
+    "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
     "indicatorDetails": {

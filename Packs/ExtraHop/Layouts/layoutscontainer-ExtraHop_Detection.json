@@ -2,6 +2,7 @@
     "id": "ExtraHop Detection",
     "group": "incident",
     "name": "ExtraHop Detection",
+	"description": "",
     "version": -1,
     "fromVersion": "6.0.0",
     "close": {

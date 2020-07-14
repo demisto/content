@@ -2,6 +2,7 @@
     "id": "Review Indicators Manually For Whitelisting",
     "group": "incident",
     "name": "Review Indicators Manually For Whitelisting Incident",
+    "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {

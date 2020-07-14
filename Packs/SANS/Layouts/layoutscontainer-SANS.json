@@ -2,6 +2,7 @@
     "id": "SANS",
     "group": "incident",
     "name": "SANS Incident",
+    "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {

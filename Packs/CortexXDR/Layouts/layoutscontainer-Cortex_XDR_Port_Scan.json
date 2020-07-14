@@ -1,7 +1,8 @@
 {
     "id": "Cortex XDR Port Scan",
     "group": "incident",
-    "name": "Cortex XDR Port Scan Incident",
+    "name": "Cortex XDR Port Scan",
+    "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {

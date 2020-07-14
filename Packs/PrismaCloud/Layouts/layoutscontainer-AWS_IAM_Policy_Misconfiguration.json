@@ -2,6 +2,7 @@
     "id": "AWS IAM Policy Misconfiguration",
     "group": "incident",
     "name": "AWS IAM Policy Misconfiguration Incident",
+    "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {

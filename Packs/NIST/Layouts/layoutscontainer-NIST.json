@@ -2,6 +2,7 @@
     "id": "NIST",
     "group": "incident",
     "name": "NIST Incident",
+    "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {

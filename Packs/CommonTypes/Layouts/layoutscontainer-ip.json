@@ -2,6 +2,7 @@
 	"id": "ipRep",
 	"group": "indicator",
 	"name": "IP Indicator",
+	"description": "",
 	"version": -1,
 	"fromVersion": "6.0.0",
 	"indicatorsDetails": {

@@ -2,6 +2,7 @@
     "id": "Expanse Appearance",
     "group": "incident",
     "name": "Expanse Appearance Incident",
+    "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {

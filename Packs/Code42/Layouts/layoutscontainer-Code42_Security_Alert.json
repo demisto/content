@@ -2,6 +2,7 @@
     "id": "Code42 Security Alert",
     "group": "incident",
     "name": "Code42 Security Alert",
+    "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {

@@ -2,6 +2,7 @@
     "id": "Hello World Alert",
     "group": "incident",
     "name": "Hello World Alert",
+	"description": "",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {

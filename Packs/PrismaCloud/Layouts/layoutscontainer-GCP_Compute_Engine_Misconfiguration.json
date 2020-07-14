@@ -2,6 +2,7 @@
     "id": "GCP Compute Engine Misconfiguration",
     "group": "incident",
     "name": "GCP Compute Engine Misconfiguration Incident",
+    "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {

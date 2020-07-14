@@ -2,6 +2,7 @@
     "id": "Employee Health Check",
     "group": "incident",
     "name": "Employee Health Check Incident",
+    "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
     "edit": {

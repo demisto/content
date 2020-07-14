@@ -2,6 +2,7 @@
     "id": "Digital Guardian Security Event",
     "group": "incident",
     "name": "Digital Guardian Security Event Incident",
+    "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {

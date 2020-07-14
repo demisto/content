@@ -2,6 +2,7 @@
     "id": "Brute Force",
     "group": "incident",
     "name": "Brute Force Incident",
+    "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {

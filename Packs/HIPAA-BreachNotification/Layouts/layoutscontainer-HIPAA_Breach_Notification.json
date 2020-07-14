@@ -2,6 +2,7 @@
     "id": "HIPAA Breach Notification",
     "group": "incident",
     "name": "HIPAA Breach Notification Incident",
+    "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
     "edit": {

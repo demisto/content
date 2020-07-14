@@ -2,6 +2,7 @@
     "id": "registryKey",
     "group": "indicator",
     "name": "Registry Key Indicator",
+    "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
     "indicatorsDetails": {

@@ -2,6 +2,7 @@
     "id": "Review Indicators Manually",
     "group": "incident",
     "name": "Review Indicators Manually Incident",
+    "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {

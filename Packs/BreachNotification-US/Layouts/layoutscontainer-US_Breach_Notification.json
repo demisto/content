@@ -2,6 +2,7 @@
     "id": "US Breach Notification",
     "group": "incident",
     "name": "US Breach Notification Incident",
+    "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {

@@ -2,6 +2,7 @@
     "id": "PCAP Analysis",
     "group": "incident",
     "name": "PCAP Analysis Incident",
+    "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {

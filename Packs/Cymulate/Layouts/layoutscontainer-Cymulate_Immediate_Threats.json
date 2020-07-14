@@ -2,6 +2,7 @@
     "id": "Cymulate Immediate Threats",
     "group": "incident",
     "name": "Cymulate Immediate Threat",
+    "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {
