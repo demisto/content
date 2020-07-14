@@ -49,7 +49,7 @@ references:
       CONTRIB_BRANCH: << pipeline.parameters.contrib_branch >>
       CONTRIB_PACK_NAME: << pipeline.parameters.contrib_pack_name >>
       # Giving different names to the following pipeline parameters to avoid collision, handling such collision case
-      # is done in 'Prepare Environment' step.
+      # is done in 'Setup Environment' step.
       TIME_TO_LIVE_PARAMETER: << pipeline.parameters.time_to_live >>
       NIGHTLY_PARAMETER: << pipeline.parameters.nightly >>
       INSTANCE_TESTS_PARAMETER: << pipeline.parameters.instance_tests >>
@@ -305,7 +305,7 @@ references:
                 exit 0
     
 jobs:
-  Prepare Environment:
+  Setup Environment:
     <<: *container_config
     resource_class: medium+
     <<: *environment
@@ -862,17 +862,17 @@ workflows:
   version: 2
   commit:
     jobs:
-      - Prepare Environment
+      - Setup Environment
       - Create Instances:
           filters:
             branches:
               ignore: /pull\/[0-9]+/
       - Run Unit Testing And Lint:
           requires:
-            - Prepare Environment
+            - Setup Environment
       - Run Validations:
           requires:
-            - Prepare Environment
+            - Setup Environment
       - Server 4_1:
           filters:
             branches:
@@ -936,17 +936,17 @@ workflows:
               only:
                 - master
     jobs:
-      - Prepare Environment:
+      - Setup Environment:
           context: nightly_env
       - Create Instances:
           context: nightly_env
       - Run Unit Testing And Lint:
           context: nightly_env
           requires:
-            - Prepare Environment
+            - Setup Environment
       - Run Validations:
           requires:
-            - Prepare Environment
+            - Setup Environment
       - Server 6_0:
           requires:
             - Create Instances
