@@ -226,10 +226,11 @@ def parse_resource(result):
 def parse_label(result):
     labels = []
 
-    for l in result:
-        labels.append({"BackgroundColor": l["bgColorHex"], "Id": l["id"], "Name": l["label"],
-                       "Protected": l["labelProtected"], "TypeId": l["labelTypeId"], "TypeName": l["labelTypeName"],
-                       "Prioritized": l["prioritized"], "TextColor": l["textColorHex"]})
+    for label in result:
+        labels.append({"BackgroundColor": label["bgColorHex"], "Id": label["id"], "Name": label["label"],
+                       "Protected": label["labelProtected"], "TypeId": label["labelTypeId"],
+                       "TypeName": label["labelTypeName"], "Prioritized": label["prioritized"],
+                       "TextColor": label["textColorHex"]})
 
     return labels
 
@@ -425,9 +426,9 @@ def test_module(client: Client):
         res = client.test_module_connection()
         if 'total_resources' not in res:
             return_error(message="Error connecting to module.")
-    except DemistoException as ex:
+    except DemistoException as exception:
         return_error(message="Error connecting to module.\nPlease check that organization ID, "
-                             + "module ID and module type matches.", error=ex)
+                             + "module ID and module type matches.", error=exception)
 
 
 # DEMISTO command evaluation
