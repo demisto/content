@@ -16,8 +16,8 @@ The collections are defined by a JSON object in the following format:
 
 To view the available TAXII services, visit the discovery service in one of the following options:
 
-- **https://*demisto_address*/instance/execute/*instance_name/taxii-discovery-service*** 
-- **http://*demisto_address*:*listen_port/taxii-discovery-service***
+- `https://*demisto_address*/instance/execute/*instance_name/taxii-discovery-service`
+- `http://*demisto_address*:*listen_port*/taxii-discovery-service`
 
 ## Access the TAXII Service by Instance Name
 To access the TAXII service by instance name, make sure ***Instance execute external*** is enabled. 

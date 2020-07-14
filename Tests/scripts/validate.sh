@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
+export DEMISTO_README_VALIDATION=yes
+
 if [[ $CIRCLE_BRANCH = master ]];
   then
     demisto-sdk validate -a

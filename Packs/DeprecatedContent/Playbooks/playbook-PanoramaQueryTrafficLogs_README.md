@@ -1,4 +1,4 @@
-Queries traffic logs in a PAN-OS Panorama or Firewall device.
+DEPRECATED. Use "PAN-OS Query Logs For Indicators" playbook instead. Queries traffic logs in a PAN-OS Panorama or Firewall device.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

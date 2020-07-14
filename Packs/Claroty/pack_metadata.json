@@ -2,16 +2,14 @@
     "name": "Claroty",
     "description": "Use the Claroty CTD to manage assets and alerts.",
     "support": "partner",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "Claroty",
     "url": "",
     "email": "gil.k@claroty.com",
     "created": "2020-03-11T12:58:02Z",
     "categories": [],
     "tags": [],
-    "useCases": [
-        "Manage assets and alerts"
-    ],
+    "useCases": [],
     "keywords": [
         "Claroty"
     ]

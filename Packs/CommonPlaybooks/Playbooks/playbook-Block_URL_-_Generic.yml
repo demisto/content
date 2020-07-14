@@ -1,7 +1,6 @@
 id: block_url_-_generic
 version: -1
 name: Block URL - Generic
-fromversion: 4.0.0
 description: |-
   This playbook blocks malicious URLs using all integrations that are enabled.
 
@@ -13,15 +12,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b95110b7-ba18-42a5-87ad-c5d37915401c
+    taskid: 59b1a1c8-41a6-4b2f-8bb4-24e4bd1036d8
     type: start
     task:
-      id: b95110b7-ba18-42a5-87ad-c5d37915401c
+      id: 59b1a1c8-41a6-4b2f-8bb4-24e4bd1036d8
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -36,18 +35,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 1808d949-f921-4957-8796-7bbedd822ad9
+    taskid: 5ba81cb8-30c1-4d31-8af6-45f937d1d58b
     type: title
     task:
-      id: 1808d949-f921-4957-8796-7bbedd822ad9
+      id: 5ba81cb8-30c1-4d31-8af6-45f937d1d58b
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -59,18 +60,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: f414f4c2-03f8-4219-8428-048557b1758b
+    taskid: 21e74ef4-5adb-44a4-874b-2bedbd59a051
     type: title
     task:
-      id: f414f4c2-03f8-4219-8428-048557b1758b
+      id: 21e74ef4-5adb-44a4-874b-2bedbd59a051
       version: -1
       name: Block URLs
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -87,12 +90,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: ad6bb4b2-ea87-4c6e-893c-a31e27e82e55
+    taskid: 6685a431-51a7-4bf8-8679-5d079a8dca85
     type: condition
     task:
-      id: ad6bb4b2-ea87-4c6e-893c-a31e27e82e55
+      id: 6685a431-51a7-4bf8-8679-5d079a8dca85
       version: -1
       name: Is there a URL to block?
       description: Verify that the playbook input includes at least one URL to block.
@@ -123,34 +128,30 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: 2d0fc7d4-b827-43c9-8b7a-bf592e7a1c1f
+    taskid: 4576e191-0508-4140-8ed3-0503e6232d9b
     type: playbook
     task:
-      id: 2d0fc7d4-b827-43c9-8b7a-bf592e7a1c1f
+      id: 4576e191-0508-4140-8ed3-0503e6232d9b
       version: -1
-      name: Add Indicator to Miner - Minemeld
-      description: ""
+      name: Add Indicator to Miner - Palo Alto MineMeld
       playbookName: Add Indicator to Miner - Palo Alto MineMeld
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
-    scriptarguments:
-      Indicator:
-        complex:
-          root: inputs.URL
-      MinerName:
-        complex:
-          root: inputs.URLBlacklistMiner
     separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -161,12 +162,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "12":
     id: "12"
-    taskid: a2108a1a-7365-45e7-8c07-a5a6fcdd8b95
+    taskid: 4270c78b-8b35-44c8-832a-11b82fbbd9c4
     type: condition
     task:
-      id: a2108a1a-7365-45e7-8c07-a5a6fcdd8b95
+      id: 4270c78b-8b35-44c8-832a-11b82fbbd9c4
       version: -1
       name: Is Zscaler enabled?
       description: Verify that there is a valid instance of Zscaler enabled.
@@ -219,12 +222,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: adb7b441-33c8-4fe9-8883-7af9a776e0d3
+    taskid: 6c17067d-ac81-454b-8c4b-77e38811443e
     type: regular
     task:
-      id: adb7b441-33c8-4fe9-8883-7af9a776e0d3
+      id: 6c17067d-ac81-454b-8c4b-77e38811443e
       version: -1
       name: Block URL with Zscaler
       description: Block the URLS using Zscaler.
@@ -250,53 +255,30 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
-    taskid: 2b812a9e-5f84-40cb-8cb9-67bcc0537ee7
+    taskid: fa3391b8-020e-4f53-8576-7445bf741452
     type: playbook
     task:
-      id: 2b812a9e-5f84-40cb-8cb9-67bcc0537ee7
+      id: fa3391b8-020e-4f53-8576-7445bf741452
       version: -1
       name: PAN-OS - Block URL - Custom URL Category
       playbookName: PAN-OS - Block URL - Custom URL Category
-      description: ""
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
-    scriptarguments:
-      AutoCommit:
-        complex:
-          root: inputs.AutoCommit
-      CustomURLCategory:
-        complex:
-          root: inputs.CustomURLCategory
-      LogForwarding:
-        complex:
-          root: inputs.LogForwarding
-      URL:
-        complex:
-          root: inputs.URL
-          transformers:
-          - operator: uniq
-      categories:
-        complex:
-          root: inputs.categories
-      device-group:
-        complex:
-          root: inputs.device-group
-      pre-post:
-        simple: pre-rulebase
-      type:
-        complex:
-          root: inputs.type
     separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -307,58 +289,30 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "15":
     id: "15"
-    taskid: bc52f173-2761-41cc-8342-6c5b462c3011
+    taskid: 7cc51964-5d19-48ce-8bc3-7403438e6dfe
     type: playbook
     task:
-      id: bc52f173-2761-41cc-8342-6c5b462c3011
+      id: 7cc51964-5d19-48ce-8bc3-7403438e6dfe
       version: -1
       name: PAN-OS - Block IP and URL - External Dynamic List
       playbookName: PAN-OS - Block IP and URL - External Dynamic List
-      description: ""
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
-    scriptarguments:
-      AutoCommit:
-        complex:
-          root: inputs.AutoCommit
-      EDLServerIP:
-        complex:
-          root: inputs.EDLServerIP
-      IP: {}
-      IPListName: {}
-      LogForwarding:
-        complex:
-          root: inputs.LogForwarding
-      URL:
-        complex:
-          root: inputs.URL
-          transformers:
-          - operator: uniq
-      URLListName:
-        complex:
-          root: inputs.URLListName
-      device-group:
-        complex:
-          root: inputs.device-group
-      inbound-or-outbound-rule:
-        simple: outbound
-      ip-pre-post-rulebase:
-        simple: pre-rulebase
-      ip-rule-position: {}
-      url-pre-post-rulebase:
-        simple: pre-rulebase
-      url-rule-position: {}
     separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -369,18 +323,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "16":
     id: "16"
-    taskid: 864f7b0f-798c-40d8-862d-c1b41fce36f0
+    taskid: 258ee49c-7ea8-4d92-8054-dd0844396174
     type: title
     task:
-      id: 864f7b0f-798c-40d8-862d-c1b41fce36f0
+      id: 258ee49c-7ea8-4d92-8054-dd0844396174
       version: -1
       name: MineMeld
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -395,18 +351,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "17":
     id: "17"
-    taskid: 59c2b2cb-4d8f-4e00-8140-751aec8dc2aa
+    taskid: e92be57f-773d-496a-80f0-b1bc292b5355
     type: title
     task:
-      id: 59c2b2cb-4d8f-4e00-8140-751aec8dc2aa
+      id: e92be57f-773d-496a-80f0-b1bc292b5355
       version: -1
       name: PAN-OS
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "19"
@@ -422,18 +380,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "18":
     id: "18"
-    taskid: 99eec4e5-301a-4b0a-83e3-d7c2f973eeea
+    taskid: 18d080a9-f73c-4394-8f59-8cb602fd1604
     type: title
     task:
-      id: 99eec4e5-301a-4b0a-83e3-d7c2f973eeea
+      id: 18d080a9-f73c-4394-8f59-8cb602fd1604
       version: -1
       name: Zscaler
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -448,12 +408,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "19":
     id: "19"
-    taskid: 8764a204-c1b6-454f-8b27-8d453cfcbb52
+    taskid: 663d099d-dde1-4521-8ff2-18fabf06d99e
     type: condition
     task:
-      id: 8764a204-c1b6-454f-8b27-8d453cfcbb52
+      id: 663d099d-dde1-4521-8ff2-18fabf06d99e
       version: -1
       name: Use EDL?
       description: ""
@@ -484,12 +446,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "20":
     id: "20"
-    taskid: 32ad589a-8395-4895-89fe-ee33d1a2b96c
+    taskid: 61ddf243-2502-4c31-8ae3-9333c488d492
     type: condition
     task:
-      id: 32ad589a-8395-4895-89fe-ee33d1a2b96c
+      id: 61ddf243-2502-4c31-8ae3-9333c488d492
       version: -1
       name: Use Custom URL Category?
       description: ""
@@ -520,6 +484,9 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -540,24 +507,29 @@ inputs:
   value: {}
   required: false
   description: The name of the URL blacklist Miner in  Minemeld.
+  playbookInputQuery:
 - key: URL
   value: {}
   required: false
   description: Array of malicious URLs to block.
+  playbookInputQuery:
 - key: URLListName
   value:
     simple: Demisto Remediation - URL EDL
   required: false
   description: URL list from the instance context with which to override the remote
     file.
+  playbookInputQuery:
 - key: LogForwarding
   value: {}
   required: false
   description: Log Forwarding object name.
+  playbookInputQuery:
 - key: EDLServerIP
   value: {}
   required: false
   description: EDL server IP address.
+  playbookInputQuery:
 - key: AutoCommit
   value:
     simple: "No"
@@ -566,23 +538,29 @@ inputs:
     This input establishes whether to commit the configuration automatically.
     Yes - Commit automatically.
     No - Commit manually.
+  playbookInputQuery:
 - key: CustomURLCategory
   value:
     simple: Demisto Remediation - Malicious URLs
   required: false
   description: Custom URL Category name.
+  playbookInputQuery:
 - key: type
   value: {}
   required: false
   description: Custom URL category type. Insert "URL List"/ "Category Match".
+  playbookInputQuery:
 - key: device-group
   value: {}
   required: false
   description: Device group for the Custom URL Category (Panorama instances).
+  playbookInputQuery:
 - key: categories
   value: {}
   required: false
   description: The list of categories. Relevant from PAN-OS v9.x.
+  playbookInputQuery:
 outputs: []
+fromversion: 4.0.0
 tests:
-  - block_indicators_-_generic_-_test
+- block_indicators_-_generic_-_test
