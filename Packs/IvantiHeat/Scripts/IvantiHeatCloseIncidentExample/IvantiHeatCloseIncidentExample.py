@@ -9,7 +9,7 @@ The script gets the record Id as argumet to create the "close incident" action p
 and sets it inside the IvantiHeat.CloseIncidentJSON context path.
 To close incident in Ivanti, execute the script and call the “ivanti-heat-object-perform-action” command where the
 request-data argument value equals the script output and action equals Close_Incident:
-!ivanti-heat-object-perform-action action=Close_Incident object-id=1 
+!ivanti-heat-object-perform-action action=Close_Incident object-id=1
 object-type=incidents request-data=${ivantiHeat.CloseIncidentJSON} .
 See the Ivanti documentation for more information on quick actions:
 *tenant-url*/help/admin/Content/Configure/QuickActions/Using_Quick_Actions.htm
