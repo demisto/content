@@ -85,7 +85,7 @@ def tag_user_on_pr(reviewers, pr_number, github_token=None, verify_ssl=True):
 
 
 def get_pr_tagged_reviewers(pr_number, github_token, verify_ssl):
-    tagged_reviewers = set()
+    result_tagged_reviewers = set()
 
     comments_endpoint = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/issues/{pr_number}/comments"
     headers = {"Authorization": "Bearer " + github_token} if github_token else {}
@@ -97,8 +97,14 @@ def get_pr_tagged_reviewers(pr_number, github_token, verify_ssl):
         sys.exit(1)
 
     comments_info = response.json()
+    github_actions_bot_comments = [c.get('body', '') for c in comments_info if c.get('user', {}).get(
+        'login') == "github-actions[bot]" and PR_COMMENT_PREFIX in c.get('body', '')]
 
-    return tagged_reviewers
+    for comment in github_actions_bot_comments:
+        tagged_reviewers = [l.lstrip("- @").rstrip("\n") for l in comment.split('\n') if l.startswith("- @")]
+        result_tagged_reviewers.update(tagged_reviewers)
+
+    return result_tagged_reviewers
 
 
 def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True):
@@ -128,7 +134,7 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True)
                 user_exists = check_if_user_exists(github_user=github_user, github_token=github_token,
                                                    verify_ssl=verify_ssl)
 
-                if user_exists and github_user != pr_author:
+                if user_exists and github_user != pr_author and github_user not in tagged_packs_reviewers:
                     reviewers.add(github_user)
                     print(f"Found {github_user} default reviewer of pack {pack}")
 
