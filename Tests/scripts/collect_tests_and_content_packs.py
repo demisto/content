@@ -12,7 +12,7 @@ import argparse
 import coloredlogs
 import logging
 from distutils.version import LooseVersion
-from typing import Dict
+from typing import Dict, Tuple
 from Tests.Marketplace.marketplace_services import IGNORED_FILES
 import demisto_sdk.commands.common.tools as tools
 from demisto_sdk.commands.common.constants import *  # noqa: E402
@@ -1174,7 +1174,17 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     return tests, packs_to_install
 
 
-def get_from_version_and_to_version_from_modified_files(all_modified_files_paths, id_set):
+def get_from_version_and_to_version_from_modified_files(all_modified_files_paths: set, id_set: dict) -> Tuple[str, str]:
+    """
+    computes the lowest from version of the modified files and the highest to version of the modified files
+    If no limitation is found- default will be 0.0.0 - 99.99.99
+    Args:
+        all_modified_files_paths: All modified files
+        id_set: the content of the id.set_json
+
+    Returns:
+        The string representation of the lowest from version and highest to version
+    """
     max_to_version = LooseVersion('0.0.0')
     min_from_version = LooseVersion('99.99.99')
     for _, artifacts in id_set.items():
@@ -1194,21 +1204,21 @@ def get_from_version_and_to_version_from_modified_files(all_modified_files_paths
     logging.debug(f'modified files are {all_modified_files_paths}')
     logging.debug(f'lowest from version found is {min_from_version}')
     logging.debug(f'highest to version found is {max_to_version}')
-    return min_from_version, max_to_version
+    return min_from_version.vstring, max_to_version.vstring
 
 
-def create_filter_envs_file(from_version, to_version):
+def create_filter_envs_file(from_version: str, to_version: str, two_before_ga=None, one_before_ga=None, ga=None):
     """Create a file containing all the envs we need to run for the CI"""
     # always run master and PreGA
-    two_before_ga = AMI_BUILDS.get('TwoBefore-GA', '0').split('-')[0]
-    one_before_ga = AMI_BUILDS.get('OneBefore-GA', '0').split('-')[0]
-    ga = AMI_BUILDS.get('GA', '0').split('-')[0]
+    two_before_ga = two_before_ga or AMI_BUILDS.get('TwoBefore-GA', '0').split('-')[0]
+    one_before_ga = one_before_ga or AMI_BUILDS.get('OneBefore-GA', '0').split('-')[0]
+    ga = ga or AMI_BUILDS.get('GA', '0').split('-')[0]
     envs_to_test = {
         'Demisto PreGA': True,
         'Demisto Marketplace': True,
-        'Demisto two before GA': is_runnable_in_server_version(from_version.vstring, two_before_ga, to_version.vstring),
-        'Demisto one before GA': is_runnable_in_server_version(from_version.vstring, one_before_ga, to_version.vstring),
-        'Demisto GA': is_runnable_in_server_version(from_version.vstring, ga, to_version.vstring),
+        'Demisto two before GA': is_runnable_in_server_version(from_version, two_before_ga, to_version),
+        'Demisto one before GA': is_runnable_in_server_version(from_version, one_before_ga, to_version),
+        'Demisto GA': is_runnable_in_server_version(from_version, ga, to_version),
     }
     logging.info("Creating filter_envs.json with the following envs: {}".format(envs_to_test))
     with open("./Tests/filter_envs.json", "w") as filter_envs_file:
@@ -1240,6 +1250,9 @@ def create_test_file(is_nightly, skip_save=False):
         two_before_ga = AMI_BUILDS.get('TwoBefore-GA', '0').split('-')[0]
 
         tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name, two_before_ga)
+        tests_string = '\n'.join(tests)
+        packs_to_install_string = '\n'.join(packs_to_install)
+
         if not skip_save:
             logging.info("Creating filter_file.txt")
             with open("./Tests/filter_file.txt", "w") as filter_file:
@@ -1248,13 +1261,11 @@ def create_test_file(is_nightly, skip_save=False):
             with open("./Tests/content_packs_to_install.txt", "w") as content_packs_to_install:
                 content_packs_to_install.write(packs_to_install_string)
 
-        tests_string = '\n'.join(tests)
         if tests_string:
             logging.info('Collected the following tests:\n{0}\n'.format(tests_string))
         else:
             logging.info('No filter configured, running all tests')
 
-        packs_to_install_string = '\n'.join(packs_to_install)
         if packs_to_install_string:
             logging.info('Collected the following content packs to install:\n{0}\n'.format(packs_to_install_string))
         else:
