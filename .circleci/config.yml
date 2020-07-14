@@ -286,6 +286,24 @@ references:
       command: |
         python3 ./Tests/scripts/update_conf_json.py
         cp "./Tests/conf.json" "$CIRCLE_ARTIFACTS/conf.json"
+
+  get_contribution_pack: &get_contribution_pack
+    when:
+      condition: << pipeline.parameters.contrib_branch >>
+      steps:
+        - run:
+            name: Get Contributor pack
+            when: always
+            command: |
+                USER=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
+                BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
+                PACK=$(echo $CONTRIB_BRANCH | cut -d ":" -f 3)
+                echo 'Copy the changes from the contributor branch $USER/$BRANCH in the pack $PACK'
+                git remote add $USER git@github.com:$USER/content.git
+                git fetch $USER $BRANCH
+                git checkout $USER/$BRANCH $PACK
+                exit 0
+    
 jobs:
   Prepare Environment:
     <<: *container_config
@@ -301,21 +319,7 @@ jobs:
             - venv
             - node_modules
           key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
-      - when:
-          condition: << pipeline.parameters.contrib_branch >>
-          steps:
-            - run:
-                name: Get Contributor pack
-                when: always
-                command: |
-                    USER=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
-                    BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
-                    PACK=$(echo $CONTRIB_BRANCH | cut -d ":" -f 3)
-                    echo 'Copy the changes from the contributor branch $USER/$BRANCH in the pack $PACK'
-                    git remote add $USER git@github.com:$USER/content.git
-                    git fetch $USER $BRANCH
-                    git checkout $USER/$BRANCH $PACK
-                    exit 0
+      - *get_contribution_pack
       - *add_ssh_keys
       - *persist_to_workspace
 
@@ -428,9 +432,8 @@ jobs:
       - setup_remote_docker
       - *restore_cache
       - *prepare_environment
-      - *restore_cache
+      - *get_contribution_pack
       - *add_ssh_keys
-      - *prepare_environment
       - *update_tests_step
       - *create_id_set
       - *build_content_descriptor
