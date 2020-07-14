@@ -437,7 +437,7 @@ def __set_server_keys(client, prints_manager, integration_params, integration_na
     update_server_configuration(
         client=client,
         server_configuration=integration_params.get('server_keys'),
-        error_msg=f'Failed to set server keys'
+        error_msg='Failed to set server keys'
     )
 
 
