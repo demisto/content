@@ -260,10 +260,10 @@ KEY_AND_QUERY = {"key": "key", "query": 'test_query'}
 QUERY = {"query": 'test_query'}
 QUERY_AND_VALUE = {"query": 'test_query', "value": "awesome"}
 data_test_build_kv_store_query = [
-    (EMPTY_CASE, EMPTY_CASE),
-    (JUST_KEY, EMPTY_CASE),
-    (STANDARD_KEY_VAL, {"demisto": "is awesome"}),
-    (WITH_ALL_PARAMS, {"demisto": "is awesome"}),
+    (EMPTY_CASE, str(EMPTY_CASE)),
+    (JUST_KEY, str(EMPTY_CASE)),
+    (STANDARD_KEY_VAL, '{"demisto": "is awesome"}'),
+    (WITH_ALL_PARAMS, '{"demisto": "is awesome"}'),
     (KEY_AND_LIMIT, {"limit": 1}),
     (KEY_AND_QUERY, 'test_query'),
     (QUERY, 'test_query'),
@@ -280,9 +280,9 @@ def test_build_kv_store_query(args, expected_query, mocker):
 
 
 data_test_build_kv_store_query_with_key_val = [
-    ({"key": "demisto", "value": "is awesome"}, str, {"demisto": "is awesome"}),
-    ({"key": "demisto", "value": "1"}, int, {"demisto": 1}),
-    ({"key": "demisto", "value": "True"}, bool, {"demisto": True}),
+    ({"key": "demisto", "value": "is awesome"}, str, '{"demisto": "is awesome"}'),
+    ({"key": "demisto", "value": "1"}, int, '{"demisto": 1}'),
+    ({"key": "demisto", "value": "True"}, bool, '{"demisto": true}'),
 ]
 
 

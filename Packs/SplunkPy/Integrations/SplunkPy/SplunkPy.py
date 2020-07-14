@@ -755,23 +755,20 @@ def build_kv_store_query(kv_store, args):
     if 'key' in args and 'value' in args:
         _type = get_key_type(kv_store, args['key'])
         args['value'] = _type(args['value']) if _type else args['value']
-        return {args['key']: args['value']}
+        return json.dumps({args['key']: args['value']})
     elif 'limit' in args:
         return {'limit': args['limit']}
     else:
-        return args.get('query', {})
+        return args.get('query', '{}')
 
 
 def kv_store_collection_data(service):
     args = demisto.args()
     stores = args['kv_store_collection_name'].split(',')
 
-    for store in stores:
-        store = service.kvstore[store]
-        query = build_kv_store_query(store, args)
-        if 'limit' not in query:
-            query = {'query': json.dumps(query)}
-        store_res = store.data.query(**query)
+    for i, store_res in enumerate(get_store_data(service)):
+        store = service.kvstore[stores[i]]
+
         if store_res:
             human_readable = tableToMarkdown(name="list of collection values {}".format(store.name),
                                              t=store_res)
@@ -783,16 +780,22 @@ def kv_store_collection_data(service):
 
 def kv_store_collection_delete_entry(service):
     args = demisto.args()
-    store = args['kv_store_collection_name']
-    query = build_kv_store_query(service, args)
-    service.kvstore[store].data.delete(query=query)
-    indicator = query.get('value')
+    store_name = args['kv_store_collection_name']
+    indicator_path = args.get('indicator_path')
+    store = service.kvstore[store_name]
+    query = build_kv_store_query(store, args)
+    store_res = next(get_store_data(service))
+    if indicator_path:
+        indicators = extract_indicator(indicator_path, store_res)
+    else:
+        indicators = []
+    store.data.delete(query=query)
     timeline = {
-        'Value': indicator,
-        'Message': 'Indicator deleted from {} store in Splunk'.format(store),
+        'Value': ','.join(indicators),
+        'Message': 'Indicator deleted from {} store in Splunk'.format(store_name),
         'Category': 'Integration Update'
     }
-    return_outputs('The values of the {} were deleted successfully'.format(store), timeline=timeline)
+    return_outputs('The values of the {} were deleted successfully'.format(store_name), timeline=timeline)
 
 
 def check_error(service, args):
@@ -838,12 +841,28 @@ def get_kv_store_config(kv_store):
 
 
 def extract_indicator(indicator_path, _dict_objects):
+    indicators = []
     indicator_paths = indicator_path.split('.')
     for indicator_obj in _dict_objects:
         indicator = ''
         for path in indicator_paths:
             indicator = indicator_obj.get(path, {})
-        return str(indicator)
+        indicators.append(str(indicator))
+    return indicators
+
+
+def get_store_data(service):
+    args = demisto.args()
+    stores = args['kv_store_collection_name'].split(',')
+
+    for store in stores:
+        store = service.kvstore[store]
+        query = build_kv_store_query(store, args)
+        if 'limit' not in query:
+            # query = {'query': json.dumps({key: val for key, val in json.loads(query).items()})}
+            # query = {'query': json.dumps(json.loads(query))}
+            query = {'query': query}
+        yield store.data.query(**query)
 
 
 def main():

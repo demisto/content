@@ -366,6 +366,8 @@ tasks:
       query:
         simple: '{"t": 9}'
       value: {}
+      indicator_path:
+        simple: 'src'
     separatecontext: false
     view: |-
       {

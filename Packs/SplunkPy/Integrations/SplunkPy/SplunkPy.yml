@@ -609,6 +609,12 @@ script:
       required: true
       secret: false
     - default: false
+      description: The path to the indicator value in kv_store_data.
+      isArray: false
+      name: indicator_path
+      required: false
+      secret: false
+    - default: false
       description: The key name to search in the store. If the query argument is used,
         this argument will be ignored
       isArray: false
