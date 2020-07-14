@@ -1913,7 +1913,7 @@ def create_file_indicator_command(client: MsClient, args: Dict) -> Tuple[str, Op
             'url'
         ]
     )
-    return human_readable, {'MicrosoftATP.Indicators(val.id == obj.id)': indicators}
+    return human_readable, {'MicrosoftATP.Indicators(val.id == obj.id)': indicator}
 
 
 def test_module(client: MsClient):
