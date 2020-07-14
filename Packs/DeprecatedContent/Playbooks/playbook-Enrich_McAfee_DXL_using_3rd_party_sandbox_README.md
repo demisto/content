@@ -1,4 +1,4 @@
-Detonates a file in Wildfire and if malicious, pushes its MD5, SHA1 and SHA256 file hashes to McAfee DXL. Example of bridging DXL to a third party sandbox.
+DEPRECATED. Use "Enrich McAfee DXL using 3rd party sandbox v2" playbook instead. Detonates a file in Wildfire and if malicious, pushes its MD5, SHA1 and SHA256 file hashes to McAfee DXL. Example of bridging DXL to a third party sandbox.
 
 
 ## Dependencies
