@@ -37,7 +37,8 @@ RAW_RESPONSE = [
                             "md5": "be357a5a72c1236a42590ea894866884",
                             "sha1": "29f4d33b0895aa46a1dad97b54096d4e68e3d91a",
                             "sha256": "6577fb6b9a5f4779f835fec594d21267aedf3c7f3ee183c4bc2fd3f9fca52df4",
-                            "sha512": "174c4574cbe429bb646e19ed1973b2ccfc314bc951f251684591105d1d0f5fe8aa9f67beae0d7420becec61bcfd51e17d270683242b77dc552e58b2f95a0625b",
+                            "sha512": "174c4574cbe429bb646e19ed1973b2ccfc314bc951f251684591105d1d0f5fe8aa9f67beae0d742"
+                                      "0becec61bcfd51e17d270683242b77dc552e58b2f95a0625b",
                             "size": 250301,
                             "ssdeep": "6144:IwUbC/ok4IeyUvtRCRvhp2h8C+GYPcX6PorXMido+vWap81:z7ok4XjtIaxrKArXBoqw",
                             "type": "application/pdf"
@@ -233,7 +234,8 @@ RAW_RESPONSE_ERROR = [
                             "md5": "be357a5a72c1236a42590ea894866884",
                             "sha1": "29f4d33b0895aa46a1dad97b54096d4e68e3d91a",
                             "sha256": "6577fb6b9a5f4779f835fec594d21267aedf3c7f3ee183c4bc2fd3f9fca52df4",
-                            "sha512": "174c4574cbe429bb646e19ed1973b2ccfc314bc951f251684591105d1d0f5fe8aa9f67beae0d7420becec61bcfd51e17d270683242b77dc552e58b2f95a0625b",
+                            "sha512": "174c4574cbe429bb646e19ed1973b2ccfc314bc951f251684591105d1d0f5fe8aa9f67beae0d7420"
+                                      "becec61bcfd51e17d270683242b77dc552e58b2f95a0625b",
                             "size": 250301,
                             "ssdeep": "6144:IwUbC/ok4IeyUvtRCRvhp2h8C+GYPcX6PorXMido+vWap81:z7ok4XjtIaxrKArXBoqw",
                             "type": "application/pdf"
