@@ -1,8 +1,6 @@
 import pytest
 from DemistoUploadFilev2 import demisto_upload_file
 
-from Packs.DemistoRESTAPI.Scripts.DemistoUploadFilev2 import DemistoUploadFilev2
-
 RAW_RESPONSE = [
     {
         "Brand": "Demisto REST API",
