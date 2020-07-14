@@ -69,6 +69,22 @@ def convert_resolution_status(resolution_status):
     return resolution_status_options[resolution_status]
 
 
+def args_to_json_filter(all_params):
+    request_data = {}
+    filters = {}
+    for key, value in all_params.items():
+        if key in ['skip', 'limit']:
+            request_data[key] = int(value)
+        if key in ['service', 'instance']:
+            filters[f'entity.{key}'] = {'eq': int(value)}
+        if key == 'severity':
+            filters[key] = {'eq': convert_severity(value)}
+        if key == 'resolution_status':
+            filters[key] = {'eq': convert_resolution_status(value)}
+    request_data['filters'] = filters
+    return request_data
+
+
 def test_module(client):
     try:
         client.alert_list(alert_id='5f06d71dba4289d0602ba5ac', customer_filters='', skip='', limit='', severity='',
@@ -88,23 +104,13 @@ def alerts_list_command(client, args):
                                service=args.get('service'), instance=args.get('instance'),
                                resolution_status=args.get('resolution_status'))
     request_data = {}
-    filters = {}
     url_suffix = '/alerts/'
     if alert_id:
         url_suffix += alert_id
     elif customer_filters:
         request_data['filters'] = json.loads(customer_filters)
     else:
-        for key, value in all_params.items():
-            if key in ['skip', 'limit']:
-                request_data[key] = int(value)
-            if key in ['service', 'instance']:
-                filters[f'entity.{key}'] = {'eq': int(value)}
-            if key == 'severity':
-                filters[key] = {'eq': convert_severity(value)}
-            if key == 'resolution_status':
-                filters[key] = {'eq': convert_resolution_status(value)}
-        request_data['filters'] = filters
+        request_data = args_to_json_filter(all_params)
 
     alerts = client.alert_list(url_suffix, request_data)
 
