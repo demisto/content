@@ -1,6 +1,6 @@
-id: CrowdStrikeMalquery - GenericPolling - Search
+id: CrowdStrikeMalquery - Search
 version: -1
-name: CrowdStrikeMalquery - GenericPolling - Search
+name: CrowdStrikeMalquery - Search
 description: |-
   Use this playbook as a sub-playbook to query the contents of binary files,
   This playbook implements polling by continuously running the `get-request` command until the operation completes.

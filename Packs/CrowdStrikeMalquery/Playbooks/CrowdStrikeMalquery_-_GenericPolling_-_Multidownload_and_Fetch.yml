@@ -1,6 +1,6 @@
-id: 'CrowdStrikeMalquery - GenericPolling - Multidownload and Fetch '
+id: CrowdStrikeMalquery - Multidownload and Fetch
 version: -1
-name: 'CrowdStrikeMalquery - GenericPolling - Multidownload and Fetch '
+name: CrowdStrikeMalquery - Multidownload and Fetch
 description: |-
   Schedule samples for download. Using samples-multidownload is a
         three-step process: 1. Schedule the download with samples-multidownload, which

@@ -102,7 +102,7 @@ script:
       type: String
     description: "Use hunt to schedule a YARA-based search for execution. Results\
       \ can be filtered based on criteria such as file type, file size and first seen\
-      \ date.     Using hunt is a two-step process:     \0Schedule a YARA-based search\
+      \ date. Using hunt is a two-step process: Schedule a YARA-based search\
       \ with hunt, which returns a request ID. Provide that request ID to the cs-malquery-get-request\
       \ to retrieve results."
   - name: cs-malquery-fuzzy-search

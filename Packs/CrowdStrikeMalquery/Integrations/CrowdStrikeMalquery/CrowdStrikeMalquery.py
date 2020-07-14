@@ -7,7 +7,7 @@ requests.packages.urllib3.disable_warnings()
 
 # CONSTANTS
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-VENDOR_NAME = 'CrowdStrike Malquery'
+VENDOR_NAME = 'CrowdStrikeMalquery'
 DBOT_SCORE = {
     'unknown': 0,
     'clean': 1,
@@ -29,14 +29,6 @@ def get_passed_mins(start_time, end_time_str, tz=None):
     """
     time_delta = start_time - datetime.fromtimestamp(end_time_str, tz)
     return time_delta.seconds / 60
-
-
-def remove_None_values_keys(d):
-    return {
-        key: value
-        for key, value in d.items()
-        if value is not None
-    }
 
 
 class Client(BaseClient):
@@ -104,7 +96,6 @@ class Client(BaseClient):
             :rtype ``str``
             :return: Access token
         """
-        # body = f"client_id={self.client_id}&client_secret={self.client_secret}"
         body = {
             'client_id': self.client_id,
             'client_secret': self.client_secret
@@ -190,16 +181,14 @@ def exact_search_command(client: Client, args: dict) -> CommandResults:
                                "Wide string")
 
     # dates format: YYYY/MM/DD
-    query_filters = {
-        "limit": int(args.get('limit', '')) if args.get('limit') else None,
-        "filter_meta": argToList(args.get('filter_meta')),
-        "filter_filetypes": argToList(args.get('file_types')),
-        "max_size": args.get('max_size'),
-        "min_size": args.get('min_size'),
-        "max_date": args.get('max_date'),
-        "min_date": args.get('min_date'), }
-    options = remove_None_values_keys(query_filters)
-    body = {"options": options, "patterns": patterns}
+    query_filters = assign_params(limit=int(args.get('limit', '100')),
+                                  filter_meta=argToList(args.get('filter_meta')),
+                                  filter_filetypes=argToList(args.get('file_types')),
+                                  max_size=args.get('max_size'),
+                                  min_size=args.get('min_size'),
+                                  max_date=args.get('max_date'),
+                                  min_date=args.get('min_date'))
+    body = {"options": query_filters, "patterns": patterns}
     raw_response = client.exact_search(body)
     entry_context = {"Request_ID": raw_response.get('meta', {}).get('reqid')}
 
@@ -224,13 +213,9 @@ def fuzzy_search_command(client: Client, args: dict) -> CommandResults:
     # must provide a pattern (hex, ascii ot wide string)
     if not patterns:
         raise DemistoException("You must provide a query to search in the following patterns: Hex, ASCII, Wide string")
-
-    query_filters = {
-        "limit": int(args.get('limit', '')) if args.get('limit') else None,
-        "filter_meta": argToList(args.get('filter_meta')) if args.get('filter_meta') else None,
-    }
-    options = remove_None_values_keys(query_filters)
-    body = {"options": options, "patterns": patterns}
+    query_filters = assign_params(limit=int(args.get('limit', '100')),
+                                  filter_meta=argToList(args.get('filter_meta')))
+    body = {"options": query_filters, "patterns": patterns}
     raw_response = client.fuzzy_search(body)
     resources_found = raw_response.get('resources', {})
     human_readable = tableToMarkdown('Fuzzy Search Result', resources_found, removeNull=True)
@@ -247,16 +232,14 @@ def hunt_command(client: Client, args: dict) -> CommandResults:
     yara_rule = args.get('yara_rule')
 
     # dates format: YYYY/MM/DD
-    query_filters = {
-        "limit": int(args.get('limit', '')) if args.get('limit') else None,
-        "filter_meta": argToList(args.get('filter_meta')),
-        "filter_filetypes": argToList(args.get('file_types')),
-        "max_size": args.get('max_size'),
-        "min_size": args.get('min_size'),
-        "max_date": args.get('max_date'),
-        "min_date": args.get('min_date'), }
-    options = remove_None_values_keys(query_filters)
-    body = {"options": options, "yara_rule": yara_rule}
+    query_filters = assign_params(limit=int(args.get('limit', '100')),
+                                  filter_meta=argToList(args.get('filter_meta')),
+                                  filter_filetypes=argToList(args.get('file_types')),
+                                  max_size=args.get('max_size'),
+                                  min_size=args.get('min_size'),
+                                  max_date=args.get('max_date'),
+                                  min_date=args.get('min_date'))
+    body = {"options": query_filters, "yara_rule": yara_rule}
     raw_response = client.hunt(body)
     entry_context = {"Request_ID": raw_response.get('meta', {}).get('reqid')}
     human_readable = tableToMarkdown('Search Result', entry_context, removeNull=True)
@@ -286,7 +269,7 @@ def get_request_command(client: Client, args: dict) -> CommandResults:
         entry_context = {
             "Request_ID": request_id,
             "Status": status,
-            "File": resources if len(resources) else None
+            "File": resources if resources else None
         }
         human_readable = tableToMarkdown(f'Search Result for request: {request_id}', resources, removeNull=True)
 
@@ -299,7 +282,6 @@ def get_request_command(client: Client, args: dict) -> CommandResults:
 
 
 def get_file_metadata_command(client: Client, args: dict):
-    indicator_type = 'File'
     file_id = args.get('file')
     raw_response = client.get_files_metadata(file_id)
     file = raw_response.get('resources', [])[0]
@@ -310,7 +292,7 @@ def get_file_metadata_command(client: Client, args: dict):
                                   integration_name=VENDOR_NAME,
                                   score=DBOT_SCORE[file_label])
     file_entry = Common.File(sha256=sha256, dbot_score=dbot_score)
-    table_name = f'{VENDOR_NAME} {indicator_type} reputation'
+    table_name = f'{VENDOR_NAME} File reputation'
     human_readable = tableToMarkdown(table_name, file, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='Malquery.File',
@@ -335,7 +317,7 @@ def file_download_command(client: Client, args: dict):
     return fileResult(file_id, content)
 
 
-# Malquery counts the download as the number of sha256 passed to the endpoind and not as a single download.
+# Malquery counts the download as the number of sha256 passed to the endpoint and not as a single download.
 def samples_multidownload_command(client: Client, args: dict) -> CommandResults:
     samples = argToList(args.get('samples'))
     body = {"samples": samples}

@@ -1,6 +1,6 @@
 {
     "name": "CrowdStrike Malquery",
-    "description": "Use the MalQuery Pack to query the contents of over a half-billion binary files, both clean and malicious, that are part of Falcon MalQuery\u2019s corpus.",
+    "description": "Use the MalQuery Pack to query the contents of over a half-billion binary files, both clean and malicious, that are part of Falcon MalQuery's corpus.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

@@ -108,21 +108,6 @@ def test_get_passed_mins():
 
 
 @pytest.mark.parametrize(
-    "input_dict, expected_dict",
-    [({"a": None, "b": None, "c": None}, {}), ({"a": "a", "b": 1, "c": None}, {"a": "a", "b": 1})])
-def test_remove_None_values_keys(input_dict, expected_dict):
-    """
-        Tests remove_None_values_keys helper function.
-
-        Use-cases:
-        1. dict with all values set to None
-        2. dict with some values set to None
-    """
-    from CrowdStrikeMalquery import remove_None_values_keys
-    assert expected_dict == remove_None_values_keys(input_dict)
-
-
-@pytest.mark.parametrize(
     "integration_context, expected_token",
     [({'access_token': 'access_token', 'valid_until': 1593443061.0}, "access_token"),
      ({'access_token': 'access_token', 'valid_until': 1573443061.0}, "new_access_token"),

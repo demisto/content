@@ -513,8 +513,8 @@ tasks:
     task:
       id: 588adb4d-01a3-45e4-82e4-6357332c5cbe
       version: -1
-      name: Exact Search - GenericPolling
-      playbookName: CrowdStrikeMalquery - GenericPolling - Search
+      name: Exact Search
+      playbookName: CrowdStrikeMalquery - Search
       type: playbook
       iscommand: false
       brand: ""
@@ -562,8 +562,8 @@ tasks:
     task:
       id: 04550bd9-db72-47e3-8acc-31fb2e49c1c7
       version: -1
-      name: Hunt - GenericPolling - Search
-      playbookName: CrowdStrikeMalquery - GenericPolling - Search
+      name: Hunt - Search
+      playbookName: CrowdStrikeMalquery - Search
       type: playbook
       iscommand: false
       brand: ""
@@ -614,8 +614,8 @@ tasks:
     task:
       id: e6e74c6e-1710-4fae-8368-5dba65ed29fa
       version: -1
-      name: Multidownload and Fetch  - GenericPolling
-      playbookName: 'CrowdStrikeMalquery - GenericPolling - Multidownload and Fetch '
+      name: Multidownload and Fetch
+      playbookName: CrowdStrikeMalquery - Multidownload and Fetch
       type: playbook
       iscommand: false
       brand: ""
