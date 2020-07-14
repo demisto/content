@@ -182,6 +182,16 @@ RAW_RESPONSE = [
 
 
 def test_demisto_upload_file(mocker):
+    """Unit test
+    Given
+    - upload_file_command command
+    - command args
+    When
+    - mock the raw response.
+    Then
+    - run the upload_file
+    Validate the content of the HumanReadable.
+    """
     mocker.patch('DemistoUploadFileV2.upload_file', return_value=RAW_RESPONSE)
     readable, _ = upload_file_command({'incidentId': '1', 'entryID': '12@12', 'body': "test_bark"})
     assert "test_bark" in readable
@@ -368,9 +378,19 @@ RAW_RESPONSE_ERROR = [
 
 
 def test_demisto_upload_file_error(mocker):
+    """Unit test
+    Given
+    - upload_file_command command
+    - command args
+    When
+    - mock the raw response as error
+    - mock the Client's send_request.
+    Then
+    - run the upload_file
+    Validate that the correct error was raised
+    """
     mocker.patch('DemistoUploadFileV2.upload_file', return_value=RAW_RESPONSE_ERROR)
 
-    with pytest.assertRaises(Exception) as err:
+    with pytest.raises(Exception,
+                       match="There was an issue uploading the file. Check your API key and input argument."):
         upload_file_command({'incidentId': '1', 'entryID': '12@12', 'body': "test_bark"})
-
-    assert "There was an issue uploading the file. Check your API key and input argument." in err.exception
