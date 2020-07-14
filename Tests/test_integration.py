@@ -423,7 +423,7 @@ def __set_server_keys(client, prints_manager, integration_params, integration_na
     if 'server_keys' not in integration_params:
         return
 
-    prints_manager.add_print_job(f'Setting server keys for integration: {integration_name}',
+    prints_manager.add_print_job('Setting server keys for integration: {}'.format(integration_name),
                                  print_color, 0, LOG_COLORS.GREEN)
 
     data = {
@@ -437,7 +437,7 @@ def __set_server_keys(client, prints_manager, integration_params, integration_na
     update_server_configuration(
         client=client,
         server_configuration=integration_params.get('server_keys'),
-        error_msg=f'Failed to set server keys'
+        error_msg='Failed to set server keys'
     )
 
 
