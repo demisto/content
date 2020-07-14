@@ -280,8 +280,7 @@ def collect_tests_and_content_packs(
                     f'Found test playbook {test_playbook_id} in pack {test_playbook_pack} - adding to packs to install')
                 packs_to_install.add(test_playbook_pack)
             else:
-                tools.print_warning(f'Found test playbook {test_playbook_id} without pack - not adding to packs to '
-                                    f'install')
+                tools.print_warning(f'Found test playbook {test_playbook_id} without pack - not adding to packs to install')
 
     return test_ids, missing_ids, caught_missing_test, packs_to_install
 
@@ -893,10 +892,10 @@ def get_test_conf_from_conf(test_id, server_version, conf=None):
     test_conf_lst = conf.get_tests()
     # return None if nothing is found
     test_conf = next((test_conf for test_conf in test_conf_lst if (
-            test_conf.get('playbookID') == test_id
-            and is_runnable_in_server_version(from_v=test_conf.get('fromversion', '0.0'),
-                                              server_v=server_version,
-                                              to_v=test_conf.get('toversion', '99.99.99')))), None)
+        test_conf.get('playbookID') == test_id
+        and is_runnable_in_server_version(from_v=test_conf.get('fromversion', '0.0'),
+                                          server_v=server_version,
+                                          to_v=test_conf.get('toversion', '99.99.99')))), None)
     return test_conf
 
 
