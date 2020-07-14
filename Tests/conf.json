@@ -3123,6 +3123,7 @@
         "Google Cloud Storage": "SDK",
         "Syslog Sender": "syslog",
         "syslog": "syslog",
+        "Generic SQL": "Does not peform http communication",
         "MongoDB Log": "Our instance not using SSL",
         "MongoDB Key Value Store": "Our instance not using SSL",
         "GoogleKubernetesEngine": "SDK"
