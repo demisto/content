@@ -104,8 +104,8 @@ TEST_STATUS_TRANS = {
 TEST_RESULT_TRANS = {
     'id': 'Id',
     'modified': 'Modified',
-    'project.id': 'Assessment.Id',
-    'project.name': 'Assessment.Name',
+    'project_id': 'Assessment.Id',
+    'project_name': 'Assessment.Name',
     'scenario.id': 'Scenario.Id',
     'scenario.name': 'Scenario.Name',
     'scenario.description': 'Scenario.Description',
@@ -263,7 +263,7 @@ def get_page_number_and_page_size(args):
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def test_module():
+def module_test():
     """
     Performs basic get request to get item samples
     """
@@ -341,7 +341,7 @@ def build_test_results_hr(test_results, test_id, page, tot_pages):
             keys[1]: scenario.get('Name'),
             keys[2]: asset.get('Hostname'),
             keys[3]: asset.get('Ipv4Address'),
-            keys[4]: demisto.get(t_res, 'JobState.Name'),
+            keys[4]: demisto.get(t_res, 'JobState'),
             keys[5]: t_res.get('Modified'),
             keys[6]: demisto.get(t_res, 'Outcome.Name')
         }
@@ -665,7 +665,7 @@ def main():
     LOG(f'Command being called is {command}')
     try:
         if command == 'test-module':
-            test_module()
+            module_test()
         elif command == 'attackiq-activate-assessment':
             activate_assessment_command()
         elif command == 'attackiq-get-assessment-execution-status':
@@ -704,5 +704,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ("__builtin__", "builtins", "__main__"):
     main()
