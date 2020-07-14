@@ -1,6 +1,8 @@
 {
  "associatedToAll": false,
- "associatedTypes": null,
+  "associatedTypes": [
+    "Code42 Security Alert"
+  ],
  "breachScript": "",
  "caseInsensitive": true,
  "cliName": "code42username",
