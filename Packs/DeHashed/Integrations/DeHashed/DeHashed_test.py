@@ -358,11 +358,11 @@ def test_email_command_suspicious_dbot_score(mocker):
 def test_email_command_no_entries_returned(mocker):
     """
     Given:
-        - The email address to check and that user defined the default dbot score to be 'SUSPICIOUS'.
+        - The email address to check.
     When:
-        - Searching an object that contains the given email address.
+        - Searching an object that contains the given email address and no results are returned.
     Then:
-        - Return the demisto outputs and validate that the dbot score is suspicious.
+        - Validate that the DBotScore is set to 0.
     """
     from DeHashed import Client, email_command
 
