@@ -67,8 +67,8 @@ def get_pr_modified_packs(pr_number, github_token, verify_ssl):
     return modified_packs
 
 
-def request_review_from_user(reviewers, pr_number, github_token=None, verify_ssl=True):
-    review_endpoint = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/pulls/{pr_number}/requested_reviewers"
+def tag_user_on_pr(reviewers, pr_number, github_token=None, verify_ssl=True):
+    review_endpoint = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/issues/{pr_number}/comments"
     headers = {"Authorization": "Bearer " + github_token} if github_token else {}
 
     reviewers_data = {
@@ -90,34 +90,35 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True)
     for pack in modified_packs:
         pack_metadata_path = os.path.join(PACKS_FULL_PATH, pack, PACK_METADATA)
 
-        if os.path.exists(pack_metadata_path):
-            with open(pack_metadata_path, 'r') as pack_metadata_file:
-                pack_metadata = json.load(pack_metadata_file)
-
-            if pack_metadata.get('support') != XSOAR_SUPPORT and PACK_METADATA_GITHUB_USER_FIELD in pack_metadata \
-                    and pack_metadata[PACK_METADATA_GITHUB_USER_FIELD]:
-                pack_reviewers = pack_metadata[PACK_METADATA_GITHUB_USER_FIELD]
-                pack_reviewers = pack_reviewers if isinstance(pack_reviewers, list) else pack_reviewers.split(",")
-                github_users = [u.lower() for u in pack_reviewers]
-
-                for github_user in github_users:
-                    user_exists = check_if_user_exists(github_user=github_user, github_token=github_token,
-                                                       verify_ssl=verify_ssl)
-
-                    if user_exists and github_user != pr_author:
-                        reviewers.add(github_user)
-                        print(f"Found {github_user} default reviewer of pack {pack}")
-
-            elif pack_metadata.get('support') == XSOAR_SUPPORT:
-                print(f"Skipping check of {pack} pack supported by {XSOAR_SUPPORT}")
-            else:
-                print(f"{pack} pack has no default github reviewer")
-        else:
+        if not os.path.exists(pack_metadata_path):
             print(f"Not found {pack} {PACK_METADATA} file.")
+            continue
+
+        with open(pack_metadata_path, 'r') as pack_metadata_file:
+            pack_metadata = json.load(pack_metadata_file)
+
+        if pack_metadata.get('support') != XSOAR_SUPPORT and PACK_METADATA_GITHUB_USER_FIELD in pack_metadata \
+                and pack_metadata[PACK_METADATA_GITHUB_USER_FIELD]:
+            pack_reviewers = pack_metadata[PACK_METADATA_GITHUB_USER_FIELD]
+            pack_reviewers = pack_reviewers if isinstance(pack_reviewers, list) else pack_reviewers.split(",")
+            github_users = [u.lower() for u in pack_reviewers]
+
+            for github_user in github_users:
+                user_exists = check_if_user_exists(github_user=github_user, github_token=github_token,
+                                                   verify_ssl=verify_ssl)
+
+                if user_exists and github_user != pr_author:
+                    reviewers.add(github_user)
+                    print(f"Found {github_user} default reviewer of pack {pack}")
+
+        elif pack_metadata.get('support') == XSOAR_SUPPORT:
+            print(f"Skipping check of {pack} pack supported by {XSOAR_SUPPORT}")
+        else:
+            print(f"{pack} pack has no default github reviewer")
 
     if reviewers:
-        request_review_from_user(reviewers=reviewers, pr_number=pr_number, github_token=github_token,
-                                 verify_ssl=verify_ssl)
+        tag_user_on_pr(reviewers=reviewers, pr_number=pr_number, github_token=github_token,
+                       verify_ssl=verify_ssl)
     else:
         print("No reviewers were found.")
 
