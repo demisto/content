@@ -18,6 +18,7 @@ def main():
     args = demisto.args()
     version = args.get('version', '3.1')
     vector_string = f"CVSS:{version}/"
+    values_map = dict()
 
     values_map_options = {
         "3.0": {
@@ -159,14 +160,14 @@ def main():
     ###########################################
     # Get all required values for calculations
     ###########################################
-    confidentiality = values_map["CIA"].get(args.get('C'))
+    confidentiality = values_map['CIA'].get(args.get('C'))
     modified_confidentiality = args.get('MC', "X")
     modified_confidentiality = confidentiality if\
         modified_confidentiality == "X" else values_map['CIA'].get(modified_confidentiality)
     integrity = values_map['CIA'].get(args.get('I'))
     modified_integrity = args.get('MI', "X")
     modified_integrity = integrity if modified_integrity == "X" else values_map['CIA'].get(modified_integrity)
-    availability = values_map["CIA"].get(args.get('A'))
+    availability = values_map['CIA'].get(args.get('A'))
     modified_availability = args.get('MA', "X")
     modified_availability = availability if modified_availability == "X"\
         else values_map['CIA'].get(modified_availability)
@@ -213,7 +214,7 @@ def main():
         iss = 1 - ((1 - confidentiality) * (1 - integrity) * (1 - availability))
 
     # Impact
-    impact = 0
+    impact = 0.0
     if version in ['3.0', '3.1']:
         if not scope_changed:
             impact = 6.42 * iss
@@ -221,12 +222,12 @@ def main():
             impact = 7.52 * (iss - 0.029) - 3.25 * (iss - 0.02) ** 15
 
     # Exploitability
-    exploitability = 0
+    exploitability = 0.0
     if version in ['3.0', '3.1']:
         exploitability = 8.22 * atack_vector * attack_complexity * privileges_required * user_interaction
 
     # Base Score
-    base_score = 0
+    base_score = 0.0
     if version in ['3.0', '3.1']:
         base_score = 0
         if impact > 0:
@@ -240,14 +241,14 @@ def main():
     ###########################################
     # Temporal Metric calculations
     ###########################################
-    temporal_score_roundup = 0
+    temporal_score_roundup = 0.0
     if version in ['3.0', '3.1']:
         temporal_score_roundup = base_score * exploit_code_maturity * remediation_level * report_confidence
 
     # Environmental Metrics
-    modified_impact_sub_score = 0
-    modified_impact = 0
-    modified_exploitability = 0
+    modified_impact_sub_score = 0.0
+    modified_impact = 0.0
+    modified_exploitability = 0.0
     if version in ['3.0', '3.1']:
         calculatedmodified_impact_sub_score = (
             1 - (
@@ -273,7 +274,7 @@ def main():
                                   modified_attack_complexity * modified_privileges_required * modified_user_interaction
 
     # Environmental Score
-    environmental_score = 0
+    environmental_score = 0.0
     if version in ['3.0', '3.1']:
         environmental_score = 0
         if modified_impact > 0:
