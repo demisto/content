@@ -9,12 +9,12 @@ def upload_file(incident_id: str, entry_id: str, body: str = ''):
 
 
 def upload_file_command(args: dict) -> Tuple[str, str]:
-    incident_id = args.get('incidentID')
-    entry_id = args.get('entryID')
-    body = args.get('body')
+    incident_id = args.get('incidentID', '')
+    entry_id = args.get('entryID', '')
+    body = args.get('body', '')
 
     response = upload_file(incident_id, entry_id, body)
-    if isError(response[0]):
+    if is_error(response[0]):
         raise Exception("There was an issue uploading the file. Check your API key and input arguments.")
 
     uploaded_entry_id = demisto.dt(response, 'Contents.response.entries.id')
