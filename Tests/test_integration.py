@@ -398,11 +398,13 @@ def __test_integration_instance(client, module_instance, prints_manager, thread_
     result_object = ast.literal_eval(response_data)
     success, failure_message = bool(result_object.get('success')), result_object.get('message')
     if not success:
+        server_url = client.api_client.configuration.host
         if failure_message:
-            test_failed_msg = 'Test integration failed.\nFailure message: {}'.format(failure_message)
+            test_failed_msg = 'Test integration failed - server: {}.\nFailure message: {}'.format(server_url,
+                                                                                                  failure_message)
             prints_manager.add_print_job(test_failed_msg, print_error, thread_index)
         else:
-            test_failed_msg = 'Test integration failed\nNo failure message.'
+            test_failed_msg = 'Test integration failed - server: {}.\nNo failure message.'.format(server_url)
             prints_manager.add_print_job(test_failed_msg, print_error, thread_index)
     return success, failure_message
 
@@ -838,7 +840,7 @@ def test_integration(client, server_url, integrations, playbook_id, prints_manag
         integration_instance_name = integration.get('instance_name', '')
         integration_params = integration.get('params', None)
         is_byoi = integration.get('byoi', True)
-        validate_test = integration.get('validate_test', True)
+        validate_test = integration.get('validate_test', False)
 
         if is_mock_run:
             configure_proxy_unsecure(integration_params)
