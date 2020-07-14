@@ -557,7 +557,8 @@ def report_get(client: Client, args: Dict) -> CommandResults:
         app_md5 = report.get('md5') if 'md5' in report else report_data.get('app_analysis', {}).get('md5_hash')
         if app_md5:
             report_data.update({'md5': app_md5})
-        readable_output = tableToMarkdown(name="Report:", t=report_data, removeNull=True)
+        headers = ['behavior', 'md5', 'threats']
+        readable_output = tableToMarkdown(name="Report:", t=report_data, headers=headers, removeNull=True)
 
         command_results = CommandResults(
             outputs_prefix='Zimperium.Reports',
