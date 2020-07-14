@@ -263,7 +263,7 @@ def get_page_number_and_page_size(args):
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def module_test():
+def test_module():
     """
     Performs basic get request to get item samples
     """
@@ -665,7 +665,7 @@ def main():
     LOG(f'Command being called is {command}')
     try:
         if command == 'test-module':
-            module_test()
+            test_module()
         elif command == 'attackiq-activate-assessment':
             activate_assessment_command()
         elif command == 'attackiq-get-assessment-execution-status':
