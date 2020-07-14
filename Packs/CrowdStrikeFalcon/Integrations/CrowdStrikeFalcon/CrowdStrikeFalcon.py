@@ -1267,7 +1267,7 @@ def upload_file_command():
 
     response, file_name = upload_file(entry_id, description)
 
-    return create_entry_object(contents=response, hr=f'File was uploaded successfully')
+    return create_entry_object(contents=response, hr='File was uploaded successfully')
 
 
 def delete_file_command():

@@ -1,5 +1,6 @@
 ## [Unreleased]
 Changed category to Utilities
+Improved the **fetch-incidents** command to prevent duplicate incidents.
 
 ## [20.5.0] - 2020-05-12
 New changes to HelloWorld:

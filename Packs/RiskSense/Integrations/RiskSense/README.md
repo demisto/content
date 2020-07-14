@@ -41,7 +41,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 8. risksense-get-app-detail
 ### 1. risksense-get-hosts
 ---
-Look up the host details. The host details can be searched based on input parameters like fieldname (Host Name, IP Address, Criticality, etc), operator (EXACT, IN, LIKE, BETWEEN), page, size, sort by and sort order.
+Gets details of the supplied host. The host details can be searched based on input parameters like fieldname (Host Name, IP Address, Criticality, etc), operator (EXACT, IN, LIKE, BETWEEN), page, size, sort by and sort direction.
 
 ##### Base Command
 
@@ -50,14 +50,14 @@ Look up the host details. The host details can be searched based on input parame
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fieldname | The RiskSense host attribute that should be considered for filtering the results. The available choices are 'Host Name', 'IP Adress' and 'Criticality'. Apart from the available choices one can provide the attributes supported by RiskSense API. Refer the API /host/filter API to get the list of supported attributes. The uid of filter attributes must be provided here. e.g. assessment_labels, asset_tags, cvss3BaseI, etc. If specified, 'value' argument is mandatory. | Optional | 
-| operator | The match operator that should be applied for filtering the hosts based on 'fieldname' and 'value'. Available options are 'EXACT' - filter records exactly matching the criteria; 'IN' - filter records matching any one of the comma-separated values; 'LIKE' - filter records with value matching the the specified pattern. All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer the API documentation for the list of supported operators. | Optional | 
-| exclusive_operator | The exclusive operator flag that determines whether the returned records matches filter criteria or not. By default set to False. If set to True, host not matching the specified values are fetched. | Optional | 
+| fieldname | The RiskSense host attribute by which to filter the results. Can be 'Host Name', 'IP Address', or 'Criticality'. Apart from the available choices, you can provide the attributes supported by RiskSense API. Refer to the API /host/filter API to get the list of supported attributes. The uid of filter attributes must be provided here, for example, assessment_labels, asset_tags, cvss3BaseI, etc. If specified, 'value' argument is mandatory. | Optional | 
+| operator | The match operator should be applied for filtering the hosts based on 'fieldname' and 'value'. Can be 'EXACT' - filter records exactly matching the criteria; 'IN' - filter records matching any one of the comma-separated values; 'LIKE' - filter records with the value matching the specified pattern. All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer to the API documentation for the list of supported operators. | Optional | 
+| exclude | The exclude flag that determines whether the returned records matches filter criteria or not. The default set is false. If set to True, host not matching the specified values are fetched. | Optional | 
 | value | The value of the host property mentioned in 'fieldname' to be considered for filter criteria. | Optional | 
-| page | The index of the page. The index is numeric value starting with 0. | Optional | 
-| size | The maximum number of records to be fetched in one page. | Optional | 
-| sort_by | The fieldname that should be considered for sorting the returned records. | Optional | 
-| sort_order | The sorting order to be considered for returned records. | Optional | 
+| page | The index of the page. The index is a numeric value starting with 0. | Optional | 
+| size | The maximum number of records to fetch in one page. | Optional | 
+| sort_by | The fieldname by which to sort the returned records. | Optional | 
+| sort_direction | The sorting direction to apply to returned records. | Optional | 
 
 
 ##### Context Output
@@ -70,9 +70,10 @@ Look up the host details. The host details can be searched based on input parame
 | Host.OS | String | The operating system of the host. | 
 | RiskSense.Host.ID | Number | The unique identifier of the host. | 
 | RiskSense.Host.ClientID | Number | The client id of the host. | 
-| RiskSense.Host.GroupID | Number | The id of the group belonging to the host. | 
+| RiskSense.Host.GroupID | Number | The ID of the group belonging to the host. | 
 | RiskSense.Host.GroupName | String | The name of the group belonging to the host. | 
-| RiskSense.Host.Groups | Unknown | The list of groups. | 
+| RiskSense.Host.Group.ID | Number | The ID of the group belonging to the host. | 
+| RiskSense.Host.Group.Name | String | The name of the group belonging to the host. | 
 | RiskSense.Host.Rs3 | Number | The asset security score calculated by the RiskSense platform (includes vulnerability risk on related web applications). | 
 | RiskSense.Host.Xrs3 | String | The asset security score calculated by the RiskSense platform (includes vulnerability risk on related web applications). | 
 | RiskSense.Host.Criticality | Number | The asset importance using a scale of 1 (lowest importance) to 5 (highest importance). | 
@@ -88,23 +89,23 @@ Look up the host details. The host details can be searched based on input parame
 | RiskSense.Host.NetworkType | String | The type of the network used by the host. | 
 | RiskSense.Host.DiscoveredOn | String | The time when the host was discovered. | 
 | RiskSense.Host.LastFoundOn | String | The time when the host was last found. | 
-| RiskSense.Host.LastScanTime | String | The last time when the host was scanned. | 
+| RiskSense.Host.LastScanTime | String | The last time when the host was last scanned. | 
 | RiskSense.Host.HostName | String | The hostname of the host. | 
 | RiskSense.Host.IpAddress | String | The IP address of the host. | 
 | RiskSense.Host.PortNumbers | String | The list of ports that are currently bound. | 
 | RiskSense.Host.OS.Name | String | The operating system of the host. | 
 | RiskSense.Host.OS.Family | String | The family of the operating system of the host. | 
 | RiskSense.Host.OS.Class | String | The class of the operating system of the host. | 
-| RiskSense.Host.OS.Vendor | String | The vendor information of the operating system of the host | 
+| RiskSense.Host.OS.Vendor | String | The vendor information of the operating system of the host. | 
 | RiskSense.Host.CMDB.Order | Number | The CMDB order number of the host. | 
 | RiskSense.Host.CMDB.Key | String | The CMDB key identifier of the host. | 
 | RiskSense.Host.CMDB.Value | String | The CMDB value identifier of the host. | 
 | RiskSense.Host.CMDB.Label | String | The CMDB label identifier of the host. | 
 | RiskSense.Host.Services | String | The name of the services which are used by the host. | 
 | RiskSense.Host.Note.UserID | String | The User ID of the user who added a note for the host. | 
-| RiskSense.Host.Note.UserName | String | The Username of the user who added a note for the host. | 
+| RiskSense.Host.Note.UserName | String | The username of the user who added a note for the host. | 
 | RiskSense.Host.Note.Note | String | The notes that are added by the user for the host. | 
-| RiskSense.Host.Note.Date | String | The time when note is added by the user for the host. | 
+| RiskSense.Host.Note.Date | String | The time when the note was added by the user for the host. | 
 | RiskSense.Host.Source.Name | String | The name of the source associated with the host. | 
 | RiskSense.Host.Source.UuID | String | The unique ID of the source associated with the host. | 
 | RiskSense.Host.Source.ScannerType | String | The type of scanner that discovered the host. | 
@@ -132,7 +133,7 @@ Look up the host details. The host details can be searched based on input parame
 
 ##### Command Example
 ```
-!risksense-get-hosts fieldname="Criticality" value="5" page="0" size="2" sort_by="Total Findings" sort_order="DESC"
+!risksense-get-hosts fieldname="Criticality" value="5" page="0" size="2" sort_by="Total Findings" sort_direction="Descending"
 ```
 
 ##### Context Example
@@ -162,7 +163,7 @@ Look up the host details. The host details can be searched based on input parame
             "Xrs3": null, 
             "Medium": 209, 
             "Criticality": 5, 
-            "LastVulnTrendingOn": "2020-03-03", 
+            "LastVulnTrendingOn": "2020-03-15", 
             "ClientID": 747, 
             "GroupID": 7990, 
             "Xrs3date": null, 
@@ -342,7 +343,7 @@ Look up the host details. The host details can be searched based on input parame
                     "Label": "Asset Compliance"
                 }
             ], 
-            "LastThreatTrendingOn": "2020-03-03", 
+            "LastThreatTrendingOn": "2020-03-15", 
             "OS": {
                 "Vendor": "Red Hat", 
                 "Class": "Not Reported", 
@@ -604,7 +605,7 @@ Look up the host details. The host details can be searched based on input parame
 
 ### 2. risksense-get-host-detail
 ---
-Look up single host details in depth. This command accepts either hostname or host id as an argument.
+Gets in-depth details of a single host. This command accepts either hostname or host ID as an argument.
 
 ##### Base Command
 
@@ -613,8 +614,8 @@ Look up single host details in depth. This command accepts either hostname or ho
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_id | The host ID is unique for the host. Host ID is either known by RiskSense users or it can be searched in context output (RiskSense.Host.ID) or in human-readable output of 'risksense-get-hosts' command. | Optional | 
-| host | The host is identified by hostname. Host name is either known by RiskSense users or it can be searched in context output (RiskSense.Host.HostName) or in human-readable output of 'risksense-get-hosts' command. | Optional | 
+| host_id | The unique host ID of the host. The host ID is either known by RiskSense users or it can be searched in context output (RiskSense.Host.ID) or in the human-readable output of 'risksense-get-hosts' command. | Optional | 
+| host | The hostname of the host. The hostname is either known by RiskSense users or it can be searched in context output (RiskSense.Host.HostName) or in the human-readable output of 'risksense-get-hosts' command. | Optional | 
 
 
 ##### Context Output
@@ -626,15 +627,16 @@ Look up single host details in depth. This command accepts either hostname or ho
 | Host.IP | String | The IP address of the host. | 
 | Host.OS | String | The operating system of the host. | 
 | RiskSense.Host.ID | Number | The unique identifier of the host. | 
-| RiskSense.Host.ClientID | Number | The client id of the host. | 
-| RiskSense.Host.GroupID | Number | The id of the group belonging to the host. | 
+| RiskSense.Host.ClientID | Number | The client ID of the host. | 
+| RiskSense.Host.GroupID | Number | The ID of the group belonging to the host. | 
 | RiskSense.Host.GroupName | String | The name of the group belonging to the host. | 
-| RiskSense.Host.Groups | Unknown | The list of the groups. | 
+| RiskSense.Host.Group.ID | Number | The ID of the group belonging to the host. | 
+| RiskSense.Host.Group.Name | String | The name of the group belonging to the host. | 
 | RiskSense.Host.Rs3 | Number | The asset security score calculated by the RiskSense platform (includes vulnerability risk on related web applications). | 
 | RiskSense.Host.Xrs3 | String | The asset security score calculated by RiskSense platform. | 
 | RiskSense.Host.Criticality | Number | The asset importance using a scale of 1 (lowest importance) to 5 (highest importance). | 
 | RiskSense.Host.Tag.ID | Number | The ID of the tag. | 
-| RiskSense.Host.Tag.Name | String | The Name of the tag. | 
+| RiskSense.Host.Tag.Name | String | The name of the tag. | 
 | RiskSense.Host.Tag.Category | String | The category of the tag. | 
 | RiskSense.Host.Tag.Description | String | The description of the tag. | 
 | RiskSense.Host.Tag.Created | String | The time when the tag was created. | 
@@ -645,9 +647,9 @@ Look up single host details in depth. This command accepts either hostname or ho
 | RiskSense.Host.NetworkType | String | The type of the network used by the host. | 
 | RiskSense.Host.DiscoveredOn | String | The time when the host was discovered. | 
 | RiskSense.Host.LastFoundOn | String | The time when the host was last found. | 
-| RiskSense.Host.LastScanTime | String | The last time when the host was scanned. | 
+| RiskSense.Host.LastScanTime | String | The last time when the host was last scanned. | 
 | RiskSense.Host.HostName | String | The hostname of the host. | 
-| RiskSense.Host.IpAddress | String | The IP Address of the host. | 
+| RiskSense.Host.IpAddress | String | The IP address of the host. | 
 | RiskSense.Host.PortNumbers | String | The list of ports that are currently bound. | 
 | RiskSense.Host.OS.Name | String | The operating system of the host. | 
 | RiskSense.Host.OS.Family | String | The family of the operating system of the host. | 
@@ -659,9 +661,9 @@ Look up single host details in depth. This command accepts either hostname or ho
 | RiskSense.Host.CMDB.Label | String | The CMDB label identifier of the host. | 
 | RiskSense.Host.Services | String | The name of the services which are used by the host. | 
 | RiskSense.Host.Note.UserID | String | The User ID of the user who added a note for the host. | 
-| RiskSense.Host.Note.UserName | String | The Username of the user who added a note for the host. | 
+| RiskSense.Host.Note.UserName | String | The username of the user who added a note for the host. | 
 | RiskSense.Host.Note.Note | String | The notes that are added by the user for the host. | 
-| RiskSense.Host.Note.Date | String | The time when note is added by the user for the host. | 
+| RiskSense.Host.Note.Date | String | The time when the note was added by the user for the host. | 
 | RiskSense.Host.Source.Name | String | The name of the source associated with the host. | 
 | RiskSense.Host.Source.UuID | String | The unique ID of the source associated with the host. | 
 | RiskSense.Host.Source.ScannerType | String | The type of scanner that discovered the host. | 
@@ -1023,12 +1025,12 @@ Scanner(s): QUALYS
   **Ticket Number**  | **Ticket Status**  | **Deep Link**                                    | **Type**  | **Connector Name**
   -------------------| -------------------| ------------------------------------------------ | ----------| --------------------
   JINT-525           | To Do              | https://risksense.atlassian.net/browse/JINT-525  | JIRA      | Test JIRA
-                                                                                                       
+
 
 
 ### 3. risksense-get-unique-cves
 ---
-Lookup vulnerability details per host finding with its base score.
+Looks up vulnerability details for the supplied host finding with its base score.
 
 ##### Base Command
 
@@ -1037,7 +1039,7 @@ Lookup vulnerability details per host finding with its base score.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostFindingId | The unique host finding ID. HostFindingId is either known by RiskSense users or it can be found in human-readable output or context data(RiskSense.HostFinding.ID) after executing 'risksense-get-host-findings' command. | Required | 
+| hostFindingId | The unique host finding ID. The host finding ID is either known by RiskSense users or it can be found in the human-readable output or context data(RiskSense.HostFinding.ID) after executing 'risksense-get-host-findings' command. | Required | 
 
 
 ##### Context Output
@@ -1046,19 +1048,19 @@ Lookup vulnerability details per host finding with its base score.
 | --- | --- | --- |
 | RiskSense.UniqueVulnerabilities.Cve | String | Common Vulnerabilities and Exposures name. | 
 | RiskSense.UniqueVulnerabilities.HostFindingID | String | The unique ID of the host finding. | 
-| RiskSense.UniqueVulnerabilities.BaseScore | Unknown | The base score represents Severity(informational, low, medium, high, critical) of risk. | 
-| RiskSense.UniqueVulnerabilities.ThreatCount | Number | Total number of Threats found. | 
-| RiskSense.UniqueVulnerabilities.AttackVector | String | The Attack vectors are a path by which attackers can gain access to the network. | 
-| RiskSense.UniqueVulnerabilities.AccessComplexity | String | The Access complexity describes conditions that are  beyond the attacker's control that must exist in order to exploit the vulnerability. | 
-| RiskSense.UniqueVulnerabilities.Authentication | String | The Authentication value represents attackers authorization to get network access. | 
-| RiskSense.UniqueVulnerabilities.ConfidentialityImpact | String | The Confidentiality impact measures the potential impact on confidentiality of a successfully exploited misuse vulnerability. | 
-| RiskSense.UniqueVulnerabilities.Integrity | String | The Integrity refers to the trustworthiness and veracity of information. | 
-| RiskSense.UniqueVulnerabilities.AvailabilityImpact | String | The Availability refers to accessibility of network resources. | 
-| RiskSense.UniqueVulnerabilities.Trending | Boolean | Trending is defined by RiskSense as vulnerabilities that are being actively abused by attackers in the wild based on activity in hacker forums, Twitter feeds as well as analysis of 3rd party threat intelligence sources. | 
-| RiskSense.UniqueVulnerabilities.VulnLastTrendingOn | String | The Last trending date of vulnerability. | 
+| RiskSense.UniqueVulnerabilities.BaseScore | Unknown | The base score represents the severity of the risk (informational, low, medium, high, or critical). | 
+| RiskSense.UniqueVulnerabilities.ThreatCount | Number | Total number of threats found. | 
+| RiskSense.UniqueVulnerabilities.AttackVector | String | The attack vectors are a path by which attackers can gain access to the network. | 
+| RiskSense.UniqueVulnerabilities.AccessComplexity | String | The access complexity describes conditions that are beyond the attacker's control that must exist in order to exploit the vulnerability. | 
+| RiskSense.UniqueVulnerabilities.Authentication | String | The authentication value represents attackers authorization to get network access. | 
+| RiskSense.UniqueVulnerabilities.ConfidentialityImpact | String | The confidentiality impact measures the potential impact on confidentiality of a successfully exploited misuse vulnerability. | 
+| RiskSense.UniqueVulnerabilities.Integrity | String | The Integrity refers to the trust level and veracity of the information. | 
+| RiskSense.UniqueVulnerabilities.AvailabilityImpact | String | The availability refers to accessibility of network resources. | 
+| RiskSense.UniqueVulnerabilities.Trending | Boolean | Trending is defined by RiskSense as vulnerabilities that are being actively abused by attackers in the wild based on activity in hacker forums, Twitter feeds, and analysis of 3rd party threat intelligence sources. | 
+| RiskSense.UniqueVulnerabilities.VulnLastTrendingOn | String | The last trending date of vulnerability. | 
 | CVE.ID | String | Common Vulnerabilities and Exposures ID. | 
 | CVE.Description | String | Description about CVE. | 
-| CVE.CVSS | String | The CVSS represents Severity(informational, low, medium, high, critical) of risk. | 
+| CVE.CVSS | String | The CVSS represents the severity of the risk (informational, low, medium, high, critical). | 
 
 
 ##### Command Example
@@ -1105,7 +1107,7 @@ Lookup vulnerability details per host finding with its base score.
 
 ### 4. risksense-get-unique-open-findings
 ---
-This command is used to find unique open host findings.The open findings can be searched based on input parameters like fieldname (Severity, Title, Source etc), operator (EXACT, IN, LIKE, BETWEEN), page and size.
+Finds unique open host findings.The open findings can be searched based on input parameters like fieldname (Severity, Title, Source etc), operator (EXACT, IN, LIKE, BETWEEN), page and size.
 
 ##### Base Command
 
@@ -1114,14 +1116,14 @@ This command is used to find unique open host findings.The open findings can be 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fieldname | The RiskSense host finding attribute that should be considered for filtering the results. The available choices are 'Title', 'Severity' and 'Source'. Apart from the available choices one can provide the attributes supported by RiskSense API. Refer the API /uniqueHostFinding/filter API to get the list of supported attributes. The uid of filter attributes must be provided here. e.g. assessment_labels, asset_tags, cvss3BaseI, etc. If specified, 'value' argument is mandatory. | Optional | 
-| operator | The match operator that should be applied for filtering the hosts based on 'fieldname' and 'value'. Available options are 'EXACT' - filter records exactly matching the criteria; 'IN' - filter records matching any one of the comma-separated values; 'LIKE' - filter records with value matching the the specified pattern. All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer the API documentation for the list of supported operators. | Optional | 
+| fieldname | The RiskSense host finding attribute that should be considered for filtering the results. The available choices are 'Title', 'Severity', and 'Source'. Apart from the available choices, one can provide the attributes supported by RiskSense API. Refer to the API /uniqueHostFinding/filter API to get the list of supported attributes. The uid of filter attributes must be provided here. e.g. assessment_labels, asset_tags, cvss3BaseI, etc. If specified, 'value' argument is mandatory. | Optional | 
+| operator | The match operator should be applied for filtering the hosts based on 'fieldname' and 'value'. Available options are 'EXACT' - filter records exactly matching the criteria; 'IN' - filter records matching any one of the comma-separated values; 'LIKE' - filter records with the value matching the specified pattern. All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer to the API documentation for the list of supported operators. | Optional | 
 | value | The value of the unique open finding property mentioned in 'fieldname' to be considered for filter criteria. | Optional | 
-| exclusive_operator | The exclusive operator flag that determines whether the returned records matches filter criteria or not. By default set to False. | Optional | 
+| exclude | The exclude flag that determines whether the returned records matches filter criteria or not. By default set to False. | Optional | 
 | page | The index of the page. The index is a numeric value and starting with 0. | Optional | 
-| size | The maximum number of records to be fetched in one page. | Optional | 
+| size | The maximum number of records to fetch in one page. | Optional | 
 | sort_by | The fieldname that should be considered for sorting the returned records. | Optional | 
-| sort_order | The sorting order to be considerd for retunred records. | Optional | 
+| sort_direction | The sorting direction to apply to returned records. | Optional | 
 
 
 ##### Context Output
@@ -1129,16 +1131,16 @@ This command is used to find unique open host findings.The open findings can be 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | RiskSense.UniqueHostFinding.Title | String | The title of the unique host finding. | 
-| RiskSense.UniqueHostFinding.Severity | Number | Similar to risk rating,the severity of a vulnerability conveys the potential threat posed. | 
-| RiskSense.UniqueHostFinding.HostCount | Number | The total number of the host found in unique host finding. | 
+| RiskSense.UniqueHostFinding.Severity | Number | Similar to risk rating, the severity of a vulnerability conveys the potential threat. | 
+| RiskSense.UniqueHostFinding.HostCount | Number | The total number of hosts found in unique host finding. | 
 | RiskSense.UniqueHostFinding.Source | String | The name of the source associated with the unique host finding. | 
 | RiskSense.UniqueHostFinding.SourceID | String | The unique ID of the source. | 
-| RiskSense.UniqueHostFinding.Href | String | Reference api link of unique host finding search. | 
+| RiskSense.UniqueHostFinding.Href | String | Reference API link of the unique host finding search. | 
 
 
 ##### Command Example
 ```
-!risksense-get-unique-open-findings fieldname=Source value=QUALYS sort_by=Severity sort_order=DESC size="3"
+!risksense-get-unique-open-findings fieldname=Source value=QUALYS sort_by=Severity sort_direction="Descending" size="3"
 ```
 
 ##### Context Example
@@ -1194,14 +1196,14 @@ A detailed host finding view with the severity level. Displays vulnerability inf
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fieldname | The RiskSense host finding attribute that should be considered for filtering the results. The available choices are 'Title', 'IP Adress' and 'Host Name'. Apart from the available choices one can provide the attributes supported by RiskSense API. Refer the API /hostFinding/filter API to get the list of supported attributes. The uid of filter attributes must be provided here. e.g. assessment_labels, asset_tags, cvss3BaseI, etc. If specified, 'value' argument is mandatory. | Optional | 
-| operator | The match operator that should be applied for filtering the hosts based on 'fieldname' and 'value'. Available options are 'EXACT' - filter records exactly matching the criteria; 'IN' - filter records matching any one of the comma-separated values; 'LIKE' - filter records with value matching the the specified pattern. All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer the API documentation for the list of supported operators. | Optional | 
-| exclusive_operator | The exclusive operator flag that determines whether the returned records matches filter criteria or not. By default set to False. | Optional | 
+| fieldname | The RiskSense host finding attribute that should be considered for filtering the results. The available choices are 'Title', 'IP Address', or 'Host Name'. In addition to the available choices, you can provide the attributes supported by RiskSense API. Refer to the API /hostFinding/filter API to get the list of supported attributes. The uid of filter attributes must be provided here. e.g. assessment_labels, asset_tags, cvss3BaseI, etc. If specified, 'value' argument is mandatory. | Optional | 
+| operator | The match operator should be applied for filtering the hosts based on 'fieldname' and 'value'. Available options are 'EXACT' (filter records exactly matching the criteria), 'IN' (filter records matching any one of the comma-separated values), or 'LIKE' (filter records with the value matching the specified pattern). All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer to the API documentation for the list of supported operators. | Optional | 
+| exclude | The exclude flag that determines whether the returned records matches filter criteria or not. By default set to False. | Optional | 
 | value | The value of the 'fieldname' to be considered for filter criteria. | Optional | 
 | page | The index of the page. The index is numeric value starting with 0. | Optional | 
-| size | The maximum number of records to be fetched in one page. | Optional | 
+| size | The maximum number of records to fetch in one page. | Optional | 
 | sort_by | The fieldname that should be considered for sorting the returned records. | Optional | 
-| sort_order | The sorting order to be considered for returned records. | Optional | 
+| sort_direction | The sorting direction to apply to returned records. | Optional | 
 | status | The status of the host findings to be considered for returned records. | Optional | 
 
 
@@ -1218,11 +1220,11 @@ A detailed host finding view with the severity level. Displays vulnerability inf
 | RiskSense.HostFinding.Group.ID | Number | The unique ID of the group associated with the host finding. | 
 | RiskSense.HostFinding.Group.Name | String | The name of the group associated with the host finding. | 
 | RiskSense.HostFinding.HostID | Number | The unique ID of the host associated with the host finding. | 
-| RiskSense.HostFinding.HostName | String | The Hostname of the host associated with the host finding. | 
-| RiskSense.HostFinding.HostIpAddress | String | The IP Address of the host associated with the host finding. | 
+| RiskSense.HostFinding.HostName | String | The hostname of the host associated with the host finding. | 
+| RiskSense.HostFinding.HostIpAddress | String | The IP address of the host associated with the host finding. | 
 | RiskSense.HostFinding.Host.Criticality | Number | The criticality of the host associated with the host finding. | 
-| RiskSense.HostFinding.Host.External | boolean | To identify if the host is external or internal. | 
-| RiskSense.HostFinding.Host.Port.ID | Number | The unique ID of the Host(s) Port associated with the host finding. | 
+| RiskSense.HostFinding.Host.External | boolean | Whether the identify of the host is external or internal. | 
+| RiskSense.HostFinding.Host.Port.ID | Number | The unique ID of the host(s) port associated with the host finding. | 
 | RiskSense.HostFinding.Host.Port.Number | Number | The port number of the host associated with the host finding. | 
 | RiskSense.HostFinding.Host.Rs3 | Number | The Asset Security Score calculated by the RiskSense platform (includes vulnerability risk on related web applications). | 
 | RiskSense.HostFinding.Network.ID | Number | The network ID of the host finding. | 
@@ -1234,59 +1236,59 @@ A detailed host finding view with the severity level. Displays vulnerability inf
 | RiskSense.HostFinding.Vulnerability.Cve | String | The name of the Common Vulnerabilities and Exposures associated with the host finding. | 
 | RiskSense.HostFinding.Vulnerability.BaseScore | Number | CVE Score. | 
 | RiskSense.HostFinding.Vulnerability.ThreatCount | Number | The total number of threats associated with the host finding. | 
-| RiskSense.HostFinding.Vulnerability.AttackVector | String | Vector information in which it has been attacked. | 
-| RiskSense.HostFinding.Vulnerability.AccessComplexity | String | Complexity Level. | 
+| RiskSense.HostFinding.Vulnerability.AttackVector | String | Vector information in which the host was attacked. | 
+| RiskSense.HostFinding.Vulnerability.AccessComplexity | String | Complexity level. | 
 | RiskSense.HostFinding.Vulnerability.Authentication | String | Authentication value represents attackers authorization to get network access. | 
 | RiskSense.HostFinding.Vulnerability.ConfidentialityImpact | String | Confidentiality impact measures the potential impact on confidentiality of a successfully exploited misuse vulnerability. | 
 | RiskSense.HostFinding.Vulnerability.Integrity | String | Integrity refers to the trustworthiness and veracity of information. | 
 | RiskSense.HostFinding.Vulnerability.AvailabilityImpact | String | Availability refers to accessibility of network resources. | 
 | RiskSense.HostFinding.Vulnerability.Trending | boolean | This signifies whether the vulnerability (which is associated with the hostFinding) has been reported by our internal functions as being trending. | 
-| RiskSense.HostFinding.Vulnerability.VulnLastTrendingOn | String | Date when last trending found. | 
+| RiskSense.HostFinding.Vulnerability.VulnLastTrendingOn | String | Date when last trending vulnerability was found. | 
 | RiskSense.HostFinding.ThreatCount | Number | The total number of threats. | 
-| RiskSense.HostFinding.Threat.Title | String | The title of threat. | 
-| RiskSense.HostFinding.Threat.Category | String | The category of threat. | 
-| RiskSense.HostFinding.Threat.Severity | String | The severity level of threat. | 
+| RiskSense.HostFinding.Threat.Title | String | The title of the threat. | 
+| RiskSense.HostFinding.Threat.Category | String | The threat category. | 
+| RiskSense.HostFinding.Threat.Severity | String | The severity level of the threat. | 
 | RiskSense.HostFinding.Threat.Description | String | The threat description. | 
 | RiskSense.HostFinding.Threat.Cve | Unknown | The Common Vulnerabilities and Exposures name of the threat. | 
 | RiskSense.HostFinding.Threat.Source | String | The source of the threat. | 
-| RiskSense.HostFinding.Threat.Published | String | The time when threat was published. | 
+| RiskSense.HostFinding.Threat.Published | String | The time when the threat was published. | 
 | RiskSense.HostFinding.Threat.Updated | String | The time when the threat was last updated. | 
 | RiskSense.HostFinding.Threat.ThreatLastTrendingOn | String | The last time when threat was in trending. | 
-| RiskSense.HostFinding.Threat.Trending | boolean | To check wheter threat is trending or not. | 
+| RiskSense.HostFinding.Threat.Trending | boolean | Whether the threat is trending. | 
 | RiskSense.HostFinding.Patch.Name | String | The patch name of the host finding. | 
-| RiskSense.HostFinding.Patch.Url | String | The patch url of the host finding. | 
+| RiskSense.HostFinding.Patch.Url | String | The patch URL of the host finding. | 
 | RiskSense.HostFinding.TagCount | Number | The total number of tags associated with host finding. | 
-| RiskSense.HostFinding.Tag.ID | Number | The Tag identifier of the host finding. | 
+| RiskSense.HostFinding.Tag.ID | Number | The tag identifier of the host finding. | 
 | RiskSense.HostFinding.Tag.Name | String | The tag name of the host finding. | 
 | RiskSense.HostFinding.Tag.Category | String | The tag category of the host finding. | 
 | RiskSense.HostFinding.Tag.Description | String | The tag description of the host finding. | 
-| RiskSense.HostFinding.Tag.Created | String | The time when the tag is created. | 
-| RiskSense.HostFinding.Tag.Updated | String | The time when the tag is last updated. | 
+| RiskSense.HostFinding.Tag.Created | String | The time when the tag was created. | 
+| RiskSense.HostFinding.Tag.Updated | String | The time when the tag was last updated. | 
 | RiskSense.HostFinding.Tag.Color | String | The color of the tag. | 
 | RiskSense.HostFinding.TagAssetCount | Number | The total number of tag assets. | 
 | RiskSense.HostFinding.TagAsset.ID | Number | The ID of the tag asset. | 
 | RiskSense.HostFinding.TagAsset.Name | String | The name of the tag asset. | 
-| RiskSense.HostFinding.TagAsset.Category | String | The cateogry of the tag asset. | 
+| RiskSense.HostFinding.TagAsset.Category | String | The category of the tag asset. | 
 | RiskSense.HostFinding.TagAsset.Description | String | The description of the tag asset. | 
-| RiskSense.HostFinding.TagAsset.Created | String | The time Date when tag asset created. | 
-| RiskSense.HostFinding.TagAsset.Updated | String | The time when tag asset was last updated. | 
+| RiskSense.HostFinding.TagAsset.Created | String | The date and time when tag asset was created. | 
+| RiskSense.HostFinding.TagAsset.Updated | String | The time when the tag asset was last updated. | 
 | RiskSense.HostFinding.TagAsset.Color | String | The color name of the tag asset. | 
 | RiskSense.HostFinding.Output | String | The output of the host finding. | 
 | RiskSense.HostFinding.Severity | Number | The severity of the host finding. | 
-| RiskSense.HostFinding.SeverityDetail.Combined | Number | The combined name of severity detail for the host finding. | 
-| RiskSense.HostFinding.SeverityDetail.Overridden | boolean | The overridden name of severity detail for the host finding. | 
-| RiskSense.HostFinding.SeverityDetail.Scanner | String | The scanner of severity detail for the host finding. | 
-| RiskSense.HostFinding.SeverityDetail.CvssV2 | Number | The cvssv2 value of severity detail for the host finding. | 
-| RiskSense.HostFinding.SeverityDetail.CvssV3 | Number | The cvssv3 value of severity detail for the host finding. | 
-| RiskSense.HostFinding.SeverityDetail.Aggregated | Number | The aggregated value of severity detail for the host finding. | 
-| RiskSense.HostFinding.SeverityDetail.State | String | The state of severity detail for the host finding. | 
-| RiskSense.HostFinding.SeverityDetail.StateName | String | The state name of severity detail for the host finding. | 
-| RiskSense.HostFinding.SeverityDetail.ExpirationDate | String | The time when severity detail was expired. | 
+| RiskSense.HostFinding.SeverityDetail.Combined | Number | The combined name of the severity detail for the host finding. | 
+| RiskSense.HostFinding.SeverityDetail.Overridden | boolean | The overridden name of the severity detail for the host finding. | 
+| RiskSense.HostFinding.SeverityDetail.Scanner | String | The scanner of the severity detail for the host finding. | 
+| RiskSense.HostFinding.SeverityDetail.CvssV2 | Number | The CVSS v2 value of the severity detail for the host finding. | 
+| RiskSense.HostFinding.SeverityDetail.CvssV3 | Number | The CVSS v3 value of the severity detail for the host finding. | 
+| RiskSense.HostFinding.SeverityDetail.Aggregated | Number | The aggregated value of the severity detail for the host finding. | 
+| RiskSense.HostFinding.SeverityDetail.State | String | The state of the severity detail for the host finding. | 
+| RiskSense.HostFinding.SeverityDetail.StateName | String | The state name of the severity detail for the host finding. | 
+| RiskSense.HostFinding.SeverityDetail.ExpirationDate | String | The time when the severity detail expired. | 
 | RiskSense.HostFinding.RiskRating | Number | The risk rate of the host finding. | 
 | RiskSense.HostFinding.Xrs3Impact | String | The impact of xrs3 for the host finding. | 
 | RiskSense.HostFinding.Xrs3ImpactOnCategory | String | The category impact of xrs3 for the host finding. | 
 | RiskSense.HostFinding.LastFoundOn | String | The latest time when the particular host finding is found. | 
-| RiskSense.HostFinding.DiscoveredOn | String | The time when hostfinding was discovered. | 
+| RiskSense.HostFinding.DiscoveredOn | String | The time when the host finding was discovered. | 
 | RiskSense.HostFinding.ResolvedOn | String | The time when the host finding was resolved. | 
 | RiskSense.HostFinding.ScannerName | String | The name of the scanner of the host finding. | 
 | RiskSense.HostFinding.FindingType | String | The finding type of the host finding. | 
@@ -1294,28 +1296,28 @@ A detailed host finding view with the severity level. Displays vulnerability inf
 | RiskSense.HostFinding.StatusEmbedded.State | String | The current state of embedded status associated with the host finding. | 
 | RiskSense.HostFinding.StatusEmbedded.StateName | String | The state name of embedded status associated with the host finding. | 
 | RiskSense.HostFinding.StatusEmbedded.StateDescription | String | The state description of embedded status associated with the host finding. | 
-| RiskSense.HostFinding.StatusEmbedded.Status | boolean | The staus of embedded status associated with the host finding. | 
+| RiskSense.HostFinding.StatusEmbedded.Status | boolean | The status of embedded status associated with the host finding. | 
 | RiskSense.HostFinding.StatusEmbedded.DurationInDays | String | The time duration (In days) of embedded status associated with the host finding. | 
 | RiskSense.HostFinding.StatusEmbedded.DueDate | String | The due date of embedded status associated with the host finding. | 
-| RiskSense.HostFinding.StatusEmbedded.ExpirationDate | String | The time when status is expired associated with the host findin.. | 
+| RiskSense.HostFinding.StatusEmbedded.ExpirationDate | String | The time when the status is expired associated with the host finding. | 
 | RiskSense.HostFinding.ManualFindingReportCount | Number | The total number of manual finding reports associated with the host finding. | 
 | RiskSense.HostFinding.ManualFindingReport.ID | Number | The ID of manual finding reports associated with the host finding. | 
 | RiskSense.HostFinding.ManualFindingReport.Title | String | The title of manual finding reports associated with the host finding. | 
 | RiskSense.HostFinding.ManualFindingReport.Label | String | The label of manual finding reports associated with the host finding. | 
-| RiskSense.HostFinding.ManualFindingReport.Pii | String | The pii number of manual finding reports associated with the host finding. | 
+| RiskSense.HostFinding.ManualFindingReport.Pii | String | The PII number of manual finding reports associated with the host finding. | 
 | RiskSense.HostFinding.ManualFindingReport.Source | String | The source of manual finding reports associated with the host finding. | 
-| RiskSense.HostFinding.ManualFindingReport.IsManualExploit | boolean | To check whether manual finding report is exploit or not. | 
+| RiskSense.HostFinding.ManualFindingReport.IsManualExploit | boolean | Whether the manual finding report is an exploit. | 
 | RiskSense.HostFinding.ManualFindingReport.EaseOfExploit | String | The total number of manual finding reports associated with the host finding. | 
-| RiskSense.HostFinding.NoteCount | Number | Number of notes found. | 
-| RiskSense.HostFinding.Note.Date | String | The time when note is added by the user for the host finding. | 
-| RiskSense.HostFinding.Note.Note | String | The notes that are added by the user for the host finding. | 
-| RiskSense.HostFinding.Note.UserID | Number | The User ID of the user who added a note for the host finding. | 
-| RiskSense.HostFinding.Note.UserName | String | The Username of the user who added a note for the host finding. | 
+| RiskSense.HostFinding.NoteCount | Number | Number of notes found for the host finding. | 
+| RiskSense.HostFinding.Note.Date | String | The time when the note was added by the user for the host finding. | 
+| RiskSense.HostFinding.Note.Note | String | The notes that were added by the user for the host finding. | 
+| RiskSense.HostFinding.Note.UserID | Number | The User ID of the user who added the note for the host finding. | 
+| RiskSense.HostFinding.Note.UserName | String | The username of the user who added a note for the host finding. | 
 | RiskSense.HostFinding.Assignment.ID | Number | The unique ID of the assignment associated with the host finding. | 
 | RiskSense.HostFinding.Assignment.FirstName | String | The first name of the assigned user for the host finding. | 
 | RiskSense.HostFinding.Assignment.LastName | String | The last name of the assigned user for the host finding. | 
-| RiskSense.HostFinding.Assignment.ReceiveEmails | boolean | Indicates whether email is received or not. | 
-| RiskSense.HostFinding.Assignment.Email | String | The email of the assigned user for the host finding. | 
+| RiskSense.HostFinding.Assignment.ReceiveEmails | boolean | Indicates whether the email was received. | 
+| RiskSense.HostFinding.Assignment.Email | String | The email address of the assigned user for the host finding. | 
 | RiskSense.HostFinding.Assignment.Username | String | The username of the assigned user for the host finding. | 
 | RiskSense.HostFinding.Services | String | The name of the services for the host finding. | 
 | Ticket.ID | String | The ID of the ticket associated with the host finding. | 
@@ -1324,19 +1326,21 @@ A detailed host finding view with the severity level. Displays vulnerability inf
 | Host.ID | String | The unique ID within the tool retrieving the host. | 
 | Host.IP | String | The IP address of the host. | 
 | CVE.ID | String | Common Vulnerabilities and Exposures ID. | 
-| CVE.Description | String | Description about CVE. | 
-| CVE.CVSS | String | The CVSS represents Severity(informational, low, medium, high, critical) of risk. | 
-| RiskSense.HostFinding.Ticket.TicketNumber | String | The number of the ticket associated with the host finding. | 
+| CVE.Description | String | Description of the CVE. | 
+| CVE.CVSS | String | The CVSS represents the severity of the risk (informational, low, medium, high, critical). | 
+| RiskSense.HostFinding.Ticket.TicketNumber | String | The number of tickets associated with the host finding. | 
 | RiskSense.HostFinding.Ticket.TicketStatus | String | The status of the ticket associated with the host finding. | 
 | RiskSense.HostFinding.Ticket.DeepLink | String | The deeplink associated with the ticket associated with the host finding. | 
-| RiskSense.HostFinding.Ticket.Type | String | The type of the ticket associated with the host finding. | 
+| RiskSense.HostFinding.Ticket.Type | String | The type of ticket associated with the host finding. | 
 | RiskSense.HostFinding.Ticket.ConnectorName | String | The connector name of the ticket associated with the host finding. | 
 | RiskSense.HostFinding.Ticket.DetailedStatus | String | The detailed status of the ticket associated with the host finding. | 
+| RiskSense.HostFinding.GroupID | Number | The unique ID of the group associated with the host finding. | 
+| RiskSense.HostFinding.GroupName | String | The name of the group associated with the host finding. | 
 
 
 ##### Command Example
 ```
-!risksense-get-host-findings fieldname="Host Name" value=loz.xg.mil sort_by="Risk Rating" sort_order=DESC size="2"
+!risksense-get-host-findings fieldname="Host Name" value=loz.xg.mil sort_by="Risk Rating" sort_direction="Descending" size="2"
 ```
 
 ##### Context Example
@@ -1993,7 +1997,7 @@ A detailed host finding view with the severity level. Displays vulnerability inf
 
 ### 6. risksense-get-apps
 ---
-Look up the application details. The application details can be searched based on input parameters like fieldname (Name, Network, Address), operator (EXACT, IN, LIKE, BETWEEN), page, size, sort by and sort order.
+Looks up the application details. The application details can be searched based on input parameters like fieldname (Name, Network, Address), operator (EXACT, IN, LIKE, BETWEEN), page, size, sort by and sort direction.
 
 ##### Base Command
 
@@ -2002,14 +2006,14 @@ Look up the application details. The application details can be searched based o
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fieldname | The RiskSense application attribute that should be considered for filtering the results. The available choices are 'Name', 'Network' and 'Address'. Apart from the available choices one can provide the attributes supported by RiskSense API. Refer the API /application/filter API to get the list of supported attributes. The uid of filter attributes must be provided here. e.g. assessment_labels, asset_tags, cvss3BaseI, etc. If specified, 'value' argument is mandatory. | Optional | 
-| operator | The match operator that should be applied for filtering the hosts based on 'fieldname' and 'value'. Available options are 'EXACT' - filter records exactly matching the criteria; 'IN' - filter records matching any one of the comma-separated values; 'LIKE' - filter records with value matching the the specified pattern. All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer the API documentation for the list of supported operators. | Optional | 
+| fieldname | The RiskSense application attribute that should be considered for filtering the results. The available choices are 'Name', 'Network', or 'Address'. Apart from the available choices, one can provide the attributes supported by RiskSense API. Refer to the API /application/filter API to get the list of supported attributes. The uid of filter attributes must be provided here. e.g. assessment_labels, asset_tags, cvss3BaseI, etc. If specified, 'value' argument is mandatory. | Optional | 
+| operator | The match operator should be applied for filtering the hosts based on 'fieldname' and 'value'. Available options are 'EXACT' (filter records exactly matching the criteria), 'IN' (filter records matching any one of the comma-separated values), or 'LIKE' (filter records with the value matching the specified pattern). All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer to the API documentation for the list of supported operators. | Optional | 
 | value | The value of the apps property mentioned in 'fieldname' to be considered for filter criteria. | Optional | 
-| exclusive_operator | The exclusive operator flag that determines whether the returned records matches filter criteria or not. By default set to False. | Optional | 
+| exclude | The exclude flag that determines whether the returned records matches filter criteria or not. The default is "false". | Optional | 
 | page | The index of the page. The index is a numeric value and starting with 0. | Optional | 
-| size | The maximum number of records to be fetched in one page. | Optional | 
+| size | The maximum number of records to fetch in one page. | Optional | 
 | sort_by | The fieldname that should be considered for sorting the returned records. | Optional | 
-| sort_order | The sorting order to be considerd for retunred records. | Optional | 
+| sort_direction | The sorting direction to apply to returned records. | Optional | 
 
 
 ##### Context Output
@@ -2019,46 +2023,47 @@ Look up the application details. The application details can be searched based o
 | RiskSense.Application.ID | Number | The unique ID within the tool retrieving the application. | 
 | RiskSense.Application.GroupID | Number | The group ID of the application. | 
 | RiskSense.Application.GroupName | String | The group name of the application. | 
-| RiskSense.Application.Groups | Unknown | The list of groups. | 
+| RiskSense.Application.Group.ID | Number | The ID of the group belonging to the Application. | 
+| RiskSense.Application.Group.Name | String | The name of the group belonging to the Application. | 
 | RiskSense.Application.Network.ID | Number | The network ID of the application. | 
 | RiskSense.Application.Network.Name | String | The network name of the application. | 
 | RiskSense.Application.Network.Type | String | The network type of the application. | 
 | RiskSense.Application.ClientID | Number | The client ID of the application. | 
 | RiskSense.Application.HostID | Number | The host ID of the application. | 
-| RiskSense.Application.Uri | String | The reference uri of the application. | 
+| RiskSense.Application.Uri | String | The reference URI of the application. | 
 | RiskSense.Application.Name | String | The name of the application. | 
 | RiskSense.Application.Description | String | The detailed description of the application. | 
 | RiskSense.Application.NoteCount | Number | The total number of notes found in the application. | 
-| RiskSense.Application.DiscoveredOn | String | The time when application is discovered. | 
+| RiskSense.Application.DiscoveredOn | String | The time when the application was discovered. | 
 | RiskSense.Application.LastFoundOn | String | The time when the application was last found. | 
-| RiskSense.Application.Total | Number | The total numbers of open findings of the application. | 
-| RiskSense.Application.Critical | Number | The number of open findings of application with critical severity. | 
-| RiskSense.Application.High | Number | The number of open findings of application with high severity. | 
-| RiskSense.Application.Medium | Number | The number of open findings of application with medium severity. | 
-| RiskSense.Application.Low | Number | The number of open findings of application with low severity. | 
-| RiskSense.Application.Info | Number | The number of open findings of application with info severity. | 
+| RiskSense.Application.Total | Number | The total number of open findings of the application. | 
+| RiskSense.Application.Critical | Number | The number of open findings of the application with critical severity. | 
+| RiskSense.Application.High | Number | The number of open findings of the application with high severity. | 
+| RiskSense.Application.Medium | Number | The number of open findings of the application with medium severity. | 
+| RiskSense.Application.Low | Number | The number of open findings of the application with low severity. | 
+| RiskSense.Application.Info | Number | The number of open findings of the application with info severity. | 
 | RiskSense.Application.Icon.Type | String | The type of icon of the application. | 
 | RiskSense.Application.Icon.OverlayText | String | The overlay text of the icon of the application. | 
 | RiskSense.Application.TagCount | Number | The total number of tags of the application. | 
-| RiskSense.Application.UrlCount | Number | The total number of urls of the application. | 
+| RiskSense.Application.UrlCount | Number | The total number of URLs of the application. | 
 | RiskSense.Application.Href | String | The deeplink pointing to the application details on RiskSense. | 
-| RiskSense.Application.CMDB.ManufacturedBy | String | The name of the manufacturer in configuration management DB (CMDB) from application details. | 
+| RiskSense.Application.CMDB.ManufacturedBy | String | The name of the manufacturer in the configuration management DB (CMDB) from application details. | 
 | RiskSense.Application.CMDB.Model | String | The CMDB model name of the application. | 
-| RiskSense.Application.CMDB.MacAddress | String | The CMDB MAC Address of the application. | 
+| RiskSense.Application.CMDB.MacAddress | String | The CMDB MAC address of the application. | 
 | RiskSense.Application.CMDB.Location | String | The CMDB location of the application. | 
 | RiskSense.Application.CMDB.ManagedBy | String | The CMDB entity name that managed the application. | 
 | RiskSense.Application.CMDB.OwnedBy | String | The CMDB entity name that owned the application. | 
 | RiskSense.Application.CMDB.SupportedBy | String | The CMDB entity name that supported the application | 
 | RiskSense.Application.CMDB.SupportGroup | String | The CMDB supporting group of the application. | 
 | RiskSense.Application.CMDB.SysID | String | The CMDB system ID of the application. | 
-| RiskSense.Application.CMDB.OperatingSystem | String | The CMDB Operating system of the application. | 
+| RiskSense.Application.CMDB.OperatingSystem | String | The CMDB operating system of the application. | 
 | RiskSense.Application.CMDB.LastScanDate | String | The CMDB last scan date of the application. | 
 | RiskSense.Application.CMDB.FerpaComplianceAsset | Boolean | The Family Educational Rights and Privacy Act. | 
 | RiskSense.Application.CMDB.HipaaComplianceAsset | Boolean | Health Insurance Portability and Accountability Act. | 
 | RiskSense.Application.CMDB.PciComplianceAsset | String | The Payment Card Industry (PCI) Council continues to make changes to ensure that their standards are up to date with emerging threats and changes in the market. | 
 | RiskSense.Application.Ticket.TicketNumber | String | The number of the ticket associated with the application. | 
 | RiskSense.Application.Ticket.TicketStatus | String | The status of the ticket associated with the application. | 
-| RiskSense.Application.Ticket.Type | String | The type of the ticket associated with the application. | 
+| RiskSense.Application.Ticket.Type | String | The type of ticket associated with the application. | 
 | RiskSense.Application.Ticket.ConnectorName | String | The connector name of the ticket associated with the application. | 
 | RiskSense.Application.Ticket.DetailedStatus | String | The detailed status of ticket associated with the application. | 
 | RiskSense.Application.Ticket.DeepLink | String | The deeplink associated with the ticket associated with the application. | 
@@ -2066,9 +2071,9 @@ Look up the application details. The application details can be searched based o
 | RiskSense.Application.Source.UuID | String | The unique ID of the source associated with the application. | 
 | RiskSense.Application.Source.ScannerType | String | The type of scanner of the source associated with the application.. | 
 | RiskSense.Application.Note.UserID | String | The user ID of the user who added a note for the application. | 
-| RiskSense.Application.Note.UserName | String | The user name of the user who added a note for the application. | 
-| RiskSense.Application.Note.Note | String | The notes that are added by the user for the application. | 
-| RiskSense.Application.Note.Date | String | The time when the note is added by the user for the application. | 
+| RiskSense.Application.Note.UserName | String | The username of the user who added a note for the application. | 
+| RiskSense.Application.Note.Note | String | The notes that were added by the user for the application. | 
+| RiskSense.Application.Note.Date | String | The time when the note was added by the user for the application. | 
 | RiskSense.Application.Tag.ID | Number | The ID of the tag. | 
 | RiskSense.Application.Tag.Name | String | The name of the tag. | 
 | RiskSense.Application.Tag.Category | String | The category of the tag. | 
@@ -2082,7 +2087,7 @@ Look up the application details. The application details can be searched based o
 
 ##### Command Example
 ```
-!risksense-get-apps fieldname=Network value=App-data sort_by="Total Findings" sort_order=DESC size="3"
+!risksense-get-apps fieldname=Network value=App-data sort_by="Total Findings" sort_direction="Descending" size="3"
 ```
 
 ##### Context Example
@@ -2419,7 +2424,7 @@ Look up the application details. The application details can be searched based o
 
 ### 7. risksense-get-host-finding-detail
 ---
-This command is used to lookup single host finding details in depth. Command accepts host finding id as an argument.
+Gets in-depth details of a single host finding. The command accepts the host finding ID as an argument.
 
 ##### Base Command
 
@@ -2428,7 +2433,7 @@ This command is used to lookup single host finding details in depth. Command acc
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostfinding_id | The unique host finding ID. HostFindingId is either known by RiskSense users or it can be found in human-readable output or context data(RiskSense.HostFinding.ID) after executing 'risksense-get-host-findings' command. | Required | 
+| hostfinding_id | The unique host finding ID. The host finding ID is either known by RiskSense users or it can be found in the human-readable output or context data(RiskSense.HostFinding.ID) after executing 'risksense-get-host-findings' command. | Required | 
 
 
 ##### Context Output
@@ -2437,18 +2442,20 @@ This command is used to lookup single host finding details in depth. Command acc
 | --- | --- | --- |
 | RiskSense.HostFinding.ID | String | The unique ID of the host finding. | 
 | RiskSense.HostFinding.Source | String | Host discovered by the scanner. | 
-| RiskSense.HostFinding.SourceID | String | Scanner ID of discovered scanner. | 
+| RiskSense.HostFinding.SourceID | String | Scanner ID of the discovered scanner. | 
 | RiskSense.HostFinding.Title | String | The title of the host finding. | 
 | RiskSense.HostFinding.Port | Number | The port number of the host finding. | 
-| RiskSense.HostFinding.GroupCount | Number | The total number of groups for host finding. | 
+| RiskSense.HostFinding.GroupCount | Number | The total number of groups for the host finding. | 
 | RiskSense.HostFinding.Group.ID | Number | The unique ID of the group associated with the host finding. | 
 | RiskSense.HostFinding.Group.Name | String | The name of the group associated with the host finding. | 
+| RiskSense.HostFinding.GroupID | Number | The unique ID of the group associated with the host finding. | 
+| RiskSense.HostFinding.GroupName | String | The name of the group associated with the host finding. | 
 | RiskSense.HostFinding.HostID | Number | The unique ID of the host associated with the host finding. | 
-| RiskSense.HostFinding.HostName | String | The Hostname of the host associated with the host finding. | 
-| RiskSense.HostFinding.HostIpAddress | String | The IP Address of the host associated with the host finding. | 
+| RiskSense.HostFinding.HostName | String | The hostname of the host associated with the host finding. | 
+| RiskSense.HostFinding.HostIpAddress | String | The IP address of the host associated with the host finding. | 
 | RiskSense.HostFinding.Host.Criticality | Number | The criticality of the host associated with the host finding. | 
-| RiskSense.HostFinding.Host.External | boolean | To identify if the host is external or internal. | 
-| RiskSense.HostFinding.Host.Port.ID | Number | The unique ID of the Host(s) Port associated with the host finding. | 
+| RiskSense.HostFinding.Host.External | boolean | Whether the host is external. | 
+| RiskSense.HostFinding.Host.Port.ID | Number | The unique ID of the host(s) port associated with the host finding. | 
 | RiskSense.HostFinding.Host.Port.Number | Number | The port number of the host associated with the host finding. | 
 | RiskSense.HostFinding.Host.Rs3 | Number | The Asset Security Score calculated by the RiskSense platform (includes vulnerability risk on related web applications). | 
 | RiskSense.HostFinding.Network.ID | Number | The network ID of the host finding. | 
@@ -2460,70 +2467,70 @@ This command is used to lookup single host finding details in depth. Command acc
 | RiskSense.HostFinding.Vulnerability.Cve | String | The name of the Common Vulnerabilities and Exposures associated with the host finding. | 
 | RiskSense.HostFinding.Vulnerability.BaseScore | Number | CVE Score. | 
 | RiskSense.HostFinding.Vulnerability.ThreatCount | Number | The total number of threats associated with the host finding. | 
-| RiskSense.HostFinding.Vulnerability.AttackVector | String | Vector information in which it has been attacked. | 
-| RiskSense.HostFinding.Vulnerability.AccessComplexity | String | Complexity Level. | 
+| RiskSense.HostFinding.Vulnerability.AttackVector | String | Vector information in which the host finding was attacked. | 
+| RiskSense.HostFinding.Vulnerability.AccessComplexity | String | Complexity level. | 
 | RiskSense.HostFinding.Vulnerability.Authentication | String | Authentication value represents attackers authorization to get network access. | 
-| RiskSense.HostFinding.Vulnerability.ConfidentialityImpact | String | Confidentiality impact measures the potential impact on confidentiality of a successfully exploited misuse vulnerability. | 
-| RiskSense.HostFinding.Vulnerability.Integrity | String | Integrity refers to the trustworthiness and veracity of information. | 
+| RiskSense.HostFinding.Vulnerability.ConfidentialityImpact | String | Confidentiality impact measures the potential impact on the confidentiality of a successfully exploited misuse vulnerability. | 
+| RiskSense.HostFinding.Vulnerability.Integrity | String | Integrity refers to the level of trust and veracity of the information. | 
 | RiskSense.HostFinding.Vulnerability.AvailabilityImpact | String | Availability refers to accessibility of network resources. | 
-| RiskSense.HostFinding.Vulnerability.Trending | boolean | This signifies whether the vulnerability (which is associated with the hostFinding) has been reported by our internal functions as being trending. | 
-| RiskSense.HostFinding.Vulnerability.VulnLastTrendingOn | String | Date when last trending found. | 
+| RiskSense.HostFinding.Vulnerability.Trending | boolean | Whether the vulnerability (which is associated with the hostFinding) has been reported by our internal functions as being trending. | 
+| RiskSense.HostFinding.Vulnerability.VulnLastTrendingOn | String | Date when the last trending vulnerability was found. | 
 | RiskSense.HostFinding.ThreatCount | Number | The total number of threats. | 
-| RiskSense.HostFinding.Threat.Title | String | The title of threat. | 
-| RiskSense.HostFinding.Threat.Category | String | The category of threat. | 
-| RiskSense.HostFinding.Threat.Severity | String | The severity level of threat. | 
+| RiskSense.HostFinding.Threat.Title | String | The title of the threat. | 
+| RiskSense.HostFinding.Threat.Category | String | The category of the threat. | 
+| RiskSense.HostFinding.Threat.Severity | String | The severity level of the threat. | 
 | RiskSense.HostFinding.Threat.Description | String | The threat description. | 
 | RiskSense.HostFinding.Threat.Cve | Unknown | The Common Vulnerabilities and Exposures name of the threat. | 
 | RiskSense.HostFinding.Threat.Source | String | The source of the threat. | 
 | RiskSense.HostFinding.Threat.Published | String | The time when threat was published. | 
 | RiskSense.HostFinding.Threat.Updated | String | The time when the threat was last updated. | 
-| RiskSense.HostFinding.Threat.ThreatLastTrendingOn | String | The last time when threat was in trending. | 
-| RiskSense.HostFinding.Threat.Trending | boolean | To check wheter threat is trending or not. | 
+| RiskSense.HostFinding.Threat.ThreatLastTrendingOn | String | The last time when the threat was trending. | 
+| RiskSense.HostFinding.Threat.Trending | boolean | Whether the threat is trending. | 
 | RiskSense.HostFinding.Patch.Name | String | The patch name of the host finding. | 
-| RiskSense.HostFinding.Patch.Url | String | The patch url of the host finding. | 
+| RiskSense.HostFinding.Patch.Url | String | The patch URL of the host finding. | 
 | RiskSense.HostFinding.TagCount | Number | The total number of tags associated with host finding. | 
-| RiskSense.HostFinding.Tag.ID | Number | The Tag identifier of the host finding. | 
+| RiskSense.HostFinding.Tag.ID | Number | The tag identifier of the host finding. | 
 | RiskSense.HostFinding.Tag.Name | String | The tag name of the host finding. | 
 | RiskSense.HostFinding.Tag.Category | String | The tag category of the host finding. | 
 | RiskSense.HostFinding.Tag.Description | String | The tag description of the host finding. | 
-| RiskSense.HostFinding.Tag.Created | String | The time when the tag is created. | 
-| RiskSense.HostFinding.Tag.Updated | String | The time when the tag is last updated. | 
+| RiskSense.HostFinding.Tag.Created | String | The time when the tag was created. | 
+| RiskSense.HostFinding.Tag.Updated | String | The time when the tag was last updated. | 
 | RiskSense.HostFinding.Tag.Color | String | The color of the tag. | 
 | RiskSense.HostFinding.TagAssetCount | Number | The total number of tag assets. | 
 | RiskSense.HostFinding.TagAsset.ID | Number | The ID of the tag asset. | 
 | RiskSense.HostFinding.TagAsset.Name | String | The name of the tag asset. | 
-| RiskSense.HostFinding.TagAsset.Category | String | The cateogry of the tag asset. | 
+| RiskSense.HostFinding.TagAsset.Category | String | The category of the tag asset. | 
 | RiskSense.HostFinding.TagAsset.Description | String | The description of the tag asset. | 
-| RiskSense.HostFinding.TagAsset.Created | String | The time Date when tag asset created. | 
-| RiskSense.HostFinding.TagAsset.Updated | String | The time when tag asset was last updated. | 
+| RiskSense.HostFinding.TagAsset.Created | String | The time and date when the tag asset was created. | 
+| RiskSense.HostFinding.TagAsset.Updated | String | The time when the tag asset was last updated. | 
 | RiskSense.HostFinding.TagAsset.Color | String | The color name of the tag asset. | 
 | RiskSense.HostFinding.Output | String | The output of the host finding. | 
 | RiskSense.HostFinding.Severity | Number | The severity of the host finding. | 
-| RiskSense.HostFinding.SeverityDetail.Combined | Number | The combined name of severity detail for the host finding. | 
-| RiskSense.HostFinding.SeverityDetail.Overridden | boolean | The overridden name of severity detail for the host finding. | 
+| RiskSense.HostFinding.SeverityDetail.Combined | Number | The combined name of the severity detail for the host finding. | 
+| RiskSense.HostFinding.SeverityDetail.Overridden | boolean | The overridden name of the severity detail for the host finding. | 
 | RiskSense.HostFinding.SeverityDetail.Scanner | String | The scanner of severity detail for the host finding. | 
-| RiskSense.HostFinding.SeverityDetail.CvssV2 | Number | The cvssv2 value of severity detail for the host finding. | 
-| RiskSense.HostFinding.SeverityDetail.CvssV3 | Number | The cvssv3 value of severity detail for the host finding. | 
-| RiskSense.HostFinding.SeverityDetail.Aggregated | Number | The aggregated value of severity detail for the host finding. | 
-| RiskSense.HostFinding.SeverityDetail.State | String | The state of severity detail for the host finding. | 
-| RiskSense.HostFinding.SeverityDetail.StateName | String | The state name of severity detail for the host finding. | 
-| RiskSense.HostFinding.SeverityDetail.ExpirationDate | String | The time when severity detail was expired. | 
+| RiskSense.HostFinding.SeverityDetail.CvssV2 | Number | The CVSS v2 value of severity detail for the host finding. | 
+| RiskSense.HostFinding.SeverityDetail.CvssV3 | Number | The CVSS v3 value of severity detail for the host finding. | 
+| RiskSense.HostFinding.SeverityDetail.Aggregated | Number | The aggregated value of the severity detail for the host finding. | 
+| RiskSense.HostFinding.SeverityDetail.State | String | The state of the severity detail for the host finding. | 
+| RiskSense.HostFinding.SeverityDetail.StateName | String | The state name of the severity detail for the host finding. | 
+| RiskSense.HostFinding.SeverityDetail.ExpirationDate | String | The time when the severity detail expired. | 
 | RiskSense.HostFinding.RiskRating | Number | The risk rate of the host finding. | 
 | RiskSense.HostFinding.Xrs3Impact | String | The impact of xrs3 for the host finding. | 
 | RiskSense.HostFinding.Xrs3ImpactOnCategory | String | The category impact of xrs3 for the host finding. | 
-| RiskSense.HostFinding.LastFoundOn | String | The latest time when the particular host finding is found. | 
-| RiskSense.HostFinding.DiscoveredOn | String | The time when hostfinding was discovered. | 
+| RiskSense.HostFinding.LastFoundOn | String | The latest time when the particular host finding was found. | 
+| RiskSense.HostFinding.DiscoveredOn | String | The time when the host finding was discovered. | 
 | RiskSense.HostFinding.ResolvedOn | String | The time when the host finding was resolved. | 
 | RiskSense.HostFinding.ScannerName | String | The name of the scanner of the host finding. | 
 | RiskSense.HostFinding.FindingType | String | The finding type of the host finding. | 
 | RiskSense.HostFinding.MachineID | String | The machine ID of the host finding. | 
-| RiskSense.HostFinding.StatusEmbedded.State | String | The current state of embedded status associated with the host finding. | 
-| RiskSense.HostFinding.StatusEmbedded.StateName | String | The state name of embedded status associated with the host finding. | 
-| RiskSense.HostFinding.StatusEmbedded.StateDescription | String | The state description of embedded status associated with the host finding. | 
-| RiskSense.HostFinding.StatusEmbedded.Status | boolean | The staus of embedded status associated with the host finding. | 
-| RiskSense.HostFinding.StatusEmbedded.DurationInDays | String | The time duration (In days) of embedded status associated with the host finding. | 
+| RiskSense.HostFinding.StatusEmbedded.State | String | The current state of the embedded status associated with the host finding. | 
+| RiskSense.HostFinding.StatusEmbedded.StateName | String | The state name of the embedded status associated with the host finding. | 
+| RiskSense.HostFinding.StatusEmbedded.StateDescription | String | The state description of the embedded status associated with the host finding. | 
+| RiskSense.HostFinding.StatusEmbedded.Status | boolean | The status of the embedded status associated with the host finding. | 
+| RiskSense.HostFinding.StatusEmbedded.DurationInDays | String | The time duration (in days) of the embedded status associated with the host finding. | 
 | RiskSense.HostFinding.StatusEmbedded.DueDate | String | The due date of embedded status associated with the host finding. | 
-| RiskSense.HostFinding.StatusEmbedded.ExpirationDate | String | The time when status is expired associated with the host findin.. | 
+| RiskSense.HostFinding.StatusEmbedded.ExpirationDate | String | The time when status is expired associated with the host finding. | 
 | RiskSense.HostFinding.ManualFindingReportCount | Number | The total number of manual finding reports associated with the host finding. | 
 | RiskSense.HostFinding.ManualFindingReport.ID | Number | The ID of manual finding reports associated with the host finding. | 
 | RiskSense.HostFinding.ManualFindingReport.Title | String | The title of manual finding reports associated with the host finding. | 
@@ -2533,10 +2540,10 @@ This command is used to lookup single host finding details in depth. Command acc
 | RiskSense.HostFinding.ManualFindingReport.IsManualExploit | boolean | To check whether manual finding report is exploit or not. | 
 | RiskSense.HostFinding.ManualFindingReport.EaseOfExploit | String | The total number of manual finding reports associated with the host finding. | 
 | RiskSense.HostFinding.NoteCount | Number | Number of notes found. | 
-| RiskSense.HostFinding.Note.Date | String | The time when the note is added by the user for the host finding. | 
+| RiskSense.HostFinding.Note.Date | String | The time when the note was added by the user for the host finding. | 
 | RiskSense.HostFinding.Note.Note | String | The notes that are added by the user for the host finding. | 
 | RiskSense.HostFinding.Note.UserID | Number | The User ID of the user who added a note for the host finding. | 
-| RiskSense.HostFinding.Note.UserName | String | The Username of the user who added a note for the host finding. | 
+| RiskSense.HostFinding.Note.UserName | String | The username of the user who added a note for the host finding. | 
 | RiskSense.HostFinding.Assignment.ID | Number | The unique ID of the assignment associated with the host finding. | 
 | RiskSense.HostFinding.Assignment.FirstName | String | The first name of the assigned user for the host finding. | 
 | RiskSense.HostFinding.Assignment.LastName | String | The last name of the assigned user for the host finding. | 
@@ -2550,8 +2557,8 @@ This command is used to lookup single host finding details in depth. Command acc
 | Host.ID | String | The unique ID within the tool retrieving the host. | 
 | Host.IP | String | The IP address of the host. | 
 | CVE.ID | String | Common Vulnerabilities and Exposures ID. | 
-| CVE.Description | String | Description about CVE. | 
-| CVE.CVSS | String | The CVSS represents Severity(informational, low, medium, high, critical) of risk. | 
+| CVE.Description | String | Description about the CVE. | 
+| CVE.CVSS | String | The CVSS represents the severity of the risk (informational, low, medium, high, critical). | 
 | RiskSense.HostFinding.Ticket.TicketNumber | String | The number of the ticket associated with the host finding. | 
 | RiskSense.HostFinding.Ticket.TicketStatus | String | The status of the ticket associated with the host finding. | 
 | RiskSense.HostFinding.Ticket.DeepLink | String | The deeplink associated with the ticket associated with the host finding. | 
@@ -2949,14 +2956,14 @@ Name: Default Group
 
 ### Host Finding Description:
 Solaris 10 and 11 hosts are vulnerable to a telnet daemon flaw.
-<P/>
+<p>
 The telnet daemon passes switches directly to the login process which looks for a switch that allows root to login to any account without a password. If your telnet daemon is running as root it allows unauthenticated remote logins.
-<P/>
+</p>
 Telnet poses a risk because data transferred between clients may not be encrypted. Telnet is also a frequent target for port scanners.
 
 ### 8. risksense-get-app-detail
 ---
-This command is used to lookup single application details in depth. Command accepts application id as an argument.
+Gets in-depth details of a single application. The command accepts an application ID as an argument.
 
 ##### Base Command
 
@@ -2965,7 +2972,7 @@ This command is used to lookup single application details in depth. Command acce
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| application_id | The application ID is unique for the application. Application ID is either known by RiskSense users or it can be searched in context output (RiskSense.Application.ID) or in human-readable output of 'risksense-get-apps' command. | Required | 
+| application_id | The application ID is unique for the application. The application ID is either known by RiskSense users or it can be searched in context output (RiskSense.Application.ID) or in the human-readable output of 'risksense-get-apps' command. | Required | 
 
 
 ##### Context Output
@@ -2975,28 +2982,29 @@ This command is used to lookup single application details in depth. Command acce
 | RiskSense.Application.ID | Number | The unique ID within the tool retrieving the application. | 
 | RiskSense.Application.GroupID | Number | The group ID of the application. | 
 | RiskSense.Application.GroupName | String | The group name of the application. | 
-| RiskSense.Application.Groups | Unknown | The list of groups. | 
+| RiskSense.Application.Group.ID | Number | The ID of the group belonging to the Application. | 
+| RiskSense.Application.Group.Name | String | The name of the group belonging to the Application. | 
 | RiskSense.Application.Network.ID | Number | The network ID of the application. | 
 | RiskSense.Application.Network.Name | String | The network name of the application. | 
 | RiskSense.Application.Network.Type | String | The network type of the application. | 
 | RiskSense.Application.ClientID | Number | The client ID of the application. | 
 | RiskSense.Application.HostID | Number | The host ID of the application. | 
-| RiskSense.Application.Uri | String | The reference uri of the application. | 
+| RiskSense.Application.Uri | String | The reference URI of the application. | 
 | RiskSense.Application.Name | String | The name of the application. | 
 | RiskSense.Application.Description | String | The detailed description of the application. | 
 | RiskSense.Application.NoteCount | Number | The total number of notes found in the application. | 
-| RiskSense.Application.DiscoveredOn | String | The time when application is discovered. | 
+| RiskSense.Application.DiscoveredOn | String | The time when the application was discovered. | 
 | RiskSense.Application.LastFoundOn | String | The time when the application was last found. | 
-| RiskSense.Application.Total | Number | The total numbers of open findings of the application. | 
-| RiskSense.Application.Critical | Number | The number of open findings of application with critical severity. | 
-| RiskSense.Application.High | Number | The number of open findings of application with high severity. | 
-| RiskSense.Application.Medium | Number | The number of open findings of application with medium severity. | 
-| RiskSense.Application.Low | Number | The number of open findings of application with low severity. | 
-| RiskSense.Application.Info | Number | The number of open findings of application with info severity. | 
-| RiskSense.Application.Icon.Type | String | The type of icon of the application. | 
+| RiskSense.Application.Total | Number | The total number of open findings of the application. | 
+| RiskSense.Application.Critical | Number | The number of open findings of the application with critical severity. | 
+| RiskSense.Application.High | Number | The number of open findings of the application with high severity. | 
+| RiskSense.Application.Medium | Number | The number of open findings of the application with medium severity. | 
+| RiskSense.Application.Low | Number | The number of open findings of the application with low severity. | 
+| RiskSense.Application.Info | Number | The number of open findings of the application with info severity. | 
+| RiskSense.Application.Icon.Type | String | The icon type of the application. | 
 | RiskSense.Application.Icon.OverlayText | String | The overlay text of the icon of the application. | 
 | RiskSense.Application.TagCount | Number | The total number of tags of the application. | 
-| RiskSense.Application.UrlCount | Number | The total number of urls of the application. | 
+| RiskSense.Application.UrlCount | Number | The total number of URLs of the application. | 
 | RiskSense.Application.Href | String | The deeplink pointing to the application details on RiskSense. | 
 | RiskSense.Application.CMDB.ManufacturedBy | String | The name of the manufacturer in configuration management DB (CMDB) from application details. | 
 | RiskSense.Application.CMDB.Model | String | The CMDB model name of the application. | 
@@ -3010,7 +3018,7 @@ This command is used to lookup single application details in depth. Command acce
 | RiskSense.Application.CMDB.OperatingSystem | String | The CMDB Operating system of the application. | 
 | RiskSense.Application.CMDB.LastScanDate | String | The CMDB last scan date of the application. | 
 | RiskSense.Application.CMDB.FerpaComplianceAsset | Boolean | The Family Educational Rights and Privacy Act. | 
-| RiskSense.Application.CMDB.HipaaComplianceAsset | Boolean | Health Insurance Portability and Accountability Act | 
+| RiskSense.Application.CMDB.HipaaComplianceAsset | Boolean | Health Insurance Portability and Accountability Act. | 
 | RiskSense.Application.CMDB.PciComplianceAsset | String | The Payment Card Industry (PCI) Council continues to make changes to ensure that their standards are up to date with emerging threats and changes in the market. | 
 | RiskSense.Application.Ticket.TicketNumber | String | The number of the ticket associated with the application. | 
 | RiskSense.Application.Ticket.TicketStatus | String | The status of the ticket associated with the application. | 
@@ -3022,9 +3030,9 @@ This command is used to lookup single application details in depth. Command acce
 | RiskSense.Application.Source.UuID | String | The unique ID of the source associated with the application. | 
 | RiskSense.Application.Source.ScannerType | String | The type of scanner of the source associated with the application.. | 
 | RiskSense.Application.Note.UserID | String | The user ID of the user who added a note for the application. | 
-| RiskSense.Application.Note.UserName | String | The user name of the user who added a note for the application. | 
+| RiskSense.Application.Note.UserName | String | The username of the user who added a note for the application. | 
 | RiskSense.Application.Note.Note | String | The notes that are added by the user for the application. | 
-| RiskSense.Application.Note.Date | String | The time when note is added by the user for the application. | 
+| RiskSense.Application.Note.Date | String | The time when the note was added by the user for the application. | 
 | RiskSense.Application.Tag.ID | Number | The ID of the tag. | 
 | RiskSense.Application.Tag.Name | String | The name of the tag. | 
 | RiskSense.Application.Tag.Category | String | The category of the tag. | 
@@ -3168,4 +3176,50 @@ This command is used to lookup single application details in depth. Command acce
 ### Ticket(s) (0):
 **No entries.**
 
+### 8. risksense-apply-tag
+---
+Apply the new or existing tag to the asset, creates a new tag if it does not exist in RiskSense.
 
+##### Base Command
+
+`risksense-apply-tag`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| tagname | Tag name which applies to the asset(s). | Required |
+| assettype | Type of asset available in RiskSense to apply the tag. Apart from the available choices, you can provide the asset type supported by RiskSense API. | Required |
+| propagate_to_all_findings | If the given argument is set to true, then it applies the tag to assets as well as findings of assets. Note - It only works if the tag with the given name does not exist. | Optional |
+| fieldname | The RiskSense asset attribute by which to filter the assets to apply the tag. It can be an attribute of Host, Application, Host Finding, Application Finding. If specified, the 'value' argument is mandatory. | Optional | 
+| operator | The match operator should be applied for filtering the assets to apply the tag based on 'fieldname' and 'value'. Can be 'EXACT' - filter records exactly matching the criteria; 'IN' - filter records matching any one of the comma-separated values; 'LIKE' - filter records with the value matching the specified pattern. All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer to the API documentation for the list of supported operators. | Optional | 
+| exclude | The exclude flag that determines whether to apply the tag on assets matches filter criteria or not. Default set to false. If set to true, tag applied on an asset not matching the specified values. | Optional | 
+| value | The value of the asset property mentioned in 'fieldname' to be considered for filter criteria. | Optional | 
+
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| RiskSense.TagAssociation.TagName | String | Name of the tag. | 
+| RiskSense.TagAssociation.AssociationID | Number | Tag association ID. |
+| RiskSense.TagAssociation.Created | String | The time when the tag was associated. |
+
+
+##### Command Example
+```!risksense-apply-tag tagname="Test" assettype="host"```
+
+##### Context Example
+```
+{
+  "RiskSense.TagAssociation":
+ {
+    "AssociationID": 2542063,
+    "Created": "2020-04-29T08:46:54",
+    "TagName": "Test"
+  }
+}
+```
+
+##### Human Readable Output
+Test tag applied to given asset(s).

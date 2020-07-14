@@ -1,10 +1,10 @@
 {
     "name": "Compliance",
-    "description": "This pack contains essential incidents fields for compliance packs.",
+    "description": " ",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.3",
     "author": "Cortex XSOAR",
-    "url": "",
+    "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [],
     "tags": [
@@ -17,10 +17,9 @@
         "Data breach"
     ],
     "created": "2020-05-10T10:50:52Z",
-    "updated": "2020-05-10T10:50:52Z",
-    "beta": false,
-    "deprecated": false,
-    "useCases": [],
+    "useCases": [
+        "Compliance"
+    ],
     "keywords": [
         "Compliance",
         "Breach",
@@ -29,6 +28,5 @@
         "Notification",
         "Breach notification",
         "Data breach"
-    ],
-    "dependencies": {}
+    ]
 }

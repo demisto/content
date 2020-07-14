@@ -1,9 +1,8 @@
 {
     "name": "Crisis Management",
-    "description": "Manage crises such as pandemics or other events that would change the conditions under which employees would normally work. Note: This is a beta pack, which lets you implement and test pre-release software. Since the pack is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.",
+    "description": "Note: This is a beta pack, which lets you implement and test pre-release software. Since the pack is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.",
     "support": "xsoar",
-    "certification": "",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.1.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -17,7 +16,6 @@
         "COVID-19"
     ],
     "created": "2020-05-06T08:54:47Z",
-    "updated": "2020-05-06T08:54:47Z",
     "useCases": [
         "Crisis Management"
     ],

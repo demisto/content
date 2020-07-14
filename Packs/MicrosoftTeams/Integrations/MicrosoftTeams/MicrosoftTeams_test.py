@@ -632,6 +632,118 @@ def test_send_message(mocker, requests_mock):
     assert results[0] == 'Message was sent successfully.'
 
 
+def test_send_message_server_notifications_incident_opened(mocker, requests_mock):
+    """
+    Given:
+     - Notification from server of an incident opened.
+
+    When:
+     - Sending notification message of the incident opened.
+
+    Then:
+     - Ensure message is sent successfully.
+     - Verify the message is sent to the dedicated notifications channel.
+    """
+    from MicrosoftTeams import send_message
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={
+            'team': 'The-A-Team',
+            'min_incident_severity': 'Low',
+            'incident_notifications_channel': 'General'
+        }
+    )
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'channel': 'incidentNotificationChannel',
+            'message': 'user has reported an incident tadam.\nView it on https://server#/WarRoom/3247',
+            'messageType': 'incidentOpened',
+            'severity': 1,
+            'to': ''
+        }
+    )
+    requests_mock.get(
+        f'https://graph.microsoft.com/v1.0/teams/{team_aad_id}/channels',
+        json={
+            'value': [
+                {
+                    'description': 'general channel',
+                    'displayName': 'General',
+                    'id': '19:67pd3966e74g45f28d0c65f1689132bb@thread.skype'
+                }
+            ]
+        }
+    )
+    requests_mock.post(
+        f'{service_url}/v3/conversations/19:67pd3966e74g45f28d0c65f1689132bb@thread.skype/activities',
+        json={}
+    )
+    send_message()
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0] == 'Message was sent successfully.'
+
+
+def test_send_message_server_notifications_incident_changed(mocker, requests_mock):
+    """
+    Given:
+     - Notification from server of an updated incident.
+
+    When:
+     - Sending notification message of the updated incident.
+
+    Then:
+     - Ensure message is sent successfully.
+     - Verify the message is sent to the dedicated notifications channel.
+    """
+    from MicrosoftTeams import send_message
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={
+            'team': 'The-A-Team',
+            'min_incident_severity': 'Low',
+            'incident_notifications_channel': 'General'
+        }
+    )
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'channel': 'incidentNotificationChannel',
+            'message': 'DBot has updated an incident tadam.\nView it on https://server#/WarRoom/3247',
+            'messageType': 'incidentChanged',
+            'severity': 1,
+            'to': ''
+        }
+    )
+    requests_mock.get(
+        f'https://graph.microsoft.com/v1.0/teams/{team_aad_id}/channels',
+        json={
+            'value': [
+                {
+                    'description': 'general channel',
+                    'displayName': 'General',
+                    'id': '19:67pd3966e74g45f28d0c65f1689132bb@thread.skype'
+                }
+            ]
+        }
+    )
+    requests_mock.post(
+        f'{service_url}/v3/conversations/19:67pd3966e74g45f28d0c65f1689132bb@thread.skype/activities',
+        json={}
+    )
+    send_message()
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0] == 'Message was sent successfully.'
+
+
 def test_get_channel_id(requests_mock):
     from MicrosoftTeams import get_channel_id
     # get channel which is in the integration context

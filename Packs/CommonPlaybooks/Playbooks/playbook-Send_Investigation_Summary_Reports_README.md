@@ -10,7 +10,7 @@ This playbook does not use any sub-playbooks.
 * Builtin
 
 ### Scripts
-* SearchIncidents
+* SearchIncidentsV2
 * GenerateSummaryReports
 * Exists
 

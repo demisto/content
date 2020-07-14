@@ -1,6 +1,6 @@
 commonfields:
   id: VolRunCmds
-  version: 1
+  version: -1
 name: VolRunCmds
 script: |-
   var cmds = args.cmds.split(',');
