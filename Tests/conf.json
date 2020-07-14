@@ -651,13 +651,6 @@
         },
         {
             "integrations": "Panorama",
-            "instance_names": "palo_alto_firewall",
-            "playbookID": "palo_alto_firewall_test_pb",
-            "timeout": 1000,
-            "nightly": true
-        },
-        {
-            "integrations": "Panorama",
             "instance_names": "palo_alto_panorama",
             "playbookID": "palo_alto_panorama_test_pb",
             "timeout": 1000,
@@ -908,16 +901,8 @@
             "nightly": true
         },
         {
-            "integrations": "epo",
-            "playbookID": "Test Playbook McAfee ePO"
-        },
-        {
             "integrations": "McAfee DXL",
             "playbookID": "McAfee DXL - Test"
-        },
-        {
-            "integrations": "activedir",
-            "playbookID": "calculate_severity_-_critical_assets_-_test"
         },
         {
             "playbookID": "TextFromHTML_test_playbook"
@@ -1688,10 +1673,6 @@
         },
         {
             "playbookID": "ReadFile test"
-        },
-        {
-            "integrations": "TruSTAR",
-            "playbookID": "TruSTAR Test"
         },
         {
             "integrations": "AlphaSOC Wisdom",
@@ -2877,7 +2858,6 @@
         "Test-Shodan_v2": "Issue 23370",
         "Symantec Deepsight Test": "Issue 22971",
         "Cybereason Test": "Issue 22683",
-        "Bluecat Address Manager test": "Issue 22616",
         "test-Expanse": "Issue 26248",
         "TestProofpointFeed": "Issue 22229",
         "Git_Integration-Test": "Issue 20029",
@@ -2886,7 +2866,6 @@
         "TestUptycs": "Issue 19750",
         "InfoArmorVigilanteATITest": "Test issue 17358",
         "ArcSight Logger test": "Issue 19117",
-        "TruSTAR Test": "Issue 19777",
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
@@ -2909,10 +2888,13 @@
         "GCS Bucket Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "GCS Object Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "Send Email To Recipients": "used in EWS Mail Sender Test 2 as sub playbook",
-        "Cortex XDR - IOC - Test": "issue #25598"
+        "Cortex XDR - IOC - Test": "issue #25598",
+        "Create Phishing Classifier V2 ML Test": "Issue 26341",
+        "DuoAdmin API test playbook": "Issue 24937",
+        "Mail Sender (New) Test": "Issue 25602"
     },
     "skipped_integrations": {
-
+        
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Symantec Management Center": "Issue 23960",
         "PerceptionPoint": "Issue 25795",
@@ -3008,11 +2990,11 @@
         "Ivanti Heat": "Issue 26259",
         "Bambenek Consulting Feed": "Issue 26184",
         "AWS - Athena - Beta": "Issue 19834",
-
+        
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tenable.sc": "unstable instance",
-
+        
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Issue 25650",
         "XFE_v2": "Issue 22715",
@@ -3021,14 +3003,14 @@
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "Issue 26266",
-
+        
         "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer",
         "SafeBreach v2": "it is a partner integration, no instance",
         "IllusiveNetworks": "supported by partner",
         "Humio": "supported by the partner",
         "Digital Guardian": "partner integration",
-
+        
         "_comment5": "~~~ OTHER ~~~",
         "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
         "Cisco ASA": "Issue 25741",
@@ -3185,7 +3167,7 @@
         "Cortex Data Lake"
     ],
     "docker_thresholds": {
-
+        
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
