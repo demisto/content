@@ -3,11 +3,15 @@ commonfields:
   id: Ivanti Heat
   version: -1
 configuration:
-- defaultvalue: https://example.net
-  display: Server URL (e.g. https://example.net)
+- display: Server URL (e.g. https://example.net)
   name: url
   required: true
   type: 0
+- display: API Token
+  hidden: false
+  name: token
+  required: true
+  type: 4
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -16,19 +20,6 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-- display: API Token
-  hidden: false
-  name: token
-  required: true
-  type: 4
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   hidden: false
@@ -41,7 +32,16 @@ configuration:
   name: incident_name_field
   required: true
   type: 0
-description: Ivanti Heat service manager
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Ivanti Heat service manager, Use this integration to manage issues and
+  create Demisto incidents from ivanti.
 display: Ivanti Heat
 name: Ivanti Heat
 script:
@@ -150,7 +150,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Fields and their values to update in the record, in format: fieldname1=value;fieldname2=value;...'
+      description: Fields values in json format to update in the json format to update in the record e.g {"Priority":5}
       isArray: false
       name: fields
       required: true
@@ -294,7 +294,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The request body in JSON format
+      description: The request body in JSON format, or using script for create the
+        request payload e.g IvantiHeatCloseIncidentExample
       isArray: false
       name: request-data
       required: true
@@ -312,7 +313,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: fields values in json format
+      description: Fields values in json format, or using script for create the request
+        payload e.g IvantiHeatCreateIncidentExample
       isArray: false
       name: fields
       required: true

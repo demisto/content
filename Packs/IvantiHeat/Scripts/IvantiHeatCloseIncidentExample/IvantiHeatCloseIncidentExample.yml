@@ -1,7 +1,7 @@
 commonfields:
-  id: IvantiHeatCloseIncident
+  id: IvantiHeatCloseIncidentExample
   version: -1
-name: IvantiHeatCloseIncident
+name: IvantiHeatCloseIncidentExample
 script: ''
 type: python
 tags: []

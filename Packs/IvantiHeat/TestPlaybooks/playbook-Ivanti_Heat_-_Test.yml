@@ -115,7 +115,7 @@ tasks:
       - "16"
     scriptarguments:
       fields:
-        simple: Subject=desc;Priority=1
+        simple: '{"Priority":1}'
       object-type:
         simple: incidents
       rec-id:
@@ -472,7 +472,7 @@ tasks:
       - "7"
     scriptarguments:
       fields:
-        simple: Subject=some text;Priority=2
+        simple: '{"Priority":1}'
       object-type:
         simple: incidents
       rec-id:
@@ -497,8 +497,8 @@ tasks:
     task:
       id: de9452d9-2665-4cff-8661-cbebf1d53e05
       version: -1
-      name: IvantiHeatCreateIncident
-      scriptName: IvantiHeatCreateIncident
+      name: IvantiHeatCreateIncidentExample
+      scriptName: IvantiHeatCreateIncidentExample
       type: regular
       iscommand: false
       brand: ""
@@ -513,7 +513,7 @@ tasks:
       description:
         simple: the description
       owner:
-        simple: Alan Taylor
+        simple: DBot
       service:
         simple: Desktop Service
       summary:

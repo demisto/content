@@ -166,7 +166,7 @@ Update details of a business object such as a change, problem, or incident.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rec-id | Buisiness object ID to update | Required | 
-| fields | Fields and their values to update in the record, in format: fieldname1=value;fieldname2=value;... | Required | 
+| fields | Fields values in json format to update in the record, e.g: {"Priority":5} | Required | 
 | object-type | Type of object record | Required | 
 
 
@@ -192,7 +192,7 @@ Update details of a business object such as a change, problem, or incident.
 
 
 #### Command Example
-```!ivanti-heat-object-update fields=Description=desc;Priority=1 object-type=problems rec-id=5874A667```
+```!ivanti-heat-object-update fields={"Description":desc","Priority":1} object-type=problems rec-id=5874A667```
 
 #### Context Example
 ```
@@ -447,7 +447,7 @@ create business objects available out-of-the-box, such as a Change, Problem, Inc
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | object-type | Type of object record | Required | 
-| fields | fields values in json format | Required | 
+| fields | The request body in JSON format, or using script for create the request payload e.g IvantiHeatCloseIncidentExample | Required | 
 
 
 #### Context Output
@@ -569,7 +569,7 @@ create business objects available out-of-the-box, such as a Change, Problem, Inc
             "OwnershipAssignmentEmail": "user@domain.com",
             "OwningOrgUnitId": "GMI",
             "OwningOrgUnitId_Valid": "4A0AD111",
-            "Phone": "+1 925.398.1800",
+            "Phone": "+1 22.33.44",
             "PreviousState": null,
             "Priority": "3",
             "Priority_Valid": "29CD5096",

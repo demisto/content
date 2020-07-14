@@ -11,7 +11,6 @@ import dateparser
 requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-TOKEN = demisto.params().get('token')
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 OBJECT_HEADERS = ['RecId', 'Subject', 'Name', 'Status', 'CreatedDateTime', 'Symptom', 'Urgency', 'OwnerTeam',
                   'IncidentNumber', 'CreatedBy', 'Details', 'Owner', 'Category', 'Description', 'Priority',
@@ -78,7 +77,7 @@ def objects_list_command(client, args):
         human_readable = tableToMarkdown(f'{object_type} results', t=raw_res.get('value'), headers=OBJECT_HEADERS,
                                          removeNull=True)
 
-        entry_context = {f'IvantiHeat.{object_type}(val.RecId===obj.RecId)': raw_res.get('value')}
+        entry_context = {f'IvantiHeat.{object_type}(val.RecId && val.RecId===obj.RecId)': raw_res.get('value')}
         return human_readable, entry_context, raw_res
 
     return 'No records found', {}, raw_res
@@ -91,12 +90,16 @@ def update_object_command(client, args):
     fields = args.get('fields')
 
     body = {}
-    fields = fields.split(';')
-    for field in fields:
-        field_data = field.split('=')
-        body[field_data[0]] = field_data[1]
 
-    raw_res = client.do_request('PUT', f'odata/businessobject/{object_type}(\'{rec_id}\')', json_data=body)
+    try:
+        fields = json.loads(fields)
+    except Exception:
+        raise Exception(f'Failed to parse fields as JSON data, received object:\n{fields}')
+
+    for key in fields.keys():
+        body[key] = fields[key]
+
+    raw_res = client.do_request('PUT', f'odata/businessobject/{object_type}(\'{rec_id}\')', json_data=fields)
 
     human_readable = tableToMarkdown(f'{rec_id} updated successfully', t=raw_res, headers=OBJECT_HEADERS, removeNull=True)
     entry_context = {f'IvantiHeat.{object_type}(val.RecId===obj.RecId)': raw_res}
@@ -139,6 +142,7 @@ def upload_attachment_command(client, args):
         entry_context = {'IvantiHeat.Attachment':
                          {'RecId': rec_id, 'AttachmentId': attachment_id, 'FileName': file_name}}
         return f'{file_name} uploaded successfully, attachment ID: {attachment_id}', entry_context, raw_res
+    return f'Upload attachment {rec_id} failed', {}, {}
 
 
 @logger
@@ -151,7 +155,7 @@ def perform_action_command(client, args):
     try:
         request_data = json.loads(request_data)
     except Exception:
-        raise Exception('Failed to parese request-data argument')
+        raise Exception(f'Failed to parse request-data as JSON data, received object:\n{request_data}')
 
     raw_res = client.do_request('POST', f'odata/businessobject/{object_type}(\'{object_id}\')/{action}',
                                 json_data=request_data, resp_type='other')
@@ -169,7 +173,7 @@ def create_object_command(client, args):
     try:
         fields = json.loads(fields)
     except Exception:
-        raise Exception('Failed to parese additional-fields data')
+        raise Exception(f'Failed to parse additional-fields as JSON data, received object:\n{fields}')
 
     for key in fields.keys():
         body[key] = fields[key]
@@ -193,10 +197,10 @@ def get_file(entry_id):
 
 
 @logger
-def fetch_incidents(client, last_run, first_fetch_time):
+def fetch_incidents(client, last_run, first_fetch_time, name_field):
     # Get the last fetch time, if exists
     last_fetch = last_run.get('last_fetch')
-    name_field = demisto.params().get('incident_name_field')
+
     # Handle first time fetch
     if last_fetch is None:
         last_fetch = dateparser.parse(first_fetch_time)
@@ -208,18 +212,17 @@ def fetch_incidents(client, last_run, first_fetch_time):
     params = {'$orderby': 'CreatedDateTime asc'}
     params['$filter'] = f'CreatedDateTime gt {last_fetch.strftime(DATE_FORMAT)}'
     raw_res = client.do_request('GET', 'odata/businessobject/incidents', params=params)
-    if raw_res.get('value'):
-        for item in raw_res['value']:
-            incident_created_time = dateparser.parse(item.get('CreatedDateTime'))
-            incident_name = item.get(name_field, item.get('RecId'))
-            incident = {
-                'name': incident_name,
-                'details': json.dumps(item),
-                'occurred': incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
-                'rawJSON': json.dumps(item)
-            }
-            incidents.append(incident)
-            last_fetch = incident_created_time
+    for item in raw_res.get('value', []):
+        incident_created_time = dateparser.parse(item.get('CreatedDateTime'))
+        incident_name = item.get(name_field, item.get('RecId'))
+        incident = {
+            'name': incident_name,
+            'details': json.dumps(item),
+            'occurred': incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
+            'rawJSON': json.dumps(item)
+        }
+        incidents.append(incident)
+        last_fetch = incident_created_time
 
     next_run = {'last_fetch': last_fetch.strftime(DATE_FORMAT)}
     return next_run, incidents
@@ -232,11 +235,15 @@ def main():
 
     # get the service API url
     base_url = urljoin(demisto.params()['url'], '/api')
-
+    token = demisto.params().get('token')
     verify_certificate = not demisto.params().get('insecure', False)
 
     # How much time before the first fetch to retrieve incidents
     first_fetch_time = demisto.params().get('fetch_time', '3 days').strip()
+
+    if demisto.params().get('isFetch', False):
+        # Validate fetch_time parameter is valid (if not, parse_date_range will raise the error message)
+        parse_date_range(first_fetch_time, '%Y-%m-%d %H:%M:%S')
 
     proxy = demisto.params().get('proxy', False)
 
@@ -254,7 +261,7 @@ def main():
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
-            headers={'Authorization': f'rest_api_key={TOKEN}'},
+            headers={'Authorization': f'rest_api_key={token}'},
             proxy=proxy)
 
         if demisto.command() == 'test-module':
@@ -268,7 +275,8 @@ def main():
             next_run, incidents = fetch_incidents(
                 client=client,
                 last_run=demisto.getLastRun(),
-                first_fetch_time=first_fetch_time)
+                first_fetch_time=first_fetch_time,
+                name_field=demisto.params().get('incident_name_field'))
 
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)

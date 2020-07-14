@@ -1,6 +1,6 @@
 {
     "name": "Ivanti Heat",
-    "description": "Ivanti Heat service manager.",
+    "description": "Use Ivanti Heat integration to manage issues and create Demisto incidents from ivanti.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
