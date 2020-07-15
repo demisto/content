@@ -1146,7 +1146,7 @@ inputs:
   playbookInputQuery:
 outputs: []
 quiet: true
-description: ""
+description: Download malicious files from a Darkfeed IOC, detonate them in automated sandboxes, and extract and block any additional indicators and files.
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
