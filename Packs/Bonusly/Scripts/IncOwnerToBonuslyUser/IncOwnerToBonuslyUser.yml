@@ -1,27 +1,40 @@
+args:
+- default: false
+  description: Enter JSON STRING like {'email@company':'@bonuslyuser'}
+  isArray: false
+  name: json
+  required: true
+  secret: false
+- default: false
+  description: Enter the XSOAR Incident Owner Username (This will lookup the Incident
+    Owners Email Address)
+  isArray: false
+  name: owner
+  required: true
+  secret: false
+comment: 'This script will get the owner of the incidents email address and then return
+  the Bonusly username '
 commonfields:
   id: IncOwnerToBonuslyUser
   version: -1
-name: IncOwnerToBonuslyUser
-script: ''
-type: python
-tags:
-- Bonusly
-- Utilities
-comment: 'This script will get the owner of the incidents email address and then return
-  the Bonusly username '
 enabled: true
-args:
-- name: json
-  required: true
-  description: Enter JSON STRING like {'email@company':'@bonuslyuser'}
+name: IncOwnerToBonuslyUser
 outputs:
 - contextPath: IncOwnerEmail
   description: Incident Owners Email Address
+  type: Unknown
 - contextPath: BonuslyUser
   description: Incident Owner Email Converted To Bonusly Username
-scripttarget: 0
+  type: Unknown
+script: '-'
 subtype: python3
-runonce: false
+system: false
+tags:
+- Bonusly
+- Utilities
+timeout: '0'
+type: python
 dockerimage: demisto/python3:3.8.3.9324
 runas: DBotWeakRole
+runonce: false
 fromversion: 5.0.0

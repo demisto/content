@@ -7,10 +7,12 @@ Pass in JSON key value lookup then fetches the incident owner and finds the bonu
 """
 
 json_lookup = demisto.args().get('json')
+if isinstance(json_lookup, str):
+    json_lookup = json.loads(json_lookup)
 
 
 def inc_owner_bonusly_user():
-    owner_username = demisto.incidents()[0].get("owner")
+    owner_username = demisto.args().get('owner')
     if owner_username:
         try:
             owner_info = demisto.executeCommand('getUserByUsername', {"username": owner_username})[0]
@@ -25,4 +27,5 @@ def inc_owner_bonusly_user():
         return_error("Error: Email for owner of incident was not found")
 
 
-inc_owner_bonusly_user()
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    inc_owner_bonusly_user()
