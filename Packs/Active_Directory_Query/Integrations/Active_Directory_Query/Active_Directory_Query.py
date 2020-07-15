@@ -463,6 +463,7 @@ def search_group_members(default_base_dn, page_size):
     args = demisto.args()
     member_type = args.get('member-type')
     group_dn = args.get('group-dn')
+    time_limit = int(args.get('time_limit', 180))
 
     custome_attributes: List[str] = []
     default_attributes = DEFAULT_PERSON_ATTRIBUTES if member_type == 'person' else DEFAULT_COMPUTER_ATTRIBUTES
@@ -480,7 +481,8 @@ def search_group_members(default_base_dn, page_size):
         query,
         default_base_dn,
         attributes=attributes,
-        page_size=page_size
+        page_size=page_size,
+        time_limit=time_limit
     )
 
     members = [{'dn': entry['dn'], 'category': member_type} for entry in entries['flat']]
