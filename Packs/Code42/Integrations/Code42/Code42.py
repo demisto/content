@@ -174,7 +174,7 @@ class Code42Client(BaseClient):
             _clear_env_var_if_exists('https_proxy')
 
         py42.settings.set_user_agent_suffix("Cortex XSOAR")
-        # py42.settings.verify_ssl_certs = verify
+        py42.settings.verify_ssl_certs = verify
 
     def _get_sdk(self):
         if self._sdk is None:
