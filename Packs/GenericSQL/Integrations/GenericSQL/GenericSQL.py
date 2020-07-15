@@ -103,11 +103,13 @@ class Client:
             cache_key = self._get_cache_string(db_preferences, ssl_connection)
             engine = cache.get(cache_key, None)
             if engine is None:  # (first time or expired) need to initialize
-                engine = sqlalchemy.create_engine(db_preferences, connect_args=ssl_connection)
+                engine = sqlalchemy.create_engine(db_preferences, connect_args=ssl_connection,
+                                                  max_identifier_length=128)
                 cache[cache_key] = engine
         else:
             demisto.debug('Initializing engine with no pool (NullPool)')
-            engine = sqlalchemy.create_engine(db_preferences, connect_args=ssl_connection, poolclass=sqlalchemy.pool.NullPool)
+            engine = sqlalchemy.create_engine(db_preferences, connect_args=ssl_connection,
+                                              poolclass=sqlalchemy.pool.NullPool, max_identifier_length=128)
         return engine.connect()
 
     def sql_query_execute_request(self, sql_query: str, bind_vars: Any) -> Tuple[Dict, List]:
