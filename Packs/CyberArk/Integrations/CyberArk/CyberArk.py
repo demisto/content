@@ -162,7 +162,7 @@ class Client(BaseClient):
 
         return self._http_request("PUT", url_suffix, resp_type='text')
 
-    def list_safes(self):
+    def get_list_safes(self):
         url_suffix = "/PasswordVault/api/Safes"
 
         return self._http_request("GET", url_suffix)
@@ -370,19 +370,19 @@ class Client(BaseClient):
 
         return self._http_request("DELETE", url_suffix, resp_type='text')
 
-    def list_accounts(self,
-                      search: str,
-                      sort: str,
-                      offset: str,
-                      limit: str,
-                      filter: str,
-                      ):
+    def get_list_accounts(self,
+                          search: str,
+                          sort: str,
+                          offset: str,
+                          limit: str,
+                          filter: str,
+                          ):
         url_suffix = f"/PasswordVault/api/Accounts?search={search}&sort={sort}&offset={offset}&limit={limit}&filter={filter}"
         return self._http_request("GET", url_suffix)
 
-    def list_account_activity(self,
-                              accountID: str,
-                              ):
+    def get_list_account_activity(self,
+                                  accountID: str,
+                                  ):
         url_suffix = f"/PasswordVault/api/Accounts/{accountID}/Activities"
         return self._http_request("GET", url_suffix)
 
@@ -459,7 +459,7 @@ class Client(BaseClient):
 
 def test_module(
         client: Client,
-) -> Tuple[str, dict, list]:
+) -> str:
     """
     If a client was made then an accesses token was successfully reached,
     therefor the username and password are valid and a connection was made
@@ -468,7 +468,7 @@ def test_module(
     :return: ok if got a valid accesses token and not all the quota is used at the moment
     """
     client._logout()
-    return_results("ok")
+    return "ok"
 
 
 def add_user_command(
@@ -499,6 +499,7 @@ def add_user_command(
                                location)
     id = response.get("id")
     results = CommandResults(
+        raw_response=response,
         outputs_prefix=f'CyberArk.Users.{id}',
         outputs_key_field='id',
         outputs=response
@@ -535,6 +536,7 @@ def update_user_command(
                                   location)
     user_id = response.get("id")
     results = CommandResults(
+        raw_response=response,
         outputs_prefix=f'CyberArk.Users.{user_id}',
         outputs_key_field='id',
         outputs=response
@@ -550,7 +552,12 @@ def delete_user_command(
     # the response should be an empty string, if an error raised it would be catch in the main block
     # should never enter to the else block, extra precautions if something want wrong
     if not response:
-        return f"User {userID} was deleted"
+        return CommandResults(
+            readable_output=f"User {userID} was deleted",
+            outputs_prefix=f'CyberArk.Users.{userID}',
+            outputs_key_field='id',
+            outputs={"id": userID, "deleted": True}
+        )
     else:
         return response
 
@@ -563,12 +570,13 @@ def get_users_command(
     response = client.get_users(filter, search)
     total_users = response.get("Total")
     headline = f"There are {total_users} users"
-    a = response.get("Users")
+    users = response.get("Users")
     results = CommandResults(
-        readable_output=headline + tableToMarkdown("table",a),
+        raw_response=response,
+        readable_output=tableToMarkdown(headline, users),
         outputs_prefix='CyberArk.Users',
         outputs_key_field='id',
-        outputs=response.get("Users"),
+        outputs=users,
     )
     return results
 
@@ -579,23 +587,26 @@ def activate_user_command(
 ):
     response = client.activate_user(userID)
     if not response:
-        return_results(f"User {userID} was activated")
+        return f"User {userID} was activated"
     else:
         return response
 
 
-def list_safes_command(
+def get_list_safes_command(
         client: Client,
 ):
-    response = client.list_safes()
+    response = client.get_list_safes()
     total_safes = response.get("Total")
-    demisto.log(f"There are {total_safes} safes")
+    headline = f"There are {total_safes} safes"
+    safes = response.get("Safes")
     results = CommandResults(
-        outputs_prefix='CyberArk.Safes',
-        outputs_key_field='SafeUrlId',
-        outputs=response.get("Safes")
+        raw_response=response,
+        readable_output=tableToMarkdown(headline, safes),
+        outputs_prefix=f'CyberArk.Safes',
+        outputs_key_field='SafeName',
+        outputs=safes
     )
-    return_results(results)
+    return results
 
 
 def get_safe_by_name_command(
@@ -604,11 +615,12 @@ def get_safe_by_name_command(
 ):
     response = client.get_safe_by_name(safe_name)
     results = CommandResults(
-        outputs_prefix=f'CyberArk.{safe_name}',
-        outputs_key_field='',
+        raw_response=response,
+        outputs_prefix=f'CyberArk.Safes.{safe_name}',
+        outputs_key_field='SafeName',
         outputs=response
     )
-    return_results(results)
+    return results
 
 
 def add_safe_command(
@@ -624,11 +636,12 @@ def add_safe_command(
     response = client.add_safe(safe_name, description, OLAC_enabled, managing_cmp, number_of_versions_retention,
                                number_of_days_retention, location)
     results = CommandResults(
-        outputs_prefix=f'CyberArk.{safe_name}',
-        outputs_key_field='',
+        raw_response=response,
+        outputs_prefix=f'CyberArk.Safes.{safe_name}',
+        outputs_key_field='SafeName',
         outputs=response
     )
-    return_results(results)
+    return results
 
 
 def update_safe_command(
@@ -646,11 +659,12 @@ def update_safe_command(
                                   number_of_versions_retention,
                                   number_of_days_retention, location)
     results = CommandResults(
-        outputs_prefix=f'CyberArk.{safe_name}',
-        outputs_key_field='',
+        raw_response=response,
+        outputs_prefix=f'CyberArk.Safes.{safe_name}',
+        outputs_key_field='SafeName',
         outputs=response
     )
-    return_results(results)
+    return results
 
 
 def delete_safe_command(
@@ -661,9 +675,14 @@ def delete_safe_command(
     # the response should be an empty string, if an error raised it would be catch in the main block
     # should never enter to the else block, extra precautions if something want wrong
     if not response:
-        return_results(f"Safe {safe_name} was deleted")
+        return CommandResults(
+            readable_output=f"Safe {safe_name} was deleted",
+            outputs_prefix=f'CyberArk.Safes.{safe_name}',
+            outputs_key_field='SafeName',
+            outputs={"SafeName": safe_name, "deleted": True}
+        )
     else:
-        return_results(response)
+        return response
 
 
 def list_safe_members_command(
@@ -672,13 +691,16 @@ def list_safe_members_command(
 ):
     response = client.list_safe_members(safe_name)
     total_safe_members = response.get("Total")
-    demisto.log(f"There are {total_safe_members} safe members for {safe_name}")
+    headline = f"There are {total_safe_members} safe members for {safe_name}"
+    members = response.get("SafeMembers")
     results = CommandResults(
-        outputs_prefix=f'CyberArk.{safe_name}',
+        raw_response=response,
+        readable_output=tableToMarkdown(headline, members),
+        outputs_prefix=f'CyberArk.{safe_name}.Members',
         outputs_key_field='MemberName',
-        outputs=response.get("SafeMembers")
+        outputs=members
     )
-    return_results(results)
+    return results
 
 
 def add_safe_member_command(
@@ -694,11 +716,12 @@ def add_safe_member_command(
     response = client.add_safe_member(safe_name, member_name, requests_authorization_level, membership_expiration_date,
                                       permissions_list, search_in)
     results = CommandResults(
-        outputs_prefix=f'CyberArk.{member_name}',
-        outputs_key_field='',
+        raw_response=response,
+        outputs_prefix=f'CyberArk.{safe_name}.{member_name}',
+        outputs_key_field=member_name,
         outputs=response.get("member")
     )
-    return_results(results)
+    return results
 
 
 def update_safe_member_command(
@@ -708,17 +731,17 @@ def update_safe_member_command(
         requests_authorization_level: str = "0",
         membership_expiration_date: str = "",
         permissions: str = "",
-        search_in: str = ""
 ):
     permissions_list = argToList(permissions)
     response = client.update_safe_member(safe_name, member_name, requests_authorization_level,
                                          membership_expiration_date, permissions_list)
     results = CommandResults(
-        outputs_prefix=f'CyberArk.{member_name}',
-        outputs_key_field='',
+        raw_response=response,
+        outputs_prefix=f'CyberArk.{safe_name}.{member_name}',
+        outputs_key_field=member_name,
         outputs=response.get("member")
     )
-    return_results(results)
+    return results
 
 
 def delete_safe_member_command(
@@ -730,9 +753,14 @@ def delete_safe_member_command(
     # the response should be an empty string, if an error raised it would be catch in the main block
     # should never enter to the else block, extra precautions if something want wrong
     if not response:
-        return_results(f"Member {member_name} was deleted from {safe_name} safe")
+        return CommandResults(
+            readable_output=f"Member {member_name} was deleted from {safe_name} safe",
+            outputs_prefix=f'CyberArk.{safe_name}.{member_name}',
+            outputs_key_field='MemberName',
+            outputs={"MemberName": member_name, "deleted": True}
+        )
     else:
-        return_results(response)
+        return response
 
 
 def add_account_command(
@@ -754,11 +782,12 @@ def add_account_command(
                                   properties, automatic_management_enabled, manual_management_reason, remote_machines,
                                   access_restricted_to_temote_machines)
     results = CommandResults(
-        outputs_prefix=f'CyberArk.{response.get("id")}',
+        raw_response=response,
+        outputs_prefix=f'CyberArk.Accounts.{response.get("id")}',
         outputs_key_field='id',
         outputs=response
     )
-    return_results(results)
+    return results
 
 
 def update_account_command(
@@ -771,11 +800,12 @@ def update_account_command(
 ):
     response = client.update_account(accountID, account_name, address, username, platformID)
     results = CommandResults(
-        outputs_prefix=f'CyberArk.{accountID}',
+        raw_response=response,
+        outputs_prefix=f'CyberArk.Accounts.{response.get("id")}',
         outputs_key_field='id',
         outputs=response
     )
-    return_results(results)
+    return results
 
 
 def delete_account_command(
@@ -786,12 +816,17 @@ def delete_account_command(
     # the response should be an empty string, if an error raised it would be catch in the main block
     # should never enter to the else block, extra precautions if something want wrong
     if not response:
-        return_results(f"Account {accountID} was deleted")
+        return CommandResults(
+            readable_output=f"Account {accountID} was deleted",
+            outputs_prefix=f'CyberArk.Accounts.{accountID}',
+            outputs_key_field='id',
+            outputs={"id": accountID, "deleted": True}
+        )
     else:
-        return_results(response)
+        return response
 
 
-def list_accounts_command(
+def get_list_accounts_command(
         client: Client,
         search: str = "",
         sort: str = "",
@@ -799,28 +834,32 @@ def list_accounts_command(
         limit: str = "50",
         filter: str = "",
 ):
-    response = client.list_accounts(search, sort, offset, limit, filter)
+    response = client.get_list_accounts(search, sort, offset, limit, filter)
     total_accounts = response.get("count")
-    demisto.log(f"There are {total_accounts} accounts")
+    accounts = response.get("value")
+    headline = f"There are {total_accounts} accounts"
     results = CommandResults(
+        raw_response=response,
+        readable_output=tableToMarkdown(headline, accounts),
         outputs_prefix=f'CyberArk.Accounts',
         outputs_key_field='id',
-        outputs=response.get("value")
+        outputs=accounts
     )
-    return_results(results)
+    return results
 
 
-def list_account_activity_command(
+def get_list_account_activity_command(
         client: Client,
         accountID: str = "",
 ):
-    response = client.list_account_activity(accountID)
+    response = client.get_list_account_activity(accountID)
     results = CommandResults(
-        outputs_prefix=f'CyberArk.{accountID}_Activities',
+        raw_response=response,
+        outputs_prefix=f'CyberArk.{accountID}.Activities',
         outputs_key_field='',
         outputs=response.get("Activities")
     )
-    return_results(results)
+    return results
 
 
 def change_credentials_random_password_command(
@@ -829,9 +868,9 @@ def change_credentials_random_password_command(
 ):
     response = client.change_credentials_random_password(accountID)
     if not response:
-        return_results(f"The password in the account {accountID} was changed")
+        return f"The password in the account {accountID} was changed"
     else:
-        return_results(response)
+        return response
 
 
 def change_credentials_set_new_password_command(
@@ -841,9 +880,9 @@ def change_credentials_set_new_password_command(
 ):
     response = client.change_credentials_set_new_password(accountID, new_credentials)
     if not response:
-        return_results(f"The password in the account {accountID} was changed")
+        return f"The password in the account {accountID} was changed"
     else:
-        return_results(response)
+        return response
 
 
 def change_credentials_in_vault_only_command(
@@ -853,9 +892,9 @@ def change_credentials_in_vault_only_command(
 ):
     response = client.change_credentials_in_vault_only(accountID, new_credentials)
     if not response:
-        return_results(f"The password in the account {accountID} was changed")
+        return f"The password in the account {accountID} was changed"
     else:
-        return_results(response)
+        return response
 
 
 def verify_credentials_command(
@@ -864,9 +903,9 @@ def verify_credentials_command(
 ):
     response = client.verify_credentials(accountID)
     if not response:
-        return_results(f"The account {accountID} was marked for verification by the CPM")
+        return f"The account {accountID} was marked for verification by the CPM"
     else:
-        return_results(response)
+        return response
 
 
 def reconcile_credentials_command(
@@ -875,9 +914,9 @@ def reconcile_credentials_command(
 ):
     response = client.reconcile_credentials(accountID)
     if not response:
-        return_results(f"The account {accountID} was marked for automatic reconciliation by the CPM.")
+        return f"The account {accountID} was marked for automatic reconciliation by the CPM."
     else:
-        return_results(response)
+        return response
 
 
 def main():
@@ -893,30 +932,29 @@ def main():
     commands = {
         'test-module': test_module,
 
-        'cyberark-pas-add-user': add_user_command,  # v
-        'cyberark-pas-update-user': update_user_command,  # v
-        'cyberark-pas-delete-user': delete_user_command,  # v
-        'cyberark-pas-get-users': get_users_command,  # v
+        'cyberark-pas-add-user': add_user_command,
+        'cyberark-pas-update-user': update_user_command,
+        'cyberark-pas-delete-user': delete_user_command,
+        'cyberark-pas-get-users': get_users_command,
         'cyberark-pas-activate-user': activate_user_command,
 
-        'cyberark-pas-list-safes': list_safes_command,  # v
-        'cyberark-pas-get-safe-by-name': get_safe_by_name_command,  # v
-        'cyberark-pas-add-safe': add_safe_command,  # v
-        'cyberark-pas-update-safe': update_safe_command,  # v
-        'cyberark-pas-delete-safe': delete_safe_command,  # v
+        'cyberark-pas-add-safe': add_safe_command,
+        'cyberark-pas-update-safe': update_safe_command,
+        'cyberark-pas-delete-safe': delete_safe_command,
+        'cyberark-pas-get-list-safes': get_list_safes_command,
+        'cyberark-pas-get-safe-by-name': get_safe_by_name_command,
 
-        'cyberark-pas-list-safe-members': list_safe_members_command,  # v
-        'cyberark-pas-add-safe-member': add_safe_member_command,  # v - using old api
-        'cyberark-pas-update-safe-member': update_safe_member_command,  # v - using old api
-        'cyberark-pas-delete-safe-member': delete_safe_member_command,  # v - using old api
+        'cyberark-pas-add-safe-member': add_safe_member_command,
+        'cyberark-pas-update-safe-member': update_safe_member_command,
+        'cyberark-pas-delete-safe-member': delete_safe_member_command,
+        'cyberark-pas-list-safe-members': list_safe_members_command,
 
-        'cyberark-pas-list-accounts': list_accounts_command,  # v
-        'cyberark-pas-add-account': add_account_command,  # v
-        'cyberark-pas-update-account': update_account_command,  # v
-        'cyberark-pas-delete-account': delete_account_command,  # v
-        'cyberark-pas-list-account-activity': list_account_activity_command,  # v
+        'cyberark-pas-add-account': add_account_command,
+        'cyberark-pas-update-account': update_account_command,
+        'cyberark-pas-delete-account': delete_account_command,
+        'cyberark-pas-get-list-accounts': get_list_accounts_command,
+        'cyberark-pas-get-list-account-activity': get_list_account_activity_command,
 
-        # api issues:
         'cyberark-pas-change-credentials-random-password': change_credentials_random_password_command,
         'cyberark-pas-change-credentials-set-new-password': change_credentials_set_new_password_command,
         'cyberark-pas-change-credentials-in-vault-only': change_credentials_in_vault_only_command,
@@ -929,7 +967,7 @@ def main():
         client = Client(server_url=url, username=username, password=password, use_ssl=use_ssl, proxy=proxy)
 
         if command in commands:
-            return_results(commands[command](client, **demisto.args())) # type: ignore[operator]
+            return_results(commands[command](client, **demisto.args()))  # type: ignore[operator]
         else:
             raise NotImplementedError(f'{command} is not an existing CyberArk command')
     except Exception as err:

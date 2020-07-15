@@ -344,7 +344,7 @@ script:
     description: Returns information about all of the user’s Safes in the Vault. It
       is demonstrated in the sample code.
     execution: false
-    name: cyberark-pas-list-safes
+    name: cyberark-pas-get-list-safes
   - arguments:
     - default: false
       description: The name of the Safe about which information is returned.
@@ -541,12 +541,6 @@ script:
       isArray: false
       name: member_name
       required: true
-      secret: false
-    - default: false
-      description: Search for the member in the Vault or Domain.
-      isArray: false
-      name: search_in
-      required: false
       secret: false
     - default: false
       description: MM\DD\YY or empty if there is no expiration date.
@@ -787,7 +781,7 @@ script:
     deprecated: false
     description: Return a list of all the accounts in the Vault.
     execution: false
-    name: cyberark-pas-list-accounts
+    name: cyberark-pas-get-list-accounts
   - arguments:
     - default: false
       description: The ID of the account whose activities will be retrieved.
@@ -799,7 +793,7 @@ script:
     description: Returns the activities of a specific account that is identified by
       its account ID.
     execution: false
-    name: cyberark-pas-list-account-activity
+    name: cyberark-pas-get-list-account-activity
   - arguments:
     - default: false
       description: The user's unique ID.
@@ -826,8 +820,9 @@ script:
       required: true
       secret: false
     - default: false
+      description: Whether or not the CPM will change the credentials in all the accounts
+        that belong to the same group.
       isArray: false
-      description: Whether or not the CPM will change the credentials in all the accounts that belong to the same group.
       name: change_creds_for_group
       required: false
       secret: false
@@ -895,8 +890,8 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
-fromversion: 5.0.0
+  type: python
 tests:
 - No tests (auto formatted)
+fromversion: 5.0.0

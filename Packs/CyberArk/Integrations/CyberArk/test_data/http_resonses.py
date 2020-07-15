@@ -1,6 +1,4 @@
-import json
-
-RAW_RESPONSE_ADD_USER = {"authenticationMethod": ["AuthTypePass"],
+ADD_USER_RAW_RESPONSE = {"authenticationMethod": ["AuthTypePass"],
                              "businessAddress": {"workCity": "", "workCountry": "", "workState": "", "workStreet": "",
                                                  "workZip": ""}, "changePassOnNextLogon": True, "componentUser": False,
                              "description": "new user for test", "distinguishedName": "", "enableUser": True,
@@ -16,7 +14,8 @@ RAW_RESPONSE_ADD_USER = {"authenticationMethod": ["AuthTypePass"],
                                         "pagerNumber": ""}, "source": "CyberArk", "suspended": False,
                              "unAuthorizedInterfaces": [], "userType": "EPVUser", "username": "TestUser",
                              "vaultAuthorization": []}
-RAW_RESPONSE_UPDATE_USER = {"authenticationMethod": ["AuthTypePass"],
+
+UPDATE_USER_RAW_RESPONSE = {"authenticationMethod": ["AuthTypePass"],
                             "businessAddress": {"workCity": "", "workCountry": "", "workState": "", "workStreet": "",
                                                 "workZip": ""},
                             "changePassOnNextLogon": True, "componentUser": False, "description": "updated description",
@@ -36,26 +35,140 @@ RAW_RESPONSE_UPDATE_USER = {"authenticationMethod": ["AuthTypePass"],
                             "userType": "EPVUser",
                             "username": "TestUser1", "vaultAuthorization": []}
 
-RAW_RESPONSE_GET_USERS = [{"componentUser": False, "id": 2, "location": "\\",
-                           "personalDetails": {"firstName": "", "lastName": "", "middleName": ""}, "source": "CyberArk",
-                           "userType": "Built-InAdmins", "username": "Administrator",
-                           "vaultAuthorization": ["AddUpdateUsers", "AddSafes", "AddNetworkAreas",
-                                                  "ManageDirectoryMapping",
-                                                  "ManageServerFileCategories", "AuditUsers", "BackupAllSafes",
-                                                  "RestoreAllSafes",
-                                                  "ResetUsersPasswords", "ActivateUsers"]},
-                          {"componentUser": True, "id": 76, "location": "\\",
-                           "personalDetails": {"firstName": "", "lastName": "", "middleName": ""}, "source": "CyberArk",
-                           "userType": "AppProvider", "username": "Sync_COMP01", "vaultAuthorization": ["AuditUsers"]},
-                          {"componentUser": True, "id": 83, "location": "\\Applications",
-                           "personalDetails": {"firstName": "", "lastName": "", "middleName": ""}, "source": "CyberArk",
-                           "userType": "AppProvider", "username": "Prov_nexpose",
-                           "vaultAuthorization": ["AddSafes", "AuditUsers"]}]
+GET_USERS_RAW_RESPONSE = {"Total": 2, "Users": [{"componentUser": False, "id": 2, "location": "\\",
+                                                  "personalDetails": {"firstName": "", "lastName": "",
+                                                                      "middleName": ""}, "source": "CyberArk",
+                                                  "userType": "Built-InAdmins", "username": "Administrator",
+                                                  "vaultAuthorization": ["AddUpdateUsers", "AddSafes",
+                                                                         "AddNetworkAreas",
+                                                                         "ManageDirectoryMapping",
+                                                                         "ManageServerFileCategories", "AuditUsers",
+                                                                         "BackupAllSafes", "RestoreAllSafes",
+                                                                         "ResetUsersPasswords", "ActivateUsers"]},
+                                                 {"componentUser": False, "id": 3, "location": "\\",
+                                                  "personalDetails": {"firstName": "", "lastName": "",
+                                                                      "middleName": ""}, "source": "CyberArk",
+                                                  "userType": "Built-InAdmins", "username": "Auditor",
+                                                  "vaultAuthorization": ["AuditUsers"]}]}
+
+ADD_SAFE_RAW_RESPONSE = {"AutoPurgeEnabled": False, "Description": "safe for tests", "Location": "\\",
+                         "ManagingCPM": "",
+                         "NumberOfDaysRetention": 100, "NumberOfVersionsRetention": None, "OLACEnabled": True,
+                         "SafeName": "TestSafe"}
+
+UPDATE_SAFE_RAW_RESPONSE = {"AutoPurgeEnabled": False, "Description": "UpdatedSafe", "Location": "\\",
+                            "ManagingCPM": "", "NumberOfDaysRetention": 150, "NumberOfVersionsRetention": None,
+                            "OLACEnabled": True, "SafeName": "UpdatedName"}
+
+GET_SAFE_BY_NAME_RAW_RESPONSE = {"AutoPurgeEnabled": False, "Description": "safe for tests", "Location": "\\",
+                            "ManagingCPM": "", "NumberOfDaysRetention": 100, "NumberOfVersionsRetention": None,
+                            "OLACEnabled": True, "SafeName": "TestSafe"}
+
+GET_LIST_SAFES_RAW_RESPONSE = {
+    "Safes": [{"Description": "", "Location": "\\", "SafeName": "VaultInternal", "SafeUrlId": "VaultInternal"},
+              {"Description": "", "Location": "\\", "SafeName": "Notification Engine",
+               "SafeUrlId": "Notification%20Engine"}]}
 
 
+ADD_SAFE_MEMBER_RAW_RESPONSE = {"member": {"MemberName": "TestUser", "MembershipExpirationDate": "",
+                                      "Permissions": [{"Key": "UseAccounts", "Value": False},
+                                                      {"Key": "RetrieveAccounts", "Value": False},
+                                                      {"Key": "ListAccounts", "Value": False},
+                                                      {"Key": "AddAccounts", "Value": False},
+                                                      {"Key": "UpdateAccountContent", "Value": False},
+                                                      {"Key": "UpdateAccountProperties", "Value": False},
+                                                      {"Key": "InitiateCPMAccountManagementOperations",
+                                                       "Value": False},
+                                                      {"Key": "SpecifyNextAccountContent", "Value": False},
+                                                      {"Key": "RenameAccounts", "Value": False},
+                                                      {"Key": "DeleteAccounts", "Value": False},
+                                                      {"Key": "UnlockAccounts", "Value": False},
+                                                      {"Key": "ManageSafe", "Value": False},
+                                                      {"Key": "ManageSafeMembers", "Value": False},
+                                                      {"Key": "BackupSafe", "Value": False},
+                                                      {"Key": "ViewAuditLog", "Value": False},
+                                                      {"Key": "ViewSafeMembers", "Value": False},
+                                                      {"Key": "AccessWithoutConfirmation", "Value": False},
+                                                      {"Key": "CreateFolders", "Value": False},
+                                                      {"Key": "DeleteFolders", "Value": False},
+                                                      {"Key": "MoveAccountsAndFolders", "Value": False},
+                                                      {"Key": "RequestsAuthorizationLevel", "Value": 0}],
+                                      "SearchIn": "vault"}}
 
+UPDATE_SAFE_MEMBER_RAW_RESPONSE = {"member": {"MemberName": "TestUser", "MembershipExpirationDate": "",
+                                         "Permissions": [{"Key": "UseAccounts", "Value": True},
+                                                         {"Key": "RetrieveAccounts", "Value": False},
+                                                         {"Key": "ListAccounts", "Value": False},
+                                                         {"Key": "AddAccounts", "Value": False},
+                                                         {"Key": "UpdateAccountContent", "Value": False},
+                                                         {"Key": "UpdateAccountProperties", "Value": False},
+                                                         {"Key": "InitiateCPMAccountManagementOperations",
+                                                          "Value": False},
+                                                         {"Key": "SpecifyNextAccountContent", "Value": False},
+                                                         {"Key": "RenameAccounts", "Value": False},
+                                                         {"Key": "DeleteAccounts", "Value": False},
+                                                         {"Key": "UnlockAccounts", "Value": False},
+                                                         {"Key": "ManageSafe", "Value": False},
+                                                         {"Key": "ManageSafeMembers", "Value": False},
+                                                         {"Key": "BackupSafe", "Value": False},
+                                                         {"Key": "ViewAuditLog", "Value": False},
+                                                         {"Key": "ViewSafeMembers", "Value": False},
+                                                         {"Key": "AccessWithoutConfirmation", "Value": False},
+                                                         {"Key": "CreateFolders", "Value": False},
+                                                         {"Key": "DeleteFolders", "Value": False},
+                                                         {"Key": "MoveAccountsAndFolders", "Value": False},
+                                                         {"Key": "RequestsAuthorizationLevel", "Value": 0}],
+                                         "SearchIn": "vault"}}
 
-def test1():
+LIST_SAFE_MEMBER_RAW_RESPONSE = {"SafeMembers": [
+    {"IsExpiredMembershipEnable": False, "IsPredefinedUser": True, "MemberName": "Administrator",
+     "MemberType": "User", "MembershipExpirationDate": None,
+     "Permissions": {"AccessWithoutConfirmation": True, "AddAccounts": True, "BackupSafe": True,
+                     "CreateFolders": True, "DeleteAccounts": True, "DeleteFolders": True,
+                     "InitiateCPMAccountManagementOperations": True, "ListAccounts": True, "ManageSafe": True,
+                     "ManageSafeMembers": True, "MoveAccountsAndFolders": True, "RenameAccounts": True,
+                     "RequestsAuthorizationLevel1": True, "RequestsAuthorizationLevel2": False,
+                     "RetrieveAccounts": True, "SpecifyNextAccountContent": True, "UnlockAccounts": True,
+                     "UpdateAccountContent": True, "UpdateAccountProperties": True, "UseAccounts": True,
+                     "ViewAuditLog": True, "ViewSafeMembers": True}},
+    {"IsExpiredMembershipEnable": False, "IsPredefinedUser": True, "MemberName": "Master", "MemberType": "User",
+     "MembershipExpirationDate": None,
+     "Permissions": {"AccessWithoutConfirmation": True, "AddAccounts": True, "BackupSafe": True,
+                     "CreateFolders": True, "DeleteAccounts": True, "DeleteFolders": True,
+                     "InitiateCPMAccountManagementOperations": True, "ListAccounts": True, "ManageSafe": True,
+                     "ManageSafeMembers": True, "MoveAccountsAndFolders": True, "RenameAccounts": True,
+                     "RequestsAuthorizationLevel1": False, "RequestsAuthorizationLevel2": False,
+                     "RetrieveAccounts": True, "SpecifyNextAccountContent": True, "UnlockAccounts": True,
+                     "UpdateAccountContent": True, "UpdateAccountProperties": True, "UseAccounts": True,
+                     "ViewAuditLog": True, "ViewSafeMembers": True}}]}
 
+ADD_ACCOUNT_RAW_RESPONSE = {"address": "/", "categoryModificationTime": 1594835018, "createdTime": 1594838456,
+                            "id": "77_4",
+                            "name": "TestAccount1", "platformId": "WinServerLocal", "safeName": "TestSafe",
+                            "secretManagement": {"automaticManagementEnabled": True,
+                                                 "lastModifiedTime": 1594824056}, "secretType": "password",
+                            "userName": "TestUser"}
 
-    print(json.dumps(RAW_RESPONSE_ADD_USER, indent=4, sort_keys=True))
+UPDATE_ACCOUNT_RAW_RESPONSE = {"address": "/", "categoryModificationTime": 1594835018, "createdTime": 1594838456,
+                               "id": "77_4", "name": "NewName", "platformId": "WinServerLocal",
+                               "safeName": "TestSafe", "secretManagement": {"automaticManagementEnabled": True,
+                                                                            "lastModifiedTime": 1594824056},
+                               "secretType": "password", "userName": "TestUser"}
+
+GET_LIST_ACCOUNT_RAW_RESPONSE = {"count": 2, "nextLink": "api/Accounts?offset=2\u0026limit=2", "value": [
+    {"address": "string", "categoryModificationTime": 1594569595, "createdTime": 1594573679, "id": "2_6",
+     "name": "account1", "platformAccountProperties": {}, "platformId": "Oracle", "safeName": "VaultInternal",
+     "secretManagement": {"automaticManagementEnabled": True, "lastModifiedTime": 1594559279},
+     "secretType": "password", "userName": "string"},
+    {"address": "10.0.0.5", "categoryModificationTime": 1583345933, "createdTime": 1573127750, "id": "2_3",
+     "name": "cybr.com.pass", "platformAccountProperties": {}, "platformId": "WinDomain",
+     "safeName": "VaultInternal",
+     "secretManagement": {"automaticManagementEnabled": False, "lastModifiedTime": 1573109750,
+                          "manualManagementReason": "NoReason"}, "secretType": "password",
+     "userName": "vaultbind@cybr.com"}]}
+
+GET_LIST_ACCOUNT_ACTIVITIES_RAW_RESPONSE = {"Activities": [
+    {"Action": "Rename File", "ActionID": 124, "Alert": False, "ClientID": "PVWA", "Date": 1594838533,
+     "MoreInfo": "NewName", "Reason": "", "User": "Administrator"},
+    {"Action": "Store password", "ActionID": 294, "Alert": False, "ClientID": "PVWA", "Date": 1594838456,
+     "MoreInfo": "", "Reason": "", "User": "Administrator"}]}
