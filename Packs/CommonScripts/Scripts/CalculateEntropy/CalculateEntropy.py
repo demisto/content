@@ -22,8 +22,12 @@ def calculate_shannon_entropy(data, minimum_entropy):
         if p_x > 0:
             entropy += - p_x * math.log(p_x, 2)
     if entropy >= minimum_entropy:
-        return '', {'EntropyResult': {'checked_value': data, 'entropy': entropy}}, {}
-    return '', {}, {}
+        human_readable = tableToMarkdown("Entropy results", {'Checked Value': data, 'Entropy': entropy},
+                                         headers=['Checked Value', 'Entropy'])
+
+        return human_readable, {'EntropyResult': {'checked_value': data, 'entropy': entropy}}, {}
+
+    return f'Entropy for {data} is {entropy} - lower than {minimum_entropy}', {}, {}
 
 
 def main():
