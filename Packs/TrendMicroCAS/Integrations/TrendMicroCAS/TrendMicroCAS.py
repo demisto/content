@@ -122,6 +122,14 @@ class Client(BaseClient):
         )
         return result
 
+    def next_link(self, link: str) -> dict:
+        data = self._http_request(
+            method='GET',
+            full_url=link,
+            url_suffix=''
+        )
+        return data
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -218,7 +226,13 @@ def security_events_list_command(client, args):
     start = args.get('start')
     end = args.get('end')
     limit = args.get('limit')
-    result = client.security_events_list(service, event_type, start, end, limit)
+    next_link = args.get('next_link')
+
+    if next_link:
+        result = client.next_link(next_link)
+    else:
+        result = client.security_events_list(service, event_type, start, end, limit)
+
     security_events = result.get('security_events')
     if not security_events:
         return "no events"
@@ -234,8 +248,8 @@ def security_events_list_command(client, args):
         return CommandResults(
             readable_output=readable_output,
             outputs_prefix='TrendMicroCAS.Events',
-            outputs_key_field='log_item_id',
-            outputs=security_events,
+            outputs_key_field='traceId',
+            outputs=result,
             raw_response=result
         )
 
@@ -256,21 +270,25 @@ def email_sweep_command(client, args):
     source_ip = args.get('source_ip')
     source_domain = args.get('source_domain')
     limit = args.get('limit')
+    next_link = args.get('next_link')
 
-    result = client.email_sweep(mailbox, lastndays, start, end, subject, file_sha1, file_name, file_extension, url,
-                                sender, recipient, message_id, source_ip, source_domain, limit)
+    if next_link:
+        result = client.next_link(next_link)
+    else:
+        result = client.email_sweep(mailbox, lastndays, start, end, subject, file_sha1, file_name, file_extension, url,
+                                    sender, recipient, message_id, source_ip, source_domain, limit)
 
     value = result.get('value')
     if not value:
-        return "not find email"
+        return "not find emails"
     else:
         readable_output = tableToMarkdown('search results', value)
 
         return CommandResults(
             readable_output=readable_output,
             outputs_prefix='TrendMicroCAS.EmailSweep',
-            outputs_key_field='mail_unique_id',
-            outputs=value,
+            outputs_key_field='traceId',
+            outputs=result,
             raw_response=result
         )
 
@@ -360,9 +378,9 @@ def blocked_lists_get_command(client):
     result = client.blocked_lists_get()
     rules = result.get('rules')
     if not rules:
-        return "no rules"
+        return "Blocked List is empty"
     else:
-        readable_output = tableToMarkdown('rules list:', rules)
+        readable_output = tableToMarkdown('Blocked List:', rules)
 
         return CommandResults(
             readable_output=readable_output,
@@ -381,7 +399,7 @@ def blocked_lists_update_command(client, args):
 
     result = client.blocked_lists_update(action_type, senders_list, urls_list, filehashes_list)
     rules = assign_params(senders=senders_list, urls=urls_list, filehashes=filehashes_list)
-    readable_output = tableToMarkdown(f'{action_type} rules successfully ', rules)
+    readable_output = tableToMarkdown(f'{action_type} Blocked List successfully ', rules)
 
     return CommandResults(
         readable_output=readable_output,

@@ -24,7 +24,7 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- display: service to fetch
+- display: Service event to fetch
   name: service
   options:
   - exchange
@@ -37,7 +37,7 @@ configuration:
   - teams
   required: false
   type: 15
-- display: event type to fetch
+- display: Event type to fetch
   hidden: false
   name: event_type
   options:
@@ -47,7 +47,7 @@ configuration:
   - dlp
   required: false
   type: 15
-- display: max fetch
+- display: Maximum number of incidents per fetch
   hidden: false
   name: max_fetch
   required: false
@@ -126,14 +126,125 @@ script:
       name: limit
       required: false
       secret: false
+    - default: false
+      description: link to the next result page when lint was used.
+      isArray: false
+      name: next_link
+      required: false
+      secret: false
     deprecated: false
     description: Retrieves security event logs of the services that Cloud App Security
       protects.
     execution: false
     name: trendmicro-cas-security-events-list
     outputs:
-    - contextPath: hello
-      description: Should be Hello **something** here
+    - contextPath: TrendMicroCAS.Events.last_log_item_generation_time
+      description: Date and time when the last log item in the current request was
+        generated, that is, the detection_time of the last log item in the current
+        request
+      type: Date
+    - contextPath: TrendMicroCAS.Events.next_link
+      description: URL for the follow-up request if the requested logs exceed the
+        specified limit to display at a time. Use this URL to form a second request
+      type: String
+    - contextPath: TrendMicroCAS.Events.security_events.event
+      description: Type of the requested security event
+      type: String
+    - contextPath: TrendMicroCAS.Events.security_events.log_item_id
+      description: ID that uniquely identifies a log item
+      type: String
+    - contextPath: TrendMicroCAS.Events.security_events.message.action
+      description: Action that Cloud App Security took after detecting the security
+        event
+      type: String
+    - contextPath: TrendMicroCAS.Events.security_events.message.action_result
+      description: Whether the action was successfully taken or not
+      type: String
+    - contextPath: TrendMicroCAS.Events.security_events.message.affected_user
+      description: Mailbox that received an email message triggering the security
+        event, or user account that uploaded or modified a file triggering the security
+        event
+      type: String
+    - contextPath: TrendMicroCAS.Events.security_events.message.detected_by
+      description: Technology or method through which the email message or file triggering
+        the security event was detected
+      type: String
+    - contextPath: TrendMicroCAS.Events.security_events.message.detection_time
+      description: Date and time when the security event was detected
+      type: Date
+    - contextPath: TrendMicroCAS.Events.security_events.message.location
+      description: Location where the security event was detected
+      type: String
+    - contextPath: TrendMicroCAS.Events.security_events.message.log_item_id
+      description: '""'
+      type: String
+    - contextPath: TrendMicroCAS.Events.security_events.message.mail_message_delivery_time
+      description: Date and time when the email message triggering the security event
+        was sent
+      type: Date
+    - contextPath: TrendMicroCAS.Events.security_events.message.mail_message_file_name
+      description: Name of the email attachment that triggered the security event
+      type: String
+    - contextPath: TrendMicroCAS.Events.security_events.message.mail_message_id
+      description: ID of the email message that triggered the security event
+      type: String
+    - contextPath: TrendMicroCAS.Events.security_events.message.mail_message_recipient
+      description: Email address(es) of the recipient(s)
+      type: String
+    - contextPath: TrendMicroCAS.Events.security_events.message.mail_message_sender
+      description: Email address of the sender
+      type: String
+    - contextPath: TrendMicroCAS.Events.security_events.message.mail_message_subject
+      description: Subject of the email message that triggered the security event
+      type: String
+    - contextPath: TrendMicroCAS.Events.security_events.message.mail_message_submit_time
+      description: Date and time when the email message triggering the security event
+        was received
+      type: Date
+    - contextPath: TrendMicroCAS.Events.security_events.message.file_name
+      description: Name of the file that triggered the security event
+      type: String
+    - contextPath: TrendMicroCAS.Events.security_events.message.file_upload_time
+      description: Date and time when the file triggering the security event was uploaded
+      type: Date
+    - contextPath: TrendMicroCAS.Events.security_events.message.risk_level
+      description: Web Reputation risk level assigned to the analyzed URL that triggered
+        the security event
+      type: String
+    - contextPath: TrendMicroCAS.Events.security_events.message.scan_type
+      description: Whether it is a real-time scan or manual scan that detected the
+        security event
+      type: String
+    - contextPath: TrendMicroCAS.Events.security_events.message.security_risk_name
+      description: Name of the security risk detected
+      type: String
+    - contextPath: TrendMicroCAS.Events.security_events.message.triggered_policy_name
+      description: Name of a configured policy that was violated
+      type: String
+    - contextPath: TrendMicroCAS.Events.security_events.message.triggered_security_filter
+      description: Name of the security filter that detected the security event
+      type: String
+    - contextPath: TrendMicroCAS.Events.security_events.message.virus_name
+      description: Name of the virus detected
+      type: String
+    - contextPath: TrendMicroCAS.Events.security_events.message.file_sha1
+      description: SHA-1 hash value of the file that triggered the security event
+      type: String
+    - contextPath: TrendMicroCAS.Events.security_events.message.detection_type
+      description: Type of the suspicious object that triggered the security event
+      type: String
+    - contextPath: TrendMicroCAS.Events.security_events.message.ransomware_name
+      description: Name of the ransomware detected
+      type: String
+    - contextPath: TrendMicroCAS.Events.security_events.message.triggered_dlp_template
+      description: Details of the compliance template that was violated to trigger
+        the security event
+      type: String
+    - contextPath: TrendMicroCAS.Events.security_events.service
+      description: Name of the requested service
+      type: String
+    - contextPath: TrendMicroCAS.Events.traceId
+      description: '""'
       type: String
   - arguments:
     - default: false
@@ -264,11 +375,67 @@ script:
       name: limit
       required: false
       secret: false
+    - default: false
+      description: link to the next result page when lint was used
+      isArray: false
+      name: next_link
+      required: false
+      secret: false
     deprecated: false
     description: Searches email messages in Cloud App Security protected mailboxes
       for those that match meta information search criteria.
     execution: false
     name: trendmicro-cas-email-sweep
+    outputs:
+    - contextPath: TrendMicroCAS.EmailSweep.next_link
+      description: URL for the follow-up request if the requested email messages exceed
+        the specified limit to display at a time. Use this URL to form a second request
+      type: String
+    - contextPath: TrendMicroCAS.EmailSweep.traceId
+      description: '""'
+      type: String
+    - contextPath: TrendMicroCAS.EmailSweep.value.mail_attachments.file_sha1
+      description: SHA-1 hash value of the attachment file
+      type: String
+    - contextPath: TrendMicroCAS.EmailSweep.value.mail_attachments.file_name
+      description: Name of the attachment file
+      type: String
+    - contextPath: TrendMicroCAS.EmailSweep.value.mail_internet_headers.HeaderName
+      description: Internet header name of the email address
+      type: String
+    - contextPath: TrendMicroCAS.EmailSweep.value.mail_internet_headers.Value
+      description: Sender email address of the email message
+      type: String
+    - contextPath: TrendMicroCAS.EmailSweep.value.mail_message_delivery_time
+      description: Date and time when the email message was sent
+      type: Date
+    - contextPath: TrendMicroCAS.EmailSweep.value.mail_message_id
+      description: Internet message ID of the email message
+      type: String
+    - contextPath: TrendMicroCAS.EmailSweep.value.mail_message_recipient
+      description: A list of recipient email addresses of the email message
+      type: String
+    - contextPath: TrendMicroCAS.EmailSweep.value.mail_message_sender
+      description: Sender email address of the email message
+      type: String
+    - contextPath: TrendMicroCAS.EmailSweep.value.mail_message_subject
+      description: Subject of the email message
+      type: String
+    - contextPath: TrendMicroCAS.EmailSweep.value.mail_unique_id
+      description: Unique ID of the email message
+      type: String
+    - contextPath: TrendMicroCAS.EmailSweep.value.mail_urls
+      description: URL(s) contained in the email body or attachment
+      type: String
+    - contextPath: TrendMicroCAS.EmailSweep.value.mailbox
+      description: Mailbox where the email message is
+      type: String
+    - contextPath: TrendMicroCAS.EmailSweep.value.source_domain
+      description: Source domain of the email message
+      type: String
+    - contextPath: TrendMicroCAS.EmailSweep.value.source_ip
+      description: Source IP address of the email message
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -536,6 +703,16 @@ script:
       administrator has configured to quarantine Exchange Online email messages.
     execution: false
     name: trendmicro-cas-blocked-lists-get
+    outputs:
+    - contextPath: TrendMicroCAS.BlockedList.filehashes
+      description: A list of blocked SHA-1 hash values configured.
+      type: String
+    - contextPath: TrendMicroCAS.BlockedList.senders
+      description: A list of blocked senders configured.
+      type: String
+    - contextPath: TrendMicroCAS.BlockedList.urls
+      description: A list of blocked URLs configured.
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -579,6 +756,16 @@ script:
       the blocked lists.
     execution: false
     name: trendmicro-cas-blocked-lists-update
+    outputs:
+    - contextPath: TrendMicroCAS.BlockedList.filehashes
+      description: A list of blocked SHA-1 hash values configured.
+      type: String
+    - contextPath: TrendMicroCAS.BlockedList.senders
+      description: A list of blocked senders configured.
+      type: String
+    - contextPath: TrendMicroCAS.BlockedList.urls
+      description: A list of blocked URLs configured.
+      type: String
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: true
