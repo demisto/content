@@ -260,6 +260,10 @@
             "mandatory": false,
             "display_name": "EWS"
         },
+        "Zimperium": {
+            "mandatory": false,
+            "display_name": "Zimperium"
+        },
         "XForceExchange": {
             "mandatory": false,
             "display_name": "IBM X-Force Exchange"
