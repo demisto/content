@@ -1,0 +1,280 @@
+id: PANW IoT Incident Handling
+version: -1
+name: PANW IoT Incident Handling
+description: This playbook is a simple example of enriching the incident by fetching
+  the device details from Palo Alto Networks IoT security portal (previously Zingbox
+  Cloud).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b39629ff-c718-4c21-8a32-88c07b1352f2
+    type: start
+    task:
+      id: b39629ff-c718-4c21-8a32-88c07b1352f2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: fefdd756-98bd-4dba-8e7a-0f327402d57b
+    type: title
+    task:
+      id: fefdd756-98bd-4dba-8e7a-0f327402d57b
+      version: -1
+      name: Incident Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 77a9b7ff-e57c-4572-88f3-04500dec2714
+    type: regular
+    task:
+      id: 77a9b7ff-e57c-4572-88f3-04500dec2714
+      version: -1
+      name: Get Device Details from IoT Server
+      description: IoT get device command - get a single device details
+      script: PaloAltoNetworks_IoT|||iot-get-device
+      type: regular
+      iscommand: true
+      brand: PaloAltoNetworks_IoT
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      id:
+        simple: ${incident.labels.deviceid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 1d815898-020e-4c18-8262-36e1848b0963
+    type: title
+    task:
+      id: 1d815898-020e-4c18-8262-36e1848b0963
+      version: -1
+      name: Applying RACI model
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 882b97b8-078e-4a69-8918-b1a772728464
+    type: regular
+    task:
+      id: 882b97b8-078e-4a69-8918-b1a772728464
+      version: -1
+      name: Calculate RACI
+      description: IoT RACI model script
+      scriptName: iot-get-raci
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      alertName:
+        simple: ${incident.name}
+      category:
+        simple: ${device.category}
+      model:
+        simple: ${device.model}
+      profile:
+        simple: ${device.profile}
+      rawType:
+        simple: ${incident.rawType}
+      vendor:
+        simple: ${device.vendor}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 22d2f0c6-d2df-442d-899b-30d5017505ed
+    type: title
+    task:
+      id: 22d2f0c6-d2df-442d-899b-30d5017505ed
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: f383ee85-bc63-4544-8887-4b06f335c678
+    type: condition
+    task:
+      id: f383ee85-bc63-4544-8887-4b06f335c678
+      version: -1
+      name: IOT_CONFIG list configured?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: 'to check whether the IOT_CONFIG is defined'
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: lists.IOT_CONFIG
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 8679a823-6048-4a83-8c40-1a5788d4018e
+    type: regular
+    task:
+      id: 8679a823-6048-4a83-8c40-1a5788d4018e
+      version: -1
+      name: Manual investigation
+      description: Please check the device and incident details.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1200,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: IoTConfigListName
+  value:
+    simple: IOT_CONFIG
+  required: false
+  description: The list name defined in the XSOAR Lists for the RACI and ServiceNow
+    calculation
+  playbookInputQuery:
+outputs: []
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

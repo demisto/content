@@ -1,0 +1,79 @@
+id: PANW IoT ServiceNow Tickets Check
+version: -1
+name: PANW IoT ServiceNow Tickets Check
+description: This playbook should be used in a "Job" that is recurring to check the
+  ServiceNow tickets status for the Palo Alto Networks IoT alerts / vulnerabilties
+  (previously Zingbox).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 496b80ab-eaaa-4e03-8874-3bac59211697
+    type: start
+    task:
+      id: 496b80ab-eaaa-4e03-8874-3bac59211697
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 3fc69d50-5810-4f39-8479-f24f36d6456f
+    type: regular
+    task:
+      id: 3fc69d50-5810-4f39-8479-f24f36d6456f
+      version: -1
+      name: iot-check-servicenow
+      description: To close the XSOAR incident if the IoT ServiceNow ticket was closed.
+        This command should be run in a Job.
+      scriptName: iot-check-servicenow
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 240,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

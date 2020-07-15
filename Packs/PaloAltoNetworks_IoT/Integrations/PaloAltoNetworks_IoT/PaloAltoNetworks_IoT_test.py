@@ -1,0 +1,186 @@
+import json
+
+import demistomock as demisto
+import PaloAltoNetworks_IoT
+from PaloAltoNetworks_IoT import Client, iot_get_device, fetch_incidents, iot_list_devices, iot_resolve_alert, iot_resolve_vuln
+
+
+def test_iot_get_device(requests_mock):
+    mock_response = json.loads('''{"hostname":"00:0a:e4:1c:62:26","ip_address":"10.10.65.96","profile_type":"Non_IoT"}''')
+    requests_mock.get('https://test.com/pub/v4.0/device?customerid=foobar&deviceid=00:0a:e4:1c:62:26', json=mock_response)
+
+    client = Client(base_url='https://test.com/pub/v4.0', tenant_id="foobar", verify=False)
+    args = {
+        'id': '00:0a:e4:1c:62:26'
+    }
+    outputs = iot_get_device(client, args).outputs
+
+    assert outputs == mock_response
+
+
+def test_fetch_incidents(requests_mock, monkeypatch):
+    monkeypatch.setattr(demisto, "params", lambda: {
+        'url': 'https://test.com'
+    })
+
+    mock_alert_response = json.loads('''{"ver":"v4.0","api":"/alert/list","items":[{"date":"2020-01-15T05:06:50.540Z",
+"name":"foo","description":"The baseline","zb_ticketid":"alert-Ob81iwWe"},{"date":"2020-01-15T05:06:50.540Z",
+"name":"bar","description":"x","zb_ticketid":"alert-Lqy4ikEz"}]}''')
+    requests_mock.get('https://test.com/pub/v4.0/alert/list?customerid=foobar&offset=0&pagelength=1000&stime=-1'
+                      '&type=policy_alert&resolved=no&sortfield=date&sortdirection=asc', json=mock_alert_response)
+
+    mock_vuln_response = json.loads('''{"ver":"v4.0","api":"/vulnerability/list","items":[{"name":"HPD41936",
+"ip":"10.55.132.114","deviceid":"a0:d3:c1:d4:19:36","detected_date":"2020-05-31T23:59:59.000Z",
+"vulnerability_name":"SMB v1 Usage"}]}''')
+    requests_mock.get('https://test.com/pub/v4.0/vulnerability/list?customerid=foobar&offset=0&pagelength=1000'
+                      '&stime=1970-01-01T00:00:00.001000Z&type=vulnerability&status=Confirmed&groupby=device',
+                      json=mock_vuln_response)
+
+    client = Client(base_url='https://test.com/pub/v4.0', tenant_id="foobar", verify=False)
+    last_run = {
+        'last_vulns_fetch': 0
+    }
+    next_run, incidents = fetch_incidents(client, last_run)
+    assert next_run == {
+        'last_alerts_fetch': 1579064810.54,
+        'last_vulns_fetch': 1590969599.0
+    }
+    assert len(incidents) == 3
+
+
+def test_fetch_incidents_special(requests_mock, monkeypatch):
+    monkeypatch.setattr(demisto, "params", lambda: {
+        'url': 'https://test.com'
+    })
+    monkeypatch.setattr(PaloAltoNetworks_IoT, 'PAGELENGTH', 2)
+
+    mock_alert_response = json.loads('''{"items": [
+        {
+            "name": "alert1",
+            "date": "2019-11-07T23:11:30.509Z",
+            "zb_ticketid": "zb_ticketid1",
+            "deviceid": "zb_ticketid1"
+        },
+        {
+            "name": "alert2",
+            "date": "2019-11-07T23:11:31.509Z",
+            "zb_ticketid": "zb_ticketid2"
+        }
+    ]}''')
+    requests_mock.get('https://test.com/pub/v4.0/alert/list?customerid=foobar&offset=0&pagelength=2&stime=-1'
+                      '&type=policy_alert&resolved=no&sortfield=date&sortdirection=asc', json=mock_alert_response)
+    mock_alert_response = json.loads('''{"items": [
+        {
+            "name": "alert3",
+            "date": "2019-11-07T23:11:31.509Z",
+            "zb_ticketid": "zb_ticketid3"
+        },
+        {
+            "name": "alert4",
+            "date": "2019-11-07T23:11:31.509Z",
+            "zb_ticketid": "zb_ticketid4"
+        }
+    ]}''')
+    requests_mock.get('https://test.com/pub/v4.0/alert/list?customerid=foobar&offset=2&pagelength=2&stime=-1'
+                      '&type=policy_alert&resolved=no&sortfield=date&sortdirection=asc', json=mock_alert_response)
+    mock_alert_response = json.loads('''{"items": [
+        {
+            "name": "alert5",
+            "date": "2019-11-07T23:11:31.509Z",
+            "zb_ticketid": "zb_ticketid5"
+        },
+        {
+            "name": "alert6",
+            "date": "2019-12-07T12:01:32.509Z",
+            "zb_ticketid": "zb_ticketid6"
+        }
+    ]}''')
+    requests_mock.get('https://test.com/pub/v4.0/alert/list?customerid=foobar&offset=4&pagelength=2&stime=-1'
+                      '&type=policy_alert&resolved=no&sortfield=date&sortdirection=asc', json=mock_alert_response)
+
+    mock_vuln_response = json.loads('''{"items": [
+        {
+            "name": "vuln1",
+            "detected_date": "2019-11-07T23:11:30.509Z",
+            "ip": "ip1",
+            "vulnerability_name": "vname1",
+            "deviceid": "deviceid1"
+        },
+        {
+            "name": "vuln2",
+            "detected_date": "2019-11-07T23:11:31.509Z",
+            "ip": "ip2",
+            "vulnerability_name": "vname2",
+            "deviceid": "deviceid2"
+        }
+    ]}''')
+    requests_mock.get('https://test.com/pub/v4.0/vulnerability/list?customerid=foobar&offset=0&pagelength=2&stime=-1'
+                      '&type=vulnerability&status=Confirmed&groupby=device', json=mock_vuln_response)
+    mock_vuln_response = json.loads('''{"items": []}''')
+    requests_mock.get('https://test.com/pub/v4.0/vulnerability/list?customerid=foobar&offset=2&pagelength=2&stime=-1'
+                      '&type=vulnerability&status=Confirmed&groupby=device', json=mock_vuln_response)
+
+    client = Client(base_url='https://test.com/pub/v4.0', tenant_id="foobar", verify=False)
+    next_run, incidents = fetch_incidents(client, {})
+    assert next_run == {
+        'last_alerts_fetch': 1573168291.509,
+        'last_vulns_fetch': 1573168291.509
+    }
+    assert len(incidents) == 7  # 5 alerts + 2 vulns
+
+
+def test_iot_list_devices(requests_mock):
+    mock_response = json.loads('''{"devices":[{},{}],"total":2}''')
+    requests_mock.get('https://test.com/pub/v4.0/device/list?customerid=foobar&filter_monitored=no&offset=1'
+                      '&pagelength=2&detail=true&sortfield=MAC&sortdirection=asc', json=mock_response)
+
+    client = Client(base_url='https://test.com/pub/v4.0', tenant_id="foobar", verify=False)
+    args = {
+        'offset': '1',
+        'pagelength': '2'
+    }
+    outputs = iot_list_devices(client, args).outputs
+
+    assert len(outputs['devices']) == 2
+
+
+def test_iot_resolve_alert(requests_mock):
+    mock_response = json.loads('''{"api":"/pub/v4.0/alert/update","ver":"v0.3"}''')
+    adapter = requests_mock.put('https://test.com/pub/v4.0/alert/update?customerid=foobar&id=123', json=mock_response)
+
+    client = Client(base_url='https://test.com/pub/v4.0', tenant_id="foobar", verify=False)
+    args = {
+        'id': '123',
+        'reason': 'test',
+        'reason_type': 'Issue Mitigated'
+    }
+    outputs = iot_resolve_alert(client, args).outputs
+
+    assert adapter.call_count == 1
+    assert adapter.called
+    assert adapter.last_request.json() == {'reason': 'test', 'reason_type': ['Issue Mitigated'], 'resolved': 'yes'}
+    assert outputs == mock_response
+
+
+def test_iot_resolve_vuln(requests_mock):
+    mock_response = json.loads('''{"api":"/vulnerability/update","ver":"v4.0","updatedVulnerInstanceList":[{
+"newScore":10,"newLevel":"Low","newAnomalyMap":{"application":0,"protocol":0,"payload":0,"external":0,"internal":0}}]}''')
+    adapter = requests_mock.put('https://test.com/pub/v4.0/vulnerability/update?customerid=foobar', json=mock_response)
+
+    client = Client(base_url='https://test.com/pub/v4.0', tenant_id="foobar", verify=False)
+    args = {
+        'id': '123',
+        'full_name': 'vuln_full_name',
+        'reason': 'test',
+    }
+    outputs = iot_resolve_vuln(client, args).outputs
+
+    assert adapter.call_count == 1
+    assert adapter.called
+    assert adapter.last_request.json() == {
+        'reason': 'test',
+        'ticketIdList': ['123'],
+        'action': 'mitigate',
+        'full_name': 'vuln_full_name'
+    }
+    assert outputs == mock_response

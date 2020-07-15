@@ -1,0 +1,15 @@
+comment: IoT alert post processing script
+commonfields:
+  id: iot-alert-post-processing
+  version: -1
+enabled: true
+name: iot-alert-post-processing
+script: '-'
+system: false
+tags:
+- iot
+- post-processing
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.7.4.2245
