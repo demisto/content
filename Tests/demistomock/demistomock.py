@@ -584,7 +584,7 @@ def results(results):
 
 def credentials(credentials):
     """(Integration only)
-    Retrieves authentication parameter object
+    For integrations that support fetching credentials. Send the fetched credentials to the server.
 
     :return: Credentials object
     :rtype: ``dict``
