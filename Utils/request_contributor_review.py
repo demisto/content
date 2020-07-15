@@ -14,7 +14,7 @@ PACKS_FULL_PATH = os.path.join(CONTENT_REPO_FULL_PATH, PACKS_FOLDER)
 PACK_METADATA = "pack_metadata.json"
 XSOAR_SUPPORT = "xsoar"
 PACK_METADATA_GITHUB_USER_FIELD = "githubUser"
-PR_COMMENT_PREFIX = "### Contributor packs were modified, please review the changes.\n"
+PR_COMMENT_PREFIX = "### Your contributed pack has been modified. Please review the changes.\n"
 
 
 def check_if_user_exists(github_user, github_token=None, verify_ssl=True):
