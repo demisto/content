@@ -406,7 +406,7 @@ def args():
 
 def command():
     """(Integration only)
-       Retrieves the integration command that is being ran
+       Retrieves the integration command that is being run
 
        :return: Integrations command name
        :rtype: ``str``
