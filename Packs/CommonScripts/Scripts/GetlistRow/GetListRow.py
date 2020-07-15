@@ -39,13 +39,13 @@ def parse_relevant_rows(headers, lines, header, value, context, parse_all=False)
         header_location = headers.index(header)
         specific_lines_to_parse = [line for line in lines if line[header_location] == value]
         lines_context = lines_to_context_format(specific_lines_to_parse, headers)
-        output_condition = '''GetListRow.Result(val.header && val.list_name == obj.list_name &&
+        output_condition = '''GetListRow(val.header && val.list_name == obj.list_name &&
                            val.header == obj.header && val.value == obj.value && val.parse_all == obj.parse_all)'''
     if not lines_context:
         return CommandResults(
             readable_output="No results found"
         )
-    context["Result"] = lines_context
+    context["Results"] = lines_context
     human_readable = tableToMarkdown('List Result', lines_context, headers=headers)
     return CommandResults(
         outputs_prefix=output_condition,

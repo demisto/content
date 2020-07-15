@@ -44,9 +44,12 @@ outputs:
 - contextPath: GetListRow.Result.List_Name
   description: The list name to search in.
   type: String
-- contextPath: GetListRow.Results.Parse_All
+- contextPath: GetListRow.Result.Parse_All
   description: Parse all the list into the context.
   type: String
+- contextPath: GetListRow.Result
+  description: All result.
+  type: UnKnown
 script: '-'
 subtype: python3
 system: false
