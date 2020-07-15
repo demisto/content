@@ -507,7 +507,7 @@ def check_if_index_is_updated(index_folder_path, content_repo, current_commit_ha
         for changed_file in current_commit.diff(index_commit):
             if changed_file.a_path.startswith(PACKS_FOLDER):
                 print(f"Found changed packs between index commit {index_commit.hexsha} and {current_commit.hexsha}")
-                return
+                break
         else:
             print_warning(f"No changes found between index commit {index_commit.hexsha} and {current_commit.hexsha}")
             print_warning(skipping_build_task_message)
