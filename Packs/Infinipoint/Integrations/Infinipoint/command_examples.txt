@@ -1,10 +1,10 @@
-!infinipoint-get-cve cve_id="CVE-2010-1297"
-!infinipoint-get-assets-programs name="nmap"
-!infinipoint-get-assets-hardware os_type=2
+!infinipoint-get-cve cve_id="CVE-2020-1301"
+!infinipoint-get-assets-programs name="VMware"
+!infinipoint-get-assets-hardware os_type="1"
 !infinipoint-get-assets-cloud source="GCP API"
-!infinipoint-get-assets-user host="et"
-!infinipoint-get-device osType=2
-!infinipoint-get-vulnerable-devices device_risk=10
+!infinipoint-get-assets-users host="et"
+!infinipoint-get-device osType=1
+!infinipoint-get-vulnerable-devices device_risk=6
 !infinipoint-get-tag name=et
 !infinipoint-get-networks alias=GCP
 !infinipoint-get-queries name=os_version

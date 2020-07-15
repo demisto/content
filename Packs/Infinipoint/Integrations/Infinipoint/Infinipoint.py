@@ -14,6 +14,25 @@ requests.packages.urllib3.disable_warnings()
 '''HELPER FUNCTIONS'''
 
 
+def get_auth_headers():
+    """
+    function to sign a jwt token with a jwt secret.
+    output: request headers with a signed token
+    """
+    try:
+        payload = {
+            "iat": int(time.time()),
+            "sub": ACCESS_KEY
+        }
+        token = jwt.encode(payload, PRIVATE_KEY.replace('\\n', '\n'), 'ES256').decode("utf-8")
+        return {"Content-Type": "application/json",
+                "Authorization": f"Bearer {token}"}
+    except Exception as e:
+        # print(f"Error while signing JWT token - check your private/access keys!\nError message:\n{e}")
+        # sys.exit(1)
+        return_error(f"Error while signing JWT token - check your private/access keys!\nError message:\n{e}")
+
+
 def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
     """
     """
@@ -59,14 +78,10 @@ def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]
     raise ValueError(f'Invalid number: "{arg_name}"')
 
 
-def http_request(method, token, route, page_index=0, content=None, use_pagination=True):
+def http_request(method, route, page_index=0, content=None, use_pagination=True):
     """
     """
     body = None
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {token}",
-    }
 
     if content and use_pagination:
         content['page'] = page_index
@@ -78,11 +93,11 @@ def http_request(method, token, route, page_index=0, content=None, use_paginatio
         method,
         BASE_URL + route,
         data=body,
-        headers=headers,
+        headers=get_auth_headers(),
         verify=False
     )
     if r.status_code != 200:
-        return_error('Error in API call [%d] - %s' % (r.status_code, r.reason))
+        return_error(f'Error in API call [{r.status_code}] - {r.reason}')
     return r.json()
 
 
@@ -100,13 +115,13 @@ def add_to_results(current_results_array, request_result):
         # sys.exit(1)
 
 
-def call_api(method, route, client, rules, use_pagination=True, condition='AND'):
+def call_api(route, rules, use_pagination=True, condition='AND', method="POST"):
     """
     loop pagination in case the total items count is bigger that PAGE_SIZE
     """
 
     if not use_pagination:
-        res = http_request(method, client, route, content=rules, use_pagination=False)
+        res = http_request(method, route, content=rules, use_pagination=False)
         return res
     else:
         query = {
@@ -118,10 +133,10 @@ def call_api(method, route, client, rules, use_pagination=True, condition='AND')
             }
         }
         results: List[Dict[str, Any]] = []
-        res = http_request(method, client, route, content=query)
+        res = http_request(method, route, content=query)
         results = add_to_results(results, res)
         for i in range(1, math.ceil(res['itemsTotal'] / PAGE_SIZE)):
-            res = http_request(method, client, route, i, query)
+            res = http_request(method, route, i, query)
             results = add_to_results(results, res)
         return results
 
@@ -153,7 +168,7 @@ def convert_string_to_ip(ip):
     return convert_ip
 
 
-def fetch_incidents(token: Any, max_results: int, last_run: Dict[str, int],
+def fetch_incidents(max_results: int, last_run: Dict[str, int],
                     first_fetch_time: Optional[int]):
     # Get the last fetch time, if exists
     # last_run is a dict with a single key, called last_fetch
@@ -178,7 +193,7 @@ def fetch_incidents(token: Any, max_results: int, last_run: Dict[str, int],
         'offset': last_fetch
     }
 
-    alerts = get_non_compliance_device_command(token, args)
+    alerts = get_non_compliance_device_command('/api/compliance/incidents', args, 'Infinipoint.Compliance.Incidents', 'deviceID')
 
     if not isinstance(alerts, List):
         for alert in alerts.outputs:
@@ -191,11 +206,11 @@ def fetch_incidents(token: Any, max_results: int, last_run: Dict[str, int],
             incident_name = "infinipoint - non compliant device"
 
             incident = {
-                'name': incident_name + " - " + alert.get('hostname'),
+                # 'name': incident_name + " - " + alert.get('hostname'),
+                'name': f'{incident_name} - {alert.get("hostname")}',
                 'details': ', '.join([d.get('issueType', None) for d in alert['issues']]),
                 'occurred': timestamp_to_datestring(incident_created_time_ms),
-                'rawJSON': json.dumps(alert),
-                'severity': 2
+                'rawJSON': json.dumps(alert)
             }
 
             incidents.append(incident)
@@ -224,219 +239,54 @@ MAX_INCIDENTS_TO_FETCH = 1000
 '''MAIN FUNCTIONS'''
 
 
-def test_module(token, json=None):
+def test_module(route):
     """Tests API connectivity and authentication'
     Returning '200' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
     """
-    route = "/auth/health/"
-    method = "POST"
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {token}",
-    }
     r = requests.request(
-        method,
+        "POST",
         BASE_URL + route,
-        data=json,
-        headers=headers,
+        headers=get_auth_headers(),
         verify=INSECURE
     )
     if r.status_code != 200:
-        return_error('Error in API call [%d] - %s' % (r.status_code, r.reason))
+        return_error(f'Error in API call [{r.status_code}] - {r.reason}')
 
 
-def get_cve_command(token, args):
-    cve_id = args.get('cve_id')
-    method = "GET"
-    route = f"/vulnerability/{cve_id}/details"
-    res = http_request(method, token, route, use_pagination=False)
-    LOG('res %s' % (res,))
+def get_cve_command(args, outputs_prefix, outputs_key_field):
+    res = http_request("GET", f"/api/vulnerability/{args.get('cve_id')}/details", use_pagination=False)
     if "cve_id" in res:
         command_results = CommandResults(
-            outputs_prefix='Infinipoint.Cve.Details',
-            outputs_key_field='ReportID',
+            outputs_prefix=outputs_prefix,
+            outputs_key_field=outputs_key_field,
             outputs=res)
         return command_results
-        #   demisto.results(res)
 
 
-def get_assets_programs_command(token, args):
-    name = args.get('name')
-    publisher = args.get('publisher')
-    version = args.get('version')
-    method = "POST"
-    route = "/assets/programs"
-    rules = [{
-        "field": "$type",
-        "operator": "=",
-        "value": "csv"
-    }]
+def infinipoint_command(route, args, outputs_prefix, outputs_key_field):
+    rules = []
 
-    if name:
-        name_node = {
-            "field": "name",
-            "operator": "contains",
-            "value": f"{name}"
-        }
-        rules.append(name_node)
+    for arg in ['name', 'publisher', 'version', 'host', 'os_type', 'source', 'username', 'osType', 'osName', 'status', 'agentVersion', 'device_os', 'device_risk', 'alias', 'gateway_ip', 'action_id', 'id', 'actionId', 'query_id']:
+        if args.get(arg):
+            rules.append({"field": arg, "operator": "contains", "value": f"{args[arg]}"})
 
-    if publisher:
-        publisher_node = {
-            "field": "publisher",
-            "operator": "contains",
-            "value": f"{publisher}"
-        }
-        rules.append(publisher_node)
-
-    if version:
-        version_node = {
-            "field": "version",
-            "operator": "contains",
-            "value": f"{version}"
-        }
-        rules.append(version_node)
-
-    res = call_api(method, route, token, rules)
-    LOG('results %s' % (res,))
+    res = call_api(route, rules)
 
     if res:
         command_results = CommandResults(
-            outputs_prefix='Infinipoint.Assets.Programs',
-            outputs_key_field='itemsTotal',
+            outputs_prefix=outputs_prefix,
+            outputs_key_field=outputs_key_field,
             outputs=res)
         return command_results
 
 
-def get_assets_hardware_command(token, args):
-    host = args.get('host')
-    os_type = args.get('os_type')
-    method = "POST"
-    route = "/assets/hardware"
-    rules = [{
-        "field": "$type",
-        "operator": "=",
-        "value": "csv"
-    }]
-
-    if host:
-        host_node = {
-            "field": "$host",
-            "operator": "contains",
-            "value": f"{host}"
-        }
-        rules.append(host_node)
-
-    if os_type:
-        os_type_node = {
-            "field": "os_type",
-            "operator": "contains",
-            "value": f"{os_type}"
-        }
-        rules.append(os_type_node)
-
-    res = call_api(method, route, token, rules)
-    LOG('results %s' % (res,))
-    if res:
-        command_results = CommandResults(
-            outputs_prefix='Infinipoint.Assets.Hardware',
-            outputs_key_field='itemsTotal',
-            outputs=res)
-        return command_results
-
-
-def get_assets_cloud_command(token, args):
-    host = args.get('host')
-    os_type = args.get('os_type')
-    source = args.get('source')
-    method = "POST"
-    route = "/assets/cloud"
-    rules = [{
-        "field": "$type",
-        "operator": "=",
-        "value": "csv"
-    }]
-
-    if host:
-        host_node = {
-            "field": "$host",
-            "operator": "contains",
-            "value": f"{host}"
-        }
-        rules.append(host_node)
-
-    if os_type:
-        os_type_node = {
-            "field": "os_type",
-            "operator": "contains",
-            "value": f"{os_type}"
-        }
-        rules.append(os_type_node)
-
-    if source:
-        source_node = {
-            "field": "source",
-            "operator": "contains",
-            "value": f"{source}"
-        }
-        rules.append(source_node)
-
-    res = call_api(method, route, token, rules)
-    LOG('results %s' % (res,))
-    if res:
-        command_results = CommandResults(
-            outputs_prefix='Infinipoint.Assets.Cloud',
-            outputs_key_field='$host',
-            outputs=res)
-        return command_results
-
-
-def get_assets_user_command(token, args):
-    host = args.get('host')
-    username = args.get('username')
-    method = "POST"
-    route = "/assets/users"
-    rules = [{
-        "field": "$type",
-        "operator": "=",
-        "value": "csv"
-    }]
-
-    if host:
-        host_node = {
-            "field": "$host",
-            "operator": "contains",
-            "value": f"{host}"
-        }
-        rules.append(host_node)
-
-    if username:
-        username_node = {
-            "field": "username",
-            "operator": "contains",
-            "value": f"{username}"
-        }
-        rules.append(username_node)
-
-    res = call_api(method, route, token, rules)
-    LOG('results %s' % (res,))
-    if res:
-        command_results = CommandResults(
-            outputs_prefix='Infinipoint.Assets.User',
-            outputs_key_field='$host',
-            outputs=res)
-        return command_results
-
-
-def get_devices_command(token, args):
+def get_devices_command(route, args, outputs_prefix, outputs_key_field):
     host = args.get('host')
     os_type = args.get('osType')
     os_name = args.get('osName')
     status = args.get('status')
     agent_version = args.get('agentVersion')
-    method = "POST"
-    # route = "/devices/search"
-    route = "/devices"
     rules = []
 
     if host:
@@ -479,23 +329,19 @@ def get_devices_command(token, args):
         }
         rules.append(agent_version_node)
 
-    res = call_api(method, route, token, rules)
-    LOG('res %s' % (res,))
+    res = call_api(route, rules)
 
     if res:
         command_results = CommandResults(
-            outputs_prefix='Infinipoint.Devices',
-            outputs_key_field='itemsTotal',
+            outputs_prefix=outputs_prefix,
+            outputs_key_field=outputs_key_field,
             outputs=res)
         return (command_results)
-        #   demisto.results(res)
 
 
-def get_vulnerable_devices_command(token, args):
+def get_vulnerable_devices_command(route, args, outputs_prefix, outputs_key_field):
     device_os = args.get('device_os')
     device_risk = args.get('device_risk')
-    method = "POST"
-    route = "/vulnerability/devices"
     rules = []
 
     if device_os:
@@ -514,48 +360,20 @@ def get_vulnerable_devices_command(token, args):
         }
         rules.append(device_risk_node)
 
-    res = call_api(method, route, token, rules)
-    LOG('res %s' % (res,))
+    res = call_api(route, rules)
+
     if res:
         command_results = CommandResults(
-            outputs_prefix='Infinipoint.Vulnerability.Devices',
-            outputs_key_field='$host',
-            outputs=res)
-        return command_results
-        #   demisto.results(res)
-
-
-def get_tag_command(token, args):
-    name = args.get('name')
-    method = "POST"
-    route = "/tags"
-    rules = []
-
-    if name:
-        name_node = {
-            'field': 'name',
-            'operator': '=',
-            'value': f'{name}'
-        }
-        rules.append(name_node)
-
-    res = call_api(method, route, token, rules)
-    LOG('res %s' % (res,))
-    if res:
-        # demisto.results(res)
-        command_results = CommandResults(
-            outputs_prefix='Infinipoint.Tags',
-            outputs_key_field='tagId',
+            outputs_prefix=outputs_prefix,
+            outputs_key_field=outputs_key_field,
             outputs=res)
         return command_results
 
 
-def get_networks_command(token, args):
+def get_networks_command(route, args, outputs_prefix, outputs_key_field):
     alias = args.get('alias')
     gateway_ip = args.get('gateway_ip')
     cidr = args.get('cidr')
-    method = "POST"
-    route = "/networks"
     rules = []
 
     if alias:
@@ -582,20 +400,18 @@ def get_networks_command(token, args):
         }
         rules.append(cidr_node)
 
-    res = call_api(method, route, token, rules)
-    LOG('res %s' % (res,))
+    res = call_api(route, rules)
+
     if res:
         command_results = CommandResults(
-            outputs_prefix='Infinipoint.Networks.Info',
-            outputs_key_field='alias',
+            outputs_prefix=outputs_prefix,
+            outputs_key_field=outputs_key_field,
             outputs=res)
         return command_results
 
 
-def get_action_command(token, args):
-    action_id = args.get('action_id')
-    method = "POST"
-    route = f"/responses/{action_id}"
+def get_action_command(args, outputs_prefix, outputs_key_field):
+    route = f"/api/responses/{args.get('action_id')}"
     rules = [
         {
             "field": "$type",
@@ -609,73 +425,45 @@ def get_action_command(token, args):
         }
     ]
 
-    res = call_api(method, route, token, rules, condition='OR')
+    res = call_api(route, rules, condition='OR')
     if res:
         command_results = CommandResults(
-            outputs_prefix='Infinipoint.Responses',
-            outputs_key_field='$host',
+            outputs_prefix=outputs_prefix,
+            outputs_key_field=outputs_key_field,
             outputs=res)
         return command_results
 
 
-def get_queries_command(token, args):
-    name = args.get('name')
-    method = "POST"
-    route = "/all-scripts/search"
-    rules = []
-
-    if name:
-        name_node = {
-            'field': 'name',
-            'operator': 'contains',
-            'value': f'{name}'
-        }
-        rules.append(name_node)
-
-    res = call_api(method, route, token, rules)
-    LOG('res %s' % (res,))
-    if res:
-        command_results = CommandResults(
-            outputs_prefix='Infinipoint.Scripts.Search',
-            outputs_key_field='actionId',
-            outputs=res)
-        return command_results
-
-
-def run_queries_command(token, args):
+def run_queries_command(route, args, outputs_prefix, outputs_key_field):
     id = args.get('id')
     target = args.get('target')
-    method = "POST"
-    route = "/all-scripts/execute"
     node = {'id': id}
 
     if target:
         node['target'] = {'ids': target}
 
-    res = call_api(method, route, token, node, False)
-    LOG('res %s' % (res,))
+    res = call_api(route, node, use_pagination=False)
+
     if res:
         command_results = CommandResults(
-            outputs_prefix='Infinipoint.Scripts.execute',
-            outputs_key_field='actionId',
+            outputs_prefix=outputs_prefix,
+            outputs_key_field=outputs_key_field,
             outputs=res)
         return command_results
 
 
-def get_non_compliance_device_command(token, args):
+def get_non_compliance_device_command(route, args, outputs_prefix, outputs_key_field):
     offset = args.get('offset')
     limit = args.get('limit')
-    method = "POST"
-    route = "/compliance/incidents"
     node = {'offset': offset,
             'limit': limit}
 
-    res = call_api(method, route, token, node, False)
-    LOG('res %s' % (res,))
+    res = call_api(route, node, False)
+
     if res:
         command_results = CommandResults(
-            outputs_prefix='Infinipoint.Compliance.Incidents',
-            outputs_key_field='deviceID',
+            outputs_prefix=outputs_prefix,
+            outputs_key_field=outputs_key_field,
             outputs=res)
         return command_results
 
@@ -687,13 +475,13 @@ def get_non_compliance_device_command(token, args):
 
 def main():
 
-    demisto.info('command is %s' % (demisto.command(), ))
+    demisto.info(f'command is {demisto.command()}')
 
     try:
-        token = create_jwt_token(PRIVATE_KEY, ACCESS_KEY)
+        # token = create_jwt_token(PRIVATE_KEY, ACCESS_KEY)
 
         if demisto.command() == 'test-module':
-            test_module(token)
+            test_module("/api/auth/health/")
             demisto.results('ok')
 
         elif demisto.command() == 'fetch-incidents':
@@ -708,7 +496,6 @@ def main():
                 max_results = MAX_INCIDENTS_TO_FETCH
 
             next_run, incidents = fetch_incidents(
-                token,
                 max_results=max_results,
                 last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
                 first_fetch_time=FIRST_FETCH_TIME
@@ -720,43 +507,43 @@ def main():
             demisto.incidents(incidents)
 
         elif demisto.command() == 'infinipoint-get-cve':
-            return_results(get_cve_command(token, demisto.args()))
+            return_results(get_cve_command(demisto.args(), 'Infinipoint.Cve.Details', 'ReportID'))
 
         elif demisto.command() == 'infinipoint-get-assets-programs':
-            return_results(get_assets_programs_command(token, demisto.args()))
+            return_results(infinipoint_command('/api/assets/programs', demisto.args(), 'Infinipoint.Assets.Programs', 'name'))
 
         elif demisto.command() == 'infinipoint-get-assets-hardware':
-            return_results(get_assets_hardware_command(token, demisto.args()))
+            return_results(infinipoint_command('/api/assets/hardware', demisto.args(), 'Infinipoint.Assets.Hardware', '$host'))
 
         elif demisto.command() == 'infinipoint-get-assets-cloud':
-            return_results(get_assets_cloud_command(token, demisto.args()))
+            return_results(infinipoint_command('/api/assets/cloud', demisto.args(), 'Infinipoint.Assets.Cloud', '$host'))
 
-        elif demisto.command() == 'infinipoint-get-assets-user':
-            return_results(get_assets_user_command(token, demisto.args()))
+        elif demisto.command() == 'infinipoint-get-assets-users':
+            return_results(infinipoint_command('/api/assets/users', demisto.args(), 'Infinipoint.Assets.User', '$host'))
 
         elif demisto.command() == 'infinipoint-get-device':
-            return_results(get_devices_command(token, demisto.args()))
+            return_results(get_devices_command('/api/devices', demisto.args(), 'Infinipoint.Devices', 'osName'))
 
         elif demisto.command() == 'infinipoint-get-vulnerable-devices':
-            return_results(get_vulnerable_devices_command(token, demisto.args()))
+            return_results(get_vulnerable_devices_command('/api/vulnerability/devices', demisto.args(),'Infinipoint.Vulnerability.Devices', '$host'))
 
         elif demisto.command() == "infinipoint-get-tag":
-            return_results(get_tag_command(token, demisto.args()))
+            return_results(infinipoint_command('/api/tags', demisto.args(), 'Infinipoint.Tags', 'tagId'))
 
         elif demisto.command() == "infinipoint-get-networks":
-            return_results(get_networks_command(token, demisto.args()))
+            return_results(get_networks_command('/api/networks', demisto.args(), 'Infinipoint.Networks.Info', 'alias'))
 
         elif demisto.command() == "infinipoint-get-queries":
-            return_results(get_queries_command(token, demisto.args()))
+            return_results(infinipoint_command('/api/all-scripts/search', demisto.args(), 'Infinipoint.Scripts.Search', 'actionId'))
 
         elif demisto.command() == "infinipoint-run-queries":
-            return_results(run_queries_command(token, demisto.args()))
+            return_results(run_queries_command('/api/all-scripts/execute', demisto.args(), 'Infinipoint.Scripts.execute', 'actionId'))
 
         elif demisto.command() == "infinipoint-get-action":
-            return_results(get_action_command(token, demisto.args()))
+            return_results(get_action_command(demisto.args(), 'Infinipoint.Responses', '$host'))
 
         elif demisto.command() == "infinipoint-get-non-compliance":
-            return_results(get_non_compliance_device_command(token, demisto.args()))
+            return_results(get_non_compliance_device_command("/api/compliance/incidents", demisto.args(), 'Infinipoint.Compliance.Incidents', 'deviceID'))
 
     except Exception as e:
         err_msg = f'Error - Infinipoint Integration [{e}]'

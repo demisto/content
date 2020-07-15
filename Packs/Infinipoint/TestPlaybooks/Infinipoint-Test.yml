@@ -1,5 +1,5 @@
 id: 663e1ec3-5590-4e23-8d99-d8a4e0c22a52
-version: 94
+version: 97
 name: Infinipoint-Test
 starttaskid: "0"
 tasks:
@@ -557,13 +557,13 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: e462dd41-b9b3-4469-85e3-b2a8e472bc0f
+    taskid: 3f375d29-6c74-4672-8de8-894dfb58c1f0
     type: regular
     task:
-      id: e462dd41-b9b3-4469-85e3-b2a8e472bc0f
+      id: 3f375d29-6c74-4672-8de8-894dfb58c1f0
       version: -1
-      name: infinipoint-get-assets-user
-      script: '|||infinipoint-get-assets-user'
+      name: infinipoint-get-assets-users
+      script: '|||infinipoint-get-assets-users'
       type: regular
       iscommand: true
       brand: ""

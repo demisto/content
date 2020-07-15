@@ -799,7 +799,7 @@ script:
             elif demisto.command() == 'infinipoint-get-assets-cloud':
                 return_results(get_assets_cloud_command(token, demisto.args()))
 
-            elif demisto.command() == 'infinipoint-get-assets-user':
+            elif demisto.command() == 'infinipoint-get-assets-users':
                 return_results(get_assets_user_command(token, demisto.args()))
 
             elif demisto.command() == 'infinipoint-get-device':
@@ -1311,7 +1311,7 @@ script:
       type: String
     - contextPath: Infinipoint.Assets.Cloud.open_ports
       type: Number
-  - name: infinipoint-get-assets-user
+  - name: infinipoint-get-assets-users
     arguments:
     - name: host
     - name: username
