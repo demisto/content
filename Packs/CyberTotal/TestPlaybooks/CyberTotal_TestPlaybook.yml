@@ -1,94 +1,122 @@
-id: CyberTotal_Auto_Enrichment_-_CyCraft
-name: CyberTotal_Auto_Enrichment_-_CyCraft
-version: -1
-fromversion: 4.5.0
-starttaskid: '0'
+id: CyberTotal_TestPlaybook
+version: 7
+name: CyberTotal_TestPlaybook
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
-    taskid: '0'
+  "0":
+    id: "0"
+    taskid: 792dbdae-20a5-4e24-8d70-a2eacd3939c2
     type: start
     task:
-      id: '0'
+      id: 792dbdae-20a5-4e24-8d70-a2eacd3939c2
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 50}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '1':
-    id: 1
-    taskid: '1'
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 29bbfd5e-e35c-4e4f-8645-6ddbfb85bab0
     type: regular
     task:
-      id: '1'
+      id: 29bbfd5e-e35c-4e4f-8645-6ddbfb85bab0
       version: -1
       name: DeleteContext
-      description: ''
-      script: DeleteContext
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: ''
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     scriptarguments:
-      all:
-        simple: yes
+      all: {}
+      index: {}
+      key:
+        complex:
+          root: CyberTotal
+      keysToKeep: {}
+      subplaybook: {}
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 200}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '2':
-    id: 2
-    taskid: '2'
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 67198cbe-507b-4ee1-8859-829f8b4f9429
     type: regular
     task:
-      id: '2'
+      id: 67198cbe-507b-4ee1-8859-829f8b4f9429
       version: -1
       name: ip
-      description: ''
-      script: '|||ip'
+      description: Return IP information and reputation
+      script: CyberTotal|||ip
       type: regular
       iscommand: true
-      brand: ''
+      brand: CyberTotal
     nexttasks:
       '#none#':
-      - '3'
-    scriptarguments: {}
+      - "3"
+    scriptarguments:
+      ip:
+        complex:
+          root: IP
+          accessor: Address
+      threshold: {}
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 400}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '3':
-    id: '3'
-    taskid: '3'
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 79b34dac-eedd-4e3c-89da-86d7b75372bf
     type: condition
     task:
-      id: '3'
+      id: 79b34dac-eedd-4e3c-89da-86d7b75372bf
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '4'
+      "yes":
+      - "4"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -133,7 +161,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: CyberTotal.IP.positive_engines
+              simple: CyberTotal.IP.positive_detections
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -145,52 +173,70 @@ tasks:
             value:
               simple: CyberTotal.IP.message
             iscontext: true
-    view: '{"position": {"x": 50, "y": 600}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '4':
-    id: 4
-    taskid: '4'
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: ceed046a-a7d0-4339-85c8-be983e613cdd
     type: regular
     task:
-      id: '4'
+      id: ceed046a-a7d0-4339-85c8-be983e613cdd
       version: -1
       name: file
-      description: ''
-      script: '|||file'
+      description: Return file's information and reputation
+      script: CyberTotal|||file
       type: regular
       iscommand: true
-      brand: ''
+      brand: CyberTotal
     nexttasks:
       '#none#':
-      - '5'
-    scriptarguments: {}
+      - "5"
+    scriptarguments:
+      hash:
+        complex:
+          root: File
+          accessor: MD5
+      threshold: {}
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 800}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '5':
-    id: '5'
-    taskid: '5'
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 4c8b4daa-09eb-4dc1-8b79-26147d6af04d
     type: condition
     task:
-      id: '5'
+      id: 4c8b4daa-09eb-4dc1-8b79-26147d6af04d
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '6'
+      "yes":
+      - "6"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -235,89 +281,82 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: CyberTotal.File.positive_engines
+              simple: CyberTotal.File.positive_detections
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.File.detection_ratio
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
               simple: CyberTotal.File.message
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.File.size
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.File.md5
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.File.sha1
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.File.sha256
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.File.extension
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.File.name
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 1000}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '6':
-    id: 6
-    taskid: '6'
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: cb8cf98a-0f95-466c-84dc-a445639f97f7
     type: regular
     task:
-      id: '6'
+      id: cb8cf98a-0f95-466c-84dc-a445639f97f7
       version: -1
       name: domain
-      description: ''
-      script: '|||domain'
+      description: Return domain  information and reputation
+      script: CyberTotal|||domain
       type: regular
       iscommand: true
-      brand: ''
+      brand: CyberTotal
     nexttasks:
       '#none#':
-      - '7'
-    scriptarguments: {}
+      - "7"
+    scriptarguments:
+      domain:
+        complex:
+          root: Domain
+          accessor: Name
+      threshold: {}
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 1200}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '7':
-    id: '7'
-    taskid: '7'
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: cb1eac60-cf39-44ad-81e3-1d5bd48dba3f
     type: condition
     task:
-      id: '7'
+      id: cb1eac60-cf39-44ad-81e3-1d5bd48dba3f
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '8'
+      "yes":
+      - "8"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -357,7 +396,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: CyberTotal.Domain.positive_engines
+              simple: CyberTotal.Domain.positive_detections
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -369,52 +408,70 @@ tasks:
             value:
               simple: CyberTotal.Domain.message
             iscontext: true
-    view: '{"position": {"x": 50, "y": 1400}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '8':
-    id: 8
-    taskid: '8'
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 9c051b10-cd2b-4023-82ca-79aa437f913a
     type: regular
     task:
-      id: '8'
+      id: 9c051b10-cd2b-4023-82ca-79aa437f913a
       version: -1
       name: url
-      description: ''
-      script: '|||url'
+      description: Return domain information and reputation
+      script: CyberTotal|||url
       type: regular
       iscommand: true
-      brand: ''
+      brand: CyberTotal
     nexttasks:
       '#none#':
-      - '9'
-    scriptarguments: {}
+      - "9"
+    scriptarguments:
+      threshold: {}
+      url:
+        complex:
+          root: URL
+          accessor: Data
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 1600}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '9':
-    id: '9'
-    taskid: '9'
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 874a3013-ca04-4af0-871b-fc6feb5a6b15
     type: condition
     task:
-      id: '9'
+      id: 874a3013-ca04-4af0-871b-fc6feb5a6b15
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '10'
+      "yes":
+      - "10"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -459,7 +516,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: CyberTotal.URL.positive_engines
+              simple: CyberTotal.URL.positive_detections
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -471,52 +528,69 @@ tasks:
             value:
               simple: CyberTotal.URL.message
             iscontext: true
-    view: '{"position": {"x": 50, "y": 1800}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '10':
-    id: 10
-    taskid: '10'
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: f489bae9-c130-4faf-8c7e-b36e11ed7283
     type: regular
     task:
-      id: '10'
+      id: f489bae9-c130-4faf-8c7e-b36e11ed7283
       version: -1
       name: cybertotal-ip-whois
-      description: ''
-      script: '|||cybertotal-ip-whois'
+      description: Return ip whois information
+      script: CyberTotal|||cybertotal-ip-whois
       type: regular
       iscommand: true
-      brand: ''
+      brand: CyberTotal
     nexttasks:
       '#none#':
-      - '11'
-    scriptarguments: {}
+      - "11"
+    scriptarguments:
+      ip:
+        complex:
+          root: IP
+          accessor: Address
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 2000}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '11':
-    id: '11'
-    taskid: '11'
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: d7854db1-33d7-42dc-8713-d4139203f5b7
     type: condition
     task:
-      id: '11'
+      id: d7854db1-33d7-42dc-8713-d4139203f5b7
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '12'
+      "yes":
+      - "12"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -543,291 +617,231 @@ tasks:
             value:
               simple: CyberTotal.WHOIS-IP.permalink
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.createdAt
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.updatedAt
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.status
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.domain
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.domainMd5
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.domainUnicode
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.nameservers
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.registrarName
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.registrarEmail
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.registrarPhone
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.registrarCreatedAt
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.registrarUpdatedAt
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.registrarExpiresAt
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.registrant.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.registrant.organization
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.registrant.street
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.registrant.city
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.registrant.state
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.registrant.zip
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.registrant.country
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.registrant.address
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.admin.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.admin.organization
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.admin.street
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.admin.city
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.admin.state
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.admin.zip
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.admin.country
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.admin.address
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.technical.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.technical.organization
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.technical.street
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.technical.city
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.technical.state
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.technical.zip
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.technical.country
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.technical.address
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.contactEmails
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.contacts
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.contactNames
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.contactCountries
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.domainAvailable
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CyberTotal.WHOIS-IP.expired
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 2200}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2200
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '12':
-    id: 12
-    taskid: '12'
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: be9c2d80-834b-4e8d-8524-e3829e7ad75a
     type: regular
     task:
-      id: '12'
+      id: be9c2d80-834b-4e8d-8524-e3829e7ad75a
       version: -1
       name: cybertotal-url-whois
-      description: ''
-      script: '|||cybertotal-url-whois'
+      description: Return url whois information
+      script: CyberTotal|||cybertotal-url-whois
       type: regular
       iscommand: true
-      brand: ''
+      brand: CyberTotal
     nexttasks:
       '#none#':
-      - '13'
-    scriptarguments: {}
+      - "13"
+    scriptarguments:
+      url:
+        complex:
+          root: URL
+          accessor: Data
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 2400}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2400
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '13':
-    id: 13
-    taskid: '13'
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: f3f13754-fb03-4b9f-8c7e-bfa9a3d6b323
+    type: condition
+    task:
+      id: f3f13754-fb03-4b9f-8c7e-bfa9a3d6b323
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.WHOIS-URL.scan_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.WHOIS-URL.task_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.WHOIS-URL.resource
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.WHOIS-URL.message
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.WHOIS-URL.permalink
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: b0a72e44-8dd0-4b59-85c0-07788c530209
     type: regular
     task:
-      id: '13'
+      id: b0a72e44-8dd0-4b59-85c0-07788c530209
       version: -1
       name: cybertotal-domain-whois
-      description: ''
+      description: Return domain whois information
       script: '|||cybertotal-domain-whois'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '14'
-    scriptarguments: {}
+      - "15"
+    scriptarguments:
+      domain:
+        complex:
+          root: Domain
+          accessor: Name
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 2600}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2800
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '14':
-    id: '14'
-    taskid: '14'
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: bb0919f6-cb69-4494-8898-6b71153b3e73
+    type: condition
+    task:
+      id: bb0919f6-cb69-4494-8898-6b71153b3e73
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.WHOIS-Domain.scan_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.WHOIS-Domain.task_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.WHOIS-Domain.resource
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.WHOIS-Domain.message
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.WHOIS-Domain.permalink
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: e3fb5c63-d016-49ac-8f20-60aca051c5ba
     type: title
     task:
-      id: '14'
+      id: e3fb5c63-d016-49ac-8f20-60aca051c5ba
       version: -1
       name: Test Done
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 2800}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3200
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
-  380, "x": 50, "y": 50}}}'
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3215,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
 inputs: []
 outputs: []

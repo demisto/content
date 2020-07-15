@@ -43,9 +43,9 @@ configuration:
   defaultvalue: "10"
   type: 0
   required: false
-- display: Ignore https ssl verification
+- display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "true"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
@@ -95,11 +95,11 @@ script:
     - contextPath: CyberTotal.IP.detection_engines
       description: The number of all antivirus vendors scanned.
       type: number
-    - contextPath: CyberTotal.IP.positive_engines
+    - contextPath: CyberTotal.IP.positive_detections
       description: The number of antivirus vendors scanned with positive detection.
       type: number
     - contextPath: CyberTotal.IP.detection_ratio
-      description: The ratio of positive_engines and detection_engines.
+      description: The ratio of positive_detections and detection_engines.
       type: string
     - contextPath: CyberTotal.IP.message
       description: Message about this search.
@@ -117,6 +117,12 @@ script:
         as malicious. If threshold not set, then threshold from instance configuration
         is used.
       defaultValue: "10"
+    - default: true
+      description: ''
+      isArray: true
+      name: file
+      required: true
+      secret: false
     outputs:
     - contextPath: CyberTotal.File.scan_date
       description: 'Scan date format: YYYY-MM-DD HH:mm:SS'
@@ -143,9 +149,12 @@ script:
     - contextPath: CyberTotal.File.detection_engines
       description: The number of all antivirus vendors scanned.
       type: number
-    - contextPath: CyberTotal.File.positive_engines
+    - contextPath: CyberTotal.File.positive_detections
       description: The number of antivirus vendors scanned with positive detection.
       type: number
+    - contextPath: CyberTotal.File.detection_ratio
+      description: The ratio of positive_detections and detection_engines.
+      type: string
     - contextPath: CyberTotal.File.message
       description: Message about this search.
       type: string
@@ -203,11 +212,11 @@ script:
     - contextPath: CyberTotal.Domain.detection_engines
       description: The number of all antivirus vendors scanned.
       type: number
-    - contextPath: CyberTotal.Domain.positive_engines
+    - contextPath: CyberTotal.Domain.positive_detections
       description: The number of antivirus vendors scanned with positive detection.
       type: number
     - contextPath: CyberTotal.Domain.detection_ratio
-      description: The ratio of positive_engines and detection_engines.
+      description: The ratio of positive_detections and detection_engines.
       type: string
     - contextPath: CyberTotal.Domain.message
       description: Message about this search.
@@ -251,11 +260,11 @@ script:
     - contextPath: CyberTotal.URL.detection_engines
       description: The number of all antivirus vendors scanned.
       type: number
-    - contextPath: CyberTotal.URL.positive_engines
+    - contextPath: CyberTotal.URL.positive_detections
       description: The number of antivirus vendors scanned with positive detection.
       type: number
     - contextPath: CyberTotal.URL.detection_ratio
-      description: The ratio of positive_engines and detection_engines.
+      description: The ratio of positive_detections and detection_engines.
       type: string
     - contextPath: CyberTotal.URL.message
       description: Message about this search.
@@ -723,3 +732,6 @@ script:
   dockerimage: demisto/python3:3.8.2.6981
   runonce: false
   subtype: python3
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
