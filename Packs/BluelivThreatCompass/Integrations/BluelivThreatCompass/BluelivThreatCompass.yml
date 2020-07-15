@@ -200,7 +200,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: New status to assign to the resource
+      description: New status to assign to the resource. Can be "positive", "negative", "informative", or "not_important".
       isArray: false
       name: status
       predefined:
@@ -211,29 +211,29 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Changes a resource status.
+    description: Changes the status of a resource.
     execution: false
     name: blueliv-resource-set-status
   - arguments:
     - default: false
-      description: Resource ID
+      description: Resource ID.
       isArray: false
       name: id
       required: true
       secret: false
     - default: false
-      description: Label ID
+      description: Label ID.
       isArray: false
       name: labelId
       required: true
       secret: false
     deprecated: false
-    description: Adds a label to the given resource
+    description: Adds a label to the given resource.
     execution: false
     name: blueliv-resource-set-label
   - arguments:
     - default: false
-      description: Resource ID
+      description: Resource ID.
       isArray: false
       name: id
       required: true
@@ -241,7 +241,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: The read status to set.
+      description: The read status to set. Can be "true" or "false". Default is "true".
       isArray: false
       name: read
       predefined:
@@ -250,7 +250,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Mark the result as read or not.
+    description: Marks the result as read or not read.
     execution: false
     name: blueliv-resource-set-read-status
   - arguments:
@@ -263,7 +263,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: '1'
-      description: Rating to assign to the result.
+      description: Rating to assign to the result. Can be a number between 1 and 5. Default is 1.
       isArray: false
       name: rating
       predefined:
@@ -275,12 +275,12 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Assign tating to a given result.
+    description: Assigns a rating to the given result.
     execution: false
     name: blueliv-resource-assign-rating
   - arguments:
     - default: false
-      description: Resource ID
+      description: Resource ID.
       isArray: false
       name: id
       required: true
@@ -288,8 +288,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: group
-      description: The new favourite status of the resource. Can be applied to the
-        user, group or general.
+      description: The new favorite status of the resource. Can be "Not", "User", "Group", or "All".
       isArray: false
       name: favourite
       predefined:
@@ -300,19 +299,19 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Changes the favourite status of a resource.
+    description: Changes the favorite status of a resource.
     execution: false
     name: blueliv-resource-favourite
   - arguments:
     - default: false
-      description: Resource ID
+      description: Resource ID.
       isArray: false
       name: id
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The new TLP to assign. '
+      description: 'The new TLP to assign to the resource. Can be "White", "Green", "Amber", or "Red".'
       isArray: false
       name: tlp
       predefined:
@@ -335,13 +334,13 @@ script:
       description: Hexadecimal color of the label background in the GUI.
       type: String
     - contextPath: BluelivThreatCompass.Label.Id
-      description: Label Id
+      description: Label ID.
       type: String
     - contextPath: BluelivThreatCompass.Label.Name
       description: Label name.
       type: String
     - contextPath: BluelivThreatCompass.Label.Protected
-      description: If the label is protected or not.
+      description: Whether the label is protected.
       type: Boolean
     - contextPath: BluelivThreatCompass.Label.TypeId
       description: Label type ID.
@@ -350,7 +349,7 @@ script:
       description: Label type name
       type: String
     - contextPath: BluelivThreatCompass.Label.Prioritized
-      description: If the label is prioritized.
+      description: Whether the label is prioritized.
       type: Boolean
     - contextPath: BluelivThreatCompass.Label.TextColor
       description: Hexadecimal color of the label text in the GUI.
