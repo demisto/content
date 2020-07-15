@@ -751,7 +751,7 @@ inputs:
     complex:
       root: incident
       accessor: srcuser
-  required: false
+  required: true
   description: The username or the email address of the user who failed to login.
 outputs: []
 fromversion: 5.0.0
