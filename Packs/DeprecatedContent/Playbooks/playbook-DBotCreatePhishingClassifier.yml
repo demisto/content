@@ -1,7 +1,7 @@
 id: DBotCreatePhishingClassifier
 version: -1
 name: DBot Create Phishing Classifier
-description: Create a phishing classifier using machine learning technique, based
+description: DEPRECATED. Use "DBot Create Phishing Classifier V2" playbook instead. Create a phishing classifier using machine learning technique, based
   on email content
 starttaskid: "0"
 tasks:
@@ -361,4 +361,4 @@ outputs:
   description: Model list name in Demisto
 fromversion: 4.1.0
 tests:
-  - CreatePhishingClassifierMLTest
+  - No tests
