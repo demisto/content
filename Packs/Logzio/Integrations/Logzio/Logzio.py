@@ -83,13 +83,13 @@ class Client(BaseClient):
             if from_time is not None:
                 if not from_time.isdigit():
                     from_time = dateparser.parse(from_time, settings={'TIMEZONE': 'UTC'})
-                    from_time = int(time.mktime(from_time.timetuple()))*1000
+                    from_time = int(time.mktime(from_time.timetuple())) * 1000
                 time_filter["from"] = from_time
                 time_filter["include_lower"] = True
             if to_time is not None:
                 if not to_time.isdigit():
                     to_time = dateparser.parse(to_time, settings={'TIMEZONE': 'UTC'})
-                    to_time = int(time.mktime(to_time.timetuple()))*1000
+                    to_time = int(time.mktime(to_time.timetuple())) * 1000
                 time_filter["to"] = to_time
                 time_filter["include_upper"] = True
             payload["query"]["bool"]["must"].append(

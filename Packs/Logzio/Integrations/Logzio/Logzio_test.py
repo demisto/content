@@ -131,9 +131,8 @@ class TestLogzio:
         request_body = requests_mock.request_history[0].json()
 
         time_range = request_body["query"]["bool"]["must"][1]["range"]["@timestamp"]
-        assert time_range["to"] == 1585500377000
-        assert time_range["from"] == 1585485977000
-
+        assert time_range["to"] == 1585507577000
+        assert time_range["from"] == 1585493177000
 
     def test_logzio_get_rule_logs(self, requests_mock):
         client = Logzio.Client("us", "fake-security-token", "fake-operational-token", False, False)
