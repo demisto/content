@@ -62,6 +62,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ""
       id: f45944a7-0362-48e3-8adb-7022ef46ef0e
       iscommand: false
       name: ""
@@ -265,6 +266,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ""
       id: a31058a7-f7d7-4c3b-8d52-633b15b8b385
       iscommand: false
       name: Complete
