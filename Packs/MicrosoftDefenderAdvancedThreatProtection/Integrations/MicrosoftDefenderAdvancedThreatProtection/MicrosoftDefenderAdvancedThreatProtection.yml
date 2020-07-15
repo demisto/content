@@ -2357,10 +2357,86 @@ script:
       name: tags
       required: false
       secret: false
+    - default: false
+      description: 'DateTime when the file was compiled. The Timestamp type represents
+        date and time information using ISO 8601 format and is always in UTC time.
+        For example, midnight UTC on Jan 1, 2014 would look like this: ''2014-01-01T00:00:00Z'''
+      isArray: false
+      name: file_compile_date_time
+      required: false
+      secret: false
+    - default: false
+      description: 'DateTime when the file was created.The Timestamp type represents
+        date and time information using ISO 8601 format and is always in UTC time.
+        For example, midnight UTC on Jan 1, 2014 would look like this: ''2014-01-01T00:00:00Z'''
+      isArray: false
+      name: file_created_date_time
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of hash stored in fileHashValue.
+      isArray: false
+      name: file_hash_type
+      predefined:
+      - unknown
+      - sha1
+      - sha256
+      - md5
+      - authenticodeHash256
+      - lsHash
+      - ctph
+      required: false
+      secret: false
+    - default: false
+      description: The file hash value.
+      isArray: false
+      name: file_hash_value
+      required: false
+      secret: false
+    - default: false
+      description: Mutex name used in file-based detections.
+      isArray: false
+      name: file_mutex_name
+      required: false
+      secret: false
+    - default: false
+      description: Name of the file if the indicator is file-based. Multiple file
+        names may be delimited by commas.
+      isArray: false
+      name: file_name
+      required: false
+      secret: false
+    - default: false
+      description: The packer used to build the file in question.
+      isArray: false
+      name: file_packer
+      required: false
+      secret: false
+    - default: false
+      description: Path of file indicating compromise. May be a Windows or *nix style
+        path.
+      isArray: false
+      name: file_path
+      required: false
+      secret: false
+    - default: false
+      description: Size of the file in bytes.
+      isArray: false
+      name: file_size
+      required: false
+      secret: false
+    - default: false
+      description: Text description of the type of file. For example, “Word Document”
+        or “Binary”.
+      isArray: false
+      name: file_type
+      required: false
+      secret: false
     deprecated: false
     description: Creates a file indicator
     execution: false
-    name: microsoft-atp-file-indicator-create
+    name: microsoft-atp-create-file-indicator
   dockerimage: demisto/crypto:1.0.0.8854
   feed: false
   isfetch: true

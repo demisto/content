@@ -570,31 +570,7 @@ class MsClient:
         params = {'$filter': 'targetProduct eq \'Microsoft Defender ATP\''}
         return self.ms_client.http_request('GET', url_suffix=cmd_url, params=params)
 
-    def create_file_indicator(
-            self,
-            action: str,
-            description: str,
-            expiration_time: str,
-            threat_type: str,
-            tlp_level: int,
-            confidence: Optional[int] = None,
-            severity: Optional[int] = None,
-            tags: Optional[List[str]] = None
-    ):
-        body = assign_params(
-            action=action,
-            description=description,
-            expirationDateTime=expiration_time,
-            targetProduct='Microsoft Defender ATP',
-            threatType=threat_type,
-            tlpLevel=tlp_level,
-            confidence=confidence,
-            severity=severity,
-            tags=tags
-        )
-        return self._post_indicators(body)
-
-    def _post_indicators(self, body) -> Dict:
+    def create_indicator(self, body) -> Dict:
         cmd_url = 'beta/security/tiIndicators'
         return self.ms_client.http_request('POST', cmd_url, json_data=body)
 
@@ -1860,22 +1836,28 @@ def get_future_time(expiration_time):
     return future_time.strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
-def create_file_indicator_command(client: MsClient, args: Dict) -> Tuple[str, Optional[Dict]]:
-    """
+def create_indicator_command(client: MsClient, args: Dict, specific_args: Dict):
+    """Adds required arguments to indicator (arguments that must be in every create call).
 
     Args:
         client: MsClient
         args: arguments from CortexSOAR.
-        Must include the following keys:
-        - action
-        - description
-        - expiration_time
-        - threat_type
+            Must include the following keys:
+            - action
+            - description
+            - expiration_time
+            - threat_type
+        specific_args: file, email or network object.
 
     Returns:
-        human readable, outputs, raw response
+        A response from API.
+
+    Raises:
+        AssertionError: For some arguments.
+
+    Documentation:
+    https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-beta#properties
     """
-    # Get arguments and assertions
     action = args.get('action', '')
     description = args.get('description', '')
     assert 1 <= len(description) <= 100, 'The description argument must contain at least 1 letter and less than 100.'
@@ -1893,10 +1875,48 @@ def create_file_indicator_command(client: MsClient, args: Dict) -> Tuple[str, Op
     except ValueError:
         raise DemistoException('The severity argument must be an integer.')
     tags = argToList(args.get('tags'))
-    indicator = client.create_file_indicator(
-        action, description, expiration_time,
-        threat_type, tlp_level, confidence,
-        severity, tags)
+    body = assign_params(
+        action=action,
+        description=description,
+        expirationDateTime=expiration_time,
+        targetProduct='Microsoft Defender ATP',
+        threatType=threat_type,
+        tlpLevel=tlp_level,
+        confidence=confidence,
+        severity=severity,
+        tags=tags
+    )
+    body.update(specific_args)
+    return client.create_indicator(body)
+
+
+def create_file_indicator_command(client: MsClient, args: Dict) -> Tuple[str, Optional[Dict]]:
+    """
+
+    Args:
+        client: MsClient
+        args: arguments from CortexSOAR.
+
+    Returns:
+        human readable, outputs, raw response
+
+    Raises:
+        AssertionError: If no file arguments.
+    """
+    file_object = assign_params(
+        fileCompileDateTime=args.get('file_compile_date_time'),
+        fileCreatedDateTime=args.get('file_created_date_time'),
+        fileHashType=args.get('file_hash_type'),
+        fileHashValue=args.get('file_hash_value'),
+        fileMutexName=args.get('file_mutex_name'),
+        fileName=args.get('file_name'),
+        filePacker=args.get('file_packer'),
+        filePath=args.get('file_path'),
+        fileSize=args.get('file_size'),
+        fileType=args.get('file_type')
+    )
+    assert file_object, 'Must supply at least one file attribute.'
+    indicator = create_indicator_command(client, args, file_object)
     human_readable = tableToMarkdown(
         'Indicators from Microsoft ATP:',
         indicator,
@@ -2056,6 +2076,8 @@ def main():
 
         elif command in ('microsoft-atp-list-indicators', 'microsoft-atp-get-indicator-by-id'):
             return_outputs(*list_indicators_command(client, args))
+        elif command == 'microsoft-atp-create-file-indicator':
+            return_outputs(*create_file_indicator_command(client, args))
     except Exception as err:
         return_error(str(err))
 
