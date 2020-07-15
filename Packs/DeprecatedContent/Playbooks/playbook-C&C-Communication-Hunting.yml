@@ -1,7 +1,7 @@
 id: playbook7
 version: -1
 name: Hunting C&C Communication Playbook
-description: A playbook to use the latest Threat Intelligence to hunt across your
+description: Deprecated. A playbook to use the latest Threat Intelligence to hunt across your
   infrastructure and look for malicious C&C communications.
 system: true
 fromversion: 2.5.0
