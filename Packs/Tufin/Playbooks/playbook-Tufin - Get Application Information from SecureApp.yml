@@ -23,8 +23,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -110
+          "x": 590,
+          "y": -510
         }
       }
     note: false
@@ -34,17 +34,17 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: b0e991fd-d693-4a79-823e-c5b68f6867cb
+    taskid: 5e4d12e7-eedb-40f2-828f-f9fab1b2b983
     type: regular
     task:
-      id: b0e991fd-d693-4a79-823e-c5b68f6867cb
+      id: 5e4d12e7-eedb-40f2-828f-f9fab1b2b983
       version: -1
       name: Search Applications
-      description: Search SecureApp applications, returning basic application information.
-      script: Tufin|||tufin-search-applications
+      description: Search SecureApp applications
+      script: '|||tufin-search-applications'
       type: regular
       iscommand: true
-      brand: Tufin
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
@@ -56,7 +56,7 @@ tasks:
       {
         "position": {
           "x": 590,
-          "y": 260
+          "y": 230
         }
       }
     note: false
@@ -66,18 +66,17 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: f0431f49-c018-4602-848f-902befac0702
+    taskid: 33b3a38e-7ebd-443d-8f18-44bc910241f6
     type: regular
     task:
-      id: f0431f49-c018-4602-848f-902befac0702
+      id: 33b3a38e-7ebd-443d-8f18-44bc910241f6
       version: -1
       name: Get Application Connections
-      description: 'Get all application connections from SecureApp for the specific
-        application. '
-      script: Tufin|||tufin-search-application-connections
+      description: Get SecureApp application connections
+      script: '|||tufin-search-application-connections'
       type: regular
       iscommand: true
-      brand: Tufin
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
@@ -132,13 +131,13 @@ tasks:
       name: Is Tufin Integration Available?
       type: condition
       iscommand: false
-      description: ''
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "3"
       "yes":
-      - "1"
+      - "5"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -173,8 +172,46 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 50
+          "x": 590,
+          "y": -180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 92e6bd09-c537-4727-81e0-52d4c547c8dc
+    type: condition
+    task:
+      id: 92e6bd09-c537-4727-81e0-52d4c547c8dc
+      version: -1
+      name: Does Application Name Exist?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.ApplicationName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 30
         }
       }
     note: false
@@ -185,14 +222,15 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "4_3_#default#": 0.51
+      "4_3_#default#": 0.46,
+      "5_3_#default#": 0.24
     },
     "paper": {
       "dimensions": {
-        "height": 775,
+        "height": 1175,
         "width": 520,
         "x": 450,
-        "y": -110
+        "y": -510
       }
     }
   }
@@ -234,5 +272,3 @@ outputs:
 - contextPath: Tufin.AppConnection.Comment
   description: Connection comment
 fromversion: 5.0.0
-tests:
-- No tests (auto formatted)

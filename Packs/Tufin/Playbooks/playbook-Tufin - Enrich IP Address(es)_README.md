@@ -1,4 +1,4 @@
-Enrich a single IP using SecureTrack.  Returns information such as the associated zones, network objects and policies for the address, and if the address is network device.
+Enrich an IP using SecureTrack.  Returns information such as the associated zones, network objects and policies for the address, and if the address is network device.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -42,4 +42,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Tufin - Enrich a Single IP Address](https://raw.githubusercontent.com/demisto/content/7370fa8ae300b0d604afcb00bfdeec402e37132e/Packs/Tufin/doc_files/Tufin%20-%20Enrich%20a%20Single%20IP%20Address.png)
+![Tufin - Enrich IP Address(es)](https://raw.githubusercontent.com/demisto/content/7370fa8ae300b0d604afcb00bfdeec402e37132e/Packs/Tufin/doc_files/Tufin%20-%20Enrich%20a%20Single%20IP%20Address.png)

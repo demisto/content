@@ -1,6 +1,6 @@
-id: Tufin - Enrich a Single IP Address
+id: Tufin - Enrich IP Address(es)
 version: -1
-name: Tufin - Enrich a Single IP Address
+name: Tufin - Enrich IP Address(es)
 description: Enrich a single IP using SecureTrack.  Returns information such as the
   associated zones, network objects and policies for the address, and if the address
   is network device.
@@ -24,8 +24,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 50
+          "x": 460,
+          "y": -150
         }
       }
     note: false
@@ -49,7 +49,7 @@ tasks:
       '#default#':
       - "6"
       "yes":
-      - "2"
+      - "7"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -84,8 +84,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 210
+          "x": 460,
+          "y": 0
         }
       }
     note: false
@@ -95,17 +95,17 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: c6e7dad8-04f8-4319-8765-ad0f13a7298e
+    taskid: 84f008cf-a3b4-4ff3-8dc8-7bab1920b0f2
     type: regular
     task:
-      id: c6e7dad8-04f8-4319-8765-ad0f13a7298e
+      id: 84f008cf-a3b4-4ff3-8dc8-7bab1920b0f2
       version: -1
       name: Get Zone
-      description: Get the USP zone(s) for the IP address.
-      script: Tufin|||tufin-get-zone-for-ip
+      description: Match the IP address to the assigned Tufin Zone
+      script: '|||tufin-get-zone-for-ip'
       type: regular
       iscommand: true
-      brand: Tufin
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
@@ -127,17 +127,17 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: aa0375a1-4661-44a1-817d-37b5b6cc2bf8
+    taskid: fbe807be-4fe1-454d-88bf-a183a2b04467
     type: regular
     task:
-      id: aa0375a1-4661-44a1-817d-37b5b6cc2bf8
+      id: fbe807be-4fe1-454d-88bf-a183a2b04467
       version: -1
       name: Resolve Network Objects
-      description: Get all network objects for the IP address.
-      script: Tufin|||tufin-object-resolve
+      description: Resolve IP address to Network Object
+      script: '|||tufin-object-resolve'
       type: regular
       iscommand: true
-      brand: Tufin
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
@@ -159,17 +159,17 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 42699043-8ac2-4b1e-8e44-9bf65df95442
+    taskid: 5b84147d-23e6-4b95-803e-55a6f89aa3ca
     type: regular
     task:
-      id: 42699043-8ac2-4b1e-8e44-9bf65df95442
+      id: 5b84147d-23e6-4b95-803e-55a6f89aa3ca
       version: -1
       name: Search Policies
-      description: Get all network policies containing the IP address.
-      script: Tufin|||tufin-policy-search
+      description: Search the policies of all devices managed by Tufin
+      script: '|||tufin-policy-search'
       type: regular
       iscommand: true
-      brand: Tufin
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
@@ -191,17 +191,17 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: e32401dd-8cf5-4868-8728-c393949ae372
+    taskid: ec0ab18c-78e7-49f4-8db6-bb2ec191bffc
     type: regular
     task:
-      id: e32401dd-8cf5-4868-8728-c393949ae372
+      id: ec0ab18c-78e7-49f4-8db6-bb2ec191bffc
       version: -1
       name: Search Network Devices
-      description: If the IP is a network device, get network device information.
-      script: Tufin|||tufin-search-devices
+      description: Search SecureTrack devices
+      script: '|||tufin-search-devices'
       type: regular
       iscommand: true
-      brand: Tufin
+      brand: ""
     nexttasks:
       '#none#':
       - "6"
@@ -249,21 +249,64 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "7":
+    id: "7"
+    taskid: 49146922-1dc6-47f8-89f1-848d101e8ff4
+    type: condition
+    task:
+      id: 49146922-1dc6-47f8-89f1-848d101e8ff4
+      version: -1
+      name: Do IP Addresses Exist?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1165,
-        "width": 490,
-        "x": 450,
-        "y": 50
+        "height": 1365,
+        "width": 770,
+        "x": 170,
+        "y": -150
       }
     }
   }
 inputs:
 - key: IP
-  value: {}
+  value:
+    complex:
+      root: IP
+      accessor: Address
+      transformers:
+      - operator: uniq
   required: true
   description: 'IP address to enrich (ex: 192.168.1.1)'
   playbookInputQuery:
@@ -287,5 +330,3 @@ outputs:
 - contextPath: Tufin.Device.IP
   description: Device IP
 fromversion: 5.0.0
-tests:
-- No tests (auto formatted)

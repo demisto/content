@@ -20,13 +20,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "9"
+      - "13"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 500,
-          "y": 50
+          "y": -150
         }
       }
     note: false
@@ -36,17 +36,17 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: e80c4ec4-7847-4e51-87a1-66a0b9b6d52c
+    taskid: 05a703ed-ea8e-4664-823c-5fc6d4a59112
     type: regular
     task:
-      id: e80c4ec4-7847-4e51-87a1-66a0b9b6d52c
+      id: 05a703ed-ea8e-4664-823c-5fc6d4a59112
       version: -1
       name: Submit Change Request to Block Traffic
       description: Submit a change request to SecureChange
-      script: Tufin|||tufin-submit-change-request
+      script: '|||tufin-submit-change-request'
       type: regular
       iscommand: true
-      brand: Tufin
+      brand: ""
     nexttasks:
       '#none#':
       - "7"
@@ -57,7 +57,7 @@ tasks:
         simple: Potentially malicious traffic has been detected from ${incident.sourceip}
           to ${incident.destinationip} ${incident.destinationports}
       destination:
-        simple: ${incident.destinationip}
+        simple: ${inputs.Destination IP}
       port:
         complex:
           root: incident
@@ -85,7 +85,7 @@ tasks:
       request-type:
         simple: Firewall Change Request
       source:
-        simple: ${incident.sourceip}
+        simple: ${inputs.Source IP}
       subject:
         simple: 'Malicious Traffic: Block ${incident.sourceip} to ${incident.destinationip}
           ${incident.destinationports}'
@@ -118,8 +118,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 387.5,
-          "y": 895
+          "x": 1170,
+          "y": 940
         }
       }
     note: false
@@ -168,26 +168,26 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: fb13bfce-99a6-4e91-855f-b007aaf0bf60
+    taskid: 669e140c-2494-482e-8e84-5296d8ba4101
     type: regular
     task:
-      id: fb13bfce-99a6-4e91-855f-b007aaf0bf60
+      id: 669e140c-2494-482e-8e84-5296d8ba4101
       version: -1
       name: Search Tufin Topology
-      description: Search the Tufin Topology Map for a route from Source to Destination
-      script: Tufin|||tufin-search-topology
+      description: Search the Tufin Topology Map
+      script: '|||tufin-search-topology'
       type: regular
       iscommand: true
-      brand: Tufin
+      brand: ""
     nexttasks:
       '#none#':
       - "10"
     scriptarguments:
       destination:
-        simple: ${incident.destinationip}
+        simple: ${inputs.Destination IP}
       service: {}
       source:
-        simple: ${incident.sourceip}
+        simple: ${inputs.Source IP}
     separatecontext: false
     view: |-
       {
@@ -203,18 +203,17 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 9c0b2f8c-1b55-46c9-8153-df630240d3f2
+    taskid: 61d528ab-73e6-4750-82f1-55a014332f01
     type: regular
     task:
-      id: 9c0b2f8c-1b55-46c9-8153-df630240d3f2
+      id: 61d528ab-73e6-4750-82f1-55a014332f01
       version: -1
       name: Search Tufin Topology Image
-      description: Search the Tufin Topology Map for a route from Source to Destination,
-        returning an image
-      script: Tufin|||tufin-search-topology-image
+      description: Search the Tufin Topology Map, returning an image
+      script: '|||tufin-search-topology-image'
       type: regular
       iscommand: true
-      brand: Tufin
+      brand: ""
     nexttasks:
       '#none#':
       - "11"
@@ -222,10 +221,10 @@ tasks:
       - "8"
     scriptarguments:
       destination:
-        simple: ${incident.destinationip}
+        simple: ${inputs.Destination IP}
       service: {}
       source:
-        simple: ${incident.sourceip}
+        simple: ${inputs.Source IP}
     separatecontext: false
     view: |-
       {
@@ -241,23 +240,25 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 50b29fe3-6a69-4200-8141-cb44777e1e8c
+    taskid: 9f860e83-b1b8-491f-881e-075531ee8486
     type: playbook
     task:
-      id: 50b29fe3-6a69-4200-8141-cb44777e1e8c
+      id: 9f860e83-b1b8-491f-881e-075531ee8486
       version: -1
-      name: Tufin - Enrich a Single IP Address
-      playbookName: Tufin - Enrich a Single IP Address
+      name: Tufin - Enrich IP Address(es)
+      description: Enrich a single IP using SecureTrack.  Returns information such
+        as the associated zones, network objects and policies for the address, and
+        if the address is network device.
+      playbookName: Tufin - Enrich IP Address(es)
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "7"
     scriptarguments:
       IP:
-        simple: ${incident.sourceip}
+        simple: ${inputs.Source IP}
     separatecontext: true
     loop:
       iscommand: false
@@ -278,23 +279,25 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: ec04891c-eca1-44f3-8d64-6ce1c14d1dc2
+    taskid: e8a2fef4-ac58-46c3-8df0-0c373585598d
     type: playbook
     task:
-      id: ec04891c-eca1-44f3-8d64-6ce1c14d1dc2
+      id: e8a2fef4-ac58-46c3-8df0-0c373585598d
       version: -1
-      name: Tufin - Enrich a Single IP Address
-      playbookName: Tufin - Enrich a Single IP Address
+      name: Tufin - Enrich IP Address(es)
+      description: Enrich a single IP using SecureTrack.  Returns information such
+        as the associated zones, network objects and policies for the address, and
+        if the address is network device.
+      playbookName: Tufin - Enrich IP Address(es)
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "7"
     scriptarguments:
       IP:
-        simple: ${incident.destinationip}
+        simple: ${inputs.Destination IP}
     separatecontext: true
     loop:
       iscommand: false
@@ -313,22 +316,91 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "13":
+    id: "13"
+    taskid: 1fbfa05c-e83a-4cc1-84f5-d0317dc36ea5
+    type: condition
+    task:
+      id: 1fbfa05c-e83a-4cc1-84f5-d0317dc36ea5
+      version: -1
+      name: Do Source and Destination IP Addresses Exist?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.Source IP
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.Destination IP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
-      "8_7_#default#": 0.51
+      "13_7_#default#": 0.53,
+      "8_7_#default#": 0.23
     },
     "paper": {
       "dimensions": {
-        "height": 910,
-        "width": 1260,
+        "height": 1155,
+        "width": 1500,
         "x": 50,
-        "y": 50
+        "y": -150
       }
     }
   }
-inputs: []
-outputs: []
+inputs:
+- key: Source IP
+  value:
+    simple: ${incident.sourceip}
+  required: true
+  description: Source IP Address
+  playbookInputQuery:
+- key: Destination IP
+  value:
+    simple: ${incident.destinationip}
+  required: true
+  description: Destination IP Address
+  playbookInputQuery:
+outputs:
+- contextPath: Tufin.Zone
+  type: unknown
+  description: ''
+- contextPath: Tufin.ObjectResolve
+  type: unknown
+  description: ''
+- contextPath: Tufin.Policysearch
+  type: unknown
+  description: ''
+- contextPath: Tufin.Device
+  type: unknown
+  description: ''
+- contextPath: Tufin.Topology
+  type: unknown
+  description: ''
 fromversion: 5.0.0
-tests:
-- No tests (auto formatted)
