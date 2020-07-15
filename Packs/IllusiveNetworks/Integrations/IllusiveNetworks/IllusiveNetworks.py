@@ -7,6 +7,8 @@ from typing import Tuple, Dict, Any
 import json
 import requests
 import dateparser
+import zipfile
+import io
 
 # Disable insecure warnings
 
@@ -740,7 +742,7 @@ def get_forensics_triggering_process_info_command(client: Client, args: dict) ->
     )
 
 
-def get_forensics_artifacts_command(client: Client, args: dict):
+def get_forensics_artifacts_command(client: Client, args: dict) -> Tuple:
     event_id = args.get("event_id")
     artifact_type = args.get("artifact_type", "DESKTOP_SCREENSHOT")
     try:
@@ -757,23 +759,30 @@ def get_forensics_artifacts_command(client: Client, args: dict):
             raise DemistoException("{}".format(e.args[0]))
 
     if len(artifact) == 0:
-        raise ValueError("file is empty")
-    return (
-        fileResult(
-            filename=f'eventId_{event_id}_{artifact_type}.zip',
-            data=artifact,
-            file_type=EntryType.ENTRY_INFO_FILE
-        )
-    )
+        return [], []
+
+    zip_file = zipfile.ZipFile(io.BytesIO(artifact))
+    file_results = []
+    file_names = []
+    i = 0
+    for info in zip_file.infolist():
+        i = i + 1
+        file_results.append(fileResult(
+            filename=f'eventId_{event_id}_{artifact_type}_{i}.jpg',
+            data=zip_file.read(info.filename),
+            file_type=entryTypes["image"]
+        ))
+        file_names.append(f'eventId_{event_id}_{artifact_type}_{i}.jpg')
+    return file_results, file_names
 
 
-def link_forensics_artifacts_name_command(isArtifactFile: bool, client: Client, args: dict) -> CommandResults:
+def link_forensics_artifacts_name_command(file_names, client: Client, args: dict) -> CommandResults:
     event_id = args.get("event_id", 0)
-    artifact_type = args.get("artifact_type", "DESKTOP_SCREENSHOT")
-    if isArtifactFile:
+
+    if len(file_names) > 0:
         outputs = {
             'eventId': int(event_id),
-            'Artifacts': f'eventId_{event_id}_{artifact_type}.zip'
+            'Artifacts': file_names
         }
 
         return CommandResults(
@@ -886,10 +895,11 @@ def main():
 
         elif demisto.command() == 'illusive-get-forensics-artifacts':
             try:
-                return_results(get_forensics_artifacts_command(client, demisto.args()))
-                return_results(link_forensics_artifacts_name_command(True, client, demisto.args()))
+                file_results, file_names = get_forensics_artifacts_command(client, demisto.args())
+                return_results(file_results)
+                return_results(link_forensics_artifacts_name_command(file_names, client, demisto.args()))
             except ValueError:
-                return_results(link_forensics_artifacts_name_command(False, client, demisto.args()))
+                return_results(link_forensics_artifacts_name_command([], client, demisto.args()))
 
         elif demisto.command() == 'illusive-get-forensics-triggering-process-info':
             return_outputs(*get_forensics_triggering_process_info_command(client, demisto.args()))

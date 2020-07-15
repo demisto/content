@@ -383,12 +383,11 @@ def test_get_forensics_triggering_process_info_command(requests_mock):
 
 
 def test_get_forensics_artifacts_command(requests_mock):
-    mock_response = {'processes': [{'commandLine': 'bbb', 'name': '1234', 'parent': '1234', 'sha256': '1234'},
-                                   {'commandLine': 'aaa', 'name': '34556', 'parent': 'dfg', 'sha256': 'erf'}]}
+    mock_response = bytes()
     mock_response2 = 3
     requests_mock.get('https://server/api/v1/incidents/id?event_id=3', json=mock_response2)
     requests_mock.get('https://server/api/v1/forensics/artifacts?event_id=3&artifacts_type=DESKTOP_SCREENSHOT',
-                      json=mock_response)
+                      content=mock_response)
 
     client = Client(base_url='https://server', verify=False)
     args = {
