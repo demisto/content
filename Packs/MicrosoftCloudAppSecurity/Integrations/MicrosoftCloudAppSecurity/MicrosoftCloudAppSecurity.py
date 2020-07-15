@@ -104,18 +104,14 @@ class Client(BaseClient):
     #         return 'No username by that name exists.'
 
 
-def arg_to_int(arg, arg_name, required=False):
-    if arg is None:
-        if required is True:
-            raise ValueError(f'Missing "{arg_name}"')
-        return None
+def arg_to_timestamp(arg):
+    if isinstance(arg, str) and arg.isdigit():
+        return int(arg)
     if isinstance(arg, str):
-        if arg.isdigit():
-            return int(arg)
-        raise ValueError(f'Invalid number: "{arg_name}"="{arg}"')
-    if isinstance(arg, int):
-        return arg
-    raise ValueError(f'Invalid number: "{arg_name}"')
+        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+        return int(date.timestamp())
+    if isinstance(arg, (int, float)):
+        return int(arg)
 
 
 def convert_severity(severity):
@@ -239,7 +235,7 @@ def args_to_json_filter_list_alert(all_params):
         if key == 'resolution_status':
             filters[key] = {'eq': convert_resolution_status(value)}
         if key == 'username':
-            filters['entity.entity'] = {'eq': value}   # username - entity!!!!!!!!!!!!!!!!!!!
+            filters['entity.entity'] = {'eq': value}  # username - entity!!!!!!!!!!!!!!!!!!!
     request_data['filters'] = filters
     return request_data
 
@@ -433,7 +429,7 @@ def users_accounts_list_command(client, args):
     customer_filters = args.get('customer_filters')
     all_params = assign_params(skip=args.get('skip'), limit=args.get('limit'), service=args.get('service'),
                                instance=args.get('instance'), type=args.get('type'), username=args.get('username'),
-                               group_id=args.get('group_id'), is_admin=args.get('is_admin'),status=args.get('status'),
+                               group_id=args.get('group_id'), is_admin=args.get('is_admin'), status=args.get('status'),
                                is_external=args.get('is_external'))
 
     if customer_filters:
@@ -450,41 +446,36 @@ def users_accounts_list_command(client, args):
 
 
 def fetch_incidents(client, max_results, last_run, first_fetch_time, filters):
-
-    # Get the last fetch time, if exists
     last_fetch = last_run.get('last_fetch')
-    previous_alerts = last_run.get('previous_alerts', '').split(',')
-    current_alerts = []
 
-    # Handle first time fetch
     if last_fetch is None:
-        last_fetch, _ = dateparser.parse(first_fetch_time)
+        last_fetch = datetime.now() - timedelta(days=1)
+        last_fetch.strftime("%Y-%m-%d %H:%M:%S")
+        last_fetch = last_fetch.timestamp()
     else:
-        last_fetch = dateparser.parse(last_fetch)
-
-    latest_created_time = last_fetch
+        last_fetch = last_fetch.timestamp()
+    return_error(last_fetch)
+    latest_created_time = int(last_fetch)
+    return_error(latest_created_time)
     incidents = []
-    filters["date"] = {"gte" : latest_created_time}
+    filters["date"] = {"gte": latest_created_time}
     alerts = client.list_incidents(filters, limit=max_results)
-
+    return_error(alerts)
     for alert in alerts:
-        incident_created_time = dateparser.parse(alert['created_time'])
-        incident = {
-            'name': alert['title'],
+        incident_created_time = dateparser.parse(alert['created_time'])  #1594283802753
+        if last_fetch:
+            if incident_created_time <= last_fetch:
+                continue
+        incidents = {
+            'name': alert['title'],  #
             'occurred': incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
             'rawJSON': json.dumps(alert),
             # 'severity': convert_severity(alert.get('severity', 1))
         }
-        if alert["_id"] not in previous_alerts:
-            incidents.append(incident)
-        current_alerts.append(alert["_id"])
-
-        # Update last run and add incident if the incident is newer than last fetch
         if incident_created_time > latest_created_time:
             latest_created_time = incident_created_time
-    prev_alerts = str(','.join(current_alerts))
 
-    next_run = {'last_fetch': latest_created_time.strftime(DATE_FORMAT), 'previous_alerts' : prev_alerts}
+    next_run = {'last_fetch': latest_created_time.strftime(DATE_FORMAT)}
     return next_run, incidents
 
 
@@ -500,7 +491,7 @@ def main():
     verify_certificate = not demisto.params().get('insecure', False)
 
     # How much time before the first fetch to retrieve incidents
-    first_fetch_time = demisto.params().get('fetch_time', '3 days').strip()
+    first_fetch_time = demisto.params().get('first_fetch', '3 days').strip()
 
     proxy = demisto.params().get('proxy', False)
 
@@ -518,19 +509,15 @@ def main():
             demisto.results(result)
 
         elif demisto.command() == 'fetch-incidents':
-
             # Set and define the fetch incidents command to run after activated via integration settings.
             params = demisto.params()
-
-            all_params = assign_params(severity=params.get('severity'), resolution_status=params.get('resolution_status'),
-                                       service=params.get('service'), instance=params.get('instance'))
+            all_params = assign_params(severity=params.get('severity'), instance=params.get('instance'),
+                                       resolution_status=params.get('resolution_status'),
+                                       service=params.get('service'))
             filters = params_to_filter(all_params)
 
-            max_results = arg_to_int(
-                arg=demisto.params().get('max_fetch'),
-                arg_name='max_fetch',
-                required=False
-            )
+            max_results = int(params.get('max_fetch', '50'))
+
             if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
                 max_results = MAX_INCIDENTS_TO_FETCH
 

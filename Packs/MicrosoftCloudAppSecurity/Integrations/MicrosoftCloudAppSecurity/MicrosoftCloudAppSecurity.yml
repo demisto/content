@@ -35,9 +35,18 @@ configuration:
   - Law
   - Medium
   - High
-  - All
   required: false
   type: 16
+- display: Maximum alerts to fetch
+  hidden: false
+  name: max_fetch
+  required: false
+  type: 0
+- display: First fetch time
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
 description: This is the Hello World integration for getting started.
 display: MicrosoftCloudAppSecurity
 name: MicrosoftCloudAppSecurity
