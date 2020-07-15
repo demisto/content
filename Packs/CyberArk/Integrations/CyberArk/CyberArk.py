@@ -503,7 +503,7 @@ def add_user_command(
         outputs_key_field='id',
         outputs=response
     )
-    return_results(results)
+    return results
 
 
 def update_user_command(
@@ -539,7 +539,7 @@ def update_user_command(
         outputs_key_field='id',
         outputs=response
     )
-    return_results(results)
+    return results
 
 
 def delete_user_command(
@@ -550,9 +550,9 @@ def delete_user_command(
     # the response should be an empty string, if an error raised it would be catch in the main block
     # should never enter to the else block, extra precautions if something want wrong
     if not response:
-        return_results(f"User {userID} was deleted")
+        return f"User {userID} was deleted"
     else:
-        return_results(response)
+        return response
 
 
 def get_users_command(
@@ -562,13 +562,15 @@ def get_users_command(
 ):
     response = client.get_users(filter, search)
     total_users = response.get("Total")
-    demisto.log(f"There are {total_users} users")
+    headline = f"There are {total_users} users"
+    a = response.get("Users")
     results = CommandResults(
+        readable_output=headline + tableToMarkdown("table",a),
         outputs_prefix='CyberArk.Users',
         outputs_key_field='id',
-        outputs=response.get("Users")
+        outputs=response.get("Users"),
     )
-    return_results(results)
+    return results
 
 
 def activate_user_command(
@@ -579,7 +581,7 @@ def activate_user_command(
     if not response:
         return_results(f"User {userID} was activated")
     else:
-        return_results(response)
+        return response
 
 
 def list_safes_command(
@@ -896,7 +898,6 @@ def main():
         'cyberark-pas-delete-user': delete_user_command,  # v
         'cyberark-pas-get-users': get_users_command,  # v
         'cyberark-pas-activate-user': activate_user_command,
-        # 'cyberark-pas-suspend-user': suspend_user_command,  # api issues
 
         'cyberark-pas-list-safes': list_safes_command,  # v
         'cyberark-pas-get-safe-by-name': get_safe_by_name_command,  # v
@@ -928,7 +929,7 @@ def main():
         client = Client(server_url=url, username=username, password=password, use_ssl=use_ssl, proxy=proxy)
 
         if command in commands:
-            commands[command](client, **demisto.args())  # type: ignore[operator]
+            return_results(commands[command](client, **demisto.args())) # type: ignore[operator]
         else:
             raise NotImplementedError(f'{command} is not an existing CyberArk command')
     except Exception as err:

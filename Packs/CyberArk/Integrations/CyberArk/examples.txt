@@ -1,0 +1,5 @@
+!cyberark-pas-add-user username="TestUser" password="12345Aa" change_password_on_the_next_logon=true description="new user for test" email="usertest@test.com" enable_user=true first_name="user" last_name="test" profession="testing integrations"
+!cyberark-pas-update-user userID=123 change_password_on_the_next_logon=true description="updated description" email="update@test.com" first_name="test1" last_name="updated-name" location="updated city" username="TestUser1" profession="test1"
+!cyberark-pas-activate-user userID=123
+!cyberark-pas-delete-user userID=123
+!cyberark-pas-get-users filter="a"
