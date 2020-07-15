@@ -1,7 +1,6 @@
 id: RiskSense Get Unique Open Findings - Test
 version: -1
 name: RiskSense Get Unique Open Findings - Test
-fromversion: 5.0.0
 description: This playbook uses the RiskSense integration and tests the various scenarios
   of the "risksense-get-unique-open-findings" command.
 starttaskid: "0"
@@ -11,12 +10,12 @@ tasks:
     taskid: 6405ebcc-5846-438a-8fc5-7178032e76a6
     type: start
     task:
-      description: ""
       id: 6405ebcc-5846-438a-8fc5-7178032e76a6
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -84,7 +83,7 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      exclusive_operator:
+      exclusivity:
         simple: "false"
       fieldname:
         simple: title
@@ -94,7 +93,7 @@ tasks:
       size:
         simple: "5"
       sort_by: {}
-      sort_order: {}
+      sort_direction: {}
       value:
         simple: NetBIOS Name Accessible
     separatecontext: false
@@ -255,13 +254,13 @@ tasks:
     taskid: 8d74e4e2-a9d2-4287-8f9f-eed4dc093734
     type: title
     task:
-      description: ""
       id: 8d74e4e2-a9d2-4287-8f9f-eed4dc093734
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -287,3 +286,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

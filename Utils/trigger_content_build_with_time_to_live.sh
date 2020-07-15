@@ -9,7 +9,7 @@
 # in this case, if you don’t specify time to live argument the default will be 180 minutes.
 
 # 2. Running the script with the contributor changes
-# The script will get local_branch_name, circleCi token, time to love argument(in minutes), contributor_user_name:contributor_branch_name and the pack path of the pack that has been changed/added.
+# The script will get local_branch_name, circleCi token, time to live argument(in minutes), contributor_user_name:contributor_branch_name and the pack path of the pack that has been changed/added.
 # For example:
 # ./Utils/trigger_content_build_with_time_to_live.sh content_branch_name <CircleCiToken> 420 contrib_name:contrib_branch_name Packs/New_Pack/
 # In this case, the script will trigger a build and the demisto-marketplace instance will live for 7 hours.
@@ -30,7 +30,7 @@ _time_to_live=$3
 _contrib_branch=$4
 _changed_pack=$5
 
-trigger_build_url=https://circleci.com/api/v1/project/demisto/content/tree/${_branch}?circle-token=${_circle_token}
+trigger_build_url="https://circleci.com/api/v2/project/github/demisto/content/pipeline"
 
 
 if [ -z $_time_to_live ] || [ $_time_to_live -lt 180 ]
@@ -53,29 +53,34 @@ fi
 
 if [ -z $_contrib_branch ]
 then
-  post_data=$(cat <<EOF
-  {
-    "build_parameters": {
-      "TIME_TO_LIVE": ${_time_to_live}
+  post_data=$(cat <<-EOF
+ {
+    "branch": "${_branch}",
+    "parameters": {
+      "time_to_live": "${_time_to_live}"
     }
   }
 EOF
 )
+
 else
+  pack_name=$(echo $_changed_pack | cut -d "/" -f 2)
   post_data=$(cat <<-EOF
-  {
-    "build_parameters": {
-      "TIME_TO_LIVE": ${_time_to_live},
-      "CONTRIB_BRANCH": "${_contrib_branch}:${_changed_pack}"
+ {
+    "branch": "${_branch}",
+    "parameters": {
+      "time_to_live": "${_time_to_live}",
+      "contrib_branch": "${_contrib_branch}:${_changed_pack}",
+      "contrib_pack_name": "$pack_name"
     }
   }
 EOF
 )
 fi
 
-
 curl \
 --header "Accept: application/json" \
 --header "Content-Type: application/json" \
 --data "${post_data}" \
---request POST ${trigger_build_url}
+--request POST ${trigger_build_url} \
+--user "$_circle_token:"

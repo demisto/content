@@ -4718,6 +4718,73 @@ def panorama_add_static_route_command():
     })
 
 
+def panorama_override_vulnerability(threatid: str, vulnerability_profile: str, drop_mode: str):
+    xpath = "{}profiles/vulnerability/entry[@name='{}']/threat-exception/entry[@name='{}']/action".format(
+        XPATH_OBJECTS,
+        vulnerability_profile,
+        threatid)
+    params = {'action': 'set',
+              'type': 'config',
+              'xpath': xpath,
+              'key': API_KEY,
+              'element': "<{0}></{0}>".format(drop_mode)
+              }
+
+    return http_request(
+        URL,
+        'POST',
+        body=params,
+    )
+
+
+@logger
+def panorama_get_predefined_threats_list(target: str):
+    """
+    Get the entire list of predefined threats as a file in Demisto
+    """
+    params = {
+        'type': 'op',
+        'cmd': '<show><predefined><xpath>/predefined/threats</xpath></predefined></show>',
+        'target': target,
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+    return result
+
+
+def panorama_get_predefined_threats_list_command():
+    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
+    result = panorama_get_predefined_threats_list(target)
+    demisto.results(fileResult('predefined-threats.json', json.dumps(result['response']['result']).encode('utf-8')))
+
+
+def panorama_block_vulnerability():
+    """
+    Ovverride a vulnerability signature such that it is in block mode
+    """
+    threatid = demisto.args().get('threat_id')
+    vulnerability_profile = demisto.args().get('vulnerability_profile')
+    drop_mode = demisto.args().get('drop_mode', 'drop')
+
+    threat = panorama_override_vulnerability(threatid, vulnerability_profile, drop_mode)
+    threat_output = {'ID': threatid, 'NewAction': drop_mode}
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': threat,
+        'ReadableContentsFormat': formats['text'],
+        'HumanReadable': 'Threat with ID {} overridden.'.format(threatid),
+        'EntryContext': {
+            "Panorama.Vulnerability(val.Name == obj.Name)": threat_output
+        }
+    })
+
+
 @logger
 def panorama_delete_static_route(xpath_network: str, virtual_router: str, route_name: str) -> Dict[str, str]:
     params = {
@@ -5243,6 +5310,57 @@ def panorama_device_reboot_command():
     demisto.results(result['response']['result'])
 
 
+@logger
+def panorama_show_location_ip(ip_address: str):
+    params = {
+        'type': 'op',
+        'cmd': f'<show><location><ip>{ip_address}</ip></location></show>',
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+
+    return result
+
+
+def panorama_show_location_ip_command():
+    """
+    Check location of a specified ip address
+    """
+    ip_address = demisto.args().get('ip_address')
+    result = panorama_show_location_ip(ip_address)
+
+    if 'response' not in result or '@status' not in result['response'] or result['response']['@status'] != 'success':
+        raise Exception(f'Failed to successfully show the location of the specified ip: {ip_address}.')
+
+    if 'response' in result and 'result' in result['response'] and 'entry' in result['response']['result']:
+        entry = result['response']['result']['entry']
+        show_location_output = {
+            "ip_address": entry.get('ip'),
+            "country_name": entry.get('country'),
+            "country_code": entry.get('@cc'),
+            "status": 'Found'
+        }
+    else:
+        show_location_output = {
+            "ip_address": ip_address,
+            "status": 'NotFound'
+        }
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown(f'IP {ip_address} location:', show_location_output,
+                                         ['ip_address', 'country_name', 'country_code', 'result'], removeNull=True),
+        'EntryContext': {"Panorama.Location.IP(val.ip_address == obj.ip_address)": show_location_output}
+    })
+
+
 def main():
     LOG(f'Command being called is: {demisto.command()}')
 
@@ -5507,6 +5625,17 @@ def main():
         # Reboot Panorama Device
         elif demisto.command() == 'panorama-device-reboot':
             panorama_device_reboot_command()
+
+        # PAN-OS Set vulnerability to drop
+        elif demisto.command() == 'panorama-block-vulnerability':
+            panorama_block_vulnerability()
+
+        # Get pre-defined threats list from the firewall
+        elif demisto.command() == 'panorama-get-predefined-threats-list':
+            panorama_get_predefined_threats_list_command()
+
+        elif demisto.command() == 'panorama-show-location-ip':
+            panorama_show_location_ip_command()
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} was not implemented.')
