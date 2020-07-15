@@ -114,5 +114,15 @@ def test_decryption_rsa(tmpdir):
 
 
 def test_assertion_types_and_extension(tmpdir):
+    """
+    Given:
+    - both types and extensions arguments
+
+    When:
+    - Running script
+
+    Then:
+    - Validate AssertionError is raises as you shouldn't supply them both.
+    """
     with raises(AssertionError):
         upload_files('', tmpdir, types='1,2,3', extensions='1,2,3')
