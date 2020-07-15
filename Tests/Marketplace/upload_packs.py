@@ -319,6 +319,7 @@ def upload_id_set(storage_bucket, id_set_local_path=None):
     """
     if not id_set_local_path:
         print("Skipping upload of id set to gcs.")
+        return
 
     id_set_gcs_path = os.path.join(GCPConfig.STORAGE_CONTENT_PATH, 'id_set.json')
     blob = storage_bucket.blob(id_set_gcs_path)
@@ -675,8 +676,14 @@ def main():
             pack.cleanup()
             continue
 
-        # in case that pack already exist at cloud storage path, skipped further steps
-        if skipped_pack_uploading:
+        task_status, exists_in_index = pack.check_if_exists_in_index(index_folder_path)
+        if not task_status:
+            pack.status = PackStatus.FAILED_SEARCHING_PACK_IN_INDEX.name
+            pack.cleanup()
+            continue
+
+        # in case that pack already exist at cloud storage path and in index, skipped further steps
+        if skipped_pack_uploading and exists_in_index:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name
             pack.cleanup()
             continue
