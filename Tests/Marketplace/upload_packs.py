@@ -403,8 +403,11 @@ def update_index_with_priced_packs(private_storage_bucket, extract_destination_p
     private_packs = []
 
     try:
+        print_error(f"private_storage_bucket is: {}, ")
         private_index_path, private_index_blob = download_and_extract_index(private_storage_bucket,
                                                                             os.path.join(extract_destination_path, 'private'))
+        print_error(f"ls: {subprocess.check_output('ls')}")
+
         private_packs = get_private_packs(private_index_path)
         add_private_packs_to_index(index_folder_path, private_index_path)
         print("Finished updating index with priced packs")
