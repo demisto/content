@@ -369,7 +369,7 @@ class MITMProxy:
         # that way previously recorded or manually added keys will only be added upon and not wiped with an overwrite
         if record:
             silence_output(
-                self.ami.check, ['mv', repo_problem_keys_filepath, current_problem_keys_filepath], stdout='null'
+                self.ami.call, ['mv', repo_problem_keys_filepath, current_problem_keys_filepath], stdout='null'
             )
 
         script_filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'timestamp_replacer.py')
