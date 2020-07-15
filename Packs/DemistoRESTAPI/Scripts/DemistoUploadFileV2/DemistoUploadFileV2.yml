@@ -1,0 +1,41 @@
+commonfields:
+  id: DemistoUploadFileV2
+  version: -1
+enabled: true
+name: DemistoUploadFileV2
+fromversion: 5.0.0
+script: '-'
+args:
+- default: false
+  description: File entry ID
+  isArray: false
+  name: entryID
+  predefined:
+  - ''
+  required: true
+  secret: false
+- default: false
+  description: Incident ID to upload the file to
+  isArray: false
+  name: incidentID
+  required: true
+  secret: false
+- default: false
+  description: Request body
+  isArray: false
+  name: body
+  required: false
+  secret: false
+comment: Copies a file from this incident to the specified incident. The file is recorded
+  as an entry in the specified incident’s War Room.
+subtype: python3
+dockerimage: demisto/python3:3.8.3.9324
+system: false
+tags:
+- DemistoAPI
+timeout: '0'
+type: python
+runonce: false
+dependson:
+  must:
+  - demisto-api-multipart
