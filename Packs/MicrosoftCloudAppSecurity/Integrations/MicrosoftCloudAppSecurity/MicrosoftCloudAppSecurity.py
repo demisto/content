@@ -14,6 +14,7 @@ requests.packages.urllib3.disable_warnings()
 
 # CONSTANTS
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+MAX_INCIDENTS_TO_FETCH = 50
 
 
 class Client(BaseClient):
@@ -72,22 +73,21 @@ class Client(BaseClient):
         )
         return data
 
-    def list_incidents(self):
+    def list_incidents(self, filters, sort_dir="asc", sort_field='date', skip=0, limit=10):
         """
         returns dummy incident data, just for the example.
         """
-        return [
-            {
-                'incident_id': 1,
-                'description': 'Hello incident 1',
-                'created_time': datetime.utcnow().strftime(DATE_FORMAT)
-            },
-            {
-                'incident_id': 2,
-                'description': 'Hello incident 2',
-                'created_time': datetime.utcnow().strftime(DATE_FORMAT)
+        return self._http_request(
+            method='POST',
+            url_suffix=f'/alerts/',
+            json_data={
+                'filters': filters,
+                'sortDirection': sort_dir,
+                'sortField': sort_field,
+                'skip': skip,
+                'limit': limit
             }
-        ]
+        )
 
     # def microsoft_cas_username(self):
     #     microsoft_cas_username = demisto.args()['username']
@@ -102,6 +102,20 @@ class Client(BaseClient):
     #         return uid, saas
     #     except:
     #         return 'No username by that name exists.'
+
+
+def arg_to_int(arg, arg_name, required=False):
+    if arg is None:
+        if required is True:
+            raise ValueError(f'Missing "{arg_name}"')
+        return None
+    if isinstance(arg, str):
+        if arg.isdigit():
+            return int(arg)
+        raise ValueError(f'Invalid number: "{arg_name}"="{arg}"')
+    if isinstance(arg, int):
+        return arg
+    raise ValueError(f'Invalid number: "{arg_name}"')
 
 
 def convert_severity(severity):
@@ -291,6 +305,19 @@ def args_to_json_dismiss_and_resolve_alerts(alert_ids, customer_filters, comment
     return request_data
 
 
+def params_to_filter(all_params):
+    filters = {}
+    if 'severity' in all_params.keys():
+        filters['severity'] = {'eq': convert_severity(all_params['severity'])}
+    if 'resolution_status' in all_params.keys():
+        filters['resolutionStatus'] = {'eq': convert_resolution_status(all_params['resolution_status'])}
+    if 'service' in all_params.keys():
+        filters['service'] = {'eq': (all_params['service'])}
+    if 'instance' in all_params.keys():
+        filters['instance'] = {'eq': (all_params['instance'])}
+    return filters
+
+
 def test_module(client):
     try:
         client.alert_list(url_suffix='/alerts/', request_data={"severity": {"eq": 0}})
@@ -422,21 +449,12 @@ def users_accounts_list_command(client, args):
     )
 
 
-def fetch_incidents(client, last_run, first_fetch_time):
-    """
-    This function will execute each interval (default is 1 minute).
+def fetch_incidents(client, max_results, last_run, first_fetch_time, filters):
 
-    Args:
-        client (Client): HelloWorld client
-        last_run (dateparser.time): The greatest incident created_time we fetched from last fetch
-        first_fetch_time (dateparser.time): If last_run is None then fetch all incidents since first_fetch_time
-
-    Returns:
-        next_run: This will be last_run in the next fetch-incidents
-        incidents: Incidents that will be created in Demisto
-    """
     # Get the last fetch time, if exists
     last_fetch = last_run.get('last_fetch')
+    previous_alerts = last_run.get('previous_alerts', '').split(',')
+    current_alerts = []
 
     # Handle first time fetch
     if last_fetch is None:
@@ -446,22 +464,27 @@ def fetch_incidents(client, last_run, first_fetch_time):
 
     latest_created_time = last_fetch
     incidents = []
-    items = client.list_incidents()
-    for item in items:
-        incident_created_time = dateparser.parse(item['created_time'])
-        incident = {
-            'name': item['description'],
-            'occurred': incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
-            'rawJSON': json.dumps(item)
-        }
+    filters["date"] = {"gte" : latest_created_time}
+    alerts = client.list_incidents(filters, limit=max_results)
 
-        incidents.append(incident)
+    for alert in alerts:
+        incident_created_time = dateparser.parse(alert['created_time'])
+        incident = {
+            'name': alert['title'],
+            'occurred': incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
+            'rawJSON': json.dumps(alert),
+            # 'severity': convert_severity(alert.get('severity', 1))
+        }
+        if alert["_id"] not in previous_alerts:
+            incidents.append(incident)
+        current_alerts.append(alert["_id"])
 
         # Update last run and add incident if the incident is newer than last fetch
         if incident_created_time > latest_created_time:
             latest_created_time = incident_created_time
+    prev_alerts = str(','.join(current_alerts))
 
-    next_run = {'last_fetch': latest_created_time.strftime(DATE_FORMAT)}
+    next_run = {'last_fetch': latest_created_time.strftime(DATE_FORMAT), 'previous_alerts' : prev_alerts}
     return next_run, incidents
 
 
@@ -495,11 +518,28 @@ def main():
             demisto.results(result)
 
         elif demisto.command() == 'fetch-incidents':
+
             # Set and define the fetch incidents command to run after activated via integration settings.
+            params = demisto.params()
+
+            all_params = assign_params(severity=params.get('severity'), resolution_status=params.get('resolution_status'),
+                                       service=params.get('service'), instance=params.get('instance'))
+            filters = params_to_filter(all_params)
+
+            max_results = arg_to_int(
+                arg=demisto.params().get('max_fetch'),
+                arg_name='max_fetch',
+                required=False
+            )
+            if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
+                max_results = MAX_INCIDENTS_TO_FETCH
+
             next_run, incidents = fetch_incidents(
                 client=client,
+                max_results=max_results,
                 last_run=demisto.getLastRun(),
-                first_fetch_time=first_fetch_time)
+                first_fetch_time=first_fetch_time,
+                filters=filters)
 
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
