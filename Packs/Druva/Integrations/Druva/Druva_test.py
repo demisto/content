@@ -101,8 +101,8 @@ def test_Druva_DeleteQuarantineRange_Command(requests_mock):
     resource_id = '12345'
     range_id = '100'
 
-    response = Druva_DeleteQuarantineRange_Command(client, resource_id, range_id)
-    assert response[1]["Druva.deletedQuarantineRange(val.rangeID == obj.rangeID)"] == '100'
+    _, _, response = Druva_DeleteQuarantineRange_Command(client, resource_id, range_id)
+    assert response["rangeID"] == '100'
 
 
 def test_Druva_ViewQurantineRange_Command(requests_mock):
@@ -201,8 +201,8 @@ def test_Druva_DeleteQuarantined_Snapshots_Command(requests_mock):
     resource_id = '28604'
     range_id = '233'
     snapshot_id = 'TW9uIE1heSAgNCAxNTowMjo0MSAyMDIw'
-    response = Druva_DeleteQuarantined_Snapshots_Command(client, resource_id, range_id, snapshot_id)
-    assert response[1]["Druva.deletedSnapshots(val.snapshotID == obj.snapshotID)"] == 'TW9uIE1heSAgNCAxNTowMjo0MSAyMDIw'
+    _, _, response = Druva_DeleteQuarantined_Snapshots_Command(client, resource_id, range_id, snapshot_id)
+    assert response['snapshotID'] == 'TW9uIE1heSAgNCAxNTowMjo0MSAyMDIw'
 
 
 def test_Druva_SearchbyFileHash_Command(requests_mock):
