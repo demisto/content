@@ -45,20 +45,29 @@ script:
   commands:
   - arguments:
     - default: false
-      defaultValue: '50'
-      description: Maximum number of records returned by the request.
+      description: |-
+        Multiple alerts matching the specified filters.
+        Alert_id should be like this template - "55af7415f8a0a7a29eef2e1f".
       isArray: false
-      name: limit
+      name: alert_ids
       required: false
       secret: false
     - default: false
+      description: Filter that the customer builds himself.
       isArray: false
+      name: customer_filters
+      required: false
+      secret: false
+    - default: false
+      description: Comment about why the alerts are dismissed.
+      isArray: false
+      name: comment
       required: false
       secret: false
     deprecated: false
-    description: Hello command - prints hello to anyone
+    description: Command to dismiss multiple alerts matching the specified filters.
     execution: false
-    name: helloworld-say-hello
+    name: microsoft-cas-alert-dismiss-bulk
     outputs:
     - contextPath: hello
       description: Should be Hello **something** here
@@ -124,10 +133,325 @@ script:
       name: alert_id
       required: false
       secret: false
+    - default: false
+      description: Username. (Usually its an email address)
+      isArray: false
+      name: username
+      required: false
+      secret: false
     deprecated: false
     description: List alerts command - prints list alerts
     execution: false
     name: microsoft-cas-alerts-list
+  - arguments:
+    - default: false
+      description: |-
+        Multiple alerts matching the specified filters.
+        Alert_id should be like this template - "55af7415f8a0a7a29eef2e1f".
+      isArray: false
+      name: alert_ids
+      required: false
+      secret: false
+    - default: false
+      description: Filter that the customer builds himself.
+      isArray: false
+      name: customer_filters
+      required: false
+      secret: false
+    - default: false
+      description: Comment about why the alerts are dismissed.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    deprecated: false
+    description: Command to resolve multiple alerts matching the specified filters.
+    execution: false
+    name: microsoft-cas-alert-resolve-bulk
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: Skips the specified number of records.
+      isArray: false
+      name: skip
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ' 50'
+      description: Maximum number of records returned by the request.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Filter activities related to the specified service appID.
+      isArray: false
+      name: 'service '
+      required: false
+      secret: false
+    - default: false
+      description: Filter activities from specified instances.
+      isArray: false
+      name: instance
+      required: false
+      secret: false
+    - default: false
+      description: Filter activities originating from the given IP address.
+      isArray: false
+      name: 'ip '
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter activities with the specified subnet categories.
+      isArray: false
+      name: 'ip_category '
+      predefined:
+      - Corporate
+      - Administrative
+      - Risky
+      - VPN
+      - Cloud_provider
+      - Other
+      required: false
+      secret: false
+    - default: false
+      description: Filter activities by the user who performed the activity.
+      isArray: false
+      name: username
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter activities by the actions taken on them.
+      isArray: false
+      name: taken_action
+      predefined:
+      - block
+      - proxy
+      - BypassProxy
+      - encrypt
+      - decrypt
+      - verified
+      - encryptionFailed
+      - protect
+      - verify
+      - 'null'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter all activities by source type.
+      isArray: false
+      name: source
+      predefined:
+      - Access_control
+      - Session_control
+      - App_connector
+      - App_connector_analysis
+      - Discovery
+      - MDATP
+      required: false
+      secret: false
+    - default: false
+      description: Filter that the customer builds himself. (If the customer use "customer_filters"
+        other filters will not work)
+      isArray: false
+      name: customer_filters
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the activity.
+      isArray: false
+      name: activity_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Command for list of activities matching the specified filters.
+    execution: false
+    name: microsoft-cas-activities-list
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: Skips the specified number of records.
+      isArray: false
+      name: skip
+      required: false
+      secret: false
+    - default: false
+      description: Maximum number of records returned by the request.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Filter files from specified app appID.
+      isArray: false
+      name: service
+      required: false
+      secret: false
+    - default: false
+      description: Filter files from specified instances.
+      isArray: false
+      name: instance
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter files with the specified file type.
+      isArray: false
+      name: file_type
+      predefined:
+      - Other
+      - Document
+      - Spreadsheet
+      - Presentation
+      - Text
+      - Image
+      - Folder
+      required: false
+      secret: false
+    - default: false
+      description: Filter files owned by specified entities.
+      isArray: false
+      name: owner
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter files with the specified sharing levels.
+      isArray: false
+      name: sharing
+      predefined:
+      - Private
+      - Internal
+      - External
+      - Public
+      - Public_Internet
+      required: false
+      secret: false
+    - default: false
+      description: Filter files by a given file extension.
+      isArray: false
+      name: extension
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter Is the file quarantined.
+      isArray: false
+      name: quarantined
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
+      description: Filter that the customer builds himself. (If the customer use "customer_filters"
+        other filters will not work)
+      isArray: false
+      name: customer_filters
+      required: false
+      secret: false
+    - default: false
+      description: Filter by file id
+      isArray: false
+      name: file_id
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: microsoft-cas-files-list
+  - arguments:
+    - default: false
+      description: Skips the specified number of records.
+      isArray: false
+      name: skip
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: |
+        Maximum number of records returned by the request
+      isArray: false
+      name: limit
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - default: false
+      description: Filter entities using services with the specified SaaS ID.
+      isArray: false
+      name: app
+      required: false
+      secret: false
+    - default: false
+      description: Filter entities using services with the specified Appstances.
+      isArray: false
+      name: instance
+      required: false
+      secret: false
+    - default: false
+      description: Filter entities by their type.
+      isArray: false
+      name: type
+      required: false
+      secret: false
+    - default: false
+      description: Filter entities with specific entities pks. If a user is selected,
+        will also return all of its accounts.
+      isArray: false
+      name: username
+      required: false
+      secret: false
+    - default: false
+      description: Filter entities by their associated group IDs.
+      isArray: false
+      name: group_id
+      required: false
+      secret: false
+    - default: false
+      description: Filter entities that are admins.
+      isArray: false
+      name: is_admin
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The entity's affiliation.
+      isArray: false
+      name: is_external
+      predefined:
+      - External
+      - Internal
+      - No_value
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter entities by status.
+      isArray: false
+      name: status
+      predefined:
+      - N/A
+      - Staged
+      - Active
+      - Suspended
+      - Deleted
+      required: false
+      secret: false
+    - default: false
+      description: Filter that the customer builds himself. (If the customer use "customer_filters"
+        other filters will not work)
+      isArray: false
+      name: customer_filters
+      required: false
+      secret: false
+    deprecated: false
+    description: Command for basic information about the users and accounts using
+      your organization's cloud apps.
+    execution: false
+    name: microsoft-cas-users-accounts-list
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: true
