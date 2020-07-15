@@ -586,8 +586,11 @@ def credentials(credentials):
     """(Integration only)
     For integrations that support fetching credentials. Send the fetched credentials to the server.
 
-    :return: Credentials object
-    :rtype: ``dict``
+    :type credentials: ``list``
+    :param credentials: List of credential objects
+
+    :return: No data returned
+    :rtype: ``None``
     """
     log("credentials: {}".format(credentials))
 
@@ -724,7 +727,7 @@ def getIntegrationContextVersioned(refresh=False):
 
 
 def incidents(incidents=None):
-    """(Integration only)
+    """
     In script, retrieves the `Incidents` list from the context
     In integration, used to return incidents to the server
 
