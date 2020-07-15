@@ -33,7 +33,8 @@ class Client(BaseClient):
 
     def bonusly_test(self):
         suffix = 'bonuses'
-        return self._http_request('GET', suffix)
+        self._http_request('GET', suffix)
+        return 'ok'
 
     def bonusly_list_bonuses_http_request(self, url_params) -> dict:
         """
@@ -346,6 +347,9 @@ def main():
 
     # Log exceptions
     except Exception as e:
+        if 'Error in API call [404]' in str(e):
+            return_error(f'Failed to execute {demisto.command()} command. Error: 404 Error URL Not Found Or Invalid')
+
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
