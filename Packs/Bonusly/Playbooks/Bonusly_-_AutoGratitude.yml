@@ -1,6 +1,7 @@
 id: Bonusly - AutoGratitude
 version: -1
 name: Bonusly - AutoGratitude
+description: "AutoGratitude is a playbook to give back a positive gratitude to security engineers and developers when they successfully complete an SLA"
 starttaskid: "0"
 tasks:
   "0":
@@ -281,3 +282,5 @@ inputs:
     met the SLA agreement. '
   playbookInputQuery: null
 outputs: []
+tests:
+  -  No tests
