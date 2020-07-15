@@ -660,7 +660,7 @@ def getArg(arg):
     Extracts given argument from the arguments object
 
     :type arg: ``str``
-    :param param: Argument to get value of
+    :param arg: Argument to get value of
 
     :return: Argument value
     :rtype: ``str``
