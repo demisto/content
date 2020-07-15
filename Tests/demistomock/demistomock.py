@@ -467,7 +467,7 @@ def gets(obj, field):
 
 def context():
     """
-    Retrieves the context data object of the incident ran in
+    Retrieves the context data object of the current incident
 
     :return: Context data object
     :rtype: ``dict``
