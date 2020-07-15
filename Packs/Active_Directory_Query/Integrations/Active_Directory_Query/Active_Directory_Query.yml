@@ -374,6 +374,13 @@ script:
     - name: attributes
       description: CSV list of attributes to include in the results, in addition to the
         default attributes.
+    - default: false
+      defaultValue: '180'
+      description: Time limit (in seconds) for the search to run.
+      isArray: false
+      name: time_limit
+      required: false
+      secret: false
     outputs:
     - contextPath: 'ActiveDirectory.Groups.dn'
       description: The DN of the group.
@@ -413,7 +420,7 @@ script:
       required: true
     description: Deletes an existing Active Directory security or distribution group.
     execution: true
-  dockerimage: demisto/ldap:1.0.0.75
+  dockerimage: demisto/ldap:1.0.0.8854
   runonce: false
 tests:
   - Active Directory Test
