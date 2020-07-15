@@ -1,6 +1,6 @@
 . $PSScriptRoot\CommonServerPowerShell.ps1
 
-# Silence write-progress
+# Silence write-progress trigger test
 $Test = $False
 $progressPreference = 'silentlyContinue'
 
