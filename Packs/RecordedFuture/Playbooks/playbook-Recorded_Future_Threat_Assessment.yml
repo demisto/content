@@ -194,7 +194,7 @@ tasks:
       id: e9f5bca8-94bd-4b41-83b4-b97b9f47599b
       version: -1
       name: Get Threat Assessment from Recorded Future
-      description: Get an indicator of the risk based on context.
+      description: Get an indication of the risk based on context.
       script: Recorded Future v2|||recordedfuture-threat-assessment
       type: regular
       iscommand: true
@@ -363,22 +363,22 @@ outputs:
   description: The actual score
   type: number
 - contextPath: File.SHA256
-  description: File SHA-256
+  description: SHA-256
   type: string
 - contextPath: File.SHA512
-  description: File SHA-512
+  description: SHA-512
   type: string
 - contextPath: File.SHA1
-  description: File SHA-1
+  description: SHA-1
   type: string
 - contextPath: File.MD5
-  description: File MD5
+  description: MD5
   type: string
 - contextPath: File.CRC32
-  description: File CRC32
+  description: CRC32
   type: string
 - contextPath: File.CTPH
-  description: File CTPH
+  description: CTPH
   type: string
 - contextPath: IP.Address
   description: IP address
