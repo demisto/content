@@ -32,6 +32,16 @@ configuration:
   name: use_url_filtering
   required: false
   type: 8
+- display: URL Filtering Additional suspicious categories. CSV list of categories that will be considered suspicious.
+  name: additional_suspicious
+  defaultvalue: ""
+  type: 12
+  required: false
+- display: URL Filtering Additional malicious categories. CSV list of categories that will be considered malicious.
+  name: additional_malicious
+  defaultvalue: ""
+  type: 12
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   required: false

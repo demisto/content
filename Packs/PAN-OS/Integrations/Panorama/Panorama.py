@@ -1,6 +1,4 @@
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 ''' IMPORTS '''
 from datetime import datetime
@@ -19,7 +17,7 @@ if not demisto.params().get('port'):
 URL = demisto.params()['server'].rstrip('/:') + ':' + demisto.params().get('port') + '/api/'
 API_KEY = str(demisto.params().get('key'))
 USE_SSL = not demisto.params().get('insecure')
-USE_URL_FILTERING = demisto.params().get('use_url_filtering') == 'true'
+USE_URL_FILTERING = demisto.params().get('use_url_filtering')
 
 # determine a vsys or a device-group
 VSYS = demisto.params().get('vsys')
@@ -106,6 +104,7 @@ PAN_OS_ERROR_DICT = {
 
 class PAN_OS_Not_Found(Exception):
     """ PAN-OS Error. """
+
     def __init__(self, *args):  # real signature unknown
         pass
 
@@ -126,7 +125,8 @@ def http_request(uri: str, method: str, headers: Dict = {},
     )
 
     if result.status_code < 200 or result.status_code >= 300:
-        raise Exception('Request Failed. with status: ' + str(result.status_code) + '. Reason is: ' + str(result.reason))
+        raise Exception(
+            'Request Failed. with status: ' + str(result.status_code) + '. Reason is: ' + str(result.reason))
 
     # if pcap download
     if params.get('type') == 'export':
@@ -577,7 +577,8 @@ def panorama_commit_status_command():
     # WARNINGS - Job warnings
     status_warnings = []
     if result.get("response", {}).get('result', {}).get('job', {}).get('warnings', {}):
-        status_warnings = result.get("response", {}).get('result', {}).get('job', {}).get('warnings', {}).get('line', [])
+        status_warnings = result.get("response", {}).get('result', {}).get('job', {}).get('warnings', {}).get('line',
+                                                                                                              [])
     ignored_error = 'configured with no certificate profile'
     commit_status_output["Warnings"] = [item for item in status_warnings if item not in ignored_error]
 
@@ -586,7 +587,8 @@ def panorama_commit_status_command():
         'ContentsFormat': formats['json'],
         'Contents': result,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Commit status:', commit_status_output, ['JobID', 'Status', 'Details', 'Warnings'],
+        'HumanReadable': tableToMarkdown('Commit status:', commit_status_output,
+                                         ['JobID', 'Status', 'Details', 'Warnings'],
                                          removeNull=True),
         'EntryContext': {"Panorama.Commit(val.JobID == obj.JobID)": commit_status_output}
     })
@@ -2234,11 +2236,19 @@ def calculate_dbot_score(category: str):
     Returns:
         dbot score.
     """
+    predefined_suspicious = ['high-risk', 'medium-risk', 'hacking', 'proxy-avoidance-and-anonymizers', 'grayware',
+                             'not-resolved']
+    additional_suspicious = argToList(demisto.params().get('additional_suspicious'))
+    suspicious_categories = list((set(additional_suspicious)).union(set(predefined_suspicious)))
+
+    predefined_malicious = ['phishing', 'command-and-control', 'malware']
+    additional_malicious = argToList(demisto.params().get('additional_malicious'))
+    malicious_categories = list((set(additional_malicious)).union(set(predefined_malicious)))
+
     dbot_score = 1
-    if category in ['phishing', 'command-and-control', 'malware']:
+    if category in malicious_categories:
         dbot_score = 3
-    elif category in ['high-risk', 'medium-risk', 'hacking', 'proxy-avoidance-and-anonymizers', 'grayware',
-                      'not-resolved']:
+    elif category in suspicious_categories:
         dbot_score = 2
     elif category == 'unknown':
         dbot_score = 0
@@ -3456,9 +3466,10 @@ def panorama_edit_edl(edl_name, element_to_change, element_value):
     edl_output = {'Name': edl_name}
     if DEVICE_GROUP:
         edl_output['DeviceGroup'] = DEVICE_GROUP
-    params = {'action': 'edit', 'type': 'config', 'key': API_KEY,
-              'xpath': XPATH_OBJECTS + "external-list/entry[@name='" + edl_name + "']/type/"
-                        + edl_type + "/" + element_to_change}
+    params = {
+        'action': 'edit', 'type': 'config', 'key': API_KEY,
+        'xpath': f"{XPATH_OBJECTS}external-list/entry[@name='{edl_name}']/type/{edl_type}/{element_to_change}"
+    }
 
     if element_to_change == 'url':
         params['element'] = add_argument_open(element_value, 'url', False)
@@ -4144,7 +4155,8 @@ def panorama_query_logs(log_type, number_of_logs, query, address_src, address_ds
         params['query'] = query
     else:
         if ip_ and (address_src or address_dst):
-            raise Exception('The ip argument cannot be used with the address-source or the address-destination arguments.')
+            raise Exception(
+                'The ip argument cannot be used with the address-source or the address-destination arguments.')
         params['query'] = build_logs_query(address_src, address_dst, ip_,
                                            zone_src, zone_dst, time_generated, action,
                                            port_dst, rule, url, filedigest)
@@ -4389,7 +4401,8 @@ def panorama_get_logs_command():
             })
         else:  # FIN
             query_logs_output['Status'] = 'Completed'
-            if 'response' not in result or 'result' not in result['response'] or 'log' not in result['response']['result'] \
+            if 'response' not in result or 'result' not in result['response'] or 'log' not in result['response'][
+                'result'] \
                     or 'logs' not in result['response']['result']['log']:
                 raise Exception('Missing logs in response.')
 
@@ -4696,7 +4709,7 @@ def panorama_add_static_route(xpath_network: str, virtual_router: str, static_ro
         'type': 'config',
         'key': API_KEY,
         'xpath': f'{xpath_network}/virtual-router/entry[@name=\'{virtual_router}\']/'
-                f'routing-table/ip/static-route/entry[@name=\'{static_route_name}\']',
+                 f'routing-table/ip/static-route/entry[@name=\'{static_route_name}\']',
         'element': f'<destination>{destination}</destination>'
                    f'<nexthop><{nexthop_type}>{nexthop_value}</{nexthop_type}></nexthop>'
     }
