@@ -1,10 +1,10 @@
 {
-    "id": "accountRep",
-    "group": "indicator",
-    "name": "Account Indicator",
+	"id": "accountRep",
+	"group": "indicator",
+	"name": "Account Indicator",
 	"description": "",
-    "version": -1,
-    "fromVersion": "6.0.0",
+	"version": -1,
+	"fromVersion": "6.0.0",
     "indicatorsDetails": {
         "tabs": [
 			{
