@@ -30,7 +30,7 @@ args:
   secret: false
 comment: Parse list by header and value.
 commonfields:
-  id: getListRow
+  id: GetListRow
   version: -1
 enabled: true
 name: GetListRow
