@@ -3,6 +3,7 @@ import os
 import pytest
 from PcapFileExtractor import InclusiveExclusive, filter_files, upload_files
 from magic import Magic
+from pytest import raises
 
 OUTPUTS = [
     {
@@ -53,7 +54,7 @@ class TestFilter:
         - Validate the file list that got back is the same as expected.
         """
         mocker.patch.object(Magic, 'from_file', return_value=type_from_magic)
-        assert expected == filter_files('/.', files, types=types, types_inclusive_or_exclusive=exclusive_or_inclusive)
+        assert expected == filter_files('/.', files, types=types, inclusive_or_exclusive=exclusive_or_inclusive)
 
     @pytest.mark.parametrize(
         'files, extensions, exclusive_or_inclusive, expected', [
@@ -73,7 +74,7 @@ class TestFilter:
         - Validate the file list that got back is the same as expected.
         """
         assert expected == filter_files('/.', files, extensions=extensions,
-                                        extensions_inclusive_or_exclusive=exclusive_or_inclusive)
+                                        inclusive_or_exclusive=exclusive_or_inclusive)
 
 
 def test_decryption_wpa_pwd(tmpdir):
@@ -110,3 +111,8 @@ def test_decryption_rsa(tmpdir):
     key_path = './TestData/rsa.key'
     results = upload_files(file_path, tmpdir, rsa_path=key_path)
     assert 5 == len(results.outputs)
+
+
+def test_assertion_types_and_extension(tmpdir):
+    with raises(AssertionError):
+        upload_files('', tmpdir, types='1,2,3', extensions='1,2,3')

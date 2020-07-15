@@ -26,7 +26,8 @@ args:
   required: false
   secret: false
 - default: false
-  description: 'A comma-separated list of file extensions to include/exclude for example, image/gif.'
+  description: 'A comma-separated list of file extensions to include/exclude for example,
+    image/gif.'
   isArray: false
   name: types
   required: false
@@ -34,35 +35,27 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: inclusive
-  description: Is the type list inclusive or exclusive. Can be "inclusive" or "exclusive". Default is "inclusive".
+  description: Is the type/extensions list inclusive or exclusive. Can be "inclusive"
+    or "exclusive". Default is "inclusive".
   isArray: false
-  name: types_inclusive_or_exclusive
+  name: inclusive_or_exclusive
   predefined:
   - inclusive
   - exclusive
   required: false
   secret: false
 - default: false
-  description: 'A comma-separated list of MIME file types to include/exclude, for example, image/png.'
+  description: 'A comma-separated list of MIME file types to include/exclude, for
+    example, image/png. Can not combine with the extensions argument.'
   isArray: false
   name: types
   required: false
   secret: false
 - default: false
-  description: 'A comma-separated list of file extensions to include/exclude, for example, image/png.'
+  description: 'A comma-separated list of file extensions to include/exclude, for
+    example, image/png. Can not combine with the types argument.'
   isArray: false
   name: extensions
-  required: false
-  secret: false
-- auto: PREDEFINED
-  default: false
-  defaultValue: inclusive
-  description: Is the extension inclusive or exclusive. Can be "inclusive" or "exclusive". Default is "inclusive".
-  isArray: false
-  name: extensions_inclusive_or_exclusive
-  predefined:
-  - inclusive
-  - exclusive
   required: false
   secret: false
 comment: This automation extracts all possible files from a PCAP file.

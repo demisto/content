@@ -49,8 +49,7 @@ def filter_files(
         root: str, files: List[str],
         types: Optional[Set[str]] = None,
         extensions: Optional[Set[str]] = None,
-        types_inclusive_or_exclusive: Optional[str] = None,
-        extensions_inclusive_or_exclusive: Optional[str] = None
+        inclusive_or_exclusive: Optional[str] = None,
 ) -> List[str]:
     """Filtering files by its MIME type and file extension.
 
@@ -59,8 +58,7 @@ def filter_files(
         files: files to filter
         types: types to filter by.
         extensions: extensions to filter by.
-        types_inclusive_or_exclusive: should types set be inclusive or exclusive
-        extensions_inclusive_or_exclusive: should extensions set be inclusive or exclusive
+        inclusive_or_exclusive: should extensions/types set be inclusive or exclusive
 
     Returns:
         Filtered file list.
@@ -71,10 +69,10 @@ def filter_files(
         if types:
             mime_type = magic_mime.from_file(os.path.join(root, file))
             # Inclusive types, take only the types in the list.
-            if types_inclusive_or_exclusive == InclusiveExclusive.INCLUSIVE and mime_type not in types:
+            if inclusive_or_exclusive == InclusiveExclusive.INCLUSIVE and mime_type not in types:
                 files.remove(file)
             # Exclusive types, don't take those files.
-            elif types_inclusive_or_exclusive == InclusiveExclusive.EXCLUSIVE and mime_type in types:
+            elif inclusive_or_exclusive == InclusiveExclusive.EXCLUSIVE and mime_type in types:
                 files.remove(file)
         if extensions:
             # strip `.` from extension
@@ -82,10 +80,10 @@ def filter_files(
             # Get file extension without a leading point.
             f_ext = os.path.splitext(file)[1].split('.')[-1]
             # Inclusive extensions, take only the types in the list.
-            if extensions_inclusive_or_exclusive == InclusiveExclusive.INCLUSIVE and f_ext not in extensions:
+            if inclusive_or_exclusive == InclusiveExclusive.INCLUSIVE and f_ext not in extensions:
                 files.remove(file)
             # Exclude extensions, don't take those files.
-            elif extensions_inclusive_or_exclusive == InclusiveExclusive.EXCLUSIVE and f_ext in extensions:
+            elif inclusive_or_exclusive == InclusiveExclusive.EXCLUSIVE and f_ext in extensions:
                 files.remove(file)
     return files
 
@@ -93,8 +91,7 @@ def filter_files(
 def upload_files(
         file_path: str, dir_path: str,
         types: Optional[Set[str]] = None, extensions: Optional[Set[str]] = None,
-        types_inclusive_or_exclusive: Optional[str] = None,
-        extensions_inclusive_or_exclusive: Optional[str] = None,
+        inclusive_or_exclusive: Optional[str] = None,
         wpa_pwd: Optional[str] = None,
         rsa_path: Optional[str] = None,
         limit: int = 5
@@ -106,8 +103,7 @@ def upload_files(
         dir_path: dir path for the files
         types: types to filter by.
         extensions: extensions to filter by.
-        types_inclusive_or_exclusive: should types set be inclusive or exclusive
-        extensions_inclusive_or_exclusive: should extensions set be inclusive or exclusive
+        inclusive_or_exclusive: should types/extensions set be inclusive or exclusive
         wpa_pwd: password to the file (if WPA-PWD protected)
         rsa_path: path to a private key file (if TLS encrypted)
         limit: maximum files to extract (default 5)
@@ -116,6 +112,7 @@ def upload_files(
         Extracted files to download
 
     """
+    assert not (types and extensions), 'Provide only types or extensions, not both.'
     command = ['tshark', '-r', f'{file_path}', '--export-objects', f'http,{dir_path}',
                '--export-objects', f'smb,{dir_path}', '--export-objects', f'imf,{dir_path}',
                '--export-objects', f'tftp,{dir_path}', '--export-objects', f'dicom,{dir_path}']
@@ -144,8 +141,8 @@ def upload_files(
         files = filter_files(root, files,
                              types=types,
                              extensions=extensions,
-                             extensions_inclusive_or_exclusive=extensions_inclusive_or_exclusive,
-                             types_inclusive_or_exclusive=types_inclusive_or_exclusive)
+                             inclusive_or_exclusive=inclusive_or_exclusive
+                             )
         for file in files:
             file_path = os.path.join(root, file)
             file_name = os.path.join(file)
@@ -184,9 +181,8 @@ def main(
         wpa_password: Optional[str] = None,
         rsa_decrypt_key_entry_id: Optional[str] = None,
         types: Optional[str] = None,
-        types_inclusive_or_exclusive: Optional[str] = 'inclusive',
+        inclusive_or_exclusive: Optional[str] = 'inclusive',
         extensions: Optional[str] = None,
-        extensions_inclusive_or_exclusive: str = 'inclusive',
         limit: str = '5',
 ):
     """Exports a PCAP file and returns them to the context.
@@ -196,9 +192,8 @@ def main(
         wpa_password: password for WPA-PWD protected files. <password> or <host>:<password>
         rsa_decrypt_key_entry_id: Entry ID of a RSA key.
         types: A CSV list of types.
-        types_inclusive_or_exclusive: Should types be inclusive or exclusive
         extensions: A CSV list of extensions.
-        extensions_inclusive_or_exclusive: Should extensions be inclusive or exclusive
+        inclusive_or_exclusive: Should types/extensions be inclusive or exclusive
         limit: Maximum of files to export from PCAP file
 
     Raises:
@@ -212,8 +207,7 @@ def main(
                 file_path, dir_path,
                 types=set(argToList(types)),
                 extensions=set(argToList(extensions)),
-                types_inclusive_or_exclusive=types_inclusive_or_exclusive,
-                extensions_inclusive_or_exclusive=extensions_inclusive_or_exclusive,
+                inclusive_or_exclusive=inclusive_or_exclusive,
                 wpa_pwd=wpa_password,
                 rsa_path=cert_path,
                 limit=int(limit) if limit else 5
