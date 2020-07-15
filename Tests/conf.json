@@ -2888,7 +2888,8 @@
         "Cortex XDR - IOC - Test": "issue #25598",
         "Create Phishing Classifier V2 ML Test": "Issue 26341",
         "DuoAdmin API test playbook": "Issue 24937",
-        "Mail Sender (New) Test": "Issue 25602"
+        "Mail Sender (New) Test": "Issue 25602",
+        "HTTPListRedirects Basic Test": "Issue 26617"
     },
     "skipped_integrations": {
         
