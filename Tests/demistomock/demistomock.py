@@ -607,7 +607,7 @@ def getFilePath(id):
 
 def investigation():
     """
-    Retrieves the ID of the investigation in which being ran in
+    Retrieves the ID of the investigation in which being run in
 
     :return: Object contains the investigation ID
     :rtype: ``dict``
