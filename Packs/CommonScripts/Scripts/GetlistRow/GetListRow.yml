@@ -1,18 +1,18 @@
 args:
 - default: false
-  description: Value to search for (You also need to enter header)
+  description: Value to search for (You also need to enter header).
   isArray: false
   name: value
   required: false
   secret: false
 - default: false
-  description: Header to search in (You also need to enter value)
+  description: Header to search in (You also need to enter value)/
   isArray: false
   name: header
   required: false
   secret: false
 - default: false
-  description: The list name to search in
+  description: The list name to search in.
   isArray: false
   name: list_name
   required: true
@@ -20,7 +20,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'False'
-  description: Parse all the list
+  description: Parse all the list into the context.
   isArray: false
   name: parse_all
   predefined:
@@ -28,25 +28,25 @@ args:
   - 'False'
   required: false
   secret: false
-comment: Parse list by header and value
+comment: Parse list by header and value.
 commonfields:
   id: getListRow
   version: -1
 enabled: true
-name: getListRow
+name: GetListRow
 outputs:
-- contextPath: GetListRow.Header
-  description: Header to search in
+- contextPath: GetListRow.Result.Header
+  description: Header to search in.
   type: String
-- contextPath: GetListRow.Value
-  description: Value to search for
+- contextPath: GetListRow.Result.Value
+  description: Value to search for.
   type: String
-- contextPath: GetListRow.ListName
-  description: The list name to search in
+- contextPath: GetListRow.Result.List_Name
+  description: The list name to search in.
   type: String
-- contextPath: GetListRow.Results
-  description: Search results
-  type: Unknown
+- contextPath: GetListRow.Results.Parse_All
+  description: Parse all the list into the context.
+  type: String
 script: '-'
 subtype: python3
 system: false
