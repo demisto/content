@@ -531,7 +531,7 @@ def error(msg, *args):
     :type msg: ``str``
     :param msg: The message to be logged
 
-    :type args: ``dict``
+    :type args: ``tuple``
     :param args: Additional arguments to log
 
     :return: No data returned
