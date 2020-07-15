@@ -3,7 +3,7 @@ version: -1
 fromversion: 4.1.0
 name: Email Address Enrichment - Generic v2
 description: |-
-  Enrich email addresses.  Email address enrichment involves:
+  DEPRECATED. Use "Email Address Enrichment - Generic v2.1" playbook instead. Enrich email addresses.  Email address enrichment involves:
   - Getting information from Active Directory for internal addresses
   - Getting the domain-squatting reputation for external addresses
 starttaskid: "0"
@@ -622,4 +622,4 @@ outputs:
   description: The DBot score.
   type: number
 tests:
-  - Email Address Enrichment - Generic v2 - Test
+  - No tests

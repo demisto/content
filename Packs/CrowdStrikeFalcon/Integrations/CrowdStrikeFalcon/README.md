@@ -23,22 +23,6 @@ The CrowdStrike Falcon OAuth 2 API integration (formerly Falcon Firehose API), e
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-1.  cs-falcon-search-device
-2.  cs-falcon-get-behavior
-3.  cs-falcon-search-detection
-4.  cs-falcon-resolve-detection
-5.  cs-falcon-contain-host
-6.  cs-falcon-lift-host-containment
-7.  cs-falcon-run-command
-8.  cs-falcon-upload-script
-9.  cs-falcon-upload-file
-10. cs-falcon-delete-file
-11. cs-falcon-get-file
-12. cs-falcon-list-files
-13. cs-falcon-get-script
-14. cs-falcon-delete-script
-15. cs-falcon-list-scripts
-16. cs-falcon-run-script
 
 ### 1. Search for a device
 
