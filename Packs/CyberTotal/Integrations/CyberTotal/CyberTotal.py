@@ -18,72 +18,6 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 class Client(BaseClient):
 
-    def test_connection(self) -> Dict[str, Any]:
-        """Gets connection to CyberTotal
-
-        :return: dict containing success status
-        :rtype: ``Dict[str, Any]``
-        """
-        self._http_request(
-            method='GET',
-            headers={'Connection': 'keep-alive', 'Host': 'cybertotal.cycraft.com'},
-            url_suffix=f'/account/login'
-        )
-        return {'status': 'success'}
-
-    def test_get_reputaion(self) -> Dict[str, Any]:
-        """Gets A IP Sample reputation using the '/_api/search/ip/basic' API endpoint
-
-        :return: dict containing the IP Sample reputation as returned from the API
-        :rtype: ``Dict[str, Any]``
-        """
-        cybertotal_result = self._http_request(
-            method='GET',
-            url_suffix=f'/_api/search/ip/basic/1.1.1.1'
-        )
-        if 'task_state' in cybertotal_result:
-            return {'task_state': cybertotal_result['task_state'], 'message': 'this search is in progress, try again later...'}
-
-        scan_time = str(cybertotal_result['scan_time'])
-        permalink = cybertotal_result['url']
-        url_path = urlparse(permalink).path
-        (rp_left, rp_match, task_id) = url_path.rpartition('/')
-
-        result = {
-            "permalink": permalink,
-            "resource": '1.1.1.1',
-            "positive_detections": 0,
-            "detection_engines": 0,
-            "scan_date": dateparser.parse(scan_time).strftime("%Y-%m-%d %H:%M:%S"),
-            "task_id": task_id,
-            "detection_ratio": "0/0"
-        }
-
-        if 'basic' not in cybertotal_result:
-            result["message"] = "search success with no basic in cybertotal result"
-            return result
-        if 'BasicInfo' not in cybertotal_result['basic']:
-            result["message"] = "search success with no BasicInfo in cybertotal result"
-            return result
-        positive_detections = 0
-        detection_engines = 0
-        if 'reputation' in cybertotal_result['basic']:
-            if 'avVenders' in cybertotal_result['basic']['reputation']:
-                detection_engines = len(cybertotal_result['basic']['reputation']['avVenders'])
-                for avVender in cybertotal_result['basic']['reputation']['avVenders']:
-                    if avVender['detected']:
-                        positive_detections = positive_detections + 1
-        # result = cybertotal_result['basic']['BasicInfo']
-        result['positive_detections'] = positive_detections
-        result['detection_engines'] = detection_engines
-        result['detection_ratio'] = str(positive_detections) + '/' + str(detection_engines)
-        result['message'] = 'search success'
-        if 'score' in cybertotal_result['basic']:
-            result['severity'] = cybertotal_result['basic']['score'].get('severity', -1)
-            result['confidence'] = cybertotal_result['basic']['score'].get('confidence', -1)
-            result['threat'] = cybertotal_result['basic']['score'].get('threat', '')
-        return result
-
     def get_ip_reputation(self, ip: str) -> Dict[str, Any]:
         """Gets the IP reputation using the '/_api/search/ip/basic' API endpoint
 
@@ -119,9 +53,6 @@ class Client(BaseClient):
         if 'basic' not in cybertotal_result:
             result["message"] = "search success with no basic in cybertotal result"
             return result
-        if 'BasicInfo' not in cybertotal_result['basic']:
-            result["message"] = "search success with no BasicInfo in cybertotal result"
-            return result
         positive_detections = 0
         detection_engines = 0
         if 'reputation' in cybertotal_result['basic']:
@@ -130,7 +61,6 @@ class Client(BaseClient):
                 for avVender in cybertotal_result['basic']['reputation']['avVenders']:
                     if avVender['detected']:
                         positive_detections = positive_detections + 1
-        # result = cybertotal_result['basic']['BasicInfo']
         result['positive_detections'] = positive_detections
         result['detection_engines'] = detection_engines
         result['detection_ratio'] = str(positive_detections) + '/' + str(detection_engines)
@@ -173,9 +103,7 @@ class Client(BaseClient):
         if 'basic' not in cybertotal_result:
             result["message"] = "search success with no basic in cybertotal result"
             return result
-        if 'BasicInfo' not in cybertotal_result['basic']:
-            result["message"] = "search success with no BasicInfo in cybertotal result"
-            return result
+
         positive_detections = 0
         detection_engines = 0
         if 'reputation' in cybertotal_result['basic']:
@@ -294,9 +222,6 @@ class Client(BaseClient):
         if 'basic' not in cybertotal_result:
             result["message"] = "search success with no basic in cybertotal result"
             return result
-        if 'BasicInfo' not in cybertotal_result['basic']:
-            result["message"] = "search success with no BasicInfo in cybertotal result"
-            return result
 
         positive_detections = 0
         detection_engines = 0
@@ -413,52 +338,6 @@ class Client(BaseClient):
         result['task_id'] = task_id
         result["message"] = "search success"
         return result
-
-
-def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: CyberTotal client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
-
-    try:
-        client.test_get_reputaion()
-    except DemistoException as e:
-        if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return 'ok'
-
-
-def test_connect_cybertotal_command(client: Client) -> CommandResults:
-    """test_connect_cybertotal_command command: Test if network to CyberTotal is accessable
-
-    :type client: ``Client``
-    :param Client: CyberTotal client to use
-
-    :return:
-        A ``CommandResults`` object that is then passed to ``return_results``,
-        that contains the CyberTotal message
-
-    :rtype: ``CommandResults``
-    """
-    result = client.test_connection()
-    readable_output = f'## {result}'
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='test_connection',
-        outputs_key_field='',
-        outputs=result
-    )
 
 
 def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int) -> CommandResults:
