@@ -51,6 +51,7 @@ tasks:
       - "23"
       - "8"
       - "10"
+      - "4"
     scriptarguments:
       all:
         simple: "yes"
