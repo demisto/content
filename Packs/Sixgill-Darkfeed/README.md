@@ -12,3 +12,4 @@ Automatically download malware from new Darkfeed IOCs and run them through the "
 Download malicious files from a Darkfeed IOC, detonate them in automated sandboxes, and extract and block any additional indicators and files.
 Automatically discover and enrich indicators with the same actor and source as the triggering IOC. Search for and isolate any compromised endpoints and proactively block IOCs from entering your network.
 
+We better add here an explanation of what they will get if they buy this pack. And what is the process. For example This pack provides access to a 3rd party product via an API key that will be delivered via email from the Partner within the next 24 hours.
