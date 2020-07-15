@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+- DEPRECATED. Use "PAN-OS - Block IP and URL - External Dynamic List v2" playbook instead. 
 
 ## [20.5.0] - 2020-05-12
 -
