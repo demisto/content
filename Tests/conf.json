@@ -2028,9 +2028,6 @@
             "playbookID": "HTTPListRedirects - Test SSL"
         },
         {
-            "playbookID": "HTTPListRedirects Basic Test"
-        },
-        {
             "playbookID": "CheckDockerImageAvailableTest"
         },
         {
