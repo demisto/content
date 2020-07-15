@@ -244,6 +244,7 @@ tasks:
       version: -1
       name: PAN-OS Commit Configuration
       playbookName: PAN-OS Commit Configuration
+      description: ""
       type: playbook
       iscommand: false
       brand: ""
