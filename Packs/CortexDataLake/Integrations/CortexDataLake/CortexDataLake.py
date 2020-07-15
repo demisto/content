@@ -1,8 +1,5 @@
-from dateutil import parser
-
+""" IMPORTS """
 from CommonServerPython import *
-
-''' IMPORTS '''
 import os
 import requests
 import json
@@ -10,6 +7,8 @@ from pancloud import QueryService, Credentials, exceptions
 import base64
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from typing import Dict, Any, List, Tuple, Callable
+from tempfile import gettempdir
+from dateutil import parser
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -741,6 +740,7 @@ def fetch_incidents(client: Client,
 
 
 def main():
+    os.environ['PAN_CREDENTIALS_DBFILE'] = os.path.join(gettempdir(), 'pancloud_credentials.json')
     params = demisto.params()
     registration_id_and_url = params.get(REGISTRATION_ID_CONST).split('@')
     if len(registration_id_and_url) != 2:
