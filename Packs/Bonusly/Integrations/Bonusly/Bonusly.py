@@ -275,10 +275,12 @@ def fetch_incidents(client, last_run, first_fetch_time, fetch_params):
             'rawJSON': json.dumps(item)
         }
 
-        # Update last run and add incident if the incident is newer than last fetch
+        # If created time is greater than latest created time then set latest created time
+        # to incident created time
         if incident_created_time.timestamp() > latest_created_time.timestamp():
             latest_created_time = incident_created_time
 
+        # if the last time fetched is before the current incident time then add it to the list of incidents
         if last_fetch.timestamp() < incident_created_time.timestamp():
             incidents.append(incident)
 
