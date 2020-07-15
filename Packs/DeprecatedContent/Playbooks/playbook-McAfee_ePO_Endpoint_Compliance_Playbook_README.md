@@ -1,4 +1,4 @@
-Discovers endpoints that are not using the latest McAfee AV Signatures.
+DEPRECATED. Use "McAfee ePO Endpoint Compliance Playbook v2" playbook instead. Discovers endpoints that are not using the latest McAfee AV Signatures.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
