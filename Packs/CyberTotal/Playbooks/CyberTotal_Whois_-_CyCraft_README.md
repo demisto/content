@@ -27,4 +27,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![CyberTotal Whois - CyCraft](Insert the link to your image here)
+![CyberTotal Whois - CyCraft](https://github.com/demisto/content/raw/CyberTotal/Packs/CyberTotal/doc_files/CyberTotalWhois.png)

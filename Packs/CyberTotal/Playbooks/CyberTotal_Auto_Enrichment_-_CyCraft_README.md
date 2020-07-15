@@ -13,10 +13,10 @@ This playbook does not use any sub-playbooks.
 * Exists
 
 ### Commands
-* ip
+* url
 * file
 * domain
-* url
+* ip
 
 ## Playbook Inputs
 ---
@@ -36,4 +36,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![CyberTotal Auto Enrichment - CyCraft](Insert the link to your image here)
+![CyberTotal Auto Enrichment - CyCraft](https://github.com/demisto/content/raw/CyberTotal/Packs/CyberTotal/doc_files/CyberTotalAutoEnrichment.png)
