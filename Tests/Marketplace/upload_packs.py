@@ -14,8 +14,8 @@ from Tests.Marketplace.marketplace_services import init_storage_client, Pack, Pa
 from demisto_sdk.commands.common.tools import run_command, print_error, print_warning, print_color, LOG_COLORS, str2bool
 
 
-def get_modified_packs(target_packs):
-    """Detects and returns modified or new packs names to upload.
+def get_packs_names(target_packs):
+    """Detects and returns packs names to upload.
 
     In case that `Modified` is passed in target_packs input, checks the git difference between two commits,
     current and previous and greps only ones with prefix Packs/.
@@ -578,9 +578,9 @@ def main():
         GCPConfig.STORAGE_BASE_PATH = storage_base_path
 
     # detect packs to upload
-    modified_packs = get_modified_packs(target_packs)
+    pack_names = get_packs_names(target_packs)
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
-    packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in modified_packs
+    packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
     # download and extract index from public bucket
