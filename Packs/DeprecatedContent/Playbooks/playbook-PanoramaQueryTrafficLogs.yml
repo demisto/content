@@ -2,7 +2,7 @@ id: PanoramaQueryTrafficLogs
 version: -1
 name: PanoramaQueryTrafficLogs
 fromversion: 4.0.0
-description: Queries traffic logs in a PAN-OS Panorama or Firewall device.
+description: DEPRECATED. Use "PAN-OS Query Logs For Indicators" playbook instead. Queries traffic logs in a PAN-OS Panorama or Firewall device.
 starttaskid: "0"
 tasks:
   "0":
@@ -394,4 +394,4 @@ inputs:
   description: Action for the query.
 outputs: []
 tests:
-- palo_alto_firewall_test_pb
+  - No test
