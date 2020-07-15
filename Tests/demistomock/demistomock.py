@@ -477,7 +477,7 @@ def context():
 
 def uniqueFile():
     """
-    Generate a random UUID
+    Generate a unique file name based upon a random UUID
 
     :return: Random UUID
     :rtype: ``str``
