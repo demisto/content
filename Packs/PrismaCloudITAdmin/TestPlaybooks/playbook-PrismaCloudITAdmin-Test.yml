@@ -1,583 +1,580 @@
 id: PrismaCloudITAdmin-Test
+version: 16
 name: PrismaCloudITAdmin-Test
-version: -1
-fromversion: 4.5.0
-starttaskid: '0'
+starttaskid: "0"
 description: ''
 tasks:
-  '0':
-    id: '0'
-    taskid: '0'
+  "0":
+    id: "0"
+    taskid: fdbcedcd-c8b5-402d-8dfd-a0097d0492b9
     type: start
     task:
-      id: '0'
+      id: fdbcedcd-c8b5-402d-8dfd-a0097d0492b9
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 50}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '1':
-    id: 1
-    taskid: '1'
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: b83b0648-6a5e-4d9c-8df9-5b246ddf249c
     type: regular
     task:
-      id: '1'
+      id: b83b0648-6a5e-4d9c-8df9-5b246ddf249c
       version: -1
       name: DeleteContext
-      description: ''
       script: DeleteContext
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '2'
+      - "13"
     scriptarguments:
       all:
-        simple: yes
+        simple: "yes"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 200}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '2':
-    id: 2
-    taskid: '2'
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 4c65e0b5-ed99-4abf-8427-5ff4d7dcd0be
     type: regular
     task:
-      id: '2'
+      id: 4c65e0b5-ed99-4abf-8427-5ff4d7dcd0be
       version: -1
       name: get-user
-      description: ''
-      script: '|||get-user'
+      description: Get a user
+      script: Prisma Cloud IT Admin|||get-user
       type: regular
       iscommand: true
-      brand: ''
+      brand: Prisma Cloud IT Admin
     nexttasks:
       '#none#':
-      - '3'
-    scriptarguments: {}
+      - "3"
+    scriptarguments:
+      scim:
+        simple: ${scim}
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 400}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '3':
-    id: '3'
-    taskid: '3'
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 6815103d-ca5c-42a4-8f71-d6f5eb9abfed
     type: condition
     task:
-      id: '3'
+      id: 6815103d-ca5c-42a4-8f71-d6f5eb9abfed
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '4'
+      '#default#':
+      - "4"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: GetUser
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: GetUser.active
-            iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isEqualString
           left:
             value:
               simple: GetUser.brand
             iscontext: true
-      - - operator: isNotEmpty
-          left:
+          right:
             value:
-              simple: GetUser.details
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: GetUser.email
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: GetUser.errorCode
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: GetUser.errorMessage
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: GetUser.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: GetUser.instanceName
-            iscontext: true
-      - - operator: isNotEmpty
+              simple: Prisma Cloud IT Admin
+      - - operator: isEqualString
           left:
             value:
               simple: GetUser.success
             iscontext: true
-      - - operator: isNotEmpty
+          right:
+            value:
+              simple: "true"
+    - label: condition-2
+      condition:
+      - - operator: isEqualString
           left:
             value:
-              simple: GetUser.userName
+              simple: 'GetUser.errorCode '
             iscontext: true
-    view: '{"position": {"x": 50, "y": 600}}'
+          right:
+            value:
+              simple: "404"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '4':
-    id: 4
-    taskid: '4'
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 5ae8148f-f6ba-4b87-8ce8-53bf51db1c0f
     type: regular
     task:
-      id: '4'
+      id: 5ae8148f-f6ba-4b87-8ce8-53bf51db1c0f
       version: -1
-      name: create-user
-      description: ''
-      script: '|||create-user'
+      name: create-user (returns errorCode 409  if the user already exists)
+      description: Creates a user
+      script: Prisma Cloud IT Admin|||create-user
       type: regular
       iscommand: true
-      brand: ''
+      brand: Prisma Cloud IT Admin
     nexttasks:
       '#none#':
-      - '5'
-    scriptarguments: {}
+      - "5"
+    scriptarguments:
+      customMapping:
+        simple: '{"roleId":"roleId","timeZone":"timeZone"}'
+      scim:
+        simple: ${scim}
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 800}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '5':
-    id: '5'
-    taskid: '5'
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: cab1dbaf-029e-46e5-8b6a-28b67a8df9d0
     type: condition
     task:
-      id: '5'
+      id: cab1dbaf-029e-46e5-8b6a-28b67a8df9d0
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '6'
+      '#default#':
+      - "6"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CreateUser
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CreateUser.brand
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CreateUser.instanceName
-            iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isEqualString
           left:
             value:
               simple: CreateUser.success
             iscontext: true
-      - - operator: isNotEmpty
-          left:
+          right:
             value:
-              simple: CreateUser.active
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CreateUser.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CreateUser.username
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CreateUser.email
-            iscontext: true
-      - - operator: isNotEmpty
+              simple: "true"
+    - label: User already exists - 409
+      condition:
+      - - operator: isEqualString
           left:
             value:
               simple: CreateUser.errorCode
             iscontext: true
-      - - operator: isNotEmpty
-          left:
+          right:
             value:
-              simple: CreateUser.errorMessage
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CreateUser.details
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 1000}}'
+              simple: "409"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '6':
-    id: 6
-    taskid: '6'
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: c0a0f8dd-f8ce-4f8f-8b97-0d23dfd5bde6
     type: regular
     task:
-      id: '6'
+      id: c0a0f8dd-f8ce-4f8f-8b97-0d23dfd5bde6
       version: -1
       name: update-user
-      description: ''
-      script: '|||update-user'
+      description: Update a user
+      script: Prisma Cloud IT Admin|||update-user
       type: regular
       iscommand: true
-      brand: ''
+      brand: Prisma Cloud IT Admin
     nexttasks:
       '#none#':
-      - '7'
-    scriptarguments: {}
+      - "7"
+    scriptarguments:
+      customMapping:
+        simple: '{"roleId":"roleId","timeZone":"timezone"}'
+      newScim:
+        simple: ${scim}
+      oldScim:
+        simple: '{"id":"demistotest@paloaltonetworks.com"}'
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 1200}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1470
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '7':
-    id: '7'
-    taskid: '7'
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 0e4ac8df-9bf3-4d14-8086-c92ceba6678e
     type: condition
     task:
-      id: '7'
+      id: 0e4ac8df-9bf3-4d14-8086-c92ceba6678e
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '8'
+      "yes":
+      - "8"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: UpdateUser
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: UpdateUser.brand
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: UpdateUser.instanceName
-            iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isEqualString
           left:
             value:
               simple: UpdateUser.success
             iscontext: true
-      - - operator: isNotEmpty
-          left:
+          right:
             value:
-              simple: UpdateUser.active
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: UpdateUser.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: UpdateUser.username
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: UpdateUser.email
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: UpdateUser.errorCode
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: UpdateUser.errorMessage
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: UpdateUser.details
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 1400}}'
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1625
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '8':
-    id: 8
-    taskid: '8'
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: d9fd3a85-1d52-4d98-8f7f-2895e00bb533
     type: regular
     task:
-      id: '8'
+      id: d9fd3a85-1d52-4d98-8f7f-2895e00bb533
       version: -1
       name: enable-user
-      description: ''
-      script: '|||enable-user'
+      description: Enable a disabled user
+      script: Prisma Cloud IT Admin|||enable-user
       type: regular
       iscommand: true
-      brand: ''
+      brand: Prisma Cloud IT Admin
     nexttasks:
       '#none#':
-      - '9'
-    scriptarguments: {}
+      - "9"
+    scriptarguments:
+      customMapping: {}
+      scim:
+        simple: ${scim}
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 1600}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '9':
-    id: '9'
-    taskid: '9'
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 48981eed-85b8-4b07-8aa1-f3c1ef06762d
     type: condition
     task:
-      id: '9'
+      id: 48981eed-85b8-4b07-8aa1-f3c1ef06762d
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '10'
+      "yes":
+      - "10"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: EnableUser
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: EnableUser.brand
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: EnableUser.instanceName
-            iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isEqualString
           left:
             value:
               simple: EnableUser.success
             iscontext: true
-      - - operator: isNotEmpty
-          left:
+          right:
             value:
-              simple: EnableUser.active
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: EnableUser.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: EnableUser.username
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: EnableUser.email
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: EnableUser.errorCode
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: EnableUser.errorMessage
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: EnableUser.details
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 1800}}'
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '10':
-    id: 10
-    taskid: '10'
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: c8093427-de28-4f85-8794-8e661eadf3fe
     type: regular
     task:
-      id: '10'
+      id: c8093427-de28-4f85-8794-8e661eadf3fe
       version: -1
       name: disable-user
-      description: ''
-      script: '|||disable-user'
+      description: Disable a user
+      script: Prisma Cloud IT Admin|||disable-user
       type: regular
       iscommand: true
-      brand: ''
+      brand: Prisma Cloud IT Admin
     nexttasks:
       '#none#':
-      - '11'
-    scriptarguments: {}
+      - "11"
+    scriptarguments:
+      customMapping: {}
+      scim:
+        simple: ${scim}
+      user_id: {}
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 2000}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '11':
-    id: '11'
-    taskid: '11'
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 6be78f6d-0c8a-4b1a-8bc2-6735372e812b
     type: condition
     task:
-      id: '11'
+      id: 6be78f6d-0c8a-4b1a-8bc2-6735372e812b
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '12'
+      "yes":
+      - "12"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: DisableUser
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: DisableUser.instanceName
-            iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isEqualString
           left:
             value:
               simple: DisableUser.success
             iscontext: true
-      - - operator: isNotEmpty
-          left:
+          right:
             value:
-              simple: DisableUser.active
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: DisableUser.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: DisableUser.username
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: DisableUser.email
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: DisableUser.errorCode
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: DisableUser.errorMessage
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: DisableUser.details
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: DisableUser.brand
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 2200}}'
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '12':
-    id: '12'
-    taskid: '12'
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: d118bcea-29aa-4bd4-8d5a-ee981b2e3759
     type: title
     task:
-      id: '12'
+      id: d118bcea-29aa-4bd4-8d5a-ee981b2e3759
       version: -1
       name: Test Done
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 2400}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
-  380, "x": 50, "y": 50}}}'
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 20701fae-d137-44e0-8945-b95d9fecff87
+    type: regular
+    task:
+      id: 20701fae-d137-44e0-8945-b95d9fecff87
+      version: -1
+      name: Set Instance Name
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      append: {}
+      key:
+        simple: appInstanceName
+      stringify: {}
+      value:
+        simple: PrismaCloud
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 391808b5-7afe-4c5e-8037-c30c4c2d18c2
+    type: regular
+    task:
+      id: 391808b5-7afe-4c5e-8037-c30c4c2d18c2
+      version: -1
+      name: Set scim data
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append: {}
+      key:
+        simple: scim
+      stringify: {}
+      value:
+        simple: |-
+          {
+            "userName": "demistotest@paloaltonetworks.com",
+            "emails": [
+              {
+                "type": "work",
+                "primary": true,
+                "value": "demistotest@paloaltonetworks.com"
+              }
+            ],
+            "name": {
+              "familyName": "Test",
+              "givenName": "Demisto"
+            },
+            "urn:scim:schemas:extension:custom:1.0:user": {
+              "roleId": "58f9779b-5420-4319-b1c8-b735e4cebc86",
+              "timeZone": "America/Los_Angeles"
+            }
+          }
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "5_6_#default#": 0.33
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2485,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
 inputs: []
 outputs: []

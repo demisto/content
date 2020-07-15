@@ -138,7 +138,7 @@ def test_disable_user_command(mocker):
     _, outputs, _ = enable_disable_user_command(client, inp_args)
 
     disable_user = 'DisableUser(val.id == obj.id && val.instanceName == obj.instanceName)'
-    assert outputs.get(disable_user).get('id') == 'testid@paloaltonetworks.com'
+    assert outputs.get(disable_user).get('id') == 'TestID@paloaltonetworks.com'
 
     # Negative scenario - User not found
     res.status_code = 404
@@ -171,7 +171,7 @@ def test_enable_user_command(mocker):
     _, outputs, _ = enable_disable_user_command(client, inp_args)
 
     enable_user = 'EnableUser(val.id == obj.id && val.instanceName == obj.instanceName)'
-    assert outputs.get(enable_user).get('id') == 'testid@paloaltonetworks.com'
+    assert outputs.get(enable_user).get('id') == 'TestID@paloaltonetworks.com'
 
     # Negative scenario - User not found
     res.status_code = 404

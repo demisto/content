@@ -269,16 +269,15 @@ def get_user_command(client, args):
     if res.status_code == 200:
         res_json = res.json()
         active = res_json['enabled']
-        generic_iam_context = OutputContext(success=True, iden=res_json.get('email'), email=res_json.get('email'),
+        generic_iam_context = OutputContext(success=True, iden=user_id, email=email,
                                             username=username, details=res_json, active=active)
     elif res.status_code == 400:
-        generic_iam_context = OutputContext(success=False, iden=user_id, username=username, errorCode=404,
+        generic_iam_context = OutputContext(success=False, iden=user_id, username=username, email=email, errorCode=404,
                                             errorMessage="User Not Found", details=res.headers.get('x-redlock-status'))
     else:
-        generic_iam_context = OutputContext(success=False, iden=user_id, username=username,
+        generic_iam_context = OutputContext(success=False, iden=user_id, username=username, email=email,
                                             errorCode=res.status_code,
-                                            errorMessage=res.headers.get('x-redlock-status'),
-                                            details=res.headers.get('x-redlock-status'))
+                                            errorMessage=res.headers.get('x-redlock-status'))
 
     generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
 
@@ -286,7 +285,11 @@ def get_user_command(client, args):
         generic_iam_context_dt: generic_iam_context.data
     }
 
-    readable_output = tableToMarkdown('Get PrismaCloud User:', generic_iam_context.data)
+    readable_output = tableToMarkdown(name='Get PrismaCloud User:',
+                                      t=generic_iam_context.data,
+                                      headers=["brand", "instanceName", "success", "active", "id", "username", "email",
+                                               "errorCode", "errorMessage", "details"],
+                                      removeNull=True)
     return (
         readable_output,
         outputs,
@@ -311,22 +314,19 @@ def create_user_command(client, args):
         generic_iam_context = OutputContext(success=True,
                                             iden=parsed_scim.get('email'),
                                             email=parsed_scim.get('email'),
-                                            details=str(res),
                                             active=True)
     elif res.status_code == 409:
         generic_iam_context = OutputContext(success=False,
                                             iden=parsed_scim.get('email'),
                                             email=parsed_scim.get('email'),
                                             errorCode=res.status_code,
-                                            errorMessage=res.headers.get('x-redlock-status'),
-                                            details=res.headers.get('x-redlock-status'))
+                                            errorMessage=res.headers.get('x-redlock-status'))
     else:
         generic_iam_context = OutputContext(success=False,
                                             iden=parsed_scim.get('email'),
                                             email=parsed_scim.get('email'),
                                             errorCode=res.status_code,
-                                            errorMessage=res.headers.get('x-redlock-status'),
-                                            details=res.headers.get('x-redlock-status'))
+                                            errorMessage=res.headers.get('x-redlock-status'))
 
     generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
 
@@ -334,7 +334,11 @@ def create_user_command(client, args):
         generic_iam_context_dt: generic_iam_context.data
     }
 
-    readable_output = tableToMarkdown('Create Prisma User:', generic_iam_context.data)
+    readable_output = tableToMarkdown(name='Create Prisma User:',
+                                      t=generic_iam_context.data,
+                                      headers=["brand", "instanceName", "success", "active", "id", "username", "email",
+                                               "errorCode", "errorMessage", "details"],
+                                      removeNull=True)
     return (
         readable_output,
         outputs,
@@ -373,7 +377,6 @@ def update_user_command(client, args):
                                             iden=user_id,
                                             email=email,
                                             username=username,
-                                            details=str(res),
                                             active=True)
     elif res.status_code == 400:
         error_mesaage = str(res.headers.get('x-redlock-status'))
@@ -386,8 +389,7 @@ def update_user_command(client, args):
                                             email=email,
                                             username=username,
                                             errorCode=error_code,
-                                            errorMessage=res.headers.get('x-redlock-status'),
-                                            details=res.headers.get('x-redlock-status'))
+                                            errorMessage=res.headers.get('x-redlock-status'))
 
     else:
         generic_iam_context = OutputContext(success=False,
@@ -395,8 +397,7 @@ def update_user_command(client, args):
                                             email=email,
                                             username=username,
                                             errorCode=res.status_code,
-                                            errorMessage=res.headers.get('x-redlock-status'),
-                                            details=res.headers.get('x-redlock-status'))
+                                            errorMessage=res.headers.get('x-redlock-status'))
 
     generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
 
@@ -404,7 +405,11 @@ def update_user_command(client, args):
         generic_iam_context_dt: generic_iam_context.data
     }
 
-    readable_output = tableToMarkdown('Update Prisma User:', generic_iam_context.data)
+    readable_output = tableToMarkdown(name='Update Prisma User:',
+                                      t=generic_iam_context.data,
+                                      headers=["brand", "instanceName", "success", "active", "id", "username", "email",
+                                               "errorCode", "errorMessage", "details"],
+                                      removeNull=True)
     return (
         readable_output,
         outputs,
@@ -440,17 +445,16 @@ def enable_disable_user_command(client, args):
         res = client.disable_user_profile(user_term)
 
     if res.status_code == 200:
-        generic_iam_context = OutputContext(success=True, iden=user_term, username=username, active=active)
+        generic_iam_context = OutputContext(success=True, iden=user_id, username=username, email=email, active=active)
     elif res.status_code == 404:
-        generic_iam_context = OutputContext(success=False, iden=user_id,
+        generic_iam_context = OutputContext(success=False, iden=user_id, email=email,
                                             username=username, errorCode=res.status_code,
                                             errorMessage="User Not Found",
                                             details=res.headers.get('x-redlock-status'))
     else:
         generic_iam_context = OutputContext(success=False, iden=user_term, username=username,
-                                            errorCode=res.status_code,
-                                            errorMessage=res.headers.get('x-redlock-status'),
-                                            details=res.headers.get('x-redlock-status'))
+                                            email=email, errorCode=res.status_code,
+                                            errorMessage=res.headers.get('x-redlock-status'))
 
     generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
 
@@ -458,7 +462,11 @@ def enable_disable_user_command(client, args):
         generic_iam_context_dt: generic_iam_context.data
     }
 
-    readable_output = tableToMarkdown(f'{format_pre_text} Prisma User:', generic_iam_context.data)
+    readable_output = tableToMarkdown(name=f'{format_pre_text} Prisma User:',
+                                      t=generic_iam_context.data,
+                                      headers=["brand", "instanceName", "success", "active", "id", "username", "email",
+                                               "errorCode", "errorMessage", "details"],
+                                      removeNull=True)
     return (
         readable_output,
         outputs,
