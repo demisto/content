@@ -416,7 +416,7 @@ def command():
 
 def log(msg):
     """
-    Prints a message to the server logs
+    Prints a message to the current incidents war room log
 
     :type msg: ``str``
     :param msg: The message to be logged
