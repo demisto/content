@@ -32,10 +32,10 @@ args:
 - default: false
   defaultValue: '*'
   description: 'Keys to retrieve from items. Keys will not be columns correlated.
-    Default is all keys. **Note**: when the amount of values exceeds the amount columns,
+    Default is all keys. **Note**: when the number of values exceeds the number of columns,
     it truncates the last values that are outside the range for table. If you want
-    to leave an empty column, please provide a place holder name that should not be
-    in the context data such as "PLACE_HOLDER".'
+    to leave an empty column, provide a place holder name that should not be
+    in the context data, such as "PLACE_HOLDER".'
   isArray: true
   name: keys
   required: false
