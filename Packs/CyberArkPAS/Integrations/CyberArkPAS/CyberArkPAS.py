@@ -6,9 +6,11 @@ from CommonServerUserPython import *
 
 import urllib3
 import traceback
+from dateparser import parse
 
 # Disable insecure warnings
 urllib3.disable_warnings()
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
 class Client(BaseClient):
@@ -35,7 +37,7 @@ class Client(BaseClient):
         headers = {
             'Content-Type': 'application/json'
         }
-        return self._http_request("POST", "/PasswordVault/API/Auth/CyberArk/Logon", headers=headers, json_data=body)
+        return self._http_request("POST", "/PasswordVault/API/Auth/CyberArkPAS/Logon", headers=headers, json_data=body)
 
     def _logout(self):
         self._http_request("POST", "/PasswordVault/API/Auth/Logoff")
@@ -126,7 +128,7 @@ class Client(BaseClient):
             },
             "id": userID,
             "username": username,
-            "source": "CyberArk",
+            "source": "CyberArkPAS",
             "userType": user_type,
             "vaultAuthorization": vault_authorization,
             "location": location,
@@ -456,6 +458,12 @@ class Client(BaseClient):
 
         return self._http_request("PATCH", url_suffix, data=str(body))
 
+    def get_security_events(self,
+                            ):
+
+        url_suffix = "/PasswordVault/API/pta/API/Events/"
+        return self._http_request("GET", url_suffix)
+
 
 def test_module(
         client: Client,
@@ -500,7 +508,7 @@ def add_user_command(
     id = response.get("id")
     results = CommandResults(
         raw_response=response,
-        outputs_prefix=f'CyberArk.Users.{id}',
+        outputs_prefix=f'CyberArkPAS.Users.{id}',
         outputs_key_field='id',
         outputs=response
     )
@@ -537,7 +545,7 @@ def update_user_command(
     user_id = response.get("id")
     results = CommandResults(
         raw_response=response,
-        outputs_prefix=f'CyberArk.Users.{user_id}',
+        outputs_prefix=f'CyberArkPAS.Users.{user_id}',
         outputs_key_field='id',
         outputs=response
     )
@@ -554,7 +562,7 @@ def delete_user_command(
     if not response:
         return CommandResults(
             readable_output=f"User {userID} was deleted",
-            outputs_prefix=f'CyberArk.Users.{userID}',
+            outputs_prefix=f'CyberArkPAS.Users.{userID}',
             outputs_key_field='id',
             outputs={"id": userID, "deleted": True}
         )
@@ -574,7 +582,7 @@ def get_users_command(
     results = CommandResults(
         raw_response=response,
         readable_output=tableToMarkdown(headline, users),
-        outputs_prefix='CyberArk.Users',
+        outputs_prefix='CyberArkPAS.Users',
         outputs_key_field='id',
         outputs=users,
     )
@@ -602,7 +610,7 @@ def get_list_safes_command(
     results = CommandResults(
         raw_response=response,
         readable_output=tableToMarkdown(headline, safes),
-        outputs_prefix=f'CyberArk.Safes',
+        outputs_prefix=f'CyberArkPAS.Safes',
         outputs_key_field='SafeName',
         outputs=safes
     )
@@ -616,7 +624,7 @@ def get_safe_by_name_command(
     response = client.get_safe_by_name(safe_name)
     results = CommandResults(
         raw_response=response,
-        outputs_prefix=f'CyberArk.Safes.{safe_name}',
+        outputs_prefix=f'CyberArkPAS.Safes.{safe_name}',
         outputs_key_field='SafeName',
         outputs=response
     )
@@ -637,7 +645,7 @@ def add_safe_command(
                                number_of_days_retention, location)
     results = CommandResults(
         raw_response=response,
-        outputs_prefix=f'CyberArk.Safes.{safe_name}',
+        outputs_prefix=f'CyberArkPAS.Safes.{safe_name}',
         outputs_key_field='SafeName',
         outputs=response
     )
@@ -660,7 +668,7 @@ def update_safe_command(
                                   number_of_days_retention, location)
     results = CommandResults(
         raw_response=response,
-        outputs_prefix=f'CyberArk.Safes.{safe_name}',
+        outputs_prefix=f'CyberArkPAS.Safes.{safe_name}',
         outputs_key_field='SafeName',
         outputs=response
     )
@@ -677,7 +685,7 @@ def delete_safe_command(
     if not response:
         return CommandResults(
             readable_output=f"Safe {safe_name} was deleted",
-            outputs_prefix=f'CyberArk.Safes.{safe_name}',
+            outputs_prefix=f'CyberArkPAS.Safes.{safe_name}',
             outputs_key_field='SafeName',
             outputs={"SafeName": safe_name, "deleted": True}
         )
@@ -696,7 +704,7 @@ def list_safe_members_command(
     results = CommandResults(
         raw_response=response,
         readable_output=tableToMarkdown(headline, members),
-        outputs_prefix=f'CyberArk.{safe_name}.Members',
+        outputs_prefix=f'CyberArkPAS.{safe_name}.Members',
         outputs_key_field='MemberName',
         outputs=members
     )
@@ -717,7 +725,7 @@ def add_safe_member_command(
                                       permissions_list, search_in)
     results = CommandResults(
         raw_response=response,
-        outputs_prefix=f'CyberArk.{safe_name}.{member_name}',
+        outputs_prefix=f'CyberArkPAS.{safe_name}.{member_name}',
         outputs_key_field=member_name,
         outputs=response.get("member")
     )
@@ -737,7 +745,7 @@ def update_safe_member_command(
                                          membership_expiration_date, permissions_list)
     results = CommandResults(
         raw_response=response,
-        outputs_prefix=f'CyberArk.{safe_name}.{member_name}',
+        outputs_prefix=f'CyberArkPAS.{safe_name}.{member_name}',
         outputs_key_field=member_name,
         outputs=response.get("member")
     )
@@ -755,7 +763,7 @@ def delete_safe_member_command(
     if not response:
         return CommandResults(
             readable_output=f"Member {member_name} was deleted from {safe_name} safe",
-            outputs_prefix=f'CyberArk.{safe_name}.{member_name}',
+            outputs_prefix=f'CyberArkPAS.{safe_name}.{member_name}',
             outputs_key_field='MemberName',
             outputs={"MemberName": member_name, "deleted": True}
         )
@@ -783,7 +791,7 @@ def add_account_command(
                                   access_restricted_to_temote_machines)
     results = CommandResults(
         raw_response=response,
-        outputs_prefix=f'CyberArk.Accounts.{response.get("id")}',
+        outputs_prefix=f'CyberArkPAS.Accounts.{response.get("id")}',
         outputs_key_field='id',
         outputs=response
     )
@@ -801,7 +809,7 @@ def update_account_command(
     response = client.update_account(accountID, account_name, address, username, platformID)
     results = CommandResults(
         raw_response=response,
-        outputs_prefix=f'CyberArk.Accounts.{response.get("id")}',
+        outputs_prefix=f'CyberArkPAS.Accounts.{response.get("id")}',
         outputs_key_field='id',
         outputs=response
     )
@@ -818,7 +826,7 @@ def delete_account_command(
     if not response:
         return CommandResults(
             readable_output=f"Account {accountID} was deleted",
-            outputs_prefix=f'CyberArk.Accounts.{accountID}',
+            outputs_prefix=f'CyberArkPAS.Accounts.{accountID}',
             outputs_key_field='id',
             outputs={"id": accountID, "deleted": True}
         )
@@ -841,7 +849,7 @@ def get_list_accounts_command(
     results = CommandResults(
         raw_response=response,
         readable_output=tableToMarkdown(headline, accounts),
-        outputs_prefix=f'CyberArk.Accounts',
+        outputs_prefix=f'CyberArkPAS.Accounts',
         outputs_key_field='id',
         outputs=accounts
     )
@@ -855,7 +863,7 @@ def get_list_account_activity_command(
     response = client.get_list_account_activity(accountID)
     results = CommandResults(
         raw_response=response,
-        outputs_prefix=f'CyberArk.{accountID}.Activities',
+        outputs_prefix=f'CyberArkPAS.{accountID}.Activities',
         outputs_key_field='',
         outputs=response.get("Activities")
     )
@@ -919,16 +927,63 @@ def reconcile_credentials_command(
         return response
 
 
+def fetch_incidents(client: Client, last_run: dict,  first_fetch_time: str,  max_fetch: str = '50') -> Tuple[dict, list]:
+
+    timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
+    if not last_run:  # if first time fetching
+        next_run = {
+            'time': parse_date_range(first_fetch_time, date_format=timestamp_format)[0],
+            'last_event_ids': []
+        }
+    else:
+        next_run = last_run
+
+    events_data = client.get_security_events()
+    incidents = []
+
+    if events_data:
+        last_event_ids = last_run.get('last_event_ids', [])
+        new_event_ids = []
+        last_event_created_time = None
+        for event_data in events_data:
+            event_id = event_data.get('id')
+
+            if event_id not in last_event_ids:  # check that event was not fetched in the last fetch
+                last_event_created_time = parse(event_data.get('createTime'))
+                incident = {
+                    'id': event_data.get('id'),
+                    'type': event_data.get('type'),
+                    'score': event_data.get('score'),
+                    'mStatus': event_data.get('mStatus'),
+                    'rawJSON': json.dumps(event_data)
+                }
+                incidents.extend([incident])
+                new_event_ids.extend([event_id])
+
+        if new_event_ids and last_event_created_time:
+            next_run = {
+                'time': last_event_created_time.strftime(timestamp_format),
+                'last_event_ids': json.dumps(new_event_ids)  # save the event IDs from the last fetch
+            }
+
+    demisto.debug(f'CyberArk PAS last fetch data: {str(next_run)}')
+    return next_run, incidents
+
+
 def main():
     params = demisto.params()
+
     username = params.get('credentials').get('identifier')
     password = params.get('credentials').get('password')
     url = params.get('url')
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
+    max_fetch = min('50', params.get('max_fetch', '50'))
+    first_fetch_time = params.get('fetch_time', '3 days').strip()
+
     command = demisto.command()
-    LOG(f'Command being called in CyberArk is: {command}')
+    LOG(f'Command being called in CyberArkPAS is: {command}')
     commands = {
         'test-module': test_module,
 
@@ -968,15 +1023,25 @@ def main():
 
         if command in commands:
             return_results(commands[command](client, **demisto.args()))  # type: ignore[operator]
+        elif command == 'fetch-incidents':
+            next_run, incidents = fetch_incidents(
+                client=client,
+                last_run=demisto.getLastRun(),
+                first_fetch_time=first_fetch_time,
+                max_fetch=max_fetch
+            )
+            demisto.setLastRun(next_run)
+            demisto.incidents(incidents)
+
         else:
-            raise NotImplementedError(f'{command} is not an existing CyberArk command')
+            raise NotImplementedError(f'{command} is not an existing CyberArk PAS command')
     except Exception as err:
         return_error(f'Unexpected error: {str(err)}', error=traceback.format_exc())
     finally:
         try:
             client._logout()
         except Exception as err:
-            demisto.info("CyberArk error: " + str(err))
+            demisto.info("CyberArk PAS error: " + str(err))
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

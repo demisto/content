@@ -11,7 +11,7 @@ ADD_USER_RAW_RESPONSE = {"authenticationMethod": ["AuthTypePass"],
                                                  "profession": "testing integrations", "state": "", "street": "",
                                                  "title": "", "zip": ""},
                              "phones": {"businessNumber": "", "cellularNumber": "", "faxNumber": "", "homeNumber": "",
-                                        "pagerNumber": ""}, "source": "CyberArk", "suspended": False,
+                                        "pagerNumber": ""}, "source": "CyberArkPAS", "suspended": False,
                              "unAuthorizedInterfaces": [], "userType": "EPVUser", "username": "TestUser",
                              "vaultAuthorization": []}
 
@@ -31,13 +31,13 @@ UPDATE_USER_RAW_RESPONSE = {"authenticationMethod": ["AuthTypePass"],
                                                 "title": "", "zip": ""},
                             "phones": {"businessNumber": "", "cellularNumber": "", "faxNumber": "", "homeNumber": "",
                                        "pagerNumber": ""},
-                            "source": "CyberArk", "suspended": False, "unAuthorizedInterfaces": [],
+                            "source": "CyberArkPAS", "suspended": False, "unAuthorizedInterfaces": [],
                             "userType": "EPVUser",
                             "username": "TestUser1", "vaultAuthorization": []}
 
 GET_USERS_RAW_RESPONSE = {"Total": 2, "Users": [{"componentUser": False, "id": 2, "location": "\\",
                                                   "personalDetails": {"firstName": "", "lastName": "",
-                                                                      "middleName": ""}, "source": "CyberArk",
+                                                                      "middleName": ""}, "source": "CyberArkPAS",
                                                   "userType": "Built-InAdmins", "username": "Administrator",
                                                   "vaultAuthorization": ["AddUpdateUsers", "AddSafes",
                                                                          "AddNetworkAreas",
@@ -47,7 +47,7 @@ GET_USERS_RAW_RESPONSE = {"Total": 2, "Users": [{"componentUser": False, "id": 2
                                                                          "ResetUsersPasswords", "ActivateUsers"]},
                                                  {"componentUser": False, "id": 3, "location": "\\",
                                                   "personalDetails": {"firstName": "", "lastName": "",
-                                                                      "middleName": ""}, "source": "CyberArk",
+                                                                      "middleName": ""}, "source": "CyberArkPAS",
                                                   "userType": "Built-InAdmins", "username": "Auditor",
                                                   "vaultAuthorization": ["AuditUsers"]}]}
 

@@ -1,15 +1,15 @@
 
 import pytest
 
-from Packs.CyberArk.Integrations.CyberArk.CyberArk import Client, add_user_command, get_users_command, \
+from Packs.CyberArkPAS.Integrations.CyberArkPAS.CyberArkPAS import Client, add_user_command, get_users_command, \
     update_user_command, add_safe_command, update_safe_command, get_list_safes_command, get_safe_by_name_command, \
     add_safe_member_command, update_safe_member_command, list_safe_members_command, add_account_command, \
     update_account_command, get_list_accounts_command, get_list_account_activity_command
-from Packs.CyberArk.Integrations.CyberArk.test_data.context import ADD_USER_CONTEXT, GET_USERS_CONTEXT, \
+from Packs.CyberArkPAS.Integrations.CyberArkPAS.test_data.context import ADD_USER_CONTEXT, GET_USERS_CONTEXT, \
     UPDATE_USER_CONTEXT, UPDATE_SAFE_CONTEXT, GET_LIST_SAFES_CONTEXT, GET_SAFE_BY_NAME_CONTEXT, ADD_SAFE_CONTEXT, \
     ADD_SAFE_MEMBER_CONTEXT, UPDATE_SAFE_MEMBER_CONTEXT, LIST_SAFE_MEMBER_CONTEXT, ADD_ACCOUNT_CONTEXT, \
     UPDATE_ACCOUNT_CONTEXT, GET_LIST_ACCOUNT_CONTEXT, GET_LIST_ACCOUNT_ACTIVITIES_CONTEXT
-from Packs.CyberArk.Integrations.CyberArk.test_data.http_resonses import ADD_USER_RAW_RESPONSE, \
+from Packs.CyberArkPAS.Integrations.CyberArkPAS.test_data.http_resonses import ADD_USER_RAW_RESPONSE, \
     UPDATE_USER_RAW_RESPONSE, GET_USERS_RAW_RESPONSE, ADD_SAFE_RAW_RESPONSE, UPDATE_SAFE_RAW_RESPONSE, \
     GET_LIST_SAFES_RAW_RESPONSE, GET_SAFE_BY_NAME_RAW_RESPONSE, ADD_SAFE_MEMBER_RAW_RESPONSE, \
     UPDATE_SAFE_MEMBER_RAW_RESPONSE, LIST_SAFE_MEMBER_RAW_RESPONSE, ADD_ACCOUNT_RAW_RESPONSE, \

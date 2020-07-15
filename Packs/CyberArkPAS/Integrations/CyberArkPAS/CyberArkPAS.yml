@@ -1,6 +1,6 @@
 category: Authentication
 commonfields:
-  id: CyberArk
+  id: CyberArkPAS
   version: -1
 configuration:
 - display: Server URL (e.g. https://example.net)
@@ -15,6 +15,17 @@ configuration:
   name: isFetch
   required: false
   type: 8
+- defaultvalue: '50'
+  display: Max fetch
+  name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
+  name: fetch_time
+  required: false
+  type: 0
 - display: Incident type
   name: incidentType
   required: false
@@ -28,8 +39,8 @@ configuration:
   required: false
   type: 8
 description: This is the Hello World integration for getting started.
-display: CyberArk
-name: CyberArk
+display: CyberArk PAS
+name: CyberArkPAS
 script:
   commands:
   - arguments:
@@ -46,7 +57,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The CyberArk interfaces that this user is not authorized to use.
+      description: The CyberArkPAS interfaces that this user is not authorized to use.
         e.g. - "PSM", "PSMP"
       isArray: true
       name: non_authorized_interfaces
@@ -180,7 +191,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The CyberArk interfaces that this user is not authorized to use.
+      description: The CyberArkPAS interfaces that this user is not authorized to use.
         e.g. - "PSM", "PSMP"
       isArray: true
       name: non_authorized_interfaces

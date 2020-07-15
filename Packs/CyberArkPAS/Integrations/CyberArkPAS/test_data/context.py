@@ -1,5 +1,5 @@
 ADD_USER_CONTEXT = {
-  "CyberArk.Users.123(val.id == obj.id)": {
+  "CyberArkPAS.Users.123(val.id == obj.id)": {
     "authenticationMethod": [
       "AuthTypePass"
     ],
@@ -48,7 +48,7 @@ ADD_USER_CONTEXT = {
       "homeNumber": "",
       "pagerNumber": ""
     },
-    "source": "CyberArk",
+    "source": "CyberArkPAS",
     "suspended": False,
     "unAuthorizedInterfaces": [],
     "userType": "EPVUser",
@@ -58,7 +58,7 @@ ADD_USER_CONTEXT = {
 }
 
 UPDATE_USER_CONTEXT = {
-  "CyberArk.Users.123(val.id == obj.id)": {
+  "CyberArkPAS.Users.123(val.id == obj.id)": {
     "authenticationMethod": [
       "AuthTypePass"
     ],
@@ -107,7 +107,7 @@ UPDATE_USER_CONTEXT = {
       "homeNumber": "",
       "pagerNumber": ""
     },
-    "source": "CyberArk",
+    "source": "CyberArkPAS",
     "suspended": False,
     "unAuthorizedInterfaces": [],
     "userType": "EPVUser",
@@ -117,7 +117,7 @@ UPDATE_USER_CONTEXT = {
 }
 
 GET_USERS_CONTEXT = {
-  "CyberArk.Users(val.id == obj.id)": [
+  "CyberArkPAS.Users(val.id == obj.id)": [
     {
       "componentUser": False,
       "id": 2,
@@ -127,7 +127,7 @@ GET_USERS_CONTEXT = {
         "lastName": "",
         "middleName": ""
       },
-      "source": "CyberArk",
+      "source": "CyberArkPAS",
       "userType": "Built-InAdmins",
       "username": "Administrator",
       "vaultAuthorization": [
@@ -152,7 +152,7 @@ GET_USERS_CONTEXT = {
         "lastName": "",
         "middleName": ""
       },
-      "source": "CyberArk",
+      "source": "CyberArkPAS",
       "userType": "Built-InAdmins",
       "username": "Auditor",
       "vaultAuthorization": [
@@ -163,7 +163,7 @@ GET_USERS_CONTEXT = {
 }
 
 ADD_SAFE_CONTEXT = {
-  "CyberArk.Safes.TestSafe(val.SafeName == obj.SafeName)": {
+  "CyberArkPAS.Safes.TestSafe(val.SafeName == obj.SafeName)": {
     "AutoPurgeEnabled": False,
     "Description": "safe for tests",
     "Location": "\\",
@@ -176,7 +176,7 @@ ADD_SAFE_CONTEXT = {
 }
 
 UPDATE_SAFE_CONTEXT = {
-  "CyberArk.Safes.TestSafe(val.SafeName == obj.SafeName)": {
+  "CyberArkPAS.Safes.TestSafe(val.SafeName == obj.SafeName)": {
     "AutoPurgeEnabled": False,
     "Description": "UpdatedSafe",
     "Location": "\\",
@@ -189,7 +189,7 @@ UPDATE_SAFE_CONTEXT = {
 }
 
 GET_SAFE_BY_NAME_CONTEXT = {
-  "CyberArk.Safes.TestSafe(val.SafeName == obj.SafeName)": {
+  "CyberArkPAS.Safes.TestSafe(val.SafeName == obj.SafeName)": {
     "AutoPurgeEnabled": False,
     "Description": "safe for tests",
     "Location": "\\",
@@ -202,7 +202,7 @@ GET_SAFE_BY_NAME_CONTEXT = {
 }
 
 GET_LIST_SAFES_CONTEXT = {
-  "CyberArk.Safes(val.SafeName == obj.SafeName)": [
+  "CyberArkPAS.Safes(val.SafeName == obj.SafeName)": [
     {
       "Description": "",
       "Location": "\\",
@@ -217,7 +217,7 @@ GET_LIST_SAFES_CONTEXT = {
     }]}
 
 ADD_SAFE_MEMBER_CONTEXT = {
-  "CyberArk.TestSafe.TestUser(val.TestUser == obj.TestUser)": {
+  "CyberArkPAS.TestSafe.TestUser(val.TestUser == obj.TestUser)": {
     "MemberName": "TestUser",
     "MembershipExpirationDate": "",
     "Permissions": [
@@ -311,7 +311,7 @@ ADD_SAFE_MEMBER_CONTEXT = {
 }
 
 UPDATE_SAFE_MEMBER_CONTEXT = {
-  "CyberArk.TestSafe.TestUser(val.TestUser == obj.TestUser)": {
+  "CyberArkPAS.TestSafe.TestUser(val.TestUser == obj.TestUser)": {
     "MemberName": "TestUser",
     "MembershipExpirationDate": "",
     "Permissions": [
@@ -405,7 +405,7 @@ UPDATE_SAFE_MEMBER_CONTEXT = {
 }
 
 LIST_SAFE_MEMBER_CONTEXT = {
-  "CyberArk.TestSafe.Members(val.MemberName == obj.MemberName)": [
+  "CyberArkPAS.TestSafe.Members(val.MemberName == obj.MemberName)": [
     {
       "IsExpiredMembershipEnable": False,
       "IsPredefinedUser": True,
@@ -471,7 +471,7 @@ LIST_SAFE_MEMBER_CONTEXT = {
 }
 
 ADD_ACCOUNT_CONTEXT = {
-  "CyberArk.Accounts.77_4(val.id == obj.id)": {
+  "CyberArkPAS.Accounts.77_4(val.id == obj.id)": {
     "address": "/",
     "categoryModificationTime": 1594835018,
     "createdTime": 1594838456,
@@ -489,7 +489,7 @@ ADD_ACCOUNT_CONTEXT = {
 }
 
 UPDATE_ACCOUNT_CONTEXT = {
-  "CyberArk.Accounts.77_4(val.id == obj.id)": {
+  "CyberArkPAS.Accounts.77_4(val.id == obj.id)": {
     "address": "/",
     "categoryModificationTime": 1594835018,
     "createdTime": 1594838456,
@@ -507,7 +507,7 @@ UPDATE_ACCOUNT_CONTEXT = {
 }
 
 GET_LIST_ACCOUNT_CONTEXT = {
-  "CyberArk.Accounts(val.id == obj.id)": [
+  "CyberArkPAS.Accounts(val.id == obj.id)": [
     {
       "address": "string",
       "categoryModificationTime": 1594569595,
@@ -545,7 +545,7 @@ GET_LIST_ACCOUNT_CONTEXT = {
 }
 
 GET_LIST_ACCOUNT_ACTIVITIES_CONTEXT = {
-  "CyberArk.77_4.Activities": [
+  "CyberArkPAS.77_4.Activities": [
     {
       "Action": "Rename File",
       "ActionID": 124,
