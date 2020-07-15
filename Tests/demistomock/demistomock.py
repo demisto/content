@@ -622,7 +622,7 @@ def executeCommand(command, args):
     :type command: ``str``
     :param command: Integration command name or script name to run
 
-    :type args: ``args``
+    :type args: ``dict``
     :param args: Integration command / script arguments
 
     :return: Command execution response wrapped in Demisto entry object
