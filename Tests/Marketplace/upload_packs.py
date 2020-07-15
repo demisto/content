@@ -224,7 +224,8 @@ def clean_non_existing_packs(index_folder_path, private_packs, storage_bucket):
     return False
 
 
-def upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs):
+def upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs,
+                            current_commit_hash):
     """Upload updated index zip to cloud storage.
 
     Args:
@@ -233,13 +234,15 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
         index_blob (Blob): google cloud storage object that represents index.zip blob.
         build_number (str): circleCI build number, used as an index revision.
         private_packs (list): List of private packs and their price.
+        current_commit_hash (str): last commit hash of head.
 
     """
     with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json"), "w+") as index_file:
         index = {
             'revision': build_number,
             'modified': datetime.utcnow().strftime(Metadata.DATE_FORMAT),
-            'packs': private_packs
+            'packs': private_packs,
+            'commit': current_commit_hash
         }
         json.dump(index, index_file, indent=4)
 
@@ -748,7 +751,8 @@ def main():
     upload_core_packs_config(storage_bucket, build_number, index_folder_path)
 
     # finished iteration over content packs
-    upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs)
+    upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs,
+                            current_commit_hash)
 
     # upload id_set.json to bucket
     upload_id_set(storage_bucket, id_set_path)
