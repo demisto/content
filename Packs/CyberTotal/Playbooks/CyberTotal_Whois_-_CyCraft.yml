@@ -1,0 +1,342 @@
+id: CyberTotal Whois - CyCraft
+version: -1
+name: CyberTotal Whois - CyCraft
+description: This playbook is used to automatically search IP, URL and domain in the
+  context data and get all detail whois information.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 28a45f06-572f-4a6e-8286-65279704821d
+    type: start
+    task:
+      id: 28a45f06-572f-4a6e-8286-65279704821d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 87cfe556-f778-452e-8aa6-00f26c4d30b6
+    type: condition
+    task:
+      id: 87cfe556-f778-452e-8aa6-00f26c4d30b6
+      version: -1
+      name: Is there any IP?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "6"
+    scriptarguments:
+      value:
+        simple: ${IP.Address}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: b56dc03b-6899-443a-84d4-510e249691dd
+    type: condition
+    task:
+      id: b56dc03b-6899-443a-84d4-510e249691dd
+      version: -1
+      name: Is there any URL?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "5"
+    scriptarguments:
+      value:
+        simple: ${URL.Data}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 90d1b39e-33a1-4b1e-8814-e2651d587235
+    type: condition
+    task:
+      id: 90d1b39e-33a1-4b1e-8814-e2651d587235
+      version: -1
+      name: Is there any domain?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "4"
+    scriptarguments:
+      value:
+        simple: ${Domain.Name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 72f03c2c-b125-4fd0-85d2-be461e8bde81
+    type: regular
+    task:
+      id: 72f03c2c-b125-4fd0-85d2-be461e8bde81
+      version: -1
+      name: Get domain whois information
+      description: Return domain whois information
+      script: CyberTotal|||cybertotal-domain-whois
+      type: regular
+      iscommand: true
+      brand: CyberTotal
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      domain:
+        complex:
+          root: Domain
+          accessor: Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: e25b86a2-6f02-40ef-8c23-246de7ce2728
+    type: regular
+    task:
+      id: e25b86a2-6f02-40ef-8c23-246de7ce2728
+      version: -1
+      name: Get URL whois information
+      description: Return url whois information
+      script: CyberTotal|||cybertotal-url-whois
+      type: regular
+      iscommand: true
+      brand: CyberTotal
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      url:
+        complex:
+          root: URL
+          accessor: Data
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 59d83e49-74f6-46b8-8323-922ecd5bbf7d
+    type: regular
+    task:
+      id: 59d83e49-74f6-46b8-8323-922ecd5bbf7d
+      version: -1
+      name: Get IP whois information
+      description: Return ip whois information
+      script: CyberTotal|||cybertotal-ip-whois
+      type: regular
+      iscommand: true
+      brand: CyberTotal
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      ip:
+        complex:
+          root: IP
+          accessor: Address
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 94599d33-0400-4abc-8b96-76e707547049
+    type: title
+    task:
+      id: 94599d33-0400-4abc-8b96-76e707547049
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 871826aa-27de-43d3-801c-3cff460cbc3e
+    type: condition
+    task:
+      id: 871826aa-27de-43d3-801c-3cff460cbc3e
+      version: -1
+      name: Is CyberTotal enabled?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "2"
+      - "3"
+      - "1"
+    scriptarguments:
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: brand
+                iscontext: true
+              right:
+                value:
+                  simple: CyberTotal
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_7_#default#": 0.18,
+      "2_7_#default#": 0.19,
+      "3_7_#default#": 0.18
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1025,
+        "width": 1260,
+        "x": 10,
+        "y": -150
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
