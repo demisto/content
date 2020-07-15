@@ -1,17 +1,17 @@
 args:
 - default: false
-  description: A comma separated list of domains.
+  description: A comma-separated list of domains.
   isArray: true
   name: domains
   required: true
   secret: false
 - default: false
-  description: A comma separated list of urls.
+  description: A comma-separated list of URLs.
   isArray: true
   name: urls
   required: true
   secret: false
-comment: Checks if urls are in the domain.
+comment: Checks if the supplied URLs are in the specified domains.
 commonfields:
   id: IsUrlPartOfDomain
   version: -1
@@ -25,7 +25,7 @@ outputs:
   description: The domain checked with the URL.
   type: String
 - contextPath: IsUrlPartOfDomain.IsInternal
-  description: Is the url is the domain.
+  description: Whether the URL is in the domain.
   type: Boolean
 script: '-'
 subtype: python3
