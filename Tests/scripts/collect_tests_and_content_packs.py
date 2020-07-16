@@ -86,10 +86,10 @@ class TestConf(object):
                 if pack:
                     packs.add(pack)
             except TypeError as e:
-                err_msg = f'Error occurred when iterating over integration "{integration}"'
+                err_msg = f'Error occurred when trying to determine the pack of integration "{integration}"'
                 err_msg += f' with path "{int_path}"' if int_path else ''
                 err_msg += f'\nERROR: "{e}"'
-                tools.print_color(err_msg, tools.LOG_COLORS.RED)
+                tools.print_color(err_msg, tools.LOG_COLORS.YELLOW)
         return packs
 
     def get_test_playbooks_configured_with_integration(self, integration_id):
