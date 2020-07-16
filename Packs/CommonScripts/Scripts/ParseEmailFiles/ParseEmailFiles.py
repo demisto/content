@@ -3276,10 +3276,10 @@ def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_o
     md += u"* {0}:\t{1}\n".format('To', email_data.get('To') or "")
     md += u"* {0}:\t{1}\n".format('CC', email_data.get('CC') or "")
     md += u"* {0}:\t{1}\n".format('Subject', email_data.get('Subject') or "")
-    if 'Text' in email_data and email_data['Text']:
+    if email_date.get('Text'):
         text = email_data['Text'].replace('<', '[').replace('>', ']')
         md += u"* {0}:\t{1}\n".format('Body/Text', text or "")
-    if 'HTML' in email_data and email_data['HTML']:
+    if email_date.get('HTML'):
         md += u"* {0}:\t{1}\n".format('Body/HTML', email_data['HTML'] or "")
 
     md += u"* {0}:\t{1}\n".format('Attachments', email_data.get('Attachments') or "")
@@ -3589,7 +3589,8 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                 'From': extract_address_eml(eml, 'from'),
                 'Subject': convert_to_unicode(eml['Subject']),
                 'HTML': convert_to_unicode(html),
-                'Text': convert_to_unicode(text),
+                
+               : convert_to_unicode(text),
                 'Headers': header_list,
                 'HeadersMap': headers_map,
                 'Attachments': ','.join(attachment_names) if attachment_names else '',
