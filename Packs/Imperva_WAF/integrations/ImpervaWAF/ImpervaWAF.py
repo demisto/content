@@ -13,9 +13,6 @@ requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 INTEGRATION_CONTEXT_NAME = 'ImpervaWaf'
-CREDENTIALS = demisto.params().get('credentials')
-USERNAME = CREDENTIALS['identifier'] if CREDENTIALS else ''
-PASSWORD = CREDENTIALS['password'] if CREDENTIALS else ''
 
 
 class Client(BaseClient):
@@ -45,7 +42,7 @@ class Client(BaseClient):
         return res
 
     def login(self):
-        res = self._http_request('POST', 'SecureSphere/api/v1/auth/session', auth=(USERNAME, PASSWORD))
+        res = self._http_request('POST', 'SecureSphere/api/v1/auth/session', auth=self._auth)
         extract_errors(res)
         self.session_id = res.get('session-id')
 
@@ -412,12 +409,16 @@ def main():
 
     proxy = demisto.params().get('proxy', False)
 
+    credentials = demisto.params().get('credentials')
+    username = credentials['identifier'] if credentials else ''
+    password = credentials['password'] if credentials else ''
+
     LOG(f'Command being called is {demisto.command()}')
     try:
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
-            auth=(USERNAME, PASSWORD),
+            auth=(username, password),
             proxy=proxy)
         command = demisto.command()
         args = demisto.args()
