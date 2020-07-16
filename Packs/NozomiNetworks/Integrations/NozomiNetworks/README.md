@@ -16,7 +16,7 @@ This integration was integrated and tested with version xx of Nozomi Networks
 | proxy | Use system proxy settings | False |
 | isFetch | Fetch incidents | False |
 | fetchTime | Get incidents from last | False |
-| riskFrom | Get alerts from risk | False |
+| riskFrom | Get incidents from risk level | False |
 | fecthAlsoIncidents | Fetch also nozomi incidents | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -65,7 +65,66 @@ This command permits you to get some assets from Nozomi, you can use the query f
 ```
 {
     "Nozomi": {
-        "Asset": []
+        "Asset": [
+            {
+                "name": "10.197.23.146",
+                "level": "1",
+                "id": "a3707ec4-7c85-437e-9d46-dbabd39b4dc2",
+                "appliance_hosts": [
+                    "nozomi-dev"
+                ],
+                "capture_device": "/vagrant/ids-testapi/fixtures/iec104_mestre_mini.pcap",
+                "ip": [
+                    "10.197.23.146"
+                ],
+                "mac_address": [
+                    "00:02:3e:99:fe:1b"
+                ],
+                "mac_address_level": {
+                    "00:02:3e:99:fe:1b": "unconfirmed"
+                },
+                "vlan_id": [],
+                "mac_vendor": [
+                    "Selta Telematica S.p.a"
+                ],
+                "os": "",
+                "roles": [
+                    "slave"
+                ],
+                "vendor": "",
+                "_asset_kb_id": "",
+                "vendor:info": {
+                    "source": "passive"
+                },
+                "firmware_version": "",
+                "firmware_version:info": {
+                    "source": "passive"
+                },
+                "os_or_firmware": "",
+                "serial_number": "",
+                "serial_number:info": {
+                    "source": "passive"
+                },
+                "product_name": "",
+                "product_name:info": {
+                    "source": "passive"
+                },
+                "type": "OT_device",
+                "type:info": {
+                    "source": "passive"
+                },
+                "protocols": [
+                    "iec104"
+                ],
+                "nodes": [
+                    "10.197.23.146"
+                ],
+                "zones": [
+                    "RemoteRTU"
+                ],
+                "custom_fields": {}
+            }
+        ]
     }
 }
 ```
@@ -86,7 +145,7 @@ Close incidents as security
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | List of arrays to close as security | Optional | 
+| ids | List of IDs to close as security | Optional | 
 
 
 #### Context Output
@@ -130,7 +189,7 @@ Close incidents as change
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | List of arrays to close as change. | Optional | 
+| ids | List of IDs to close as change. | Optional | 
 
 
 #### Context Output
@@ -218,7 +277,7 @@ Find a node ip from a mac address
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | mac | a mac address | Required | 
-| only_nodes_confirmed | This argument permet you to return only the nodes ips from a mac address of nodes having the status to 'confirmed'. Default value is false.  | Optional | 
+| only_nodes_confirmed | This argument permit you to return only the nodes IPs from a mac address of nodes having the status to 'confirmed'. Default value is True.  | Optional | 
 
 
 #### Context Output
@@ -243,4 +302,4 @@ Find a node ip from a mac address
 
 #### Human Readable Output
 
->Nozomi Networks - Results for the Ip from Mac Search not found ip for mac address: '00:0c:29:22:50:26'
+>Nozomi Networks - No IP results were found for mac address: '00:0c:29:22:50:26'

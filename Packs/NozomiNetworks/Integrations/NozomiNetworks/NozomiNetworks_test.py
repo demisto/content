@@ -1,34 +1,33 @@
+import pytest
 from NozomiNetworks import *
 
 NOZOMIGUARDIAN_URL = 'https://test.com'
 
 
-def test_has_last_id():
-    assert has_last_id({'last_id': "an_id"})
+@pytest.mark.parametrize('obj, expected', [({'last_id': "an_id"}, True), ({}, False), (None, False), ])
+def test_has_last_id(obj, expected):
+    assert has_last_id(obj) is expected
 
 
-def test_has_last_id_empty():
-    assert has_last_id({}) is False
-
-
-def test_has_last_id_none():
-    assert has_last_id(None) is False
-
-
-def test_has_last_run():
-    assert has_last_run({'last_fetch': "a_timestamp"}) is True
-
-
-def test_has_last_run_empty():
-    assert has_last_run({}) is False
-
-
-def test_has_last_run_none():
-    assert has_last_run(None) is False
+@pytest.mark.parametrize('obj, expected', [({'last_fetch': "a_timestamp"}, True), ({}, False), (None, False), ])
+def test_has_last_run(obj, expected):
+    assert has_last_run(obj) is expected
 
 
 def test_start_time_return_value():
     assert start_time({'last_fetch': 1540390400000}) == "1540390400000"
+
+
+def test_fetch_incidents_test():
+    i, last_fetch = fetch_incidents(
+        st='1392048072242',
+        risk='12',
+        fetch_also_n2os_incidents=False,
+        test_mode=True
+    )
+
+    assert last_fetch is None
+    assert len(i) == 0
 
 
 def test_start_time_return_timestamp():
@@ -43,24 +42,14 @@ def test_start_time_if_last_run_0_return_default():
     assert len(time) == 13
 
 
-def test_time_filter_no_ts():
-    assert better_than_time_filter(None) is ''
+@pytest.mark.parametrize('obj, expected', [(None, ''), ('', ''), ("1540390400000", " | where time > 1540390400000"), ])
+def test_time_filter(obj, expected):
+    assert better_than_time_filter(obj) == expected
 
 
-def test_time_filter_empty_ts():
-    assert better_than_time_filter('') is ''
-
-
-def test_better_time_filter_with_ts():
-    assert better_than_time_filter("1540390400000") == " | where time > 1540390400000"
-
-
-def test_equal_time_filter_with_ts():
-    assert equal_than_time_filter("1540390400000") == " | where time == 1540390400000"
-
-
-def test_equal_time_filter_with_none_ts():
-    assert equal_than_time_filter(None) == ""
+@pytest.mark.parametrize('obj, expected', [(None, ''), ('', ''), ("1540390400000", " | where time == 1540390400000"), ])
+def test_equal_time_filter_with_ts(obj, expected):
+    assert equal_than_time_filter(obj) == expected
 
 
 def test_parse_incidents():
@@ -75,30 +64,15 @@ def test_parse_incidents():
     del i['occurred']
 
     assert i == {
-        'name': 'Link RST sent by Slave',
+        'name': 'Link RST sent by Slave_1af93f46-65c1-4f52-a46a-2a181597fb0c',
         'severity': 2,
         'rawJSON': '{"id": "1af93f46-65c1-4f52-a46a-2a181597fb0c", "type_id": "NET:RST-FROM-SLAVE", "name": "Link RST sent by Slave", "description": "The slave 10.197.23.139 sent a RST of the connection to the master.", "severity": 10, "mac_src": "00:02:3e:99:c9:5d", "mac_dst": "00:c0:c9:30:04:f1", "ip_src": "10.197.23.182", "ip_dst": "10.197.23.139", "risk": "4.5", "protocol": "iec104", "src_roles": "master", "dst_roles": "slave", "time": 1392048082242, "ack": false, "port_src": 1097, "port_dst": 2404, "status": "open", "threat_name": "", "type_name": "Link RST sent by Slave", "zone_src": "RemoteRTU", "zone_dst": "RemoteRTU"}'
     }
 
 
-def test_parse_severity_10():
-    assert parse_severity({'risk': 10}) is 4
-
-
-def test_parse_severity_9():
-    assert parse_severity({'risk': 9.0}) is 4
-
-
-def test_parse_severity_8():
-    assert parse_severity({'risk': 8.5}) is 4
-
-
-def test_parse_severity_2():
-    assert parse_severity({'risk': 2.3}) is 1
-
-
-def test_parse_severity_1():
-    assert parse_severity({'risk': 1.6}) is 1
+@pytest.mark.parametrize('obj, expected', [(10, 4), (9.0, 4), (8.5, 4), (2.3, 1), (1.6, 1)])
+def test_parse_severity(obj, expected):
+    assert parse_severity({'risk': obj}) is expected
 
 
 def test_http_incident_request(requests_mock):
@@ -140,15 +114,15 @@ def test_incidents_filtered(requests_mock):
     assert lid is not None
     assert lr == 1392048082242
     assert list(map(lambda i: {
-        'name': i['name'],
+        'name': f"{i['name'].partition('_')[0]}",
         'severity': i['severity']
     }, fi)) == [
                {
-                   'name': 'Link RST sent by Slave',
+                   'name': f'Link RST sent by Slave',
                    'severity': 2
                },
                {
-                   'name': 'New Node',
+                   'name': f'New Node',
                    'severity': 4
                }
            ]
@@ -175,28 +149,14 @@ def test_ids_from_incidents():
     assert ids_from_incidents([{'id': 1}, {'id': 2}]) == [1, 2]
 
 
-def test_ids_from_args():
-    assert ids_from_args({'ids': f'["an_id"]'}) == ['an_id']
+@pytest.mark.parametrize('obj, expected', [('8', ' | where risk >= 8'), ('', ''), (None, '')])
+def test_risk_filter(obj, expected):
+    assert risk_filter(obj) == expected
 
 
-def test_ids_from_args_stripped():
-    assert ids_from_args({'ids': f'[" an_id"]'}) == ['an_id']
-
-
-def test_risk_filter():
-    assert risk_filter('8') == ' | where risk >= 8'
-
-
-def test_risk_filter_none():
-    assert risk_filter(None) == ''
-
-
-def test_also_n2os_incidents_filter_true():
+@pytest.mark.parametrize('obj, expected', [(True, ''), (False, ' | where is_incident == false')])
+def test_also_n2os_incidents_filter_true(obj, expected):
     assert also_n2os_incidents_filter(True) == ''
-
-
-def test_also_n2os_incidents_filter_false():
-    assert also_n2os_incidents_filter(False) == ' | where is_incident == false'
 
 
 def test_find_assets(requests_mock):
@@ -225,15 +185,15 @@ def test_assets_limit_from_args_string():
 
 
 def test_assets_limit_from_args_empty():
-    assert assets_limit_from_args({}) == 500
+    assert assets_limit_from_args({}) == 50
 
 
 def test_assets_max_limit_reached_return_1000():
-    assert assets_limit_from_args({'limit': 1001}) == 1000
+    assert assets_limit_from_args({'limit': 1001}) == 100
 
 
 def test_assets_limit_from_args_none():
-    assert assets_limit_from_args(None) == 500
+    assert assets_limit_from_args(None) == 50
 
 
 def test_find_assets_empty(requests_mock):
@@ -278,13 +238,14 @@ def test_filter_without_where():
     assert filter_from_args({'filter': 'id == 123'}) == ' | where id == 123'
 
 
-def test_filter_without_where():
+def test_filter_with_where():
     assert filter_from_args({'filter': '| where id == 123'}) == '| where id == 123'
 
 
 def test_ip_from_mac(requests_mock):
+    mac = '00:d0:c9:ca:bd:6a'
     result = find_ip_by_mac(
-        {'mac': '00:d0:c9:ca:bd:6a', 'only_nodes_confirmed': False},
+        {'mac': mac, 'only_nodes_confirmed': False},
         __get_client(
             [
                 {
@@ -295,9 +256,9 @@ def test_ip_from_mac(requests_mock):
             requests_mock
         ))
     assert result['readable_output'] == "Nozomi Networks - Results for the Ip from Mac Search is ['10.196.97.231', '172.16.0.4']"
-    assert result['outputs'] == ['10.196.97.231', '172.16.0.4']
-    assert result['outputs_prefix'] == 'Nozomi.Ips'
-    assert result['outputs_key_field'] == ''
+    assert result['outputs'] == {'ips': ['10.196.97.231', '172.16.0.4'], 'mac': mac}
+    assert result['outputs_prefix'] == 'Nozomi.IpByMac'
+    assert result['outputs_key_field'] is None
 
 
 def test_ip_from_mac_not_found(requests_mock):
@@ -312,8 +273,8 @@ def test_ip_from_mac_not_found(requests_mock):
             ],
             requests_mock
         ))
-    assert result['readable_output'] == 'Nozomi Networks - Results for the Ip from Mac Search not found ip for mac address: 12:33:44:55:bd:6a'
-    assert result['outputs'] == 'Ip not found'
+    assert result['readable_output'] == 'Nozomi Networks - No IP results were found for mac address: 12:33:44:55:bd:6a'
+    assert result['outputs'] is None
 
 
 def test_query_count_alerts(requests_mock):
@@ -329,7 +290,7 @@ def test_query_count_alerts(requests_mock):
             requests_mock
         ))
     assert result['outputs'] == [{'count': 126}]
-    assert result['outputs_prefix'] == 'Nozomi.Result'
+    assert result['outputs_prefix'] == 'Nozomi.Query.Result'
     assert result['outputs_key_field'] == ''
 
 

@@ -1,10 +1,11 @@
+from datetime import timezone
+
 from CommonServerPython import *
 
 ''' IMPORTS '''
 
 import requests
 import json
-import time
 import ast
 
 requests.packages.urllib3.disable_warnings()
@@ -31,9 +32,6 @@ class Client(BaseClient):
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 ''' GLOBAL_VARIABLES '''
-FETCH_TIME_FROM = demisto.params().get('fetchTime', '7 days').strip()
-RISK_FROM = demisto.params().get('riskFrom', None)
-FETCH_ALSO_N2OS_INCIDENTS = demisto.params().get('fecthAlsoIncidents', False)
 INTEGRATION_NAME = 'Nozomi Networks'
 QUERY_PATH = '/api/open/query/do?query='
 QUERY_ALERTS_PATH = '/api/open/query/do?query=alerts'
@@ -42,26 +40,28 @@ JOB_STATUS_MAX_RETRY = 5
 DEFAULT_HEAD_ALERTS = 20
 DEFAULT_HEAD_ASSETS = 50
 DEFAULT_HEAD_QUERY = 500
-MAX_ITEMS_FINDABLE_BY_A_COMMAND = 1000
-MAX_ASSETS_FINDABLE_BY_A_COMMAND = 1000
-DEFAULT_ASSETS_FINDABLE_BY_A_COMMAND = 500
-
-CLIENT = Client(
-    base_url=demisto.params().get('endpoint'),
-    verify=not demisto.params().get('insecure', True),
-    ok_codes=(200, 201, 202, 204),
-    headers={'accept': "application/json"},
-    auth=(demisto.params().get('username'), demisto.params().get('password')),
-    proxy=demisto.params().get('proxy', False))
+MAX_ASSETS_FINDABLE_BY_A_COMMAND = 100
+DEFAULT_ASSETS_FINDABLE_BY_A_COMMAND = 50
 
 
 '''HELPER FUNCTIONS'''
 
 
+def get_client():
+    return Client(
+        base_url=demisto.params().get('endpoint'),
+        verify=not demisto.params().get('insecure', True),
+        ok_codes=(200, 201, 202, 204),
+        headers={'accept': "application/json"},
+        auth=(demisto.params().get("credentials", {}).get('identifier', ''),
+              demisto.params().get("credentials", {}).get('password', '')),
+        proxy=demisto.params().get('proxy', False))
+
+
 def parse_incident(i):
     return {
-        'name': i['name'],
-        'occurred': datetime.fromtimestamp(i['time']/1000).strftime(DATE_FORMAT),
+        'name': f"{i['name']}_{i['id']}",
+        'occurred':  datetime.fromtimestamp(i['time']/1000, timezone.utc).isoformat(),
         'severity': parse_severity(i),
         'rawJSON': json.dumps(clean_null_terms(i))
     }
@@ -111,8 +111,8 @@ def better_than_id_filter(id):
     return res
 
 
-def start_time(last_run):
-    fetch_time_default, _ = parse_date_range(FETCH_TIME_FROM, date_format=DATE_FORMAT, to_timestamp=True)
+def start_time(last_run, fetch_time_from='7 days'):
+    fetch_time_default, _ = parse_date_range(fetch_time_from, date_format=DATE_FORMAT, to_timestamp=True)
     if has_last_run(last_run):
         time_from_last_run = f'{last_run.get("last_fetch", fetch_time_default)}'
         result = f'{fetch_time_default}' if time_from_last_run == '0' else f'{time_from_last_run}'
@@ -193,93 +193,37 @@ def last_asset_id(response):
     return response[-1]['id'] if len(response) > 0 else ''
 
 
-def wait_for_job_result(job_id, operation, client):
-    job_status = None
-    count = 0
-
-    try:
-        while job_status != 'SUCCESS' and JOB_STATUS_MAX_RETRY >= count:
-            time.sleep(2)
-            count = count + 1
-            job_status = client.http_get_request(
-                f'/api/open/alerts/{operation}/status/{job_id}'
-            )['result']['status']
-    except Exception as e:
-        LOG(f'nozomi: wait_for_job_result got an error, not able to retrieve job status with id {job_id}, error {e}')
-        return False
-
-    return job_status == 'SUCCESS'
-
-
 def ack_unack_alerts(ids, status, client):
     data = []
     for id in ids:
         data.append({'id': id, 'ack': status})
     response = client.http_post_request('/api/open/alerts/ack', {'data': data})
-    return wait_for_job_result(response["result"]["id"], 'ack', client)
+    return response["result"]["id"]
 
 
 def ack_alerts(ids, client):
     return ack_unack_alerts(ids, True, client)
 
 
-def unack_alerts(ids, client):
-    return ack_unack_alerts(ids, False, client)
-
-
-def is_acked(id, client=CLIENT):
-    return alert_by_id(id, client)['result'][0]['status'] == 'ack'
-
-
-def alert_by_id(id, client):
-    return client.http_get_request(
-        f'{QUERY_ALERTS_PATH} | select id status | where id == {id}'
-    )
-
-
 def nozomi_alerts_ids_from_demisto_incidents(demisto_incidents):
     return ids_from_incidents([json.loads(incident['rawJSON']) for incident in demisto_incidents])
 
 
-def ids_from_args(args):
-    return [i.strip() for i in ast.literal_eval(args.get('ids', []))]
-
-
-def close_alerts(args, close_action, client=CLIENT):
+def close_alerts(args, close_action, client):
     readable_close_action = "closed_as_security" if close_action == "delete_rules" else "closed_as_change"
-    human_readable = f'Command changes the status of alerts passed as "{readable_close_action}" in Nozomi Networks platform.'
-    extracted_ids = ids_from_args(args)
+    extracted_ids = argToList(args.get('ids'))
+    human_readable = f'Command changes the status of the following alerts: {extracted_ids} passed as "{readable_close_action}" in Nozomi Networks platform.'
 
-    response = client.http_post_request(
+    client.http_post_request(
         '/api/open/alerts/close',
         {"ids": extracted_ids, "close_action": close_action})
 
-    result = 'SUCCESS' if wait_for_job_result(response['result']['id'], 'close', client) else 'FAIL'
-
     return {
-        'outputs': result,
-        'outputs_prefix': 'Nozomi.Ids',
-        'outputs_key_field': '',
-        'readable_output': human_readable
+        'readable_output': human_readable,
+        'outputs_prefix': None,
+        'outputs_key_field': None,
+        'outputs': None
     }
-
-
-def context_entry(value):
-    return {
-        "Nozomi": value
-    }
-
-
-def is_closed_as_security(id, client):
-    return is_alert_status_as(id, 'closed_as_security', client)
-
-
-def is_closed_as_a_change(id, client):
-    return is_alert_status_as(id, 'closed_as_change', client)
-
-
-def is_alert_status_as(id, expected_status, client):
-    return alert_by_id(id, client)['result'][0]['status'] == expected_status
 
 
 def has_last_id(lr):
@@ -333,13 +277,24 @@ def humanize_api_error(error):
 
 
 def fetch_incidents(
-        st=start_time(demisto.getLastRun()),
-        client=CLIENT,
-        last_run=demisto.getLastRun(),
-        last_id=get_last_id(demisto.getLastRun()),
-        risk=RISK_FROM,
-        fetch_also_n2os_incidents=FETCH_ALSO_N2OS_INCIDENTS
+        st=None,
+        client=None,
+        last_run=None,
+        last_id=None,
+        risk=None,
+        fetch_also_n2os_incidents=None,
+        test_mode=False
 ):
+    st = start_time(demisto.getLastRun(), demisto.params().get('fetchTime', '7 days').strip()) if st is None else st
+    client = client or get_client()
+    last_run = last_run or demisto.getLastRun()
+    last_id = last_id or get_last_id(demisto.getLastRun())
+    risk = risk or demisto.params().get('riskFrom', None)
+    fetch_also_n2os_incidents = fetch_also_n2os_incidents or demisto.params().get('fecthAlsoIncidents', False)
+
+    if test_mode:
+        return [], None  # cause we want just field validation from test fetch
+
     demisto_incidents, last_fetch, last_id_returned = incidents(st, last_id, last_run, risk, fetch_also_n2os_incidents, client)
 
     ack_alerts(nozomi_alerts_ids_from_demisto_incidents(demisto_incidents), client)
@@ -349,7 +304,7 @@ def fetch_incidents(
     return demisto_incidents, last_fetch
 
 
-def is_alive(client=CLIENT):
+def is_alive(client=get_client()):
     error = None
     try:
         client.http_get_request(f'{QUERY_ALERTS_PATH} | count')
@@ -359,39 +314,39 @@ def is_alive(client=CLIENT):
     return humanize_api_error(error) if error else 'ok'
 
 
-def close_incidents_as_change(args, client=CLIENT):
+def close_incidents_as_change(args, client=get_client()):
     return close_alerts(args, 'learn_rules', client)
 
 
-def close_incidents_as_security(args, client=CLIENT):
+def close_incidents_as_security(args, client=get_client()):
     return close_alerts(args, 'delete_rules', client)
 
 
-def query(args, client=CLIENT):
+def query(args, client=get_client()):
     title = f'{INTEGRATION_NAME} - Results for Query'
     response = client.http_get_request(
         f'{QUERY_PATH}{args.get("query", "")} | head {DEFAULT_HEAD_QUERY}')
 
     if 'error' in response and response['error']:
         return {
-            'outputs': response['error'],
-            'outputs_prefix': 'Nozomi.Error',
-            'outputs_key_field': '',
+            'outputs_key_field': None,
+            'outputs': None,
+            'outputs_prefix': None,
             'readable_output': response['error']
-    }
+        }
 
     result = response['result']
     human_readable = tableToMarkdown(t=result, name=title, removeNull=True)
 
     return {
         'outputs': result,
-        'outputs_prefix': 'Nozomi.Result',
+        'outputs_prefix': 'Nozomi.Query.Result',
         'outputs_key_field': '',
         'readable_output': human_readable
     }
 
 
-def find_assets(args, head=DEFAULT_HEAD_ASSETS, client=CLIENT):
+def find_assets(args, head=DEFAULT_HEAD_ASSETS, client=get_client()):
     title = f'{INTEGRATION_NAME} - Results for Find Assets'
     limit = assets_limit_from_args(args)
     result = []  # type: List[dict]
@@ -430,43 +385,46 @@ def find_assets(args, head=DEFAULT_HEAD_ASSETS, client=CLIENT):
     }
 
 
-def find_ip_by_mac(args, client=CLIENT):
+def find_ip_by_mac(args, client=get_client()):
     mac = args.get("mac", "")
     only_nodes_confirmed = args.get("only_nodes_confirmed", True)
-    result_error = None
+    result_error = False
     result = []  # type: List[str]
 
     response = client.http_get_request(
         f'{QUERY_PATH}nodes | select ip mac_address | where mac_address == {mac}{nodes_confirmed_filter(only_nodes_confirmed)}')
 
     if len(response["result"]) == 0:
-        human_readable = f'{INTEGRATION_NAME} - Results for the Ip from Mac Search not found ip for mac address: {mac}'
-        result_error = "Ip not found"
-        prefix = 'Nozomi.Error'
+        human_readable = f'{INTEGRATION_NAME} - No IP results were found for mac address: {mac}'
+        result_error = True
+        prefix = None
     else:
         ips = [node['ip'] for node in response["result"]]
         human_readable = f'{INTEGRATION_NAME} - Results for the Ip from Mac Search is {ips}'
-        result = ips
-        prefix = 'Nozomi.Ips'
+        result = {'ips': ips, 'mac': mac}
+        prefix = 'Nozomi.IpByMac'
 
     return {
-        'outputs': result_error if result_error else result,
+        'outputs': None if result_error else result,
         'outputs_prefix': prefix,
-        'outputs_key_field': '',
+        'outputs_key_field': None,
         'readable_output': human_readable
     }
 
 
 ''' EXECUTION '''
 
-LOG('nozomi: invoked command %s' % (demisto.command(),))
-
+demisto.info('nozomi: invoked command %s' % (demisto.command(),))
 
 try:
     if demisto.command() == 'fetch-incidents':
         fetch_incidents()
     elif demisto.command() == 'test-module':
-        demisto.results(is_alive())
+        if demisto.params().get('isFetch'):
+            fetch_incidents(test_mode=True)
+            demisto.results('ok')
+        else:
+            demisto.results(is_alive())
     elif demisto.command() == 'nozomi-close-incidents-as-change':
         return_results(CommandResults(**close_incidents_as_change(demisto.args())))
     elif demisto.command() == 'nozomi-close-incidents-as-security':
@@ -478,6 +436,6 @@ try:
     elif demisto.command() == 'nozomi-find-ip-by-mac':
         return_results(CommandResults(**find_ip_by_mac(demisto.args())))
 except Exception as e:
-    LOG(f'nozomi: got an error {e}')
-    LOG.print_log()
+    demisto.error(f'nozomi: got an error {e}')
     return_error(e)
+
