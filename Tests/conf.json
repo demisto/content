@@ -2841,6 +2841,9 @@
             "integrations": "Blueliv ThreatCompass",
             "playbookID": "Blueliv_ThreatCompass_test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "MicrosoftCloudAppSecurity",
         }
     ],
     "skipped_tests": {
