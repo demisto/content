@@ -53,6 +53,13 @@ Return IP information and reputation
 | CyberTotal.IP.positive_detections | number | The number of antivirus vendors scanned with positive detection. | 
 | CyberTotal.IP.detection_ratio | string | The ratio of positive\_detections and detection\_engines. | 
 | CyberTotal.IP.message | string | Message about this search. | 
+| IP.Address | String | IP address | 
+| IP.DetectionEngines | Number | The total number of engines that checked the indicator. | 
+| IP.PositiveDetections | Number | The number of engines that positively detected the indicator as malicious. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
 
 
 #### Command Example
@@ -100,6 +107,16 @@ Return file's information and reputation
 | CyberTotal.File.sha256 | string | This file’s sha256 value. | 
 | CyberTotal.File.extension | string | This file’s extension type. | 
 | CyberTotal.File.name | string | This file’s name, separated by ‘,’ if more than 2 names. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA1 hash of the file. | 
+| File.Name | String | The full file name \(including file extension\). | 
+| File.Extension | String | The file extension, for example: 'xls'. | 
+| File.Size | Number | The size of the file in bytes. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
 
 
 #### Command Example
@@ -111,7 +128,7 @@ Return file's information and reputation
 
 ### domain
 ***
-Return domain  information and reputation
+Return domain information and reputation
 
 
 #### Base Command
@@ -139,6 +156,15 @@ Return domain  information and reputation
 | CyberTotal.Domain.positive_detections | number | The number of antivirus vendors scanned with positive detection. | 
 | CyberTotal.Domain.detection_ratio | string | The ratio of positive\_detections and detection\_engines. | 
 | CyberTotal.Domain.message | string | Message about this search. | 
+| Domain.Name | String | The domain name, for example: "google.com". | 
+| Domain.DetectionEngines | Number | The total number of engines that checked the indicator. | 
+| Domain.PositiveDetections | Number | The number of engines that positively detected the indicator as malicious. | 
+| Domain.Malicious.Vendor | String | The vendor reporting the domain as malicious. | 
+| Domain.Malicious.Description | String | A description explaining why the domain was reported as malicious. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
 
 
 #### Command Example
@@ -179,6 +205,15 @@ Return domain information and reputation
 | CyberTotal.URL.positive_detections | number | The number of antivirus vendors scanned with positive detection. | 
 | CyberTotal.URL.detection_ratio | string | The ratio of positive\_detections and detection\_engines. | 
 | CyberTotal.URL.message | string | Message about this search. | 
+| URL.Data | String | The URL | 
+| URL.DetectionEngines | String | The total number of engines that checked the indicator. | 
+| URL.PositiveDetections | String | The number of engines that positively detected the indicator as malicious. | 
+| URL.Malicious.Vendor | String | The vendor reporting the URL as malicious. | 
+| URL.Malicious.Description | String | A description of the malicious URL. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
 
 
 #### Command Example
