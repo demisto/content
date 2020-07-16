@@ -159,6 +159,8 @@ def list_accounts(client, args):
         outputs_prefix='CyberArk.Accounts',
         outputs_key_field='AccountID',
         outputs=cyberark_ec,
+        raw_response=raw_response,
+        readable_output=tableToMarkdown("CyberArk PAS Accounts", cyberark_ec)
     )
 
 
@@ -192,7 +194,9 @@ def add_account(client, args):
     return CommandResults(
         outputs_prefix='CyberArk.Accounts',
         outputs_key_field='AccountID',
-        outputs=cyberark_ec
+        outputs=cyberark_ec,
+        raw_response=raw_response,
+        readable_output=tableToMarkdown("CyberArk PAS New Account", cyberark_ec)
     )
 
 
