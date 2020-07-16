@@ -56,6 +56,8 @@ Return IP information and reputation
 | IP.Address | String | IP address | 
 | IP.DetectionEngines | Number | The total number of engines that checked the indicator. | 
 | IP.PositiveDetections | Number | The number of engines that positively detected the indicator as malicious. | 
+| IP.Malicious.Vendor | String | The vendor reporting the IP address as malicious. | 
+| IP.Malicious.Description | String | A description explaining why the IP address was reported as malicious. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 

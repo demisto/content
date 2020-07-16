@@ -114,6 +114,12 @@ script:
       description: The number of engines that positively detected the indicator as
         malicious.
       type: Number
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor reporting the IP address as malicious.
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: A description explaining why the IP address was reported as malicious.
+      type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
