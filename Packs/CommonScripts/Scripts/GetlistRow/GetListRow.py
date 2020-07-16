@@ -58,10 +58,10 @@ def parse_list(parse_all, header, value, list_name):
     validate_args(parse_all, header, value)
     list_data = demisto.executeCommand("getList", {'listName': list_name})[0]['Contents']
     context = {
-        "List_Name": list_name,
+        "ListName": list_name,
         "Header": header,
         "Value": value,
-        "Parse_All": parse_all
+        "ParseAll": parse_all
     }
     validate_list_exists(list_data)
     headers, lines = list_to_headers_and_lines(list_data)

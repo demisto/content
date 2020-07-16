@@ -41,10 +41,10 @@ outputs:
 - contextPath: GetListRow.Result.Value
   description: Value to search for.
   type: String
-- contextPath: GetListRow.Result.List_Name
-  description: The list name to search in.
+- contextPath: GetListRow.Result.ListName
+  description: The name of the list to search in.
   type: String
-- contextPath: GetListRow.Result.Parse_All
+- contextPath: GetListRow.Result.ParseAll
   description: Parse all the list into the context.
   type: String
 - contextPath: GetListRow.Result
