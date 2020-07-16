@@ -750,10 +750,10 @@ inputs:
 outputs:
 - contextPath: RemediatedIndicators
   description: List of indicators that were remediated
-  type: unknown
+  type: Array
 - contextPath: NotRemediatedIndicators
   description: List of indicators that were not remediated
-  type: unknown
+  type: Array
 quiet: true
 fromversion: 5.0.0
 tests:

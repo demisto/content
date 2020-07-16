@@ -5,8 +5,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 * Block Indicators - Generic v2
-* SafeBreach Compare and Tag Insight Indicators (draft)
-* SafeBreach - Rerun Insights (draft)
+* SafeBreach Compare and Tag Insight Indicators
+* SafeBreach - Rerun Insight
 
 ### Integrations
 * SafeBreach_v2

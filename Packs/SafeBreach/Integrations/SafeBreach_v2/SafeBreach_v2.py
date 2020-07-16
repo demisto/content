@@ -300,7 +300,7 @@ def get_splunk_remedation_query(response):
                  vendor['id'] == 'splunk']
         return "".join(query)
     except Exception as e:
-        print(e)
+        demisto.error(e)
         return ""
 
 
@@ -343,7 +343,7 @@ def get_indicators_command(client: Client, insight_category: list, insight_data_
             if not INDICATOR_TYPE_MAPPER.get(str(item['type'])) or item["value"] == 'N/A':
                 continue
             if isinstance(item['type'], int):
-                print('Data type is int', item['type'], insight['ruleId'])
+                demisto.info('Data type is int', item['type'], insight['ruleId'])
 
             is_behaveioral = item['type'] in ['Port', 'Protocol', 'Command', 'Registry', 'Process']
             reputation_score = DEMISTO_INDICATOR_REPUTATION.get(demisto.params().get('feedReputation'))
