@@ -140,6 +140,7 @@ class PackStatus(enum.Enum):
     FAILED_REMOVING_PACK_SKIPPED_FOLDERS = "Failed to remove pack hidden and skipped folders"
     FAILED_RELEASE_NOTES = "Failed to generate changelog.json"
     FAILED_DETECTING_MODIFIED_FILES = "Failed in detecting modified files of the pack"
+    FAILED_SEARCHING_PACK_IN_INDEX = "Failed in searching pack folder in index"
 
 
 class Pack(object):
@@ -1238,6 +1239,31 @@ class Pack(object):
                     images_list.append(image_data)
 
         return images_list
+
+    def check_if_exists_in_index(self, index_folder_path):
+        """ Checks if pack is sub-folder of downloaded index.
+
+        Args:
+            index_folder_path (str): index folder full path.
+
+        Returns:
+            bool: whether the operation succeeded.
+            bool: whether pack exists in index folder.
+
+        """
+        task_status, exists_in_index = False, False
+
+        try:
+            if not os.path.exists(index_folder_path):
+                print_error(f"{GCPConfig.INDEX_NAME} does not exists.")
+                return task_status, exists_in_index
+
+            exists_in_index = os.path.exists(os.path.join(index_folder_path, self._pack_name))
+            task_status = True
+        except Exception as e:
+            print_error(f"Failed searching {self._pack_name} pack in {GCPConfig.INDEX_NAME}. Additional info:\n{e}")
+        finally:
+            return task_status, exists_in_index
 
     def upload_integration_images(self, storage_bucket):
         """ Uploads pack integrations images to gcs.
