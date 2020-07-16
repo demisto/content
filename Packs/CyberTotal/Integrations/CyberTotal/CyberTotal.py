@@ -476,6 +476,7 @@ def url_reputation_command(client: Client, args: Dict[str, Any], default_thresho
             indicator_type=DBotScoreType.URL,
             integration_name='CyberTotal',
             score=score,
+            malicious_description=f'CyberTotal returned reputation {reputation}'
         )
 
         url_standard_context = Common.URL(
