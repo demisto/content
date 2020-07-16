@@ -86,22 +86,13 @@ class Client(BaseClient):
 
 
 def arg_to_timestamp(arg, arg_name, required):
-    if arg is None:
-        if required is True:
-            raise ValueError(f'Missing "{arg_name}"')
-        return None
-
     if isinstance(arg, str) and arg.isdigit():
         return int(arg)
     if isinstance(arg, str):
         date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
-        if date is None:
-            raise ValueError(f'Invalid date: {arg_name}')
-
         return int(date.timestamp())
     if isinstance(arg, (int, float)):
         return int(arg)
-    raise ValueError(f'Invalid date: "{arg_name}"')
 
 
 def convert_severity(severity):
@@ -190,6 +181,13 @@ def convert_status(status):
     return status_option[status]
 
 
+def str_to_bool(str):
+    if str == 'True':
+        return True
+    elif str == 'False':
+        return False
+
+
 def args_to_json_filter_list_activity(all_params):
     request_data = {}
     filters = {}
@@ -245,7 +243,7 @@ def args_to_json_filter_list_files(all_params):
         if key == 'extension':
             filters[key] = {'eq': value}
         if key == 'quarantined':
-            filters[key] = {'eq': eval(value)}
+            filters[key] = {'eq': str_to_bool(value)}
         if key == 'owner':
             filters['owner.entity'] = {'eq': value}
     request_data = {'filters': filters}

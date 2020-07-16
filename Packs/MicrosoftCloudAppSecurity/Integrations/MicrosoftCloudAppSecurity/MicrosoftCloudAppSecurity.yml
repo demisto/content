@@ -462,8 +462,6 @@ script:
       your organization's cloud apps.
     execution: false
     name: microsoft-cas-users-accounts-list
-  tests:
-    - No tests
   dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: true
@@ -473,3 +471,5 @@ script:
   script: '-'
   subtype: python3
   type: python
+tests:
+    - No tests
