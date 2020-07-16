@@ -26,7 +26,7 @@ def where_field_equals(args):
 
 def main():
     args = demisto.args()
-    hr_string, entry_context = where_field_equals(args)
+    hr_string = where_field_equals(args)
     return_outputs(readable_output=hr_string, outputs={})
 
 
