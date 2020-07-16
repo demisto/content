@@ -9,7 +9,7 @@ This integration was integrated and tested with version xx of Microsoft_Graph_Fi
 ---
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
-## Required Permissions
+### Required Permissions
 1. Directory.Read.All - Delegated
 2. Files.ReadWrite.All - Application
 3. Files.ReadWrite.All - Delegated
