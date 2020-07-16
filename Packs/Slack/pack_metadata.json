@@ -29,7 +29,7 @@
             "display_name": "Syslog Sender"
         },
         "Active_Directory_Query": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Active Directory Query"
         }
     },
