@@ -1004,6 +1004,4 @@ script:
       description: Group ID.
     description: Moves a system to a different group.
   runonce: false
-tests:
-- Test Playbook McAfee ePO
 toversion: 4.1.9
