@@ -337,7 +337,6 @@ jobs:
             - *restore_cache
             - *add_ssh_keys
             - *prepare_environment
-            - *infrastructure_testing
             - *run_unit_testing_and_lint
             - store_test_results:
                 path: ./unit-tests
@@ -842,7 +841,6 @@ jobs:
       - *secrets
       - *validate_files_and_yaml
       - *run_unit_testing_and_lint
-      - *infrastructure_testing
       - *create_id_set
       - *build_content_descriptor
       - *common_server_documentation
