@@ -304,7 +304,7 @@ script:
     - default: false
       description: The user's unique ID.
       isArray: false
-      name: userID
+      name: user_id
       required: true
       secret: false
     deprecated: false
@@ -315,7 +315,7 @@ script:
     - default: false
       description: The user's unique ID.
       isArray: false
-      name: userID
+      name: user_id
       required: true
       secret: false
     deprecated: false
@@ -343,7 +343,7 @@ script:
     - default: false
       description: The user's unique ID.
       isArray: false
-      name: userID
+      name: user_id
       required: true
       secret: false
     deprecated: false
@@ -624,7 +624,7 @@ script:
     - default: false
       description: The platform assigned to this account.
       isArray: false
-      name: platformID
+      name: platform_id
       required: true
       secret: false
     - default: false
@@ -707,7 +707,7 @@ script:
     - default: false
       description: The unique ID of the account to delete.
       isArray: false
-      name: accountID
+      name: account_id
       required: true
       secret: false
     deprecated: false
@@ -718,7 +718,7 @@ script:
     - default: false
       description: The unique ID of the account to delete.
       isArray: false
-      name: accountID
+      name: account_id
       required: true
       secret: false
     - default: false
@@ -736,7 +736,7 @@ script:
     - default: false
       description: The platform assigned to this account.
       isArray: false
-      name: platformID
+      name: platform_id
       required: false
       secret: false
     - default: false
@@ -797,7 +797,7 @@ script:
     - default: false
       description: The ID of the account whose activities will be retrieved.
       isArray: false
-      name: accountID
+      name: account_id
       required: true
       secret: false
     deprecated: false
@@ -809,7 +809,7 @@ script:
     - default: false
       description: The user's unique ID.
       isArray: false
-      name: userID
+      name: user_id
       required: true
       secret: false
     deprecated: false
@@ -820,7 +820,7 @@ script:
     - default: false
       description: The unique ID of the account.
       isArray: false
-      name: accountID
+      name: account_id
       required: true
       secret: false
     - default: false
@@ -845,7 +845,7 @@ script:
     - default: false
       description: The unique account ID of the account.
       isArray: false
-      name: accountID
+      name: account_id
       required: true
       secret: false
     deprecated: false
@@ -856,7 +856,7 @@ script:
     - default: false
       description: The unique account ID of the account.
       isArray: false
-      name: accountID
+      name: account_id
       required: true
       secret: false
     deprecated: false
@@ -867,7 +867,7 @@ script:
     - default: false
       description: The unique ID of the account.
       isArray: false
-      name: accountID
+      name: account_id
       required: true
       secret: false
     deprecated: false
@@ -879,7 +879,7 @@ script:
     - default: false
       description: The unique ID of the account.
       isArray: false
-      name: AccountID
+      name: account_id
       required: true
       secret: false
     - default: false

@@ -91,7 +91,7 @@ class Client(BaseClient):
 
     def update_user(
             self,
-            userID: str,
+            user_id: str,
             username: str,
             user_type: str,
             non_authorized_interfaces: list,
@@ -108,7 +108,7 @@ class Client(BaseClient):
             distinguished_name: str,
             location: str
     ):
-        url_suffix = f"/PasswordVault/api/Users/{userID}"
+        url_suffix = f"/PasswordVault/api/Users/{user_id}"
         body = {
             "enableUser": enable_user == "true",
             "changePassOnNextLogon": change_password_on_the_next_logon == "true",
@@ -126,7 +126,7 @@ class Client(BaseClient):
                 "firstName": first_name,
                 "lastName": last_name
             },
-            "id": userID,
+            "id": user_id,
             "username": username,
             "source": "CyberArkPAS",
             "userType": user_type,
@@ -137,9 +137,9 @@ class Client(BaseClient):
         return self._http_request("PUT", url_suffix, json_data=body)
 
     def delete_user(self,
-                    userID: str
+                    user_id: str
                     ):
-        url_suffix = f"/PasswordVault/api/Users/{userID}"
+        url_suffix = f"/PasswordVault/api/Users/{user_id}"
 
         # json is not defined for this response, therefore we wish to get the "text" value back
         return self._http_request("DELETE", url_suffix, resp_type='text')
@@ -158,9 +158,9 @@ class Client(BaseClient):
         return self._http_request("GET", url_suffix, json_data=body)
 
     def activate_user(self,
-                      userID: str
+                      user_id: str
                       ):
-        url_suffix = f"/PasswordVault/WebServices/PIMServices.svc/Users/{userID}"
+        url_suffix = f"/PasswordVault/WebServices/PIMServices.svc/Users/{user_id}"
 
         return self._http_request("PUT", url_suffix, resp_type='text')
 
@@ -284,7 +284,7 @@ class Client(BaseClient):
                     account_name: list,
                     address: str,
                     username: str,
-                    platformID: str,
+                    platform_id: str,
                     safe_name: str,
                     password: str,
                     secret_type: str,
@@ -300,7 +300,7 @@ class Client(BaseClient):
             "name": account_name,
             "address": address,
             "userName": username,
-            "platformId": platformID,
+            "platformId": platform_id,
             "safeName": safe_name,
             "secretType": secret_type,
             "secret": password,
@@ -366,9 +366,9 @@ class Client(BaseClient):
         return self._http_request("DELETE", url_suffix, resp_type='text')
 
     def delete_account(self,
-                       accountID: str,
+                       account_id: str,
                        ):
-        url_suffix = f"/PasswordVault/api/Accounts/{accountID}"
+        url_suffix = f"/PasswordVault/api/Accounts/{account_id}"
 
         return self._http_request("DELETE", url_suffix, resp_type='text')
 
@@ -383,25 +383,25 @@ class Client(BaseClient):
         return self._http_request("GET", url_suffix)
 
     def get_list_account_activity(self,
-                                  accountID: str,
+                                  account_id: str,
                                   ):
-        url_suffix = f"/PasswordVault/api/Accounts/{accountID}/Activities"
+        url_suffix = f"/PasswordVault/api/Accounts/{account_id}/Activities"
         return self._http_request("GET", url_suffix)
 
     def change_credentials_random_password(self,
-                                           accountID: str,
+                                           account_id: str,
                                            ):
-        url_suffix = f"/PasswordVault/API/Accounts/{accountID}/Change"
+        url_suffix = f"/PasswordVault/API/Accounts/{account_id}/Change"
         body = {
             "ChangeEntireGroup": "true"
         }
         return self._http_request("POST", url_suffix, json_data=body, resp_type='text')
 
     def change_credentials_set_new_password(self,
-                                            accountID: str,
+                                            account_id: str,
                                             new_credentials: str,
                                             ):
-        url_suffix = f"/passwordvault/api/Accounts/{accountID}/SetNextPassword"
+        url_suffix = f"/passwordvault/api/Accounts/{account_id}/SetNextPassword"
         body = {
             "ChangeImmediately": "true" == "true",
             "NewCredentials": new_credentials,
@@ -409,42 +409,42 @@ class Client(BaseClient):
         return self._http_request("POST", url_suffix, json_data=body, resp_type='text')
 
     def change_credentials_in_vault_only(self,
-                                         accountID: str,
+                                         account_id: str,
                                          new_credentials: str,
                                          ):
-        url_suffix = f"/passwordvault/api/Accounts/{accountID}/Password/Update"
+        url_suffix = f"/passwordvault/api/Accounts/{account_id}/Password/Update"
         body = {
             "NewCredentials": new_credentials,
         }
         return self._http_request("POST", url_suffix, json_data=body, resp_type='text')
 
     def verify_credentials(self,
-                           accountID: str,
+                           account_id: str,
                            ):
-        url_suffix = f"/PasswordVault/WebServices/PIMServices.svc/Accounts/{accountID}/VerifyCredentials"
+        url_suffix = f"/PasswordVault/WebServices/PIMServices.svc/Accounts/{account_id}/VerifyCredentials"
 
         return self._http_request("POST", url_suffix, resp_type='text')
 
     def reconcile_credentials(self,
-                              accountID: str,
+                              account_id: str,
                               ):
-        url_suffix = f"/PasswordVault/API/Accounts/{accountID}/Reconcile"
+        url_suffix = f"/PasswordVault/API/Accounts/{account_id}/Reconcile"
 
         return self._http_request("POST", url_suffix, resp_type='text')
 
     def update_account(self,
-                       accountID: str,
+                       account_id: str,
                        account_name: str,
                        address: str,
                        username: str,
-                       platformID: str,
+                       platform_id: str,
                        ):
-        url_suffix = f"/PasswordVault/api/Accounts/{accountID}"
+        url_suffix = f"/PasswordVault/api/Accounts/{account_id}"
 
         arguments = {"name": account_name,
                      "address": address,
                      "userName": username,
-                     "platformId": platformID}
+                     "platformId": platform_id}
         body = []
         for key, value in arguments.items():
             if value:
@@ -517,7 +517,7 @@ def add_user_command(
 
 def update_user_command(
         client: Client,
-        userID: str,
+        user_id: str,
         username: str,
         user_type: str = "EPVUser",
         non_authorized_interfaces: str = "",
@@ -537,7 +537,7 @@ def update_user_command(
     non_authorized_interfaces_list = argToList(non_authorized_interfaces)
     vault_authorization_list = argToList(vault_authorization)
 
-    response = client.update_user(userID, username, user_type, non_authorized_interfaces_list, expiry_date,
+    response = client.update_user(user_id, username, user_type, non_authorized_interfaces_list, expiry_date,
                                   change_password_on_the_next_logon, password_never_expires, vault_authorization_list,
                                   description, email, first_name, last_name, enable_user, profession,
                                   distinguished_name,
@@ -554,17 +554,17 @@ def update_user_command(
 
 def delete_user_command(
         client: Client,
-        userID: str,
+        user_id: str,
 ):
-    response = client.delete_user(userID)
+    response = client.delete_user(user_id)
     # the response should be an empty string, if an error raised it would be catch in the main block
     # should never enter to the else block, extra precautions if something want wrong
     if not response:
         return CommandResults(
-            readable_output=f"User {userID} was deleted",
-            outputs_prefix=f'CyberArkPAS.Users.{userID}',
+            readable_output=f"User {user_id} was deleted",
+            outputs_prefix=f'CyberArkPAS.Users.{user_id}',
             outputs_key_field='id',
-            outputs={"id": userID, "deleted": True}
+            outputs={"id": user_id, "deleted": True}
         )
     else:
         return response
@@ -591,11 +591,11 @@ def get_users_command(
 
 def activate_user_command(
         client: Client,
-        userID: str,
+        user_id: str,
 ):
-    response = client.activate_user(userID)
+    response = client.activate_user(user_id)
     if not response:
-        return f"User {userID} was activated"
+        return f"User {user_id} was activated"
     else:
         return response
 
@@ -776,7 +776,7 @@ def add_account_command(
         account_name: list = "",
         address: str = "",
         username: str = "",
-        platformID: str = "",
+        platform_id: str = "",
         safe_name: str = "",
         password: str = "",
         secret_type: str = "password",
@@ -786,7 +786,7 @@ def add_account_command(
         remote_machines: str = "",
         access_restricted_to_temote_machines: str = "true"
 ):
-    response = client.add_account(account_name, address, username, platformID, safe_name, password, secret_type,
+    response = client.add_account(account_name, address, username, platform_id, safe_name, password, secret_type,
                                   properties, automatic_management_enabled, manual_management_reason, remote_machines,
                                   access_restricted_to_temote_machines)
     results = CommandResults(
@@ -800,13 +800,13 @@ def add_account_command(
 
 def update_account_command(
         client: Client,
-        accountID: str = "",
+        account_id: str = "",
         account_name: str = "",
         address: str = "",
         username: str = "",
-        platformID: str = "",
+        platform_id: str = "",
 ):
-    response = client.update_account(accountID, account_name, address, username, platformID)
+    response = client.update_account(account_id, account_name, address, username, platform_id)
     results = CommandResults(
         raw_response=response,
         outputs_prefix=f'CyberArkPAS.Accounts.{response.get("id")}',
@@ -818,17 +818,17 @@ def update_account_command(
 
 def delete_account_command(
         client: Client,
-        accountID: str = "",
+        account_id: str = "",
 ):
-    response = client.delete_account(accountID)
+    response = client.delete_account(account_id)
     # the response should be an empty string, if an error raised it would be catch in the main block
     # should never enter to the else block, extra precautions if something want wrong
     if not response:
         return CommandResults(
-            readable_output=f"Account {accountID} was deleted",
-            outputs_prefix=f'CyberArkPAS.Accounts.{accountID}',
+            readable_output=f"Account {account_id} was deleted",
+            outputs_prefix=f'CyberArkPAS.Accounts.{account_id}',
             outputs_key_field='id',
-            outputs={"id": accountID, "deleted": True}
+            outputs={"id": account_id, "deleted": True}
         )
     else:
         return response
@@ -872,57 +872,57 @@ def get_list_account_activity_command(
 
 def change_credentials_random_password_command(
         client: Client,
-        accountID: str,
+        account_id: str,
 ):
-    response = client.change_credentials_random_password(accountID)
+    response = client.change_credentials_random_password(account_id)
     if not response:
-        return f"The password in the account {accountID} was changed"
+        return f"The password in the account {account_id} was changed"
     else:
         return response
 
 
 def change_credentials_set_new_password_command(
         client: Client,
-        accountID: str,
+        account_id: str,
         new_credentials: str,
 ):
-    response = client.change_credentials_set_new_password(accountID, new_credentials)
+    response = client.change_credentials_set_new_password(account_id, new_credentials)
     if not response:
-        return f"The password in the account {accountID} was changed"
+        return f"The password in the account {account_id} was changed"
     else:
         return response
 
 
 def change_credentials_in_vault_only_command(
         client: Client,
-        accountID: str,
+        account_id: str,
         new_credentials: str,
 ):
-    response = client.change_credentials_in_vault_only(accountID, new_credentials)
+    response = client.change_credentials_in_vault_only(account_id, new_credentials)
     if not response:
-        return f"The password in the account {accountID} was changed"
+        return f"The password in the account {account_id} was changed"
     else:
         return response
 
 
 def verify_credentials_command(
         client: Client,
-        accountID: str,
+        account_id: str,
 ):
-    response = client.verify_credentials(accountID)
+    response = client.verify_credentials(account_id)
     if not response:
-        return f"The account {accountID} was marked for verification by the CPM"
+        return f"The account {account_id} was marked for verification by the CPM"
     else:
         return response
 
 
 def reconcile_credentials_command(
         client: Client,
-        accountID: str,
+        account_id: str,
 ):
-    response = client.reconcile_credentials(accountID)
+    response = client.reconcile_credentials(account_id)
     if not response:
-        return f"The account {accountID} was marked for automatic reconciliation by the CPM."
+        return f"The account {account_id} was marked for automatic reconciliation by the CPM."
     else:
         return response
 
@@ -939,6 +939,9 @@ def fetch_incidents(client: Client, last_run: dict,  first_fetch_time: str,  max
         next_run = last_run
 
     events_data = client.get_security_events()
+    events_data_length = len(events_data)
+    if events_data_length > int(max_fetch):
+        events_data = events_data[events_data_length-1-int(max_fetch):events_data_length-1]
     incidents = []
 
     if events_data:

@@ -37,7 +37,7 @@ UPDATE_USER_ARGS = {
   "last_name": "updated-name",
   "password_never_expires": "false",
   "profession": "test1",
-  "userID": "123",
+  "user_id": "123",
   "username": "TestUser1"
 }
 
@@ -86,14 +86,14 @@ ADD_ACCOUNT_ARGS = {
   "address": "/",
   "automatic_management_enabled": "true",
   "password": "12345Aa",
-  "platformID": "WinServerLocal",
+  "platform_id": "WinServerLocal",
   "safe_name": "TestSafe",
   "secret_type": "password",
   "username": "TestUser"
 }
 
 UPDATE_ACCOUNT_ARGS = {
-  "accountID": "77_4",
+  "account_id": "77_4",
   "account_name": "NewName"
 }
 
@@ -103,7 +103,7 @@ GET_LIST_ACCOUNT_ARGS = {
 }
 
 GET_LIST_ACCOUNT_ACTIVITIES_ARGS = {
-  "accountID": "77_4"
+  "account_id": "77_4"
 }
 
 
