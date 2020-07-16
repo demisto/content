@@ -2,7 +2,7 @@ id: entity_enrichment_generic
 version: -1
 name: Entity Enrichment - Generic
 fromversion: 3.6.0
-description: Enrich entities using one or more integrations
+description: DEPRECATED. Use "Entity Enrichment - Generic v3" playbook instead. Enrich entities using one or more integrations
 starttaskid: "0"
 tasks:
   "0":
