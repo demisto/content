@@ -1,4 +1,4 @@
-This playbook is used to automatically enrich indicators(ip, url, domain, md5, sha1, sha256). These indicators should be set as input of this playbook. The output of this playbook includes detection engines, positive detections, detection ratio, severity, confidence and threat.
+This playbook automatically enriches indicators (including IPs, URLs, domains; MD5, SHA-1, and SHA-256 file hashes). Playbook input: the indicators you want to enrich.  Playbook output: detection engine results, positive detections, detection ratios; as well as severity, confidence, and threat scores.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -13,22 +13,22 @@ This playbook does not use any sub-playbooks.
 * Exists
 
 ### Commands
-* url
-* file
 * domain
+* url
 * ip
+* file
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Domain | The input domain will be searched automatically on CyberTotal and get reputation. | Domain.Name | Optional |
-| IP | The input IP will be searched automatically on CyberTotal and get reputation. | IP.Address | Optional |
-| URL | The input URL will be searched automatically on CyberTotal and get reputation. | URL.Data | Optional |
-| MD5 | The input MD5 will be searched automatically on CyberTotal and get reputation. | File.MD5 | Optional |
-| SHA1 | The input SHA1 will be searched automatically on CyberTotal and get reputation. | File.SHA1 | Optional |
-| SHA256 | The input SHA256 will be searched automatically on CyberTotal and get reputation. | File.SHA256 | Optional |
+| Domain | The input domain will be searched automatically on CyberTotal to retrieve reputation data. | Domain.Name | Optional |
+| IP | The input IP will be searched automatically on CyberTotal and to retrieve reputation data. | IP.Address | Optional |
+| URL | The input URL will be searched automatically on CyberTotal to retrieve reputation data. | URL.Data | Optional |
+| MD5 | The input MD5 will be searched automatically on CyberTotal to retrieve reputation data. | File.MD5 | Optional |
+| SHA1 | The input SHA1 will be searched automatically on CyberTotal to retrieve reputation data. | File.SHA1 | Optional |
+| SHA256 | The input SHA256 will be searched automatically on CyberTotal to retrieve reputation data. | File.SHA256 | Optional |
 
 ## Playbook Outputs
 ---

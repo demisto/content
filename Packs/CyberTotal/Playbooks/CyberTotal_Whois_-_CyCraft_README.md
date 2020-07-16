@@ -1,4 +1,4 @@
-This playbook is used to automatically search IP, URL and domain in the context data and get all detail whois information.
+This playbook is used to automatically retrieve Whois information regarding IPs, URLs and domains. Playbook input: IPs, URLs, domains. Playbook output: Whois lookup information.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -14,8 +14,8 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 * cybertotal-domain-whois
-* cybertotal-ip-whois
 * cybertotal-url-whois
+* cybertotal-ip-whois
 
 ## Playbook Inputs
 ---

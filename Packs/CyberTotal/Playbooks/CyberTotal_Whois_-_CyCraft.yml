@@ -1,8 +1,9 @@
 id: CyberTotal Whois - CyCraft
 version: -1
 name: CyberTotal Whois - CyCraft
-description: This playbook is used to automatically search IP, URL and domain in the
-  context data and get all detail whois information.
+description: 'This playbook is used to automatically retrieve Whois information regarding
+  IPs, URLs and domains. Playbook input: IPs, URLs, domains. Playbook output: Whois
+  lookup information.'
 starttaskid: "0"
 tasks:
   "0":

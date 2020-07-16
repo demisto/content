@@ -1,10 +1,10 @@
 id: CyberTotal Auto Enrichment - CyCraft
 version: -1
 name: CyberTotal Auto Enrichment - CyCraft
-description: This playbook is used to automatically enrich indicators(ip, url, domain,
-  md5, sha1, sha256). These indicators should be set as input of this playbook. The
-  output of this playbook includes detection engines, positive detections, detection
-  ratio, severity, confidence and threat.
+description: 'This playbook automatically enriches indicators (including IPs, URLs,
+  domains; MD5, SHA-1, and SHA-256 file hashes). Playbook input: the indicators you
+  want to enrich.  Playbook output: detection engine results, positive detections,
+  detection ratios; as well as severity, confidence, and threat scores.'
 starttaskid: "0"
 tasks:
   "0":
@@ -578,8 +578,8 @@ inputs:
       root: Domain
       accessor: Name
   required: false
-  description: The input domain will be searched automatically on CyberTotal and get
-    reputation.
+  description: The input domain will be searched automatically on CyberTotal to retrieve
+    reputation data.
   playbookInputQuery:
 - key: IP
   value:
@@ -587,7 +587,8 @@ inputs:
       root: IP
       accessor: Address
   required: false
-  description: The input IP will be searched automatically on CyberTotal and get reputation.
+  description: The input IP will be searched automatically on CyberTotal and to retrieve
+    reputation data.
   playbookInputQuery:
 - key: URL
   value:
@@ -595,8 +596,8 @@ inputs:
       root: URL
       accessor: Data
   required: false
-  description: The input URL will be searched automatically on CyberTotal and get
-    reputation.
+  description: The input URL will be searched automatically on CyberTotal to retrieve
+    reputation data.
   playbookInputQuery:
 - key: MD5
   value:
@@ -604,8 +605,8 @@ inputs:
       root: File
       accessor: MD5
   required: false
-  description: The input MD5 will be searched automatically on CyberTotal and get
-    reputation.
+  description: The input MD5 will be searched automatically on CyberTotal to retrieve
+    reputation data.
   playbookInputQuery:
 - key: SHA1
   value:
@@ -613,8 +614,8 @@ inputs:
       root: File
       accessor: SHA1
   required: false
-  description: The input SHA1 will be searched automatically on CyberTotal and get
-    reputation.
+  description: The input SHA1 will be searched automatically on CyberTotal to retrieve
+    reputation data.
   playbookInputQuery:
 - key: SHA256
   value:
@@ -622,8 +623,8 @@ inputs:
       root: File
       accessor: SHA256
   required: false
-  description: The input SHA256 will be searched automatically on CyberTotal and get
-    reputation.
+  description: The input SHA256 will be searched automatically on CyberTotal to retrieve
+    reputation data.
   playbookInputQuery:
 outputs: []
 quiet: true
