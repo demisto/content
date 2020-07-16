@@ -36,6 +36,7 @@ commonfields:
   version: -1
 enabled: true
 name: WhereFieldEquals
+fromversion: 5.5.0
 outputs:
 - contextPath: WhereFieldEquals.SearchedField
   description: Attribute in the collection's items where equality was checked.
