@@ -194,5 +194,3 @@ outputs:
 - contextPath: File
   description: The file to sample.
   type: unknown
-tests:
-  - get_file_sample_from_path_-_d2_-_test
