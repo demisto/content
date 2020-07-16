@@ -8,11 +8,6 @@
     "detailsV2": {
         "tabs": [
             {
-                "id": "summary",
-                "name": "Legacy Summary",
-                "type": "summary"
-            },
-            {
                 "hidden": false,
                 "id": "qdjwqktnvs",
                 "name": "Offboarding Process",

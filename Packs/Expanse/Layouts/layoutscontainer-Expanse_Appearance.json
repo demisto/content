@@ -8,11 +8,6 @@
     "detailsV2": {
         "tabs": [
             {
-                "id": "summary",
-                "name": "Legacy Summary",
-                "type": "summary"
-            },
-            {
                 "id": "caseinfoid",
                 "name": "Incident Info",
                 "sections": [
