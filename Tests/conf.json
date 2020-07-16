@@ -2836,6 +2836,11 @@
             "integrations": "TruSTAR v2",
             "playbookID": "TruSTAR v2-Test",
             "timeout": 500
+        },
+        {
+            "integrations": "Blueliv ThreatCompass",
+            "playbookID": "Blueliv_ThreatCompass_test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
@@ -2986,6 +2991,7 @@
         "VxStream": "Issue #23795",
         "Bambenek Consulting Feed": "Issue 26184",
         "AWS - Athena - Beta": "Issue 19834",
+        "Blueliv ThreatCompass": "Community contribution",
         
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
