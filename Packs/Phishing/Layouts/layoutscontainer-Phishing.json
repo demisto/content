@@ -1,11 +1,11 @@
 {
-    "id": "Phishing",
-    "group": "incident",
-    "name": "Phishing Incident",
+	"id": "Phishing",
+	"group": "incident",
+	"name": "Phishing Incident",
 	"description": "",
-    "version": -1,
-    "fromVersion": "6.0.0",
-    "edit": {
+	"version": -1,
+	"fromVersion": "6.0.0",
+	"edit": {
         "sections": [
 			{
 				"id": "",

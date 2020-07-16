@@ -1,11 +1,11 @@
 {
-    "id": "domainRepUnified",
-    "group": "indicator",
-    "name": "Domain Indicator",
+	"id": "domainRepUnified",
+	"group": "indicator",
+	"name": "Domain Indicator",
 	"description": "",
-    "version": -1,
-    "fromVersion": "6.0.0",
-    "indicatorsDetails": {
+	"version": -1,
+	"fromVersion": "6.0.0",
+	"indicatorsDetails": {
         "tabs": [
 			{
 				"id": "default-main",

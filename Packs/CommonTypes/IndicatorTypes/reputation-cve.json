@@ -162,5 +162,5 @@
     },
     "manualMapping": null,
     "fileHashesPriority": null,
-    "layout": "cveRep",
+    "layout": "cveRep"
   }

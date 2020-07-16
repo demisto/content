@@ -1,11 +1,11 @@
 {
-    "id": "Indicator Feed",
-    "group": "incident",
-    "name": "Indicator Feed Incident",
+	"id": "Indicator Feed",
+	"group": "incident",
+	"name": "Indicator Feed Incident",
 	"description": "",
-    "version": -1,
-    "fromVersion": "6.0.0",
-    "edit": {
+	"version": -1,
+	"fromVersion": "6.0.0",
+	"edit": {
         "sections": [
 			{
 				"description": "",
