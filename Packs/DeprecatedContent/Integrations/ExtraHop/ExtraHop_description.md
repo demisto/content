@@ -1,1 +1,0 @@
-ExtraHop performs real-time stream analysis of the packets that carry data across a network.

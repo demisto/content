@@ -1,1 +1,0 @@
-The MaxMind GeoIP2 integration allows you to query the MaxMind API service and retrieve a JSON of all details.
