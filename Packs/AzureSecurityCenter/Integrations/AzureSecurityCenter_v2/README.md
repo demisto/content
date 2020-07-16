@@ -4,9 +4,10 @@ Unified security management and advanced threat protection across hybrid cloud w
 </p>
 <h2>Use Case</h2>
 With Security Center, you can apply security policies across your workloads, limit your exposure to threats, and detect and respond to attacks.
-<h2>Detailed Description</h2>
-<ul>
-<li>To allow us access to Azure Security Center, an admin has to approve our app using an admin consent flow, by clicking on the following [link](https://oproxy.demisto.ninja/ms-azure-sc).</li>
+
+<h2>Authentication</h2>
+For more details about the authentication used in this integration, see <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication">Microsoft Integrations - Authentication</a>.
+
 <li>After authorizing the Demisto app, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields. After giving consent, the application has to have a role assigned so it can access the relevant resources per subscription. </li>
 <li>In order to assign a role to the application after consent was given: 
   <ul>
