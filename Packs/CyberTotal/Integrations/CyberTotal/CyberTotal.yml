@@ -104,6 +104,28 @@ script:
     - contextPath: CyberTotal.IP.message
       description: Message about this search.
       type: string
+    - contextPath: IP.Address
+      description: IP address
+      type: String
+    - contextPath: IP.DetectionEngines
+      description: The total number of engines that checked the indicator.
+      type: Number
+    - contextPath: IP.PositiveDetections
+      description: The number of engines that positively detected the indicator as
+        malicious.
+      type: Number
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
     description: Return IP information and reputation
   - name: file
     arguments:
@@ -176,6 +198,36 @@ script:
     - contextPath: CyberTotal.File.name
       description: This file’s name, separated by ‘,’ if more than 2 names.
       type: string
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.Extension
+      description: "The file extension, for example: 'xls'."
+      type: String
+    - contextPath: File.Size
+      description: The size of the file in bytes.
+      type: Number
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
     description: Return file's information and reputation
   - name: domain
     arguments:
@@ -221,7 +273,35 @@ script:
     - contextPath: CyberTotal.Domain.message
       description: Message about this search.
       type: string
-    description: Return domain  information and reputation
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: Domain.DetectionEngines
+      description: The total number of engines that checked the indicator.
+      type: Number
+    - contextPath: Domain.PositiveDetections
+      description: The number of engines that positively detected the indicator as
+        malicious.
+      type: Number
+    - contextPath: Domain.Malicious.Vendor
+      description: The vendor reporting the domain as malicious.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: A description explaining why the domain was reported as malicious.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    description: Return domain information and reputation
   - name: url
     arguments:
     - name: url
@@ -269,6 +349,34 @@ script:
     - contextPath: CyberTotal.URL.message
       description: Message about this search.
       type: string
+    - contextPath: URL.Data
+      description: The URL
+      type: String
+    - contextPath: URL.DetectionEngines
+      description: The total number of engines that checked the indicator.
+      type: String
+    - contextPath: URL.PositiveDetections
+      description: The number of engines that positively detected the indicator as
+        malicious.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: The vendor reporting the URL as malicious.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: A description of the malicious URL.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
     description: Return domain information and reputation
   - name: cybertotal-ip-whois
     arguments:
