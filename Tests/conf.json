@@ -2836,6 +2836,11 @@
             "integrations": "TruSTAR v2",
             "playbookID": "TruSTAR v2-Test",
             "timeout": 500
+        },
+        {
+            "integrations": "Blueliv ThreatCompass",
+            "playbookID": "Blueliv_ThreatCompass_test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
@@ -2888,7 +2893,8 @@
         "Cortex XDR - IOC - Test": "issue #25598",
         "Create Phishing Classifier V2 ML Test": "Issue 26341",
         "DuoAdmin API test playbook": "Issue 24937",
-        "Mail Sender (New) Test": "Issue 25602"
+        "Mail Sender (New) Test": "Issue 25602",
+        "HTTPListRedirects Basic Test": "Issue 26617"
     },
     "skipped_integrations": {
         
@@ -2899,7 +2905,6 @@
         "Traps": "Issue 24122",
         "McAfee Advanced Threat Defense": "Issue 16909",
         "CrowdStrike Falcon X": "Issue 26209",
-        "Cisco Umbrella Investigate": "Issue 24338",
         "Deep Instinct": "The partner didn't provide an instance",
         "Cofense Triage v2": "No instance - partner integration",
         "ArcSight Logger": "Issue 24303",
@@ -2986,6 +2991,7 @@
         "VxStream": "Issue #23795",
         "Bambenek Consulting Feed": "Issue 26184",
         "AWS - Athena - Beta": "Issue 19834",
+        "Blueliv ThreatCompass": "Community contribution",
         
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
