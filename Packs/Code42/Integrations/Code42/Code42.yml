@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: console.us.code42.com
-  display: Code42 Console URL for the pod your Code42 instance is running in
+  display: Code42 Console URL for your Code42 environment
   name: console_url
   required: true
   type: 0
@@ -103,11 +103,11 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Searches for a file in Security Data by JSON query, hash, username,
-      device hostname, exfiltration type, or a combination of parameters. At least
-      one argument must be passed in the command. If a JSON argument is passed, it
-      will be used to the exclusion of other parameters, otherwise parameters will
-      be combined with an AND clause.
+    description: Searches for file events by JSON query, hash, username, device hostname,
+      exfiltration type, or a combination of parameters. At least one argument must
+      be passed in the command. If a JSON argument is passed, it will be used to the
+      exclusion of other parameters, otherwise parameters will be combined with an
+      AND clause.
     execution: false
     name: code42-securitydata-search
     outputs:
@@ -660,8 +660,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The name of the legal hold matter to which the user will
-        be added.
+      description: The name of the legal hold matter to which the user will be added.
       isArray: false
       name: mattername
       required: true
@@ -685,14 +684,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The username of the user to remove from the given legal hold matter.
+      description: The username of the user to release from the given legal hold matter.
       isArray: false
       name: username
       required: true
       secret: false
     - default: false
-      description: The name of the legal hold matter from which to which the user
-        will be removed.
+      description: The name of the legal hold matter from which the user will be released.
       isArray: false
       name: mattername
       required: true
@@ -728,40 +726,40 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Downloads a file from Code42 servers.
+    description: Downloads a file from Code42.
     execution: false
     name: code42-download-file
     outputs:
-      - contextPath: File.Size
-        description: The size of the file.
-        type: Number
-      - contextPath: File.SHA1
-        description: The SHA1 hash of the file.
-        type: String
-      - contextPath: File.SHA256
-        description: The SHA256 hash of the file.
-        type: String
-      - contextPath: File.Name
-        description: The name of the file.
-        type: String
-      - contextPath: File.SSDeep
-        description: The SSDeep hash of the file.
-        type: String
-      - contextPath: File.EntryID
-        description: The entry ID of the file.
-        type: String
-      - contextPath: File.Info
-        description: File information.
-        type: String
-      - contextPath: File.Type
-        description: The file type.
-        type: String
-      - contextPath: File.MD5
-        description: The MD5 hash of the file.
-        type: String
-      - contextPath: File.Extension
-        description: The file extension.
-        type: String
+    - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
   - arguments:
     - default: false
       description: Email id of the user.
@@ -816,3 +814,4 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 4.1.0
