@@ -124,18 +124,6 @@
 				"sortValues": null,
 				"type": "",
 				"version": 0
-			},
-			{
-				"description": "",
-				"id": "",
-				"isVisible": true,
-				"modified": "0001-01-01T00:00:00Z",
-				"name": "Custom Fields",
-				"query": null,
-				"queryType": "",
-				"readOnly": false,
-				"type": "",
-				"version": 0
 			}
 		],
 		"system": false,
