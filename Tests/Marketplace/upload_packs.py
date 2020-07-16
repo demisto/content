@@ -78,6 +78,7 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
     Returns:
         str: extracted index folder full path.
         Blob: google cloud storage object that represents index.zip blob.
+        str: downloaded index generation.
 
     """
     index_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
@@ -85,18 +86,18 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
 
     index_blob = storage_bucket.blob(index_storage_path)
     index_folder_path = os.path.join(extract_destination_path, GCPConfig.INDEX_NAME)
+    index_generation = 0  # Setting to 0 makes the operation succeed only if there are no live versions of the blob
 
     if not os.path.exists(extract_destination_path):
         os.mkdir(extract_destination_path)
 
     if not index_blob.exists():
         os.mkdir(index_folder_path)
-        return index_folder_path, index_blob
+        return index_folder_path, index_blob, index_generation
 
-    # index zip should never be cached in the memory, should be updated version
-    index_blob.cache_control = "no-cache,max-age=0"
     index_blob.download_to_filename(download_index_path)
     index_blob.reload()
+    index_generation = index_blob.generation
 
     if os.path.exists(download_index_path):
         with ZipFile(download_index_path, 'r') as index_zip:
@@ -109,7 +110,7 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
         os.remove(download_index_path)
         print(f"Finished downloading and extracting {GCPConfig.INDEX_NAME} file to {extract_destination_path}")
 
-        return index_folder_path, index_blob
+        return index_folder_path, index_blob, index_generation
     else:
         print_error(f"Failed to download {GCPConfig.INDEX_NAME}.zip file from cloud storage.")
         sys.exit(1)
@@ -225,7 +226,7 @@ def clean_non_existing_packs(index_folder_path, private_packs, storage_bucket):
 
 
 def upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs,
-                            current_commit_hash):
+                            current_commit_hash, index_generation):
     """Upload updated index zip to cloud storage.
 
     Args:
@@ -235,6 +236,7 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
         build_number (str): circleCI build number, used as an index revision.
         private_packs (list): List of private packs and their price.
         current_commit_hash (str): last commit hash of head.
+        index_generation (str): downloaded index generation.
 
     """
     with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json"), "w+") as index_file:
@@ -250,8 +252,9 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
     index_zip_path = shutil.make_archive(base_name=index_folder_path, format="zip",
                                          root_dir=extract_destination_path, base_dir=index_zip_name)
 
+    index_blob.reload()
     index_blob.cache_control = "no-cache,max-age=0"  # disabling caching for index blob
-    index_blob.upload_from_filename(index_zip_path)
+    index_blob.upload_from_filename(index_zip_path, if_generation_match=index_generation)
 
     shutil.rmtree(index_folder_path)
     print_color(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.", LOG_COLORS.GREEN)
@@ -395,8 +398,8 @@ def update_index_with_priced_packs(private_storage_bucket, extract_destination_p
     private_packs = []
 
     try:
-        private_index_path, _ = download_and_extract_index(private_storage_bucket,
-                                                           os.path.join(extract_destination_path, 'private'))
+        private_index_path, _, _ = download_and_extract_index(private_storage_bucket,
+                                                              os.path.join(extract_destination_path, 'private'))
         private_packs = get_private_packs(private_index_path)
         add_private_packs_to_index(index_folder_path, private_index_path)
         print("Finished updating index with priced packs")
@@ -633,7 +636,8 @@ def main():
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
     # download and extract index from public bucket
-    index_folder_path, index_blob = download_and_extract_index(storage_bucket, extract_destination_path)
+    index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
+                                                                                 extract_destination_path)
 
     check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, remote_previous_commit_hash)
 
@@ -759,7 +763,7 @@ def main():
 
     # finished iteration over content packs
     upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs,
-                            current_commit_hash)
+                            current_commit_hash, index_generation)
 
     # upload id_set.json to bucket
     upload_id_set(storage_bucket, id_set_path)
