@@ -23,6 +23,8 @@ def main():
 
     variation = args.get('variation')
     new_time = apply_variation(original_datetime, variation)
+    if not new_time:
+        return_error('Invalid variation specified')
     demisto.results(new_time.isoformat())
 
 
