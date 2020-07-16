@@ -9,10 +9,8 @@ from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 import demistomock as demisto
 
-
-class InclusiveExclusive(Enum):
-    INCLUSIVE: str = 'inclusive'
-    EXCLUSIVE: str = 'exclusive'
+INCLUSIVE: str = 'inclusive'
+EXCLUSIVE: str = 'exclusive'
 
 
 def get_file_path_from_id(entry_id: str) -> Tuple[str, str]:
@@ -63,27 +61,28 @@ def filter_files(
     Returns:
         Filtered file list.
     """
+    # strip `.` from extension
+    if extensions is not None:
+        extensions = set([extension.split('.')[-1] for extension in extensions])
     magic_mime = magic.Magic(mime=True)
     for file in files:
         # types list supplied,
         if types:
             mime_type = magic_mime.from_file(os.path.join(root, file))
             # Inclusive types, take only the types in the list.
-            if inclusive_or_exclusive == InclusiveExclusive.INCLUSIVE and mime_type not in types:
+            if inclusive_or_exclusive == INCLUSIVE and mime_type not in types:
                 files.remove(file)
             # Exclusive types, don't take those files.
-            elif inclusive_or_exclusive == InclusiveExclusive.EXCLUSIVE and mime_type in types:
+            elif inclusive_or_exclusive == EXCLUSIVE and mime_type in types:
                 files.remove(file)
         if extensions:
-            # strip `.` from extension
-            extensions = set([extension.split('.')[-1] for extension in extensions])
             # Get file extension without a leading point.
             f_ext = os.path.splitext(file)[1].split('.')[-1]
             # Inclusive extensions, take only the types in the list.
-            if inclusive_or_exclusive == InclusiveExclusive.INCLUSIVE and f_ext not in extensions:
+            if inclusive_or_exclusive == INCLUSIVE and f_ext not in extensions:
                 files.remove(file)
             # Exclude extensions, don't take those files.
-            elif inclusive_or_exclusive == InclusiveExclusive.EXCLUSIVE and f_ext in extensions:
+            elif inclusive_or_exclusive == EXCLUSIVE and f_ext in extensions:
                 files.remove(file)
     return files
 

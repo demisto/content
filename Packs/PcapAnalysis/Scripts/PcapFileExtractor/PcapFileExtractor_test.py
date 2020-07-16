@@ -1,10 +1,9 @@
 import os
 
 import pytest
-from PcapFileExtractor import InclusiveExclusive, filter_files, upload_files
+from PcapFileExtractor import filter_files, upload_files, INCLUSIVE, EXCLUSIVE
 from magic import Magic
 from pytest import raises
-
 OUTPUTS = [
     {
         'FileMD5': 'dca7766edd1e4976cac5e64fcaeec1fd',
@@ -38,9 +37,9 @@ def test_extract_files(tmpdir):
 class TestFilter:
     @pytest.mark.parametrize(
         'files, types, type_from_magic, exclusive_or_inclusive, expected', [
-            (['./png_file.png'], ['image/png'], 'image/png', InclusiveExclusive.EXCLUSIVE, []),
-            (['./png_file.png'], ['image/png'], 'image/png', InclusiveExclusive.INCLUSIVE, ['./png_file.png']),
-            (['./png_file.mp3'], ['sound/mp3'], 'image/png', InclusiveExclusive.INCLUSIVE, [])
+            (['./png_file.png'], ['image/png'], 'image/png', EXCLUSIVE, []),
+            (['./png_file.png'], ['image/png'], 'image/png', INCLUSIVE, ['./png_file.png']),
+            (['./png_file.mp3'], ['sound/mp3'], 'image/png', INCLUSIVE, [])
         ])
     def test_types(self, files, types, type_from_magic, exclusive_or_inclusive, expected, mocker):
         """
@@ -58,9 +57,9 @@ class TestFilter:
 
     @pytest.mark.parametrize(
         'files, extensions, exclusive_or_inclusive, expected', [
-            (['./png_file.png'], {'.png'}, InclusiveExclusive.EXCLUSIVE, []),
-            (['./png_file.png'], {'.png'}, InclusiveExclusive.INCLUSIVE, ['./png_file.png']),
-            (['./png_file.mp3'], {'sound/mp3'}, InclusiveExclusive.INCLUSIVE, [])
+            (['./png_file.png'], {'.png'}, EXCLUSIVE, []),
+            (['./png_file.png'], {'.png'}, INCLUSIVE, ['./png_file.png']),
+            (['./png_file.mp3'], {'sound/mp3'}, INCLUSIVE, [])
         ])
     def test_extensions(self, files, extensions, exclusive_or_inclusive, expected):
         """
