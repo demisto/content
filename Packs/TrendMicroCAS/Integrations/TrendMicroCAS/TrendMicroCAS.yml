@@ -1,14 +1,14 @@
 category: Authentication
 commonfields:
-  id: TrendMicroCAS
+  id: TrendMicro Cloud App Security
   version: -1
 configuration:
 - additionalinfo: the place where your Cloud App Security service is hosted
-  defaultvalue: U.S.
-  display: ServiceURL
+  defaultvalue: U.S.A
+  display: Service URL
   name: serviceURL
   options:
-  - U.S.
+  - U.S.A
   - EU
   - Japan
   - Australia and New Zealand
@@ -27,6 +27,7 @@ configuration:
 - display: Service event to fetch
   name: service
   options:
+  - all
   - exchange
   - sharepoint
   - onedrive
@@ -35,21 +36,29 @@ configuration:
   - googledrive
   - gmail
   - teams
+  - exchangeserver
   required: false
-  type: 15
+  type: 16
 - display: Event type to fetch
   hidden: false
   name: event_type
   options:
+  - all
   - securityrisk
-  - virtualanalyze
+  - virtualanalyzer
   - ransomware
   - dlp
   required: false
-  type: 15
-- display: Maximum number of incidents per fetch
+  type: 16
+- defaultvalue: '50'
+  display: Maximum number of incidents per fetch
   hidden: false
   name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
   required: false
   type: 0
 - display: Trust any certificate (not secure)
@@ -62,8 +71,8 @@ configuration:
   type: 8
 description: 'Use Trend Micro - Cloud App Security to: Log retrieval - Threat investigation:
   - Threat mitigation - Threat remediation - Intelligent investigation.'
-display: TrendMicroCAS
-name: TrendMicroCAS
+display: TrendMicro Cloud App Security
+name: TrendMicro Cloud App Security
 script:
   commands:
   - arguments:
@@ -82,6 +91,7 @@ script:
       - googledrive
       - gmail
       - teams
+      - exchangeserver
       required: true
       secret: false
     - auto: PREDEFINED
@@ -92,29 +102,27 @@ script:
       name: event_type
       predefined:
       - securityrisk
-      - virtualanalyze
+      - virtualanalyzer
       - ransomware
       - dlp
       required: true
       secret: false
     - default: false
       description: |-
-        Start time during which logs are to retrieve. Format: ISO 8601 timestamp to the second or millisecond in UTC, yyyy-mm-ddThh:mm:ss[.mmm]Z. For example, 2016-07-22T01:51:31Z or 2016-07-22T01:51:31.001Z.
+        Start time during which logs are to retrieve.
         The request retrieves logs within a maximum of 72 hours before the point of time when the request is sent according to the start and end settings:
-        If both start and end are not specified, the request retrieves logs within five minutes before the point of time when the request is sent.
+        If both start and end are not specified, the request retrieves logs within 5 minutes before the point of time when the request is sent.
         If both start and end are specified, the request retrieves logs within the configured duration. Make sure the end time is no earlier than the start time.
-        If only start is specified, the request retrieves logs within five minutes after the point of the configured start time.
+        If only start is specified, the request retrieves all logs from the start time.
       isArray: false
       name: start
       required: false
       secret: false
     - default: false
-      description: |-
-        End time during which logs are to retrieve. Format: ISO 8601 timestamp to the second or millisecond in UTC, yyyy-mm-ddThh:mm:ss[.mmm]Z. For example, 2016-07-22T01:51:31Z or 2016-07-22T01:51:31.001Z.
-        The request retrieves logs within a maximum of 72 hours before the point of time when the request is sent according to the start and end settings:
-        If both start and end are not specified, the request retrieves logs within five minutes before the point of time when the request is sent.
-        If both start and end are specified, the request retrieves logs within the configured duration. Make sure the end time is no earlier than the start time.
-        If only end is specified, the request retrieves logs within five minutes before the point of the configured end time.
+      description: "End time during which logs are to retrieve.\nThe request retrieves\
+        \ logs within a maximum of 72 hours before \nIf only end is specified, the\
+        \ request retrieves logs within five minutes before the point of the configured\
+        \ end time."
       isArray: false
       name: end
       required: false
@@ -176,7 +184,7 @@ script:
       description: Location where the security event was detected
       type: String
     - contextPath: TrendMicroCAS.Events.security_events.message.log_item_id
-      description: '""'
+      description: ID that uniquely identifies a log item
       type: String
     - contextPath: TrendMicroCAS.Events.security_events.message.mail_message_delivery_time
       description: Date and time when the email message triggering the security event
@@ -244,7 +252,7 @@ script:
       description: Name of the requested service
       type: String
     - contextPath: TrendMicroCAS.Events.traceId
-      description: '""'
+      description: Randomly generated identity to uniquely trace the request.
       type: String
   - arguments:
     - default: false
@@ -392,7 +400,7 @@ script:
         the specified limit to display at a time. Use this URL to form a second request
       type: String
     - contextPath: TrendMicroCAS.EmailSweep.traceId
-      description: '""'
+      description: Randomly generated identity to uniquely trace the request
       type: String
     - contextPath: TrendMicroCAS.EmailSweep.value.mail_attachments.file_sha1
       description: SHA-1 hash value of the attachment file
@@ -458,9 +466,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Takes actions on a batch of specified user accounts, including disabling
-      a user account, requesting to enable multi-factor authentication (MFA) for a
-      user account, and requesting to reset password for a user account.
+    description: |-
+      Takes actions on a batch of specified user accounts, including disabling a user account, requesting to enable multi-factor authentication (MFA) for a user account, and requesting to reset password for a user account.
+      supports only in office365 - exchange
     execution: false
     name: trendmicro-cas-user-take-action
     outputs:
@@ -502,7 +510,7 @@ script:
         Internet message ID of an email message to take action on
         It can be obtained from "trendmicro-cas-email-sweep" command
       isArray: false
-      name: mail_messge_id
+      name: mail_message_id
       required: true
       secret: false
     - default: false
@@ -519,9 +527,12 @@ script:
         It can be obtained from "trendmicro-cas-email-sweep" command
       isArray: false
       name: mail_message_delivery_time
-      required: false
+      required: true
       secret: false
     deprecated: false
+    description: |-
+      Takes actions on a batch of specified email messages.
+      supports only  in office365 - exchange
     execution: false
     name: trendmicro-cas-email-take-action
     outputs:
@@ -598,7 +609,7 @@ script:
       description: Unique ID of a Threat Mitigation API request
       type: String
     - contextPath: TrendMicroCAS.UserActionResult.error_code
-      description: "\t\nResult code of the action."
+      description: Result code of the action.
       type: Number
     - contextPath: TrendMicroCAS.UserActionResult.error_message
       description: String describing the result code.
@@ -673,7 +684,7 @@ script:
       description: Unique ID of a Threat Mitigation API request
       type: String
     - contextPath: TrendMicroCAS.EmailActionResult.error_code
-      description: "\t\nResult code of the action."
+      description: Result code of the action.
       type: Number
     - contextPath: TrendMicroCAS.EmailActionResult.error_message
       description: String describing the result code.
