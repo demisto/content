@@ -17,7 +17,7 @@ Microsoft Defender Advanced Threat Protection Get Machine Action Status
 ---
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
-## Required Permissions
+### Required Permissions
 * AdvancedQuery.Read.All - Application
 * Alert.ReadWrite.All - Application
 * File.Read.All - Application

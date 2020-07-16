@@ -6,10 +6,11 @@ This integration was integrated and tested with version 1.0 of Microsoft Graph G
 <h2>Use Cases</h2>
 <ul>
 <li>Manage the organization groups.</li>
-</ul><h2>Authentication</h2>
+</ul>
+<h2>Authentication</h2>
 For more details about the authentication used in this integration, see <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication">Microsoft Integrations - Authentication</a>.
 
-<h3>Required Permissions in</h3>
+<h3>Required Permissions</h3>
 <li>Directory.ReadWrite.All - Delegated</li>
 <li>Directory.ReadWrite.All - Application</li>
 <li>Group.ReadWrite.All - Application</li>
