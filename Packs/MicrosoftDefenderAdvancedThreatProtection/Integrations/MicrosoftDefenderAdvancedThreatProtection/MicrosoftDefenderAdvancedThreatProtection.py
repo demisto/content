@@ -1896,6 +1896,8 @@ def create_file_indicator_command(client: MsClient, args: Dict) -> Tuple[str, Op
     Args:
         client: MsClient
         args: arguments from CortexSOAR.
+            Should contain an email observable:
+            - https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-beta#indicator-observables---file
 
     Returns:
         human readable, outputs, raw response
@@ -1935,6 +1937,59 @@ def create_file_indicator_command(client: MsClient, args: Dict) -> Tuple[str, Op
     )
     return human_readable, {'MicrosoftATP.Indicators(val.id == obj.id)': indicator}
 
+
+def create_network_indicator_command(client, args):
+    """
+
+    Args:
+        client: MsClient
+        args: arguments from CortexSOAR.
+            Should contain an email observable:
+            - https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-beta#indicator-observables---network
+    Returns:
+        human readable, outputs, raw response
+
+    Raises:
+        AssertionError: If no file arguments.
+    """
+    email_object = assign_params(
+        domainName=args.get('domain_name'),
+        networkCidrBlock=args.get('network_cidr_block'),
+        networkDestinationAsn=args.get('network_destination_asn'),
+        networkDestinationCidrBlock	=args.get('network_destination_cidr_block'),
+        networkDestinationIPv4=args.get('network_destination_ipv4'),
+        networkDestinationIPv6=args.get('network_destination_ipv6'),
+        networkDestinationPort=args.get('network_destination_port'),
+        networkIPv4=args.get('network_ipv4'),
+        networkIPv6=args.get('network_ipv6'),
+        networkPort=args.get('network_port'),
+        networkProtocol=args.get('network_protocol'),
+        networkSourceAsn=args.get('network_source_asn'),
+        networkSourceCidrBlock=args.get('network_source_cidr_block'),
+        networkSourceIPv4=args.get('network_source_ipv4'),
+        networkSourceIPv6=args.get('network_source_ipv6'),
+        networkSourcePort=args.get('network_source_port'),
+        userAgent=args.get('user_agent')
+    )
+    assert email_object, 'Must supply at least one email attribute.'
+    indicator = create_indicator_command(client, args, email_object)
+    human_readable = tableToMarkdown(
+        'Indicators from Microsoft ATP:',
+        indicator,
+        headers=[
+            'indicator_id',
+            'action',
+            'threatType',
+            'severity',
+            'fileName',
+            'fileHashType',
+            'fileHashValue',
+            'domainName',
+            'networkIPv4',
+            'url'
+        ]
+    )
+    return human_readable, {'MicrosoftATP.Indicators(val.id == obj.id)': indicator}
 
 def test_module(client: MsClient):
     try:
@@ -2078,6 +2133,8 @@ def main():
             return_outputs(*list_indicators_command(client, args))
         elif command == 'microsoft-atp-create-file-indicator':
             return_outputs(*create_file_indicator_command(client, args))
+        elif command == 'microsoft-atp-create-network-indicator':
+            return_outputs(*create_network_indicator_command(client, args))
     except Exception as err:
         return_error(str(err))
 
