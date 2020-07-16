@@ -477,7 +477,8 @@ def get_recent_commits_data(content_repo):
     return content_repo.head.commit.hexsha, content_repo.commit('origin/master~1').hexsha
 
 
-def check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, remote_previous_commit_hash):
+def check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, remote_previous_commit_hash,
+                              storage_bucket):
     """ Checks stored at index.json commit hash and compares it to current commit hash. In case no packs folders were
     added/modified/deleted, all other steps are not performed.
 
@@ -486,11 +487,16 @@ def check_if_index_is_updated(index_folder_path, content_repo, current_commit_ha
         content_repo (git.repo.base.Repo): content repo object.
         current_commit_hash (str): last commit hash of head.
         remote_previous_commit_hash (str): previous commit of origin/master (origin/master~1)
+        storage_bucket: public storage bucket.
 
     """
     skipping_build_task_message = "Skipping Upload Packs To Marketplace Storage Step."
 
     try:
+        if storage_bucket.name != GCPConfig.PRODUCTION_BUCKET:
+            print("Skipping index update check in non production bucket")
+            return
+
         if not os.path.exists(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")):
             # will happen only in init bucket run
             print_warning(f"{GCPConfig.INDEX_NAME}.json not found in {GCPConfig.INDEX_NAME} folder")
@@ -647,7 +653,8 @@ def main():
     index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
                                                                                  extract_destination_path)
 
-    check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, remote_previous_commit_hash)
+    check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, remote_previous_commit_hash,
+                              storage_bucket)
 
     if private_bucket_name:  # Add private packs to the index
         private_storage_bucket = storage_client.bucket(private_bucket_name)
