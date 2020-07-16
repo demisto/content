@@ -1,13 +1,11 @@
 import hashlib
 import subprocess
 import tempfile
-from enum import Enum
 from typing import List, Optional, Set, Tuple, Union
 
 import magic
-from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
-import demistomock as demisto
+from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 INCLUSIVE: str = 'inclusive'
 EXCLUSIVE: str = 'exclusive'
