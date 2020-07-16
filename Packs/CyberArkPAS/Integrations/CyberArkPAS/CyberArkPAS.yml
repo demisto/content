@@ -26,6 +26,11 @@ configuration:
   name: fetch_time
   required: false
   type: 0
+- defaultvalue: 0
+  display: Query, CyberArk Pas value (0.0-100.0)
+  name: query
+  required: false
+  type: 0
 - display: Incident type
   name: incidentType
   required: false
