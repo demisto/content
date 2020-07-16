@@ -32,10 +32,10 @@ comment: "Return all items from the list where their given 'field' attribute is 
   \ - equalTo='IP'\n - getField='name' \n\nWill return all items names where field\
   \ 'type' equals 'IP' - ['192.1,0.82', '172.0.0.2']"
 commonfields:
-  id: WhereFieldEqualsV2
+  id: WhereFieldEquals
   version: -1
 enabled: true
-name: WhereFieldEqualsV2
+name: WhereFieldEquals
 outputs:
 - contextPath: WhereFieldEquals.SearchedField
   description: Attribute in the collection's items where equality was checked.
