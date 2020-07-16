@@ -73,21 +73,12 @@ configuration:
   defaultvalue: "60"
   type: 19
   required: false
-- display: First Fetch Time Range
+- display: First Fetch Time Range (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   additionalinfo: All indicators from the given day(s) will be fetched.
   name: firstFetchInterval
   defaultvalue: Today
-  type: 15
+  type: 0
   required: true
-  options:
-  - Today
-  - 1 day
-  - 2 days
-  - 3 days
-  - 4 days
-  - 5 days
-  - 6 days
-  - 7 days
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   defaultvalue: ""

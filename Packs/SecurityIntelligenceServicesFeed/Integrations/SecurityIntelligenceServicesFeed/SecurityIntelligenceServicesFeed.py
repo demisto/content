@@ -4,14 +4,14 @@ from CommonServerPython import *
 
 from typing import Dict, Any, List, Generator, Union, Optional
 from dateutil.parser import parse
-from datetime import timezone
+import dateparser
 import csv
 import gzip
 import boto3 as s3
 import botocore
 import botocore.config as config
 import urllib3
-
+from datetime import timezone
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -415,8 +415,7 @@ def fetch_indicators_command(client: Client, feed_types: List[str], first_fetch_
         client.set_s3_client(region_name=REGIONS[feed])
 
         # Parsing first fetch time.
-        date, _ = parse_date_range('0 day' if first_fetch_interval == 'Today' else first_fetch_interval)
-        date_from = date.date()
+        date_from, now = dateparser.parse(f'{first_fetch_interval} UTC'), datetime.now(timezone.utc)
 
         # Retrieving cached key from integration context.
         cached_key = get_last_key_from_integration_context(feed)
@@ -425,7 +424,7 @@ def fetch_indicators_command(client: Client, feed_types: List[str], first_fetch_
         latest_key_list: List[str] = [key_dict.get('Key', '') for key_dict in
                                       client.request_list_objects(feed_type=feed, start_after=cached_key,
                                                                   prefix=feed.lower()) if
-                                      key_dict.get('LastModified', datetime.today().date()).date() >= date_from]
+                                      key_dict.get('LastModified', now) >= date_from]
 
         # If get-indicators command called.
         if limit:
