@@ -3,7 +3,8 @@ version: -1
 system: true
 fromversion: 2.5.0
 name: McAfee ePO Repository Compliance Playbook
-description: Ensures that ePO servers are updated to the latest McAfee published AV signatures (DAT file version).
+description: DEPRECATED. Use "McAfee ePO Repository Compliance Playbook v2" playbook instead. Ensures that ePO servers are updated to the latest McAfee published AV
+  signatures (DAT file version).
 starttaskid: "0"
 tasks:
   "0":
@@ -157,7 +158,8 @@ tasks:
       attachIDs: {}
       bcc: {}
       body:
-        simple: ePO Update Error. Please review status of Demisto incident ${incident.id} - ${incident.name}
+        simple: ePO Update Error. Please review status of Demisto incident ${incident.id}
+          - ${incident.name}
       cc: {}
       htmlBody: {}
       noteEntryID: {}
@@ -432,5 +434,4 @@ view: |-
 inputs: []
 outputs: []
 tests:
-- Test Playbook McAfee ePO
-toversion: 4.1.9
+- No test - Deprecated playbook

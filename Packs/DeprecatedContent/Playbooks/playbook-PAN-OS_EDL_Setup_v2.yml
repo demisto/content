@@ -3,7 +3,7 @@ version: -1
 fromversion: 4.0.0
 name: PAN-OS EDL Setup v2
 description: |-
-  Configures an external dynamic list in PAN-OS.
+  DEPRECATED. Use "PAN-OS EDL Setup v3" playbook instead. Configures an external dynamic list in PAN-OS.
   In the event that the file exists on the web server, it will sync it to demisto. Then it will create an EDL object and a matching rule.
 starttaskid: "0"
 tasks:

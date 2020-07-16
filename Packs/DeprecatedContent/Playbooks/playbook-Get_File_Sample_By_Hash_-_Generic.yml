@@ -2,7 +2,8 @@ id: get_file_sample_by_hash_-_generic
 version: -1
 name: Get File Sample By Hash - Generic
 fromversion: 3.5.0
-description: Returns to the war-room a file sample correlating from a hash using one or more products
+description: DEPRECATED. Use "Get File Sample By Hash - Generic v2" playbook instead. Returns to the war-room a file sample correlating from a hash using one
+  or more products
 starttaskid: "0"
 tasks:
   "0":
@@ -145,4 +146,3 @@ outputs:
   type: unknown
 tests:
 - No tests
-toversion: 4.1.9

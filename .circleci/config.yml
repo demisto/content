@@ -49,7 +49,7 @@ references:
       CONTRIB_BRANCH: << pipeline.parameters.contrib_branch >>
       CONTRIB_PACK_NAME: << pipeline.parameters.contrib_pack_name >>
       # Giving different names to the following pipeline parameters to avoid collision, handling such collision case
-      # is done in 'Prepare Environment' step.
+      # is done in 'Setup Environment' step.
       TIME_TO_LIVE_PARAMETER: << pipeline.parameters.time_to_live >>
       NIGHTLY_PARAMETER: << pipeline.parameters.nightly >>
       INSTANCE_TESTS_PARAMETER: << pipeline.parameters.instance_tests >>
@@ -71,11 +71,13 @@ references:
   attach_workspace: &attach_workspace
     attach_workspace:
       at: *workspace_root
+
   add_ssh_keys: &add_ssh_keys
     add_ssh_keys:
       fingerprints:
         - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
         - "f5:25:6a:e5:ac:4b:84:fb:60:54:14:82:f1:e9:6c:f9" # disable-secrets-detection
+
   prepare_environment: &prepare_environment
     run:
       name: Prepare Environment
@@ -143,6 +145,7 @@ references:
         unzip -q "$CIRCLE_ARTIFACTS/content_test.zip" -d "test_content_dir"
         zip -j "$CIRCLE_ARTIFACTS/all_content.zip" test_content_dir/*
         rm -r test_content_dir
+
   restore_cache: &restore_cache
     restore_cache:
       key: venv-{{ checksum "package-lock.json" }}
@@ -180,7 +183,7 @@ references:
       paths:
         - project
 
-  Secrets: &Secrets
+  secrets: &secrets
     run:
       name: Secrets
       when: always
@@ -202,6 +205,7 @@ references:
 
         [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD="false" || CHECK_BACKWARD="true"
         ./Tests/scripts/validate.sh
+
   run_unit_testing_and_lint: &run_unit_testing_and_lint
     run:
       name: Run Unit Testing and Lint
@@ -214,9 +218,9 @@ references:
         echo "flake8 py3 version: $(python3 -m flake8 --version)"
         echo "bandit py2 version: $(python2 -m bandit --version 2>&1)"
         echo "bandit py3 version: $(python3 -m bandit --version 2>&1)"
-        echo "vulture py2 version: $(python2 -m vulture --version) 2>&1"
-        echo "vulture py3 version: $(python3 -m vulture --version) 2>&1"
-        SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh freeze_4_1)
+        echo "vulture py2 version: $(python2 -m vulture --version 2>&1)"
+        echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
+        SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
         mkdir ./unit-tests
         if [ -n "$SHOULD_LINT_ALL" ]; then
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
@@ -224,12 +228,14 @@ references:
         else
           demisto-sdk lint -p 8 -g --prev-ver 'freeze_4_1' -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
         fi
+
   create_id_set: &create_id_set
     run:
       name: Create ID Set
       when: always
       command: |
         demisto-sdk create-id-set -o ./Tests/id_set.json
+
   build_content_descriptor: &build_content_descriptor
     run:
       name: Build Content Descriptor
@@ -243,12 +249,14 @@ references:
             # new release notes summary generator in packs format
             python3 Utils/release_notes_generator.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM --output $CIRCLE_ARTIFACTS/packs-release-notes.md
         fi
+
   common_server_documentation: &common_server_documentation
     run:
       name: Common Server Documentation
       when: always
       command: |
         ./Documentation/commonServerDocs.sh
+
   collect_test_list_and_content_packs: &collect_test_list_and_content_packs
     run:
       name: Collect Test List And Content Packs
@@ -262,12 +270,14 @@ references:
 
         [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
         python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY
+
   calculate_packs_dependencies: &calculate_packs_dependencies
     run:
       name: Calculate Packs Dependencies
       when: always
       command: |
         python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/id_set.json -o $CIRCLE_ARTIFACTS/packs_dependencies.json
+
   update_tests_step: &update_tests_step
     run:
       name: Update Tests step
@@ -275,8 +285,26 @@ references:
       command: |
         python3 ./Tests/scripts/update_conf_json.py
         cp "./Tests/conf.json" "$CIRCLE_ARTIFACTS/conf.json"
+
+  get_contribution_pack: &get_contribution_pack
+    when:
+      condition: << pipeline.parameters.contrib_branch >>
+      steps:
+        - run:
+            name: Get Contributor pack
+            when: always
+            command: |
+                USER=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
+                BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
+                PACK=$(echo $CONTRIB_BRANCH | cut -d ":" -f 3)
+                echo 'Copy the changes from the contributor branch $USER/$BRANCH in the pack $PACK'
+                git remote add $USER git@github.com:$USER/content.git
+                git fetch $USER $BRANCH
+                git checkout $USER/$BRANCH $PACK
+                exit 0
+
 jobs:
-  Prepare Environment:
+  Setup Environment:
     <<: *container_config
     resource_class: medium+
     <<: *environment
@@ -289,22 +317,8 @@ jobs:
           paths:
             - venv
             - node_modules
-          key: venv-{{ checksum "package-lock.json" }}
-      - when:
-          condition: << pipeline.parameters.contrib_branch >>
-          steps:
-            - run:
-                name: Get Contributor pack
-                when: always
-                command: |
-                    USER=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
-                    BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
-                    PACK=$(echo $CONTRIB_BRANCH | cut -d ":" -f 3)
-                    echo 'Copy the changes from the contributor branch $USER/$BRANCH in the pack $PACK'
-                    git remote add $USER git@github.com:$USER/content.git
-                    git fetch $USER $BRANCH
-                    git checkout $USER/$BRANCH $PACK
-                    exit 0
+          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
+      - *get_contribution_pack
       - *add_ssh_keys
       - *persist_to_workspace
 
@@ -344,7 +358,7 @@ jobs:
             - *restore_cache
             - *add_ssh_keys
             - *prepare_environment
-            - *Secrets
+            - *secrets
             - *validate_files_and_yaml
             - run:
                 name: Content Docs Site
@@ -416,9 +430,8 @@ jobs:
       - setup_remote_docker
       - *restore_cache
       - *prepare_environment
-      - *restore_cache
+      - *get_contribution_pack
       - *add_ssh_keys
-      - *prepare_environment
       - *update_tests_step
       - *create_id_set
       - *build_content_descriptor
@@ -823,7 +836,7 @@ jobs:
       - setup_remote_docker
       - *restore_cache
       - *prepare_environment
-      - *Secrets
+      - *secrets
       - *validate_files_and_yaml
       - *run_unit_testing_and_lint
       - *create_id_set
@@ -846,17 +859,17 @@ workflows:
   version: 2
   commit:
     jobs:
-      - Prepare Environment
+      - Setup Environment
       - Create Instances:
           filters:
             branches:
               ignore: /pull\/[0-9]+/
       - Run Unit Testing And Lint:
           requires:
-            - Prepare Environment
+            - Setup Environment
       - Run Validations:
           requires:
-            - Prepare Environment
+            - Setup Environment
       - Server 4_1:
           filters:
             branches:
@@ -920,17 +933,17 @@ workflows:
               only:
                 - master
     jobs:
-      - Prepare Environment:
+      - Setup Environment:
           context: nightly_env
       - Create Instances:
           context: nightly_env
       - Run Unit Testing And Lint:
           context: nightly_env
           requires:
-            - Prepare Environment
+            - Setup Environment
       - Run Validations:
           requires:
-            - Prepare Environment
+            - Setup Environment
       - Server 6_0:
           requires:
             - Create Instances

@@ -3,7 +3,7 @@ version: -1
 name: URL Enrichment - Generic
 fromversion: 3.6.0
 description: |-
-  Enrich URL using one or more integrations.
+  DEPRECATED. Use "URL Enrichment - Generic v2" playbook instead. Enrich URL using one or more integrations.
 
   URL enrichment includes:
   * Verify URL SSL

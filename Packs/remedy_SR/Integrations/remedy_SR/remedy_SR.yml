@@ -30,7 +30,7 @@ configuration:
 description: |-
   The BMC Service Request Management application enables an IT department and other business departments to easily define available services, publish those services in a service catalog, and automate fulfillment of those services for the user community, enabling users to help themselves.
   This integration uses SOAP API and supports SRM 9.0 version.
-display: Remedy SR (Beta)
+display: BMC Remedy SR (Beta)
 name: remedy_sr_beta
 script:
   commands:
@@ -220,7 +220,7 @@ script:
     - contextPath: Remedy.Ticket.ContactPhone
       description: Contact Phone
       type: string
-  - deprecated: false
+  - deprecated: true
     description: Update a ticket
     execution: false
     name: remedy-update-ticket
