@@ -56,8 +56,6 @@ class Client(BaseClient):
         return data
 
     def users_accounts_list(self, request_data):
-        url_1 = urljoin(self._base_url, '/entities/')
-        return_error(url_1)
         data = self._http_request(
             method='GET',
             url_suffix='/entities/',
@@ -82,10 +80,10 @@ class Client(BaseClient):
             url_suffix=f'/alerts/',
             json_data={
                 'filters': filters,
-                'sortDirection': sort_dir,
-                'sortField': sort_field,
-                'skip': skip,
-                'limit': limit
+                # 'sortDirection': sort_dir,
+                # 'sortField': sort_field,
+                # 'skip': skip,
+                # 'limit': limit
             }
         )
 
@@ -104,14 +102,23 @@ class Client(BaseClient):
     #         return 'No username by that name exists.'
 
 
-def arg_to_timestamp(arg):
+def arg_to_timestamp(arg, arg_name, required):
+    if arg is None:
+        if required is True:
+            raise ValueError(f'Missing "{arg_name}"')
+        return None
+
     if isinstance(arg, str) and arg.isdigit():
         return int(arg)
     if isinstance(arg, str):
         date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+        if date is None:
+            raise ValueError(f'Invalid date: {arg_name}')
+
         return int(date.timestamp())
     if isinstance(arg, (int, float)):
         return int(arg)
+    raise ValueError(f'Invalid date: "{arg_name}"')
 
 
 def convert_severity(severity):
@@ -273,7 +280,7 @@ def args_to_json_filter_list_users_accounts(all_params):
         if key == 'type':
             filters[key] = {'eq': value}
         if key == 'username':
-            filters['entity'] = {'eq': value}  # username - entity!!!!!!!!!!!!!!!!!!!
+            filters['entity'] = {'eq': json.loads(value)}  # username - entity!!!!!!!!!!!!!!!!!!!
         if key == 'group_id':
             filters['userGroups'] = {'eq': value}
         if key == 'is_admin':
@@ -449,33 +456,30 @@ def fetch_incidents(client, max_results, last_run, first_fetch_time, filters):
     last_fetch = last_run.get('last_fetch')
 
     if last_fetch is None:
-        last_fetch = datetime.now() - timedelta(days=1)
-        last_fetch.strftime("%Y-%m-%d %H:%M:%S")
-        last_fetch = last_fetch.timestamp()
+        last_fetch = first_fetch_time
     else:
-        last_fetch = last_fetch.timestamp()
-    return_error(last_fetch)
-    latest_created_time = int(last_fetch)
-    return_error(latest_created_time)
+        last_fetch = int(last_fetch)
+    latest_created_time = last_fetch
     incidents = []
     filters["date"] = {"gte": latest_created_time}
     alerts = client.list_incidents(filters, limit=max_results)
-    return_error(alerts)
-    for alert in alerts:
-        incident_created_time = dateparser.parse(alert['created_time'])  #1594283802753
+    for alert in alerts['data']:
+        incident_created_time = (alert['timestamp'])  #1594283802753
         if last_fetch:
             if incident_created_time <= last_fetch:
                 continue
-        incidents = {
+        occurred = datetime.fromtimestamp(incident_created_time / 1000.0).isoformat() + 'Z'
+        occurred_iso = occurred.split('.')
+        incident = {
             'name': alert['title'],  #
-            'occurred': incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
-            'rawJSON': json.dumps(alert),
+            'occurred': occurred_iso[0] + 'Z',
+            'rawJSON': json.dumps(alert)
             # 'severity': convert_severity(alert.get('severity', 1))
         }
+        incidents.append(incident)
         if incident_created_time > latest_created_time:
             latest_created_time = incident_created_time
-
-    next_run = {'last_fetch': latest_created_time.strftime(DATE_FORMAT)}
+    next_run = {'last_fetch': latest_created_time}
     return next_run, incidents
 
 
@@ -491,8 +495,14 @@ def main():
     verify_certificate = not demisto.params().get('insecure', False)
 
     # How much time before the first fetch to retrieve incidents
-    first_fetch_time = demisto.params().get('first_fetch', '3 days').strip()
-
+    first_fetch = demisto.params().get('first_fetch')
+    if not first_fetch:
+        first_fetch = '3 days'
+    first_fetch_time = arg_to_timestamp(
+        arg=first_fetch,
+        arg_name='First fetch time',
+        required=True
+    )
     proxy = demisto.params().get('proxy', False)
 
     LOG(f'Command being called is {demisto.command()}')
@@ -516,18 +526,17 @@ def main():
                                        service=params.get('service'))
             filters = params_to_filter(all_params)
 
-            max_results = int(params.get('max_fetch', '50'))
+            max_results = params.get('max_fetch', '50')
 
             if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
                 max_results = MAX_INCIDENTS_TO_FETCH
 
             next_run, incidents = fetch_incidents(
                 client=client,
-                max_results=max_results,
+                max_results=int(max_results),
                 last_run=demisto.getLastRun(),
                 first_fetch_time=first_fetch_time,
                 filters=filters)
-
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 

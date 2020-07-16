@@ -369,6 +369,7 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Command to fetch a list of files matching the specified filters.
     execution: false
     name: microsoft-cas-files-list
   - arguments:
