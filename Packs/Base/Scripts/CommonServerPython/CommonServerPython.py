@@ -80,6 +80,15 @@ class EntryType(object):
     WIDGET = 17
 
 
+class IncidentStatus(object):
+    """
+    Enum: contains all the incidents status types (e.g. pending, active, done, archive)
+    """
+    PENDING = 0
+    ACTIVE = 1
+    DONE = 2
+    ARCHIVE = 3
+
 # DEPRECATED - use EntryFormat enum instead
 formats = {
     'html': 'html',
@@ -2660,6 +2669,14 @@ def return_results(results):
         demisto.results(results.to_context())
         return
 
+    if isinstance(results, AllSchemesTypesMappingObject):
+        demisto.results(results.extract_mapping())
+        return
+
+    if isinstance(results, ObjectMirror):
+        demisto.results(results.extract_for_local())
+        return
+
     demisto.results(results)
 
 
@@ -4029,3 +4046,48 @@ def update_integration_context(context, object_keys=None, sync=True):
 
 class DemistoException(Exception):
     pass
+
+
+class ObjectMirror(object):
+    def __init__(self, object, entries):
+        self.object = object
+        self.entries = entries
+
+    def extract_for_local(self):
+        if self.object:
+            demisto.info(f'Updating object {self.object["id"]}')
+            return [self.object] + self.entries
+
+
+class SchemeMappingField:
+    def __init__(self, name, description=''):
+        self.name = name
+        self.description = description
+
+
+class SchemeTypeMapping:
+    def __init__(self, type_name='', fields=None):
+        self.type_name = type_name
+        self.fields = fields if fields else []
+
+    def add_field(self, field):
+        self.fields.append(field)
+
+    def extract_mapping(self):
+        return {
+            self.type_name: { field.name: field.description for field in self.fields }
+        }
+
+class AllSchemesTypesMappingObject:
+    def __init__(self, scheme_types_mapping=None):
+        self.scheme_types_mappings = scheme_types_mapping if scheme_types_mapping else []
+
+    def add_scheme_type(self, scheme_type_mapping):
+        self.scheme_types_mappings.append(scheme_type_mapping)
+
+    def extract_mapping(self):
+        all_mappings = []
+        for scheme_types_mapping in self.scheme_types_mappings:
+            all_mappings.append(scheme_types_mapping.extract_mapping())
+
+        return all_mappings

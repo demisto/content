@@ -1,0 +1,268 @@
+{
+	"brands": null,
+	"defaultIncidentType": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "6.0.0",
+	"id": "6e4b1f4f-45d4-4f74-8b16-5f4a4d89d5cb",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 7,
+	"mapping": {
+		"ServiceNowTicket": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"assigned_to": {
+					"complex": null,
+					"simple": "servicenowassignedto"
+				},
+				"assignment_group": {
+					"complex": null,
+					"simple": "servicenowassignmentgroup"
+				},
+				"category": {
+					"complex": null,
+					"simple": "servicenowcategory"
+				},
+				"child_incidents": {
+					"complex": null,
+					"simple": "childincidentscount"
+				},
+				"close_notes": {
+					"complex": null,
+					"simple": "closeNotes"
+				},
+				"closed_at": {
+					"complex": null,
+					"simple": "closed"
+				},
+				"description": {
+					"complex": null,
+					"simple": "details"
+				},
+				"escalation": {
+					"complex": null,
+					"simple": "servicenowescalation"
+				},
+				"impact": {
+					"complex": null,
+					"simple": "servicenowimpact"
+				},
+				"notify": {
+					"complex": null,
+					"simple": "servicenownotify"
+				},
+				"opened_at": {
+					"complex": null,
+					"simple": "lastOpen"
+				},
+				"priority": {
+					"complex": null,
+					"simple": "servicenowpriority"
+				},
+				"resolved_at": {
+					"complex": null,
+					"simple": "closed"
+				},
+				"severity": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "severity",
+						"transformers": [
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "3 - Low"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "0"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "3 - Low"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "0.5"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "3 - Low"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "1"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "2 - Medium"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "2"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "1 - High"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "3"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "1 - High"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "4"
+										}
+									}
+								},
+								"operator": "replace"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"short_description": {
+					"complex": null,
+					"simple": "name"
+				},
+				"sla_due": {
+					"complex": null,
+					"simple": "remediationsla.dueDate"
+				},
+				"state": {
+					"complex": null,
+					"simple": "servicenowstate"
+				},
+				"subcategory": {
+					"complex": null,
+					"simple": "subcategory"
+				},
+				"sys_created_on": {
+					"complex": null,
+					"simple": "created"
+				},
+				"urgency": {
+					"complex": null,
+					"simple": "servicenowurgency"
+				},
+				"work_notes": {
+					"complex": null,
+					"simple": "servicenowworknotes"
+				},
+				"work_start": {
+					"complex": null,
+					"simple": "timetoassignment.startDate"
+				}
+			}
+		}
+	},
+	"name": "ServiceNow Mirror Out",
+	"nameRaw": "ServiceNow Mirror Out",
+	"packID": "",
+	"sortValues": null,
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": null,
+		"simple": ""
+	},
+	"type": "mapping-outgoing",
+	"unclassifiedCases": null,
+	"version": -1
+}

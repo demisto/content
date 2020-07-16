@@ -47,13 +47,13 @@ configuration:
   name: timestamp_field
   required: false
   type: 0
-- display: ServiceNow ticket column to be set as the incident name, default is the
+- defaultvalue: number
+  display: ServiceNow ticket column to be set as the incident name, default is the
     incident number
   hidden: false
   name: incident_name
   required: false
   type: 0
-  defaultvalue: number
 - display: Incident type
   name: incidentType
   required: false
@@ -2208,6 +2208,16 @@ script:
       description: 'Name of the document to be routed by this work item, for example:
         case record.'
       type: String
+  - deprecated: false
+    description: Returns the list of fields for an incident type
+    execution: false
+    name: get-mapping-fields
+  - deprecated: false
+    execution: false
+  - deprecated: false
+    description: Returns an updated incident and entries
+    execution: false
+    name: get-remote-data
   dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: true

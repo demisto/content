@@ -1947,8 +1947,6 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     ticket_id = args.get('remoteId')
     org_status = args.get('status')
 
-    demisto.debug(f'data is {data}, entries are {entries}, incident_changed is {incident_changed}, and ticket_id is {ticket_id}\n')
-
     ticket_type = 'incident'
     if incident_changed:
         additional_fields = split_fields(str(args.get('additional_fields', '')))
@@ -1974,32 +1972,32 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     return ticket_id
 
 
-def get_mapping_fields_command(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
+def get_mapping_fields_command(client: Client) -> AllSchemesTypesMappingObject:
     """get-mapping-fields command: Returns the list of fields for an incident type
-
     :type client: ``Client``
     :param Client: XSOAR client to use
-
     :type args: ``Dict[str, Any]``
     :param args:
         all command arguments, usually passed from ``demisto.args()``.
         ``args['type']`` incident type to retrieve fields for
-
     :return:
         A ``Dict[str, Any]`` object with keys as field names and description as values
-
     :rtype: ``Dict[str, Any]``
     """
-    res = {}
+    all_mappings = AllSchemesTypesMappingObject()
+    incident_fields: List[dict] = client.send_request(f'table/{client.ticket_type}?sysparm_limit=1', 'GET')
 
-    result = client.send_request(f'table/{client.ticket_type}?sysparm_limit=1', 'GET')
-    if 'result' not in result:
-        raise Exception('ServiceNow error: ' + str(result))
-    ticket = result.get('result')
-    res["Default Schema"] = ticket[0]
+    type_ = client.ticket_type
+    incident_type_scheme = SchemeTypeMapping(type_name=type_)
+    demisto.debug(f'Collecting incident mapping for incident type - "{type_}"')
 
-    demisto.debug(f'res is {res}\n')
-    return res
+    ticket = incident_fields.get('result')[0]
+    for field in ticket:
+        incident_field = SchemeMappingField(field)
+        incident_type_scheme.add_field(incident_field)
+
+    all_mappings.add_scheme_type(incident_type_scheme)
+    return all_mappings
 
 
 def main():
@@ -2075,7 +2073,7 @@ def main():
         elif command == 'update-remote-system':
             demisto.results(update_remote_system_command(client, demisto.args()))
         elif demisto.command() == 'get-mapping-fields':
-            demisto.results(get_mapping_fields_command(client, demisto.args()))
+            return_results(get_mapping_fields_command(client))
         elif command in commands:
             md_, ec_, raw_response, ignore_auto_extract = commands[command](client, args)
             return_outputs(md_, ec_, raw_response, ignore_auto_extract=ignore_auto_extract)

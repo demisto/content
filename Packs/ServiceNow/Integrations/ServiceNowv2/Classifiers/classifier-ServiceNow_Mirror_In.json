@@ -1,0 +1,152 @@
+{
+	"brands": null,
+	"defaultIncidentType": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "6.0.0",
+	"id": "8d6f01ac-bf39-4c52-8e3c-ba4607eed376",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 19,
+	"mapping": {
+		"ServiceNowTicket": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Child Incidents Count": {
+					"complex": null,
+					"simple": "child_incidents"
+				},
+				"Remediation SLA": {
+					"complex": null,
+					"simple": "sla_due"
+				},
+				"ServiceNow Assigned To": {
+					"complex": null,
+					"simple": "assigned_to"
+				},
+				"ServiceNow Assignment Group": {
+					"complex": null,
+					"simple": "assignment_group"
+				},
+				"ServiceNow Category": {
+					"complex": null,
+					"simple": "category"
+				},
+				"ServiceNow Closed Date": {
+					"complex": null,
+					"simple": "closed_at"
+				},
+				"ServiceNow Description": {
+					"complex": null,
+					"simple": "description"
+				},
+				"ServiceNow Due Date": {
+					"complex": null,
+					"simple": "due_date"
+				},
+				"ServiceNow Escalation": {
+					"complex": null,
+					"simple": "escalation"
+				},
+				"ServiceNow Impact": {
+					"complex": null,
+					"simple": "impact"
+				},
+				"ServiceNow Notify": {
+					"complex": null,
+					"simple": "notify"
+				},
+				"ServiceNow Opened Date": {
+					"complex": null,
+					"simple": "opened_at"
+				},
+				"ServiceNow Priority": {
+					"complex": null,
+					"simple": "priority"
+				},
+				"ServiceNow Resolution Notes": {
+					"complex": null,
+					"simple": "close_notes"
+				},
+				"ServiceNow Resolved Time": {
+					"complex": null,
+					"simple": "resolved_at"
+				},
+				"ServiceNow Severity": {
+					"complex": null,
+					"simple": "severity"
+				},
+				"ServiceNow State": {
+					"complex": null,
+					"simple": "state"
+				},
+				"ServiceNow Ticket Number": {
+					"complex": null,
+					"simple": "number"
+				},
+				"ServiceNow Urgency": {
+					"complex": null,
+					"simple": "urgency"
+				},
+				"ServiceNow Work Notes": {
+					"complex": null,
+					"simple": "work_notes"
+				},
+				"State": {
+					"complex": null,
+					"simple": "state"
+				},
+				"Sub Category": {
+					"complex": null,
+					"simple": "subcategory"
+				},
+				"dbotMirrorDirection": {
+					"complex": null,
+					"simple": ".='Both'"
+				},
+				"dbotMirrorId": {
+					"complex": null,
+					"simple": "sys_id"
+				},
+				"dbotMirrorInstance": {
+					"complex": null,
+					"simple": "='ServiceNow v2_copy_instance_2'"
+				},
+				"dbotMirrorTags": {
+					"complex": null,
+					"simple": ".='ForServiceNow'"
+				},
+				"details": {
+					"complex": null,
+					"simple": "description"
+				},
+				"name": {
+					"complex": null,
+					"simple": "short_description"
+				},
+				"severity": {
+					"complex": null,
+					"simple": "severity"
+				}
+			}
+		}
+	},
+	"name": "ServiceNow Mirror In",
+	"nameRaw": "ServiceNow Mirror In",
+	"packID": "",
+	"sortValues": null,
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": null,
+		"simple": ""
+	},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}
