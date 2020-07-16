@@ -32,11 +32,5 @@
             "mandatory": false,
             "display_name": "Active Directory Query"
         }
-    },
-    "displayedImages": [
-        "CommonTypes",
-        "MicrosoftTeams",
-        "Syslog",
-        "Active_Directory_Query"
-    ]
+    }
 }
