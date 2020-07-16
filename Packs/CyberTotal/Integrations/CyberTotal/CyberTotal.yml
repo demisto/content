@@ -145,12 +145,6 @@ script:
         as malicious. If threshold not set, then threshold from instance configuration
         is used.
       defaultValue: "10"
-    - default: true
-      description: ''
-      isArray: true
-      name: file
-      required: true
-      secret: false
     outputs:
     - contextPath: CyberTotal.File.scan_date
       description: 'Scan date format: YYYY-MM-DD HH:mm:SS'
