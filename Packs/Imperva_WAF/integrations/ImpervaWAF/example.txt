@@ -1,0 +1,20 @@
+!imperva-waf-ip-group-list
+!imperva-waf-sites-list
+!imperva-waf-web-service-custom-policy-list
+!imperva-waf-server-group-list site-name=`Default Site`
+!imperva-waf-ip-group-list-entries ip-group-name=`Google IP Addresses`
+!imperva-waf-ip-group-remove-entries ip-group-name=`test`
+!imperva-waf-server-group-list-policies site-name=`Default Site` server-group-name=`Tel Aviv`
+!imperva-waf-web-service-custom-policy-get policy-name=`test policy`
+!imperva-waf-ip-group-create group-name=`test_policy` entry-type=single ip-address-from=127.0.0.1
+!imperva-waf-ip-group-create group-name=`test_policy` entry-type=range ip-address-from=127.0.0.1 ip-address-to=127.0.0.2
+!imperva-waf-ip-group-create group-name=`test_policy` entry-type=network network-address=10.0.0.1 cidr-mask=20
+!imperva-waf-ip-group-create group-name=test_policy json-entries=`[{"type":"single","ipAddressFrom":"127.0.0.1"}]`
+!imperva-waf-ip-group-update-entries group-name=test_policy entry-type=range ip-address-from=10.0.0.1 ip-address-to=10.0.0.2 operation=add
+!imperva-waf-ip-group-update-entries group-name=test_policy json-entries=`[{"operation":"remove","type":"single","ipAddressFrom":"127.0.0.1"}]`
+!imperva-waf-ip-group-delete group-name=test_policy
+!imperva-waf-web-service-custom-policy-create policy-name=test_policy server-group-name-to-apply=`Tel Aviv` site-name-to-apply=`Default Site` web-service-name-to-apply=Orders followed-action=`Long IP Block`
+!imperva-waf-web-service-custom-policy-create policy-name=test_policy server-group-name-to-apply=`Tel Aviv` site-name-to-apply=`Default Site` web-service-name-to-apply=Orders followed-action=`Long IP Block` ip-addresses-criteria-operation=excludeAll ip-addresses=10.0.0.1,10.0.0.2 ip-groups=testDemisto
+!imperva-waf-web-service-custom-policy-create policy-name=test_policy server-group-name-to-apply=`Tel Aviv` site-name-to-apply=`Default Site` web-service-name-to-apply=Orders followed-action=`Long IP Block` geo-location-criteria-operation=atLeastOne country-names=Spain,Argentia
+!imperva-waf-web-service-custom-policy-update policy-name=test_policy enabled=False
+!imperva-waf-web-service-custom-policy-update policy-name=test_policy ip-addresses-criteria-operation=atLeastOne ip-addresses=127.0.0.1
