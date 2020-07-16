@@ -23,6 +23,7 @@ from Tests.test_content import load_conf_files, extract_filtered_tests, Parallel
 from Tests.update_content_data import update_content
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
     install_all_content_packs
+from Tests.tools import update_server_configuration
 
 MARKET_PLACE_MACHINES = ('master',)
 
@@ -39,7 +40,7 @@ def options_handler():
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
     parser.add_argument('-n', '--is-nightly', type=str2bool, help='Is nightly build')
     parser.add_argument('--branch', help='GitHub branch name', required=True)
-    parser.add_argument('--build-number', help='CI build number', required=True)
+    parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
 
     options = parser.parse_args()
 
@@ -692,7 +693,8 @@ def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci
         ci_build_number (str): CI build number
 
     Returns:
-        None
+        response_data: The response data
+        status_code: The response status code
     """
     host = client.api_client.configuration.host
     installed_content_message = \
@@ -700,37 +702,64 @@ def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci
     prints_manager.add_print_job(installed_content_message, print_color, 0, LOG_COLORS.GREEN)
 
     # make request to update server configs
-    data = {
-        'data': {
-            'content.pack.verify': 'false',
-            'marketplace.initial.sync.delay': '0',
-            'content.pack.ignore.missing.warnings.contentpack': 'true',
-            'marketplace.bootstrap.bypass.url':
-                'https://storage.googleapis.com/marketplace-ci-build/content/builds/{}/{}'.format(
-                    branch_name, ci_build_number
-                )
-        },
-        'version': -1
+    server_configuration = {
+        'content.pack.verify': 'false',
+        'marketplace.initial.sync.delay': '0',
+        'content.pack.ignore.missing.warnings.contentpack': 'true',
+        'marketplace.bootstrap.bypass.url':
+            'https://storage.googleapis.com/marketplace-ci-build/content/builds/{}/{}'.format(
+                branch_name, ci_build_number)
+
     }
-    response_data, status_code, _ = demisto_client.generic_request_func(self=client, path='/system/config',
-                                                                        method='POST', body=data)
+    error_msg = "Failed to set GCP bucket server config - with status code "
+    return update_server_configuration(client, server_configuration, error_msg)
 
-    try:
-        result_object = ast.literal_eval(response_data)
-    except ValueError as err:
-        print_error('failed to parse response from demisto. response is {}.\nError:\n{}'.format(response_data, err))
-        return
 
-    if status_code >= 300 or status_code < 200:
-        message = result_object.get('message', '')
-        msg = "Failed to set GCP bucket server config - with status code " + str(status_code) + '\n' + message
-        print_error(msg)
+def set_docker_hardening_for_build(client, prints_manager):
+    """Sets docker hardening configuration
+
+    Args:
+        client (demisto_client): The configured client to use.
+        prints_manager (ParallelPrintsManager): Print manager object
+
+    Returns:
+        response_data: The response data
+        status_code: The response status code
+    """
+    host = client.api_client.configuration.host
+    installed_content_message = \
+        '\nMaking "POST" request to server - "{}" to set docker hardening server configuration.'.format(host)
+    prints_manager.add_print_job(installed_content_message, print_color, 0, LOG_COLORS.GREEN)
+
+    # make request to update server configs
+    server_configuration = {
+        'docker.cpu.limit': '1.0',
+        'docker.run.internal.asuser': 'true',
+        'limit.docker.cpu': 'true',
+        'python.pass.extra.keys': '--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192'
+    }
+    error_msg = "Failed to set docker hardening server config - with status code "
+
+    return update_server_configuration(client, server_configuration, error_msg)
 
 
 def get_pack_ids_to_install():
     with open('./Tests/content_packs_to_install.txt', 'r') as packs_stream:
         pack_ids = packs_stream.readlines()
         return [pack_id.rstrip('\n') for pack_id in pack_ids]
+
+
+def restart_server(server, prints_manager):
+    installed_content_message = \
+        '\nRestarting servers to apply server config ...'
+    prints_manager.add_print_job(installed_content_message, print_color, 0, LOG_COLORS.GREEN)
+    ssh_string = 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} ' \
+                 '"sudo systemctl restart demisto"'
+    try:
+        subprocess.check_output(
+            ssh_string.format('ec2-user', server.replace('https://', '')), shell=True)
+    except subprocess.CalledProcessError as exc:
+        print(exc.output)
 
 
 def main():
@@ -755,20 +784,15 @@ def main():
     username = secret_conf.get('username') if not username else username
     password = secret_conf.get('userPassword') if not password else password
 
-    if LooseVersion(server_numeric_version) >= LooseVersion('6.0.0'):
+    if LooseVersion(server_numeric_version) >= LooseVersion('5.5.0'):
         for server in servers:
             client = demisto_client.configure(base_url=server, username=username, password=password,
                                               verify_ssl=False)
-            set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number)
-            print('Restarting servers to apply GCS server config ...')
-            ssh_string = 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} ' \
-                         '"sudo systemctl restart demisto"'
-            try:
-                subprocess.check_output(
-                    ssh_string.format('ec2-user', server.replace('https://', '')), shell=True)
-            except subprocess.CalledProcessError as exc:
-                print(exc.output)
-        print('Done restarting servers.')
+            set_docker_hardening_for_build(client, prints_manager)
+            if LooseVersion(server_numeric_version) >= LooseVersion('6.0.0'):
+                set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number)
+            restart_server(server, prints_manager)
+        prints_manager.add_print_job('Done restarting servers', print_color, 0, LOG_COLORS.GREEN)
 
     tests = conf['tests']
     skipped_integrations_conf = conf['skipped_integrations']
@@ -826,7 +850,9 @@ def main():
                     client = demisto_client.configure(base_url=server_url, username=username, password=password,
                                                       verify_ssl=False)
 
-                    search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager)
+                    _, flag = search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager)
+                    if not flag:
+                        raise Exception('Failed to search and install packs.')
                 except Exception as exc:
                     prints_manager.add_print_job(str(exc), print_error, 0)
                     prints_manager.execute_thread_prints(0)
