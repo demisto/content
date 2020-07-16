@@ -64,27 +64,35 @@ def filter_files(
     # strip `.` from extension
     if extensions is not None:
         extensions = set([extension.split('.')[-1] for extension in extensions])
+    else:
+        extensions = set()
+    if types is None:
+        types = set()
     magic_mime = magic.Magic(mime=True)
-    for file in files:
-        # types list supplied,
-        if types:
+    new_files = files.copy()
+    # MIME Types
+    if types:
+        for file in files:
+            # types list supplied,
             mime_type = magic_mime.from_file(os.path.join(root, file))
             # Inclusive types, take only the types in the list.
             if inclusive_or_exclusive == INCLUSIVE and mime_type not in types:
-                files.remove(file)
+                new_files.remove(file)
             # Exclusive types, don't take those files.
             elif inclusive_or_exclusive == EXCLUSIVE and mime_type in types:
-                files.remove(file)
-        if extensions:
+                new_files.remove(file)
+    # Extensions
+    if extensions:
+        for file in files:
             # Get file extension without a leading point.
             f_ext = os.path.splitext(file)[1].split('.')[-1]
             # Inclusive extensions, take only the types in the list.
             if inclusive_or_exclusive == INCLUSIVE and f_ext not in extensions:
-                files.remove(file)
+                new_files.remove(file)
             # Exclude extensions, don't take those files.
             elif inclusive_or_exclusive == EXCLUSIVE and f_ext in extensions:
-                files.remove(file)
-    return files
+                new_files.remove(file)
+    return new_files
 
 
 def upload_files(
@@ -150,6 +158,8 @@ def upload_files(
                 data = file_stream.read()
                 demisto.results(fileResult(file_name, data))
 
+            with open(file_path, 'rb') as file_stream:
+                data = file_stream.read()
                 md5.update(data)
                 sha1.update(data)
                 sha256.update(data)
