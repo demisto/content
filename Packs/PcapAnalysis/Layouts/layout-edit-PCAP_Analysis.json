@@ -127,40 +127,6 @@
 			},
 			{
 				"description": "",
-				"fields": [
-					{
-						"fieldId": "incident_dbotprediction",
-						"id": "",
-						"isVisible": true,
-						"modified": "0001-01-01T00:00:00Z",
-						"sortValues": null,
-						"version": 0
-					},
-					{
-						"fieldId": "incident_dbotpredictionprobability",
-						"id": "",
-						"isVisible": true,
-						"modified": "0001-01-01T00:00:00Z",
-						"sortValues": null,
-						"version": 0
-					},
-					{
-						"fieldId": "incident_investigationstage",
-						"id": "",
-						"isVisible": true,
-						"modified": "0001-01-01T00:00:00Z",
-						"sortValues": null,
-						"version": 0
-					},
-					{
-						"fieldId": "incident_urlsslverification",
-						"id": "",
-						"isVisible": true,
-						"modified": "0001-01-01T00:00:00Z",
-						"sortValues": null,
-						"version": 0
-					}
-				],
 				"id": "",
 				"isVisible": true,
 				"modified": "0001-01-01T00:00:00Z",
