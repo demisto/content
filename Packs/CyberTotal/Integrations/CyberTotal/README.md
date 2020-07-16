@@ -65,11 +65,73 @@ Return IP information and reputation
 
 
 #### Command Example
-``` ```
+```!ip ip=1.1.1.1```
+
+#### Context Example
+```
+{
+    "CyberTotal": {
+        "IP": {
+            "asn": {
+                "allocatedAt": 1395990000,
+                "asnID": 13335,
+                "countryCode": "US",
+                "description": "AS13335 - US - CLOUDFLARENET",
+                "handle": "AS13335",
+                "name": "CLOUDFLARENET",
+                "registry": "arin"
+            },
+            "detection_engines": 89,
+            "domainNameServers": [
+                "one.one.one.one"
+            ],
+            "hosting": {},
+            "location": {
+                "areaCode": 0,
+                "city": "Sydney",
+                "countryCode": "AU",
+                "countryName": "AU",
+                "dmaCode": 0,
+                "latitude": "-33.8688",
+                "longitude": "151.209",
+                "metroCodeId": 0,
+                "postalCode": null,
+                "region": null,
+                "regionName": null
+            },
+            "permalink": "https://cybertotal.cycraft.com/app/intelligence/021cd51ad995491e98bdab951e3f60bb",
+            "positive_engines": 7,
+            "resolvedIP": "1.1.1.1",
+            "resource": "1.1.1.1",
+            "response_code": 1,
+            "routedBlock": "1.1.1.0/24",
+            "scan_date": "2020-06-08 14:11:12",
+            "scan_id": "1.1.1.1-1591625472",
+            "verbose_msg": "CyberTotal Scan finished, information enriched."
+        }
+    },
+    "DBotScore": {
+        "Indicator": "1.1.1.1",
+        "Score": 2,
+        "Type": "ip",
+        "Vendor": "CyberTotal"
+    },
+    "IP": {
+        "ASN": "AS13335 - US - CLOUDFLARENET",
+        "Address": "1.1.1.1",
+        "DetectionEngines": 89,
+        "Geo": {
+            "Country": "AU",
+            "Location": "-33.8688:151.209"
+        },
+        "PositiveDetections": 7
+    }
+}
+```
 
 #### Human Readable Output
 
-
+>All modules that can run command ip are in disabled state. modules are: CyberTotal_instance_1.
 
 ### file
 ***
@@ -85,7 +147,6 @@ Return file's information and reputation
 | --- | --- | --- |
 | hash | list of hash(s). | Required | 
 | threshold | If the HASH has reputation above the threshold then the HASH defined as malicious. If threshold not set, then threshold from instance configuration is used. | Optional | 
-| file |  | Required | 
 
 
 #### Context Output
@@ -122,11 +183,20 @@ Return file's information and reputation
 
 
 #### Command Example
-``` ```
+```!file hash=b5e8793b216cf2e63c47af4ac424ac9a77601405c131c32a2eaa22812306123e```
+
+#### Context Example
+```
+{
+    "File": {
+        "SHA256": "b5e8793b216cf2e63c47af4ac424ac9a77601405c131c32a2eaa22812306123e"
+    }
+}
+```
 
 #### Human Readable Output
 
-
+>All modules that can run command file are in disabled state. modules are: CyberTotal_instance_1.
 
 ### domain
 ***
@@ -170,11 +240,16 @@ Return domain information and reputation
 
 
 #### Command Example
-``` ```
+```!domain domain=abc.com```
+
+#### Context Example
+```
+{}
+```
 
 #### Human Readable Output
 
-
+>All modules that can run command domain are in disabled state. modules are: CyberTotal_instance_1.
 
 ### url
 ***
@@ -219,11 +294,67 @@ Return domain information and reputation
 
 
 #### Command Example
-``` ```
+```!url url=http://abc.com```
+
+#### Context Example
+```
+{
+    "CyberTotal": {
+        "Domain": {
+            "confidence": 7,
+            "detection_engines": 79,
+            "detection_ratio": "0/79",
+            "message": "search success",
+            "permalink": "https://cybertotal.cycraft.com/app/intelligence/79ca1bd740564c36a7a4a78df5dc719d",
+            "positive_detections": 0,
+            "resource": "abc.com",
+            "scan_date": "2020-06-18 03:19:48",
+            "severity": 6,
+            "task_id": "79ca1bd740564c36a7a4a78df5dc719d",
+            "threat": "Medium"
+        },
+        "URL": {
+            "confidence": 1,
+            "detection_engines": 79,
+            "detection_ratio": "0/79",
+            "message": "search success",
+            "permalink": "https://cybertotal.cycraft.com/app/intelligence/61bbc65f5c034930b8a659c39e745d96",
+            "positive_detections": 0,
+            "resource": "http://abc.com",
+            "scan_date": "2020-06-22 07:24:16",
+            "severity": 5,
+            "task_id": "61bbc65f5c034930b8a659c39e745d96",
+            "threat": "Medium"
+        }
+    },
+    "DBotScore": [
+        {
+            "Indicator": "http://abc.com",
+            "Score": 1,
+            "Type": "url",
+            "Vendor": "CyberTotal"
+        },
+        {
+            "Indicator": "abc.com",
+            "Score": 0,
+            "Type": "domain",
+            "Vendor": "CyberTotal"
+        }
+    ],
+    "Domain": {
+        "DetectionEngines": 79,
+        "Name": "abc.com"
+    },
+    "URL": {
+        "Data": "http://abc.com",
+        "DetectionEngines": 79
+    }
+}
+```
 
 #### Human Readable Output
 
-
+>All modules that can run command url are in disabled state. modules are: CyberTotal_instance_1.
 
 ### cybertotal-ip-whois
 ***
@@ -295,11 +426,73 @@ Return ip whois information
 
 
 #### Command Example
-``` ```
+```!cybertotal-ip-whois ip=1.1.1.1```
+
+#### Context Example
+```
+{
+    "CyberTotal": {
+        "IP": {
+            "asn": {
+                "allocatedAt": 1395990000,
+                "asnID": 13335,
+                "countryCode": "US",
+                "description": "AS13335 - US - CLOUDFLARENET",
+                "handle": "AS13335",
+                "name": "CLOUDFLARENET",
+                "registry": "arin"
+            },
+            "detection_engines": 89,
+            "domainNameServers": [
+                "one.one.one.one"
+            ],
+            "hosting": {},
+            "location": {
+                "areaCode": 0,
+                "city": "Sydney",
+                "countryCode": "AU",
+                "countryName": "AU",
+                "dmaCode": 0,
+                "latitude": "-33.8688",
+                "longitude": "151.209",
+                "metroCodeId": 0,
+                "postalCode": null,
+                "region": null,
+                "regionName": null
+            },
+            "permalink": "https://cybertotal.cycraft.com/app/intelligence/021cd51ad995491e98bdab951e3f60bb",
+            "positive_engines": 7,
+            "resolvedIP": "1.1.1.1",
+            "resource": "1.1.1.1",
+            "response_code": 1,
+            "routedBlock": "1.1.1.0/24",
+            "scan_date": "2020-06-08 14:11:12",
+            "scan_id": "1.1.1.1-1591625472",
+            "verbose_msg": "CyberTotal Scan finished, information enriched."
+        }
+    },
+    "DBotScore": {
+        "Indicator": "1.1.1.1",
+        "Score": 2,
+        "Type": "ip",
+        "Vendor": "CyberTotal"
+    },
+    "IP": {
+        "ASN": "AS13335 - US - CLOUDFLARENET",
+        "Address": "1.1.1.1",
+        "DetectionEngines": 89,
+        "Geo": {
+            "Country": "AU",
+            "Location": "-33.8688:151.209"
+        },
+        "PositiveDetections": 7
+    }
+}
+```
 
 #### Human Readable Output
 
-
+>All modules that can run command cybertotal-ip-whois are in disabled state. modules are: CyberTotal_instance_1.
 
 ### cybertotal-url-whois
 ***
@@ -371,11 +564,67 @@ Return url whois information
 
 
 #### Command Example
-``` ```
+```!cybertotal-url-whois url=http://abc.com```
+
+#### Context Example
+```
+{
+    "CyberTotal": {
+        "Domain": {
+            "confidence": 7,
+            "detection_engines": 79,
+            "detection_ratio": "0/79",
+            "message": "search success",
+            "permalink": "https://cybertotal.cycraft.com/app/intelligence/79ca1bd740564c36a7a4a78df5dc719d",
+            "positive_detections": 0,
+            "resource": "abc.com",
+            "scan_date": "2020-06-18 03:19:48",
+            "severity": 6,
+            "task_id": "79ca1bd740564c36a7a4a78df5dc719d",
+            "threat": "Medium"
+        },
+        "URL": {
+            "confidence": 1,
+            "detection_engines": 79,
+            "detection_ratio": "0/79",
+            "message": "search success",
+            "permalink": "https://cybertotal.cycraft.com/app/intelligence/61bbc65f5c034930b8a659c39e745d96",
+            "positive_detections": 0,
+            "resource": "http://abc.com",
+            "scan_date": "2020-06-22 07:24:16",
+            "severity": 5,
+            "task_id": "61bbc65f5c034930b8a659c39e745d96",
+            "threat": "Medium"
+        }
+    },
+    "DBotScore": [
+        {
+            "Indicator": "abc.com",
+            "Score": 0,
+            "Type": "domain",
+            "Vendor": "CyberTotal"
+        },
+        {
+            "Indicator": "http://abc.com",
+            "Score": 1,
+            "Type": "url",
+            "Vendor": "CyberTotal"
+        }
+    ],
+    "Domain": {
+        "DetectionEngines": 79,
+        "Name": "abc.com"
+    },
+    "URL": {
+        "Data": "http://abc.com",
+        "DetectionEngines": 79
+    }
+}
+```
 
 #### Human Readable Output
 
-
+>All modules that can run command cybertotal-url-whois are in disabled state. modules are: CyberTotal_instance_1.
 
 ### cybertotal-domain-whois
 ***
@@ -447,8 +696,13 @@ Return domain whois information
 
 
 #### Command Example
-``` ```
+```!cybertotal-domain-whois domain=abc.com```
+
+#### Context Example
+```
+{}
+```
 
 #### Human Readable Output
 
-
+>All modules that can run command cybertotal-domain-whois are in disabled state. modules are: CyberTotal_instance_1.
