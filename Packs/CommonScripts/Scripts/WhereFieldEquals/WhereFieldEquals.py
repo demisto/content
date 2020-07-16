@@ -21,22 +21,13 @@ def where_field_equals(args):
             else:
                 found_matches.append(dict_item)
     hr_string = str(found_matches)
-    entry_context = {
-        "WhereFieldEquals": {
-            "SearchedField": field,
-            "FieldReturned": get_field,
-            "EqualTo": equal_to,
-            "OriginalValues": values_to_search,
-            "Results": found_matches
-        }
-    }
-    return hr_string, entry_context
+    return hr_string
 
 
 def main():
     args = demisto.args()
     hr_string, entry_context = where_field_equals(args)
-    return_outputs(readable_output=hr_string, outputs=entry_context)
+    return_outputs(readable_output=hr_string, outputs={})
 
 
 # python2 uses __builtin__ python3 uses builtins

@@ -37,22 +37,6 @@ commonfields:
 enabled: true
 name: WhereFieldEquals
 fromversion: 5.5.0
-outputs:
-- contextPath: WhereFieldEquals.SearchedField
-  description: Attribute in the collection's items where equality was checked.
-  type: String
-- contextPath: WhereFieldEquals.FieldReturned
-  description: Field which items were extracted from.
-  type: String
-- contextPath: WhereFieldEquals.EqualTo
-  description: Value which was matched against.
-  type: String
-- contextPath: WhereFieldEquals.OriginalValues
-  description: Collection which the script was ran against.
-  type: String
-- contextPath: WhereFieldEquals.Results
-  description: Array containing the found values.
-  type: String
 script: '-'
 subtype: python3
 system: false

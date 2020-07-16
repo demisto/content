@@ -21,27 +21,7 @@ class WhereFieldEquals(unittest.TestCase):
             "getField":
             "name"
         }
-        expected_result = ("['מה זה', '172.0.0.2']",
-                           dict(
-                               WhereFieldEquals={
-                                   'SearchedField':
-                                   'type',
-                                   'FieldReturned':
-                                   'name',
-                                   'EqualTo':
-                                   'IP',
-                                   'OriginalValues': [{
-                                       'name': 'מה זה',
-                                       'type': 'IP'
-                                   }, {
-                                       'name': 'myFile.txt',
-                                       'type': 'File'
-                                   }, {
-                                       'name': '172.0.0.2',
-                                       'type': 'IP'
-                                   }],
-                                   'Results': ['מה זה', '172.0.0.2']
-                               }))
+        expected_result = "['מה זה', '172.0.0.2']"
         recieved_result = where_field_equals(args)
         assert expected_result == recieved_result
 
@@ -63,27 +43,7 @@ class WhereFieldEquals(unittest.TestCase):
             "getField":
             "name"
         }
-        expected_result = ("['łłłłł', '172.0.0.2']",
-                           dict(
-                               WhereFieldEquals={
-                                   'SearchedField':
-                                   'type',
-                                   'FieldReturned':
-                                   'name',
-                                   'EqualTo':
-                                   'IP',
-                                   'OriginalValues': [{
-                                       'name': 'łłłłł',
-                                       'type': 'IP'
-                                   }, {
-                                       'name': 'myFile.txt',
-                                       'type': 'File'
-                                   }, {
-                                       'name': '172.0.0.2',
-                                       'type': 'IP'
-                                   }],
-                                   'Results': ['łłłłł', '172.0.0.2']
-                               }))
+        expected_result = "['łłłłł', '172.0.0.2']"
         recieved_result = where_field_equals(args)
         assert expected_result == recieved_result
 
@@ -103,34 +63,7 @@ class WhereFieldEquals(unittest.TestCase):
             "equalTo":
             "IP"
         }
-        expected_result = (
-            "[{'name': 'Testing', 'type': 'IP'}, {'name': '172.0.0.2', 'type': 'IP'}]",
-            dict(
-                WhereFieldEquals={
-                    'SearchedField':
-                    'type',
-                    'FieldReturned':
-                    None,
-                    'EqualTo':
-                    'IP',
-                    'OriginalValues': [{
-                        'name': 'Testing',
-                        'type': 'IP'
-                    }, {
-                        'name': 'myFile.txt',
-                        'type': 'File'
-                    }, {
-                        'name': '172.0.0.2',
-                        'type': 'IP'
-                    }],
-                    'Results': [{
-                        'name': 'Testing',
-                        'type': 'IP'
-                    }, {
-                        'name': '172.0.0.2',
-                        'type': 'IP'
-                    }]
-                }))
+        expected_result = "[{'name': 'Testing', 'type': 'IP'}, {'name': '172.0.0.2', 'type': 'IP'}]"
 
         recieved_result = where_field_equals(args)
         assert expected_result == recieved_result
@@ -153,26 +86,6 @@ class WhereFieldEquals(unittest.TestCase):
             "getField":
             "name"
         }
-        expected_result = ("['מה זה']",
-                           dict(
-                               WhereFieldEquals={
-                                   'SearchedField':
-                                   'type',
-                                   'FieldReturned':
-                                   'name',
-                                   'EqualTo':
-                                   'IP',
-                                   'OriginalValues': [{
-                                       'name': 'מה זה',
-                                       'type': 'IP'
-                                   }, {
-                                       'name': 'myFile.txt',
-                                       'type': 'File'
-                                   }, {
-                                       'name': '172.0.0.2',
-                                       'type_1': 'IP'
-                                   }],
-                                   'Results': ['מה זה']
-                               }))
+        expected_result = "['מה זה']"
         recieved_result = where_field_equals(args)
         assert expected_result == recieved_result
