@@ -8,10 +8,9 @@
     - ***cs-falcon-refresh-session***
     
   - Added the *target* argument to the ***cs-falcon-run-command*** command to support single and batch operations.
-  - Fixed entry context keys
-  - Fixed cs-falcon-get-script, A script entry returned from the command replaces the entry identifying with `ID` in `CrowdStrike.Script`.
-  - Fixed cs-falcon-list-scripts, Script entries returned from the command replace the entries identifying with `ID`s in `CrowdStrike.Script`.
-
+  - Fixed entry context keys.
+  - Fixed an issue in the ***cs-falcon-get-script*** command where returned script entries replaced the entry identifying with *ID* in the *CrowdStrike.Script* path. This breaks backward compatibility.
+  - Fixed an issue in the ***cs-falcon-list-scripts*** command where returned script entries replaced the entry identifying with *ID*s in the *CrowdStrike.Script* path. This breaks backward compatibility.
 
 ## [20.5.0] - 2020-05-12
 -
