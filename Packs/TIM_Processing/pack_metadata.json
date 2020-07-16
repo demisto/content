@@ -31,7 +31,7 @@
             "display_name": "MISP"
         },
         "Whois": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Whois"
         },
         "PolySwarm": {
