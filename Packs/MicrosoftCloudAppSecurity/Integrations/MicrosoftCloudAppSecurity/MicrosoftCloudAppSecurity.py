@@ -71,35 +71,18 @@ class Client(BaseClient):
         )
         return data
 
-    def list_incidents(self, filters, sort_dir="asc", sort_field='date', skip=0, limit=10):
+    def list_incidents(self, filters, limit):
         """
         returns dummy incident data, just for the example.
         """
         return self._http_request(
             method='POST',
-            url_suffix=f'/alerts/',
+            url_suffix='/alerts/',
             json_data={
                 'filters': filters,
-                # 'sortDirection': sort_dir,
-                # 'sortField': sort_field,
-                # 'skip': skip,
-                # 'limit': limit
+                'limit': limit
             }
         )
-
-    # def microsoft_cas_username(self):
-    #     microsoft_cas_username = demisto.args()['username']
-    #     entities = self._http_request(
-    #         method='GET',
-    #         url_suffix='/entities/',
-    #         json_data={}
-    #     )
-    #     try:
-    #         uid = (entities['data'][1])
-    #         saas = (initial_response['records'][0])
-    #         return uid, saas
-    #     except:
-    #         return 'No username by that name exists.'
 
 
 def arg_to_timestamp(arg, arg_name, required):
@@ -225,7 +208,7 @@ def args_to_json_filter_list_activity(all_params):
             filters['user.username'] = {'eq': value}
         if key == 'taken_action':
             filters['activity.takenAction'] = {'eq': value}
-    request_data['filters'] = filters
+    request_data = {'filters': filters}
     return request_data
 
 
@@ -242,8 +225,8 @@ def args_to_json_filter_list_alert(all_params):
         if key == 'resolution_status':
             filters[key] = {'eq': convert_resolution_status(value)}
         if key == 'username':
-            filters['entity.entity'] = {'eq': value}  # username - entity!!!!!!!!!!!!!!!!!!!
-    request_data['filters'] = filters
+            filters['entity.entity'] = {'eq': value}
+    request_data = {'filters': filters}
     return request_data
 
 
@@ -263,9 +246,9 @@ def args_to_json_filter_list_files(all_params):
             filters[key] = {'eq': value}
         if key == 'quarantined':
             filters[key] = {'eq': eval(value)}
-        if key == 'owner':  # ownerrrrrrrrrrr!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        if key == 'owner':
             filters['owner.entity'] = {'eq': value}
-    request_data['filters'] = filters
+    request_data = {'filters': filters}
     return request_data
 
 
@@ -280,7 +263,7 @@ def args_to_json_filter_list_users_accounts(all_params):
         if key == 'type':
             filters[key] = {'eq': value}
         if key == 'username':
-            filters['entity'] = {'eq': json.loads(value)}  # username - entity!!!!!!!!!!!!!!!!!!!
+            filters['entity'] = {'eq': json.loads(value)}
         if key == 'group_id':
             filters['userGroups'] = {'eq': value}
         if key == 'is_admin':
@@ -289,7 +272,7 @@ def args_to_json_filter_list_users_accounts(all_params):
             filters['isExternal'] = {'eq': convert_is_external(value)}
         if key == 'status':
             filters[key] = {'eq': convert_status(value)}
-    request_data['filters'] = filters
+    request_data = {'filters': filters}
     return request_data
 
 
@@ -464,17 +447,16 @@ def fetch_incidents(client, max_results, last_run, first_fetch_time, filters):
     filters["date"] = {"gte": latest_created_time}
     alerts = client.list_incidents(filters, limit=max_results)
     for alert in alerts['data']:
-        incident_created_time = (alert['timestamp'])  #1594283802753
+        incident_created_time = (alert['timestamp'])
         if last_fetch:
             if incident_created_time <= last_fetch:
                 continue
         occurred = datetime.fromtimestamp(incident_created_time / 1000.0).isoformat() + 'Z'
         occurred_iso = occurred.split('.')
         incident = {
-            'name': alert['title'],  #
+            'name': alert['title'],
             'occurred': occurred_iso[0] + 'Z',
             'rawJSON': json.dumps(alert)
-            # 'severity': convert_severity(alert.get('severity', 1))
         }
         incidents.append(incident)
         if incident_created_time > latest_created_time:
