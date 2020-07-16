@@ -320,7 +320,7 @@ references:
 jobs:
   Setup Environment:
     <<: *container_config
-    resource_class: medium+
+    resource_class: medium
     <<: *environment
     steps:
       - checkout
@@ -337,7 +337,7 @@ jobs:
 
   Run Unit Testing And Lint:
     <<: *container_config
-    resource_class: medium+
+    resource_class: medium
     <<: *environment
     steps:
       - *attach_workspace
@@ -361,7 +361,7 @@ jobs:
             - *store_artifacts
   Run Validations:
     <<: *container_config
-    resource_class: medium+
+    resource_class: medium
     <<: *environment
     steps:
       - *attach_workspace
@@ -666,7 +666,6 @@ jobs:
               - << pipeline.parameters.contrib_branch >>
               - << pipeline.parameters.demisto_sdk_nightly >>
               - << pipeline.parameters.nightly >>
-              - << pipeline.parameters.non_ami_run >>
           steps:
             - run:
                 name:  Not running this job
@@ -791,9 +790,7 @@ jobs:
           condition:
             or:
               - << pipeline.parameters.instance_tests >>
-              - << pipeline.parameters.contrib_branch >>
               - << pipeline.parameters.demisto_sdk_nightly >>
-              - << pipeline.parameters.nightly >>
               - << pipeline.parameters.non_ami_run >>
           steps:
             - run:
