@@ -16,6 +16,7 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -23,6 +24,11 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
     taskid: bbbcdeb5-0c34-4e16-8770-aa346c4a5751
@@ -32,7 +38,7 @@ tasks:
       version: -1
       name: Delete Context
       description: Delete all context
-      scriptName: DeleteContext
+      script: DeleteContext
       type: regular
       iscommand: false
       brand: ""
@@ -40,8 +46,10 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      all: "yes"
-      key: ""
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -49,6 +57,11 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
     taskid: 915923af-de13-4cdd-82ab-a5116d12ced7
@@ -66,16 +79,17 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      discover_fields: ""
-      end_time: ""
-      field_summary: ""
-      lastDays: ""
-      local_search: ""
-      query: ""
-      search_type: ""
-      start_time: ""
-      summary_fields: ""
-      timeout: ""
+      discover_fields: {}
+      end_time: {}
+      field_summary: {}
+      lastDays: {}
+      local_search: {}
+      query: {}
+      search_type: {}
+      start_time: {}
+      summary_fields: {}
+      timeout: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -83,6 +97,11 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
     taskid: a5a14007-1113-4aa4-83f6-04e81d04a768
@@ -100,11 +119,15 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      end_time: ""
-      lastDays: "1"
-      searchSessionId: ${ArcSightLogger.Search.SearchSessionId}
-      sessionId: ${ArcSightLogger.Search.SessionId}
-      start_time: ""
+      end_time: {}
+      lastDays:
+        simple: "1"
+      searchSessionId:
+        simple: ${ArcSightLogger.Search.SearchSessionId}
+      sessionId:
+        simple: ${ArcSightLogger.Search.SessionId}
+      start_time: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -112,6 +135,11 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
     taskid: 4f7407a0-fbe0-40c8-8ddf-58bd4d5cde0f
@@ -129,12 +157,16 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      dir: ""
-      fields: ""
-      length: "10"
-      offset: ""
-      searchSessionId: ${ArcSightLogger.Search.SearchSessionId}
-      sessionId: ${ArcSightLogger.Search.SessionId}
+      dir: {}
+      fields: {}
+      length:
+        simple: "10"
+      offset: {}
+      searchSessionId:
+        simple: ${ArcSightLogger.Search.SearchSessionId}
+      sessionId:
+        simple: ${ArcSightLogger.Search.SessionId}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -142,6 +174,11 @@ tasks:
           "y": 1070
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
     taskid: c38f760a-f448-41d1-8029-a941b7e97c14
@@ -159,8 +196,11 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
-      searchSessionId: ${ArcSightLogger.Search.SearchSessionId}
-      sessionId: ${ArcSightLogger.Search.SessionId}
+      searchSessionId:
+        simple: ${ArcSightLogger.Search.SearchSessionId}
+      sessionId:
+        simple: ${ArcSightLogger.Search.SessionId}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -168,6 +208,11 @@ tasks:
           "y": 1245
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
     taskid: e7b4f762-27af-42b6-8c25-9d3bc6485fe4
@@ -177,7 +222,7 @@ tasks:
       version: -1
       name: Wait 2 seconds
       description: Wait 2 seconds in order to aloow the search to be completed.
-      scriptName: Sleep
+      script: Sleep
       type: regular
       iscommand: false
       brand: ""
@@ -185,7 +230,9 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
-      seconds: "2"
+      seconds:
+        simple: "2"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -193,6 +240,11 @@ tasks:
           "y": 720
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
     taskid: 7963a823-66bc-4f8a-88ac-91091586ae59
@@ -210,8 +262,11 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      searchSessionId: ${ArcSightLogger.Search.SearchSessionId}
-      sessionId: ${ArcSightLogger.Search.SessionId}
+      searchSessionId:
+        simple: ${ArcSightLogger.Search.SearchSessionId}
+      sessionId:
+        simple: ${ArcSightLogger.Search.SessionId}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -219,6 +274,11 @@ tasks:
           "y": 895
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
     taskid: 69a4ece6-0753-4cbe-8736-1184524bcf27
@@ -228,7 +288,7 @@ tasks:
       version: -1
       name: Delete Context
       description: Delete all context
-      scriptName: DeleteContext
+      script: DeleteContext
       type: regular
       iscommand: false
       brand: ""
@@ -236,8 +296,10 @@ tasks:
       '#none#':
       - "14"
     scriptarguments:
-      all: "yes"
-      key: ""
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -245,6 +307,11 @@ tasks:
           "y": 1420
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
     taskid: 831a807e-a20d-4873-866f-9a27aaeb3b68
@@ -259,19 +326,21 @@ tasks:
       iscommand: true
       brand: ArcSight Logger
     scriptarguments:
-      dir: ""
-      discover_fields: ""
-      end_time: ""
-      field_summary: ""
-      fields: ""
-      lastDays: ""
-      length: "10"
-      local_search: ""
-      offset: ""
-      query: ""
-      start_time: ""
-      summary_fields: ""
-      timeout: ""
+      dir: {}
+      discover_fields: {}
+      end_time: {}
+      field_summary: {}
+      fields: {}
+      lastDays: {}
+      length:
+        simple: "10"
+      local_search: {}
+      offset: {}
+      query: {}
+      start_time: {}
+      summary_fields: {}
+      timeout: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -279,6 +348,11 @@ tasks:
           "y": 1595
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -292,3 +366,4 @@ view: |-
     }
   }
 inputs: []
+outputs: []

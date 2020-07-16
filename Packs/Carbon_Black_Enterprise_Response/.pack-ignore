@@ -1,0 +1,11 @@
+[file:playbook-Block_Endpoint_-_Carbon_Black_Response.yml]
+ignore=BA101
+
+[file:playbook-Get_File_Sample_By_Hash_-_Carbon_Black_Enterprise_Response.yml]
+ignore=BA101
+
+[file:playbook-Get_File_Sample_From_Path_-_Carbon_Black_Enterprise_Response.yml]
+ignore=BA101
+
+[file:playbook-Block_File_-_Carbon_Black_Response.yml]
+ignore=BA101

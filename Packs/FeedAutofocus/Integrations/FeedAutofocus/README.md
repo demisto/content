@@ -1,5 +1,7 @@
 Use the AutoFocus Feeds integration to fetch indicators from AutoFocus.
 For more information click [here](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/autofocus-feeds.html).
+This Feed supports the AutoFocus Custom Feed and the AutoFocus Samples Feed.
+To ingest the Daily Feed, use the [AutoFocus Daily Feed](https://xsoar.pan.dev/docs/reference/integrations/auto-focus-daily-feed). 
 
 ## Configure AutoFocus Feed on Demisto
 

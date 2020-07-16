@@ -41,6 +41,11 @@ configuration:
   name: fetch_time
   required: false
   type: 0
+- defaultvalue: '50'
+  display: The maximum number of incidents to fetch each time. Maximum is 50.
+  name: max_fetch
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: unsecure
   required: false
@@ -533,6 +538,13 @@ script:
       name: incident_types
       required: false
       secret: false
+    - default: false
+      defaultValue: '50'
+      description: Maximum number of incidents to retrieve.
+      isArray: false
+      name: max
+      required: false
+      secret: false
     deprecated: false
     description: Gets a list of incidents.
     execution: false
@@ -1017,7 +1029,7 @@ script:
     - contextPath: Securonix.Incidents.IsWhitelisted
       description: Whether the incident is whitelisted.
       type: Boolean
-  dockerimage: demisto/python3:3.7.5.4328
+  dockerimage: demisto/python3:3.8.3.8715
   feed: false
   isfetch: true
   longRunning: false

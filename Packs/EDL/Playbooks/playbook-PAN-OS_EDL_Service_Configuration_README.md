@@ -16,13 +16,13 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Integrations
 * Palo Alto Networks PAN-OS
 * Palo Alto Networks PAN-OS EDL Service
-
 ### Scripts
 * AreValuesEqual
 
 ### Commands
-* panorama-create-edl
+* panorama-list-rules
 * panorama-get-edl
+* panorama-create-edl
 
 ## Playbook Inputs
 ---
@@ -82,4 +82,4 @@ allow/deny/drop
 
 ## Playbook Image
 ---
-![PAN-OS_EDL_Service_Configuration](https://raw.githubusercontent.com/demisto/content/master/Packs/EDL/doc_files/PAN-OS_EDL_Service_Configuration.png)
+![PAN-OS EDL Service Configuration](https://raw.githubusercontent.com/demisto/content/master/Packs/EDL/doc_files/PAN-OS_EDL_Service_Configuration.png)

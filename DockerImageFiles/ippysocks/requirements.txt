@@ -1,3 +1,0 @@
-pysocks
-python-whois
-urllib3

@@ -385,7 +385,7 @@ script:
     description: Tests connectivity of the email.
     execution: false
     name: msgraph-mail-test
-  dockerimage: demisto/crypto:1.0.0.303
+  dockerimage: demisto/crypto:1.0.0.8854
   isfetch: true
   longRunning: false
   longRunningPort: false
@@ -396,3 +396,5 @@ script:
 tests:
 - No test - manual test playbook-Microsoft_Graph_Mail_Sender_test is available in
   NonCircleTests folder
+defaultClassifier: Microsoft Graph Mail Single User
+defaultMapperIn: Microsoft Graph Mail Single User-mapper

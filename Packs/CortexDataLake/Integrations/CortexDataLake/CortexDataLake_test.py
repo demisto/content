@@ -101,8 +101,7 @@ def test_prepare_fetch_incidents_query():
 
 def test_get_table_name():
     from CortexDataLake import get_table_name
-    # Records in each query should all have the same table (log_type)
-    # In this test records have different log_type just to verify that the function takes the first
-    records = [{'log_type': {'id': 3, 'value': 'threat'}},
-               {'log_type': {'id': 3, 'value': 'traffic'}}]
-    assert get_table_name(records) == 'threat'
+    query = 'SELECT pcap FROM `firewall.threat` WHERE is_packet_capture = true  AND severity = "Critical" LIMIT 10'
+    assert get_table_name(query) == 'firewall.threat'
+    query = 'Wrongly formmated query'
+    assert get_table_name(query) == 'Unrecognized table name'

@@ -1,18 +1,24 @@
 {
-  "name": "Gmail Single User (Beta)",
-  "description": "Gmail API using OAuth 2.0.",
-  "support": "xsoar",
-  "currentVersion": "1.0.0",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
-  "created": "2020-04-14T00:00:00Z",
-  "categories": [
-    "Messaging"
-  ],
-  "tags": [
-    "Gmail Single User (Beta)"
-  ],
-  "useCases": [],
-  "keywords": []
+    "name": "Gmail Single User (Beta)",
+    "description": "Gmail API using OAuth 2.0.",
+    "support": "xsoar",
+    "currentVersion": "1.0.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Messaging"
+    ],
+    "tags": [
+        "Gmail Single User (Beta)"
+    ],
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {
+        "Phishing": {
+            "mandatory": false,
+            "display_name": "Phishing"
+        }
+    }
 }

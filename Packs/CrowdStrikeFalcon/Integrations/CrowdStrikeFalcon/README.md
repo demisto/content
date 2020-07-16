@@ -39,13 +39,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 14. cs-falcon-delete-script
 15. cs-falcon-list-scripts
 16. cs-falcon-run-script
-17. cs-falcon-run-get-command
-18. cs-falcon-status-get-command
-19. cs-falcon-status-command
-20. cs-falcon-get-extracted-file
-21. cs-falcon-list-host-files
-22. cs-falcon-refresh-session
-    
+
 ### 1. Search for a device
 
 ---

@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Removed the threat type **phish**.
 
 ## [20.5.2] - 2020-05-26
 Fixed a bug where the 'Test' button always returned a positive 
