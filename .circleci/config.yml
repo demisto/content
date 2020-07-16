@@ -666,6 +666,7 @@ jobs:
               - << pipeline.parameters.contrib_branch >>
               - << pipeline.parameters.demisto_sdk_nightly >>
               - << pipeline.parameters.nightly >>
+              - << pipeline.parameters.non_ami_run >>
           steps:
             - run:
                 name:  Not running this job
@@ -679,6 +680,7 @@ jobs:
               - << pipeline.parameters.contrib_branch >>
               - << pipeline.parameters.demisto_sdk_nightly >>
               - << pipeline.parameters.nightly >>
+              - << pipeline.parameters.non_ami_run >>
           steps:
             - *attach_workspace
             - *restore_cache
@@ -689,17 +691,14 @@ jobs:
                 shell: /bin/bash
                 when: always
                 command: |
-                  if ./Tests/scripts/is_ami.sh ;
-                    then
-                      python3 ./Tests/scripts/wait_until_server_ready.py "Demisto GA"
-                    else
-                      python3 ./Tests/scripts/wait_until_server_ready.py "Demisto"
-                  fi
+                  python3 ./Tests/scripts/wait_until_server_ready.py "Demisto GA"
             - run:
                 name: Run Tests - Server 5.0
                 shell: /bin/bash
                 when: always
                 command: |
+                  echo 'export INSTANCE_ROLE="Demisto GA"' >> $BASH_ENV
+                  source $BASH_ENV
                   export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto GA"')
                   echo "Demisto GA filter=$TEMP"
                   if [[ "$TEMP" == "false" ]];
@@ -711,9 +710,8 @@ jobs:
                     then
                       echo 'export INSTANCE_ROLE="Demisto GA"' >> $BASH_ENV
                     else
-                      'export INSTANCE_ROLE="master"' >> $BASH_ENV
+                      echo "Not AMI run, can't run on this version"
                   fi
-                  source $BASH_ENV
                   ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
 
             - *destroy_instances
@@ -791,19 +789,17 @@ jobs:
             or:
               - << pipeline.parameters.instance_tests >>
               - << pipeline.parameters.demisto_sdk_nightly >>
-              - << pipeline.parameters.non_ami_run >>
           steps:
             - run:
                 name: Not running this job
                 when: always
                 command: |
-                  echo "Not running this job when triggered with one of instance_tests, contrib_branch, demisto_sdk_nightly, nightly or non_ami_run"
+                  echo "Not running this job when triggered with one of instance_tests or demisto_sdk_nightly"
       - unless:
           condition:
             or:
               - << pipeline.parameters.instance_tests >>
               - << pipeline.parameters.demisto_sdk_nightly >>
-              - << pipeline.parameters.non_ami_run >>
           steps:
             - *attach_workspace
             - *add_ssh_keys
@@ -813,15 +809,18 @@ jobs:
                 shell: /bin/bash
                 when: always
                 command: |
-                  python3 ./Tests/scripts/wait_until_server_ready.py "Demisto Marketplace"
+                  if ./Tests/scripts/is_ami.sh ;
+                    then
+                      python3 ./Tests/scripts/wait_until_server_ready.py "Demisto Marketplace"
+                  else
+                      python3 ./Tests/scripts/wait_until_server_ready.py "Demisto"
+                  fi
             - run:
                 name: Run Tests - Demisto 6.0
                 shell: /bin/bash
                 when: always
                 no_output_timeout: 5h
                 command: |
-                  echo 'export INSTANCE_ROLE="Demisto Marketplace"' >> $BASH_ENV
-                  source $BASH_ENV
                   export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto Marketplace"')
                   echo "Demisto Marketplace filter=$TEMP"
                   if [[ "$TEMP" == "false" ]];
@@ -831,13 +830,15 @@ jobs:
                   fi
                   if ./Tests/scripts/is_ami.sh ;
                     then
-                      ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
-                      export RETVAL=$?
-                      cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
-                      exit $RETVAL
+                      echo 'export INSTANCE_ROLE="Demisto Marketplace"' >> $BASH_ENV
                   else
-                      echo "Not AMI run, can't run on this version"
+                    echo 'export INSTANCE_ROLE="master"' >> $BASH_ENV
                   fi
+                  source $BASH_ENV
+                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
+                  export RETVAL=$?
+                  cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
+                  exit $RETVAL
             - run:
                 name: Upload Packs To Marketplace Storage
                 command: |
