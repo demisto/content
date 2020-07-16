@@ -20,14 +20,16 @@ def where_field_equals(args):
                 found_matches.append(dict_item[get_field])
             else:
                 found_matches.append(dict_item)
-    hr_string = str(found_matches)
-    return hr_string
+    if len(found_matches) == 1:
+        return found_matches[0]
+
+    return found_matches
 
 
 def main():
     args = demisto.args()
     hr_string = where_field_equals(args)
-    return_outputs(readable_output=hr_string, outputs={})
+    return_outputs(readable_output=str(hr_string))
 
 
 # python2 uses __builtin__ python3 uses builtins
