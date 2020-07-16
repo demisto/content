@@ -34,7 +34,7 @@
             "display_name": "Shodan"
         },
         "SANS": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "SANS"
         },
         "GoogleSafeBrowsing": {
@@ -98,11 +98,11 @@
             "display_name": "OpenPhish"
         },
         "CommonTypes": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Common Types"
         },
         "Phishing": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Phishing"
         },
         "PolySwarm": {
@@ -146,7 +146,7 @@
             "display_name": "ThreatExchange"
         },
         "NIST": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "NIST"
         },
         "ThreatMiner": {
@@ -214,7 +214,7 @@
             "display_name": "Cofense Intelligence"
         },
         "CommonScripts": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Common Scripts"
         },
         "XForceExchange": {
