@@ -102,15 +102,15 @@ script:
     execution: false
     name: imperva-waf-server-group-list-policies
     outputs:
-    - contextPath: ImpervaWaf.SecurityPolicies.PolicyName
+    - contextPath: ImpervaWaf.SecurityPolicy.PolicyName
       type: String
-    - contextPath: ImpervaWaf.SecurityPolicies.PolicyType
+    - contextPath: ImpervaWaf.SecurityPolicy.PolicyType
       type: String
-    - contextPath: ImpervaWaf.SecurityPolicies.ServerGroup
+    - contextPath: ImpervaWaf.SecurityPolicy.ServerGroup
       type: String
-    - contextPath: ImpervaWaf.SecurityPolicies.SiteName
+    - contextPath: ImpervaWaf.SecurityPolicy.SiteName
       type: String
-    - contextPath: ImpervaWaf.SecurityPolicies.System
+    - contextPath: ImpervaWaf.SecurityPolicy.System
       type: Boolean
   - deprecated: false
     execution: false
@@ -127,6 +127,39 @@ script:
     deprecated: false
     execution: false
     name: imperva-waf-web-service-custom-policy-get
+    outputs:
+    - contextPath: ImpervaWaf.CustomWebPolicy.Enabled
+      type: Boolean
+    - contextPath: ImpervaWaf.CustomWebPolicy.FollowedAction
+      type: String
+    - contextPath: ImpervaWaf.CustomWebPolicy.Name
+      type: String
+    - contextPath: ImpervaWaf.CustomWebPolicy.OneAlertPerSession
+      type: Boolean
+    - contextPath: ImpervaWaf.CustomWebPolicy.DisplayResponsePage
+      type: Boolean
+    - contextPath: ImpervaWaf.CustomWebPolicy.Action
+      type: String
+    - contextPath: ImpervaWaf.CustomWebPolicy.Severity
+      type: String
+    - contextPath: ImpervaWaf.CustomWebPolicy.ApplyTo.serverGroupName
+      type: String
+    - contextPath: ImpervaWaf.CustomWebPolicy.ApplyTo.siteName
+      type: String
+    - contextPath: ImpervaWaf.CustomWebPolicy.ApplyTo.webServiceName
+      type: String
+    - contextPath: ImpervaWaf.CustomWebPolicy.MatchCriteria.operation
+      type: String
+    - contextPath: ImpervaWaf.CustomWebPolicy.MatchCriteria.type
+      type: String
+    - contextPath: ImpervaWaf.CustomWebPolicy.MatchCriteria
+      type: Unknown
+    - contextPath: ImpervaWaf.CustomWebPolicy.MatchCriteria.ipGroups.Group name
+      type: String
+    - contextPath: ImpervaWaf.CustomWebPolicy.MatchCriteria.userDefined.IP Address
+      type: String
+    - contextPath: ImpervaWaf.CustomWebPolicy.MatchCriteria.values.country
+      type: String
   - arguments:
     - default: false
       isArray: false
@@ -171,6 +204,9 @@ script:
     deprecated: false
     execution: false
     name: imperva-waf-ip-group-create
+    outputs:
+    - contextPath: ImpervaWaf.IpGroup.Name
+      type: String
   - arguments:
     - default: false
       isArray: false
@@ -353,6 +389,9 @@ script:
     deprecated: false
     execution: false
     name: imperva-waf-web-service-custom-policy-create
+    outputs:
+    - contextPath: ImpervaWaf.SecurityPolicy.Name
+      type: String
   - arguments:
     - default: false
       isArray: false
@@ -478,6 +517,15 @@ script:
     deprecated: false
     execution: false
     name: imperva-waf-web-service-custom-policy-update
+  - arguments:
+    - default: false
+      isArray: false
+      name: policy-name
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: imperva-waf-web-service-custom-policy-delete
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: true

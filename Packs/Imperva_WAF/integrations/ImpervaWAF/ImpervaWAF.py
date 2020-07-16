@@ -278,10 +278,11 @@ def get_custom_policy_command(client, args):
     hr_policy = policy.copy()
     del hr_policy['MatchCriteria']
     del hr_policy['ApplyTo']
-    human_readable = tableToMarkdown('Policy data', hr_policy, removeNull=True)
+    human_readable = tableToMarkdown(f'Policy data for {policy_name}', hr_policy, removeNull=True)
 
     if raw_res.get('applyTo'):
-        human_readable += '\n\n' + tableToMarkdown('Services to apply the policy to', raw_res.get('applyTo'), removeNull=True)
+        human_readable += '\n\n' + tableToMarkdown('Services to apply the policy to', raw_res.get('applyTo'),
+                                                   removeNull=True)
 
     for match in raw_res.get('matchCriteria', []):
         tmp_match = match.copy()
@@ -293,19 +294,19 @@ def get_custom_policy_command(client, args):
             if tmp_match.get('userDefined'):
                 for i, element in enumerate(tmp_match['userDefined']):
                     tmp_match['userDefined'][i] = {'IP Address': tmp_match['userDefined'][i]}
-                human_readable += '\n\n' + tableToMarkdown(f'Operation: {operation}, Source IP addresses', tmp_match['userDefined'], removeNull=True)
+                human_readable += '\n\n' + tableToMarkdown(f'Match operation: {operation}\n Source IP addresses:', tmp_match['userDefined'], removeNull=True)
 
             if tmp_match.get('ipGroups'):
                 for i, element in enumerate(tmp_match['ipGroups']):
                     tmp_match['ipGroups'][i] = {'Group name': tmp_match['ipGroups'][i]}
-                human_readable += '\n\n' + tableToMarkdown(f'Operation: {operation}, IP Groups', tmp_match['ipGroups'], removeNull=True)
+                human_readable += '\n\n' + tableToMarkdown(f'Match operation: {operation}\n IP Groups:', tmp_match['ipGroups'], removeNull=True)
 
         # generate human readable for sourceGeolocation type
         elif match_type == 'sourceGeolocation':
             if tmp_match.get('values'):
                 for i, element in enumerate(tmp_match['values']):
                     tmp_match['values'][i] = {'Country name': tmp_match['values'][i]}
-                human_readable += '\n\n' + tableToMarkdown(f'Operation: {operation}, Countries to match', tmp_match['values'], removeNull=True)
+                human_readable += '\n\n' + tableToMarkdown(f'Match operation: {operation}\n Countries to match:', tmp_match['values'], removeNull=True)
 
     entry_context = {f'{INTEGRATION_CONTEXT_NAME}.CustomWebPolicy(val.Name===obj.Name)': policy}
     return_outputs(human_readable, entry_context, raw_res)
@@ -316,7 +317,8 @@ def create_ip_group_command(client, args):
     group_name = args.get('group-name')
     body = generate_ip_groups_entries(args)
     raw_res = client.do_request('POST', f'conf/ipGroups/{group_name}', json_data=body)
-    return_outputs(f'Group {group_name} created successfully', {}, raw_res)
+    entry_context = {f'{INTEGRATION_CONTEXT_NAME}.IpGroup.Name': group_name}
+    return_outputs(f'Group {group_name} created successfully', entry_context, raw_res)
 
 
 @logger
@@ -357,10 +359,10 @@ def create_custom_policy_command(client, args):
 
     body['applyTo'] = [{'siteName': site, 'serverGroupName': server_group, 'webServiceName': web_service}]
 
-    print(json.dumps(body))
     raw_res = client.do_request('POST', f'conf/policies/security/webServiceCustomPolicies/{policy_name}',
                                 json_data=body)
-    return_outputs(f'Policy {policy_name} created successfully', {}, raw_res)
+    entry_context = {f'{INTEGRATION_CONTEXT_NAME}.SecurityPolicy.Name': policy_name}
+    return_outputs(f'Policy {policy_name} created successfully', entry_context, raw_res)
 
 
 @logger
@@ -394,6 +396,13 @@ def update_custom_policy_command(client, args):
     return_outputs(f'Policy {policy_name} updated successfully', {}, raw_res)
 
 
+@logger
+def delete_custom_policy_command(client, args):
+    policy_name = args.get('policy-name')
+    raw_res = client.do_request('DELETE', f'conf/policies/security/webServiceCustomPolicies/{policy_name}')
+    return_outputs(f'Policy {policy_name} deleted successfully', {}, raw_res)
+
+
 def main():
 
     # get the service API url
@@ -425,7 +434,8 @@ def main():
                     'imperva-waf-ip-group-update-entries': update_ip_group_command,
                     'imperva-waf-ip-group-delete': delete_ip_group_command,
                     'imperva-waf-web-service-custom-policy-create': create_custom_policy_command,
-                    'imperva-waf-web-service-custom-policy-update': update_custom_policy_command
+                    'imperva-waf-web-service-custom-policy-update': update_custom_policy_command,
+                    'imperva-waf-web-service-custom-policy-delete': delete_custom_policy_command
                     }
 
         if command in commands:
