@@ -14,3 +14,4 @@ scripttarget: 0
 dependson: {}
 timeout: 0s
 dockerimage: demisto/taxii2:1.0.0.9219
+toversion: 4.1.9

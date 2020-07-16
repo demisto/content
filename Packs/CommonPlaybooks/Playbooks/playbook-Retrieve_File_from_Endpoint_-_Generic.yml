@@ -199,4 +199,5 @@ inputs:
     Default is no.
 outputs: []
 tests:
-  - No test
+- No test
+toversion: 4.1.9

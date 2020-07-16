@@ -227,8 +227,7 @@ inputs:
   value:
     simple: "10"
   required: true
-  description: Amount of time to poll before declaring a timeout and resuming the playbook
-    (in minutes).
+  description: Amount of time to poll before declaring a timeout and resuming the playbook (in minutes).
 - key: dt
   value: {}
   required: true
@@ -244,3 +243,4 @@ inputs:
 outputs: []
 tests:
 - No test
+toversion: 4.1.9

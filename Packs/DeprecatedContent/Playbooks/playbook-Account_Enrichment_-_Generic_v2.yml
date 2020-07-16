@@ -238,4 +238,5 @@ outputs:
   description: The account's manager.
   type: string
 tests:
-  - No tests
+- No tests
+toversion: 4.1.9

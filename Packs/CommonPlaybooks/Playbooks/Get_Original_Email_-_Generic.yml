@@ -160,3 +160,4 @@ outputs:
 - contextPath: Email.HeadersMap
   description: The headers of the email.
 fromversion: 4.0.0
+toversion: 4.1.9

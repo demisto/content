@@ -188,4 +188,5 @@ inputs:
   description: The ID of the endpoint.
 outputs: []
 tests:
-  - No test - Is be tested in Traps test playbook
+- No test - Is be tested in Traps test playbook
+toversion: 4.1.9

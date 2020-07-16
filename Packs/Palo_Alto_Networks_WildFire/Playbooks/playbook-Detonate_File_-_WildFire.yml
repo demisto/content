@@ -480,8 +480,7 @@ inputs:
   value:
     simple: "15"
   required: false
-  description: The duration after which to stop pooling and to resume the playbook
-    (in minutes)
+  description: The duration after which to stop pooling and to resume the playbook (in minutes)
 - key: ReportFileType
   value: {}
   required: false
@@ -569,4 +568,5 @@ outputs:
   description: The size of the submission
   type: number
 tests:
-  - Wildfire Test
+- Wildfire Test
+toversion: 4.1.9

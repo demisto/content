@@ -508,8 +508,7 @@ tasks:
       id: 6e299488-408a-4b9d-82d0-cb053caf322e
       version: -1
       name: Mcafee ATD Upload File
-      description: upload a file/web URL for dynamic analysis by using the provided
-        Analyzer Profile. Only single file/web URL can be submitted at a time.
+      description: upload a file/web URL for dynamic analysis by using the provided Analyzer Profile. Only single file/web URL can be submitted at a time.
       script: '|||atd-file-upload'
       type: regular
       iscommand: true
@@ -702,3 +701,4 @@ outputs:
 tests:
 - Test Playbook McAfee ATD
 - Detonate File - Generic Test
+toversion: 4.1.9

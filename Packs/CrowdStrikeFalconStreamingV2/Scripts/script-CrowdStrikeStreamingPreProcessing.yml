@@ -2,8 +2,9 @@ commonfields:
   id: CrowdStrikeStreamingPreProcessing
   version: -1
 name: CrowdStrikeStreamingPreProcessing
-script: |-
+script: >-
   res = True
+
   for inc in demisto.incidents():
       host = ''
       if inc['labels']:
@@ -37,3 +38,4 @@ comment: |
   Will add entry to duplicate(older) incident notifying a duplicate incident was ignored.
 enabled: true
 scripttarget: 0
+toversion: 4.1.9

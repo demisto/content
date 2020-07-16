@@ -543,4 +543,5 @@ inputs:
     No - Commit manually.
 outputs: []
 tests:
-  - PAN-OS - Block IP - Static Address Group Test
+- PAN-OS - Block IP - Static Address Group Test
+toversion: 4.1.9

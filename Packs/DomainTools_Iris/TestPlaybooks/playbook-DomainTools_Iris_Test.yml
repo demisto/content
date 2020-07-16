@@ -151,9 +151,7 @@ tasks:
       id: 4b918569-c912-4923-8484-5de58c1341a1
       version: -1
       name: Indicator Pivoting - DomainTools Iris
-      description: Pivots are used to gather data that shares a common attribute with
-        a domain. For instance, pivoting on an IP Address will give you back all domains
-        related to that IP address.
+      description: Pivots are used to gather data that shares a common attribute with a domain. For instance, pivoting on an IP Address will give you back all domains related to that IP address.
       playbookName: Indicator Pivoting - DomainTools Iris
       type: playbook
       iscommand: false
@@ -850,3 +848,4 @@ outputs:
 - contextPath: DomainTools.PivotedDomains.Analytics.GoogleAnalyticTrackingCode
   description: Google Analytics Tracking Code
   type: Number
+toversion: 4.1.9

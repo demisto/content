@@ -36,3 +36,4 @@ scripttarget: 0
 runonce: false
 tests:
 - JSONtoCSV-Test
+toversion: 4.1.9

@@ -38,8 +38,7 @@ tasks:
       id: c72b7079-0540-4e4f-8e31-53ad677da71b
       version: -1
       name: Panorama Query Logs
-      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
-        and wildfire.'
+      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering and wildfire.'
       playbookName: Panorama Query Logs
       type: playbook
       iscommand: false
@@ -140,8 +139,7 @@ tasks:
       id: e707ab50-0f9a-4436-862c-e80583c031ff
       version: -1
       name: Panorama Query Logs
-      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
-        and wildfire.'
+      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering and wildfire.'
       playbookName: Panorama Query Logs
       type: playbook
       iscommand: false
@@ -187,8 +185,7 @@ tasks:
       id: c4878f59-6826-42ae-8477-5d1b09a04de1
       version: -1
       name: Panorama Query Logs
-      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
-        and wildfire.'
+      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering and wildfire.'
       playbookName: Panorama Query Logs
       type: playbook
       iscommand: false
@@ -286,3 +283,4 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.1.9

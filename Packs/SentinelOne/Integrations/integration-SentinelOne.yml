@@ -33,7 +33,7 @@ configuration:
   type: 4
   required: false
 script:
-  script: |-
+  script: >-
     var SentinelOne = function() {
         var builder = (function() {
             var buildURL = function(urlTemplate, urlArgs) {
@@ -650,7 +650,9 @@ script:
         };
     };
 
+
     var sentinelOne = SentinelOne();
+
 
     switch (command) {
         case 'test-module':
@@ -705,13 +707,9 @@ script:
   - name: so-count-by-filters
     arguments:
     - name: participating_fields
-      description: Which fields to get counts for. Allowed values software_information__os_type
-        software_information__os_arch hardware_information__machine_type network_information__domain
-        network_status configuration__learning_mode is_pending_uninstall is_up_to_date
-        infected policy_id is_active
+      description: Which fields to get counts for. Allowed values software_information__os_type software_information__os_arch hardware_information__machine_type network_information__domain network_status configuration__learning_mode is_pending_uninstall is_up_to_date infected policy_id is_active
     - name: query
-      description: Free text search on Agent's network computer name, IP & Mac addresses,
-        Domain and Group name, and agent version (contains).
+      description: Free text search on Agent's network computer name, IP & Mac addresses, Domain and Group name, and agent version (contains).
     - name: created_at__lt
       description: Created date (less than)
     - name: created_at__gt
@@ -759,8 +757,7 @@ script:
       predefined:
       - "false"
       - "true"
-      description: Enable the ability to query on each agents that ever subscribed
-        (decommission or commissioned).
+      description: Enable the ability to query on each agents that ever subscribed (decommission or commissioned).
     - name: is_decommissioned
       auto: PREDEFINED
       predefined:
@@ -824,8 +821,7 @@ script:
   - name: so-agents-count
     arguments:
     - name: query
-      description: Free text search on Agent's network computer name, IP & Mac addresses,
-        Domain and Group name, and agent version (contains).
+      description: Free text search on Agent's network computer name, IP & Mac addresses, Domain and Group name, and agent version (contains).
     - name: created_at__lt
       description: Created date (less than).
     - name: created_at__gt
@@ -873,8 +869,7 @@ script:
       predefined:
       - "false"
       - "true"
-      description: enable the ability to query on each agents that ever subscribed
-        (decommission or commissioned).
+      description: enable the ability to query on each agents that ever subscribed (decommission or commissioned).
     - name: is_decommissioned
       auto: PREDEFINED
       predefined:
@@ -952,8 +947,7 @@ script:
   - name: so-agents-query
     arguments:
     - name: query
-      description: Free text search on Agent's network computer name, IP & Mac addresses,
-        Domain and Group name, and agent version (contains).
+      description: Free text search on Agent's network computer name, IP & Mac addresses, Domain and Group name, and agent version (contains).
     - name: created_at__lt
       description: Created date (less than).
     - name: created_at__gt
@@ -1001,8 +995,7 @@ script:
       predefined:
       - "false"
       - "true"
-      description: enable the ability to query on each agents that ever subscribed
-        (decommission or commissioned).
+      description: enable the ability to query on each agents that ever subscribed (decommission or commissioned).
     - name: is_decommissioned
       auto: PREDEFINED
       predefined:
@@ -1148,8 +1141,7 @@ script:
       required: true
       description: The broadcast message to send
     - name: query
-      description: Free text search on Agent's network computer name, IP & Mac addresses,
-        Domain and Group name, and agent version (contains).
+      description: Free text search on Agent's network computer name, IP & Mac addresses, Domain and Group name, and agent version (contains).
     - name: created_at__lt
       description: Created date (less than).
     - name: created_at__gt
@@ -1197,8 +1189,7 @@ script:
       predefined:
       - "false"
       - "true"
-      description: enable the ability to query on each agents that ever subscribed
-        (decommission or commissioned).
+      description: enable the ability to query on each agents that ever subscribed (decommission or commissioned).
     - name: is_decommissioned
       auto: PREDEFINED
       predefined:
@@ -1262,8 +1253,7 @@ script:
   - name: so-agents-connect
     arguments:
     - name: query
-      description: Free text search on Agent's network computer name, IP & Mac addresses,
-        Domain and Group name, and agent version (contains).
+      description: Free text search on Agent's network computer name, IP & Mac addresses, Domain and Group name, and agent version (contains).
     - name: created_at__lt
       description: Created date (less than).
     - name: created_at__gt
@@ -1311,8 +1301,7 @@ script:
       predefined:
       - "false"
       - "true"
-      description: enable the ability to query on each agents that ever subscribed
-        (decommission or commissioned).
+      description: enable the ability to query on each agents that ever subscribed (decommission or commissioned).
     - name: is_decommissioned
       auto: PREDEFINED
       predefined:
@@ -1382,8 +1371,7 @@ script:
   - name: so-agents-decommission
     arguments:
     - name: query
-      description: Free text search on Agent's network computer name, IP & Mac addresses,
-        Domain and Group name, and agent version (contains).
+      description: Free text search on Agent's network computer name, IP & Mac addresses, Domain and Group name, and agent version (contains).
     - name: created_at__lt
       description: Created date (less than).
     - name: created_at__gt
@@ -1431,8 +1419,7 @@ script:
       predefined:
       - "false"
       - "true"
-      description: enable the ability to query on each agents that ever subscribed
-        (decommission or commissioned).
+      description: enable the ability to query on each agents that ever subscribed (decommission or commissioned).
     - name: is_decommissioned
       auto: PREDEFINED
       predefined:
@@ -1496,8 +1483,7 @@ script:
   - name: so-agents-disconnect
     arguments:
     - name: query
-      description: Free text search on Agent's network computer name, IP & Mac addresses,
-        Domain and Group name, and agent version (contains).
+      description: Free text search on Agent's network computer name, IP & Mac addresses, Domain and Group name, and agent version (contains).
     - name: created_at__lt
       description: Created date (less than).
     - name: created_at__gt
@@ -1545,8 +1531,7 @@ script:
       predefined:
       - "false"
       - "true"
-      description: enable the ability to query on each agents that ever subscribed
-        (decommission or commissioned).
+      description: enable the ability to query on each agents that ever subscribed (decommission or commissioned).
     - name: is_decommissioned
       auto: PREDEFINED
       predefined:
@@ -1610,8 +1595,7 @@ script:
   - name: so-agents-fetch-logs
     arguments:
     - name: query
-      description: Free text search on Agent's network computer name, IP & Mac addresses,
-        Domain and Group name, and agent version (contains).
+      description: Free text search on Agent's network computer name, IP & Mac addresses, Domain and Group name, and agent version (contains).
     - name: created_at__lt
       description: Created date (less than).
     - name: created_at__gt
@@ -1659,8 +1643,7 @@ script:
       predefined:
       - "false"
       - "true"
-      description: enable the ability to query on each agents that ever subscribed
-        (decommission or commissioned).
+      description: enable the ability to query on each agents that ever subscribed (decommission or commissioned).
     - name: is_decommissioned
       auto: PREDEFINED
       predefined:
@@ -1724,8 +1707,7 @@ script:
   - name: so-agents-shutdown
     arguments:
     - name: query
-      description: Free text search on Agent's network computer name, IP & Mac addresses,
-        Domain and Group name, and agent version (contains).
+      description: Free text search on Agent's network computer name, IP & Mac addresses, Domain and Group name, and agent version (contains).
     - name: created_at__lt
       description: Created date (less than).
     - name: created_at__gt
@@ -1773,8 +1755,7 @@ script:
       predefined:
       - "false"
       - "true"
-      description: enable the ability to query on each agents that ever subscribed
-        (decommission or commissioned).
+      description: enable the ability to query on each agents that ever subscribed (decommission or commissioned).
     - name: is_decommissioned
       auto: PREDEFINED
       predefined:
@@ -1838,8 +1819,7 @@ script:
   - name: so-agents-uninstall
     arguments:
     - name: query
-      description: Free text search on Agent's network computer name, IP & Mac addresses,
-        Domain and Group name, and agent version (contains).
+      description: Free text search on Agent's network computer name, IP & Mac addresses, Domain and Group name, and agent version (contains).
     - name: created_at__lt
       description: Created date (less than).
     - name: created_at__gt
@@ -1887,8 +1867,7 @@ script:
       predefined:
       - "false"
       - "true"
-      description: enable the ability to query on each agents that ever subscribed
-        (decommission or commissioned).
+      description: enable the ability to query on each agents that ever subscribed (decommission or commissioned).
     - name: is_decommissioned
       auto: PREDEFINED
       predefined:
@@ -1970,8 +1949,7 @@ script:
       - linux
       description: OS type for desired update.
     - name: query
-      description: Free text search on Agent's network computer name, IP & Mac addresses,
-        Domain and Group name, and agent version (contains).
+      description: Free text search on Agent's network computer name, IP & Mac addresses, Domain and Group name, and agent version (contains).
     - name: created_at__lt
       description: Created date (less than).
     - name: created_at__gt
@@ -2019,8 +1997,7 @@ script:
       predefined:
       - "false"
       - "true"
-      description: enable the ability to query on each agents that ever subscribed
-        (decommission or commissioned).
+      description: enable the ability to query on each agents that ever subscribed (decommission or commissioned).
     - name: is_decommissioned
       auto: PREDEFINED
       predefined:
@@ -2281,8 +2258,7 @@ script:
       required: true
       description: The group id.
     - name: query
-      description: Free text search on Agent's network computer name, IP & Mac addresses,
-        Domain and Group name, and agent version (contains).
+      description: Free text search on Agent's network computer name, IP & Mac addresses, Domain and Group name, and agent version (contains).
     - name: id__in
       description: Agents ids list (by comma separator)
     - name: id__nin
@@ -2394,8 +2370,7 @@ script:
       - "true"
       description: Is black hash
     - name: query
-      description: Free text search on Agent's network computer name, IP & Mac addresses,
-        Domain and Group name, and agent version (contains).
+      description: Free text search on Agent's network computer name, IP & Mac addresses, Domain and Group name, and agent version (contains).
     - name: skip
       description: Skip a number of items
     - name: limit
@@ -2641,8 +2616,7 @@ script:
       - "3"
       - "4"
       - "5"
-      description: Threat's mitigation status. Allowed values 0- Mitigated, 1- Active,
-        2-Blocked, 3- Suspicious, 4- Pending, 5- Suspicious canceled
+      description: Threat's mitigation status. Allowed values 0- Mitigated, 1- Active, 2-Blocked, 3- Suspicious, 4- Pending, 5- Suspicious canceled
     - name: created_at__lt
       description: System creation date (less than).
     - name: created_at__gt
@@ -2714,4 +2688,5 @@ script:
       description: The ID of the threat
     description: Resolve threats
 tests:
-  - no test
+- no test
+toversion: 4.1.9

@@ -431,4 +431,5 @@ outputs:
 - contextPath: File.Extension
   description: File's Extension
 tests:
-  - CuckooTest
+- CuckooTest
+toversion: 4.1.9

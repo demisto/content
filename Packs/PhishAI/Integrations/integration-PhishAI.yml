@@ -19,8 +19,9 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     var DONT_CHECK_CERTIFICATE = false;
+
 
     function checkStatus(scan_id, apiKey){
         var res = http(
@@ -59,6 +60,7 @@ script:
             }
         };
     }
+
 
 
     function analayzeResult(report, url, scan_id) {
@@ -117,6 +119,7 @@ script:
     }
 
 
+
     function phishAiScan(url, apiKey) {
         var initialRes = http(
             'https://app.phish.ai/api/url/scan',
@@ -162,6 +165,7 @@ script:
     }
 
 
+
     function phishAiDispute(scan_id, apiKey) {
         var res = http(
             'https://app.phish.ai/api/url/dispute?scan_id=' + scan_id,
@@ -193,6 +197,7 @@ script:
             throw 'Failed to dispute url ' + url + ', Scan ID: ' + scan_id + '. Response error: ' + textRes;
         }
     }
+
 
     switch (command) {
         case 'test-module':
@@ -260,8 +265,7 @@ script:
     - contextPath: PhishAI.URL
       description: URL address
       type: string
-    description: Check if url is phishing and get details about the brand that is
-      being phished
+    description: Check if url is phishing and get details about the brand that is being phished
   - name: phish-ai-check-status
     arguments:
     - name: scan_id
@@ -287,3 +291,4 @@ script:
   runonce: false
 tests:
 - PhishAi-Test
+toversion: 4.1.9

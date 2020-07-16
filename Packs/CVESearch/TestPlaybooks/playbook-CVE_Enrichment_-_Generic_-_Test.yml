@@ -94,9 +94,7 @@ tasks:
       id: 6db7f463-a6b1-498b-8e55-a0d79ad364a8
       version: -1
       name: Verify
-      description: "Gets a value and return it. This is to be used in playbook conditional
-        tasks - get a value from incident field, label or context, and act accordingly.
-        \nIf an array is returned. the first value will be the decision making value."
+      description: "Gets a value and return it. This is to be used in playbook conditional tasks - get a value from incident field, label or context, and act accordingly. \nIf an array is returned. the first value will be the decision making value."
       type: condition
       iscommand: false
       brand: ""
@@ -191,3 +189,4 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.1.9

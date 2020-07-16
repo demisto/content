@@ -14,7 +14,7 @@ configuration:
 description: Rasterize URLs or emails given to it
 display: Rasterize
 name: Rasterize
-toversion: '4.5.9'
+toversion: '4.1.9'
 script:
   commands:
   - arguments:
@@ -106,4 +106,4 @@ script:
   subtype: python2
 defaultEnabled: true
 tests:
-  - Rasterize Test
+- Rasterize Test

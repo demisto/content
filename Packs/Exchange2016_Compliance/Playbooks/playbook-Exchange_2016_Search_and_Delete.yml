@@ -95,8 +95,7 @@ tasks:
       Timeout:
         simple: "10080"
       dt:
-        simple: EWS.ComplianceSearch(val.Status === 'InProgress' || val.Status ===
-          'Starting').Name
+        simple: EWS.ComplianceSearch(val.Status === 'InProgress' || val.Status === 'Starting').Name
     separatecontext: true
     loop:
       iscommand: false
@@ -359,5 +358,6 @@ inputs:
 outputs: []
 fromversion: '4.1.0'
 tests:
-  - No test
+- No test
 
+toversion: 4.1.9

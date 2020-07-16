@@ -134,4 +134,5 @@ outputs:
 - contextPath: Tanium.SavedQuestionResult.SavedQuestionID
   description: The unique ID of the saved question object.
 tests:
-  - Tanium v2 - Test
+- Tanium v2 - Test
+toversion: 4.1.9

@@ -11,9 +11,9 @@ configuration: []
 scriptNotVisible: true
 defaultEnabled: true
 tests:
-  - No test
+- No test
 script:
-  script: |
+  script: >
     switch (command) {
         case 'test-module':
             return 'ok';
@@ -71,3 +71,4 @@ script:
       description: yep
     description: try me
   runonce: false
+toversion: 4.1.9
