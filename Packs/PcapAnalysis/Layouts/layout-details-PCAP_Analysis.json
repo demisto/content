@@ -495,5 +495,6 @@
 		"version": -1
 	},
 	"typeId": "PCAP Analysis",
-	"version": -1
+	"version": -1,
+	"fromVersion": "5.0.0"
 }
