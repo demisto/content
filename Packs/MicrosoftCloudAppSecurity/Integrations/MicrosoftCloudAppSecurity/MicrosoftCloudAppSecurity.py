@@ -85,7 +85,7 @@ class Client(BaseClient):
         )
 
 
-def arg_to_timestamp(arg, arg_name, required):
+def arg_to_timestamp(arg):
     if isinstance(arg, str) and arg.isdigit():
         return int(arg)
     if isinstance(arg, str):
@@ -125,7 +125,7 @@ def convert_source_type(source):
     return source_type_option[source]
 
 
-def convert_file_type(source):
+def convert_file_type(file_type):
     file_type_option = {
         'Other': 0,
         'Document': 1,
@@ -135,7 +135,7 @@ def convert_file_type(source):
         'Image': 5,
         'Folder': 6
     }
-    return file_type_option[source]
+    return file_type_option[file_type]
 
 
 def convert_file_sharing(sharing):
@@ -144,7 +144,7 @@ def convert_file_sharing(sharing):
         'Internal': 1,
         'External': 2,
         'Public': 3,
-        'Public (Internet)': 4
+        'Public_Internet': 4
     }
     return file_sharing_option[sharing]
 
@@ -165,7 +165,7 @@ def convert_is_external(is_external):
     is_external_option = {
         'External': True,
         'Internal': False,
-        'No value': None
+        'No_value': None
     }
     return is_external_option[is_external]
 
@@ -478,11 +478,7 @@ def main():
     first_fetch = demisto.params().get('first_fetch')
     if not first_fetch:
         first_fetch = '3 days'
-    first_fetch_time = arg_to_timestamp(
-        arg=first_fetch,
-        arg_name='First fetch time',
-        required=True
-    )
+    first_fetch_time = arg_to_timestamp(first_fetch)
     proxy = demisto.params().get('proxy', False)
 
     LOG(f'Command being called is {demisto.command()}')
