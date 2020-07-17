@@ -22,9 +22,9 @@ def test_convert_severity(severity, expected):
 @pytest.mark.parametrize(
     "resolution_status, expected",
     [
-        ("Low", 0),
-        ("Medium", 1),
-        ("High", 2)
+        ("Open", 0),
+        ("Dismissed", 1),
+        ("Resolved", 2)
     ]
 )
 def test_convert_resolution_status(resolution_status, expected):
@@ -132,17 +132,144 @@ def test_convert_status(status, expected):
     assert res == expected
 
 
+@pytest.mark.parametrize(
+    "string, expected",
+    [
+        ("True", True),
+        ("False", False),
+    ]
+)
+def test_str_to_bool(string, expected):
+    from MicrosoftCloudAppSecurity import str_to_bool
+    res = str_to_bool(string)
+    assert res == expected
 
 
+@pytest.mark.parametrize(
+    "arg, expected",
+    [
+        ("3256754321", 3256754321),
+        ("2020-03-20T14:28:23.382748", 1584707303),
+        (2323248648.123, 2323248648)
+    ]
+)
+def test_arg_to_timestamp(arg, expected):
+    from MicrosoftCloudAppSecurity import arg_to_timestamp
+    res = arg_to_timestamp(arg)
+    assert res == expected
 
 
+expected = {'filters': {'entity.service': {'eq': 111}, 'entity.instance': {'eq': 111}, 'severity': {'eq': 0},
+                        'resolutionStatus': {'eq': 0}, 'entity.entity': {'eq':
+                        {'id': '3fa9f28b-eb0e-463a-ba7b-8089fe9991e2', 'saas': 11161, 'inst': 0}}}, 'skip': 5,
+            'limit': 10}
+request_data = {"service": "111", "instance": "111", "severity": "Low", "resolution_status": "Open", "username":
+                '{"id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2", "saas": 11161, "inst": 0}', "skip": "5", "limit": "10"}
 
 
+@pytest.mark.parametrize(
+    "all_params, expected",
+    [
+        (request_data, expected)
+    ]
+)
+def test_args_to_json_filter_list_alert(all_params, expected):
+    from MicrosoftCloudAppSecurity import args_to_json_filter_list_alert
+    res = args_to_json_filter_list_alert(all_params)
+    assert res == expected
 
 
+expected = {'filters': {'service': {'eq': 111}, 'instance': {'eq': 111}, 'ip.address': {'eq': '8.8.8.8'},
+                        'ip.category': {'eq': 1}, 'user.username': {'eq': 'dev@demistodev.onmicrosoft.com'},
+                        'activity.takenAction': {'eq': 'block'}, 'source': {'eq': 0}}, 'skip': 5, 'limit': 10}
+request_data = {"service": "111", "instance": "111", "ip": "8.8.8.8", "ip_category": "Corporate", "username":
+                'dev@demistodev.onmicrosoft.com', 'taken_action': 'block', 'source': 'Access_control',
+                "skip": "5", "limit": "10"}
 
 
+@pytest.mark.parametrize(
+    "all_params, expected",
+    [
+        (request_data, expected)
+    ]
+)
+def test_args_to_json_filter_list_activity(all_params, expected):
+    from MicrosoftCloudAppSecurity import args_to_json_filter_list_activity
+    res = args_to_json_filter_list_activity(all_params)
+    assert res == expected
 
+
+expected = {'filters': {'service': {'eq': 111}, 'instance': {'eq': 111}, 'fileType': {'eq': 0},
+                        'quarantined': {'eq': True}, 'owner.entity':
+                        {'eq': {"id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2", "saas": 11161, "inst": 0}},
+                        'sharing': {'eq': 0}, 'extension': {'eq': 'png'}, }, 'skip': 5, 'limit': 10}
+request_data = {"service": "111", "instance": "111", "file_type": "Other", "owner":
+                '{"id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2", "saas": 11161, "inst": 0}', "sharing": 'Private',
+                'extension': 'png', 'quarantined': 'True', "skip": "5", "limit": "10"}
+
+
+@pytest.mark.parametrize(
+    "all_params, expected",
+    [
+        (request_data, expected)
+    ]
+)
+def test_args_to_json_filter_list_files(all_params, expected):
+    from MicrosoftCloudAppSecurity import args_to_json_filter_list_files
+    res = args_to_json_filter_list_files(all_params)
+    assert res == expected
+
+
+expected = {'filters': {'app': {'eq': 111}, 'instance': {'eq': 111}, 'type': {'eq': 'user'},
+                        'isExternal': {'eq': True}, 'status': {'eq': 0}, 'entity':
+                        {'eq': {"id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2", "saas": 11161, "inst": 0}},
+                        'userGroups': {'eq': '1234'}, 'isAdmin': {'eq': 'demisto'}, }, 'skip': 5, 'limit': 10}
+request_data = {"app": "111", "instance": "111", "type": "user", "status": 'N/A', "username":
+                '{"id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2", "saas": 11161, "inst": 0}', "group_id": '1234',
+                'is_admin': 'demisto', 'is_external': 'External', "skip": "5", "limit": "10"}
+
+
+@pytest.mark.parametrize(
+    "all_params, expected",
+    [
+        (request_data, expected)
+    ]
+)
+def test_args_to_json_filter_list_users_accounts(all_params, expected):
+    from MicrosoftCloudAppSecurity import args_to_json_filter_list_users_accounts
+    res = args_to_json_filter_list_users_accounts(all_params)
+    assert res == expected
+
+
+@pytest.mark.parametrize(
+    "alert_ids, customer_filters, comment, expected",
+    [
+        ("5f06d71dba4,289d0602ba5ac", '', '', {'filters': {'id': {'eq': ['5f06d71dba4', '289d0602ba5ac']}}}),
+        ("5f06d71dba4", '', 'Irrelevant', {"comment": "Irrelevant", 'filters': {'id': {'eq': ['5f06d71dba4']}}}),
+        ("", '{"filters": {"id": {"eq": ["5f06d71dba4"]}}}', "", {'filters': {'id': {'eq': ['5f06d71dba4']}}})
+    ]
+)
+def test_args_to_json_dismiss_and_resolve_alerts(alert_ids, customer_filters, comment, expected):
+    from MicrosoftCloudAppSecurity import args_to_json_dismiss_and_resolve_alerts
+    res = args_to_json_dismiss_and_resolve_alerts(alert_ids, customer_filters, comment)
+    assert res == expected
+
+
+expected = {'entity.service': {'eq': 111}, 'entity.instance': {'eq': 111}, 'severity': {'eq': 0},
+                        'resolutionStatus': {'eq': 0}}
+request_data = {"service": "111", "instance": "111", "severity": "Low", "resolution_status": "Open"}
+
+
+@pytest.mark.parametrize(
+    "all_params, expected",
+    [
+        (request_data, expected)
+    ]
+)
+def test_params_to_filter(all_params, expected):
+    from MicrosoftCloudAppSecurity import params_to_filter
+    res = params_to_filter(all_params)
+    assert res == expected
 
 
 @pytest.mark.parametrize(

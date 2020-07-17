@@ -106,9 +106,9 @@ def convert_severity(severity):
 
 def convert_resolution_status(resolution_status):
     resolution_status_options = {
-        'Low': 0,
-        'Medium': 1,
-        'High': 2
+        'Open': 0,
+        'Dismissed': 1,
+        'Resolved': 2
     }
     return resolution_status_options[resolution_status]
 
@@ -181,10 +181,10 @@ def convert_status(status):
     return status_option[status]
 
 
-def str_to_bool(str):
-    if str == 'True':
+def str_to_bool(string):
+    if string.lower() == 'true':
         return True
-    elif str == 'False':
+    elif string.lower() == 'false':
         return False
 
 
@@ -195,9 +195,9 @@ def args_to_json_filter_list_activity(all_params):
         if key in ['skip', 'limit']:
             request_data[key] = int(value)
         if key in ['service', 'instance']:
-            filters[f'entity.{key}'] = {'eq': int(value)}
-        if key == 'severity':
-            filters[key] = {'eq': convert_severity(value)}
+            filters[key] = {'eq': int(value)}
+        if key == 'source':
+            filters[key] = {'eq': convert_source_type(value)}
         if key == 'ip_category':
             filters['ip.category'] = {'eq': convert_ip_category(value)}
         if key == 'ip':
@@ -206,7 +206,7 @@ def args_to_json_filter_list_activity(all_params):
             filters['user.username'] = {'eq': value}
         if key == 'taken_action':
             filters['activity.takenAction'] = {'eq': value}
-    request_data = {'filters': filters}
+    request_data['filters'] = filters
     return request_data
 
 
@@ -217,14 +217,14 @@ def args_to_json_filter_list_alert(all_params):
         if key in ['skip', 'limit']:
             request_data[key] = int(value)
         if key in ['service', 'instance']:
-            filters[key] = {'eq': int(value)}
-        if key == 'source':
-            filters[key] = {'eq': convert_source_type(value)}
+            filters[f'entity.{key}'] = {'eq': int(value)}
+        if key == 'severity':
+            filters[key] = {'eq': convert_severity(value)}
         if key == 'resolution_status':
-            filters[key] = {'eq': convert_resolution_status(value)}
+            filters['resolutionStatus'] = {'eq': convert_resolution_status(value)}
         if key == 'username':
-            filters['entity.entity'] = {'eq': value}
-    request_data = {'filters': filters}
+            filters['entity.entity'] = {'eq': json.loads(value)}
+    request_data['filters'] = filters
     return request_data
 
 
@@ -245,8 +245,8 @@ def args_to_json_filter_list_files(all_params):
         if key == 'quarantined':
             filters[key] = {'eq': str_to_bool(value)}
         if key == 'owner':
-            filters['owner.entity'] = {'eq': value}
-    request_data = {'filters': filters}
+            filters['owner.entity'] = {'eq': json.loads(value)}
+    request_data['filters'] = filters
     return request_data
 
 
@@ -270,7 +270,7 @@ def args_to_json_filter_list_users_accounts(all_params):
             filters['isExternal'] = {'eq': convert_is_external(value)}
         if key == 'status':
             filters[key] = {'eq': convert_status(value)}
-    request_data = {'filters': filters}
+    request_data['filters'] = filters
     return request_data
 
 
@@ -296,9 +296,9 @@ def params_to_filter(all_params):
     if 'resolution_status' in all_params.keys():
         filters['resolutionStatus'] = {'eq': convert_resolution_status(all_params['resolution_status'])}
     if 'service' in all_params.keys():
-        filters['service'] = {'eq': (all_params['service'])}
+        filters['entity.service'] = {'eq': (int(all_params['service']))}
     if 'instance' in all_params.keys():
-        filters['instance'] = {'eq': (all_params['instance'])}
+        filters['entity.instance'] = {'eq': (int(all_params['instance']))}
     return filters
 
 
