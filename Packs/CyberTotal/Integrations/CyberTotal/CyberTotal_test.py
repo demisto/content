@@ -178,7 +178,7 @@ def test_file(requests_mock):
     )
 
     args = {
-        'hash': file_to_check,
+        'file': file_to_check,
         'threshold': 10,
     }
 
