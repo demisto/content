@@ -58,7 +58,7 @@ def get_client():
 def parse_incident(i):
     return {
         'name': f"{i['name']}_{i['id']}",
-        'occurred': datetime.fromtimestamp(i['time']/1000, timezone.utc).isoformat(),
+        'occurred': datetime.fromtimestamp(i['time'] / 1000, timezone.utc).isoformat(),
         'severity': parse_severity(i),
         'rawJSON': json.dumps(clean_null_terms(i))
     }
@@ -124,13 +124,15 @@ def has_last_run(lr):
 
 def incidents_better_than_time(st, head, risk, also_n2os_incidents, client):
     return client.http_get_request(
-        f'{QUERY_ALERTS_PATH} | sort time asc | sort id asc{better_than_time_filter(st)}{risk_filter(risk)}{also_n2os_incidents_filter(also_n2os_incidents)} | head {head}'
+        f'{QUERY_ALERTS_PATH} | sort time asc | sort id asc{better_than_time_filter(st)}'
+        f'{risk_filter(risk)}{also_n2os_incidents_filter(also_n2os_incidents)} | head {head}'
     )['result']
 
 
 def incidents_equal_than_time(st, risk, also_n2os_incidents, client):
     return client.http_get_request(
-        f'{QUERY_ALERTS_PATH} | sort time asc | sort id asc{equal_than_time_filter(st)}{risk_filter(risk)}{also_n2os_incidents_filter(also_n2os_incidents)}'
+        f'{QUERY_ALERTS_PATH} | sort time asc | sort id asc{equal_than_time_filter(st)}'
+        f'{risk_filter(risk)}{also_n2os_incidents_filter(also_n2os_incidents)}'
     )['result']
 
 
@@ -209,7 +211,8 @@ def nozomi_alerts_ids_from_demisto_incidents(demisto_incidents):
 def close_alerts(args, close_action, client):
     readable_close_action = "closed_as_security" if close_action == "delete_rules" else "closed_as_change"
     extracted_ids = argToList(args.get('ids'))
-    human_readable = f'Command changes the status of the following alerts: {extracted_ids} passed as "{readable_close_action}" in Nozomi Networks platform.'
+    human_readable = f'Command changes the status of the following alerts: {extracted_ids} ' \
+        f'passed as "{readable_close_action}" in Nozomi Networks platform.'
 
     client.http_post_request(
         '/api/open/alerts/close',
