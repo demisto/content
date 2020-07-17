@@ -129,7 +129,7 @@ def test_nozomi_alerts_ids_from_demisto_incidents():
 def test_is_alive(requests_mock):
     assert is_alive(
         __get_client(
-            [{'json': __load_test_data('./test_data/alive.json'),'path': '/api/open/query/do?query=alerts | count'}],
+            [{'json': __load_test_data('./test_data/alive.json'), 'path': '/api/open/query/do?query=alerts | count'}],
             requests_mock)) == 'ok'
 
 
