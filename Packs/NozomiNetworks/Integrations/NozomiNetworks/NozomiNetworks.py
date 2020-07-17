@@ -7,7 +7,6 @@ from CommonServerPython import *
 
 import requests
 import json
-import ast
 
 requests.packages.urllib3.disable_warnings()
 
