@@ -28,9 +28,6 @@ class Client(BaseClient):
         return self.http_request('POST', path, data)
 
 
-''' CONSTANTS '''
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-
 ''' GLOBAL_VARIABLES '''
 INTEGRATION_NAME = 'Nozomi Networks'
 QUERY_PATH = '/api/open/query/do?query='
@@ -112,7 +109,7 @@ def better_than_id_filter(id):
 
 
 def start_time(last_run, fetch_time_from='7 days'):
-    fetch_time_default, _ = parse_date_range(fetch_time_from, date_format=DATE_FORMAT, to_timestamp=True)
+    fetch_time_default, _ = parse_date_range(fetch_time_from, date_format='%Y-%m-%dT%H:%M:%SZ', to_timestamp=True)
     if has_last_run(last_run):
         time_from_last_run = f'{last_run.get("last_fetch", fetch_time_default)}'
         result = f'{fetch_time_default}' if time_from_last_run == '0' else f'{time_from_last_run}'
@@ -414,28 +411,31 @@ def find_ip_by_mac(args, client=get_client()):
 
 ''' EXECUTION '''
 
-demisto.info('nozomi: invoked command %s' % (demisto.command(),))
 
-try:
-    if demisto.command() == 'fetch-incidents':
-        fetch_incidents()
-    elif demisto.command() == 'test-module':
-        if demisto.params().get('isFetch'):
-            fetch_incidents(test_mode=True)
-            demisto.results('ok')
-        else:
-            demisto.results(is_alive())
-    elif demisto.command() == 'nozomi-close-incidents-as-change':
-        return_results(CommandResults(**close_incidents_as_change(demisto.args())))
-    elif demisto.command() == 'nozomi-close-incidents-as-security':
-        return_results(CommandResults(**close_incidents_as_security(demisto.args())))
-    elif demisto.command() == 'nozomi-find-assets':
-        return_results(CommandResults(**find_assets(demisto.args())))
-    elif demisto.command() == 'nozomi-query':
-        return_results(CommandResults(**query(demisto.args())))
-    elif demisto.command() == 'nozomi-find-ip-by-mac':
-        return_results(CommandResults(**find_ip_by_mac(demisto.args())))
-except Exception as e:
-    demisto.error(f'nozomi: got an error {e}')
-    return_error(e)
+def main():
+    try:
+        if demisto.command() == 'fetch-incidents':
+            fetch_incidents()
+        elif demisto.command() == 'test-module':
+            if demisto.params().get('isFetch'):
+                fetch_incidents(test_mode=True)
+                demisto.results('ok')
+            else:
+                demisto.results(is_alive())
+        elif demisto.command() == 'nozomi-close-incidents-as-change':
+            return_results(CommandResults(**close_incidents_as_change(demisto.args())))
+        elif demisto.command() == 'nozomi-close-incidents-as-security':
+            return_results(CommandResults(**close_incidents_as_security(demisto.args())))
+        elif demisto.command() == 'nozomi-find-assets':
+            return_results(CommandResults(**find_assets(demisto.args())))
+        elif demisto.command() == 'nozomi-query':
+            return_results(CommandResults(**query(demisto.args())))
+        elif demisto.command() == 'nozomi-find-ip-by-mac':
+            return_results(CommandResults(**find_ip_by_mac(demisto.args())))
+    except Exception as e:
+        demisto.error(f'nozomi: got an error {e}')
+        return_error(str(e))
 
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
