@@ -109,31 +109,17 @@ def test_incidents_filtered(requests_mock):
         '4',
         True,
         __get_client(
-            [
-                {
-                    'json': __load_test_data('./test_data/incidents_better_than_time.json'),
-                    'path': '/api/open/query/do?query=alerts | sort time asc | sort id asc '
-                            '| where time > 1392048082000 | where risk >= 4 | head 20'
-                }
-            ],
-            requests_mock)
-        )
+            [{'json': __load_test_data('./test_data/incidents_better_than_time.json'),
+              'path': '/api/open/query/do?query=alerts | sort time asc | sort id asc '
+              '| where time > 1392048082000 | where risk >= 4 | head 20'}],
+            requests_mock))
 
     assert lid is not None
     assert lr == 1392048082242
     assert list(map(lambda i: {
         'name': f"{i['name'].partition('_')[0]}",
         'severity': i['severity']
-    }, fi)) == [
-               {
-                   'name': f'Link RST sent by Slave',
-                   'severity': 2
-               },
-               {
-                   'name': f'New Node',
-                   'severity': 4
-               }
-           ]
+    }, fi)) == [{'name': 'Link RST sent by Slave', 'severity': 2}, {'name': 'New Node', 'severity': 4}]
 
 
 def test_nozomi_alerts_ids_from_demisto_incidents():
@@ -143,14 +129,8 @@ def test_nozomi_alerts_ids_from_demisto_incidents():
 def test_is_alive(requests_mock):
     assert is_alive(
         __get_client(
-            [
-                {
-                    'json': __load_test_data('./test_data/alive.json'),
-                    'path': '/api/open/query/do?query=alerts | count'
-                }
-            ],
-            requests_mock
-        )) == 'ok'
+            [{'json': __load_test_data('./test_data/alive.json'),'path': '/api/open/query/do?query=alerts | count'}],
+            requests_mock)) == 'ok'
 
 
 def test_ids_from_incidents():
