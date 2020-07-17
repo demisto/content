@@ -1,5 +1,5 @@
 from datetime import timezone
-from typing import List
+from typing import Dict
 
 from CommonServerPython import *
 
@@ -58,7 +58,7 @@ def get_client():
 def parse_incident(i):
     return {
         'name': f"{i['name']}_{i['id']}",
-        'occurred':  datetime.fromtimestamp(i['time']/1000, timezone.utc).isoformat(),
+        'occurred': datetime.fromtimestamp(i['time']/1000, timezone.utc).isoformat(),
         'severity': parse_severity(i),
         'rawJSON': json.dumps(clean_null_terms(i))
     }
@@ -282,7 +282,7 @@ def fetch_incidents(
         fetch_also_n2os_incidents=None,
         test_mode=False
 ):
-    st = start_time(demisto.getLastRun(), demisto.params().get('fetchTime', '7 days').strip()) if st is None else st
+    st = st or start_time(demisto.getLastRun(), demisto.params().get('fetchTime', '7 days').strip())
     client = client or get_client()
     last_run = last_run or demisto.getLastRun()
     last_id = last_id or get_last_id(demisto.getLastRun())
@@ -386,7 +386,7 @@ def find_ip_by_mac(args, client=get_client()):
     mac = args.get("mac", "")
     only_nodes_confirmed = args.get("only_nodes_confirmed", True)
     result_error = False
-    result = []  # type: List[str]
+    result = {}  # type: Dict
 
     response = client.http_get_request(
         f'{QUERY_PATH}nodes | select ip mac_address | where mac_address == {mac}{nodes_confirmed_filter(only_nodes_confirmed)}')
@@ -398,7 +398,10 @@ def find_ip_by_mac(args, client=get_client()):
     else:
         ips = [node['ip'] for node in response["result"]]
         human_readable = f'{INTEGRATION_NAME} - Results for the Ip from Mac Search is {ips}'
-        result = {'ips': ips, 'mac': mac}
+        result = {
+            'ips': ips,
+            'mac': mac
+        }
         prefix = 'Nozomi.IpByMac'
 
     return {

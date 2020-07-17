@@ -66,7 +66,14 @@ def test_parse_incidents():
     assert i == {
         'name': 'Link RST sent by Slave_1af93f46-65c1-4f52-a46a-2a181597fb0c',
         'severity': 2,
-        'rawJSON': '{"id": "1af93f46-65c1-4f52-a46a-2a181597fb0c", "type_id": "NET:RST-FROM-SLAVE", "name": "Link RST sent by Slave", "description": "The slave 10.197.23.139 sent a RST of the connection to the master.", "severity": 10, "mac_src": "00:02:3e:99:c9:5d", "mac_dst": "00:c0:c9:30:04:f1", "ip_src": "10.197.23.182", "ip_dst": "10.197.23.139", "risk": "4.5", "protocol": "iec104", "src_roles": "master", "dst_roles": "slave", "time": 1392048082242, "ack": false, "port_src": 1097, "port_dst": 2404, "status": "open", "threat_name": "", "type_name": "Link RST sent by Slave", "zone_src": "RemoteRTU", "zone_dst": "RemoteRTU"}'
+        'rawJSON': '{"id": "1af93f46-65c1-4f52-a46a-2a181597fb0c", '
+                   '"type_id": "NET:RST-FROM-SLAVE", "name": "Link RST sent by Slave", '
+                   '"description": "The slave 10.197.23.139 sent a RST of the connection to the master.", '
+                   '"severity": 10, "mac_src": "00:02:3e:99:c9:5d", "mac_dst": "00:c0:c9:30:04:f1", '
+                   '"ip_src": "10.197.23.182", "ip_dst": "10.197.23.139", "risk": "4.5", "protocol": "iec104", '
+                   '"src_roles": "master", "dst_roles": "slave", "time": 1392048082242, "ack": false, '
+                   '"port_src": 1097, "port_dst": 2404, "status": "open", "threat_name": "", '
+                   '"type_name": "Link RST sent by Slave", "zone_src": "RemoteRTU", "zone_dst": "RemoteRTU"}'
     }
 
 
@@ -105,7 +112,8 @@ def test_incidents_filtered(requests_mock):
             [
                 {
                     'json': __load_test_data('./test_data/incidents_better_than_time.json'),
-                    'path': '/api/open/query/do?query=alerts | sort time asc | sort id asc | where time > 1392048082000 | where risk >= 4 | head 20'
+                    'path': '/api/open/query/do?query=alerts | sort time asc | sort id asc '
+                            '| where time > 1392048082000 | where risk >= 4 | head 20'
                 }
             ],
             requests_mock)
@@ -250,12 +258,14 @@ def test_ip_from_mac(requests_mock):
             [
                 {
                     'json': __load_test_data('./test_data/find_by_mac.json'),
-                    'path': '/api/open/query/do?query=nodes | select ip mac_address | where mac_address == 00:d0:c9:ca:bd:6a'
+                    'path': '/api/open/query/do?query=nodes | select ip mac_address '
+                            '| where mac_address == 00:d0:c9:ca:bd:6a'
                 }
             ],
             requests_mock
         ))
-    assert result['readable_output'] == "Nozomi Networks - Results for the Ip from Mac Search is ['10.196.97.231', '172.16.0.4']"
+    assert result['readable_output'] == "Nozomi Networks - Results for the Ip from Mac Search is " \
+                                        "['10.196.97.231', '172.16.0.4']"
     assert result['outputs'] == {'ips': ['10.196.97.231', '172.16.0.4'], 'mac': mac}
     assert result['outputs_prefix'] == 'Nozomi.IpByMac'
     assert result['outputs_key_field'] is None
@@ -268,7 +278,8 @@ def test_ip_from_mac_not_found(requests_mock):
             [
                 {
                     'json': __load_test_data('./test_data/empty_find_by_mac.json'),
-                    'path': '/api/open/query/do?query=nodes | select ip mac_address | where mac_address == 12:33:44:55:bd:6a'
+                    'path': '/api/open/query/do?query=nodes | select ip mac_address '
+                            '| where mac_address == 12:33:44:55:bd:6a'
                 }
             ],
             requests_mock
