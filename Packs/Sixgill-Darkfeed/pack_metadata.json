@@ -2,7 +2,7 @@
   "name": "Darkfeed™ - Current Customer Edition",
   "description": "Get contextual and actionable insights to proactively block underground threats in real-time with the most comprehensive, automated stream of IOCs\n\nFor organizations who are currently Darkfeed customers.",
   "support": "partner",
-  "currentVersion": "1.0.0",
+  "currentVersion": "1.1.0",
   "author": "Sixgill",
   "url": "https://github.com/cybersixgill",
   "email": "support@cybersixgill.com, dev@cybersixgill.com",
