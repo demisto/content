@@ -136,9 +136,8 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      defaultValue: '[]'
       description: List of IDs to close as security
-      isArray: false
+      isArray: true
       name: ids
       required: false
       secret: false
@@ -148,9 +147,8 @@ script:
     name: nozomi-close-incidents-as-security
   - arguments:
     - default: false
-      defaultValue: '[]'
       description: List of IDs to close as change.
-      isArray: false
+      isArray: true
       name: ids
       required: false
       secret: false
