@@ -526,7 +526,7 @@ def file_reputation_command(client: Client, args: Dict[str, Any], default_thresh
     :rtype: ``CommandResults``
     """
 
-    hashs = argToList(args.get('hash'))
+    hashs = argToList(args.get('file'))
     if len(hashs) == 0:
         raise ValueError('HASH(s) not specified')
 

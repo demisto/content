@@ -135,7 +135,7 @@ script:
     description: Return IP information and reputation
   - name: file
     arguments:
-    - name: hash
+    - name: file
       required: true
       default: true
       description: list of hash(s).
