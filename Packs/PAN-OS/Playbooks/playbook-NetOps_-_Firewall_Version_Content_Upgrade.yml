@@ -406,7 +406,7 @@ tasks:
         simple: "10"
       dt:
         simple: Panorama.Content.Install(val.Status !== 'Completed' && val.Status
-          != ‘Failed’).JobID
+          !== 'Failed').JobID
     separatecontext: true
     loop:
       iscommand: false
@@ -494,8 +494,8 @@ tasks:
       Timeout:
         simple: "20"
       dt:
-        simple: Panorama.PANOS.Download(val.Status !== 'Completed' && val.Status !=
-          ‘Failed’).JobID
+        simple: Panorama.PANOS.Download(val.Status !== 'Completed' && val.Status !==
+          'Failed').JobID
     separatecontext: true
     loop:
       iscommand: false
@@ -550,8 +550,8 @@ tasks:
       Timeout:
         simple: "20"
       dt:
-        simple: Panorama.PANOS.Install(val.Status !== 'Completed' && val.Status !=
-          ‘Failed’).JobID
+        simple: Panorama.PANOS.Install(val.Status !== 'Completed' && val.Status !==
+          'Failed').JobID
     separatecontext: true
     loop:
       iscommand: false

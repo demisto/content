@@ -1,10 +1,14 @@
+Cortex XDR is the world's first detection and response app that natively integrates network, endpoint and cloud data to stop sophisticated attacks.
 
-XDR handle indicators  
-This integration was integrated and tested with Branch: stable-50 of XDR
-## Configure XDR iocs on Cortex XSOAR  
+Use the Cortex XDR - IOCs feed integration to sync indicators between Cortex XSOAR and Cortex XDR. The integration will sync indicators according to the defined fetch interval. At each interval, the integration will push new and modified indicators defined in the **Sync Query** from Cortex XSOAR to Cortex XDR. Additionally, the integration will check if there are manual modifications of indicators on Cortex XDR and sync back to Cortex XSOAR. Once per day, the integration will perform a *complete sync* which will also remove indicators that have been deleted/expired in Cortex XSOAR, from Cortex XDR. 
+
+
+This integration was integrated and tested with Branch: stable-50 of XDR.
+
+## Configure Cortex XDR - IOC on Cortex XSOAR  
   
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.  
-2. Search for XDR iocs.  
+2. Search for Cortex XDR - IOC.  
 3. Click **Add instance** to create and configure a new integration instance.  
   
 | **Parameter** | **Description** | **Required** |  
@@ -13,8 +17,8 @@ This integration was integrated and tested with Branch: stable-50 of XDR
 | apikey_id | API Key ID | True |  
 | apikey | API Key | True |  
 | feed | Fetch indicators | False |  
-| severity | the severity in XDR | True |  
-| query | query | True |  
+| severity | the severity in Cortex XDR | True |  
+| query | Sync Query | True |  
 | insecure | Trust any certificate \(not secure\) | False |  
 | proxy | Use system proxy settings | False |  
 | feedReputation | Indicator Reputation | False |  
@@ -46,65 +50,44 @@ There is no context output for this command.
   
 #### Command Example  
 ```!xdr-iocs-sync```  
-  #### Human Readable Output  
+#### Human Readable Output  
   
 >sync with XDR completed.  
   
-### xdr-iocs-iocs-to-keep  
+### xdr-iocs-push
 ***  
-Update all iocs to keep and delete the other.  
-run this ones a day in 01:00 - 3:00 utc time.  
+Push new IOCs to XDR. run This every minute (without indicator argument) or ioc trigerd (using indicator argument).
   
   
 #### Base Command  
   
-`xdr-iocs-to-keep`  
+`xdr-iocs-push`  
 #### Input  
   
-There are no input arguments for this command.  
-  
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| indicator | the indicators | Optional | 
+
+
 #### Context Output  
   
 There is no context output for this command.  
   
 #### Command Example  
-```xdr-iocs-to-keep```  
+```xdr-iocs-push```  
   
 #### Human Readable Output  
-  >sync with XDR completed.
+>push success.
   
   
-### xdr-push-iocs  
-***  
-Push new iocs to XDR run this ones a min.  
-  
-  
-#### Base Command  
-  
-`xdr-push-iocs`  
-#### Input  
-  
-There are no input arguments for this command.  
-  
-#### Context Output  
-  
-There is no context output for this command.  
-  
-#### Command Example  
-```xdr-push-iocs```  
-  
-#### Human Readable Output  
-  
-  
-  
-### xdr-enable-iocs  
+### xdr-iocs-enable  
 ***  
 Enable iocs in XDR server  
   
   
 #### Base Command  
   
-`xdr-enable-iocs`  
+`xdr-iocs-enable`  
 #### Input  
   
 | **Argument Name** | **Description** | **Required** |  
@@ -116,20 +99,20 @@ Enable iocs in XDR server
 There is no context output for this command.  
   
 #### Command Example  
-```!xdr-enable-iocs indicator=11.11.11.11```  
+```!xdr-iocs-enable indicator=11.11.11.11```  
     
 #### Human Readable Output  
   
 >indicators 11.11.11.11 enabled.  
   
-### xdr-disable-iocs  
+### xdr-iocs-disable  
 ***  
 Disable iocs in XDR server  
   
   
 #### Base Command  
   
-`xdr-disable-iocs`  
+`xdr-iocs-disable`  
 #### Input  
   
 | **Argument Name** | **Description** | **Required** |  
@@ -141,9 +124,8 @@ Disable iocs in XDR server
 There is no context output for this command.  
   
 #### Command Example  
-```!xdr-disable-iocs indicator=22.22.22.22```  
+```!xdr-iocs-disable indicator=22.22.22.22```  
   
 #### Human Readable Output  
   
 >indicators 22.22.22.22 disabled.  
-  

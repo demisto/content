@@ -260,6 +260,36 @@ class TestCreateFile:
         data = self.get_file(TestCreateFile.path)
         assert data == expected_data, f'create_file_sync with all iocs\n\tcreates: {data}\n\tinstead: {expected_data}'
 
+    data_test_create_file_with_empty_indicators = [
+        {},
+        {'value': '11.11.11.11'},
+        {'indicator_type': 'IP'}
+    ]
+
+    @pytest.mark.parametrize('defective_indicator', data_test_create_file_with_empty_indicators)
+    def test_create_file_sync_with_empty_indicators(self, defective_indicator, mocker):
+        """
+            Given:
+                - Sync command
+
+            When:
+                - a part iocs dont have all required data
+
+            Then:
+                - Verify sync file data.
+        """
+        all_iocs, expected_data = self.get_all_iocs(self.data_test_create_file_sync, 'json')
+        all_iocs['iocs'].append(defective_indicator)
+        all_iocs['total'] += 1
+        mocker.patch.object(demisto, 'searchIndicators', return_value=all_iocs)
+        warnings = mocker.patch.object(demisto, 'debug')
+        create_file_sync(TestCreateFile.path)
+        data = self.get_file(TestCreateFile.path)
+        assert data == expected_data, f'create_file_sync with all iocs\n\tcreates: {data}\n\tinstead: {expected_data}'
+        error_msg = warnings.call_args.args[0]
+        assert error_msg.startswith("unexpected IOC format in key: '"), f"create_file_sync empty message\n\tstarts: {error_msg}\n\tinstead: unexpected IOC format in key: '"    # noqa: E501
+        assert error_msg.endswith(f"', {str(defective_indicator)}"), f"create_file_sync empty message\n\tends: {error_msg}\n\tinstead: ', {str(defective_indicator)}"     # noqa: E501
+
     def test_create_file_iocs_to_keep_without_iocs(self, mocker):
         """
             Given:
@@ -414,7 +444,12 @@ class TestDemistoIOCToXDR:
     data_test_demisto_ioc_to_xdr = [
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP', 'score': 2},
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'SUSPICIOUS', 'severity': 'INFO', 'type': 'IP'}
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'SUSPICIOUS', 'severity': 'INFO',
+             'type': 'IP'}
+        ),
+        (
+            {'value': '11.11.11.11', 'indicator_type': 100, 'score': 2},
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'SUSPICIOUS', 'severity': 'INFO', 'type': '100'}
         ),
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP'},
@@ -463,6 +498,12 @@ class TestDemistoIOCToXDR:
         output = demisto_ioc_to_xdr(demisto_ioc)
         assert output == xdr_ioc, f'demisto_ioc_to_xdr({demisto_ioc})\n\treturns: {d_sort(output)}\n\tinstead: {d_sort(xdr_ioc)}'    # noqa: E501
 
+    def test_empty_demisto_ioc_to_xdr(self, mocker):
+        warnings = mocker.patch.object(demisto, 'debug')
+        output = demisto_ioc_to_xdr({})
+        assert output == {}, 'demisto_ioc_to_xdr({})\n\treturns: ' + str(d_sort(output)) + '\n\tinstead: {}'
+        assert warnings.call_args.args[0] == "unexpected IOC format in key: 'value', {}"
+
 
 class TestXDRIOCToDemisto:
 
@@ -500,11 +541,9 @@ class TestXDRIOCToDemisto:
                 'type': 'File',
                 'score': 1,
                 'fields': {
-                    'xdr': {
-                        'expiration': 'Never',
-                        'score': 1,
-                        'status': 'disabled'
-                    }
+                    'expirationdate': 'Never',
+                    'tags': 'Cortex XDR',
+                    'xdrstatus': 'disabled'
                 }
             }
         ),
@@ -522,11 +561,9 @@ class TestXDRIOCToDemisto:
                 'type': 'Domain',
                 'score': 1,
                 'fields': {
-                    'xdr': {
-                        'expiration': 'Never',
-                        'score': 1,
-                        'status': 'disabled'
-                    }
+                    'expirationdate': 'Never',
+                    'tags': 'Cortex XDR',
+                    'xdrstatus': 'disabled'
                 }
             }
         ),
@@ -537,7 +574,7 @@ class TestXDRIOCToDemisto:
                 'RULE_STATUS': 'ENABLED', 'BS_STATUS': 'DONE', 'BS_TS': 1591165801784, 'BS_RETRIES': 1,
                 'RULE_EXPIRATION_TIME': -1, 'IOC_TYPE': 'DOMAIN_NAME', 'RULE_INDICATOR': 'test.co.il',
                 'REPUTATION': 'SUSPICIOUS', 'RELIABILITY': 'A',
-                'VENDORS': [{'vendor_name': 'XDR iocs', 'reputation': 'SUSPICIOUS', 'reliability': 'A'}],
+                'VENDORS': [{'vendor_name': 'Cortex XDR - IOC', 'reputation': 'SUSPICIOUS', 'reliability': 'A'}],
                 'KLASS': None,
                 'IS_DEFAULT_TTL': False, 'RULE_TTL': -1, 'MARKED_DELETED': 0
             },
@@ -546,18 +583,16 @@ class TestXDRIOCToDemisto:
                 'type': 'Domain',
                 'score': 2,
                 'fields': {
-                    'xdr': {
-                        'expiration': 'Never',
-                        'score': 2,
-                        'status': 'enabled'
-                    }
+                    'expirationdate': 'Never',
+                    'tags': 'Cortex XDR',
+                    'xdrstatus': 'enabled'
                 }
             }
         )
     ]
 
     @pytest.mark.parametrize('xdr_ioc, demisto_ioc', data_test_xdr_ioc_to_demisto)
-    def test_xdr_ioc_to_demisto(self, xdr_ioc, demisto_ioc):
+    def test_xdr_ioc_to_demisto(self, xdr_ioc, demisto_ioc, mocker):
         """
             Given:
                 - IOC in XDR format.
@@ -565,7 +600,7 @@ class TestXDRIOCToDemisto:
             Then:
                 - IOC in demisto format.
         """
-
+        mocker.patch.object(demisto, 'searchIndicators', return_value={})
         output = xdr_ioc_to_demisto(xdr_ioc)
         del output['rawJSON']
         assert output == demisto_ioc, f'xdr_ioc_to_demisto({xdr_ioc})\n\treturns: {d_sort(output)}\n\tinstead: {d_sort(demisto_ioc)}'    # noqa: E501
@@ -582,7 +617,7 @@ class TestCommands:
                 Then:
                     - Verify enable command is called.
             """
-            mocker.patch.object(demisto, 'command', return_value='xdr-enable-iocs')
+            mocker.patch.object(demisto, 'command', return_value='xdr-iocs-enable')
             mocker.patch.object(demisto, 'args', return_value={'indicator': '11.11.11.11'})
             mocker.patch('XDR_iocs.Client.http_request', return_value={})
             outputs = mocker.patch('XDR_iocs.return_outputs')
@@ -601,7 +636,7 @@ class TestCommands:
                     - Verify disable command is called.
             """
 
-            mocker.patch.object(demisto, 'command', return_value='xdr-disable-iocs')
+            mocker.patch.object(demisto, 'command', return_value='xdr-iocs-disable')
             mocker.patch.object(demisto, 'args', return_value={'indicator': '11.11.11.11'})
             mocker.patch('XDR_iocs.Client.http_request', return_value={})
             outputs = mocker.patch('XDR_iocs.return_outputs')
@@ -632,17 +667,16 @@ class TestCommands:
         http_request = mocker.patch.object(Client, 'http_request')
         mocker.patch.object(demisto, 'getIntegrationContext', return_value={'time': '2020-06-03T00:00:00Z'})
         iocs, _ = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_sync, 'json')
-        mocker.patch.object(demisto, 'searchIndicators', returnvalue=iocs)
+        mocker.patch.object(demisto, 'searchIndicators', return_value=iocs)
         mocker.patch('XDR_iocs.return_outputs')
         tim_insert_jsons(client)
         assert http_request.call_args.kwargs['url_suffix'] == 'tim_insert_jsons/', 'tim_insert_jsons command url changed'
 
     def test_get_changes(self, mocker):
         mocker.patch.object(demisto, 'getIntegrationContext', return_value={'ts': 1591142400000})
-        mocker.patch.object(demisto, 'createIndicators', return_value={'ts': 1591142400000})
+        mocker.patch.object(demisto, 'createIndicators')
+        mocker.patch.object(demisto, 'searchIndicators', return_value={})
         xdr_res = {'reply': list(map(lambda xdr_ioc: xdr_ioc[0], TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto))}
         mocker.patch.object(Client, 'http_request', return_value=xdr_res)
-        outputs = mocker.patch('XDR_iocs.return_outputs')
         get_changes(client)
-        ioc_time_line = xdr_ioc_to_timeline(list(map(lambda x: str(x[0].get('RULE_INDICATOR')), TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto)))    # noqa: E501
-        assert ioc_time_line == outputs.call_args.kwargs['timeline'], f'time line\n\treturns: {outputs}\n\tinstead: {ioc_time_line}'    # noqa: E501
+        xdr_ioc_to_timeline(list(map(lambda x: str(x[0].get('RULE_INDICATOR')), TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto)))    # noqa: E501

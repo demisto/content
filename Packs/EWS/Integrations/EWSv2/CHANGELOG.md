@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+- Fixed a bug in the **test module** which failed on a delegated mailbox.
 
 ## [20.5.0] - 2020-05-12
 - Command - "ews-get-items", add Email entry context by demisto standards as an output.

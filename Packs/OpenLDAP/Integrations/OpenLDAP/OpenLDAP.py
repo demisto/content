@@ -356,7 +356,7 @@ def main():
         elif isinstance(e, LDAPSocketOpenError):
             msg = f'Failed to connect to OpenLDAP server. Additional details: {msg}'
         elif isinstance(e, LDAPInvalidPortError):
-            msg = f'Not valid ldap server input. Check that server input is of form: ip or ldap://ip'
+            msg = 'Not valid ldap server input. Check that server input is of form: ip or ldap://ip'
         return_error(str(msg))
 
 

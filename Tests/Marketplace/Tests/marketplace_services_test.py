@@ -1,6 +1,7 @@
 import pytest
 import json
 import os
+import random
 from unittest.mock import mock_open
 from Tests.Marketplace.marketplace_services import Pack, Metadata, input_to_list, get_valid_bool, convert_price, \
     get_higher_server_version, GCPConfig
@@ -28,7 +29,8 @@ class TestMetadataParsing:
         """
         parsed_metadata = Pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
                                                     pack_id='test_pack_id', integration_images=[], author_image="",
-                                                    dependencies_data={}, server_min_version="5.5.0")
+                                                    dependencies_data={}, server_min_version="5.5.0",
+                                                    build_number="dummy_build_number", commit_hash="dummy_commit")
         assert parsed_metadata['name'] == 'Test Pack Name'
         assert parsed_metadata['id'] == 'test_pack_id'
         assert parsed_metadata['description'] == 'Description of test pack'
@@ -44,6 +46,8 @@ class TestMetadataParsing:
         assert parsed_metadata['price'] == 0
         assert parsed_metadata['serverMinVersion'] == '5.5.0'
         assert parsed_metadata['currentVersion'] == '2.3.0'
+        assert parsed_metadata['versionInfo'] == "dummy_build_number"
+        assert parsed_metadata['commit'] == "dummy_commit"
         assert parsed_metadata['tags'] == ["tag number one", "Tag number two"]
         assert parsed_metadata['categories'] == ["Messaging"]
         assert parsed_metadata['contentItems'] == {}
@@ -58,7 +62,8 @@ class TestMetadataParsing:
         """
         parsed_metadata = Pack._parse_pack_metadata(user_metadata={}, pack_content_items={},
                                                     pack_id='test_pack_id', integration_images=[], author_image="",
-                                                    dependencies_data={}, server_min_version="dummy_server_version")
+                                                    dependencies_data={}, server_min_version="dummy_server_version",
+                                                    build_number="dummy_build_number", commit_hash="dummy_hash")
 
         assert parsed_metadata['name'] == "test_pack_id"
         assert parsed_metadata['id'] == "test_pack_id"
@@ -80,7 +85,8 @@ class TestMetadataParsing:
         mocker.patch("Tests.Marketplace.marketplace_services.print_warning")
         parsed_metadata = Pack._parse_pack_metadata(user_metadata=pack_metadata_input, pack_content_items={},
                                                     pack_id="test_pack_id", integration_images=[], author_image="",
-                                                    dependencies_data={}, server_min_version="dummy_server_version")
+                                                    dependencies_data={}, server_min_version="dummy_server_version",
+                                                    build_number="dummy_build_number", commit_hash="dummy_hash")
 
         assert parsed_metadata['price'] == expected
 
@@ -137,6 +143,30 @@ class TestParsingInternalFunctions:
         result_author = Pack._get_author(support_type="partner", author=author)
 
         assert result_author == expected
+
+    @pytest.mark.parametrize("support_type, certification", [("xsoar", None), ("xsoar", ""), ("xsoar", "verified")])
+    def test_get_certification_xsoar_support(self, support_type, certification):
+        """ Tests case when support is set to xsoar. Expected result should be certified certification.
+        """
+        result_certification = Pack._get_certification(support_type=support_type, certification=certification)
+
+        assert result_certification == Metadata.CERTIFIED
+
+    @pytest.mark.parametrize("support_type, certification", [("partner", None), ("developer", "")])
+    def test_get_certification_non_xsoar_support_empty(self, support_type, certification):
+        """ Tests case when support is set to non xsoar. Expected result should empty certification string.
+        """
+        result_certification = Pack._get_certification(support_type=support_type, certification=certification)
+
+        assert result_certification == ""
+
+    def test_get_certification_non_xsoar_support(self):
+        """ Tests case when support is set to partner with certified value.
+            Expected result should be certified certification.
+        """
+        result_certification = Pack._get_certification(support_type="partner", certification="certified")
+
+        assert result_certification == Metadata.CERTIFIED
 
 
 class TestHelperFunctions:
@@ -243,8 +273,11 @@ class TestChangelogCreation:
         """
         mocker.patch("os.path.exists", return_value=False)
         dummy_path = 'Irrelevant/Test/Path'
-        result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path)
-        assert result is True
+        build_number = random.randint(0, 100000)
+        task_status, not_updated_build = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path,
+                                                                    build_number=build_number)
+        assert task_status is True
+        assert not_updated_build is False
 
     def test_prepare_release_notes_upgrade_version(self, mocker, dummy_pack):
         """
@@ -274,8 +307,11 @@ class TestChangelogCreation:
         }'''
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         dummy_path = 'Irrelevant/Test/Path'
-        result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path)
-        assert result is True
+        build_number = random.randint(0, 100000)
+        task_status, not_updated_build = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path,
+                                                                    build_number=build_number)
+        assert task_status is True
+        assert not_updated_build is False
 
     def test_prepare_release_notes_upgrade_version_mismatch(self, mocker, dummy_pack):
         """
@@ -306,11 +342,13 @@ class TestChangelogCreation:
         }'''
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         dummy_path = 'Irrelevant/Test/Path'
-        result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path)
-        assert result is False
+        build_number = random.randint(0, 100000)
+        task_status, not_updated_build = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path,
+                                                                    build_number=build_number)
+        assert task_status is False
+        assert not_updated_build is False
 
     def test_prepare_release_notes_upgrade_version_dup(self, mocker, dummy_pack):
-        # TODO When we move to not overriding packs in the build, we will need to change result returned.
         """
            Given:
                - Valid new version and valid current changelog found in index with existing version.
@@ -339,8 +377,11 @@ class TestChangelogCreation:
         }'''
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         dummy_path = 'Irrelevant/Test/Path'
-        result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path)
-        assert result is True
+        build_number = random.randint(0, 100000)
+        task_status, not_updated_build = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path,
+                                                                    build_number=build_number)
+        assert task_status is True
+        assert not_updated_build is False
 
     def test_clean_release_notes_lines(self):
         original_rn = '''
@@ -357,6 +398,44 @@ This is visible
 '''
         clean_rn = Pack._clean_release_notes(original_rn)
         assert expected_rn == clean_rn
+
+    def test_create_changelog_entry_new(self):
+        """
+           Given:
+               - release notes, display version and build number
+           When:
+               - new changelog entry must created
+           Then:
+               - return changelog entry with release notes and without R letter in display name
+       """
+        release_notes = "dummy release notes"
+        version_display_name = "1.2.3"
+        build_number = "5555"
+        version_changelog = Pack._create_changelog_entry(release_notes=release_notes,
+                                                         version_display_name=version_display_name,
+                                                         build_number=build_number, new_version=True)
+
+        assert version_changelog['releaseNotes'] == "dummy release notes"
+        assert version_changelog['displayName'] == f'{version_display_name} - {build_number}'
+
+    def test_create_changelog_entry_existing(self):
+        """
+           Given:
+               - release notes, display version and build number
+           When:
+               - changelog entry already exists
+           Then:
+               - return changelog entry with release notes and R letter appended in display name
+       """
+        release_notes = "dummy release notes"
+        version_display_name = "1.2.3"
+        build_number = "5555"
+        version_changelog = Pack._create_changelog_entry(release_notes=release_notes,
+                                                         version_display_name=version_display_name,
+                                                         build_number=build_number, new_version=False)
+
+        assert version_changelog['releaseNotes'] == "dummy release notes"
+        assert version_changelog['displayName'] == f'{version_display_name} - R{build_number}'
 
 
 class TestImagesUpload:
@@ -461,3 +540,273 @@ class TestLoadUserMetadata:
         assert print_error_mock.call_count == 1
         assert not task_status
         assert user_metadata == {}
+
+
+class TestSetDependencies:
+
+    @staticmethod
+    def get_pack_metadata():
+        metadata_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data', 'metadata.json')
+        with open(metadata_path, 'r') as metadata_file:
+            pack_metadata = json.load(metadata_file)
+
+        return pack_metadata
+
+    def test_set_dependencies_new_dependencies(self):
+        """
+           Given:
+               - Pack with user dependencies
+               - New generated dependencies
+           When:
+               - Formatting metadata
+           Then:
+               - The dependencies in the metadata file should be merged with the generated ones
+       """
+        from Tests.Marketplace.marketplace_services import Pack
+
+        metadata = self.get_pack_metadata()
+        generated_dependencies = {
+            'ImpossibleTraveler': {
+                'dependencies': {
+                    'HelloWorld': {
+                        'mandatory': False,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'HelloWorld',
+                        'certification': 'certified'
+                    },
+                    'ServiceNow': {
+                        'mandatory': True,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'ServiceNow',
+                        'certification': 'certified'
+                    },
+                    'Ipstack': {
+                        'mandatory': False,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'Ipstack',
+                        'certification': 'certified'
+                    },
+                    'Active_Directory_Query': {
+                        'mandatory': True,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'Active Directory Query v2',
+                        'certification': 'certified'
+                    }
+                }
+            }
+        }
+
+        p = Pack('ImpossibleTraveler', 'dummy_path')
+        dependencies = json.dumps(metadata['dependencies'])
+        dependencies = json.loads(dependencies)
+        dependencies.update(generated_dependencies['ImpossibleTraveler']['dependencies'])
+
+        p.set_pack_dependencies(metadata, generated_dependencies)
+
+        assert metadata['dependencies'] == dependencies
+
+    def test_set_dependencies_no_user_dependencies(self):
+        """
+           Given:
+               - Pack without user dependencies
+               - New generated dependencies
+           When:
+               - Formatting metadata
+           Then:
+               - The dependencies in the metadata file should be the generated ones
+       """
+        from Tests.Marketplace.marketplace_services import Pack
+
+        metadata = self.get_pack_metadata()
+
+        generated_dependencies = {
+            'ImpossibleTraveler': {
+                'dependencies': {
+                    'HelloWorld': {
+                        'mandatory': False,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'HelloWorld',
+                        'certification': 'certified'
+                    },
+                    'ServiceNow': {
+                        'mandatory': True,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'ServiceNow',
+                        'certification': 'certified'
+                    },
+                    'Ipstack': {
+                        'mandatory': False,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'Ipstack',
+                        'certification': 'certified'
+                    },
+                    'Active_Directory_Query': {
+                        'mandatory': True,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'Active Directory Query v2',
+                        'certification': 'certified'
+                    }
+                }
+            }
+        }
+
+        metadata['dependencies'] = {}
+        p = Pack('ImpossibleTraveler', 'dummy_path')
+
+        p.set_pack_dependencies(metadata, generated_dependencies)
+
+        assert metadata['dependencies'] == generated_dependencies['ImpossibleTraveler']['dependencies']
+
+    def test_set_dependencies_no_generated_dependencies(self):
+        """
+           Given:
+               - Pack with user dependencies
+               - No generated dependencies
+           When:
+               - Formatting metadata
+           Then:
+               - The dependencies in the metadata file should be the user ones
+       """
+        from Tests.Marketplace.marketplace_services import Pack
+
+        metadata = self.get_pack_metadata()
+        dependencies = metadata['dependencies']
+        p = Pack('ImpossibleTraveler', 'dummy_path')
+        p.set_pack_dependencies(metadata, {})
+
+        assert metadata['dependencies'] == dependencies
+
+    def test_set_dependencies_core_pack(self):
+        """
+           Given:
+               - Core pack with new dependencies
+               - No mandatory dependencies that are not core packs
+           When:
+               - Formatting metadata
+           Then:
+               - The dependencies in the metadata file should be merged
+       """
+        from Tests.Marketplace.marketplace_services import Pack
+
+        metadata = self.get_pack_metadata()
+
+        generated_dependencies = {
+            'HelloWorld': {
+                'dependencies': {
+                    'CommonPlaybooks': {
+                        'mandatory': True,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'ServiceNow',
+                        'certification': 'certified'
+                    }
+                }
+            }
+        }
+
+        metadata['dependencies'] = {}
+        metadata['name'] = 'HelloWorld'
+        metadata['id'] = 'HelloWorld'
+        p = Pack('HelloWorld', 'dummy_path')
+        dependencies = json.dumps(generated_dependencies['HelloWorld']['dependencies'])
+        dependencies = json.loads(dependencies)
+
+        p.set_pack_dependencies(metadata, generated_dependencies)
+
+        assert metadata['dependencies'] == dependencies
+
+    def test_set_dependencies_core_pack_new_mandatory_dependency(self):
+        """
+           Given:
+               - Core pack with new dependencies
+               - Mandatory dependencies that are not core packs
+           When:
+               - Formatting metadata
+           Then:
+               - An exception should be raised
+       """
+        from Tests.Marketplace.marketplace_services import Pack
+
+        metadata = self.get_pack_metadata()
+
+        generated_dependencies = {
+            'HelloWorld': {
+                'dependencies': {
+                    'CommonPlaybooks': {
+                        'mandatory': True,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'ServiceNow',
+                        'certification': 'certified'
+                    },
+                    'SlackV2': {
+                        'mandatory': True,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'Ipstack',
+                        'certification': 'certified'
+                    }
+                }
+            }
+        }
+
+        metadata['dependencies'] = {}
+        p = Pack('HelloWorld', 'dummy_path')
+
+        with pytest.raises(Exception) as e:
+            p.set_pack_dependencies(metadata, generated_dependencies)
+
+        assert str(e.value) == "New mandatory dependencies ['SlackV2'] were found in the core pack HelloWorld"
+
+    def test_set_dependencies_core_pack_mandatory_dependency_override(self):
+        """
+           Given:
+               - Core pack with new dependencies
+               - Mandatory dependencies that are not core packs that were overridden in the user metadata
+           When:
+               - Formatting metadata
+           Then:
+               - Metadata should be formatted correctly
+       """
+        from Tests.Marketplace.marketplace_services import Pack
+
+        metadata = self.get_pack_metadata()
+
+        generated_dependencies = {
+            'HelloWorld': {
+                'dependencies': {
+                    'CommonPlaybooks': {
+                        'mandatory': True,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'ServiceNow',
+                        'certification': 'certified'
+                    },
+                    'Ipstack': {
+                        'mandatory': True,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'Ipstack',
+                        'certification': 'certified'
+                    }
+                }
+            }
+        }
+
+        p = Pack('HelloWorld', 'dummy_path')
+        user_dependencies = metadata['dependencies']
+        dependencies = json.dumps(generated_dependencies['HelloWorld']['dependencies'])
+        dependencies = json.loads(dependencies)
+        dependencies.update(user_dependencies)
+
+        p.set_pack_dependencies(metadata, generated_dependencies)
+
+        assert metadata['dependencies'] == dependencies

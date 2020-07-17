@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8e58d94c-d612-4a09-834b-e0a6d44a5055
+    taskid: 9226a6fb-3a94-4edb-8697-d5fef2620be6
     type: start
     task:
-      id: 8e58d94c-d612-4a09-834b-e0a6d44a5055
+      id: 9226a6fb-3a94-4edb-8697-d5fef2620be6
       version: -1
       name: ""
       iscommand: false
@@ -29,12 +29,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 2fd612aa-4287-4576-89d2-e76416ea5602
+    taskid: afe3ce00-503b-46fa-83cc-8e4dd1b1c688
     type: playbook
     task:
-      id: 2fd612aa-4287-4576-89d2-e76416ea5602
+      id: afe3ce00-503b-46fa-83cc-8e4dd1b1c688
       version: -1
       name: Convert file hash to corresponding hashes
       description: |
@@ -62,6 +64,7 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -72,12 +75,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 6d22fedd-3a2c-4360-8c46-dd6cf54ba135
+    taskid: 5243cd03-39f6-48ef-8070-6d24927c232c
     type: title
     task:
-      id: 6d22fedd-3a2c-4360-8c46-dd6cf54ba135
+      id: 5243cd03-39f6-48ef-8070-6d24927c232c
       version: -1
       name: Done
       type: title
@@ -94,6 +99,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -112,14 +119,17 @@ inputs:
     simple: 37972f57e2d8dd4a808bee0f8355ce5bd11d25e922f5e325a5e23fbfd806f7f9
   required: false
   description: Test SHA256 hash.
+  playbookInputQuery: null
 - key: SHA1
   value:
     simple: 1242814afcd7ddafa5b42e52e2fb0915c491f634
   required: false
   description: Test SHA1 hash.
+  playbookInputQuery: null
 - key: MD5
   value:
     simple: 85a94aa9eb4cef9ad81150fe2bf0de37
   required: false
   description: Test MD5 hash.
+  playbookInputQuery: null
 outputs: []

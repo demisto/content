@@ -2,7 +2,7 @@
     "name": "Common Types",
     "description": "Common types pack.",
     "support": "xsoar",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.5.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,5 +10,378 @@
     "categories": [],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "dependencies": {
+        "TruSTAR": {
+            "mandatory": false,
+            "display_name": "TruSTAR"
+        },
+        "MaxMind_GeoIP2": {
+            "mandatory": false,
+            "display_name": "MaxMind GeoIP2"
+        },
+        "Traps": {
+            "mandatory": false,
+            "display_name": "Palo Alto Networks Traps"
+        },
+        "Shodan": {
+            "mandatory": false,
+            "display_name": "Shodan"
+        },
+        "Whois": {
+            "mandatory": false,
+            "display_name": "Whois"
+        },
+        "Polygon": {
+            "mandatory": false,
+            "display_name": "Polygon"
+        },
+        "Phishing": {
+            "mandatory": false,
+            "display_name": "Phishing"
+        },
+        "ThreatConnect": {
+            "mandatory": false,
+            "display_name": "ThreatConnect"
+        },
+        "Malware": {
+            "mandatory": false,
+            "display_name": "Malware"
+        },
+        "Expanse": {
+            "mandatory": false,
+            "display_name": "Expanse"
+        },
+        "BruteForce": {
+            "mandatory": false,
+            "display_name": "Brute Force"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "Pipl": {
+            "mandatory": false,
+            "display_name": "Pipl"
+        },
+        "SplunkPy": {
+            "mandatory": false,
+            "display_name": "SplunkPy"
+        },
+        "AccessInvestigation": {
+            "mandatory": false,
+            "display_name": "Access Investigation"
+        },
+        "AutoFocus": {
+            "mandatory": false,
+            "display_name": "AutoFocus"
+        },
+        "VulnDB": {
+            "mandatory": false,
+            "display_name": "VulnDB"
+        },
+        "Palo_Alto_Networks_WildFire": {
+            "mandatory": false,
+            "display_name": "Palo Alto Networks WildFire"
+        },
+        "ThreatQ": {
+            "mandatory": false,
+            "display_name": "ThreatQ"
+        },
+        "Alexa": {
+            "mandatory": false,
+            "display_name": "Alexa Rank Indicator"
+        },
+        "AlienVault_OTX": {
+            "mandatory": false,
+            "display_name": "AlienVault OTX"
+        },
+        "Recorded_Future": {
+            "mandatory": false,
+            "display_name": "Recorded Future"
+        },
+        "UrlScan": {
+            "mandatory": false,
+            "display_name": "urlscan.io"
+        },
+        "ReversingLabs_A1000": {
+            "mandatory": false,
+            "display_name": "ReversingLabs A1000"
+        },
+        "Zscaler": {
+            "mandatory": false,
+            "display_name": "Zscaler"
+        },
+        "Zimperium": {
+            "mandatory": false,
+            "display_name": "TruSTAR"
+        },
+        "Flashpoint": {
+            "mandatory": false,
+            "display_name": "Flashpoint"
+        },
+        "ExtraHop": {
+            "mandatory": false,
+            "display_name": "ExtraHop Reveal(x)"
+        },
+        "OpenPhish": {
+            "mandatory": false,
+            "display_name": "OpenPhish"
+        },
+        "Ipstack": {
+            "mandatory": false,
+            "display_name": "Ipstack"
+        },
+        "Lastline": {
+            "mandatory": false,
+            "display_name": "Lastline"
+        },
+        "ImpossibleTraveler": {
+            "mandatory": false,
+            "display_name": "Impossible Traveler"
+        },
+        "ReversingLabs_Titanium_Cloud": {
+            "mandatory": false,
+            "display_name": "ReversingLabs Titanium Cloud"
+        },
+        "Maltiverse": {
+            "mandatory": false,
+            "display_name": "Maltiverse"
+        },
+        "PassiveTotal": {
+            "mandatory": false,
+            "display_name": "PassiveTotal"
+        },
+        "EclecticIQ": {
+            "mandatory": false,
+            "display_name": "EclecticIQ Platform"
+        },
+        "GoogleChronicleBackstory": {
+            "mandatory": false,
+            "display_name": "Chronicle"
+        },
+        "TCPIPUtils": {
+            "mandatory": false,
+            "display_name": "TCPIPUtils"
+        },
+        "DomainTools_Iris": {
+            "mandatory": false,
+            "display_name": "DomainTools Iris"
+        },
+        "GoogleSafeBrowsing": {
+            "mandatory": false,
+            "display_name": "Google Safe Browsing"
+        },
+        "URLHaus": {
+            "mandatory": false,
+            "display_name": "URLhaus"
+        },
+        "APIVoid": {
+            "mandatory": false,
+            "display_name": "APIVoid"
+        },
+        "AwakeSecurity": {
+            "mandatory": false,
+            "display_name": "Awake Security"
+        },
+        "PhishTank": {
+            "mandatory": false,
+            "display_name": "PhishTank"
+        },
+        "illuminate": {
+            "mandatory": false,
+            "display_name": "illuminate"
+        },
+        "isight": {
+            "mandatory": false,
+            "display_name": "FireEye iSIGHT"
+        },
+        "SlashNextPhishingIncidentResponse": {
+            "mandatory": false,
+            "display_name": "SlashNext Phishing Incident Response"
+        },
+        "Symantec_Deepsight": {
+            "mandatory": false,
+            "display_name": "Symantec Deepsight Intelligence (Beta)"
+        },
+        "Compliance": {
+            "mandatory": false,
+            "display_name": "Compliance"
+        },
+        "ipinfo": {
+            "mandatory": false,
+            "display_name": "ipinfo"
+        },
+        "Anomali_ThreatStream": {
+            "mandatory": false,
+            "display_name": "Anomali ThreatStream"
+        },
+        "GDPR": {
+            "mandatory": false,
+            "display_name": "GDPR"
+        },
+        "PrismaCloud": {
+            "mandatory": false,
+            "display_name": "Prisma Cloud"
+        },
+        "PcapAnalysis": {
+            "mandatory": false,
+            "display_name": "PCAP Analysis"
+        },
+        "XForceExchange": {
+            "mandatory": false,
+            "display_name": "IBM X-Force Exchange"
+        },
+        "VirusTotal": {
+            "mandatory": false,
+            "display_name": "VirusTotal"
+        },
+        "XFE": {
+            "mandatory": false,
+            "display_name": "IBM X-Force Exchange"
+        },
+        "CrowdStrikeIntel": {
+            "mandatory": false,
+            "display_name": "CrowdStrike Falcon Intel"
+        },
+        "PolySwarm": {
+            "mandatory": false,
+            "display_name": "PolySwarm"
+        },
+        "Cofense-Intelligence": {
+            "mandatory": false,
+            "display_name": "Cofense Intelligence"
+        },
+        "HelloWorld": {
+            "mandatory": false,
+            "display_name": "HelloWorld"
+        },
+        "PortScan": {
+            "mandatory": false,
+            "display_name": "Port Scan"
+        },
+        "iDefense": {
+            "mandatory": false,
+            "display_name": "iDefense"
+        },
+        "ThreatMiner": {
+            "mandatory": false,
+            "display_name": "ThreatMiner"
+        },
+        "CVESearch": {
+            "mandatory": false,
+            "display_name": "CVE Search"
+        },
+        "EmployeeOffboarding": {
+            "mandatory": false,
+            "display_name": "Employee Offboarding"
+        },
+        "MISP": {
+            "mandatory": false,
+            "display_name": "MISP"
+        },
+        "AbuseDB": {
+            "mandatory": false,
+            "display_name": "AbuseIPDB"
+        },
+        "IsItPhishing": {
+            "mandatory": false,
+            "display_name": "IsItPhishing"
+        },
+        "Cisco-umbrella": {
+            "mandatory": false,
+            "display_name": "Cisco Umbrella Investigate"
+        },
+        "DomainTools": {
+            "mandatory": false,
+            "display_name": "DomainTools"
+        },
+        "ThreatExchange": {
+            "mandatory": false,
+            "display_name": "ThreatExchange"
+        },
+        "Pwned": {
+            "mandatory": false,
+            "display_name": "Pwned"
+        },
+        "McAfee-TIE": {
+            "mandatory": false,
+            "display_name": "McAfee Threat Intelligence Exchange"
+        }
+    },
+    "displayedImages": [
+        "TruSTAR",
+        "MaxMind_GeoIP2",
+        "Traps",
+        "Shodan",
+        "Whois",
+        "Polygon",
+        "Phishing",
+        "ThreatConnect",
+        "Malware",
+        "Expanse",
+        "BruteForce",
+        "CommonScripts",
+        "Pipl",
+        "SplunkPy",
+        "AccessInvestigation",
+        "AutoFocus",
+        "VulnDB",
+        "Palo_Alto_Networks_WildFire",
+        "ThreatQ",
+        "Alexa",
+        "AlienVault_OTX",
+        "Recorded_Future",
+        "UrlScan",
+        "ReversingLabs_A1000",
+        "Zscaler",
+        "Flashpoint",
+        "ExtraHop",
+        "OpenPhish",
+        "Ipstack",
+        "Lastline",
+        "ImpossibleTraveler",
+        "ReversingLabs_Titanium_Cloud",
+        "Maltiverse",
+        "PassiveTotal",
+        "EclecticIQ",
+        "GoogleChronicleBackstory",
+        "TCPIPUtils",
+        "DomainTools_Iris",
+        "GoogleSafeBrowsing",
+        "URLHaus",
+        "APIVoid",
+        "AwakeSecurity",
+        "PhishTank",
+        "illuminate",
+        "isight",
+        "SlashNextPhishingIncidentResponse",
+        "Symantec_Deepsight",
+        "Compliance",
+        "ipinfo",
+        "Anomali_ThreatStream",
+        "GDPR",
+        "PrismaCloud",
+        "PcapAnalysis",
+        "XForceExchange",
+        "VirusTotal",
+        "XFE",
+        "CrowdStrikeIntel",
+        "PolySwarm",
+        "Cofense-Intelligence",
+        "HelloWorld",
+        "PortScan",
+        "iDefense",
+        "ThreatMiner",
+        "CVESearch",
+        "EmployeeOffboarding",
+        "MISP",
+        "AbuseDB",
+        "IsItPhishing",
+        "Cisco-umbrella",
+        "DomainTools",
+        "ThreatExchange",
+        "Pwned",
+        "McAfee-TIE"
+    ]
 }

@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added support for auto detection of indicator types.
 
 ## [20.5.0] - 2020-05-12
 Fixed an issue where tag parsing did not work as expected.

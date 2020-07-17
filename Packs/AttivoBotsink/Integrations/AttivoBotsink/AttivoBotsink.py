@@ -72,7 +72,11 @@ class BSAPI:
             demisto.error("Type is: {type}".format(type=e.__class__.__name__))
 
         if r is not None and r.content:
-            return r.json()
+            try:
+                json_res = r.json()
+            except ValueError:
+                return_error('Failed deserializing response JSON - {}'.format(r.content))
+            return json_res
         else:
             return None
 

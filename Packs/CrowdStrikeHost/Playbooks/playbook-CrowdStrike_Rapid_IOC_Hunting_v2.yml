@@ -1,0 +1,568 @@
+id: CrowdStrike Rapid IOC Hunting v2
+version: -1
+name: CrowdStrike Rapid IOC Hunting v2
+description: Hunt for endpoint activity involving hash and domain IOCs using Crowdstrike
+  Falcon Host.\nAlso use AnalystEmail label to determine where to send an email alert
+  if something is found.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e4894164-409a-4adc-87bc-96a530ba8a27
+    type: start
+    task:
+      id: e4894164-409a-4adc-87bc-96a530ba8a27
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 295e9ac6-c665-4a4e-8d23-a0903a666143
+    type: condition
+    task:
+      id: 295e9ac6-c665-4a4e-8d23-a0903a666143
+      version: -1
+      name: Are there domains to hunt?
+      description: Check if a context key is set. Can also optionally provide a value
+        argument to compare against context data for this key.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "5"
+    scriptarguments:
+      value:
+        simple: ${Domain}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: ddaf36d8-5125-4b61-8f48-190aee2586f0
+    type: condition
+    task:
+      id: ddaf36d8-5125-4b61-8f48-190aee2586f0
+      version: -1
+      name: Are there MD5s to hunt?
+      description: Check if a context key is set. Can also optionally provide a value
+        argument to compare against context data for this key.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "6"
+    scriptarguments:
+      value:
+        simple: ${File.MD5}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: ca2f470d-41dd-4d21-8c26-98a5169bc0cd
+    type: condition
+    task:
+      id: ca2f470d-41dd-4d21-8c26-98a5169bc0cd
+      version: -1
+      name: Are there SHA1s to hunt?
+      description: Check if a context key is set. Can also optionally provide a value
+        argument to compare against context data for this key.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "7"
+    scriptarguments:
+      value:
+        simple: ${File.SHA1}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 0f812845-70a9-4408-83cf-74c92d1915a2
+    type: condition
+    task:
+      id: 0f812845-70a9-4408-83cf-74c92d1915a2
+      version: -1
+      name: Are there SHA256s to hunt?
+      description: Check if a context key is set. Can also optionally provide a value
+        argument to compare against context data for this key.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "8"
+    scriptarguments:
+      value:
+        simple: ${File.SHA256}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 892f37be-8fb0-493f-8c86-b64fedf6b049
+    type: regular
+    task:
+      id: 892f37be-8fb0-493f-8c86-b64fedf6b049
+      version: -1
+      name: Hunt for devices accessing bad domains
+      description: Returns a list of device IDs on which an indicator ran.
+      script: FalconHost|||cs-device-ran-on
+      type: regular
+      iscommand: true
+      brand: FalconHost
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      type:
+        simple: domain
+      value:
+        simple: ${Domain.Name}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 79c5b224-634c-4ea7-8604-a94bd0637419
+    type: regular
+    task:
+      id: 79c5b224-634c-4ea7-8604-a94bd0637419
+      version: -1
+      name: Hunt for devices running MD5
+      description: |
+        Returns a list of device IDs on which an indicator ran.
+      script: FalconHost|||cs-device-ran-on
+      type: regular
+      iscommand: true
+      brand: FalconHost
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      type:
+        simple: md5
+      value:
+        simple: ${File.MD5}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: f42da4b9-e44a-47f7-8bd3-58ebc367fd29
+    type: regular
+    task:
+      id: f42da4b9-e44a-47f7-8bd3-58ebc367fd29
+      version: -1
+      name: Hunt for devices accessing SHA1
+      description: Returns a list of device IDs on which an indicator ran.
+      script: FalconHost|||cs-device-ran-on
+      type: regular
+      iscommand: true
+      brand: FalconHost
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      type:
+        simple: sha1
+      value:
+        simple: ${File.SHA1}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 85fdaa12-b5f9-44c3-81e9-029353b53de2
+    type: regular
+    task:
+      id: 85fdaa12-b5f9-44c3-81e9-029353b53de2
+      version: -1
+      name: Hunt for devices accessing SHA256
+      description: Returns a list of device IDs on which an indicator ran.
+      script: FalconHost|||cs-device-ran-on
+      type: regular
+      iscommand: true
+      brand: FalconHost
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      type:
+        simple: sha256
+      value:
+        simple: ${File.SHA256}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1512.5,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: fee08a36-3893-425d-8329-77cea06d0d53
+    type: title
+    task:
+      id: fee08a36-3893-425d-8329-77cea06d0d53
+      version: -1
+      name: Get device details and email
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: ee1c2ef3-3993-4227-8e33-cd0baedeff6a
+    type: regular
+    task:
+      id: ee1c2ef3-3993-4227-8e33-cd0baedeff6a
+      version: -1
+      name: Get device details
+      script: FalconHost|||cs-device-search
+      type: regular
+      iscommand: true
+      brand: FalconHost
+      description: Enrcich device information.
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      filter: {}
+      limit: {}
+      offset: {}
+      query:
+        simple: ${FalconHostDevices}
+      value:
+        simple: ${FalconHostDevices}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1512.5,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: ace027f2-ca97-4786-8085-f2b98e47f964
+    type: regular
+    task:
+      id: ace027f2-ca97-4786-8085-f2b98e47f964
+      version: -1
+      name: Notify analyst to review information
+      description: Sends an email using EWS.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: 'Hello,\nPlease review Cortex XSOAR incident "${incident.name} # ${incident.id}
+          " - results are waiting for you.'
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: 'Cortex XSOAR incident ${incident.name} # ${incident.id}'
+      to:
+        simple: ${incident.labels.AnalystEmail}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1512.5,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 4fde6e6e-c916-4a95-83e0-d716d9e58435
+    type: regular
+    task:
+      id: 4fde6e6e-c916-4a95-83e0-d716d9e58435
+      version: -1
+      name: Analyst - review information
+      type: regular
+      iscommand: false
+      description: Review incident information
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1512.5,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 6275c1bc-a359-444b-89aa-c6baf47db456
+    type: condition
+    task:
+      id: 6275c1bc-a359-444b-89aa-c6baf47db456
+      version: -1
+      name: Found any devices?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+      description: Conditional task to verify if devices found with suspicious indicator
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "11"
+    scriptarguments:
+      value:
+        simple: ${FalconHostDevices}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 063c114f-096a-476d-894c-18f3d802fc0f
+    type: title
+    task:
+      id: 063c114f-096a-476d-894c-18f3d802fc0f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1175,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 9ba5d50c-d454-4b3e-8149-847fdfff135c
+    type: condition
+    task:
+      id: 9ba5d50c-d454-4b3e-8149-847fdfff135c
+      version: -1
+      name: Is FalconHost enabled?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "17"
+    scriptarguments:
+      value:
+        simple: ${modules(val.brand == 'FalconHost' && val.state == 'active')}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 06bbd1d4-24bf-4daa-8a57-b1925c9426ae
+    type: title
+    task:
+      id: 06bbd1d4-24bf-4daa-8a57-b1925c9426ae
+      version: -1
+      name: Hunt for indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_11_yes": 0.55,
+      "4_8_yes": 0.56
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1725,
+        "width": 1842.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+The phishing layout now displays the email headers if the email was attached as file or was retrieved using mail listener integrations.
 
 ## [20.5.2] - 2020-05-26
 -
