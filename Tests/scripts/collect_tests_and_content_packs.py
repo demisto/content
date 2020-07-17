@@ -4,13 +4,13 @@ This script is used to create a filter_file.txt file which will run only the nee
 Overview can be found at: https://confluence.paloaltonetworks.com/display/DemistoContent/Configure+Test+Filter
 """
 import os
-import re
 import sys
 import json
 import glob
 import random
 import argparse
 from typing import Dict
+from Tests.Marketplace.marketplace_services import IGNORED_FILES
 import demisto_sdk.commands.common.tools as tools
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -18,9 +18,6 @@ CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
 sys.path.append(CONTENT_DIR)
 
 from demisto_sdk.commands.common.constants import *  # noqa: E402
-from demisto_sdk.commands.common.tools import get_yaml, str2bool, get_from_version, get_to_version, \
-    collect_ids, get_script_or_integration_id, LOG_COLORS, print_error, print_color, \
-    print_warning, server_version_compare  # noqa: E402
 
 # Search Keyword for the changed file
 NO_TESTS_FORMAT = 'No test( - .*)?'
@@ -34,9 +31,8 @@ FILE_IN_PACKS_SCRIPTS_DIR_REGEX = r'{}/([^/]+)/{}/(.+)'.format(
 
 TEST_DATA_INTEGRATION_YML_REGEX = r'Tests\/scripts\/infrastructure_tests\/tests_data\/mock_integrations\/.*\.yml'
 INTEGRATION_REGEXES = [
-    INTEGRATION_REGEX,
-    BETA_INTEGRATION_REGEX,
-    PACKS_INTEGRATION_REGEX,
+    PACKS_INTEGRATION_PY_REGEX,
+    PACKS_INTEGRATION_PS_TEST_REGEX,
     TEST_DATA_INTEGRATION_YML_REGEX
 ]
 TEST_DATA_SCRIPT_YML_REGEX = r'Tests/scripts/infrastructure_tests/tests_data/mock_scripts/.*.yml'
@@ -44,8 +40,7 @@ SCRIPT_REGEXES = [
     TEST_DATA_SCRIPT_YML_REGEX
 ]
 INCIDENT_FIELD_REGEXES = [
-    INCIDENT_FIELD_REGEX,
-    PACKS_INCIDENT_FIELDS_REGEX
+    PACKS_INCIDENT_FIELD_JSON_REGEX
 ]
 FILES_IN_SCRIPTS_OR_INTEGRATIONS_DIRS_REGEXES = [
     FILE_IN_INTEGRATIONS_DIR_REGEX,
@@ -55,20 +50,19 @@ FILES_IN_SCRIPTS_OR_INTEGRATIONS_DIRS_REGEXES = [
 ]
 CHECKED_TYPES_REGEXES = [
     # Integrations
-    INTEGRATION_REGEX,
-    INTEGRATION_YML_REGEX,
-    BETA_INTEGRATION_REGEX,
-    PACKS_INTEGRATION_REGEX,
+    PACKS_INTEGRATION_PY_REGEX,
     PACKS_INTEGRATION_YML_REGEX,
+    PACKS_INTEGRATION_NON_SPLIT_YML_REGEX,
+    PACKS_INTEGRATION_PS_REGEX,
+
     # Scripts
-    SCRIPT_REGEX,
-    SCRIPT_YML_REGEX,
     PACKS_SCRIPT_REGEX,
     PACKS_SCRIPT_YML_REGEX,
+    PACKS_SCRIPT_NON_SPLIT_YML_REGEX,
+
     # Playbooks
     PLAYBOOK_REGEX,
-    BETA_PLAYBOOK_REGEX,
-    PACKS_PLAYBOOK_YML_REGEX
+    PLAYBOOK_YML_REGEX
 ]
 
 # File names
@@ -98,7 +92,7 @@ def is_runnable_in_server_version(from_v, server_v, to_v):
     Returns:
         bool. true if obj is runnable
     """
-    return server_version_compare(from_v, server_v) <= 0 and server_version_compare(server_v, to_v) <= 0
+    return tools.server_version_compare(from_v, server_v) <= 0 and tools.server_version_compare(server_v, to_v) <= 0
 
 
 def checked_type(file_path, regex_list):
@@ -114,13 +108,14 @@ def validate_not_a_package_test_script(file_path):
     return '_test' not in file_path and 'test_' not in file_path
 
 
-def get_modified_files(files_string):
+def get_modified_files_for_testing(files_string):
     """Get a string of the modified files"""
     is_conf_json = False
     is_reputations_json = False
     is_indicator_json = False
 
     sample_tests = []
+    modified_metadata_list = set([])
     changed_common = []
     modified_files_list = []
     modified_tests_list = []
@@ -159,8 +154,7 @@ def get_modified_files(files_string):
             # reputations.json
             elif re.match(INDICATOR_TYPES_REPUTATIONS_REGEX, file_path, re.IGNORECASE) or \
                     re.match(PACKS_INDICATOR_TYPES_REPUTATIONS_REGEX, file_path, re.IGNORECASE) or \
-                    re.match(INDICATOR_TYPES_REGEX, file_path, re.IGNORECASE) or \
-                    re.match(PACKS_INDICATOR_TYPES_REGEX, file_path, re.IGNORECASE):
+                    re.match(PACKS_INDICATOR_TYPE_JSON_REGEX, file_path, re.IGNORECASE):
                 is_reputations_json = True
 
             elif checked_type(file_path, INCIDENT_FIELD_REGEXES):
@@ -178,16 +172,18 @@ def get_modified_files(files_string):
             elif re.match(DOCS_REGEX, file_path) or os.path.splitext(file_path)[-1] in ['.md', '.png']:
                 continue
 
-            elif all(file not in file_path for file in
-                     (SECRETS_WHITE_LIST, PACKS_PACK_META_FILE_NAME, PACKS_WHITELIST_FILE_NAME)):
+            elif any(file in file_path for file in (PACKS_PACK_META_FILE_NAME, PACKS_WHITELIST_FILE_NAME)):
+                modified_metadata_list.add(tools.get_pack_name(file_path))
+
+            elif SECRETS_WHITE_LIST not in file_path:
                 sample_tests.append(file_path)
 
-    return (modified_files_list, modified_tests_list, changed_common, is_conf_json, sample_tests, is_reputations_json,
-            is_indicator_json)
+    return (modified_files_list, modified_tests_list, changed_common, is_conf_json, sample_tests,
+            modified_metadata_list, is_reputations_json, is_indicator_json)
 
 
 def get_name(file_path):
-    data_dictionary = get_yaml(file_path)
+    data_dictionary = tools.get_yaml(file_path)
 
     if data_dictionary:
         return data_dictionary.get('name', '-')
@@ -195,7 +191,7 @@ def get_name(file_path):
 
 def get_tests(file_path):
     """Collect tests mentioned in file_path"""
-    data_dictionary = get_yaml(file_path)
+    data_dictionary = tools.get_yaml(file_path)
     # inject no tests to whitelist so adding values to white list will not force all tests
     if data_dictionary:
         return data_dictionary.get('tests', [])
@@ -262,8 +258,9 @@ def collect_tests_and_content_packs(
 
         if detected_usage and test_playbook_id not in test_ids and test_playbook_id not in skipped_tests:
             caught_missing_test = True
-            print_error("The playbook {} does not appear in the conf.json file, which means no test with it will run."
-                        "please update the conf.json file accordingly".format(test_playbook_name))
+            tools.print_error("The playbook {} does not appear in the conf.json file,"
+                              " which means no test with it will run. please update the conf.json file accordingly"
+                              .format(test_playbook_name))
 
     missing_ids = update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts,
                                       integration_ids, playbook_ids, script_ids)
@@ -280,11 +277,10 @@ def collect_tests_and_content_packs(
             test_playbook_pack = test_playbook_object.get('pack')
             if test_playbook_pack:
                 print(
-                    f'Found test playbook {test_playbook_id} in pack {test_playbook_pack} - adding to packs to install'
-                )
+                    f'Found test playbook {test_playbook_id} in pack {test_playbook_pack} - adding to packs to install')
                 packs_to_install.add(test_playbook_pack)
             else:
-                print_warning(f'Found test playbook {test_playbook_id} without pack - not adding to packs to install')
+                tools.print_warning(f'Found test playbook {test_playbook_id} without pack - not adding to packs to install')
 
     return test_ids, missing_ids, caught_missing_test, packs_to_install
 
@@ -337,6 +333,32 @@ class TestConf(object):
                     all_integrations.append(t['integrations'])
 
         return all_integrations
+
+    def get_tested_integrations_for_collected_tests(self, collected_tests):
+        tested_integrations = []
+        conf_tests = self._conf['tests']
+
+        for t in conf_tests:
+            if t.get('playbookID') not in collected_tests:
+                continue
+
+            if 'integrations' in t:
+                if isinstance(t['integrations'], list):
+                    tested_integrations.extend(t['integrations'])
+                else:
+                    tested_integrations.append(t['integrations'])
+
+        return tested_integrations
+
+    def get_packs_of_tested_integrations(self, collected_tests, id_set):
+        packs = set([])
+        tested_integrations = self.get_tested_integrations_for_collected_tests(collected_tests)
+        for integration in tested_integrations:
+            int_path = id_set__get_integration_file_path(id_set, integration)
+            pack = tools.get_pack_name(int_path)
+            if pack:
+                packs.add(pack)
+        return packs
 
     def get_test_playbooks_configured_with_integration(self, integration_id):
         test_playbooks = []
@@ -391,7 +413,7 @@ def get_integration_commands(integration_ids, integration_set):
 
 
 def is_integration_fetching_incidents(integration_yml_path):
-    integration_yml_dict = get_yaml(integration_yml_path)
+    integration_yml_dict = tools.get_yaml(integration_yml_path)
 
     return integration_yml_dict.get('script').get('isfetch', False) is True
 
@@ -455,7 +477,7 @@ def find_tests_and_content_packs_for_modified_files(modified_files, conf, id_set
     if len(missing_ids) > 0:
         test_string = '\n'.join(missing_ids)
         message = "You've failed to provide tests for:\n{0}".format(test_string)
-        print_color(message, LOG_COLORS.RED)
+        tools.print_color(message, tools.LOG_COLORS.RED)
 
     if caught_missing_test or len(missing_ids) > 0:
         global _FAILED
@@ -472,7 +494,7 @@ def update_with_tests_sections(missing_ids, modified_files, test_ids, tests):
         for test in tests_from_file:
             if test in test_ids or re.match(NO_TESTS_FORMAT, test, re.IGNORECASE):
                 if checked_type(file_path, INTEGRATION_REGEXES):
-                    _id = get_script_or_integration_id(file_path)
+                    _id = tools.get_script_or_integration_id(file_path)
 
                 else:
                     _id = get_name(file_path)
@@ -482,7 +504,7 @@ def update_with_tests_sections(missing_ids, modified_files, test_ids, tests):
 
             else:
                 message = "The test '{0}' does not exist in the conf.json file, please re-check your code".format(test)
-                print_color(message, LOG_COLORS.RED)
+                tools.print_color(message, tools.LOG_COLORS.RED)
                 global _FAILED
                 _FAILED = True
 
@@ -513,7 +535,7 @@ def collect_content_packs_to_install(id_set: Dict, integration_ids: set, playboo
                 print(f'Found integration {integration_id} in pack {integration_pack} - adding to packs to install')
                 packs_to_install.add(integration_object.get('pack'))
             else:
-                print_warning(f'Found integration {integration_id} without pack - not adding to packs to install')
+                tools.print_warning(f'Found integration {integration_id} without pack - not adding to packs to install')
 
     id_set_playbooks = id_set.get('playbooks', [])
     for playbook in id_set_playbooks:
@@ -525,7 +547,7 @@ def collect_content_packs_to_install(id_set: Dict, integration_ids: set, playboo
                 print(f'Found playbook {playbook_name} in pack {playbook_pack} - adding to packs to install')
                 packs_to_install.add(playbook_pack)
             else:
-                print_warning(f'Found playbook {playbook_name} without pack - not adding to packs to install')
+                tools.print_warning(f'Found playbook {playbook_name} without pack - not adding to packs to install')
 
     id_set_script = id_set.get('scripts', [])
     for script in id_set_script:
@@ -537,7 +559,7 @@ def collect_content_packs_to_install(id_set: Dict, integration_ids: set, playboo
                 print(f'Found script {script_id} in pack {script_pack} - adding to packs to install')
                 packs_to_install.add(script_object.get('pack'))
             else:
-                print_warning(f'Found script {script_id} without pack - not adding to packs to install')
+                tools.print_warning(f'Found script {script_id} without pack - not adding to packs to install')
 
     return packs_to_install
 
@@ -549,9 +571,10 @@ def get_api_module_integrations(changed_api_modules, integration_set):
         integration_data = list(integration.values())[0]
         if integration_data.get('api_modules', '') in changed_api_modules:
             file_path = integration_data.get('file_path')
-            integration_id = get_script_or_integration_id(file_path)
+            integration_id = tools.get_script_or_integration_id(file_path)
             integration_ids_to_test.add(integration_id)
-            integration_to_version[integration_id] = (get_from_version(file_path), get_to_version(file_path))
+            integration_to_version[integration_id] = (tools.get_from_version(file_path),
+                                                      tools.get_to_version(file_path))
 
     return integration_ids_to_test, integration_to_version
 
@@ -570,7 +593,7 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
         if checked_type(file_path, SCRIPT_REGEXES + YML_SCRIPT_REGEXES):
             name = get_name(file_path)
             script_names.add(name)
-            script_to_version[name] = (get_from_version(file_path), get_to_version(file_path))
+            script_to_version[name] = (tools.get_from_version(file_path), tools.get_to_version(file_path))
 
             package_name = os.path.dirname(file_path)
             if glob.glob(package_name + "/*_test.py"):
@@ -580,15 +603,15 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
         elif checked_type(file_path, YML_PLAYBOOKS_NO_TESTS_REGEXES):
             name = get_name(file_path)
             playbook_names.add(name)
-            playbook_to_version[name] = (get_from_version(file_path), get_to_version(file_path))
+            playbook_to_version[name] = (tools.get_from_version(file_path), tools.get_to_version(file_path))
 
         elif checked_type(file_path, INTEGRATION_REGEXES + YML_INTEGRATION_REGEXES):
-            _id = get_script_or_integration_id(file_path)
+            _id = tools.get_script_or_integration_id(file_path)
             integration_ids.add(_id)
-            integration_to_version[_id] = (get_from_version(file_path), get_to_version(file_path))
+            integration_to_version[_id] = (tools.get_from_version(file_path), tools.get_to_version(file_path))
 
         if checked_type(file_path, API_MODULE_REGEXES):
-            api_module_name = get_script_or_integration_id(file_path)
+            api_module_name = tools.get_script_or_integration_id(file_path)
             changed_api_modules.add(api_module_name)
 
     if not id_set:
@@ -645,10 +668,10 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     print('The following ids are affected due to the changes you made:')
     for entity in ['scripts', 'playbooks', 'integrations']:
         print(affected_ids_strings[entity])
-        print_color(deprecated_msgs[entity], LOG_COLORS.YELLOW)
+        tools.print_color(deprecated_msgs[entity], tools.LOG_COLORS.YELLOW)
 
     if deprecated_commands_message:
-        print_color(deprecated_commands_message, LOG_COLORS.YELLOW)
+        tools.print_color(deprecated_commands_message, tools.LOG_COLORS.YELLOW)
 
     packs_to_install = collect_content_packs_to_install(id_set, integration_ids, playbook_names, script_names)
 
@@ -870,10 +893,9 @@ def get_test_conf_from_conf(test_id, server_version, conf=None):
     # return None if nothing is found
     test_conf = next((test_conf for test_conf in test_conf_lst if (
         test_conf.get('playbookID') == test_id
-        and is_runnable_in_server_version(from_v=test_conf.get('fromversion', '0'),
+        and is_runnable_in_server_version(from_v=test_conf.get('fromversion', '0.0'),
                                           server_v=server_version,
-                                          to_v=test_conf.get('toversion', '99.99.99'))
-    )), None)
+                                          to_v=test_conf.get('toversion', '99.99.99')))), None)
     return test_conf
 
 
@@ -894,7 +916,7 @@ def extract_matching_object_from_id_set(obj_id, obj_set, server_version='0'):
                 continue
 
         # check if object is runnable
-        fromversion = obj.get('fromversion', '0')
+        fromversion = obj.get('fromversion', '0.0')
         toversion = obj.get('toversion', '99.99.99')
         if is_runnable_in_server_version(from_v=fromversion, server_v=server_version, to_v=toversion):
             return obj
@@ -954,32 +976,32 @@ def is_test_runnable(test_id, id_set, conf, server_version):
     warning_prefix = f'{test_id} is not runnable on {server_version}'
     # check if test is skipped
     if test_id in skipped_tests:
-        print_warning(f'{warning_prefix} - skipped')
+        tools.print_warning(f'{warning_prefix} - skipped')
         return False
     test_conf = get_test_conf_from_conf(test_id, server_version, conf)
 
     # check if there's a test to run
     if not test_conf:
-        print_warning(f'{warning_prefix} - couldn\'t find test in conf.json')
+        tools.print_warning(f'{warning_prefix} - couldn\'t find test in conf.json')
         return False
-    conf_fromversion = test_conf.get('fromversion', '0')
+    conf_fromversion = test_conf.get('fromversion', '0.0')
     conf_toversion = test_conf.get('toversion', '99.99.99')
     test_playbooks_set = id_set.get('TestPlaybooks', [])
     test_playbook_obj = extract_matching_object_from_id_set(test_id, test_playbooks_set, server_version)
 
     # check whether the test is runnable in id_set
     if not test_playbook_obj:
-        print_warning(f'{warning_prefix} - couldn\'t find the test in id_set.json')
+        tools.print_warning(f'{warning_prefix} - couldn\'t find the test in id_set.json')
         return False
 
     # check used integrations available
     if not is_test_integrations_available(server_version, test_conf, conf, id_set):
-        print_warning(f'{warning_prefix} - no active integration found')
+        tools.print_warning(f'{warning_prefix} - no active integration found')
         return False
 
     # check conf from/to
     if not is_runnable_in_server_version(conf_fromversion, server_version, conf_toversion):
-        print_warning(f'{warning_prefix} - conf.json from/to version')
+        tools.print_warning(f'{warning_prefix} - conf.json from/to version')
         return False
 
     return True
@@ -1046,6 +1068,13 @@ def get_random_tests(tests_num, rand, conf=None, id_set=None, server_version='0'
     return tests
 
 
+def get_tests_for_pack(pack_path):
+    pack_yml_files = tools.get_files_in_dir(pack_path, ['yml'])
+    pack_test_playbooks = [tools.collect_ids(file) for file in pack_yml_files if
+                           checked_type(file, YML_TEST_PLAYBOOKS_REGEXES)]
+    return pack_test_playbooks
+
+
 def get_content_pack_name_of_test(tests: set, id_set: Dict = None) -> set:
     """Returns the content packs names in which given test playbooks are in.
 
@@ -1076,16 +1105,45 @@ def get_content_pack_name_of_test(tests: set, id_set: Dict = None) -> set:
     return content_packs
 
 
+def get_modified_packs(files_string):
+    modified_packs = set()
+    all_files = files_string.splitlines()
+
+    for _file in all_files:
+        file_data = _file.split()
+        if not file_data:
+            continue
+        file_status = file_data[0]
+        if file_status.lower().startswith('r'):
+            file_path = file_data[2]
+        else:
+            file_path = file_data[1]
+
+        if file_path.startswith('Documentation'):
+            modified_packs.add('Base')
+
+        elif file_path.startswith('Packs'):
+            modified_packs.add(tools.get_pack_name(file_path))
+
+    return modified_packs
+
+
 def get_test_list_and_content_packs_to_install(files_string, branch_name, two_before_ga_ver='0', conf=None,
                                                id_set=None):
     """Create a test list that should run"""
-    (modified_files, modified_tests_list, changed_common, is_conf_json, sample_tests, is_reputations_json,
-     is_indicator_json) = get_modified_files(files_string)
+
+    (modified_files_with_relevant_tests, modified_tests_list, changed_common, is_conf_json, sample_tests,
+     modified_metadata_list, is_reputations_json, is_indicator_json) = get_modified_files_for_testing(files_string)
 
     tests = set([])
     packs_to_install = set([])
-    if modified_files:
-        tests, packs_to_install = find_tests_and_content_packs_for_modified_files(modified_files, conf, id_set)
+    if modified_files_with_relevant_tests:
+        tests, packs_to_install = find_tests_and_content_packs_for_modified_files(modified_files_with_relevant_tests,
+                                                                                  conf, id_set)
+    for pack in modified_metadata_list:
+        pack_tests = get_tests_for_pack(tools.pack_name_to_path(pack))
+        packs_to_install.add(pack)
+        tests = tests.union(pack_tests)
 
     # Adding a unique test for a json file.
     if is_reputations_json:
@@ -1097,10 +1155,11 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
         tests.add('Test IP Indicator Fields')
 
     for file_path in modified_tests_list:
-        test = collect_ids(file_path)
+        test = tools.collect_ids(file_path)
         if test not in tests:
             tests.add(test)
-        packs_to_install = packs_to_install.union(get_content_pack_name_of_test(tests, id_set))
+
+    packs_to_install = packs_to_install.union(get_content_pack_name_of_test(tests, id_set))
 
     if is_conf_json:
         tests = tests.union(get_test_from_conf(branch_name, conf))
@@ -1111,19 +1170,30 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
             tests_num=RANDOM_TESTS_NUM, rand=rand, conf=conf, id_set=id_set, server_version=two_before_ga_ver)
         packs_to_install = get_content_pack_name_of_test(tests, id_set)
         if changed_common:
-            print_warning('Adding 3 random tests due to: {}'.format(','.join(changed_common)))
+            tools.print_warning('Adding 3 random tests due to: {}'.format(','.join(changed_common)))
         elif sample_tests:  # Choosing 3 random tests for infrastructure testing
-            print_warning('Collecting sample tests due to: {}'.format(','.join(sample_tests)))
+            tools.print_warning('Collecting sample tests due to: {}'.format(','.join(sample_tests)))
         else:
-            print_warning("Running Sanity check only")
-            tests.add('DocumentationTest')  # test with integration configured
+            tools.print_warning("Running Sanity check only")
+
             tests.add('TestCommonPython')  # test with no integration configured
+            tests.add('HelloWorld-Test')  # test with integration configured
+            packs_to_install.add("HelloWorld")
 
     if changed_common:
         tests.add('TestCommonPython')
 
-    if 'NonSupported' in packs_to_install:
-        packs_to_install.remove("NonSupported")
+    # get all modified packs - not just tests related
+    modified_packs = get_modified_packs(files_string)
+    if modified_packs:
+        packs_to_install = packs_to_install.union(modified_packs)
+
+    packs_to_install.update(["DeveloperTools", "Base"])
+
+    packs_of_tested_integrations = conf.get_packs_of_tested_integrations(tests, id_set)
+    packs_to_install = packs_to_install.union(packs_of_tested_integrations)
+
+    packs_to_install = {pack_to_install for pack_to_install in packs_to_install if pack_to_install not in IGNORED_FILES}
 
     return tests, packs_to_install
 
@@ -1157,6 +1227,10 @@ def create_test_file(is_nightly, skip_save=False):
         print("Getting changed files from the branch: {0}".format(branch_name))
         if branch_name != 'master':
             files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
+            # Checks if the build is for contributor PR and if so add it's pack.
+            if tools.run_command('echo $CONTRIB_BRANCH'):
+                packs_diff = tools.run_command("git diff --name-status HEAD -- Packs")
+                files_string += f"\n{packs_diff}"
         else:
             commit_string = tools.run_command("git log -n 2 --pretty='%H'")
             commit_string = commit_string.replace("'", "")
@@ -1200,19 +1274,19 @@ def create_test_file(is_nightly, skip_save=False):
 
 
 if __name__ == "__main__":
-    print_color("Starting creation of test filter file", LOG_COLORS.GREEN)
+    tools.print_color("Starting creation of test filter file", tools.LOG_COLORS.GREEN)
 
     parser = argparse.ArgumentParser(description='Utility CircleCI usage')
-    parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly or not')
-    parser.add_argument('-s', '--skip-save', type=str2bool,
+    parser.add_argument('-n', '--nightly', type=tools.str2bool, help='Is nightly or not')
+    parser.add_argument('-s', '--skip-save', type=tools.str2bool,
                         help='Skipping saving the test filter file (good for simply doing validation)')
     options = parser.parse_args()
 
     # Create test file based only on committed files
     create_test_file(options.nightly, options.skip_save)
     if not _FAILED:
-        print_color("Finished test configuration", LOG_COLORS.GREEN)
+        tools.print_color("Finished test configuration", tools.LOG_COLORS.GREEN)
         sys.exit(0)
     else:
-        print_color("Failed test configuration. See previous errors.", LOG_COLORS.RED)
+        tools.print_color("Failed test configuration. See previous errors.", tools.LOG_COLORS.RED)
         sys.exit(1)

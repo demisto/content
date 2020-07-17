@@ -305,7 +305,7 @@ def alert_get_command(client, args):
         code42_context = map_to_code42_alert_context(alert)
         code42_securityalert_context.append(code42_context)
         readable_outputs = tableToMarkdown(
-            f'Code42 Security Alert Results',
+            'Code42 Security Alert Results',
             code42_securityalert_context,
             headers=SECURITY_ALERT_HEADERS
         )
@@ -325,7 +325,7 @@ def alert_resolve_command(client, args):
             code42_context = map_to_code42_alert_context(updated_alert)
             code42_securityalert_context.append(code42_context)
             readable_outputs = tableToMarkdown(
-                f'Code42 Security Alert Resolved',
+                'Code42 Security Alert Resolved',
                 code42_securityalert_context,
                 headers=SECURITY_ALERT_HEADERS
             )
@@ -357,7 +357,7 @@ def departingemployee_add_command(client, args):
             'Note': args.get('note')
         }
         readable_outputs = tableToMarkdown(
-            f'Code42 Departing Employee Lens User Added',
+            'Code42 Departing Employee Lens User Added',
             de_context
         )
         return readable_outputs, {'Code42.DepartingEmployee': de_context}, case
@@ -374,7 +374,7 @@ def departingemployee_remove_command(client, args):
             'Username': args['username'],
         }
         readable_outputs = tableToMarkdown(
-            f'Code42 Departing Employee Lens User Removed',
+            'Code42 Departing Employee Lens User Removed',
             de_context
         )
         return readable_outputs, {'Code42.DepartingEmployee': de_context}, case
@@ -445,7 +445,7 @@ def securitydata_search_command(client, args):
             file_context_event = map_to_file_context(file_event)
             file_context.append(file_context_event)
         readable_outputs = tableToMarkdown(
-            f'Code42 Security Data Results',
+            'Code42 Security Data Results',
             code42_securitydata_context,
             headers=SECURITY_EVENT_HEADERS
         )

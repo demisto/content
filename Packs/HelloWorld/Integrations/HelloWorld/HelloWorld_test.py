@@ -432,7 +432,7 @@ def test_fetch_incidents(requests_mock):
     requests_mock.get(
         'https://test.com/api/v1/get_alerts?alert_status=ACTIVE'
         '&severity=Low%2CMedium%2CHigh%2CCritical&max_results=2'
-        '&start_time=1582584487', json=mock_response['alerts'])
+        '&start_time=1581944401', json=mock_response['alerts'])
 
     client = Client(
         base_url='https://test.com/api/v1',
@@ -443,7 +443,7 @@ def test_fetch_incidents(requests_mock):
     )
 
     last_run = {
-        'last_fetch': 1582584487  # Mon Feb 24 2020
+        'last_fetch': 1581944401  # Mon Feb 17 2020
     }
 
     _, new_incidents = fetch_incidents(

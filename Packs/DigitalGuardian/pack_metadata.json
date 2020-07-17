@@ -2,7 +2,6 @@
     "name": "Digital Guardian",
     "description": "Digital Guardian ARC Watchlist Integration",
     "support": "partner",
-    "serverMinVersion": "5.0.0",
     "currentVersion": "1.0.0",
     "author": "Digital Guardian",
     "url": "https://digitalguardian.com",

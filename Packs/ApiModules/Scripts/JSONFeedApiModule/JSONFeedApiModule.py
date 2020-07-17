@@ -100,7 +100,8 @@ def test_module(client, params) -> str:
     return 'ok'
 
 
-def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list, **kwargs) -> Union[Dict, List[Dict]]:
+def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list, auto_detect: bool, **kwargs)\
+        -> Union[Dict, List[Dict]]:
     """
     Fetches the indicators from client.
     :param client: Client of a JSON Feed
@@ -120,7 +121,7 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
                     item = {indicator_field: item}
                 indicator_value = item.get(indicator_field)
 
-                current_indicator_type = indicator_type or auto_detect_indicator_type(indicator_value)
+                current_indicator_type = determine_indicator_type(indicator_type, auto_detect, indicator_value)
                 if not current_indicator_type:
                     continue
 
@@ -141,6 +142,21 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
                 indicators.append(indicator)
 
     return indicators
+
+
+def determine_indicator_type(indicator_type, auto_detect, value):
+    """
+    Detect the indicator type of the given value.
+    Args:
+        indicator_type: (str) Given indicator type.
+        auto_detect: (bool) True whether auto detection of the indicator type is wanted.
+        value: (str) The value which we'd like to get indicator type of.
+    Returns:
+        Str which stands for the indicator type after detection.
+    """
+    if auto_detect:
+        indicator_type = auto_detect_indicator_type(value)
+    return indicator_type
 
 
 def extract_all_fields_from_indicator(indicator, indicator_key):
@@ -195,14 +211,16 @@ def feed_main(params, feed_name, prefix):
             return_outputs(test_module(client, params))
 
         elif command == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, indicator_type, feedTags)
+            indicators = fetch_indicators_command(client, params.get('indicator_type'), feedTags,
+                                                  params.get('auto_detect_type'))
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
 
         elif command == f'{prefix}get-indicators':
             # dummy command for testing
             limit = int(demisto.args().get('limit', 10))
-            indicators = fetch_indicators_command(client, indicator_type, feedTags)[:limit]
+            auto_detect = params.get('auto_detect_type')
+            indicators = fetch_indicators_command(client, indicator_type, feedTags, auto_detect)[:limit]
             hr = tableToMarkdown('Indicators', indicators, headers=['value', 'type', 'rawJSON'])
             return_outputs(hr, {}, indicators)
 

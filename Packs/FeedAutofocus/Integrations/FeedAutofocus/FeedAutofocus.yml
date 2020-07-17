@@ -99,6 +99,11 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Tags
+  hidden: false
+  name: feedTags
+  required: false
+  type: 0
 description: Use the AutoFocus Feeds integration to fetch indicators from AutoFocus.
 display: AutoFocus Feed
 name: AutoFocus Feed
@@ -123,7 +128,7 @@ script:
     description: Gets the indicators from AutoFocus.
     execution: false
     name: autofocus-get-indicators
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.8.3.9324
   feed: true
   isfetch: false
   longRunning: false
