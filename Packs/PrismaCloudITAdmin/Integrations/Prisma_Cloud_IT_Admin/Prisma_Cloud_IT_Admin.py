@@ -277,7 +277,8 @@ def get_user_command(client, args):
     else:
         generic_iam_context = OutputContext(success=False, iden=user_id, username=username, email=email,
                                             errorCode=res.status_code,
-                                            errorMessage=res.headers.get('x-redlock-status'))
+                                            errorMessage=res.headers.get('x-redlock-status'),
+                                            details=res.headers.get('x-redlock-status'))
 
     generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
 
@@ -320,13 +321,15 @@ def create_user_command(client, args):
                                             iden=parsed_scim.get('email'),
                                             email=parsed_scim.get('email'),
                                             errorCode=res.status_code,
-                                            errorMessage=res.headers.get('x-redlock-status'))
+                                            errorMessage=res.headers.get('x-redlock-status'),
+                                            details=res.headers.get('x-redlock-status'))
     else:
         generic_iam_context = OutputContext(success=False,
                                             iden=parsed_scim.get('email'),
                                             email=parsed_scim.get('email'),
                                             errorCode=res.status_code,
-                                            errorMessage=res.headers.get('x-redlock-status'))
+                                            errorMessage=res.headers.get('x-redlock-status'),
+                                            details=res.headers.get('x-redlock-status'))
 
     generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
 
@@ -389,7 +392,8 @@ def update_user_command(client, args):
                                             email=email,
                                             username=username,
                                             errorCode=error_code,
-                                            errorMessage=res.headers.get('x-redlock-status'))
+                                            errorMessage=res.headers.get('x-redlock-status'),
+                                            details=res.headers.get('x-redlock-status'))
 
     else:
         generic_iam_context = OutputContext(success=False,
@@ -397,7 +401,8 @@ def update_user_command(client, args):
                                             email=email,
                                             username=username,
                                             errorCode=res.status_code,
-                                            errorMessage=res.headers.get('x-redlock-status'))
+                                            errorMessage=res.headers.get('x-redlock-status'),
+                                            details=res.headers.get('x-redlock-status'))
 
     generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
 
@@ -454,7 +459,8 @@ def enable_disable_user_command(client, args):
     else:
         generic_iam_context = OutputContext(success=False, iden=user_term, username=username,
                                             email=email, errorCode=res.status_code,
-                                            errorMessage=res.headers.get('x-redlock-status'))
+                                            errorMessage=res.headers.get('x-redlock-status'),
+                                            details=res.headers.get('x-redlock-status'))
 
     generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
 
