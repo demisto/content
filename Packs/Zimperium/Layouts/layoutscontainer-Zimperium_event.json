@@ -1,14 +1,12 @@
 {
-	"TypeName": "Zimperium Event",
-	"kind": "details",
-	"layout": {
-		"TypeName": "",
-		"id": "Zimperium Event",
-		"kind": "details",
-		"modified": "2020-07-02T11:24:36.865357+03:00",
-		"name": "",
-		"system": false,
-		"tabs": [
+	"id": "Zimperium event",
+	"group": "incident",
+	"name": "Zimperium Event",
+	"description": "",
+	"version": -1,
+	"fromVersion": "6.0.0",
+    "detailsV2": {
+        "tabs": [
 			{
 				"id": "summary",
 				"name": "Legacy Summary",
@@ -430,12 +428,6 @@
 				"name": "Canvas",
 				"type": "canvas"
 			}
-		],
-		"typeId": "Zimperium Event",
-		"version": -1
-	},
-	"typeId": "Zimperium Event",
-	"version": -1,
-	"fromVersion": "5.0.0",
-	"toVersion": "5.9.9"
+		]
+    }
 }
