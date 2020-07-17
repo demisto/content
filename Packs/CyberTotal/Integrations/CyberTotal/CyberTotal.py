@@ -30,7 +30,7 @@ class Client(BaseClient):
 
         cybertotal_result = self._http_request(
             method='GET',
-            url_suffix=f'/_api/search/ip/basic/' + ip
+            url_suffix='/_api/search/ip/basic/{}'.format(ip)
         )
         if 'task_state' in cybertotal_result:
             return {'task_state': cybertotal_result['task_state'], 'message': 'this search is in progress, try again later...'}
@@ -83,7 +83,7 @@ class Client(BaseClient):
 
         cybertotal_result = self._http_request(
             method='GET',
-            url_suffix=f'/_api/search/url/basic?q=' + url
+            url_suffix='/_api/search/url/basic?q={}'.format(url)
         )
         if 'task_state' in cybertotal_result:
             return {'task_state': cybertotal_result['task_state'], 'message': 'this search is in progress, try again later...'}
@@ -134,7 +134,7 @@ class Client(BaseClient):
 
         cybertotal_result = self._http_request(
             method='GET',
-            url_suffix=f'/_api/search/hash/basic/' + _hash
+            url_suffix='/_api/search/hash/basic/{}'.format(_hash)
         )
         if 'task_state' in cybertotal_result:
             return {'task_state': cybertotal_result['task_state'], 'message': 'this search is in progress, try again later...'}
@@ -200,7 +200,7 @@ class Client(BaseClient):
 
         cybertotal_result = self._http_request(
             method='GET',
-            url_suffix=f'/_api/search/domain/basic/' + domain
+            url_suffix='/_api/search/domain/basic/{}'.format(domain)
         )
         if 'task_state' in cybertotal_result:
             return {'task_state': cybertotal_result['task_state'], 'message': 'this search is in progress, try again later...'}
@@ -253,7 +253,7 @@ class Client(BaseClient):
 
         cybertotal_result = self._http_request(
             method='GET',
-            url_suffix=f'/_api/search/ip/whois/' + ip
+            url_suffix='/_api/search/ip/whois/{}'.format(ip)
         )
         if 'task_state' in cybertotal_result:
             return {'task_state': cybertotal_result['task_state'], 'message': 'this search is in progress, try again later...'}
@@ -285,7 +285,7 @@ class Client(BaseClient):
 
         cybertotal_result = self._http_request(
             method='GET',
-            url_suffix=f'/_api/search/url/whois?q=' + url
+            url_suffix='/_api/search/url/whois?q={}'.format(url)
         )
         if 'task_state' in cybertotal_result:
             return {'task_state': cybertotal_result['task_state'], 'message': 'this search is in progress, try again later...'}
@@ -318,7 +318,7 @@ class Client(BaseClient):
 
         cybertotal_result = self._http_request(
             method='GET',
-            url_suffix=f'/_api/search/domain/whois/' + domain
+            url_suffix='/_api/search/domain/whois/{}'.format(domain)
         )
         if 'task_state' in cybertotal_result:
             return {'task_state': cybertotal_result['task_state'], 'message': 'this search is in progress, try again later...'}
