@@ -5310,6 +5310,57 @@ def panorama_device_reboot_command():
     demisto.results(result['response']['result'])
 
 
+@logger
+def panorama_show_location_ip(ip_address: str):
+    params = {
+        'type': 'op',
+        'cmd': f'<show><location><ip>{ip_address}</ip></location></show>',
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+
+    return result
+
+
+def panorama_show_location_ip_command():
+    """
+    Check location of a specified ip address
+    """
+    ip_address = demisto.args().get('ip_address')
+    result = panorama_show_location_ip(ip_address)
+
+    if 'response' not in result or '@status' not in result['response'] or result['response']['@status'] != 'success':
+        raise Exception(f'Failed to successfully show the location of the specified ip: {ip_address}.')
+
+    if 'response' in result and 'result' in result['response'] and 'entry' in result['response']['result']:
+        entry = result['response']['result']['entry']
+        show_location_output = {
+            "ip_address": entry.get('ip'),
+            "country_name": entry.get('country'),
+            "country_code": entry.get('@cc'),
+            "status": 'Found'
+        }
+    else:
+        show_location_output = {
+            "ip_address": ip_address,
+            "status": 'NotFound'
+        }
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown(f'IP {ip_address} location:', show_location_output,
+                                         ['ip_address', 'country_name', 'country_code', 'result'], removeNull=True),
+        'EntryContext': {"Panorama.Location.IP(val.ip_address == obj.ip_address)": show_location_output}
+    })
+
+
 def main():
     LOG(f'Command being called is: {demisto.command()}')
 
@@ -5582,6 +5633,9 @@ def main():
         # Get pre-defined threats list from the firewall
         elif demisto.command() == 'panorama-get-predefined-threats-list':
             panorama_get_predefined_threats_list_command()
+
+        elif demisto.command() == 'panorama-show-location-ip':
+            panorama_show_location_ip_command()
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} was not implemented.')
