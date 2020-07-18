@@ -365,8 +365,8 @@ def run_and_record(conf_json_test_details, tests_queue, tests_settings, c, proxy
                              playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number,
                              server_url, build_name, prints_manager, thread_index=thread_index, is_mock_run=True)
     proxy.stop(thread_index=thread_index, prints_manager=prints_manager)
-    proxy.clean_mock_file(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
     if succeed:
+        proxy.clean_mock_file(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
         proxy.move_mock_file_to_repo(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
 
     proxy.set_repo_folder()
@@ -1192,11 +1192,11 @@ def safe_lock_integrations(test_timeout: int,
     filtered_integrations_details = [integration for integration in integrations_details if
                                      integration['name'] not in parallel_integrations_names]
     integration_names = get_integrations_list(filtered_integrations_details)
-    prints_manager.add_print_job(
-        f'Attempting to lock integrations {integration_names}, with timeout {test_timeout}',
-        print,
-        thread_index,
-        include_timestamp=True)
+    if integration_names:
+        print_msg = f'Attempting to lock integrations {integration_names}, with timeout {test_timeout}'
+    else:
+        print_msg = 'No integrations to lock'
+    prints_manager.add_print_job(print_msg, print, thread_index, include_timestamp=True)
     try:
         storage_client = storage.Client()
         locked = lock_integrations(filtered_integrations_details, test_timeout, storage_client, prints_manager, thread_index)

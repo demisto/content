@@ -1,7 +1,7 @@
 id: playbook14
 version: -1
 name: Checkpoint Firewall Configuration Backup Playbook
-description: Triggers a backup task on each firewall appliance and pulls the resulting
+description: DEPRECATED. Triggers a backup task on each firewall appliance and pulls the resulting
   file into the war room via SCP.
 system: true
 fromversion: 2.5.0
