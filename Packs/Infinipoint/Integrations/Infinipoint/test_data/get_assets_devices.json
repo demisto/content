@@ -1,6 +1,6 @@
 [
   {
-    "agentVersion": "3.200.30.0",
+    "agentVersion": "X.XXX.XX.X",
     "clientType": 0,
     "discoveryId": "",
     "domain": "europe-west1-b.c.riscale.internal",
@@ -20,7 +20,7 @@
     "networks": [
       {
         "alias": "",
-        "cidr": "10.132.0.1/32",
+        "cidr": "XX.132.0.1/32",
         "gatewayIp": 176422913,
         "gatewayMACAddress": "42:01:0A:84:00:01"
       }
