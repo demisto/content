@@ -65,20 +65,28 @@ script:
     - name: device_risk
     outputs:
     - contextPath: Infinipoint.Vulnerability.Devices.$device
+      description: ''
       type: String
     - contextPath: Infinipoint.Vulnerability.Devices.$host
+      description: ''
       type: String
     - contextPath: Infinipoint.Vulnerability.Devices.cve_id
+      description: ''
       type: Unknown
     - contextPath: Infinipoint.Vulnerability.Devices.device_risk
+      description: ''
       type: Number
     - contextPath: Infinipoint.Vulnerability.Devices.device_risk_type
+      description: ''
       type: Number
     - contextPath: Infinipoint.Vulnerability.Devices.software_name
+      description: ''
       type: Unknown
     - contextPath: Infinipoint.Vulnerability.Devices.vulnerability_count
+      description: ''
       type: Number
   - name: infinipoint-get-assets-programs
+    description: ''
     arguments:
     - name: name
       auto: PREDEFINED
@@ -94,26 +102,37 @@ script:
       - Software version
     outputs:
     - contextPath: Infinipoint.Assets.Programs.items.$device
+      description: ''
       type: String
     - contextPath: Infinipoint.Assets.Programs.items.$host
+      description: ''
       type: String
     - contextPath: Infinipoint.Assets.Programs.items.$time
+      description: ''
       type: Number
     - contextPath: Infinipoint.Assets.Programs.items.$type
+      description: ''
       type: String
     - contextPath: Infinipoint.Assets.Programs.items.name
+      description: ''
       type: String
     - contextPath: Infinipoint.Assets.Programs.items.os_type
+      description: ''
       type: String
     - contextPath: Infinipoint.Assets.Programs.items.program_exists
+      description: ''
       type: String
     - contextPath: Infinipoint.Assets.Programs.items.publisher
+      description: ''
       type: String
     - contextPath: Infinipoint.Assets.Programs.items.version
+      description: ''
       type: String
     - contextPath: Infinipoint.Assets.Programs.items.install_update_date
+      description: ''
       type: Date
     - contextPath: Infinipoint.Assets.Programs.itemsTotal
+      description: ''
       type: Number
   - name: infinipoint-get-cve
     arguments:
@@ -121,8 +140,10 @@ script:
       required: true
     outputs:
     - contextPath: Infinipoint.Cve.Details.campaign_intelligence.apt
+      description: ''
       type: String
     - contextPath: Infinipoint.Cve.Details.campaign_intelligence.description
+      description: ''
       type: String
     - contextPath: Infinipoint.Cve.Details.campaign_intelligence.targeted_countries
       type: String

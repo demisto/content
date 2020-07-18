@@ -1,7 +1,7 @@
 [
   {
     "alias": "GCP",
-    "cidr": "192.168.237.2/24",
+    "cidr": "XXX.XXX.XXX.X/24",
     "city": null,
     "country": null,
     "cronExpression": "",

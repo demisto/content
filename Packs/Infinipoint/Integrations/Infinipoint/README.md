@@ -16,7 +16,7 @@ This integration was integrated and tested with version xx of Infinipoint
 | max_fetch | Maximum number of incidents per fetch | False |
 | first_fetch | First fetch time | False |
 | insecure | Trust any certificate \(not secure\) | False |
-| page_size | page size | False |
+| proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -619,6 +619,65 @@ After you successfully execute a command, a DBot message appears in the War Room
 | Infinipoint.Compliance.Incidents.policyName | String |  | 
 | Infinipoint.Compliance.Incidents.policyVersion | Number |  | 
 | Infinipoint.Compliance.Incidents.timestamp | Number |  | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### infinipoint-get-device-details 
+***
+ 
+
+
+#### Base Command
+
+`infinipoint-get-device-details`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| discoveryId |  | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Infinipoint.Device.Details.$device | String |  | 
+| Infinipoint.Device.Details.$type | String |  | 
+| Infinipoint.Device.Details._key | String |  | 
+| Infinipoint.Device.Details.archive | Number |  | 
+| Infinipoint.Device.Details.building | String |  | 
+| Infinipoint.Device.Details.classification | String |  | 
+| Infinipoint.Device.Details.department | String |  | 
+| Infinipoint.Device.Details.email | String |  | 
+| Infinipoint.Device.Details.enroll_date | Date |  | 
+| Infinipoint.Device.Details.first_seen | Number |  | 
+| Infinipoint.Device.Details.hidden | Number |  | 
+| Infinipoint.Device.Details.host_name.name | String |  | 
+| Infinipoint.Device.Details.host_name.value | String |  | 
+| Infinipoint.Device.Details.jamf_tag | String |  | 
+| Infinipoint.Device.Details.last_report_date | Number |  | 
+| Infinipoint.Device.Details.last_seen | Number |  | 
+| Infinipoint.Device.Details.mac_address.name | String |  | 
+| Infinipoint.Device.Details.mac_address.value | String |  | 
+| Infinipoint.Device.Details.model | String |  | 
+| Infinipoint.Device.Details.name_tag | String |  | 
+| Infinipoint.Device.Details.os_name.name | String |  | 
+| Infinipoint.Device.Details.os_name.value | String |  | 
+| Infinipoint.Device.Details.phone_number | String |  | 
+| Infinipoint.Device.Details.position | String |  | 
+| Infinipoint.Device.Details.providers | String |  | 
+| Infinipoint.Device.Details.room | String |  | 
+| Infinipoint.Device.Details.serial | String |  | 
+| Infinipoint.Device.Details.site | String |  | 
+| Infinipoint.Device.Details.udid | String |  | 
+| Infinipoint.Device.Details.unique_id | String |  | 
+| Infinipoint.Device.Details.username | String |  | 
 
 
 #### Command Example

@@ -2,10 +2,11 @@
 !infinipoint-get-assets-programs name="VMware"
 !infinipoint-get-assets-hardware os_type="1"
 !infinipoint-get-assets-cloud source="GCP API"
-!infinipoint-get-assets-users host="et"
+!infinipoint-get-assets-users username="et"
 !infinipoint-get-device osType=1
-!infinipoint-get-vulnerable-devices device_risk=6
+!infinipoint-get-vulnerable-devices device_risk=3
 !infinipoint-get-tag name=et
 !infinipoint-get-networks alias=GCP
 !infinipoint-get-queries name=os_version
-!infinipoint-run-osquery query_id=dcbf29ff-4da6-4228-9d8f-3e269ca8e6fa
+!infinipoint-run-queries id=0b5004ce-0a18-11ea-9a9f-362b9e155667
+
