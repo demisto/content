@@ -95,9 +95,9 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
         os.mkdir(index_folder_path)
         return index_folder_path, index_blob, index_generation
 
-    index_blob.download_to_filename(download_index_path)
     index_blob.reload()
     index_generation = index_blob.generation
+    index_blob.download_to_filename(download_index_path)
 
     if os.path.exists(download_index_path):
         with ZipFile(download_index_path, 'r') as index_zip:
