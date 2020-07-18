@@ -3589,8 +3589,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                 'From': extract_address_eml(eml, 'from'),
                 'Subject': convert_to_unicode(eml['Subject']),
                 'HTML': convert_to_unicode(html),
-                
-               : convert_to_unicode(text),
+                'Text': convert_to_unicode(text),
                 'Headers': header_list,
                 'HeadersMap': headers_map,
                 'Attachments': ','.join(attachment_names) if attachment_names else '',
