@@ -106,8 +106,8 @@ configuration:
   defaultvalue: "false"
   type: 8
 description: A PassiveTotal with Security Intelligence Services Feed provides you
-  with newly observed Domain, Host, Malware, Phishing, and Scam Blacklist with options
-  for Daily and Hourly ingestion available.
+  with newly observed Domain, Host, Malware, Phishing, and Scam Blacklist with
+  options for Daily and Hourly ingestion available.
 display: Security Intelligence Services Feed
 name: Security Intelligence Services Feed
 script:
@@ -134,7 +134,7 @@ script:
       - Malware
     - name: search
       description: Indicators that match the given search pattern will be fetched.
-  dockerimage: demisto/boto3py3:1.0.0.9798
+  dockerimage: demisto/boto3py3:1.0.0.9909
   feed: true
   isfetch: false
   longRunning: false
