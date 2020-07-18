@@ -1,0 +1,9 @@
+action: py, msg: getenv
+cwd: /Users/dtavori/dev/demisto/content
+cmd: /Users/dtavori/.pyenv/versions/3.8.0/bin/python3.8 -m virtualenv --no-download --python /Users/dtavori/.pyenv/versions/3.8.0/bin/python3.8 py37
+Already using interpreter /Users/dtavori/.pyenv/versions/3.8.0/bin/python3.8
+Using base prefix '/Users/dtavori/.pyenv/versions/3.8.0'
+New python executable in /Users/dtavori/dev/demisto/content/py37/bin/python3.8
+Also creating executable in /Users/dtavori/dev/demisto/content/py37/bin/python
+Installing setuptools, pip, wheel...
+done.
