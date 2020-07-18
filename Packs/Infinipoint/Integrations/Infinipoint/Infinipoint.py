@@ -11,6 +11,50 @@ import dateparser
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+
+class Client(BaseClient):
+
+    def call_command(self, url_suffix: str, args: Dict[str, Any], pagination=True, page_index=0, method='POST')\
+            -> Dict[str, Any]:
+        """
+        """
+
+        if args and pagination:
+            args['page'] = page_index
+
+        return self._http_request(
+            method=method,
+            url_suffix=url_suffix,
+            json_data=args
+        )
+
+    def call_api(self, route, rules, pagination=True, condition='AND', client=None):
+        """
+        loop pagination in case the total items count is bigger that PAGE_SIZE
+        """
+
+        if not pagination:
+            res = client.call_command(route, rules, pagination=pagination)
+            return res
+        else:
+            query = {
+                'pageSize': PAGE_SIZE,
+                'page': 0,
+                'ruleSet': {
+                    'condition': condition,
+                    'rules': rules
+                }
+            }
+            results: List[Dict[str, Any]] = []
+            res = client.call_command(route, query)
+            results = results + res['items']
+
+            for i in range(1, math.ceil(res['itemsTotal'] / PAGE_SIZE)):
+                res = client.call_command(route, query, i)
+                results = results + res['items']
+            return results
+
+
 '''HELPER FUNCTIONS'''
 
 
@@ -28,8 +72,6 @@ def get_auth_headers():
         return {"Content-Type": "application/json",
                 "Authorization": f"Bearer {token}"}
     except Exception as e:
-        # print(f"Error while signing JWT token - check your private/access keys!\nError message:\n{e}")
-        # sys.exit(1)
         return_error(f"Error while signing JWT token - check your private/access keys!\nError message:\n{e}")
 
 
@@ -115,13 +157,15 @@ def add_to_results(current_results_array, request_result):
         # sys.exit(1)
 
 
-def call_api(route, rules, use_pagination=True, condition='AND', method="POST"):
+def call_api(route, rules, use_pagination=True, condition='AND', method="POST", headers=None):
     """
     loop pagination in case the total items count is bigger that PAGE_SIZE
     """
 
     if not use_pagination:
+        # res = http_request(method, route, content=rules, use_pagination=False)
         res = http_request(method, route, content=rules, use_pagination=False)
+        # res = client.call_command(route, query)
         return res
     else:
         query = {
@@ -226,13 +270,14 @@ def fetch_incidents(max_results: int, last_run: Dict[str, int],
 
 ''' GLOBALS/PARAMS '''
 
-PAGE_SIZE = arg_to_int(arg=demisto.params().get('page_size'), arg_name='page_size', required=False)
+PAGE_SIZE = 1
 INSECURE = demisto.params().get('insecure', False)
 BASE_URL = demisto.params().get('url')
 ACCESS_KEY = demisto.params().get('access_key')
 PRIVATE_KEY = demisto.params().get('private_key')
 FIRST_FETCH_TIME = arg_to_timestamp(arg=demisto.params().get('first_fetch', '3 days'),
                                     arg_name='First fetch time', required=True)
+PROXY = demisto.params().get('proxy', False)
 MAX_INCIDENTS_TO_FETCH = 1000
 
 
@@ -257,23 +302,76 @@ def test_module(route):
 def get_cve_command(args, outputs_prefix, outputs_key_field):
     res = http_request("GET", f"/api/vulnerability/{args.get('cve_id')}/details", use_pagination=False)
     if "cve_id" in res:
+        cve = Common.CVE(
+            id=res['cve_id'],
+            cvss=res['cve_dynamic_data']['base_metric_v2']['base_score'],
+            description=res['cve_description'],
+            published='',
+            modified=''
+        )
+
         command_results = CommandResults(
             outputs_prefix=outputs_prefix,
             outputs_key_field=outputs_key_field,
-            outputs=res)
+            outputs=res,
+            indicators=[cve]
+        )
         return command_results
 
 
-def infinipoint_command(route, args, outputs_prefix, outputs_key_field):
+def get_device_details_command(args, outputs_prefix, outputs_key_field):
+    res = http_request("GET", f"/api/discover/{args.get('discoveryId')}/details", use_pagination=False)
+    if "$device" in res:
+        command_results = CommandResults(
+            outputs_prefix=outputs_prefix,
+            outputs_key_field=outputs_key_field,
+            outputs=res
+        )
+        return command_results
+
+
+# def infinipoint_command(route, args, outputs_prefix, outputs_key_field):
+#     rules = []
+#
+#     for arg in ['name', 'publisher', 'version', 'host', 'os_type', 'source', 'username', 'osType', 'osName', 'status',
+#                 'agentVersion', 'device_os', 'device_risk', 'alias',
+#                 'gateway_ip', 'action_id', 'id', 'actionId', 'query_id']:
+#         if args.get(arg):
+#             rules.append({"field": arg, "operator": "contains", "value": f"{args[arg]}"})
+#
+#     res = call_api(route, rules)
+#
+#     if res:
+#         for node in res:
+#             if '$time' in node:
+#                 created_time_ms = int(node.get('$time', '0')) * 1000
+#                 node['$time'] = timestamp_to_datestring(created_time_ms)
+#
+#         command_results = CommandResults(
+#             outputs_prefix=outputs_prefix,
+#             outputs_key_field=outputs_key_field,
+#             outputs=res)
+#         return command_results
+
+
+def infinipoint_command(client, route, args, outputs_prefix, outputs_key_field, pagination=True):
     rules = []
 
-    for arg in ['name', 'publisher', 'version', 'host', 'os_type', 'source', 'username', 'osType', 'osName', 'status', 'agentVersion', 'device_os', 'device_risk', 'alias', 'gateway_ip', 'action_id', 'id', 'actionId', 'query_id']:
+    for arg in ['name', 'publisher', 'version', 'host', 'os_type', 'source', 'username', 'osType', 'osName',
+                'status',
+                'agentVersion', 'device_os', 'device_risk', 'alias',
+                'gateway_ip', 'action_id', 'id', 'actionId', 'query_id']:
         if args.get(arg):
             rules.append({"field": arg, "operator": "contains", "value": f"{args[arg]}"})
 
-    res = call_api(route, rules)
+    res = client.call_api(route, rules, client=client, pagination=pagination)
 
     if res:
+        for node in res:
+            if '$time' in node and isinstance(node['$time'], int):
+                created_time_ms = int(node.get('$time', '0')) * 1000
+                node['$time'] = timestamp_to_datestring(created_time_ms)
+
         command_results = CommandResults(
             outputs_prefix=outputs_prefix,
             outputs_key_field=outputs_key_field,
@@ -330,6 +428,131 @@ def get_devices_command(route, args, outputs_prefix, outputs_key_field):
         rules.append(agent_version_node)
 
     res = call_api(route, rules)
+
+    if res:
+        command_results = CommandResults(
+            outputs_prefix=outputs_prefix,
+            outputs_key_field=outputs_key_field,
+            outputs=res)
+        return (command_results)
+
+
+def get_devices_client_command(route, args, outputs_prefix, outputs_key_field, client):
+    host = args.get('host')
+    os_type = args.get('osType')
+    os_name = args.get('osName')
+    status = args.get('status')
+    agent_version = args.get('agentVersion')
+    rules = []
+
+    if host:
+        host_node = {
+            'field': 'host',
+            'operator': 'contains',
+            'value': f'{host}'
+        }
+        rules.append(host_node)
+
+    if os_type:
+        os_type_node = {
+            'field': 'osType',
+            'operator': '=',
+            'value': f'{os_type}'
+        }
+        rules.append(os_type_node)
+
+    if os_name:
+        os_name_node = {
+            'field': 'osName',
+            'operator': 'contains',
+            'value': f'{os_name}'
+        }
+        rules.append(os_name_node)
+
+    if status:
+        status_node = {
+            'field': 'status',
+            'operator': '=',
+            'value': f'{status}'
+        }
+        rules.append(status_node)
+
+    if agent_version:
+        agent_version_node = {
+            'field': 'agentVersion',
+            'operator': '=',
+            'value': f'{agent_version}'
+        }
+        rules.append(agent_version_node)
+    query = {
+        'pageSize': PAGE_SIZE,
+        'page': 0,
+        'ruleSet': {
+            'condition': 'AND',
+            'rules': rules
+        }
+    }
+
+    res = client.call_command(route, query)
+    # res = call_api(route, rules)
+
+    if res:
+        command_results = CommandResults(
+            outputs_prefix=outputs_prefix,
+            outputs_key_field=outputs_key_field,
+            outputs=res)
+        return (command_results)
+
+
+def get_devices_client2_command(route, args, outputs_prefix, outputs_key_field, client, pagination=True):
+    host = args.get('host')
+    os_type = args.get('osType')
+    os_name = args.get('osName')
+    status = args.get('status')
+    agent_version = args.get('agentVersion')
+    rules = []
+
+    if host:
+        host_node = {
+            'field': 'host',
+            'operator': 'contains',
+            'value': f'{host}'
+        }
+        rules.append(host_node)
+
+    if os_type:
+        os_type_node = {
+            'field': 'osType',
+            'operator': '=',
+            'value': f'{os_type}'
+        }
+        rules.append(os_type_node)
+
+    if os_name:
+        os_name_node = {
+            'field': 'osName',
+            'operator': 'contains',
+            'value': f'{os_name}'
+        }
+        rules.append(os_name_node)
+
+    if status:
+        status_node = {
+            'field': 'status',
+            'operator': '=',
+            'value': f'{status}'
+        }
+        rules.append(status_node)
+
+    if agent_version:
+        agent_version_node = {
+            'field': 'agentVersion',
+            'operator': '=',
+            'value': f'{agent_version}'
+        }
+        rules.append(agent_version_node)
+
+    res = client.call_api(route, rules, client=client, pagination=pagination)
 
     if res:
         command_results = CommandResults(
@@ -478,15 +701,33 @@ def main():
     demisto.info(f'command is {demisto.command()}')
 
     try:
-        # token = create_jwt_token(PRIVATE_KEY, ACCESS_KEY)
+        # start
+        headers = get_auth_headers()
+        client = Client(
+            base_url=BASE_URL,
+            verify=INSECURE,
+            headers=headers,
+            proxy=PROXY)
+        # if demisto.command() == 'infinipoint-gett-device':
+        #     return_results(get_devices_client_command('/api/devices', demisto.args(), 'Infinipoint.Devices', 'osName',
+        #                                               client))
+        #
+        # if demisto.command() == 'infinipoint-gettt-device':
+        #     return_results(get_devices_client2_command('/api/devices', demisto.args(), 'Infinipoint.Devices', 'osName',
+        #                                                client))
+        #
+        # elif demisto.command() == 'infinipoint-get-assetss-programs':
+        #     return_results(infinipoint_command2('/api/assets/programs', demisto.args(), 'Infinipoint.Assets.Programs',
+        #                                         'name', client))
+        # end
 
+        # token = create_jwt_token(PRIVATE_KEY, ACCESS_KEY)
+        # handle_proxy()
         if demisto.command() == 'test-module':
             test_module("/api/auth/health/")
             demisto.results('ok')
 
         elif demisto.command() == 'fetch-incidents':
-
-            # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
             max_results = arg_to_int(
                 arg=demisto.params().get('max_fetch'),
                 arg_name='max_fetch',
@@ -497,54 +738,60 @@ def main():
 
             next_run, incidents = fetch_incidents(
                 max_results=max_results,
-                last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
+                last_run=demisto.getLastRun(),
                 first_fetch_time=FIRST_FETCH_TIME
             )
-            # saves next_run for the time fetch-incidents is invoked
             demisto.setLastRun(next_run)
-            # fetch-incidents calls ``demisto.incidents()`` to provide the list
-            # of incidents to crate
             demisto.incidents(incidents)
 
         elif demisto.command() == 'infinipoint-get-cve':
             return_results(get_cve_command(demisto.args(), 'Infinipoint.Cve.Details', 'ReportID'))
 
         elif demisto.command() == 'infinipoint-get-assets-programs':
-            return_results(infinipoint_command('/api/assets/programs', demisto.args(), 'Infinipoint.Assets.Programs', 'name'))
+            return_results(infinipoint_command(client, '/api/assets/programs', demisto.args(), 'Infinipoint.Assets.Programs',
+                                               'name'))
 
         elif demisto.command() == 'infinipoint-get-assets-hardware':
-            return_results(infinipoint_command('/api/assets/hardware', demisto.args(), 'Infinipoint.Assets.Hardware', '$host'))
+            return_results(infinipoint_command(client, '/api/assets/hardware', demisto.args(), 'Infinipoint.Assets.Hardware',
+                                               '$host'))
 
         elif demisto.command() == 'infinipoint-get-assets-cloud':
-            return_results(infinipoint_command('/api/assets/cloud', demisto.args(), 'Infinipoint.Assets.Cloud', '$host'))
+            return_results(infinipoint_command(client, '/api/assets/cloud', demisto.args(), 'Infinipoint.Assets.Cloud',
+                                               '$host'))
 
         elif demisto.command() == 'infinipoint-get-assets-users':
-            return_results(infinipoint_command('/api/assets/users', demisto.args(), 'Infinipoint.Assets.User', '$host'))
+            return_results(infinipoint_command(client, '/api/assets/users', demisto.args(), 'Infinipoint.Assets.User', '$host'))
 
         elif demisto.command() == 'infinipoint-get-device':
             return_results(get_devices_command('/api/devices', demisto.args(), 'Infinipoint.Devices', 'osName'))
 
         elif demisto.command() == 'infinipoint-get-vulnerable-devices':
-            return_results(get_vulnerable_devices_command('/api/vulnerability/devices', demisto.args(),'Infinipoint.Vulnerability.Devices', '$host'))
+            return_results(get_vulnerable_devices_command('/api/vulnerability/devices', demisto.args(),
+                                                          'Infinipoint.Vulnerability.Devices', '$host'))
 
         elif demisto.command() == "infinipoint-get-tag":
-            return_results(infinipoint_command('/api/tags', demisto.args(), 'Infinipoint.Tags', 'tagId'))
+            return_results(infinipoint_command(client, '/api/tags', demisto.args(), 'Infinipoint.Tags', 'tagId'))
 
         elif demisto.command() == "infinipoint-get-networks":
             return_results(get_networks_command('/api/networks', demisto.args(), 'Infinipoint.Networks.Info', 'alias'))
 
         elif demisto.command() == "infinipoint-get-queries":
-            return_results(infinipoint_command('/api/all-scripts/search', demisto.args(), 'Infinipoint.Scripts.Search', 'actionId'))
+            return_results(infinipoint_command(client, '/api/all-scripts/search', demisto.args(), 'Infinipoint.Scripts.Search',
+                                               'actionId'))
 
         elif demisto.command() == "infinipoint-run-queries":
-            return_results(run_queries_command('/api/all-scripts/execute', demisto.args(), 'Infinipoint.Scripts.execute', 'actionId'))
+            return_results(run_queries_command('/api/all-scripts/execute', demisto.args(),
+                                               'Infinipoint.Scripts.execute', 'actionId'))
 
         elif demisto.command() == "infinipoint-get-action":
             return_results(get_action_command(demisto.args(), 'Infinipoint.Responses', '$host'))
 
         elif demisto.command() == "infinipoint-get-non-compliance":
-            return_results(get_non_compliance_device_command("/api/compliance/incidents", demisto.args(), 'Infinipoint.Compliance.Incidents', 'deviceID'))
+            return_results(get_non_compliance_device_command("/api/compliance/incidents", demisto.args(),
+                                                             'Infinipoint.Compliance.Incidents', 'deviceID'))
 
+        elif demisto.command() == "infinipoint-get-device-details":
+            return_results(get_device_details_command(demisto.args(), 'Infinipoint.Compliance.Incidents', 'deviceID'))
     except Exception as e:
         err_msg = f'Error - Infinipoint Integration [{e}]'
         return_error(err_msg, error=e)
