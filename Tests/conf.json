@@ -9,6 +9,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "Security Intelligence Services Feed",
+            "playbookID": "SecurityIntelligenceServicesFeed - Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Humio",
             "playbookID": "Humio-Test",
             "fromversion": "5.0.0"

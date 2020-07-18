@@ -410,6 +410,7 @@ def test_indicator_field_mapping():
     from SecurityIntelligenceServicesFeed import indicator_field_mapping, datetime, timezone
     expected_res = {'service': 'Passive Total',
                     'firstseenbysource': datetime.fromtimestamp(1590810346, timezone.utc).isoformat()}
+
     assert indicator_field_mapping('domain', {'value': '007blog.icu', 'Timestamp': '1590810346'}) == expected_res
 
     expected_res = {'service': 'Passive Total', 'siscategory': 'category',
