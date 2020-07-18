@@ -231,11 +231,11 @@ def main():
     if version in ['3.0', '3.1']:
         base_score = 0
         if impact > 0:
-            multiplier = 1
+            multiplier = 1.0
             if scope_changed:
                 multiplier = 1.08
             calculated_value = multiplier * (impact + exploitability)
-            base_score = calculated_value if calculated_value < 10 else 10
+            base_score = calculated_value if calculated_value < 10.0 else 10.0
             base_score = round_up(base_score)
 
     ###########################################
@@ -278,7 +278,7 @@ def main():
     if version in ['3.0', '3.1']:
         environmental_score = 0
         if modified_impact > 0:
-            exponential = 1
+            exponential = 1.0
             if modified_scope_changed:
                 exponential = 1.08
             calculated_value = exponential * (modified_impact + modified_exploitability)
