@@ -301,5 +301,6 @@
     },
     "typeId": "Panorama Best Practice Assessment",
     "version": -1,
-    "fromVersion": "4.5.0"
+    "fromVersion": "4.5.0",
+    "toVersion": "5.9.9"
 }

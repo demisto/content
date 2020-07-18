@@ -1,0 +1,6 @@
+action: py, msg: developpkg
+cwd: /Users/dtavori/dev/demisto/content
+cmd: /Users/dtavori/dev/demisto/content/py37/bin/python -m pip install --exists-action w -e .
+ERROR: File "setup.py" not found. Directory cannot be installed in editable mode: /Users/dtavori/dev/demisto/content
+WARNING: You are using pip version 19.3.1; however, version 20.1.1 is available.
+You should consider upgrading via the 'pip install --upgrade pip' command.
