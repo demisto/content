@@ -322,14 +322,15 @@ def test_fetch_indicators_command(mocker):
     Tests, The work of fetch indicators command.
     """
     import csv
-    from SecurityIntelligenceServicesFeed import fetch_indicators_command, datetime
+    from SecurityIntelligenceServicesFeed import fetch_indicators_command, datetime, timezone
     expected_response = [{'value': '007blog.icu',
                           'type': 'Domain',
                           'rawJSON': OrderedDict([('value', '007blog.icu'),
                                                   ('Timestamp', '1590810346'),
                                                   ('type', 'Domain')]),
                           'fields': {'service': 'Passive Total',
-                                     'firstseenbysource': datetime.fromtimestamp(1590810346).isoformat() + 'Z'}}]
+                                     'firstseenbysource': datetime.fromtimestamp(1590810346,
+                                                                                 timezone.utc).isoformat()}}]
 
     mocker.patch('SecurityIntelligenceServicesFeed.Client.request_list_objects',
                  return_value=[{'Key': 'key1', 'LastModified': datetime.today()}])
@@ -357,7 +358,7 @@ def test_get_indicators_command(mocker):
     Tests, The work of get indicators command.
     """
     import csv
-    from SecurityIntelligenceServicesFeed import get_indicators_command, datetime
+    from SecurityIntelligenceServicesFeed import get_indicators_command, datetime, timezone
     humanreadable = '### Total indicators fetched: 1\n'
     humanreadable += '### Indicators from Security Intelligence Services feed\n'
     humanreadable += '|Value|Type|\n'
@@ -373,7 +374,8 @@ def test_get_indicators_command(mocker):
                                         ('type', 'Domain')]),
                                    'fields':
                                        {'service': 'Passive Total',
-                                        'firstseenbysource': datetime.fromtimestamp(1590810346).isoformat() + 'Z'}}],
+                                        'firstseenbysource': datetime.fromtimestamp(1590810346,
+                                                                                    timezone.utc).isoformat()}}],
                      'HumanReadable': humanreadable,
                      'EntryContext': {}}
 
@@ -405,15 +407,15 @@ def test_indicator_field_mapping():
     """
     Tests, indicator field mapping for various feed.
     """
-    from SecurityIntelligenceServicesFeed import indicator_field_mapping, datetime
+    from SecurityIntelligenceServicesFeed import indicator_field_mapping, datetime, timezone
     expected_res = {'service': 'Passive Total',
-                    'firstseenbysource': datetime.fromtimestamp(1590810346).isoformat() + 'Z'}
+                    'firstseenbysource': datetime.fromtimestamp(1590810346, timezone.utc).isoformat()}
     assert indicator_field_mapping('domain', {'value': '007blog.icu', 'Timestamp': '1590810346'}) == expected_res
 
     expected_res = {'service': 'Passive Total', 'siscategory': 'category',
                     'threattypes': [{'threatcategory': 'Phishing'}],
                     'sismatchtype': 'type',
-                    'sisexpiration': '2020-06-15T00:25:44Z'}
+                    'sisexpiration': '2020-06-15T00:25:44+00:00'}
 
     assert indicator_field_mapping('phish', {'value': '007blog.icu', 'type': 'URL', 'MatchType': 'type',
                                              'Category': 'category',
@@ -422,7 +424,7 @@ def test_indicator_field_mapping():
     expected_res = {'service': 'Passive Total', 'sismalwaretype': 'category',
                     'threattypes': [{'threatcategory': 'Malware'}],
                     'sismatchtype': 'type',
-                    'sisexpiration': '2020-06-15T00:25:44Z'}
+                    'sisexpiration': '2020-06-15T00:25:44+00:00'}
 
     assert indicator_field_mapping('malware',
                                    {'value': '007blog.icu', 'type': 'URL', 'MatchType': 'type',
