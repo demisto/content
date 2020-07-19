@@ -2038,10 +2038,6 @@
             "playbookID": "ExtractDomainFromEmailTest"
         },
         {
-            "playbookID": "Account Enrichment - Generic v2 - Test",
-            "integrations": "activedir"
-        },
-        {
             "playbookID": "Extract Indicators From File - Generic v2 - Test",
             "integrations": "Image OCR",
             "timeout": 300,
@@ -2860,7 +2856,6 @@
         "Test-Shodan_v2": "Issue 23370",
         "Symantec Deepsight Test": "Issue 22971",
         "Cybereason Test": "Issue 22683",
-        "test-Expanse": "Issue 26248",
         "TestProofpointFeed": "Issue 22229",
         "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
@@ -2895,9 +2890,15 @@
         "DuoAdmin API test playbook": "Issue 24937",
         "Mail Sender (New) Test": "Issue 25602",
         "HTTPListRedirects Basic Test": "Issue 26617",
+        "SMB test": "Issue 26454",
         "Infocyte-Test": "Issue 26445",
-        "HybridAnalysis-Test": "Issue 26599",
-        "Pwned v2 test": "Issue 26601"
+        "Account Enrichment - Generic v2 - Test": "Issue 26452",
+        "Office365_Feed_Test": "Issue 26455",
+        "DBotCreatePhishingClassifierV2FromFile-Test": "Issue 26456",
+        "Google Chronicle Backstory Asset - Test": "Issue 26460",
+        "Keylight v2 - Test": "Issue 26462",
+        "AutoFocus V2 test": "Issue 26464",
+        "PAN-OS Create Or Edit Rule Test": "Issue 26465"
     },
     "skipped_integrations": {
         
@@ -2911,7 +2912,6 @@
         "Deep Instinct": "The partner didn't provide an instance",
         "Cofense Triage v2": "No instance - partner integration",
         "ArcSight Logger": "Issue 24303",
-        "AttackIQFireDrill": "Issue 24281",
         "MxToolBox": "No instance",
         "Skyformation": "No instance, old partner",
         "Prisma Access": "Instance will be provided soon by Lior and Prasen",
@@ -2966,7 +2966,6 @@
         "AlienVault USM Anywhere": "Issue #18273",
         "Tufin": "Issue 16441",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
-        "MimecastV2": "Issue 14593",
         "Netskope": "instance is down",
         "Farsight DNSDB": "Issue 15512",
         "Service Manager": "Expired license",
