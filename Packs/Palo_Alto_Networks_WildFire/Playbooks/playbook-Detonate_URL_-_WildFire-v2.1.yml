@@ -44,8 +44,8 @@ tasks:
       id: 98375c12-21d9-4878-8f08-fe923af00cbe
       version: -1
       name: WildFire Upload File URL
-      description: Uploads the URL of a remote file to WildFire for analysis.
-      script: WildFire-v2|||wildfire-upload-file-url
+      description: Uploads the URL to WildFire for analysis.
+      script: WildFire-v2|||wildfire-upload-url
       type: regular
       iscommand: true
       brand: WildFire-v2
