@@ -4,6 +4,7 @@ from CommonServerPython import *
 
 from typing import Dict, Any, List, Generator, Union, Optional
 from dateutil.parser import parse
+from datetime import timezone
 import csv
 import gzip
 import boto3 as s3
@@ -221,8 +222,7 @@ class Client:
                     response_feeds = gzip.open(feed_type, 'rt')
                     while True:
                         # Creating feeds batch
-                        feeds_batch = [feed.replace('\tnull\t', '') for _, feed in zip(range(batch_size), response_feeds)
-                                       if feed]
+                        feeds_batch = [feed for _, feed in zip(range(batch_size), response_feeds) if feed]
                         if not feeds_batch:
                             response_feeds.close()
                             os.remove(feed_type)
@@ -313,6 +313,19 @@ def validate_limit(limit: str) -> None:
         raise ValueError(MESSAGES['INVALID_LIMIT_ERROR'])
 
 
+def prepare_date_string_for_custom_fields(date_string: str) -> str:
+    """
+    Prepares date string in iso format and adds timezone if not exist.
+
+    :param date_string: string represent date.
+    :return: formatted date string.
+    """
+    parsed_dt = parse(date_string)
+    if parsed_dt.tzinfo is None or parsed_dt.tzinfo.utcoffset(parsed_dt) is None:
+        parsed_dt = parsed_dt.replace(tzinfo=timezone.utc)
+    return parsed_dt.isoformat()
+
+
 def indicator_field_mapping(feed_type: str, indicator: Dict[str, Any]) -> Dict[str, Any]:
     """
     Maps the indicator fields.
@@ -327,7 +340,8 @@ def indicator_field_mapping(feed_type: str, indicator: Dict[str, Any]) -> Dict[s
     try:
         if feed_type in ['host', 'domain']:
             if indicator.get('Timestamp'):
-                fields['firstseenbysource'] = datetime.fromtimestamp(int(indicator['Timestamp'])).isoformat() + 'Z'
+                fields['firstseenbysource'] = datetime.fromtimestamp(int(indicator.get('Timestamp')),  # type: ignore
+                                                                     timezone.utc).isoformat()
         else:
             fields['threattypes'] = [{'threatcategory': feed_type.capitalize() if feed_type != 'phish' else 'Phishing'}]
             if indicator.get('MatchType'):
@@ -338,14 +352,14 @@ def indicator_field_mapping(feed_type: str, indicator: Dict[str, Any]) -> Dict[s
                     fields['sismalwaretype'] = indicator['MalwareType']
 
                 if indicator.get('MaliciousExpiration'):
-                    fields['sisexpiration'] = parse(
-                        indicator['MaliciousExpiration']).isoformat() + 'Z'
+                    fields['sisexpiration'] = prepare_date_string_for_custom_fields(
+                        indicator['MaliciousExpiration'])
             else:
                 if indicator.get('Category'):
                     fields['siscategory'] = indicator['Category']
 
                 if indicator.get('Expiration'):
-                    fields['sisexpiration'] = parse(indicator['Expiration']).isoformat() + 'Z'
+                    fields['sisexpiration'] = prepare_date_string_for_custom_fields(indicator['Expiration'])
 
     except ValueError as exception:
         raise ValueError(MESSAGES['Feed_EXTRACT_ERROR'] + str(exception))
