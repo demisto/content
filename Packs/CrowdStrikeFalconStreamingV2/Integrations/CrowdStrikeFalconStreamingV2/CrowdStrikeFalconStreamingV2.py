@@ -409,7 +409,7 @@ async def test_module(base_url: str, client_id: str, client_secret: str, verify_
         demisto.results('ok')
 
 
-def fetch_samples():
+def fetch_samples() -> None:
     """Extracts sample events stored in the integration context and returns them as incidents
 
     Returns:
