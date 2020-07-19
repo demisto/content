@@ -173,7 +173,12 @@ class EventStream:
                                 try:
                                     streaming_event = json.loads(stripped_line)
                                     event_metadata = streaming_event.get('metadata', {})
-                                    event_creation_time = event_metadata.get('eventCreationTime', 0) / 1000
+                                    event_creation_time = event_metadata.get('eventCreationTime', 0)
+                                    if not event_creation_time:
+                                        demisto.debug('Could not extract "eventCreationTime" field, using 0 instead. '
+                                                      f'{streaming_event}')
+                                    else:
+                                        event_creation_time /= 1000
                                     event_creation_time_dt = datetime.fromtimestamp(event_creation_time)
                                     if event_creation_time_dt < first_fetch_time:
                                         continue
