@@ -304,6 +304,13 @@ def get_splunk_remedation_query(response):
         return ""
 
 
+def extract_safebreach_error(response):
+    errors = response.json().get('error') and response.json().get('error').get('errors')
+    if not errors:
+        return f'Failed to extract error!\n{response.json().get("error")}'
+    return ','.join(list(map(lambda e: e.get('data').get('message'), errors)))
+
+
 ''' Commands '''
 
 
@@ -407,7 +414,9 @@ def get_remediation_data_command(client: Client, args: dict, no_output_mode: boo
         insight = insight[0]
 
     if response.status_code < 200 or response.status_code >= 300:
-        raise DemistoException(f'Failed to fetch remediation data for insight id {insight_id}')
+        error = extract_safebreach_error(response)
+        raise DemistoException(
+            f'Failed to fetch remediation data for insight id {insight_id}\nSafeBreach error:{error}')
 
     sb_remediation_data = response.json().get('remediationData')
     processed_data = extract_data(sb_remediation_data)
@@ -538,7 +547,9 @@ def insight_rerun_command(client: Client, args: dict):
             response = client.rerun_at_safebreach(rerun_data)
 
             if response.status_code < 200 or response.status_code >= 300:
-                raise DemistoException('Failed to rerun simulation for insight id {}'.format(insight_id))
+                error = extract_safebreach_error(response)
+                raise DemistoException(
+                    f'Failed to rerun simulation for insight id {insight_id}\nSafeBreach error:{error}')
             try:
                 response = response.json()['data']
             except ValueError:
@@ -882,8 +893,14 @@ def safebreach_test_module(url: str, api_key: str) -> str:
         full_url,
         headers={'Accept': 'application/json', 'x-apitoken': api_key}
     )
-    if response.status_code < 200 or response.status_code >= 300:
-        raise DemistoException('Test connection failed')
+    if response.status_code == 201:
+        return 'ok'
+    elif response.status_code == 401:
+        return 'API Key is invalid, try again'
+    elif response.status_code == 200:
+        return 'URL is invalid, try again'
+    elif response.status_code < 200 or response.status_code >= 300:
+        return ('Test connection failed')
     return 'ok'
 
 
