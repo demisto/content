@@ -11,6 +11,63 @@ INCLUSIVE: str = 'inclusive'
 EXCLUSIVE: str = 'exclusive'
 
 
+class HashCalculator:
+    """Class to calculate hashes.
+
+    """
+    @staticmethod
+    def _calculate_by_chunks(hash_calculator, file_path: str) -> str:
+        """Calculates hashes by chunks
+
+        Args:
+            hash_calculator: A hashlib object
+            file_path: File path to calculate hashes
+
+        Returns:
+            Hash string.
+        """
+        with open(file_path, "rb") as f:
+            for chunk in iter(lambda: f.read(4096), b""):
+                hash_calculator.update(chunk)
+        return hash_calculator.hexdigest()
+
+    @classmethod
+    def md5(cls, file_path: str) -> str:
+        """Calculate MD5 hash of file.
+
+        Args:
+            file_path: A path of file to calculate.
+
+        Returns:
+            A MD5 hash
+        """
+        return cls._calculate_by_chunks(hashlib.md5(), file_path)
+
+    @classmethod
+    def sha1(cls, file_path: str) -> str:
+        """Calculate SHA1 hash of file.
+
+        Args:
+            file_path: A path of file to calculate.
+
+        Returns:
+            A SHA1 hash
+        """
+        return cls._calculate_by_chunks(hashlib.sha1(), file_path)
+
+    @classmethod
+    def sha256(cls, file_path: str) -> str:
+        """Calculate SHA256 hash of file.
+
+        Args:
+            file_path: A path of file to calculate.
+
+        Returns:
+            A SHA256 hash
+        """
+        return cls._calculate_by_chunks(hashlib.sha256(), file_path)
+
+
 def get_file_path_from_id(entry_id: str) -> Tuple[str, str]:
     """Gets a file path and name from entry_id.
 
@@ -134,9 +191,6 @@ def upload_files(
     run_command(command)
 
     context = []
-    md5 = hashlib.md5()
-    sha1 = hashlib.sha1()
-    sha256 = hashlib.sha256()
     for root, _, files in os.walk(dir_path):
         # Limit the files list to the limit provided by the user
         files = files[: limit]
@@ -156,16 +210,10 @@ def upload_files(
                 data = file_stream.read()
                 demisto.results(fileResult(file_name, data))
 
-            with open(file_path, 'rb') as file_stream:
-                data = file_stream.read()
-                md5.update(data)
-                sha1.update(data)
-                sha256.update(data)
-
             context.append({
-                'FileMD5': md5.hexdigest(),
-                'FileSHA1': sha1.hexdigest(),
-                'FileSHA256': sha256.hexdigest(),
+                'FileMD5': HashCalculator.md5(file_path),
+                'FileSHA1': HashCalculator.sha1(file_path),
+                'FileSHA256': HashCalculator.sha256(file_path),
                 'FileName': file_name,
                 'FileSize': os.path.getsize(file_path),
                 'FileExtension': os.path.splitext(file_name)[1]
