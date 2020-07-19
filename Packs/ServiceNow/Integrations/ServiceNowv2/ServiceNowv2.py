@@ -1902,6 +1902,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
             'Category': 'chat',
             'ContentsFormat': 'text',
             'Contents': note.get('value'),
+            'Note': True
         })
 
     original_ticket = result['result']
@@ -1912,7 +1913,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
             'Type': EntryType.NOTE,
             'Contents': {
                 'dbotIncidentClose': True,
-                'closeReason': 'From ServiceNow'
+                'closeReason': f'From ServiceNow: {original_ticket.get("close_notes")}'
             },
             'ContentsFormat': EntryFormat.JSON
         })
@@ -1949,9 +1950,6 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
 
     ticket_type = 'incident'
     if incident_changed:
-        additional_fields = split_fields(str(args.get('additional_fields', '')))
-        additional_fields_keys = list(additional_fields.keys())
-
         fields = get_ticket_fields(data, ticket_type=ticket_type)
         fields.update(additional_fields)
 
@@ -1967,7 +1965,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
             key = 'comments'
             text = str(entry.get('contents', ''))
 
-            result = client.add_comment(ticket_id, ticket_type, key, text)
+            client.add_comment(ticket_id, ticket_type, key, text)
 
     return ticket_id
 
