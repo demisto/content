@@ -19,5 +19,6 @@
 	"disabled": false,
 	"reputationCalc": 0,
 	"vcShouldIgnore": false,
-    "fromVersion": "5.0.0"
+	"fromVersion": "5.0.0",
+	"layout": "PCAP Analysis"
 }
