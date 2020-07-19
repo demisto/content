@@ -3,8 +3,8 @@
 	"defaultIncidentType": "",
 	"description": "",
 	"feed": false,
-	"fromServerVersion": "6.0.0",
-	"id": "6e4b1f4f-45d4-4f74-8b16-5f4a4d89d5cb",
+	"fromVersion": "6.0.0",
+	"id": "Mapper-Outgoing-ServiceNow",
 	"incidentSamples": null,
 	"indicatorSamples": null,
 	"instanceIds": null,
@@ -251,9 +251,12 @@
 			}
 		}
 	},
-	"name": "ServiceNow Mirror Out",
-	"nameRaw": "ServiceNow Mirror Out",
+	"name": "Mapper-Outgoing-ServiceNow",
+	"nameRaw": "Mapper-Outgoing-ServiceNow",
 	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
 	"sortValues": null,
 	"sourceClassifierId": "",
 	"system": false,

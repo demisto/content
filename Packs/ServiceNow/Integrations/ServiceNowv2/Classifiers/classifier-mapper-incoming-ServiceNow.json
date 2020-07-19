@@ -3,8 +3,8 @@
 	"defaultIncidentType": "",
 	"description": "",
 	"feed": false,
-	"fromServerVersion": "6.0.0",
-	"id": "8d6f01ac-bf39-4c52-8e3c-ba4607eed376",
+	"fromVersion": "6.0.0",
+	"id": "Mapper-Incoming-ServiceNow",
 	"incidentSamples": null,
 	"indicatorSamples": null,
 	"instanceIds": null,
@@ -248,8 +248,8 @@
 			}
 		}
 	},
-	"name": "ServiceNow Mirror In",
-	"nameRaw": "ServiceNow Mirror In",
+	"name": "Mapper-Incoming-ServiceNow",
+	"nameRaw": "Mapper-Incoming-ServiceNow",
 	"packID": "",
 	"propagationLabels": [
 		"all"

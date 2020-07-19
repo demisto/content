@@ -1813,7 +1813,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]
     return 'ok', {}, {}, True
 
 
-def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> List[Dict[str, Any]]:
+def get_remote_data_command(client: Client, args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """get-remote-data command: Returns an updated incident and entries
 
     :type client: ``Client``
@@ -1842,9 +1842,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
 
     ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
     number = str(args.get('number', ''))
-    get_attachments = args.get('get_attachments', 'false')
     custom_fields = split_fields(str(args.get('custom_fields', '')))
-    additional_fields = argToList(str(args.get('additional_fields', '')))
 
     result = client.get(ticket_type, ticket_id, generate_body({}, custom_fields), number)
     if not result or 'result' not in result:
@@ -1886,7 +1884,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
         demisto.debug(f'Pull result is {ticket}')
         return [ticket]
 
-    for note in comments_result.get('result'):
+    for note in comments_result.get('result', []):
         entry_time = arg_to_timestamp(
             arg=note.get('sys_created_on'),
             arg_name='sys_created_on',
@@ -1948,15 +1946,14 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     ticket_id = args.get('remoteId')
     org_status = args.get('status')
 
-    ticket_type = 'incident'
+    ticket_type = client.ticket_type
     if incident_changed:
         fields = get_ticket_fields(data, ticket_type=ticket_type)
-        fields.update(additional_fields)
 
         demisto.debug(f'Sending update request to server {ticket_type}, {ticket_id}, {fields}\n')
-        result = client.update(ticket_type, ticket_id, fields, {})
+        result = client.update(ticket_type, ticket_id, fields)
 
-        demisto.info(f'Ticket Update result {result}\n')
+        demisto.info(f'Ticket Update result {result}')
 
     if len(entries) > 0:
         demisto.debug(f'New entries {entries}\n')
@@ -1985,9 +1982,8 @@ def get_mapping_fields_command(client: Client) -> AllSchemesTypesMappingObject:
     all_mappings = AllSchemesTypesMappingObject()
     incident_fields: List[dict] = client.send_request(f'table/{client.ticket_type}?sysparm_limit=1', 'GET')
 
-    type_ = client.ticket_type
-    incident_type_scheme = SchemeTypeMapping(type_name=type_)
-    demisto.debug(f'Collecting incident mapping for incident type - "{type_}"')
+    incident_type_scheme = SchemeTypeMapping(type_name=client.ticket_type)
+    demisto.debug(f'Collecting incident mapping for incident type - "{client.ticket_type}"')
 
     ticket = incident_fields.get('result')[0]
     for field in ticket:
