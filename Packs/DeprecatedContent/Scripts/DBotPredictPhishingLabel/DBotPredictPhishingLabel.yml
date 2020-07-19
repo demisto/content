@@ -60,5 +60,5 @@ deprecated: true
 dockerimage: demisto/dl:1.1
 runonce: false
 tests:
-- CreatePhishingClassifierMLTest
+- No tests
 fromversion: 4.1.0

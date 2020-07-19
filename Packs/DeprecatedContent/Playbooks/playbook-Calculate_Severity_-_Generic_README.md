@@ -1,4 +1,4 @@
-Calculates and assigns the incident severity based on the highest returned severity level from the following severity calculations:
+DEPRECATED. Use "Calculate Severity - Generic v2" playbook instead. Calculates and assigns the incident severity based on the highest returned severity level from the following severity calculations:
 
 * Indicators DBotScore - Calculates the incident severity level according to the highest indicator DBotScore.
 * Critical assets - Determines if a critical assest is associated with the invesigation.
