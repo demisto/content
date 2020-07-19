@@ -183,7 +183,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: pdf
-      description: Request a structured report (XML PDF).
+      description: Request a structured report (XML or PDF).
       isArray: false
       name: format
       predefined:
@@ -203,7 +203,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: url to retreive its report.
+      description: |-
+        Retrieves results for a url using WildFire. Supported currently only in US cloud. Report format is in json.
       isArray: true
       name: url
       required: false

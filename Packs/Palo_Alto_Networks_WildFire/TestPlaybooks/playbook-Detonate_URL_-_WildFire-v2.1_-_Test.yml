@@ -1,0 +1,151 @@
+id: Detonate URL - WildFire v2.1 - Test
+version: -1
+name: Detonate URL - WildFire v2.1 - Test
+description: |-
+  test pb of:
+  Detonate URL - WildFire v2.1
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 98a07179-4df7-42a1-8b90-8259f224bf5b
+    type: start
+    task:
+      id: 98a07179-4df7-42a1-8b90-8259f224bf5b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 5afbdd7a-c142-41bb-8552-17f670dcb677
+    type: regular
+    task:
+      id: 5afbdd7a-c142-41bb-8552-17f670dcb677
+      version: -1
+      name: set url
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      append: {}
+      key:
+        simple: URL.Data
+      stringify: {}
+      value:
+        simple: http://www.demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: dc552869-133f-4ef8-8bb6-5f2e993b2b62
+    type: title
+    task:
+      id: dc552869-133f-4ef8-8bb6-5f2e993b2b62
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 6ca1d2aa-b7e7-441e-831e-ba347c1c5714
+    type: playbook
+    task:
+      id: 6ca1d2aa-b7e7-441e-831e-ba347c1c5714
+      version: -1
+      name: Detonate URL - WildFire v2.1
+      playbookName: Detonate URL - WildFire v2.1
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      Interval:
+        simple: "1"
+      ReportFileType: {}
+      Timeout:
+        simple: "60"
+      URL:
+        complex:
+          root: URL
+          accessor: Data
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

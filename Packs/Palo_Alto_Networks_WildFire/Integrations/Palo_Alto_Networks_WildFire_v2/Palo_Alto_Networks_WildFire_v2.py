@@ -642,7 +642,7 @@ def wildfire_get_url_report(url: str):
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['text'],
             'EntryContext': {
-                "WildFire.Report(val.url == obj.url || val.MD5 == obj.url)": entry_context
+                "WildFire.Report(val.URL == obj.URL)": entry_context
             }
         })
         sys.exit(0)
@@ -658,7 +658,7 @@ def wildfire_get_url_report(url: str):
             'HumanReadable': 'The sample is still being analyzed. Please wait to download the report.',
             'ReadableContentsFormat': formats['text'],
             'EntryContext': {
-                "WildFire.Report(val.url == obj.url": entry_context
+                "WildFire.Report(val.URL == obj.URL)": entry_context
             }
         })
         sys.exit(0)
@@ -737,7 +737,7 @@ def wildfire_get_report_command():
             headers = ['sha256', 'type', 'verdict']
             human_readable = tableToMarkdown(f'Wildfire URL report for {url}', t=report, headers=headers,
                                              removeNull=True)
-            entry_context = {"WildFire.Report(val.url == obj.url || val.MD5 == obj.url)": report}
+            entry_context = {"WildFire.Report(val.URL == obj.URL)": report}
             return_outputs(human_readable, entry_context, report)
         else:
             ioc, report, file_info = wildfire_get_file_report(element)
