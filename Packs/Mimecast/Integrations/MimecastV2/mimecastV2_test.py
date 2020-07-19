@@ -203,3 +203,66 @@ def test_mimecast_add_remove_member_to_group_with_domain(mocker):
     mocker.patch.object(MimecastV2, 'create_get_group_members_request', return_value=get_group_members_req_response)
     readable, _, _ = MimecastV2.add_remove_member_to_group('add')
     assert readable == 'Address had been added to group ID folder_id'
+
+
+CREATE_MANAGED_URL_SUCCESSFUL_MOCK = {
+    "fail": [],
+    "meta": {
+        "status": 200
+    },
+    "data": [
+        {
+            "comment": "None",
+            "domain": "www.test.com",
+            "queryString": "",
+            "disableRewrite": False,
+            "port": -1,
+            "disableUserAwareness": False,
+            "disableLogClick": False,
+            "action": "permit",
+            "path": "",
+            "matchType": "explicit",
+            "scheme": "https",
+            "id": "fake_id"
+        }
+    ]
+}
+
+
+def test_create_managed_url(mocker):
+    """Unit test
+    Given
+    - create_managed_url command
+    - the url does not exist
+    - command args - url, action, matchType, disableRewrite, disableUserAwareness, disableLogClick
+    - command raw response
+    When
+    - mock the server response to create_managed_url_request.
+    Then
+    Validate the content of the command result.
+    """
+    args = {
+        'url': 'https://www.test.com',
+        'action': 'permit',
+        'matchType': 'explicit',
+        'disableRewrite': 'false',
+        'disableUserAwareness': 'false',
+        'disableLogClick': 'false'
+    }
+
+    expected_context = {
+        'Mimecast.URL(val.ID && val.ID == obj.ID)':
+            [{'Domain': 'www.test.com',
+              'disableRewrite': False,
+              'disableLogClick': False,
+              'Action': 'permit',
+              'Path': '',
+              'matchType': 'explicit',
+              'ID': 'fake_id'}]}
+
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(MimecastV2, 'create_managed_url_request',
+                        return_value=CREATE_MANAGED_URL_SUCCESSFUL_MOCK['data'][0])
+    results = MimecastV2.create_managed_url()
+    assert 'Managed URL https://www.test.com created successfully!' in results.get('HumanReadable')
+    assert expected_context == results.get('EntryContext')
