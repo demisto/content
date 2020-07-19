@@ -23,6 +23,7 @@ from Tests.test_content import load_conf_files, extract_filtered_tests, Parallel
 from Tests.update_content_data import update_content
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
     install_all_content_packs
+from Tests.tools import update_server_configuration
 
 MARKET_PLACE_MACHINES = ('master',)
 
@@ -39,7 +40,7 @@ def options_handler():
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
     parser.add_argument('-n', '--is-nightly', type=str2bool, help='Is nightly build')
     parser.add_argument('--branch', help='GitHub branch name', required=True)
-    parser.add_argument('--build-number', help='CI build number', required=True)
+    parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
 
     options = parser.parse_args()
 
@@ -742,49 +743,23 @@ def set_docker_hardening_for_build(client, prints_manager):
     return update_server_configuration(client, server_configuration, error_msg)
 
 
-def update_server_configuration(client, server_configuration, error_msg):
-    """updates server configuration
-
-    Args:
-        client (demisto_client): The configured client to use.
-        server_configuration (dict): The server configuration to be added
-        error_msg (str): The error message
-
-    Returns:
-        response_data: The response data
-        status_code: The response status code
-    """
-    system_conf_response = demisto_client.generic_request_func(
-        self=client,
-        path='/system/config',
-        method='GET'
-    )
-    system_conf = ast.literal_eval(system_conf_response[0]).get('sysConf', {})
-    system_conf.update(server_configuration)
-    data = {
-        'data': system_conf,
-        'version': -1
-    }
-    response_data, status_code, _ = demisto_client.generic_request_func(self=client, path='/system/config',
-                                                                        method='POST', body=data)
-
-    try:
-        result_object = ast.literal_eval(response_data)
-    except ValueError as err:
-        print_error('failed to parse response from demisto. response is {}.\nError:\n{}'.format(response_data, err))
-        return
-
-    if status_code >= 300 or status_code < 200:
-        message = result_object.get('message', '')
-        msg = f'{error_msg} {status_code}\n{message}'
-        print_error(msg)
-    return response_data, status_code
-
-
 def get_pack_ids_to_install():
     with open('./Tests/content_packs_to_install.txt', 'r') as packs_stream:
         pack_ids = packs_stream.readlines()
         return [pack_id.rstrip('\n') for pack_id in pack_ids]
+
+
+def restart_server(server, prints_manager):
+    installed_content_message = \
+        '\nRestarting servers to apply server config ...'
+    prints_manager.add_print_job(installed_content_message, print_color, 0, LOG_COLORS.GREEN)
+    ssh_string = 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} ' \
+                 '"sudo systemctl restart demisto"'
+    try:
+        subprocess.check_output(
+            ssh_string.format('ec2-user', server.replace('https://', '')), shell=True)
+    except subprocess.CalledProcessError as exc:
+        print(exc.output)
 
 
 def main():
@@ -816,15 +791,8 @@ def main():
             set_docker_hardening_for_build(client, prints_manager)
             if LooseVersion(server_numeric_version) >= LooseVersion('6.0.0'):
                 set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number)
-            print('Restarting servers to apply server config ...')
-            ssh_string = 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} ' \
-                         '"sudo systemctl restart demisto"'
-            try:
-                subprocess.check_output(
-                    ssh_string.format('ec2-user', server.replace('https://', '')), shell=True)
-            except subprocess.CalledProcessError as exc:
-                print(exc.output)
-        print('Done restarting servers.')
+            restart_server(server, prints_manager)
+        prints_manager.add_print_job('Done restarting servers', print_color, 0, LOG_COLORS.GREEN)
 
     tests = conf['tests']
     skipped_integrations_conf = conf['skipped_integrations']
@@ -882,7 +850,9 @@ def main():
                     client = demisto_client.configure(base_url=server_url, username=username, password=password,
                                                       verify_ssl=False)
 
-                    search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager)
+                    _, flag = search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager)
+                    if not flag:
+                        raise Exception('Failed to search and install packs.')
                 except Exception as exc:
                     prints_manager.add_print_job(str(exc), print_error, 0)
                     prints_manager.execute_thread_prints(0)
