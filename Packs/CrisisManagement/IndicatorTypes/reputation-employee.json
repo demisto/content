@@ -21,5 +21,6 @@
 	"defaultMapping": null,
 	"manualMapping": null,
 	"fileHashesPriority": null,
-	"expiration": 0
+	"expiration": 0,
+	"layout": "Employee"
 }
