@@ -76,7 +76,7 @@ class NotFoundError(Exception):
         pass
 
 
-def http_request(url: str, method: str, headers: dict = None, body: dict = None, params: dict = None, files=None,
+def http_request(url: str, method: str, headers: dict = None, body=None, params=None, files=None,
                  resp_type: str = 'xml'):
     LOG('running request with url=%s' % url)
     result = requests.request(
@@ -173,19 +173,19 @@ def create_dbot_score_from_verdict(pretty_verdict):
         raise Exception('Hash is missing in WildFire verdict.')
     if pretty_verdict["Verdict"] not in VERDICTS_TO_DBOTSCORE:
         raise Exception('This hash verdict is not mapped to a DBotScore. Contact Demisto support for more information.')
-    dbot_score = [{
-        'Indicator': pretty_verdict["SHA256"] if 'SHA256' in pretty_verdict else pretty_verdict["MD5"],
-        'Type': 'hash',
-        'Vendor': 'WildFire',
-        'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]]
-    },
+    dbot_score = [
+        {
+            'Indicator': pretty_verdict["SHA256"] if 'SHA256' in pretty_verdict else pretty_verdict["MD5"],
+            'Type': 'hash',
+            'Vendor': 'WildFire',
+            'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]]
+        },
         {
             'Indicator': pretty_verdict["SHA256"] if 'SHA256' in pretty_verdict else pretty_verdict["MD5"],
             'Type': 'file',
             'Vendor': 'WildFire',
             'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]]
         }
-
     ]
     return dbot_score
 
@@ -743,7 +743,7 @@ def wildfire_get_report_command():
             return_outputs(human_readable, entry_context, report)
         else:
             ioc, report, file_info = wildfire_get_file_report(element)
-            create_file_report(ioc, report, file_info, format_, verbose, url_report)
+            create_file_report(ioc, report, file_info, format_, verbose)
 
 
 def wildfire_file_command():
