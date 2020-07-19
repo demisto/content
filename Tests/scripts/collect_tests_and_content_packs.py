@@ -80,10 +80,16 @@ class TestConf(object):
         packs = set([])
         tested_integrations = self.get_tested_integrations_for_collected_tests(collected_tests)
         for integration in tested_integrations:
-            int_path = id_set__get_integration_file_path(id_set, integration)
-            pack = tools.get_pack_name(int_path)
-            if pack:
-                packs.add(pack)
+            try:
+                int_path = id_set__get_integration_file_path(id_set, integration)
+                pack = tools.get_pack_name(int_path)
+                if pack:
+                    packs.add(pack)
+            except TypeError as e:
+                err_msg = f'Error occurred when trying to determine the pack of integration "{integration}"'
+                err_msg += f' with path "{int_path}"' if int_path else ''
+                err_msg += f'\nERROR: "{e}"'
+                tools.print_color(err_msg, tools.LOG_COLORS.YELLOW)
         return packs
 
     def get_test_playbooks_configured_with_integration(self, integration_id):
@@ -1237,7 +1243,7 @@ def create_test_file(is_nightly, skip_save=False):
         if branch_name != 'master':
             files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
             # Checks if the build is for contributor PR and if so add it's pack.
-            if tools.run_command('echo $CONTRIB_BRANCH'):
+            if os.getenv('CONTRIB_BRANCH'):
                 packs_diff = tools.run_command("git diff --name-status HEAD -- Packs")
                 files_string += f"\n{packs_diff}"
         else:
