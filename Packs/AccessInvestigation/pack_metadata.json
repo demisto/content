@@ -32,11 +32,5 @@
             "mandatory": true,
             "display_name": "Common Scripts"
         }
-    },
-    "displayedImages": [
-        "Active_Directory_Query",
-        "CommonTypes",
-        "CommonPlaybooks",
-        "CommonScripts"
-    ]
+    }
 }
