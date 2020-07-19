@@ -2807,6 +2807,15 @@
             "fromversion": "5.0.0"
         },
         {
+            "playbookID": "PCAP File Carving Test",
+            "instance_names": "virus_total_general",
+            "integrations": [
+                "VirusTotal",
+                "WildFire-v2"
+            ],
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "VirusTotal",
             "instance_names": "virus_total_general",
             "playbookID": "PCAP Parsing And Indicator Enrichment Test",
@@ -2957,7 +2966,6 @@
         "AlienVault USM Anywhere": "Issue #18273",
         "Tufin": "Issue 16441",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
-        "MimecastV2": "Issue 14593",
         "Netskope": "instance is down",
         "Farsight DNSDB": "Issue 15512",
         "Service Manager": "Expired license",
