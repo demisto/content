@@ -1,8 +1,8 @@
-id: 'QRadar - Get offense correlations '
+id: QRadar - Get offense correlations
 version: -1
-name: 'QRadar - Get offense correlations '
+name: QRadar - Get offense correlations
 toversion: 3.1.0
-fromversion: ""
+fromversion: 1.0.0
 description: |-
   Run on a QRadar offense to get more information
 
