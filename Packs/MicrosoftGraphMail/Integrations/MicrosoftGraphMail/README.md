@@ -1,6 +1,13 @@
 Use the Microsoft Graph integration to let your applications get authorized access to a user's Outlook mail data in a personal or organization account.
 
-## Configure MicrosoftGraphMail on Demisto
+## Authentication
+For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
+
+### Required Permissions
+* Mail.ReadWrite - Application
+* User.Read - Application
+
+## Configure Microsoft Graph Mail on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for MicrosoftGraphMail.
