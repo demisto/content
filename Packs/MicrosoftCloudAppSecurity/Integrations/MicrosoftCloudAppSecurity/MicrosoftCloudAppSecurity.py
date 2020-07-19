@@ -468,13 +468,8 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     token = demisto.params().get('token')
-
-    # get the service API url
     base_url = f'{urljoin(demisto.params().get("url"))}api/v1'
-
     verify_certificate = not demisto.params().get('insecure', False)
-
-    # How much time before the first fetch to retrieve incidents
     first_fetch = demisto.params().get('first_fetch')
     if not first_fetch:
         first_fetch = '3 days'
@@ -490,15 +485,13 @@ def main():
             proxy=proxy)
 
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
             result = test_module(client)
             demisto.results(result)
 
         elif demisto.command() == 'fetch-incidents':
-            # Set and define the fetch incidents command to run after activated via integration settings.
             params = demisto.params()
             all_params = assign_params(severity=params.get('severity'), instance=params.get('instance'),
-                                       resolution_status=params.get('resolution_status'),
+                                       resolution_status=params.get('resolutionStatus'),
                                        service=params.get('service'))
             filters = params_to_filter(all_params)
 

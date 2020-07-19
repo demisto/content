@@ -1,5 +1,6 @@
 import pytest
 from CommonServerPython import *
+from MicrosoftCloudAppSecurity import Client
 
 
 RETURN_ERROR_TARGET = 'GetListRow.return_error'
@@ -256,7 +257,7 @@ def test_args_to_json_dismiss_and_resolve_alerts(alert_ids, customer_filters, co
 
 
 expected = {'entity.service': {'eq': 111}, 'entity.instance': {'eq': 111}, 'severity': {'eq': 0},
-                        'resolutionStatus': {'eq': 0}}
+            'resolutionStatus': {'eq': 0}}
 request_data = {"service": "111", "instance": "111", "severity": "Low", "resolution_status": "Open"}
 
 
@@ -270,6 +271,16 @@ def test_params_to_filter(all_params, expected):
     from MicrosoftCloudAppSecurity import params_to_filter
     res = params_to_filter(all_params)
     assert res == expected
+
+
+client_mocker = Client(base_url='url')
+
+
+def test_alerts_list_command(mocker):
+    from MicrosoftCloudAppSecurity import alerts_list_command
+    mocker.patch.object(client_mocker, 'alert_list', return_value=ALERT_BY_ID_DATA)
+    res = alerts_list_command(client_mocker, {'alert_id': '5f06d71dba4289d0602ba5ac'})
+    assert res.readable_output == ALERT_BY_ID_DATA
 
 
 @pytest.mark.parametrize(
@@ -320,3 +331,63 @@ def test_parse_list(mocker, parse_all, header, value, list_name, expected):
                                                                   3,Chen,developer,on'''}])
     res = parse_list(parse_all, header, value, list_name)
     assert expected in res.readable_output
+
+
+ALERT_BY_ID_DATA = {
+    "_id": "5f06d71dba4289d0602ba5ac",
+    "timestamp": 1594283802753,
+    "entities": [
+        {
+            "id": "5f01dce13de79160fbec4150",
+            "label": "block png files",
+            "policyType": "FILE",
+            "type": "policyRule"
+        },
+        {
+            "id": 15600,
+            "label": "Microsoft OneDrive for Business",
+            "type": "service"
+        },
+        {
+            "id": "d10230e2-52db-4ec8-815b-c5484524d078|501f6179-e6f9-457c-9892-1590dee07ede",
+            "label": "image (2).png",
+            "type": "file"
+        },
+        {
+            "em": "dev@demistodev.onmicrosoft.com",
+            "entityType": 2,
+            "id": "2827c1e7-edb6-4529-b50d-25984e968637",
+            "inst": 0,
+            "label": "demisto dev",
+            "pa": "dev@demistodev.onmicrosoft.com",
+            "saas": 11161,
+            "type": "account"
+        },
+        {
+            "id": "dev@demistodev.onmicrosoft.com",
+            "label": "dev@demistodev.onmicrosoft.com",
+            "type": "user"
+        }
+    ],
+    "title": "block png files",
+    "description": "File policy 'block png files' was matched by 'image (2).png'",
+    "stories": [
+        0
+    ],
+    "policy": {
+        "id": "5f01dce13de79160fbec4150",
+        "label": "block png files",
+        "policyType": "FILE",
+        "type": "policyRule"
+    },
+    "contextId": "ebac1a16-81bf-449b-8d43-5732c3c1d999",
+    "threatScore": 19,
+    "isSystemAlert": False,
+    "idValue": 15728642,
+    "statusValue": 1,
+    "severityValue": 0,
+    "handledByUser": 'null',
+    "comment": 'null',
+    "resolveTime": "2020-07-12T07:48:40.975Z",
+    "URL": "https://demistodev.portal.cloudappsecurity.com/#/alerts/5f06d71dba4289d0602ba5ac"
+}

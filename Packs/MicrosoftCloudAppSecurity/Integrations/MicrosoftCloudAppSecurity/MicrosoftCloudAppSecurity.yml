@@ -47,6 +47,15 @@ configuration:
   name: first_fetch
   required: false
   type: 0
+- display: incident_resolutionStatus
+  hidden: false
+  name: resolutionStatus
+  options:
+  - Open
+  - Dismissed
+  - Resolved
+  required: false
+  type: 16
 description: This is the Hello World integration for getting started.
 display: MicrosoftCloudAppSecurity
 name: MicrosoftCloudAppSecurity
@@ -472,4 +481,4 @@ script:
   subtype: python3
   type: python
 tests:
-    - No tests
+- No tests
