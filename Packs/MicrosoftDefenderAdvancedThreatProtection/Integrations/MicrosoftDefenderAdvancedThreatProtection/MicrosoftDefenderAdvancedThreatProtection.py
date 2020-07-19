@@ -574,6 +574,16 @@ class MsClient:
         cmd_url = 'beta/security/tiIndicators'
         return self.ms_client.http_request('POST', cmd_url, json_data=body)
 
+    def update_indicator(self, indicator_id, expiration_date_time, description, severity):
+        cmd_url = 'bet/security/tiIndicators'
+        body = assign_params(
+            indicator_id=indicator_id,
+            expirationDateTime=expiration_date_time,
+            description=description,
+            severity=severity
+        )
+        return self.ms_client.http_request('UPDATE', cmd_url, json_data=body)
+
 
 ''' Commands '''
 
@@ -1956,7 +1966,7 @@ def create_network_indicator_command(client, args):
         domainName=args.get('domain_name'),
         networkCidrBlock=args.get('network_cidr_block'),
         networkDestinationAsn=args.get('network_destination_asn'),
-        networkDestinationCidrBlock	=args.get('network_destination_cidr_block'),
+        networkDestinationCidrBlock=args.get('network_destination_cidr_block'),
         networkDestinationIPv4=args.get('network_destination_ipv4'),
         networkDestinationIPv6=args.get('network_destination_ipv6'),
         networkDestinationPort=args.get('network_destination_port'),
@@ -1991,6 +2001,7 @@ def create_network_indicator_command(client, args):
     )
     return human_readable, {'MicrosoftATP.Indicators(val.id == obj.id)': indicator}
 
+
 def test_module(client: MsClient):
     try:
         client.ms_client.http_request(method='GET', url_suffix='/alerts', params={'$top': '1'})
@@ -2001,6 +2012,29 @@ def test_module(client: MsClient):
 
 
 ''' EXECUTION CODE '''
+
+
+def update_indicator_command(client: MsClient, args: dict) -> str:
+    severity = args.get('severity')
+    if severity is not None:
+        try:
+            severity = int(severity)
+            assert 0 <= severity <= 5, 'The severity argument must be between 0 and 5'
+        except ValueError:
+            raise DemistoException('The severity argument must be an integer.')
+    indicator_id = args.get('indicator_id')
+    indicator_id = indicator_id
+    expiration_date_time = args.get('expiration_date_time')
+    description = args.get('description')
+    if description is not None:
+        assert 1 <= len(
+            description) <= 100, 'The description argument must contain at least 1 letter and less than 100.'
+
+    client.update_indicator(
+        indicator_id=indicator_id, expiration_date_time=expiration_date_time,
+        description=description, severity=severity
+    )
+    return f'Indicator ID: {indicator_id}'
 
 
 def main():
@@ -2131,10 +2165,12 @@ def main():
 
         elif command in ('microsoft-atp-list-indicators', 'microsoft-atp-get-indicator-by-id'):
             return_outputs(*list_indicators_command(client, args))
-        elif command == 'microsoft-atp-create-file-indicator':
+        elif command == 'microsoft-atp-indicator-create-file':
             return_outputs(*create_file_indicator_command(client, args))
-        elif command == 'microsoft-atp-create-network-indicator':
+        elif command == 'microsoft-atp-indicator-create-network':
             return_outputs(*create_network_indicator_command(client, args))
+        elif command == 'microsoft-atp-indicator-update':
+            return_outputs(*update_indicator_command(client, args))
     except Exception as err:
         return_error(str(err))
 
