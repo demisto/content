@@ -86,6 +86,7 @@ script:
   script: ''
   subtype: python3
   type: python
+  isfetchsamples: true
 fromversion: 5.0.0
 tests:
   - No test

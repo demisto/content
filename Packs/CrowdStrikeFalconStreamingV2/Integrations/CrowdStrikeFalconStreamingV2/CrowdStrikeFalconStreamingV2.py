@@ -409,6 +409,18 @@ async def test_module(base_url: str, client_id: str, client_secret: str, verify_
         demisto.results('ok')
 
 
+def fetch_samples():
+    """Extracts sample events stored in the integration context and returns them as incidents
+
+    Returns:
+        None: No data returned.
+    """
+    integration_context = demisto.getIntegrationContext()
+    sample_events = json.loads(integration_context.get('sample_events', '[]'))
+    incidents = [{'rawJSON': json.dumps(event)} for event in sample_events]
+    demisto.incidents(incidents)
+
+
 def get_sample_events(store_samples: bool = False) -> None:
     """Extracts sample events stored in the integration context and returns them
 
@@ -461,6 +473,8 @@ def main():
                 base_url, client_id, client_secret, stream, offset, event_type, verify_ssl, proxy, incident_type,
                 first_fetch_time, store_samples
             ))
+        elif demisto.command() == 'fetch-incidents':
+            fetch_samples()
         elif demisto.command() == 'crowdstrike-falcon-streaming-get-sample-events':
             get_sample_events(store_samples)
     except Exception as e:
