@@ -14,8 +14,8 @@ from Tests.Marketplace.marketplace_services import init_storage_client, Pack, Pa
 from demisto_sdk.commands.common.tools import run_command, print_error, print_warning, print_color, LOG_COLORS, str2bool
 
 
-def get_modified_packs(target_packs):
-    """Detects and returns modified or new packs names to upload.
+def get_packs_names(target_packs):
+    """Detects and returns packs names to upload.
 
     In case that `Modified` is passed in target_packs input, checks the git difference between two commits,
     current and previous and greps only ones with prefix Packs/.
@@ -319,6 +319,7 @@ def upload_id_set(storage_bucket, id_set_local_path=None):
     """
     if not id_set_local_path:
         print("Skipping upload of id set to gcs.")
+        return
 
     id_set_gcs_path = os.path.join(GCPConfig.STORAGE_CONTENT_PATH, 'id_set.json')
     blob = storage_bucket.blob(id_set_gcs_path)
@@ -577,9 +578,9 @@ def main():
         GCPConfig.STORAGE_BASE_PATH = storage_base_path
 
     # detect packs to upload
-    modified_packs = get_modified_packs(target_packs)
+    pack_names = get_packs_names(target_packs)
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
-    packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in modified_packs
+    packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
     # download and extract index from public bucket
@@ -675,8 +676,14 @@ def main():
             pack.cleanup()
             continue
 
-        # in case that pack already exist at cloud storage path, skipped further steps
-        if skipped_pack_uploading:
+        task_status, exists_in_index = pack.check_if_exists_in_index(index_folder_path)
+        if not task_status:
+            pack.status = PackStatus.FAILED_SEARCHING_PACK_IN_INDEX.name
+            pack.cleanup()
+            continue
+
+        # in case that pack already exist at cloud storage path and in index, skipped further steps
+        if skipped_pack_uploading and exists_in_index:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name
             pack.cleanup()
             continue

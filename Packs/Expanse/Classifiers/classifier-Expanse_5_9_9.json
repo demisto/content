@@ -1,0 +1,95 @@
+{
+    "brandName": "Expanse",
+    "custom": true,
+    "defaultIncidentType": "",
+    "feed": false,
+    "id": "95573d05-345e-43b6-82f1-a5a8ad402e69",
+    "incidentSamples": [],
+    "indicatorSamples": null,
+    "isDefault": false,
+    "keyTypeMap": {},
+    "fromVersion": "5.0.0",
+    "toVersion": "5.9.9",
+    "mapping": {
+        "Expanse Appearance": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Expanse Business Unit": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "businessUnit",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Expanse Exposure Type": {
+                    "complex": {
+                        "accessor": "exposureType",
+                        "filters": [],
+                        "root": "payload",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Expanse Severity": {
+                    "complex": {
+                        "accessor": "severity",
+                        "filters": [],
+                        "root": "payload",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "ExpanseRawJSONEvent": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": ".",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "Expanse Behavior": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Expanse Behavior Rule": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "riskRule",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Expanse Business Unit": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "businessUnit",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "ExpanseRawJSONEvent": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": ".",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "sortValues": null,
+    "transformer": {
+        "complex": null,
+        "simple": ""
+    },
+    "unclassifiedCases": {},
+    "version": -1
+}
