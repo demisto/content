@@ -117,7 +117,7 @@ script:
                 context = {'Domain': {'Name': res.response.record_source, 'Whois': changeKeys(toCamelCase, res.response.parsed_whois)}};
             }
         } else {
-            var md += "Could not find any results. Please make sure the queried domain exists"
+            var md += "Could not find any results. Please make sure the queried domain exists";
         }
 
         return {
