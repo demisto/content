@@ -2038,10 +2038,6 @@
             "playbookID": "ExtractDomainFromEmailTest"
         },
         {
-            "playbookID": "Account Enrichment - Generic v2 - Test",
-            "integrations": "activedir"
-        },
-        {
             "playbookID": "Extract Indicators From File - Generic v2 - Test",
             "integrations": "Image OCR",
             "timeout": 300,
@@ -2860,7 +2856,6 @@
         "Test-Shodan_v2": "Issue 23370",
         "Symantec Deepsight Test": "Issue 22971",
         "Cybereason Test": "Issue 22683",
-        "test-Expanse": "Issue 26248",
         "TestProofpointFeed": "Issue 22229",
         "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
@@ -2908,7 +2903,6 @@
         "Deep Instinct": "The partner didn't provide an instance",
         "Cofense Triage v2": "No instance - partner integration",
         "ArcSight Logger": "Issue 24303",
-        "AttackIQFireDrill": "Issue 24281",
         "MxToolBox": "No instance",
         "Skyformation": "No instance, old partner",
         "Prisma Access": "Instance will be provided soon by Lior and Prasen",
@@ -2963,7 +2957,6 @@
         "AlienVault USM Anywhere": "Issue #18273",
         "Tufin": "Issue 16441",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
-        "MimecastV2": "Issue 14593",
         "Netskope": "instance is down",
         "Farsight DNSDB": "Issue 15512",
         "Service Manager": "Expired license",
@@ -3035,6 +3028,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "Infocyte": "Proxy issues",
         "SNDBOX": "Submits a file - tests that send files shouldn't be mocked",
         "Joe Security": "Submits a file - tests that send files shouldn't be mocked",
         "Maltiverse": "issue 24335",
