@@ -5,7 +5,9 @@ description: This playbook is used to carve (extract) files from within PCAP fil
   and perform enrichment and detonation of the extracted files. Supported PCAP file
   types are pcap, cap, pcapng. The playbook can handle one PCAP file per incident.
   Additional inputs allow the user to provide the WPA password for decrypting 802.11
-  (wireless) traffic and adding an RSA certificate to decrypt SSL traffic. To display
+  (wireless) traffic and adding an RSA certificate to decrypt SSL traffic. Additional
+  options allow to filter the files to extract according to the file extenstion or the
+  file actual type (MIME) and limit the amount of files to extract. To display
   the results within the relevant incident fields, the playbook needs to run in a
   PCAP Analysis incident type. For handling of PCAP files larger than 30 MB, refer
   to the PcapMinerV2 documentation.
