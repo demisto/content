@@ -174,18 +174,16 @@ def create_dbot_score_from_verdict(pretty_verdict):
     if pretty_verdict["Verdict"] not in VERDICTS_TO_DBOTSCORE:
         raise Exception('This hash verdict is not mapped to a DBotScore. Contact Demisto support for more information.')
     dbot_score = [
-        {
-            'Indicator': pretty_verdict["SHA256"] if 'SHA256' in pretty_verdict else pretty_verdict["MD5"],
-            'Type': 'hash',
-            'Vendor': 'WildFire',
-            'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]]
-        },
-        {
-            'Indicator': pretty_verdict["SHA256"] if 'SHA256' in pretty_verdict else pretty_verdict["MD5"],
-            'Type': 'file',
-            'Vendor': 'WildFire',
-            'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]]
-        }
+        {'Indicator': pretty_verdict["SHA256"] if 'SHA256' in pretty_verdict else pretty_verdict["MD5"],
+         'Type': 'hash',
+         'Vendor': 'WildFire',
+         'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]]
+         },
+        {'Indicator': pretty_verdict["SHA256"] if 'SHA256' in pretty_verdict else pretty_verdict["MD5"],
+         'Type': 'file',
+         'Vendor': 'WildFire',
+         'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]]
+         }
     ]
     return dbot_score
 
