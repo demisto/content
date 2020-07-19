@@ -143,7 +143,7 @@ def validate_arguments(args):
         raise ValueError('Sort_direction argument should be either Ascending or Descending.')
 
     if exclusive_operator not in ['true', 'false']:
-        raise ValueError('Exclusivity argument should be either true or false.')
+        raise ValueError('Exclude argument should be either true or false.')
 
     if not str(size).isdigit() or int(size) == 0:
         raise ValueError('Size argument must be a non-zero positive number. Accepted values between 1-1000.')
@@ -2300,7 +2300,7 @@ def apply_tag_command(client, args):
     propagate_to_all_findings = args.get('propagate_to_all_findings', 'false')
 
     if args.get('exclude', 'false').lower() not in ['true', 'false']:
-        raise ValueError('Exclusivity argument should be either true or false.')
+        raise ValueError('Exclude argument should be either true or false.')
 
     if propagate_to_all_findings.lower() not in ['true', 'false']:
         raise ValueError('Value of propagate_to_all_findings argument should be either true or false.')
