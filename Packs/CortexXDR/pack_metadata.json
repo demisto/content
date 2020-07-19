@@ -8,7 +8,8 @@
     "email": "",
     "created": "2020-03-11T13:16:53Z",
     "categories": [
-        "Endpoint"
+        "Endpoint",
+        "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
         "Recommended by Cortex XSOAR",
