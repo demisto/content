@@ -9,6 +9,7 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from typing import Dict, Any, List, Tuple, Callable
 from tempfile import gettempdir
 from dateutil import parser
+import demistomock as demisto
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -104,6 +105,7 @@ class Client(BaseClient):
         """
         query_data = {'query': self.add_instance_id_to_query(query),
                       'language': 'csql'}
+        print(query)
         query_service = self.initial_query_service()
         response = query_service.create_query(query_params=query_data, enforce_json=True)
         query_result = response.json()
@@ -429,6 +431,23 @@ def build_where_clause(args: dict) -> str:
         # if query arg is supplied than we just need to parse it and only it
         return args['query'].strip()
 
+    # TODO: Make sure the query includes "OR" between source ip to dest ip
+
+    where_clause = ''
+    if 'ip' in args.keys():
+        ips = {'source_ip.value': args.get('ip'), 'dest_ip.value': args.get('ip')}
+        del args['ip']
+        for key, values in ips.items():
+            ips_values_list: list = argToList(values)
+
+            where_clause += ' OR '.join([f'({key} = "{value}")' for value in ips_values_list])
+
+    if 'port' in args.keys():
+        # TODO: Add support for port arg
+        args['source_port'] = args.get('port')
+        args['dest_port'] = args.get('port')
+        del args['port']
+
     # We want to add only keys that are part of the query
     string_query_fields = {key: value for key, value in args.items() if key in args_dict and key not in non_string_keys}
     or_statements = []
@@ -442,7 +461,7 @@ def build_where_clause(args: dict) -> str:
         non_string_values_list: list = argToList(values)
         field = args_dict[key]
         or_statements.append(' OR '.join([f'{field} = {value}' for value in non_string_values_list]))
-    where_clause = ' AND '.join([f'({or_statement})' for or_statement in or_statements if or_statement])
+    where_clause += ' AND '.join([f'({or_statement})' for or_statement in or_statements if or_statement])
     return where_clause
 
 

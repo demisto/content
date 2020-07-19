@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: Cortex Data Lake
+  id: Cortex Data Lake-test
   version: -1
 configuration:
 - display: Token
@@ -75,10 +75,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- additionalinfo: |-
-    How many incidents will be fetched per query.
-    Caution: high number could create overload. Default is 10.
-  defaultvalue: '10'
+- defaultvalue: '10'
   display: Incidents fetched per query
   hidden: false
   name: limit
@@ -98,8 +95,8 @@ description: Palo Alto Networks Cortex Data Lake provides cloud-based, centraliz
   log storage and aggregation for your on premise, virtual (private cloud and public
   cloud) firewalls, for Prisma Access, and for cloud-delivered services such as Cortex
   XDR
-display: Cortex Data Lake
-name: Cortex Data Lake
+display: Cortex Data Lake-test
+name: Cortex Data Lake-test
 script:
   commands:
   - arguments:
@@ -758,8 +755,8 @@ script:
       secret: false
     - default: false
       description: A free-text query for which to search. This forms the WHERE part
-        of the query, for example, !cdl-query-traffic-logs query="source_ip.value LIKE '192.168.1.*'
-        AND dest_ip.value='8.8.8.8' And dest_port=1234"
+        of the query, for example, !cdl-query-traffic-logs query="source_ip.value
+        LIKE '192.168.1.*' AND dest_ip.value='8.8.8.8' And dest_port=1234"
       isArray: false
       name: query
       required: false
@@ -1353,6 +1350,20 @@ script:
       description: The number of logs to return. Default is 5.
       isArray: false
       name: limit
+      required: false
+      secret: false
+    - default: false
+      description: IP address. Enter an IP address or an array of IP addresses for
+        which to search, for example 1.1.1.1,2.2.2.2.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: Port utilized by the session. Enter a port or array of ports to
+        search.
+      isArray: false
+      name: port
       required: false
       secret: false
     deprecated: false
