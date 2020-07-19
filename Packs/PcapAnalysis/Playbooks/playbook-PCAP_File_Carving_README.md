@@ -46,4 +46,4 @@ Default value is 'inclusive' | inclusive | Optional |
 
 ## Playbook Image
 ---
-![PCAP File Carving](Insert the link to your image here)
+![PCAP File Carving](https://raw.githubusercontent.com/demisto/content/master/Packs/PcapAnalysis/doc_files/PCAP_File_Carving.png)
