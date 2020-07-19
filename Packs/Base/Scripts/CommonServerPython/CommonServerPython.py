@@ -2670,7 +2670,7 @@ def return_results(results):
         demisto.results(results.to_context())
         return
 
-    if isinstance(results, AllSchemesTypesMappingObject):
+    if isinstance(results, GetMappingFieldsResponse):
         demisto.results(results.extract_mapping())
         return
 
@@ -4145,7 +4145,7 @@ class SchemeTypeMapping:
             self.type_name: self.fields
         }
 
-class AllSchemesTypesMappingObject:
+class GetMappingFieldsResponse:
     def __init__(self, scheme_types_mapping=None):
         self.scheme_types_mappings = scheme_types_mapping if scheme_types_mapping else []
 

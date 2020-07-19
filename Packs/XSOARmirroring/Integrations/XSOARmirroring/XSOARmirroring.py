@@ -389,7 +389,7 @@ def get_incident_command(client: Client, args: Dict[str, Any]) -> CommandResults
     )
 
 
-def get_mapping_fields_command(client: Client) -> AllSchemesTypesMappingObject:
+def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
     """get-mapping-fields command: Returns the list of fields for an incident type
 
     :type client: ``Client``
@@ -405,7 +405,7 @@ def get_mapping_fields_command(client: Client) -> AllSchemesTypesMappingObject:
 
     :rtype: ``Dict[str, Any]``
     """
-    all_mappings = AllSchemesTypesMappingObject()
+    all_mappings = GetMappingFieldsResponse()
     incident_fields: List[dict] = client.get_incident_fields()
 
     types = client.get_incident_types()
