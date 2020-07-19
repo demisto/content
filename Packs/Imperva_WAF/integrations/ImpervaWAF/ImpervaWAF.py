@@ -6,7 +6,6 @@ from CommonServerUserPython import *
 import json
 import requests
 import traceback
-import dateparser
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -163,7 +162,7 @@ def ip_group_list_command(client, args):
         for i, element in enumerate(groups):
             groups[i] = {'Name': groups[i]}
 
-    human_readable = tableToMarkdown(f'IP groups', groups, removeNull=True)
+    human_readable = tableToMarkdown('IP groups', groups, removeNull=True)
     entry_context = {f'{INTEGRATION_CONTEXT_NAME}.IpGroup(val.Name===obj.Name)': groups}
     return_outputs(human_readable, entry_context, raw_res)
 
@@ -253,7 +252,7 @@ def custom_policy_list_command(client, args):
         for i, element in enumerate(policies):
             policies[i] = {'Name': policies[i]}
 
-    human_readable = tableToMarkdown(f'Custom web policies', policies, removeNull=True)
+    human_readable = tableToMarkdown('Custom web policies', policies, removeNull=True)
     entry_context = {f'{INTEGRATION_CONTEXT_NAME}.CustomWebPolicy(val.Name===obj.Name)': policies}
     return_outputs(human_readable, entry_context, raw_res)
 
@@ -291,19 +290,22 @@ def get_custom_policy_command(client, args):
             if tmp_match.get('userDefined'):
                 for i, element in enumerate(tmp_match['userDefined']):
                     tmp_match['userDefined'][i] = {'IP Address': tmp_match['userDefined'][i]}
-                human_readable += '\n\n' + tableToMarkdown(f'Match operation: {operation}\n Source IP addresses:', tmp_match['userDefined'], removeNull=True)
+                human_readable += '\n\n' + tableToMarkdown(f'Match operation: {operation}\n Source IP addresses:',
+                                                           tmp_match['userDefined'], removeNull=True)
 
             if tmp_match.get('ipGroups'):
                 for i, element in enumerate(tmp_match['ipGroups']):
                     tmp_match['ipGroups'][i] = {'Group name': tmp_match['ipGroups'][i]}
-                human_readable += '\n\n' + tableToMarkdown(f'Match operation: {operation}\n IP Groups:', tmp_match['ipGroups'], removeNull=True)
+                human_readable += '\n\n' + tableToMarkdown(f'Match operation: {operation}\n IP Groups:',
+                                                           tmp_match['ipGroups'], removeNull=True)
 
         # generate human readable for sourceGeolocation type
         elif match_type == 'sourceGeolocation':
             if tmp_match.get('values'):
                 for i, element in enumerate(tmp_match['values']):
                     tmp_match['values'][i] = {'Country name': tmp_match['values'][i]}
-                human_readable += '\n\n' + tableToMarkdown(f'Match operation: {operation}\n Countries to match:', tmp_match['values'], removeNull=True)
+                human_readable += '\n\n' + tableToMarkdown(f'Match operation: {operation}\n Countries to match:',
+                                                           tmp_match['values'], removeNull=True)
 
     entry_context = {f'{INTEGRATION_CONTEXT_NAME}.CustomWebPolicy(val.Name===obj.Name)': policy}
     return_outputs(human_readable, entry_context, raw_res)
