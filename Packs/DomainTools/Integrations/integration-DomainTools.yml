@@ -97,23 +97,27 @@ script:
             parsed = false;
             log('error code 206');
         }
-        var splitRes = res.response.whois.record.split('\n');
         var md = '### DomainTools whois result for '+ query + '\n';
-        var resMap = {};
-        splitRes.forEach(function(entry){
-            splitEntry = entry.split(/:\s(.+)/);
-            if(splitEntry[1]){
-                splitEntry[0] = toCamelCase(splitEntry[0]);
-                md += '**'+splitEntry[0]+':** '+splitEntry[1]+'\n';
-                resMap[splitEntry[0]] = addKeyToJson(resMap[splitEntry[0]], splitEntry[1]);
-            }
-        });
-
         var context;
-        if(parsed === 'false'){
-            context = {'Domain': {'Name': res.response.record_source, 'Whois': resMap}};
-        }else{
-            context = {'Domain': {'Name': res.response.record_source, 'Whois': changeKeys(toCamelCase, res.response.parsed_whois)}};
+        if(res.response.whois){
+            var splitRes = res.response.whois.record.split('\n');
+            var resMap = {};
+            splitRes.forEach(function(entry){
+                splitEntry = entry.split(/:\s(.+)/);
+                if(splitEntry[1]){
+                    splitEntry[0] = toCamelCase(splitEntry[0]);
+                    md += '**'+splitEntry[0]+':** '+splitEntry[1]+'\n';
+                    resMap[splitEntry[0]] = addKeyToJson(resMap[splitEntry[0]], splitEntry[1]);
+                }
+            });
+
+            if(parsed === 'false'){
+                context = {'Domain': {'Name': res.response.record_source, 'Whois': resMap}};
+            }else{
+                context = {'Domain': {'Name': res.response.record_source, 'Whois': changeKeys(toCamelCase, res.response.parsed_whois)}};
+            }
+        } else {
+            var md += "Could not find any results. Please make sure the queried domain exists"
         }
 
         return {
@@ -239,11 +243,12 @@ script:
         }
 
         addresses.forEach(function(address){
-            md+= '\nFound ' + address.domain_count + ' domains for ' +address.ip_address + '\n';
-            address.domain_names.forEach(function(domain){
-                md += '* ' + domain + '\n';
-                context.Domain.push({'Name': domain, 'DNS' : {'Address' : address.ip_address}});
-            });
+            if(adress) {
+              md+= '\nFound ' + address.domain_count + ' domains for ' +address.ip_address + '\n';
+              address.domain_names.forEach(function(domain){
+                  md += '* ' + domain + '\n';
+                  context.Domain.push({'Name': domain, 'DNS' : {'Address' : address.ip_address}});
+              })};
         });
 
         return {
