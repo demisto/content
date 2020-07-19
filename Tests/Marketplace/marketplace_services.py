@@ -63,8 +63,7 @@ class GCPConfig(object):
                        "ExportIndicators",
                        "Malware",
                        "DefaultPlaybook",
-                       "AccessInvestigation",
-                       "CalculateTimeDifference"
+                       "AccessInvestigation"
                        ]  # cores packs list
 
 
