@@ -356,10 +356,10 @@ def alert_resolve_bulk_command(client, args):
     customer_filters = args.get('customer_filters')
     comment = args.get('comment')
     request_data = args_to_json_dismiss_and_resolve_alerts(alert_ids, customer_filters, comment)
-    resolve_alerts = client.alert_dismiss_bulk(request_data)
+    resolve_alerts = client.alert_resolve_bulk(request_data)
     return CommandResults(
         readable_output=resolve_alerts,
-        outputs_prefix='MicrosoftCloudAppSecurity.AlertDismiss',
+        outputs_prefix='MicrosoftCloudAppSecurity.AlertResolve',
         outputs_key_field='alert_ids',
         outputs=resolve_alerts
     )
