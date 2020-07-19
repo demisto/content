@@ -403,7 +403,6 @@ def update_index_with_priced_packs(private_storage_bucket, extract_destination_p
     private_packs = []
 
     try:
-        print_error(f"private_storage_bucket is: {}, ")
         private_index_path, private_index_blob = download_and_extract_index(private_storage_bucket,
                                                                             os.path.join(extract_destination_path, 'private'))
         print_error(f"ls: {subprocess.check_output('ls')}")
@@ -621,7 +620,7 @@ def main():
 
     # download and extract index from public bucket
     print_error(f"extract: {extract_destination_path}")
-    index_folder_path, index_blob = download_and_extract_index(default_storage_bucket, extract_destination_path)
+    index_folder_path, index_blob = download_and_extract_index(storage_bucket, extract_destination_path)
     print_error(index_folder_path)
 
     print_error(f"ls: {subprocess.check_output('ls')}")
