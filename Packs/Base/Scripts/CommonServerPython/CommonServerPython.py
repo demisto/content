@@ -2674,7 +2674,7 @@ def return_results(results):
         demisto.results(results.extract_mapping())
         return
 
-    if isinstance(results, ObjectMirror):
+    if isinstance(results, GetRemoteDataResponse):
         demisto.results(results.extract_for_local())
         return
 
@@ -4049,21 +4049,85 @@ class DemistoException(Exception):
     pass
 
 
-class ObjectMirror(object):
-    def __init__(self, object, entries):
-        self.object = object
+def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int:
+    """Converts an XSOAR argument to a timestamp (seconds from epoch)
+
+    This function is used to quickly validate an argument provided to XSOAR
+    via ``demisto.args()`` into an ``int`` containing a timestamp (seconds
+    since epoch). It will throw a ValueError if the input is invalid.
+    If the input is None, it will throw a ValueError if required is ``True``,
+    or ``None`` if required is ``False.
+
+    :type arg: ``Any``
+    :param arg: argument to convert
+
+    :type arg_name: ``str``
+    :param arg_name: argument name
+
+    :type required: ``bool``
+    :param required:
+        throws exception if ``True`` and argument provided is None
+
+    :return:
+        returns an ``int`` containing a timestamp (seconds from epoch) if conversion works
+        returns ``-1`` if arg is ``None`` and required is set to ``False``
+        otherwise throws an Exception
+    :rtype: ``Optional[int]``
+    """
+
+    if arg is None:
+        if required is True:
+            raise ValueError(f'Missing "{arg_name}"')
+        return -1
+
+    if isinstance(arg, str) and arg.isdigit():
+        # timestamp is a str containing digits - we just convert it to int
+        return int(arg)
+    if isinstance(arg, str):
+        # we use dateparser to handle strings either in ISO8601 format, or
+        # relative time stamps.
+        # For example: format 2019-10-23T00:00:00 or "3 days", etc
+        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+        if date is None:
+            # if d is None it means dateparser failed to parse it
+            raise ValueError(f'Invalid date: {arg_name}')
+
+        return int(date.timestamp())
+    if isinstance(arg, (int, float)):
+        # Convert to int if the input is a float
+        return int(arg)
+    raise ValueError(f'Invalid date: "{arg_name}"')
+
+
+class GetRemoteDateArgs:
+    def __init__(self, args):
+        self.incident_id = args['id']
+        self.last_update = arg_to_timestamp(
+            arg=args.get('lastUpdate'),
+            arg_name='lastUpdate',
+            required=True
+        )
+
+
+class UpdateRemoteSystemArgs:
+    def __init__(self, args):
+        self.data: dict = args.get('data')  # type: ignore
+        self.entries = args.get('entries')
+        self.incident_changed = args.get('incidentChanged')
+        self.incident_id = args.get('remoteId')
+        self.inc_status = args.get('status')
+        self.delta: dict = args.get('delta')
+
+
+class GetRemoteDataResponse:
+    def __init__(self, mirrored_object, entries):
+        self.mirrored_object = mirrored_object
         self.entries = entries
 
     def extract_for_local(self):
-        if self.object:
-            demisto.info(f'Updating object {self.object["id"]}')
-            return [self.object] + self.entries
-
-
-class SchemeMappingField:
-    def __init__(self, name, description=''):
-        self.name = name
-        self.description = description
+        if self.mirrored_object:
+            demisto.info(f'Updating object {self.mirrored_object["id"]}')
+            return [self.mirrored_object] + self.entries
 
 
 class SchemeTypeMapping:
@@ -4071,12 +4135,14 @@ class SchemeTypeMapping:
         self.type_name = type_name
         self.fields = fields if fields else []
 
-    def add_field(self, field):
-        self.fields.append(field)
+    def add_field(self, name, description=''):
+        self.fields.append({
+            name: description
+        })
 
     def extract_mapping(self):
         return {
-            self.type_name: { field.name: field.description for field in self.fields }
+            self.type_name: self.fields
         }
 
 class AllSchemesTypesMappingObject:

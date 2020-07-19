@@ -89,7 +89,8 @@ class Client(BaseClient):
 
     def add_incident_entry(self, incident_id: Optional[str], entry: Dict[str, Any]):
         if not entry.get('note', False):
-            demisto.info(f'the entry has inv_id {incident_id}\nformat {entry.get("format")}\n contents {entry.get("contents")}')
+            demisto.debug(f'the entry has inv_id {incident_id}\nformat {entry.get("format")}\n contents '
+                          f'{entry.get("contents")}')
             self._http_request(
                 method='POST',
                 url_suffix='/entry/formatted',
@@ -100,7 +101,8 @@ class Client(BaseClient):
                 }
             )
         else:
-            demisto.info(f'the entry has inv_id {incident_id}\ndata {entry.get("date")}\nmarkdown {entry.get("markdown")}')
+            demisto.debug(f'the entry has inv_id {incident_id}\ndata {entry.get("date")}\n'
+                         f'markdown {entry.get("markdown")}')
             entry_format = True if entry.get('format') == 'markdown' else False
             self._http_request(
                 method='POST',
@@ -157,56 +159,6 @@ def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]
         return arg
 
     raise ValueError(f'Invalid number: "{arg_name}"')
-
-
-def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int:
-    """Converts an XSOAR argument to a timestamp (seconds from epoch)
-
-    This function is used to quickly validate an argument provided to XSOAR
-    via ``demisto.args()`` into an ``int`` containing a timestamp (seconds
-    since epoch). It will throw a ValueError if the input is invalid.
-    If the input is None, it will throw a ValueError if required is ``True``,
-    or ``None`` if required is ``False.
-
-    :type arg: ``Any``
-    :param arg: argument to convert
-
-    :type arg_name: ``str``
-    :param arg_name: argument name
-
-    :type required: ``bool``
-    :param required:
-        throws exception if ``True`` and argument provided is None
-
-    :return:
-        returns an ``int`` containing a timestamp (seconds from epoch) if conversion works
-        returns ``-1`` if arg is ``None`` and required is set to ``False``
-        otherwise throws an Exception
-    :rtype: ``Optional[int]``
-    """
-
-    if arg is None:
-        if required is True:
-            raise ValueError(f'Missing "{arg_name}"')
-        return -1
-
-    if isinstance(arg, str) and arg.isdigit():
-        # timestamp is a str containing digits - we just convert it to int
-        return int(arg)
-    if isinstance(arg, str):
-        # we use dateparser to handle strings either in ISO8601 format, or
-        # relative time stamps.
-        # For example: format 2019-10-23T00:00:00 or "3 days", etc
-        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
-        if date is None:
-            # if d is None it means dateparser failed to parse it
-            raise ValueError(f'Invalid date: {arg_name}')
-
-        return int(date.timestamp())
-    if isinstance(arg, (int, float)):
-        # Convert to int if the input is a float
-        return int(arg)
-    raise ValueError(f'Invalid date: "{arg_name}"')
 
 
 ''' COMMAND FUNCTIONS '''
@@ -289,7 +241,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     else:
         query = f'created:>="{created_filter}"'
 
-    demisto.info(f'Fetching incidents since last fetch: {created_filter}')
+    demisto.debug(f'Fetching incidents since last fetch: {created_filter}')
     incidents = client.search_incidents(
         query=query,
         max_results=max_results,
@@ -465,8 +417,8 @@ def get_mapping_fields_command(client: Client) -> AllSchemesTypesMappingObject:
         for field in incident_fields:
             if field.get('group') == 0 and (field.get('associatedToAll')
                                             or incident_type_name in field.get('associatedTypes')):  # type: ignore
-                incident_field = SchemeMappingField(name=field.get('cliName'),
-                                                    description=f"{field.get('name')} - "
+                incident_field = incident_type_scheme.add_field(name=field.get('cliName'),
+                                                                description=f"{field.get('name')} - "
                                                                 f"{field.get('type')} - {field.get('description')}")
                 incident_type_scheme.add_field(incident_field)
 
@@ -476,16 +428,16 @@ def get_mapping_fields_command(client: Client) -> AllSchemesTypesMappingObject:
     demisto.debug('Collecting the default incident scheme')
     for field in incident_fields:
         if field.get('group') == 0 and field.get('associatedToAll'):
-            incident_field = SchemeMappingField(name=field.get('cliName'),
-                                                description=f"{field.get('name')} - "
-                                                            f"{field.get('type')} - {field.get('description')}")
+            incident_field = default_scheme.add_field(name=field.get('cliName'),
+                                                      description=f"{field.get('name')} - "
+                                                      f"{field.get('type')} - {field.get('description')}")
             default_scheme.add_field(incident_field)
 
     all_mappings.add_scheme_type(default_scheme)
     return all_mappings
 
 
-def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> ObjectMirror:
+def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> GetRemoteDataResponse:
     """get-remote-data command: Returns an updated incident and entries
 
     :type client: ``Client``
@@ -502,14 +454,9 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
 
     :rtype: ``List[Dict[str, Any]]``
     """
+    remote_args = GetRemoteDateArgs(args)
+    demisto.debug(f'Getting update for remote [{remote_args.incident_id}]')
 
-    incident_id = args.get('id')  # type: ignore
-    demisto.debug(f'Getting update for remote [{incident_id}]')
-    last_update = arg_to_timestamp(
-        arg=args.get('lastUpdate'),
-        arg_name='lastUpdate',
-        required=True
-    )
     categories = params.get('categories', None)
     if categories:
         categories = categories.split(',')
@@ -521,7 +468,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
     else:
         tags = None
 
-    incident = client.get_incident(incident_id=incident_id)  # type: ignore
+    incident = client.get_incident(incident_id=remote_args.incident_id)  # type: ignore
     # If incident was modified before we last updated, no need to return it
     modified = arg_to_timestamp(
         arg=incident.get('modified'),
@@ -535,12 +482,13 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
     )
 
     if (datetime.fromtimestamp(modified) - datetime.fromtimestamp(occurred) < timedelta(minutes=1)
-            and datetime.fromtimestamp(last_update) - datetime.fromtimestamp(modified) < timedelta(minutes=1)):
-        last_update = occurred + 1  # in case we had new entries less than a minute after the incident creation
+            and datetime.fromtimestamp(remote_args.last_update) -
+            datetime.fromtimestamp(modified) < timedelta(minutes=1)):
+        remote_args.last_update = occurred + 1  # in case new entries created less than a minute after incident creation
 
     entries = client.get_incident_entries(
-        incident_id=incident_id,  # type: ignore
-        from_date=last_update * 1000,
+        incident_id=remote_args.incident_id,  # type: ignore
+        from_date=remote_args.last_update * 1000,
         max_results=100,
         categories=categories,
         tags=tags
@@ -569,12 +517,12 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
             'ContentsFormat': EntryFormat.JSON
         })
 
-    if last_update >= modified and not formatted_entries:
-        demisto.debug(f'Nothing new in the incident, incident id {incident_id}')
+    if remote_args.last_update >= modified and not formatted_entries:
+        demisto.debug(f'Nothing new in the incident, incident id {remote_args.incident_id}')
         incident = {}  # this empties out the incident, which will result in not updating the local one
 
-    mirror_data = ObjectMirror(
-        object=incident,
+    mirror_data = GetRemoteDataResponse(
+        mirrored_object=incident,
         entries=formatted_entries
     )
     return mirror_data
@@ -599,57 +547,52 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
 
     :rtype: ``str``
     """
-    data: dict = args.get('data')  # type: ignore
-    entries = args.get('entries')
-    incident_changed = args.get('incidentChanged')
-    incident_id = args.get('remoteId')
-    inc_status = args.get('status')
-    delta: dict = args.get('delta')  # type: ignore
+    parsed_args = UpdateRemoteSystemArgs(args)
+    if parsed_args.delta:
+        demisto.debug(f'Got the following delta keys {str(list(parsed_args.delta.keys()))}')
 
-    if delta:
-        demisto.debug(f'Got the following delta keys {str(list(delta.keys()))}')
+    demisto.debug(f'Sending incident with remote ID [{parsed_args.incident_id}] to remote system\n')
 
-    demisto.debug(f'Sending incident with remote ID [{incident_id}] to remote system\n')
-
-    new_incident_id: str = incident_id  # type: ignore
+    new_incident_id: str = parsed_args.incident_id  # type: ignore
     updated_incident = {}
-    if not incident_id or incident_changed:
-        if incident_id:
+    if not parsed_args.incident_id or parsed_args.incident_changed:
+        if parsed_args.incident_id:
             # First, get the incident as we need the version
-            old_incident = client.get_incident(incident_id=incident_id)
-            for changed_key in delta.keys():
-                old_incident[changed_key] = delta[changed_key]  # type: ignore
+            old_incident = client.get_incident(incident_id=parsed_args.incident_id)
+            for changed_key in parsed_args.delta.keys():
+                old_incident[changed_key] = parsed_args.delta[changed_key]  # type: ignore
 
-            data = old_incident
+            parsed_args.data = old_incident
 
         else:
-            data['createInvestigation'] = True
+            parsed_args.data['createInvestigation'] = True
             # This is used to identify the custom field, so that we will know the source of the incident
             # and will not mirror it in afterwards
-            data['CustomFields'] = {
+            parsed_args.data['CustomFields'] = {
                 'frompong': 'true'
             }
 
-        updated_incident = client.update_incident(incident=data)
+        updated_incident = client.update_incident(incident=parsed_args.data)
         new_incident_id = updated_incident['id']
         demisto.debug(f'Got back ID [{new_incident_id}]')
 
     else:
-        demisto.debug(f'Skipping updating remote incident fields [{incident_id}] as it is not new nor changed.')
+        demisto.debug(f'Skipping updating remote incident fields [{parsed_args.incident_id}] as it is '
+                      f'not new nor changed.')
 
-    if entries:
-        for entry in entries:
+    if parsed_args.entries:
+        for entry in parsed_args.entries:
             demisto.debug(f'Sending entry {entry.get("id")}')
             client.add_incident_entry(incident_id=new_incident_id, entry=entry)
 
     # Close incident if relevant
-    if updated_incident and inc_status == IncidentStatus.DONE:
+    if updated_incident and parsed_args.inc_status == IncidentStatus.DONE:
         demisto.debug(f'Closing remote incident {new_incident_id}')
         client.close_incident(
             new_incident_id,
             updated_incident.get('version'),  # type: ignore
-            data.get('closeReason'),
-            data.get('closeNotes')
+            parsed_args.data.get('closeReason'),
+            parsed_args.data.get('closeNotes')
         )
 
     return new_incident_id
