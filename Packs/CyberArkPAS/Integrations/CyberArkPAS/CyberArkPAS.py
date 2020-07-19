@@ -10,168 +10,6 @@ from dateparser import parse
 
 # Disable insecure warnings
 
-#delete it!:
-TEMP = [
-    {
-        "id": "5f0ea000e4b0ba4baf5d1910",
-        "type": "VaultViaIrregularIp",
-        "score": 27.656250000000004,
-        "createTime": 1594793984000,
-        "lastUpdateTime": 1594793984000,
-        "audits": [
-            {
-                "id": "5f0ea000e4b0ba4baf5d190e",
-                "type": "VAULT_LOGON",
-                "sensorType": "VAULT",
-                "action": "Logon",
-                "createTime": 1594793984000,
-                "vaultUser": "Administrator",
-                "source": {
-                    "mOriginalAddress": "82.166.99.178"
-                },
-                "cloudData": {}
-            }
-        ],
-        "additionalData": {
-            "station": "82.166.99.178",
-            "reason": "ip",
-            "vault_user": "administrator"
-        },
-        "mStatus": "OPEN"
-    },
-    {
-        "id": "5f0c5b5de4b0ba4baf5c66db",
-        "type": "VaultViaIrregularIp",
-        "score": 29.414062500000004,
-        "createTime": 1594645338000,
-        "lastUpdateTime": 1594645338000,
-        "audits": [
-            {
-                "id": "5f0c5b5de4b0ba4baf5c653e",
-                "type": "VAULT_LOGON",
-                "sensorType": "VAULT",
-                "action": "Logon",
-                "createTime": 1594645338000,
-                "vaultUser": "Administrator",
-                "source": {
-                    "mOriginalAddress": "46.116.46.136",
-                    "mResolvedAddress": {
-                        "mOriginalAddress": "46.116.46.136",
-                        "mAddress": "46.116.46.136",
-                        "mHostName": "46-116-46-136",
-                        "mFqdn": "46-116-46-136.bb.netvision.net.il"
-                    }
-                },
-                "cloudData": {}
-            }
-        ],
-        "additionalData": {
-            "station": "46.116.46.136",
-            "reason": "ip",
-            "vault_user": "administrator"
-        },
-        "mStatus": "OPEN"
-    },
-    {
-        "id": "5f0b4e53e4b0ba4baf5c43ed",
-        "type": "VaultViaIrregularIp",
-        "score": 29.414062500000004,
-        "createTime": 1594576467000,
-        "lastUpdateTime": 1594576467000,
-        "audits": [
-            {
-                "id": "5f0b4e53e4b0ba4baf5c43eb",
-                "type": "VAULT_LOGON",
-                "sensorType": "VAULT",
-                "action": "Logon",
-                "createTime": 1594576467000,
-                "vaultUser": "Administrator",
-                "source": {
-                    "mOriginalAddress": "46.116.46.136",
-                    "mResolvedAddress": {
-                        "mOriginalAddress": "46.116.46.136",
-                        "mAddress": "46.116.46.136",
-                        "mHostName": "46-116-46-136",
-                        "mFqdn": "46-116-46-136.bb.netvision.net.il"
-                    }
-                },
-                "cloudData": {}
-            }
-        ],
-        "additionalData": {
-            "station": "46.116.46.136",
-            "reason": "ip",
-            "vault_user": "administrator"
-        },
-        "mStatus": "OPEN"
-    },
-    {
-        "id": "5f0b4320e4b0ba4baf5c2b05",
-        "type": "VaultViaIrregularIp",
-        "score": 29.414062500000004,
-        "createTime": 1594573600000,
-        "lastUpdateTime": 1594573600000,
-        "audits": [
-            {
-                "id": "5f0b4320e4b0ba4baf5c2b03",
-                "type": "VAULT_LOGON",
-                "sensorType": "VAULT",
-                "action": "Logon",
-                "createTime": 1594573600000,
-                "vaultUser": "Administrator",
-                "source": {
-                    "mOriginalAddress": "46.116.46.136",
-                    "mResolvedAddress": {
-                        "mOriginalAddress": "46.116.46.136",
-                        "mAddress": "46.116.46.136",
-                        "mHostName": "46-116-46-136",
-                        "mFqdn": "46-116-46-136.bb.netvision.net.il"
-                    }
-                },
-                "cloudData": {}
-            }
-        ],
-        "additionalData": {
-            "station": "46.116.46.136",
-            "reason": "ip",
-            "vault_user": "administrator"
-        },
-        "mStatus": "OPEN"
-    },
-    {
-        "id": "5f0b3064e4b0ba4baf5c1113",
-        "type": "VaultViaIrregularIp",
-        "score": 29.414062500000004,
-        "createTime": 1594568804000,
-        "lastUpdateTime": 1594568804000,
-        "audits": [
-            {
-                "id": "5f0b3064e4b0ba4baf5c1111",
-                "type": "VAULT_LOGON",
-                "sensorType": "VAULT",
-                "action": "Logon",
-                "createTime": 1594568804000,
-                "vaultUser": "Administrator",
-                "source": {
-                    "mOriginalAddress": "46.116.46.136",
-                    "mResolvedAddress": {
-                        "mOriginalAddress": "46.116.46.136",
-                        "mAddress": "46.116.46.136",
-                        "mHostName": "46-116-46-136",
-                        "mFqdn": "46-116-46-136.bb.netvision.net.il"
-                    }
-                },
-                "cloudData": {}
-            }
-        ],
-        "additionalData": {
-            "station": "46.116.46.136",
-            "reason": "ip",
-            "vault_user": "administrator"
-        },
-        "mStatus": "OPEN"
-    }]
-
 urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
@@ -230,8 +68,7 @@ class Client(BaseClient):
         headers = {
             'Content-Type': 'application/json'
         }
-        #return self._http_request("POST", "/PasswordVault/API/Auth/CyberArk/Logon", headers=headers, json_data=body)
-        return "mock"
+        return self._http_request("POST", "/PasswordVault/API/Auth/CyberArk/Logon", headers=headers, json_data=body)
 
     def _logout(self):
         self._http_request("POST", "/PasswordVault/API/Auth/Logoff")
@@ -655,7 +492,6 @@ class Client(BaseClient):
     def get_security_events(self,
                             next_run: str
                             ):
-        return TEMP
         url_suffix = "/PasswordVault/API/pta/API/Events/"
         self._headers["lastUpdatedEventDate"] = next_run
         return self._http_request("GET", url_suffix)
@@ -1054,12 +890,12 @@ def get_list_accounts_command(
 
 def get_list_account_activity_command(
         client: Client,
-        accountID: str = "",
+        account_id: str = "",
 ):
-    response = client.get_list_account_activity(accountID)
+    response = client.get_list_account_activity(account_id)
     results = CommandResults(
         raw_response=response,
-        outputs_prefix=f'CyberArkPAS.{accountID}.Activities',
+        outputs_prefix=f'CyberArkPAS.{account_id}.Activities',
         outputs_key_field='',
         outputs=response.get("Activities")
     )
@@ -1123,11 +959,14 @@ def reconcile_credentials_command(
         return response
 
 
-def fetch_incidents(client: Client, last_run: dict,  first_fetch_time: str, query: str,  max_fetch: str = '50') -> Tuple[dict, list]:
+def fetch_incidents(client: Client, last_run: dict,  first_fetch_time: str, query: str,  max_fetch: str = '50')\
+        -> Tuple[dict, list]:
 
     if not last_run:  # if first time fetching
+        start_time, _ = parse_date_range(first_fetch_time)
+        start_time_timestamp = date_to_timestamp(start_time)
         next_run = {
-            'time': parse_date_range(first_fetch_time),
+            'time': str(start_time_timestamp),
             'last_event_ids': []
         }
     else:
@@ -1139,20 +978,20 @@ def fetch_incidents(client: Client, last_run: dict,  first_fetch_time: str, quer
     # the events are sorted from the newest to the oldest so first we reverse the list
     reverse_events_data = filtered_events_data[::-1]
 
-    if len(reverse_events_data) > int(max_fetch):
-        # second, we cut the top max_fetch events
-        reverse_events_data = reverse_events_data[0:max_fetch-1]
-
     incidents = []
     if reverse_events_data:
         last_event_ids = last_run.get('last_event_ids', [])
         new_event_ids = []
         event_updated_time = None
+
+        incidents_num = 0
+
         for event_data in reverse_events_data:
             # by reversing the list before, we can now go over the items from the oldest to the newest
             event_id = event_data.get('id')
 
             if event_id not in last_event_ids:  # check that event was not fetched in the last fetch
+                incidents_num += 1
                 event_updated_time = event_data.get('lastUpdateTime')
                 incident = {
                     'name': f"CyberArk PAS Incident: {event_id}.",
@@ -1162,6 +1001,10 @@ def fetch_incidents(client: Client, last_run: dict,  first_fetch_time: str, quer
                 }
                 incidents.append(incident)
                 new_event_ids.append(event_id)
+
+            # make sure that there are no more than max_fetch incidents that are being created
+            if incidents_num >= int(max_fetch):
+                break
 
         if new_event_ids and event_updated_time:
             next_run = {
@@ -1173,6 +1016,7 @@ def fetch_incidents(client: Client, last_run: dict,  first_fetch_time: str, quer
 
 
 def main():
+
     params = demisto.params()
     username = params.get('credentials').get('identifier')
     password = params.get('credentials').get('password')

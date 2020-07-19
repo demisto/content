@@ -566,3 +566,25 @@ GET_LIST_ACCOUNT_ACTIVITIES_CONTEXT = {
       "Reason": "",
       "User": "Administrator"
     }]}
+
+INCIDENTS = [
+  {'name': 'CyberArk PAS Incident: 5f0b3064e4b0ba4baf5c1113.', 'occurred': '2020-07-12T15:46:44.000Z', 'severity': 1,
+   'rawJSON': '{"id": "5f0b3064e4b0ba4baf5c1113", "type": "VaultViaIrregularIp", "score": 29.414062500000004,'
+              ' "createTime": 1594568804000, "lastUpdateTime": 1594568804000, "audits":'
+              ' [{"id": "5f0b3064e4b0ba4baf5c1111", "type": "VAULT_LOGON", "sensorType": "VAULT",'
+              ' "action": "Logon", "createTime": 1594568804000, "vaultUser": "Administrator",'
+              ' "source": {"mOriginalAddress": "46.116.46.136", "mResolvedAddress":'
+              ' {"mOriginalAddress": "46.116.46.136", "mAddress": "46.116.46.136", "mHostName": "46-116-46-136",'
+              ' "mFqdn": "46-116-46-136.bb.netvision.net.il"}}, "cloudData": {}}], "additionalData":'
+              ' {"station": "46.116.46.136", "reason": "ip", "vault_user": "administrator"}, "mStatus": "OPEN"}'},
+  {'name': 'CyberArk PAS Incident: 5f0b4320e4b0ba4baf5c2b05.', 'occurred': '2020-07-12T17:06:40.000Z', 'severity': 1,
+   'rawJSON': '{"id": "5f0b4320e4b0ba4baf5c2b05", "type": "VaultViaIrregularIp", "score": 29.414062500000004,'
+              ' "createTime": 1594573600000, "lastUpdateTime": 1594573600000, "audits":'
+              ' [{"id": "5f0b4320e4b0ba4baf5c2b03", "type": "VAULT_LOGON", "sensorType": "VAULT", "action": "Logon",'
+              ' "createTime": 1594573600000, "vaultUser": "Administrator", "source": {"mOriginalAddress":'
+              ' "46.116.46.136", "mResolvedAddress": {"mOriginalAddress": "46.116.46.136", "mAddress": "46.116.46.136",'
+              ' "mHostName": "46-116-46-136", "mFqdn": "46-116-46-136.bb.netvision.net.il"}}, "cloudData": {}}],'
+              ' "additionalData": {"station": "46.116.46.136", "reason": "ip", "vault_user": "administrator"},'
+              ' "mStatus": "OPEN"}'}]
+
+INCIDENTS2 = [{'name': 'CyberArk PAS Incident: 5f0b4e53e4b0ba4baf5c43ed.', 'occurred': '2020-07-12T17:54:27.000Z', 'severity': 1, 'rawJSON': '{"id": "5f0b4e53e4b0ba4baf5c43ed", "type": "VaultViaIrregularIp", "score": 29.414062500000004, "createTime": 1594576467000, "lastUpdateTime": 1594576467000, "audits": [{"id": "5f0b4e53e4b0ba4baf5c43eb", "type": "VAULT_LOGON", "sensorType": "VAULT", "action": "Logon", "createTime": 1594576467000, "vaultUser": "Administrator", "source": {"mOriginalAddress": "46.116.46.136", "mResolvedAddress": {"mOriginalAddress": "46.116.46.136", "mAddress": "46.116.46.136", "mHostName": "46-116-46-136", "mFqdn": "46-116-46-136.bb.netvision.net.il"}}, "cloudData": {}}], "additionalData": {"station": "46.116.46.136", "reason": "ip", "vault_user": "administrator"}, "mStatus": "OPEN"}'}]

@@ -4,16 +4,17 @@ import pytest
 from Packs.CyberArkPAS.Integrations.CyberArkPAS.CyberArkPAS import Client, add_user_command, get_users_command, \
     update_user_command, add_safe_command, update_safe_command, get_list_safes_command, get_safe_by_name_command, \
     add_safe_member_command, update_safe_member_command, list_safe_members_command, add_account_command, \
-    update_account_command, get_list_accounts_command, get_list_account_activity_command
+    update_account_command, get_list_accounts_command, get_list_account_activity_command, fetch_incidents
 from Packs.CyberArkPAS.Integrations.CyberArkPAS.test_data.context import ADD_USER_CONTEXT, GET_USERS_CONTEXT, \
     UPDATE_USER_CONTEXT, UPDATE_SAFE_CONTEXT, GET_LIST_SAFES_CONTEXT, GET_SAFE_BY_NAME_CONTEXT, ADD_SAFE_CONTEXT, \
     ADD_SAFE_MEMBER_CONTEXT, UPDATE_SAFE_MEMBER_CONTEXT, LIST_SAFE_MEMBER_CONTEXT, ADD_ACCOUNT_CONTEXT, \
-    UPDATE_ACCOUNT_CONTEXT, GET_LIST_ACCOUNT_CONTEXT, GET_LIST_ACCOUNT_ACTIVITIES_CONTEXT
+    UPDATE_ACCOUNT_CONTEXT, GET_LIST_ACCOUNT_CONTEXT, GET_LIST_ACCOUNT_ACTIVITIES_CONTEXT, INCIDENTS, INCIDENTS2
 from Packs.CyberArkPAS.Integrations.CyberArkPAS.test_data.http_resonses import ADD_USER_RAW_RESPONSE, \
     UPDATE_USER_RAW_RESPONSE, GET_USERS_RAW_RESPONSE, ADD_SAFE_RAW_RESPONSE, UPDATE_SAFE_RAW_RESPONSE, \
     GET_LIST_SAFES_RAW_RESPONSE, GET_SAFE_BY_NAME_RAW_RESPONSE, ADD_SAFE_MEMBER_RAW_RESPONSE, \
     UPDATE_SAFE_MEMBER_RAW_RESPONSE, LIST_SAFE_MEMBER_RAW_RESPONSE, ADD_ACCOUNT_RAW_RESPONSE, \
-    UPDATE_ACCOUNT_RAW_RESPONSE, GET_LIST_ACCOUNT_RAW_RESPONSE, GET_LIST_ACCOUNT_ACTIVITIES_RAW_RESPONSE
+    UPDATE_ACCOUNT_RAW_RESPONSE, GET_LIST_ACCOUNT_RAW_RESPONSE, GET_LIST_ACCOUNT_ACTIVITIES_RAW_RESPONSE, \
+    GET_SECURITY_EVENTS_RAW_RESPONSE
 
 ADD_USER_ARGS = {
   "change_password_on_the_next_logon": "true",
@@ -147,3 +148,45 @@ def test_cyberark_aim_commands(command, args, http_response, context, mocker):
     outputs = command(client, **args)
     results = outputs.to_context()
     assert results.get("EntryContext") == context
+
+
+def test_fetch_incidents(mocker):
+    """Unit test
+    Given
+    - raw response of the http request
+    When
+    - mock the http request result as 5 results that are sorted from the newest to the oldest
+    Then
+    - as defined in the demisto params - show only 2, those should be the oldest 2 available
+    - validate the incidents values
+    """
+    mocker.patch.object(Client, '_generate_token')
+    client = Client(server_url="https://api.cyberark.com/", username="user1", password="12345", use_ssl=False,
+                    proxy=False)
+
+    mocker.patch.object(Client, '_http_request', return_value=GET_SECURITY_EVENTS_RAW_RESPONSE)
+
+    a, incidents = fetch_incidents(client, {}, "3 days", "0", "2")
+    assert incidents == INCIDENTS
+
+
+def test_fetch_incidents_with_an_incident_that_was_shown_before(mocker):
+    """Unit test
+        Given
+        - demisto params
+        - raw response of the http request
+        When
+        - mock the http request result while one of the incidents was shown in the previous run
+        Then
+        - validate the incidents values, make sure the event that was shown before is not in
+        the incidents again
+        """
+    mocker.patch.object(Client, '_generate_token')
+    client = Client(server_url="https://api.cyberark.com/", username="user1", password="12345", use_ssl=False,
+                    proxy=False)
+
+    mocker.patch.object(Client, '_http_request', return_value=GET_SECURITY_EVENTS_RAW_RESPONSE)
+    # the last run dict is the same we would have got if we run the prev test before
+    last_run = {'time': 1594573600000, 'last_event_ids': '["5f0b3064e4b0ba4baf5c1113", "5f0b4320e4b0ba4baf5c2b05"]'}
+    _, incidents = fetch_incidents(client, last_run, "3 days", "0", "1")
+    assert incidents == INCIDENTS2
