@@ -2,7 +2,7 @@
     "name": "Impossible Traveler",
     "description": " ",
     "support": "xsoar",
-    "currentVersion": "1.1.2",
+    "currentVersion": "1.2.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -16,5 +16,7 @@
     "useCases": [
         "Impossible Traveler"
     ],
-    "keywords": []
+    "keywords": [],
+    "dependencies": {},
+    "displayedImages": []
 }
