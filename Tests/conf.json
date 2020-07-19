@@ -2849,7 +2849,8 @@
         },
         {
             "integrations": "Imperva WAF",
-            "playbookID": "Imperva WAF - Test"
+            "playbookID": "Imperva WAF - Test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
