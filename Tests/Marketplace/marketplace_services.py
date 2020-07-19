@@ -62,7 +62,8 @@ class GCPConfig(object):
                        "HelloWorld",
                        "ExportIndicators",
                        "Malware",
-                       "DefaultPlaybook"
+                       "DefaultPlaybook",
+                       "AccessInvestigation"
                        ]  # cores packs list
 
 
