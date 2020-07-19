@@ -173,7 +173,7 @@ GET_LIST_ACCOUNT_ACTIVITIES_RAW_RESPONSE = {"Activities": [
     {"Action": "Store password", "ActionID": 294, "Alert": False, "ClientID": "PVWA", "Date": 1594838456,
      "MoreInfo": "", "Reason": "", "User": "Administrator"}]}
 
-GET_SECURITY_EVENTS = [
+GET_SECURITY_EVENTS_RAW_RESPONSE = [
     {
         "id": "5f0ea000e4b0ba4baf5d1910",
         "type": "VaultViaIrregularIp",
@@ -313,6 +313,134 @@ GET_SECURITY_EVENTS = [
                 "sensorType": "VAULT",
                 "action": "Logon",
                 "createTime": 1594568804000,
+                "vaultUser": "Administrator",
+                "source": {
+                    "mOriginalAddress": "46.116.46.136",
+                    "mResolvedAddress": {
+                        "mOriginalAddress": "46.116.46.136",
+                        "mAddress": "46.116.46.136",
+                        "mHostName": "46-116-46-136",
+                        "mFqdn": "46-116-46-136.bb.netvision.net.il"
+                    }
+                },
+                "cloudData": {}
+            }
+        ],
+        "additionalData": {
+            "station": "46.116.46.136",
+            "reason": "ip",
+            "vault_user": "administrator"
+        },
+        "mStatus": "OPEN"
+    }]
+
+GET_SECURITY_EVENTS_WITH_UNNECESSARY_INCIDENT_RAW_RESPONSE = [
+    {
+        "id": "5f0ea000e4b0ba4baf5d1910",
+        "type": "VaultViaIrregularIp",
+        "score": 27.656250000000004,
+        "createTime": 1594793984000,
+        "lastUpdateTime": 1594793984000,
+        "audits": [
+            {
+                "id": "5f0ea000e4b0ba4baf5d190e",
+                "type": "VAULT_LOGON",
+                "sensorType": "VAULT",
+                "action": "Logon",
+                "createTime": 1594793984000,
+                "vaultUser": "Administrator",
+                "source": {
+                    "mOriginalAddress": "82.166.99.178"
+                },
+                "cloudData": {}
+            }
+        ],
+        "additionalData": {
+            "station": "82.166.99.178",
+            "reason": "ip",
+            "vault_user": "administrator"
+        },
+        "mStatus": "OPEN"
+    },
+    {
+        "id": "5f0c5b5de4b0ba4baf5c66db",
+        "type": "VaultViaIrregularIp",
+        "score": 29.414062500000004,
+        "createTime": 1594645338000,
+        "lastUpdateTime": 1594645338000,
+        "audits": [
+            {
+                "id": "5f0c5b5de4b0ba4baf5c653e",
+                "type": "VAULT_LOGON",
+                "sensorType": "VAULT",
+                "action": "Logon",
+                "createTime": 1594645338000,
+                "vaultUser": "Administrator",
+                "source": {
+                    "mOriginalAddress": "46.116.46.136",
+                    "mResolvedAddress": {
+                        "mOriginalAddress": "46.116.46.136",
+                        "mAddress": "46.116.46.136",
+                        "mHostName": "46-116-46-136",
+                        "mFqdn": "46-116-46-136.bb.netvision.net.il"
+                    }
+                },
+                "cloudData": {}
+            }
+        ],
+        "additionalData": {
+            "station": "46.116.46.136",
+            "reason": "ip",
+            "vault_user": "administrator"
+        },
+        "mStatus": "OPEN"
+    },
+    {
+        "id": "5f0b4e53e4b0ba4baf5c43ed",
+        "type": "VaultViaIrregularIp",
+        "score": 29.414062500000004,
+        "createTime": 1594576467000,
+        "lastUpdateTime": 1594576467000,
+        "audits": [
+            {
+                "id": "5f0b4e53e4b0ba4baf5c43eb",
+                "type": "VAULT_LOGON",
+                "sensorType": "VAULT",
+                "action": "Logon",
+                "createTime": 1594576467000,
+                "vaultUser": "Administrator",
+                "source": {
+                    "mOriginalAddress": "46.116.46.136",
+                    "mResolvedAddress": {
+                        "mOriginalAddress": "46.116.46.136",
+                        "mAddress": "46.116.46.136",
+                        "mHostName": "46-116-46-136",
+                        "mFqdn": "46-116-46-136.bb.netvision.net.il"
+                    }
+                },
+                "cloudData": {}
+            }
+        ],
+        "additionalData": {
+            "station": "46.116.46.136",
+            "reason": "ip",
+            "vault_user": "administrator"
+        },
+        "mStatus": "OPEN"
+    },
+    {
+        "id": "5f0b4320e4b0ba4baf5c2b05",
+        "type": "VaultViaIrregularIp",
+        "score": 29.414062500000004,
+        "createTime": 1594573600000,
+        "lastUpdateTime": 1594573600000,
+        "audits": [
+            {
+                "id": "5f0b4320e4b0ba4baf5c2b03",
+                "type": "VAULT_LOGON",
+                "sensorType": "VAULT",
+                "action": "Logon",
+                "createTime": 1594573600000,
                 "vaultUser": "Administrator",
                 "source": {
                     "mOriginalAddress": "46.116.46.136",
