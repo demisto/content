@@ -6,7 +6,6 @@ contentitemexportablefields:
     itemVersion: 1.0.3
     fromServerVersion: ""
     toServerVersion: ""
-vcShouldKeepItemLegacyProdMachine: false
 name: generic-sql-oracle
 description: The initial state of the table is that in each database there are 4 records.
 starttaskid: "0"
@@ -21,6 +20,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -124,6 +124,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
