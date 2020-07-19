@@ -11,7 +11,7 @@
 	"description": "State",
 	"editForm": true,
 	"fieldCalcScript": "",
-	"fromServerVersion": "",
+	"fromServerVersion": "5.0.0",
 	"group": 0,
 	"hidden": false,
 	"id": "incident_state",
