@@ -7,7 +7,8 @@ description: This playbook is used to carve (extract) files from within PCAP fil
   Additional inputs allow the user to provide the WPA password for decrypting 802.11
   (wireless) traffic and adding an RSA certificate to decrypt SSL traffic. Additional
   options allow to filter the files to extract according to the file extenstion or the
-  file actual type (MIME) and limit the amount of files to extract. To display
+  file actual type (MIME) and limit the amount of files to extract. Another feature allowed
+  to specify a filter to to create a new smaller PCAP file. To display
   the results within the relevant incident fields, the playbook needs to run in a
   PCAP Analysis incident type. For handling of PCAP files larger than 30 MB, refer
   to the PcapMinerV2 documentation.
@@ -527,12 +528,6 @@ view: |-
     }
   }
 inputs:
-- key: WpaPassword
-  value: {}
-  required: false
-  description: This input value is used to provide a WPA (Wi-Fi Protected Access)
-    password to decrypt encrypted 802.11 Wi-FI traffic.
-  playbookInputQuery:
 - key: RsaDecryptKeyEntryID
   value:
     complex:
@@ -602,6 +597,12 @@ inputs:
   required: false
   description: This input specifies the file entry id for the PCAP file if the user
     provided the file in the incident. One PCAP file can run per incident.
+  playbookInputQuery:
+- key: WpaPassword
+  value: {}
+  required: false
+  description: This input value is used to provide a WPA (Wi-Fi Protected Access)
+    password to decrypt encrypted 802.11 Wi-FI traffic.
   playbookInputQuery:
 - key: PcapFilter
   value: {}
