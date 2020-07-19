@@ -2,7 +2,7 @@ id: endpoint_enrichment_-_generic
 version: -1
 name: Endpoint Enrichment - Generic
 fromversion: "3.5.0"
-description: Enrich an Endpoint Hostname using one or more integrations
+description: DEPRECATED. Use "Endpoint Enrichment - Generic v2.1" playbook instead. Enrich an Endpoint Hostname using one or more integrations
 starttaskid: "0"
 tasks:
   "0":

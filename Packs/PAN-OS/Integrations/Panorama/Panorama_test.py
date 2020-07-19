@@ -1,17 +1,63 @@
 import pytest
-
 import demistomock as demisto
 
 integration_params = {
-    'port': '22',
+    'port': '443',
     'vsys': 'vsys1',
-    'server': '1.1.1.1'
+    'server': 'https://1.1.1.1',
+    'key': 'thisisabogusAPIKEY!',
+}
+
+mock_demisto_args = {
+    'threat_id': "11111",
+    'vulnerability_profile': "mock_vuln_profile"
 }
 
 
 @pytest.fixture(autouse=True)
 def set_params(mocker):
     mocker.patch.object(demisto, 'params', return_value=integration_params)
+    mocker.patch.object(demisto, 'args', return_value=mock_demisto_args)
+
+
+@pytest.fixture
+def patched_requests_mocker(requests_mock):
+    """
+    This function mocks various PANOS API responses so we can accurately test the instance
+    """
+    base_url = "{}:{}/api/".format(integration_params['server'], integration_params['port'])
+    # Version information
+    mock_version_xml = """
+    <response status = "success">
+        <result>
+            <sw-version>9.0.6</sw-version>
+            <multi-vsys>off</multi-vsys>
+            <model>Panorama</model>
+            <serial>FAKESERIALNUMBER</serial>
+        </result>
+    </response>
+    """
+    version_path = "{}{}{}".format(base_url, "?type=version&key=", integration_params['key'])
+    requests_mock.get(version_path, text=mock_version_xml, status_code=200)
+    mock_response_xml = """
+    <response status="success" code="20">
+    <msg>command succeeded</msg>
+    </response>
+    """
+    requests_mock.post(base_url, text=mock_response_xml, status_code=200)
+    return requests_mock
+
+
+def test_panoram_get_os_version(patched_requests_mocker):
+    from Panorama import get_pan_os_version
+    r = get_pan_os_version()
+    assert r == '9.0.6'
+
+
+def test_panoram_override_vulnerability(patched_requests_mocker):
+    from Panorama import panorama_override_vulnerability
+    r = panorama_override_vulnerability(mock_demisto_args['threat_id'], mock_demisto_args['vulnerability_profile'], 'reset-both')
+    assert r['response']['@status'] == 'success'
 
 
 def test_add_argument_list():
@@ -150,13 +196,15 @@ def test_prettify_traffic_logs():
 
 def test_prettify_logs():
     from Panorama import prettify_logs
-    traffic_logs = [{'action': 'my_action1', 'category': 'my_category1', 'rule': 'my_rule1', 'natdport': '100'},
-                    {'action': 'my_action2', 'category': 'my_category2', 'rule': 'my_rule2', 'natdport': '101'}]
+    traffic_logs = [{'action': 'my_action1', 'category': 'my_category1', 'rule': 'my_rule1', 'natdport': '100',
+                     'bytes': '12'},
+                    {'action': 'my_action2', 'category': 'my_category2', 'rule': 'my_rule2', 'natdport': '101',
+                     'bytes_sent': '11'}]
     response = prettify_logs(traffic_logs)
     expected = [{'Action': 'my_action1', 'CategoryOrVerdict': 'my_category1', 'Rule': 'my_rule1',
-                 'NATDestinationPort': '100'},
+                 'NATDestinationPort': '100', 'Bytes': '12'},
                 {'Action': 'my_action2', 'CategoryOrVerdict': 'my_category2', 'Rule': 'my_rule2',
-                 'NATDestinationPort': '101'}]
+                 'NATDestinationPort': '101', 'BytesSent': '11'}]
     assert response == expected
 
 

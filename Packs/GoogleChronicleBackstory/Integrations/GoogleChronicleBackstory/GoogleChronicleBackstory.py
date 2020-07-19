@@ -7,6 +7,9 @@ import httplib2
 import urllib.parse
 from oauth2client import service_account
 
+# A request will be tried 3 times if it fails at the socket/connection level
+httplib2.RETRIES = 3
+
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -24,7 +27,8 @@ CHRONICLE_OUTPUT_PATHS = {
     'IocDetails': 'GoogleChronicleBackstory.IocDetails(val.IoCQueried && val.IoCQueried == obj.IoCQueried)',
     'Ip': 'GoogleChronicleBackstory.IP(val.IoCQueried && val.IoCQueried == obj.IoCQueried)',
     'Domain': 'GoogleChronicleBackstory.Domain(val.IoCQueried && val.IoCQueried == obj.IoCQueried)',
-    'Alert': 'GoogleChronicleBackstory.Alert(val.AssetName && val.AssetName == obj.AssetName)'
+    'Alert': 'GoogleChronicleBackstory.Alert(val.AssetName && val.AssetName == obj.AssetName)',
+    'Events': 'GoogleChronicleBackstory.Events'
 }
 
 ARTIFACT_NAME_DICT = {
@@ -33,6 +37,13 @@ ARTIFACT_NAME_DICT = {
     'hash_sha1': 'SHA1',
     'hash_md5': 'MD5',
     'destination_ip_address': 'IP'
+}
+
+ASSET_IDENTIFIER_NAME_DICT = {
+    'host name': 'hostname',
+    'ip address': 'asset_ip_address',
+    'mac address': 'mac',
+    'product id': 'product_id',
 }
 
 HOST_CTX_KEY_DICT = {
@@ -125,21 +136,42 @@ def get_http_client(proxy, disable_ssl):
     return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=disable_ssl)
 
 
-def validate_response(raw_response):
+def validate_response(client, url, method='GET'):
     """
-    validates response from Chronicle Backstory before handing it over to the command callers
-    :param raw_response:
-    :return: response object otherwise raises exception
+    Get response from Chronicle Search API and validate it.
+
+    :param client: object of client class
+    :type client: object of client class
+
+    :param url: url
+    :type url: str
+
+    :param method: HTTP request method
+    :type method: str
+
+    :return: response
     """
-    if not raw_response:
-        raise ValueError('Technical Error while making API call to Backstory. Empty response received')
-    if raw_response[0].status != 200:
-        raise ValueError(parse_error_message(raw_response[1]))
-    try:
-        response = json.loads(raw_response[1])
-    except json.decoder.JSONDecodeError:
-        raise ValueError('Invalid response format while making API call to Backstory. Response not in JSON format')
-    return response
+    for _ in range(3):
+        raw_response = client.http_client.request(url, method)
+
+        if not raw_response:
+            raise ValueError('Technical Error while making API call to Chronicle. Empty response received')
+        if raw_response[0].status == 500:
+            raise ValueError('Internal server error occurred, please try again later')
+        if raw_response[0].status == 429:
+            demisto.debug('API Rate limit exceeded. Retrying in {} seconds...'.format(1))
+            time.sleep(1)
+            continue
+        if raw_response[0].status != 200:
+            return_error(
+                'Status code: {}\nError: {}'.format(raw_response[0].status, parse_error_message(raw_response[1])))
+        try:
+            response = json.loads(raw_response[1])
+            return response
+        except json.decoder.JSONDecodeError:
+            raise ValueError('Invalid response format while making API call to Chronicle. Response not in JSON format')
+    else:
+        raise ValueError('API rate limit exceeded. Try again later.')
 
 
 def get_params_for_reputation_command():
@@ -241,7 +273,7 @@ def validate_configuration_parameters(param: Dict[str, Any]):
         raise ValueError('User\'s Service Account JSON has invalid format')
 
 
-def validate_start_end_date(start_date, end_date=None):
+def validate_start_end_date(start_date, end_date=None, reference_time=None):
     """
     Check whether the start_date and end_date provided are in valid ISO Format(e.g. 2019-10-17T00:00:00Z)
     Check whether start_date is not later than end_date.
@@ -252,6 +284,9 @@ def validate_start_end_date(start_date, end_date=None):
 
     :type end_date: string
     :param end_date: date
+
+    :type reference_time: string
+    :param reference_time: date
 
     :return: raise ValueError if validation fails, else return None
     :rtype: None
@@ -282,6 +317,13 @@ def validate_start_end_date(start_date, end_date=None):
         if start_date > end_date:
             raise ValueError('End time must be later than Start time')
 
+    if reference_time:
+        # checking date format
+        try:
+            datetime.strptime(reference_time, '%Y-%m-%dT%H:%M:%SZ')
+        except Exception:
+            raise ValueError('Invalid reference time, supports ISO date format only. e.g. 2019-10-17T00:00:00Z')
+
 
 def validate_page_size(page_size):
     """
@@ -311,7 +353,7 @@ def validate_preset_time_range(value):
     """
     value_split = value.split(' ')
     try:
-        if value_split[0].lower() not in 'last':
+        if value_split[0].lower() != 'last':
             raise ValueError(
                 'Invalid value provided. Allowed values are  "Last 1 day", "Last 7 days", '
                 '"Last 15 days" and "Last 30 days"')
@@ -435,12 +477,15 @@ def parse_assets_response(response: Dict[str, Any], artifact_type, artifact_valu
     return context_data, tabular_data_list, host_context
 
 
-def get_default_command_args_value(args: Dict[str, Any]):
+def get_default_command_args_value(args: Dict[str, Any], date_range=None):
     """
     returns and validate commands argument default values as per Chronicle Backstory
 
     :type args: dict
     :param args: contain all arguments for command
+
+    :type date_range: string
+    :param date_range: The date range to be parsed
 
     :return : start_time, end_time, page_size
     :rtype : datetime, datetime, int̥
@@ -450,13 +495,17 @@ def get_default_command_args_value(args: Dict[str, Any]):
         preset_time_range = validate_preset_time_range(preset_time_range)
         start_time, end_time = get_chronicle_default_date_range(preset_time_range)
     else:
-        start_time, end_time = get_chronicle_default_date_range()
+        if date_range is None:
+            date_range = '3 days'
+        start_time, end_time = get_chronicle_default_date_range(days=date_range)
         start_time = args.get('start_time', start_time)
         end_time = args.get('end_time', end_time)
     page_size = args.get('page_size', 10000)
-
     validate_page_size(page_size)
-    validate_start_end_date(start_time, end_time)
+    if args.get('reference_time', ''):
+        validate_start_end_date(start_time, end_time, args.get('reference_time', ''))
+    else:
+        validate_start_end_date(start_time, end_time)
 
     return start_time, end_time, page_size
 
@@ -475,13 +524,13 @@ def parse_error_message(error):
         json_error = json.loads(error)
     except json.decoder.JSONDecodeError:
         demisto.debug(
-            'Invalid response received from Backstory Search API. Response not in JSON format. Response - {}'.format(
+            'Invalid response received from Chronicle Search API. Response not in JSON format. Response - {}'.format(
                 error))
-        raise ValueError('Invalid response received from Backstory Search API. Response not in JSON format.')
+        raise ValueError('Invalid response received from Chronicle Search API. Response not in JSON format.')
 
-    if json_error['error']['code'] == 403:
+    if json_error.get('error', {}).get('code') == 403:
         return 'Permission denied'
-    return json_error['error']['message']
+    return json_error.get('error', {}).get('message', '')
 
 
 def get_informal_time(date):
@@ -547,7 +596,7 @@ def parse_list_ioc_response(ioc_matches):
 
             # prepare normalized dict for human readable
             hr_ioc_matches.append({
-                'Domain': domain,
+                'Domain': '[{}]({})'.format(domain, ioc_match.get('uri', [''])[0]),
                 'Category': category,
                 'Source': source,
                 'Confidence': confidence,
@@ -818,7 +867,8 @@ def parse_alert_info(alert_infos, filter_severity):
             'Name': alert_info['name'],
             'SourceProduct': alert_info['sourceProduct'],
             'Severity': alert_info['severity'],
-            'Timestamp': alert_info['timestamp']
+            'Timestamp': alert_info['timestamp'],
+            'Uri': alert_info.get('uri', [''])[0]
         }
         infos.append(info)
     return infos, len(infos)
@@ -836,9 +886,8 @@ def get_ioc_domain_matches(client_obj, start_time, fetch_limit):
     """
 
     request_url = '{}/ioc/listiocs?start_time={}&page_size={}'.format(BACKSTORY_API_V1_URL, start_time, fetch_limit)
-    response = client_obj.http_client.request(request_url, 'GET')
 
-    response_body = validate_response(response)
+    response_body = validate_response(client_obj, request_url)
     ioc_matches = response_body.get('response', {}).get('matches', [])
     parsed_ioc = parse_list_ioc_response(ioc_matches)
     return parsed_ioc['context']
@@ -858,7 +907,7 @@ def get_gcb_alerts(client_obj, start_time, end_time, fetch_limit, filter_severit
     """
     request_url = '{}/alert/listalerts?start_time={}&end_time={}&page_size={}'.format(BACKSTORY_API_V1_URL, start_time,
                                                                                       end_time, fetch_limit)
-    json_response = validate_response(client_obj.http_client.request(request_url, 'GET'))
+    json_response = validate_response(client_obj, request_url)
 
     alerts = []
     for alert in json_response.get('alerts', []):
@@ -894,6 +943,172 @@ def reputation_operation_command(client_obj, indicator, reputation_function):
         return_outputs(*reputation_function(client_obj, artifact))
 
 
+def group_infos_by_alert_asset_name(asset_alerts):
+    """
+    this method converts assets with multiple alerts into assets per asset_alert and
+        returns both human readable and context.
+    For an asset, group the asset_alert infos based on asset_alert name.
+    Returns human readable and context data.
+
+    :param asset_alerts: normalized asset alerts returned by Backstory.
+    :return: both human readable and context format having asset per alerts object
+    """
+
+    unique_asset_alerts_hr = {}  # type: Dict[str,Any]
+    unique_asset_alert_ctx = {}  # type: Dict[str,Any]
+    for asset_alert in asset_alerts:
+        for info in asset_alert['AlertInfo']:
+            asset_alert_key = asset_alert['AssetName'] + '-' + info['Name']
+
+            asset_alert_hr = unique_asset_alerts_hr.get(asset_alert_key, {})
+            asset_alert_ctx = unique_asset_alert_ctx.get(asset_alert_key, {})
+
+            if asset_alert_hr:
+                # Re calculate First and Last seen time
+                if info['Timestamp'] >= asset_alert_hr['Last Seen Ago']:
+                    asset_alert_hr['Last Seen Ago'] = info['Timestamp']
+                    asset_alert_hr['Last Seen'] = get_informal_time(info['Timestamp'])
+                    asset_alert_ctx['LastSeen'] = info['Timestamp']
+                elif info['Timestamp'] <= asset_alert_hr['First Seen Ago']:
+                    asset_alert_hr['First Seen Ago'] = info['Timestamp']
+                    asset_alert_hr['First Seen'] = get_informal_time(info['Timestamp'])
+                    asset_alert_ctx['FirstSeen'] = info['Timestamp']
+            else:
+                asset_alert_hr['First Seen Ago'] = info['Timestamp']
+                asset_alert_hr['First Seen'] = get_informal_time(info['Timestamp'])
+                asset_alert_hr['Last Seen Ago'] = info['Timestamp']
+                asset_alert_hr['Last Seen'] = get_informal_time(info['Timestamp'])
+
+                asset_alert_ctx['FirstSeen'] = info['Timestamp']
+                asset_alert_ctx['LastSeen'] = info['Timestamp']
+
+            asset_alert_ctx.setdefault('Occurrences', []).append(info['Timestamp'])
+            asset_alert_ctx['Alerts'] = asset_alert_hr['Alerts'] = asset_alert_ctx.get('Alerts', 0) + 1
+            asset_alert_ctx['Asset'] = asset_alert['AssetName']
+            asset_alert_ctx['AlertName'] = asset_alert_hr['Alert Names'] = info['Name']
+            asset_alert_ctx['Severities'] = asset_alert_hr['Severities'] = info['Severity']
+            asset_alert_ctx['Sources'] = asset_alert_hr['Sources'] = info['SourceProduct']
+
+            asset_alert_hr['Asset'] = '[{}]({})'.format(asset_alert['AssetName'], info.get('Uri'))
+
+            unique_asset_alert_ctx[asset_alert_key] = asset_alert_ctx
+            unique_asset_alerts_hr[asset_alert_key] = asset_alert_hr
+
+    return unique_asset_alerts_hr, unique_asset_alert_ctx
+
+
+def convert_alerts_into_hr(events):
+    """
+    converts alerts into human readable by parsing alerts
+    :param events:
+    :return:
+    """
+    data = group_infos_by_alert_asset_name(events)[0].values()
+    return tableToMarkdown('Security Alert(s)', list(data),
+                           ['Alerts', 'Asset', 'Alert Names', 'First Seen', 'Last Seen', 'Severities',
+                            'Sources'],
+                           removeNull=True)
+
+
+def get_asset_identifier_details(asset_identifier):
+    """
+    Return asset identifier detail such as hostname, ip, mac
+
+    :param asset_identifier: A dictionary that have asset information
+    :type asset_identifier: dict
+
+    :return: asset identifier name
+    :rtype: str
+    """
+    if asset_identifier.get('hostname', ''):
+        return asset_identifier.get('hostname', '')
+    if asset_identifier.get('ip', []):
+        return '\n'.join(asset_identifier.get('ip', []))
+    if asset_identifier.get('mac', []):
+        return '\n'.join(asset_identifier.get('mac', []))
+    return None
+
+
+def get_more_information(event):
+    """
+    Get more information for event from response
+
+    :param event: event details
+    :type event: dict
+
+    :return: queried domain, process command line, file use by process
+    :rtype: str, str, str
+    """
+    queried_domain = ''
+    process_command_line = ''
+    file_use_by_process = ''
+
+    if event.get('metadata', {}).get('eventType', '') == 'NETWORK_DNS':
+        questions = event.get('network', {}).get('dns', {}).get('questions', [])
+        for question in questions:
+            queried_domain += '{}\n'.format(question.get('name', ''))
+
+    if event.get('target', {}).get('process', {}).get('commandLine', ''):
+        process_command_line += event.get('target', {}).get('process', {}).get('commandLine', '')
+
+    if event.get('target', {}).get('process', {}).get('file', {}).get('fullPath', ''):
+        file_use_by_process += event.get('target', {}).get('process', {}).get('file', {}).get('fullPath', '')
+
+    return queried_domain, process_command_line, file_use_by_process
+
+
+def get_context_for_events(events):
+    """
+    Convert response into Context data
+
+    :param events: List of events
+    :type events: list
+
+    :return: list of context data
+    """
+    events_ec = []
+    for event in events:
+        event_dict = {}
+        if 'metadata' in event.keys():
+            event_dict.update(event.pop('metadata'))
+        event_dict.update(event)
+        events_ec.append(event_dict)
+
+    return events_ec
+
+
+def get_list_events_hr(events):
+    """
+    converts events response into human readable.
+
+    :param events: list of events
+    :type events: list
+
+    :return: returns human readable string for gcb-list-events command
+    :rtype: str
+    """
+
+    hr_dict = []
+    for event in events:
+        # Get queried domain, process command line, file use by process information
+        more_info = get_more_information(event)
+
+        hr_dict.append({
+            'Event Timestamp': event.get('metadata', {}).get('eventTimestamp', ''),
+            'Event Type': event.get('metadata', {}).get('eventType', ''),
+            'Principal Asset Identifier': get_asset_identifier_details(event.get('principal', {})),
+            'Target Asset Identifier': get_asset_identifier_details(event.get('target', {})),
+            'Queried Domain': more_info[0],
+            'Process Command Line': more_info[1],
+            'File In Use By Process': more_info[2]
+        })
+
+    hr = tableToMarkdown('Event(s) Details', hr_dict,
+                         ['Event Timestamp', 'Event Type', 'Principal Asset Identifier', 'Target Asset Identifier',
+                          'Queried Domain', 'File In Use By Process', 'Process Command Line'], removeNull=True)
+    return hr
+
+
 ''' REQUESTS FUNCTIONS '''
 
 
@@ -914,7 +1129,7 @@ def test_function(client_obj, params: Dict[str, Any]):
     request_url = '{}/ioc/listiocs?start_time=2019-10-15T20:37:00Z&page_size=1'.format(
         BACKSTORY_API_V1_URL)
 
-    validate_response(client_obj.http_client.request(request_url, 'GET'))
+    validate_response(client_obj, request_url)
     demisto.results('ok')
 
 
@@ -938,8 +1153,7 @@ def gcb_list_iocs_command(client_obj, args: Dict[str, Any]):
     # Make a request
     request_url = '{}/ioc/listiocs?start_time={}&page_size={}'.format(
         BACKSTORY_API_V1_URL, start_time, page_size)
-
-    json_data = validate_response(client_obj.http_client.request(request_url, 'GET'))
+    json_data = validate_response(client_obj, request_url)
 
     # List of IoCs returned for further processing
     ioc_matches = json_data.get('response', {}).get('matches', [])
@@ -960,7 +1174,7 @@ def gcb_list_iocs_command(client_obj, args: Dict[str, Any]):
         return '### No domain matches found', {}, {}
 
 
-def gcb_assets_command(client_obj, args: Dict[str, Any]):
+def gcb_assets_command(client_obj, args: Dict[str, str]):
     """
     This command will respond with a list of the assets which accessed the input artifact
     (ip, domain, md5, sha1, sha256) during the specified time.
@@ -968,21 +1182,21 @@ def gcb_assets_command(client_obj, args: Dict[str, Any]):
     :type client_obj: Client
     :param client_obj: client object which is used to get response from api
 
-    :type args:  Dict[str, Any]
+    :type args:  Dict[str, str]
     :param args: it contain arguments of gcb-list-ioc command
 
     :return: command output
     """
 
-    artifact_value = args.get('artifact_value')
+    artifact_value = args.get('artifact_value', '')
     artifact_type = get_artifact_type(artifact_value)
 
     start_time, end_time, page_size = get_default_command_args_value(args)
 
     request_url = '{}/artifact/listassets?artifact.{}={}&start_time={}&end_time={}&page_size={}'.format(
-        BACKSTORY_API_V1_URL, artifact_type, artifact_value, start_time, end_time, page_size)
+        BACKSTORY_API_V1_URL, artifact_type, urllib.parse.quote(artifact_value), start_time, end_time, page_size)
 
-    response = validate_response(client_obj.http_client.request(request_url, 'GET'))
+    response = validate_response(client_obj, request_url)
 
     ec = {}  # type: Dict[str, Any]
     if response and response.get('assets'):
@@ -990,6 +1204,7 @@ def gcb_assets_command(client_obj, args: Dict[str, Any]):
                                                                          artifact_value)
         hr = tableToMarkdown('Artifact Accessed - {0}'.format(artifact_value), tabular_data,
                              ['Host Name', 'Host IP', 'Host MAC', 'First Accessed Time', 'Last Accessed Time'])
+        hr += '[View assets in Chronicle]({})'.format(response.get('uri', [''])[0])
         ec = {
             'Host': host_context,
             **context_data
@@ -1000,7 +1215,7 @@ def gcb_assets_command(client_obj, args: Dict[str, Any]):
     return hr, ec, response
 
 
-def gcb_ioc_details_command(client_obj, args: Dict[str, Any]):
+def gcb_ioc_details_command(client_obj, args: Dict[str, str]):
     """
     This method fetches the IoC Details from Backstory using 'listiocdetails' Search API
 
@@ -1013,12 +1228,12 @@ def gcb_ioc_details_command(client_obj, args: Dict[str, Any]):
     :return: command output (Human Readable, Context Data and Raw Response)
     :rtype: tuple
     """
-    artifact_value = args.get('artifact_value')
+    artifact_value = args.get('artifact_value', '')
     artifact_type = get_artifact_type(artifact_value)
 
     request_url = '{}/artifact/listiocdetails?artifact.{}={}'.format(BACKSTORY_API_V1_URL, artifact_type,
-                                                                     artifact_value)
-    response = validate_response(client_obj.http_client.request(request_url, 'GET'))
+                                                                     urllib.parse.quote(artifact_value))
+    response = validate_response(client_obj, request_url)
 
     ec = {}  # type: Dict[str, Any]
     hr = ''
@@ -1042,6 +1257,7 @@ def gcb_ioc_details_command(client_obj, args: Dict[str, Any]):
             hr += tableToMarkdown('IoC Details', context_dict['hr_table_data'],
                                   ['Domain', 'IP Address', 'Category', 'Confidence Score', 'Severity',
                                    'First Accessed Time', 'Last Accessed Time'])
+            hr += '[View IoC details in Chronicle]({})'.format(response.get('uri', [''])[0])
         else:
             hr += 'No Records Found'
         return hr, ec, response
@@ -1072,7 +1288,7 @@ def ip_command(client_obj, ip_address: str):
     request_url = '{}/artifact/listiocdetails?artifact.destination_ip_address={}'.format(
         BACKSTORY_API_V1_URL, ip_address)
 
-    response = validate_response(client_obj.http_client.request(request_url, 'GET'))
+    response = validate_response(client_obj, request_url)
 
     ec = {}  # type: Dict[str, Any]
     hr = ''
@@ -1085,6 +1301,7 @@ def ip_command(client_obj, ip_address: str):
             hr += tableToMarkdown('Reputation Parameters', context_dict['hr_table_data'],
                                   ['Domain', 'IP Address', 'Category', 'Confidence Score', 'Severity',
                                    'First Accessed Time', 'Last Accessed Time'])
+            hr += '[View IoC details in Chronicle]({})'.format(response.get('uri', [''])[0])
         else:
             hr += 'No Records Found'
 
@@ -1125,8 +1342,9 @@ def domain_command(client_obj, domain_name: str):
     :return: command output
     :rtype: tuple
     """
-    request_url = '{}/artifact/listiocdetails?artifact.domain_name={}'.format(BACKSTORY_API_V1_URL, domain_name)
-    response = validate_response(client_obj.http_client.request(request_url, 'GET'))
+    request_url = '{}/artifact/listiocdetails?artifact.domain_name={}'.format(BACKSTORY_API_V1_URL,
+                                                                              urllib.parse.quote(domain_name))
+    response = validate_response(client_obj, request_url)
 
     ec = {}  # type: Dict[str, Any]
     hr = ''
@@ -1139,6 +1357,7 @@ def domain_command(client_obj, domain_name: str):
             hr += tableToMarkdown('Reputation Parameters', context_dict['hr_table_data'],
                                   ['Domain', 'IP Address', 'Category', 'Confidence Score', 'Severity',
                                    'First Accessed Time', 'Last Accessed Time'])
+            hr += '[View IoC details in Chronicle]({})'.format(response.get('uri', [''])[0])
         else:
             hr += 'No Records Found'
 
@@ -1226,70 +1445,6 @@ def fetch_incidents(client_obj, params: Dict[str, Any]):
     demisto.incidents(incidents)
 
 
-def group_infos_by_alert_asset_name(asset_alerts):
-    """
-    this method converts assets with multiple alerts into assets per asset_alert and
-        returns both human readable and context.
-    For an asset, group the asset_alert infos based on asset_alert name.
-    Returns human readable and context data.
-
-    :param asset_alerts: normalized asset alerts returned by Backstory.
-    :return: both human readable and context format having asset per alerts object
-    """
-
-    unique_asset_alerts_hr = {}  # type: Dict[str,Any]
-    unique_asset_alert_ctx = {}  # type: Dict[str,Any]
-    for asset_alert in asset_alerts:
-        for info in asset_alert['AlertInfo']:
-            asset_alert_key = asset_alert['AssetName'] + '-' + info['Name']
-
-            asset_alert_hr = unique_asset_alerts_hr.get(asset_alert_key, {})
-            asset_alert_ctx = unique_asset_alert_ctx.get(asset_alert_key, {})
-
-            if asset_alert_hr:
-                # Re calculate First and Last seen time
-                if info['Timestamp'] >= asset_alert_hr['Last Seen Ago']:
-                    asset_alert_hr['Last Seen Ago'] = info['Timestamp']
-                    asset_alert_hr['Last Seen'] = get_informal_time(info['Timestamp'])
-                    asset_alert_ctx['LastSeen'] = info['Timestamp']
-                elif info['Timestamp'] <= asset_alert_hr['First Seen Ago']:
-                    asset_alert_hr['First Seen Ago'] = info['Timestamp']
-                    asset_alert_hr['First Seen'] = get_informal_time(info['Timestamp'])
-                    asset_alert_ctx['FirstSeen'] = info['Timestamp']
-            else:
-                asset_alert_hr['First Seen Ago'] = info['Timestamp']
-                asset_alert_hr['First Seen'] = get_informal_time(info['Timestamp'])
-                asset_alert_hr['Last Seen Ago'] = info['Timestamp']
-                asset_alert_hr['Last Seen'] = get_informal_time(info['Timestamp'])
-                asset_alert_ctx['FirstSeen'] = info['Timestamp']
-                asset_alert_ctx['LastSeen'] = info['Timestamp']
-
-            asset_alert_ctx.setdefault('Occurrences', []).append(info['Timestamp'])
-            asset_alert_ctx['Alerts'] = asset_alert_hr['Alerts'] = asset_alert_ctx.get('Alerts', 0) + 1
-            asset_alert_ctx['Asset'] = asset_alert_hr['Asset'] = asset_alert['AssetName']
-            asset_alert_ctx['AlertName'] = asset_alert_hr['Alert Names'] = info['Name']
-            asset_alert_ctx['Severities'] = asset_alert_hr['Severities'] = info['Severity']
-            asset_alert_ctx['Sources'] = asset_alert_hr['Sources'] = info['SourceProduct']
-
-            unique_asset_alert_ctx[asset_alert_key] = asset_alert_ctx
-            unique_asset_alerts_hr[asset_alert_key] = asset_alert_hr
-
-    return unique_asset_alerts_hr, unique_asset_alert_ctx
-
-
-def convert_alerts_into_hr(events):
-    """
-    converts alerts into human readable by parsing alerts
-    :param events:
-    :return:
-    """
-    data = group_infos_by_alert_asset_name(events)[0].values()
-    return tableToMarkdown('Security Alert(s)', list(data),
-                           ['Alerts', 'Asset', 'Alert Names', 'First Seen', 'Last Seen', 'Severities',
-                            'Sources'],
-                           removeNull=True)
-
-
 def gcb_list_alerts_command(client_obj, args: Dict[str, Any]):
     """
     This method fetches alerts that are correlated to the asset under investigation.
@@ -1311,14 +1466,81 @@ def gcb_list_alerts_command(client_obj, args: Dict[str, Any]):
         hr += 'No Records Found'
         return hr, {}, {}
 
+    # prepare alerts into human readable
+    hr = convert_alerts_into_hr(alerts)
+
+    # Remove Url key in context data
+    for alert in alerts:
+        for alert_info in alert.get('AlertInfo', []):
+            if 'Uri' in alert_info.keys():
+                del alert_info['Uri']
     ec = {
         CHRONICLE_OUTPUT_PATHS['Alert']: alerts
     }
 
-    # prepare alerts into human readable
-    hr = convert_alerts_into_hr(alerts)
-
     return hr, ec, alerts
+
+
+def gcb_list_events_command(client_obj, args: Dict[str, str]):
+    """
+    List all of the events discovered within your enterprise on a particular device within the specified time range.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type args:  Dict[str, str]
+    :param args: it contain arguments of gcb-list-ioc command
+
+    :return: command output
+    :rtype: str, dict, dict
+    """
+
+    asset_identifier_type = ASSET_IDENTIFIER_NAME_DICT.get(args.get('asset_identifier_type', '').lower(),
+                                                           args.get('asset_identifier_type', ''))
+    asset_identifier = urllib.parse.quote(args.get('asset_identifier', ''))
+
+    # retrieve arguments and validate it
+    start_time, end_time, _ = get_default_command_args_value(args, '2 hours')
+
+    page_size = args.get('page_size', '100')
+
+    # validate page size argument
+    if int(page_size) > 1000:
+        return_error('Page size should be in the range from 1 to 1000.')
+
+    reference_time = args.get('reference_time', start_time)
+
+    # Make a request URL
+    request_url = '{}/asset/listevents?asset.{}={}&start_time={}&end_time={}&page_size={}&reference_time={}' \
+        .format(BACKSTORY_API_V1_URL, asset_identifier_type, asset_identifier, start_time, end_time, page_size,
+                reference_time)
+    demisto.debug('Requested url : ' + request_url)
+
+    # get list of events from Chronicle Backstory
+    json_data = validate_response(client_obj, request_url)
+
+    events = json_data.get('events', [])
+    if not events:
+        hr = 'No Events Found'
+        return hr, {}, {}
+
+    # prepare alerts into human readable
+    hr = get_list_events_hr(events)
+    hr += '[View events in Chronicle]({})'.format(json_data.get('uri', [''])[0])
+
+    if json_data.get('moreDataAvailable', False):
+        last_event_timestamp = datetime.strptime(events[-1].get('metadata', {}).get('eventTimestamp', ''), DATE_FORMAT)
+        hr += '\n\nMaximum number of events specified in page_size has been returned. There might still be more ' \
+              'events in your Chronicle account. To fetch the next set of events, execute the command with the start ' \
+              'time as {}'.format(last_event_timestamp.strftime(DATE_FORMAT))
+
+    parsed_ec = get_context_for_events(json_data.get('events', []))
+
+    ec = {
+        CHRONICLE_OUTPUT_PATHS["Events"]: parsed_ec
+    }
+
+    return hr, ec, json_data
 
 
 def main():
@@ -1330,7 +1552,8 @@ def main():
         'gcb-list-iocs': gcb_list_iocs_command,
         'gcb-assets': gcb_assets_command,
         'gcb-ioc-details': gcb_ioc_details_command,
-        'gcb-list-alerts': gcb_list_alerts_command
+        'gcb-list-alerts': gcb_list_alerts_command,
+        'gcb-list-events': gcb_list_events_command
     }
     # initialize configuration parameter
     proxy = demisto.params().get('proxy')

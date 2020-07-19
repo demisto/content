@@ -42,6 +42,8 @@ args_to_test = [
     ({}, {'noID': 15}, None, {}),  # Test that data without ID isn't added
     ({}, {'ID': 1, 'EntryID': 15}, None, {})  # Test that just an ID and EntryID is not added.
 ]
+
+
 @pytest.mark.parametrize("main_data, data_to_add, future_id, wanted_output", args_to_test)
 def test_add_to_data(main_data, data_to_add, future_id, wanted_output):
     from PcapMinerV2 import add_to_data

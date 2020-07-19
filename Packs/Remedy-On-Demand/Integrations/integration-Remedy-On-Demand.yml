@@ -210,7 +210,7 @@ script:
     };
 
     var getIncident = function(id, title) {
-        var url = baseUrl + '/api/arsys/v1/entry/HPD:IncidentInterface_Create/' + preperIncId(id);
+        var url = baseUrl + '/api/arsys/v1/entry/HPD:IncidentInterface/' + id;
         var token = login();
         var res = sendRequest(url, token);
         logout(token);
@@ -224,7 +224,7 @@ script:
     };
 
     var fetchIncidents = function(query) {
-        var url = baseUrl + '/api/arsys/v1/entry/HPD:IncidentInterface_Create/';
+        var url = baseUrl + '/api/arsys/v1/entry/HPD:IncidentInterface/';
         if(query) {
             url += '?q=' + encodeURIComponent(query);
         }
@@ -242,7 +242,7 @@ script:
     };
 
     var updateIncident = function(incID, updateObject) {
-        var url = baseUrl + '/api/arsys/v1/entry/HPD:IncidentInterface_Create/' + preperIncId(incID);
+        var url = baseUrl + '/api/arsys/v1/entry/HPD:IncidentInterface/' + incID + '|' + incID;
         var token = login();
 
         filterEmptyFields(updateObject);
@@ -264,7 +264,7 @@ script:
             };
         }
         var query =  "'Create Date'>" + '"' + lastRun.value + '"';
-        var url = baseUrl + '/api/arsys/v1/entry/HPD:IncidentInterface_Create/' + '?q=' + encodeURIComponent(query);
+        var url = baseUrl + '/api/arsys/v1/entry/HPD:IncidentInterface/' + '?q=' + encodeURIComponent(query);
         var token = login();
         var res = sendRequest(url, token);
         logout(token);
@@ -323,6 +323,7 @@ script:
                 }
             );
     }
+
   type: javascript
   commands:
   - name: remedy-incident-create
@@ -417,7 +418,7 @@ script:
     - name: ID
       required: true
       default: true
-      description: Incident ID (we will pad leading zeros if necessary)
+      description: Incident Entry ID. If EntryID is not available to you, incident details can be found using `remedy-fetch-incidents query="'Incident Number' = \"<incident number>\"".
     outputs:
     - contextPath: Ticket.ID
       description: Ticket ID
@@ -464,7 +465,7 @@ script:
     - name: ID
       required: true
       default: true
-      description: Incident ID
+      description: Incident Entry ID. If EntryID is not available to you, incident details can be found using `remedy-fetch-incidents query="'Incident Number' = \"<incident number>\"".
     - name: description
       description: Updated description
     - name: status

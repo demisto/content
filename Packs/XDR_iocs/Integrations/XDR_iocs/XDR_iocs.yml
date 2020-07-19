@@ -38,6 +38,13 @@ configuration:
   required: true
   type: 15
 - additionalinfo: The query used to collect indicators to sync from Cortex XSOAR to Cortex XDR.
+  defaultvalue: Cortex XDR
+  display: Indicator tag
+  hidden: false
+  name: tag
+  required: true
+  type: 0
+- additionalinfo: The tag for incomming indicators.
   defaultvalue: reputation:Bad and (type:File or type:Domain or type:IP)
   display: Sync Query
   hidden: false
@@ -89,12 +96,14 @@ configuration:
   name: feedExpirationInterval
   required: false
   type: 1
-- defaultvalue: 'true'
+- display: ''
+  defaultvalue: 'true'
   hidden: true
   name: feedIncremental
   required: false
   type: 8
-- display: Feed Fetch Interval
+- defaultvalue: '1'
+  display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
   type: 19
@@ -114,7 +123,9 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: 'false'
-      description: For first sync, set to true.
+      description: |-
+        For first sync, set to true.
+        (do NOT run this twice!)
       isArray: false
       name: firstTime
       predefined:
@@ -123,9 +134,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: |-
-      Run once when you configure the integration (do NOT run this twice!).
-      will all the indicators that were synced with XDR and then resync.
+    description: Sync your IOC with Cortex XDR and delete the old.
     execution: false
     name: xdr-iocs-sync
   - arguments:
@@ -161,7 +170,7 @@ script:
     description: Disables IOCs in the XDR server.
     execution: false
     name: xdr-iocs-disable
-  dockerimage: demisto/python3:3.8.3.8715
+  dockerimage: demisto/python3:3.8.3.9324
   feed: true
   isfetch: false
   longRunning: false
