@@ -78,5 +78,5 @@
             "mandatory": false,
             "display_name": "Port Scan"
         }
-    },
+    }
 }
