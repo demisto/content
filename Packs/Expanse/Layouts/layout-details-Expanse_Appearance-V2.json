@@ -52,6 +52,15 @@
 							},
 							{
 								"endCol": 2,
+								"fieldId": "expansebusinessunit",
+								"height": 22,
+								"id": "cfae0370-af4a-11ea-af3d-1b2598e4d95e",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
 								"fieldId": "severity",
 								"height": 24,
 								"id": "incident-severity-field",
@@ -270,6 +279,15 @@
 						"i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
 						"isVisible": true,
 						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "expanserawjsonevent",
+								"height": 53,
+								"id": "d3e655f0-af4a-11ea-af3d-1b2598e4d95e",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
 							{
 								"endCol": 2,
 								"fieldId": "details",
