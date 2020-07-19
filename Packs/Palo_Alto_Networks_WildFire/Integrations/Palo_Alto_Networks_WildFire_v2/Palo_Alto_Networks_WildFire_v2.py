@@ -1,11 +1,7 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
-import json
 import shutil
-import requests
 from typing import Dict, Any
+
+from CommonServerPython import *
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -80,7 +76,8 @@ class NotFoundError(Exception):
         pass
 
 
-def http_request(url, method, headers=None, body=None, params=None, files=None):
+def http_request(url: str, method: str, headers: dict = None, body: dict = None, params: dict = None, files=None,
+                 resp_type: str = 'xml'):
     LOG('running request with url=%s' % url)
     result = requests.request(
         method,
@@ -115,6 +112,9 @@ def http_request(url, method, headers=None, body=None, params=None, files=None):
 
     if result.headers['Content-Type'] == 'application/octet-stream':
         return result
+
+    if resp_type == 'json':
+        return result.json()
     try:
         json_res = json.loads(xml2json(result.text))
         return json_res
@@ -184,7 +184,7 @@ def create_dbot_score_from_verdict(pretty_verdict):
             'Type': 'file',
             'Vendor': 'WildFire',
             'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]]
-    }
+        }
 
     ]
     return dbot_score
@@ -247,7 +247,7 @@ def create_upload_entry(upload_body, title, result):
         'HumanReadable': human_readable,
         'ReadableContentsFormat': formats['markdown'],
         'EntryContext': {
-            "WildFire.Report(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5)": pretty_upload_body
+            "WildFire.Report(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5 || val.URL == obj.URL)": pretty_upload_body
         }
     })
 
@@ -488,7 +488,7 @@ def wildfire_get_verdicts_command():
         })
 
 
-def create_report(file_hash, reports, file_info, format_='xml', verbose=False):
+def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml', verbose: bool = False):
     udp_ip = []
     udp_port = []
     tcp_ip = []
@@ -531,7 +531,7 @@ def create_report(file_hash, reports, file_info, format_='xml', verbose=False):
 
     outputs = {
         'Status': 'Success',
-        'SHA256': file_info["sha256"]
+        'SHA256': file_info.get('sha256')
     }
 
     if len(udp_ip) > 0 or len(udp_port) > 0 or len(tcp_ip) > 0 or len(tcp_port) > 0 or dns_query or dns_response:
@@ -608,7 +608,7 @@ def create_report(file_hash, reports, file_info, format_='xml', verbose=False):
         demisto.results(result)
 
     else:
-        human_readable = tableToMarkdown('WildFire Report', prettify_report_entry(file_info))
+        human_readable = tableToMarkdown('WildFire File Report', prettify_report_entry(file_info))
         if verbose:
             for report in reports:
                 if isinstance(report, dict):
@@ -625,7 +625,50 @@ def create_report(file_hash, reports, file_info, format_='xml', verbose=False):
 
 
 @logger
-def wildfire_get_report(file_hash):
+def wildfire_get_url_report(url: str):
+    get_report_uri = f"{URL}{URL_DICT['report']}"
+    params = {
+        'apikey': TOKEN,
+        'url': url
+    }
+    entry_context = {'url': url}
+    try:
+        result = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params, resp_type='json').get(
+            'result')
+    except NotFoundError:
+        entry_context['Status'] = 'NotFound'
+        demisto.results({
+            'Type': entryTypes['note'],
+            'HumanReadable': 'Report not found.',
+            'Contents': None,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['text'],
+            'EntryContext': {
+                "WildFire.Report(val.url == obj.url || val.MD5 == obj.url)": entry_context
+            }
+        })
+        sys.exit(0)
+
+    reports = json.loads(result.get('report', None))
+
+    if not reports:
+        entry_context['Status'] = 'Pending'
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': result,
+            'ContentsFormat': formats['json'],
+            'HumanReadable': 'The sample is still being analyzed. Please wait to download the report.',
+            'ReadableContentsFormat': formats['text'],
+            'EntryContext': {
+                "WildFire.Report(val.url == obj.url": entry_context
+            }
+        })
+        sys.exit(0)
+    return url, reports
+
+
+@logger
+def wildfire_get_file_report(file_hash: str):
     get_report_uri = URL + URL_DICT["report"]
     params = {
         'apikey': TOKEN,
@@ -673,6 +716,7 @@ def wildfire_get_report(file_hash):
 
 
 def wildfire_get_report_command():
+    urls = argToList(demisto.args().get('url', ''))
     if 'sha256' in demisto.args():
         sha256 = demisto.args().get('sha256', None)
     elif 'hash' in demisto.args():
@@ -680,13 +724,26 @@ def wildfire_get_report_command():
     else:
         sha256 = None
     md5 = demisto.args().get('md5', None)
-    inputs = hash_args_handler(sha256, md5)
+    if urls:
+        inputs = urls
+        url_report = True
+    else:
+        inputs = hash_args_handler(sha256, md5)
+        url_report = False
 
     verbose = demisto.args().get('verbose', 'false').lower() == 'true'
     format_ = demisto.args().get('format', 'xml')
     for element in inputs:
-        file_hash, report, file_info = wildfire_get_report(element)
-        create_report(file_hash, report, file_info, format_, verbose)
+        if url_report:
+            url, report = wildfire_get_url_report(element)
+            headers = ['sha256', 'type', 'verdict']
+            human_readable = tableToMarkdown(f'Wildfire URL report for {url}', t=report, headers=headers,
+                                             removeNull=True)
+            entry_context = {"WildFire.Report(val.url == obj.url || val.MD5 == obj.url)": report}
+            return_outputs(human_readable, entry_context, report)
+        else:
+            ioc, report, file_info = wildfire_get_file_report(element)
+            create_file_report(ioc, report, file_info, format_, verbose, url_report)
 
 
 def wildfire_file_command():
@@ -699,8 +756,8 @@ def wildfire_file_command():
                 'ContentsFormat': formats['text']
             })
         else:
-            file_hash, report, file_info = wildfire_get_report(element)
-            create_report(file_hash, report, file_info, 'xml', False)
+            file_hash, report, file_info = wildfire_get_file_report(element)
+            create_file_report(file_hash, report, file_info, 'xml', False)
 
 
 def wildfire_get_sample(file_hash):
