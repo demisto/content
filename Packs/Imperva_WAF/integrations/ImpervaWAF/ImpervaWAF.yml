@@ -19,6 +19,8 @@ configuration:
   name: proxy
   required: false
   type: 8
+description: Use the Imperva WAF integration to manage IP groups and Web security
+  policies in Imperva WAF.
 display: Imperva WAF
 name: Imperva WAF
 script:
@@ -310,6 +312,7 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Add or remove rows in an IP Group indicated by ip Group Name.
     execution: false
     name: imperva-waf-ip-group-update-entries
   - arguments:
@@ -320,6 +323,7 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Delete a IP Group indicated by group name.
     execution: false
     name: imperva-waf-ip-group-delete
   - arguments:
