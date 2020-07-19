@@ -353,8 +353,9 @@ def get_indicators_command(client: Client, insight_category: list, insight_data_
                 demisto.info('Data type is int', item['type'], insight['ruleId'])
 
             is_behaveioral = item['type'] in ['Port', 'Protocol', 'Command', 'Registry', 'Process']
-            reputation_score = DEMISTO_INDICATOR_REPUTATION.get(demisto.params().get('feedReputation'))
-
+            score_behavioral_reputation = DEMISTO_INDICATOR_REPUTATION.get(demisto.params().get('behavioralReputation'))
+            score_non_behavioral_reputation = DEMISTO_INDICATOR_REPUTATION.get(
+                demisto.params().get('nonBehavioralReputation'))
             raw_json = {
                 'value': str(item["value"]),
                 'dataType': item['type'],
@@ -378,7 +379,7 @@ def get_indicators_command(client: Client, insight_category: list, insight_data_
                 'type': INDICATOR_TYPE_MAPPER.get(str(item['type'])),
                 'rawJSON': raw_json,
                 'fields': mapping,
-                'score': reputation_score
+                'score': score_behavioral_reputation if is_behaveioral else score_non_behavioral_reputation
             }
 
             if is_ip(item["value"]):
@@ -452,11 +453,15 @@ def get_remediation_data_command(client: Client, args: dict, no_output_mode: boo
             item["value"] = item["value"].encode('utf-8').decode('unicode_escape').encode('latin1').decode('utf-8')
 
         if demisto_data_type:
+            is_behaveioral = item['type'] in ['Port', 'Protocol', 'Command', 'Registry', 'Process']
+            score_behavioral_reputation = DEMISTO_INDICATOR_REPUTATION.get(demisto.params().get('behavioralReputation'))
+            score_non_behavioral_reputation = DEMISTO_INDICATOR_REPUTATION.get(
+                demisto.params().get('nonBehavioralReputation'))
             dbot_score = {
                 "Indicator": item["value"],
                 'type': get_dbot_type(item['type'], item["value"]),  # TODO: maybe change it to SB_Indicator?
                 "Vendor": "SafeBreach",
-                "Score": 3  # TODO: Change to is behaviroal set to defaults
+                "Score": score_behavioral_reputation if is_behaveioral else score_non_behavioral_reputation
             }
             primary_standard_context = {
                 demisto_data_type: item["value"],  # e.g Data : <URL>, SHA256:<SHA256>
@@ -518,19 +523,30 @@ def insight_rerun_command(client: Client, args: dict):
                 outputs
             """
 
-    insights: Any = client.get_insights().json()
+    raw_insights: Any = client.get_insights().json()
     insight_ids: Any = args.get('insightIds')
+    human_readable_list = []
+    safebreach_insight_context_list = []
+    safebreach_test_context_list = []
 
     if isinstance(insight_ids, str):
         insight_ids = literal_eval(insight_ids)
     if isinstance(insight_ids, int):
         insight_ids = [insight_ids]
 
-    insights = list(filter(lambda insight: insight['ruleId'] in insight_ids, insights))
+    # Filter all insight according to given.
+    active_insight_ids = list(map(lambda i: i['ruleId'], raw_insights))
+    invalid_insight_ids = list(filter(lambda i: i not in active_insight_ids, insight_ids))
+    insights = list(filter(lambda insight: insight['ruleId'] in insight_ids, raw_insights))
+
+    # if given id is not in the active id:
+    if len(invalid_insight_ids):
+        # TODO: check if it can be demisto.log()
+        demisto.info(f'Insight ids:{invalid_insight_ids} are invalid.')
 
     for insight in insights:
-        insight_id = insight['ruleId']
         try:
+            insight_id = insight.get('ruleId')
             if not insight_ids:
                 raise ValueError('Insight IDs are invalid')
 
@@ -538,7 +554,7 @@ def insight_rerun_command(client: Client, args: dict):
 
             rerun_data = {
                 "matrix": {
-                    "name": "Insight (Demisto) - {0}".format(insight['actionBasedTitle']),
+                    "name": "Insight (XSOAR) - {0}".format(insight['actionBasedTitle']),
                     "moveIds": insight['attacks'],
                     "nodeIds": nodes_ids
                 },
@@ -558,32 +574,36 @@ def insight_rerun_command(client: Client, args: dict):
             t = {
                 'Insight Id': insight_id,
                 'Test Id': response.get('runId'),
-                'Name': "Insight (Demisto) - {0}".format(insight.get('actionBasedTitle')),
+                'Name': "Insight (XSOAR) - {0}".format(insight.get('actionBasedTitle')),
                 '# Attacks': len(insight.get('attacks'))
             }
             context_object = {
                 'Id': insight_id,
-                'Rerun': [{'Name': "Insight (Demisto) - {0}".format(insight.get('actionBasedTitle')),
+                'Rerun': [{'Name': "Insight (XSOAR) - {0}".format(insight.get('actionBasedTitle')),
                            'Id': response.get('runId'),
                            'AttacksCount': len(insight.get('attacks')),
                            'ScheduledTime': datetime.now().isoformat()}]
             }
             test_context_dict = {
                 'Id': response.get('runId'),
-                'Name': "Insight (Demisto) - {0}".format(insight.get('actionBasedTitle')),
+                'Name': "Insight (XSOAR) - {0}".format(insight.get('actionBasedTitle')),
                 'Status': 'Pending',
                 'AttacksCount': len(insight.get('attacks')),
                 'ScheduledTime': datetime.now().isoformat()
             }
-            readable_output = tableToMarkdown(name='Rerun SafeBreach Insight', t=t, removeNull=True)
-            safebreach_context = {
-                'SafeBreach.Insight(val.Id == obj.Id)': context_object,
-                'SafeBreach.Test(val.Id == obj.Id)': test_context_dict,
-            }
-            return_outputs(readable_output=readable_output, outputs=safebreach_context, raw_response=context_object)
+            human_readable_list.append(t)
+            safebreach_insight_context_list.append(context_object)
+            safebreach_test_context_list.append(test_context_dict)
         except Exception as e:
+            print(e)
             traceback.print_exc()
-            DemistoException('Failed to rerun insight', e)
+            return_error('Failed to rerun insight', e)
+    safebreach_context = {
+        'SafeBreach.Insight(val.Id == obj.Id)': safebreach_insight_context_list,
+        'SafeBreach.Test(val.Id == obj.Id)': safebreach_test_context_list,
+    }
+    readable_output = tableToMarkdown(name='Rerun SafeBreach Insight', t=human_readable_list, removeNull=True)
+    return_outputs(readable_output=readable_output, outputs=safebreach_context)
 
 
 def get_insights_command(client: Client, args: Dict, no_output_mode: bool) -> List:
