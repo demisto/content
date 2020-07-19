@@ -2846,6 +2846,10 @@
             "integrations": "Blueliv ThreatCompass",
             "playbookID": "Blueliv_ThreatCompass_test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Imperva WAF",
+            "playbookID": "Imperva WAF - Test"
         }
     ],
     "skipped_tests": {
