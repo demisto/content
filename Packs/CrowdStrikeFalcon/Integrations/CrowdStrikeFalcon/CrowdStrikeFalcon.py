@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 import json
 import requests
@@ -205,7 +206,8 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             f'Failed to parse json object from response: {exception} - {res.content}')  # type: ignore[str-bytes-safe]
 
 
-def create_entry_object(contents: Union[List[Any],Dict[str,Any]]={}, ec: Union[List[Any],Dict[str,Any]]=None, hr: str=''):
+def create_entry_object(contents: Union[List[Any], Dict[str, Any]] = {}, ec: Union[List[Any], Dict[str, Any]] = None,
+                        hr: str = ''):
     """
         Creates an entry object
 
@@ -358,7 +360,7 @@ def refresh_session(host_id: str) -> Dict:
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/entities/refresh-session/v1'
-    
+
     body = json.dumps({
         'device_id': host_id
     })
@@ -424,17 +426,19 @@ def run_batch_admin_cmd(host_ids: list, command_type: str, full_command: str) ->
     return response
 
 
-def run_batch_get_cmd(host_ids: list, file_path: str, optional_hosts: list = None, timeout: int = None, timeout_duration: str = None) -> Dict:
+def run_batch_get_cmd(host_ids: list, file_path: str, optional_hosts: list = None, timeout: int = None,
+                      timeout_duration: str = None) -> Dict:
     """
         Batch executes `get` command across hosts to retrieve files.
         After this call is made `/real-time-response/combined/batch-get-command/v1` is used to query for the results.
 
       :param host_ids: List of host agent ID’s to run RTR command on.
       :param file_path: Full path to the file that is to be retrieved from each host in the batch.
-      :param optional_hosts: List of a subset of hosts we want to run the command on. If this list is supplied, only these hosts will receive the command.
+      :param optional_hosts: List of a subset of hosts we want to run the command on.
+                             If this list is supplied, only these hosts will receive the command.
       :param timeout: Timeout for how long to wait for the request in seconds
       :param timeout_duration: Timeout duration for for how long to wait for the request in duration syntax
-      :return: Response JSON which contains errors (if exist) and retrieved resources      
+      :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/combined/batch-get-command/v1'
     batch_id = init_rtr_batch_session(host_ids)
@@ -471,7 +475,7 @@ def run_single_read_cmd(host_id: str, command_type: str, full_command: str) -> D
     """
     endpoint_url = '/real-time-response/entities/command/v1'
     session_id = init_rtr_single_session(host_id)
-    
+
     body = json.dumps({
         'base_command': command_type,
         'command_string': full_command,
@@ -491,7 +495,7 @@ def run_single_write_cmd(host_id: str, command_type: str, full_command: str) -> 
     """
     endpoint_url = '/real-time-response/entities/active-responder-command/v1'
     session_id = init_rtr_single_session(host_id)
-    
+
     body = json.dumps({
         'base_command': command_type,
         'command_string': full_command,
@@ -511,7 +515,7 @@ def run_single_admin_cmd(host_id: str, command_type: str, full_command: str) -> 
     """
     endpoint_url = '/real-time-response/entities/admin-command/v1'
     session_id = init_rtr_single_session(host_id)
-    
+
     body = json.dumps({
         'base_command': command_type,
         'command_string': full_command,
@@ -531,8 +535,8 @@ def status_read_cmd(request_id: str, sequence_id: Optional[int]) -> Dict:
     endpoint_url = '/real-time-response/entities/command/v1'
 
     params = {
-      'cloud_request_id': request_id,
-      'sequence_id': sequence_id or 0
+        'cloud_request_id': request_id,
+        'sequence_id': sequence_id or 0
     }
 
     response = http_request('GET', endpoint_url, params=params)
@@ -549,12 +553,13 @@ def status_write_cmd(request_id: str, sequence_id: Optional[int]) -> Dict:
     endpoint_url = '/real-time-response/entities/active-responder-command/v1'
 
     params = {
-      'cloud_request_id': request_id,
-      'sequence_id': sequence_id or 0
+        'cloud_request_id': request_id,
+        'sequence_id': sequence_id or 0
     }
 
     response = http_request('GET', endpoint_url, params=params)
     return response
+
 
 def status_admin_cmd(request_id: str, sequence_id: Optional[int]) -> Dict:
     """
@@ -566,8 +571,8 @@ def status_admin_cmd(request_id: str, sequence_id: Optional[int]) -> Dict:
     endpoint_url = '/real-time-response/entities/admin-command/v1'
 
     params = {
-      'cloud_request_id': request_id,
-      'sequence_id': sequence_id or 0
+        'cloud_request_id': request_id,
+        'sequence_id': sequence_id or 0
     }
 
     response = http_request('GET', endpoint_url, params=params)
@@ -582,9 +587,9 @@ def list_host_files(host_id: str) -> Dict:
     """
     endpoint_url = '/real-time-response/entities/file/v1'
     session_id = init_rtr_single_session(host_id)
-    
+
     params = {
-        'session_id': session_id 
+        'session_id': session_id
     }
     response = http_request('GET', endpoint_url, params=params)
     return response
@@ -673,7 +678,7 @@ def get_extracted_file(host_id: str, sha256: str, filename: str = None):
         'sha256': sha256
     }
     if filename:
-      params['filename'] = filename
+        params['filename'] = filename
 
     response = http_request('GET', endpoint_url, params=params, no_json=True)
     return response
@@ -1367,15 +1372,15 @@ def run_command():
                 'BaseCommand': resource.get('base_command'),
                 'Command': full_command
             })
-        
+
         human_readable = tableToMarkdown(f'Command {full_command} results', output, removeNull=True)
         entry_context_batch = {
-            'CrowdStrike' : {
-              'Command': output
+            'CrowdStrike': {
+                'Command': output
             }
         }
         return create_entry_object(contents=response, ec=entry_context_batch, hr=human_readable)
-    else: # target = 'single'
+    else:  # target = 'single'
         responses = []
         for host_id in host_ids:
             if scope == 'read':
@@ -1785,7 +1790,7 @@ def status_command():
                 error_message = f'Could not run command\n{errors}'
             return_error(error_message)
 
-        sequence_id = int(resource.get('sequence_id',0))
+        sequence_id = int(resource.get('sequence_id', 0))
         output.append({
             'Complete': resource.get('complete') or False,
             'Stdout': resource.get('stdout'),
@@ -1796,7 +1801,7 @@ def status_command():
             'NextSequenceID': sequence_id + 1
         })
 
-    human_readable = tableToMarkdown(f'Command status results', output, removeNull=True)
+    human_readable = tableToMarkdown('Command status results', output, removeNull=True)
     entry_context = {
         'CrowdStrike.Command(val.TaskID === obj.TaskID)': output
     }
@@ -1867,7 +1872,7 @@ def list_host_files_command():
             'SHA256': resource.get('sha256'),
             'Size': resource.get('size'),
         })
-    
+
     if files_output:
         human_readable = tableToMarkdown('CrowdStrike Falcon files', files_output)
     else:
@@ -1888,7 +1893,7 @@ def refresh_session_command():
 
     response = refresh_session(host_id)
     resources: list = response.get('resources', [])
-    
+
     session_id = None
     for resource in resources:
         errors = resource.get('errors', [])
@@ -1898,7 +1903,7 @@ def refresh_session_command():
                 error_message = f'Could not run command\n{errors}'
             return_error(error_message)
         session_id = resource.get('session_id')
-    
+
     return create_entry_object(contents=response, hr=f'CrowdStrike Session Refreshed: {session_id}')
 
 
