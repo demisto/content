@@ -72,7 +72,8 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: Use The ServiceNow IT Service Management (ITSM) solution to modernize the way you manage and deliver services to your users.
+description: Use The ServiceNow IT Service Management (ITSM) solution to modernize
+  the way you manage and deliver services to your users.
 display: ServiceNow v2
 name: ServiceNow v2
 script:
@@ -2212,8 +2213,6 @@ script:
     description: Returns the list of fields for an incident type
     execution: false
     name: get-mapping-fields
-  - deprecated: false
-    execution: false
   - deprecated: false
     description: Returns an updated incident and entries
     execution: false
