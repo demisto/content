@@ -134,7 +134,7 @@ script:
       - Malware
     - name: search
       description: Indicators that match the given search pattern will be fetched.
-  dockerimage: demisto/boto3py3:1.0.0.9798
+  dockerimage: demisto/boto3py3:1.0.0.9909
   feed: true
   isfetch: false
   longRunning: false
