@@ -2807,6 +2807,15 @@
             "fromversion": "5.0.0"
         },
         {
+            "playbookID": "PCAP File Carving Test",
+            "instance_names": "virus_total_general",
+            "integrations": [
+                "VirusTotal",
+                "WildFire-v2"
+            ],
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "VirusTotal",
             "instance_names": "virus_total_general",
             "playbookID": "PCAP Parsing And Indicator Enrichment Test",
