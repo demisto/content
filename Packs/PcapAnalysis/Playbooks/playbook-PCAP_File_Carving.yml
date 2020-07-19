@@ -616,20 +616,20 @@ inputs:
     simple: "5"
   required: false
   description: This input limits the number of files to be extracted from the PCAP
-    file. default value is 5.
+    file. Default value is 5.
   playbookInputQuery:
 - key: FileExtensionFilter
   value: {}
   required: false
   description: |-
-    This input is used to select which file extensions to include or exclude from the PCAP file. List the extensions comma separated, such as png,gif,exe
+    This input is used to select which file extensions to include or exclude from the PCAP file. Extensions must be comma separated, for example, png,gif,exe.
     This setting cannot be used with the FileTypeFilter.
   playbookInputQuery:
 - key: FileTypeFilter
   value: {}
   required: false
   description: |-
-    This input is used to select which file type (MIME type) to include or exclude from the PCAP file. List the extensions comma separated, such as image/jpeg,application/x-javascript
+    This input is used to select which file type (MIME type) to include or exclude from the PCAP file. Extensions must be comma separated, for example, image/jpeg,application/x-javascript
     This setting cannot be used with the FileExtensionFilter.
   playbookInputQuery:
 - key: FilterType
@@ -637,7 +637,7 @@ inputs:
     simple: inclusive
   required: false
   description: |-
-    This input is combines with the FileExtensionFilter input or the FileTypeFilter input. It specifies if the type/extensions list inclusive or exclusive. Can be "inclusive" or "exclusive". Default is "inclusive".
+    This input is combined with the FileExtensionFilter input or the FileTypeFilter input. It specifies if the type/extensions list is inclusive or exclusive. Can be "inclusive" or "exclusive". Default is "inclusive".
     Default value is 'inclusive'
   playbookInputQuery:
 outputs:
