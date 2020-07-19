@@ -79,20 +79,4 @@
             "display_name": "Port Scan"
         }
     },
-    "displayedImages": [
-        "EWSMailSender",
-        "MicrosoftGraphListener",
-        "MailSenderNew",
-        "CommonTypes",
-        "CommonPlaybooks",
-        "XDR_iocs",
-        "CommonScripts",
-        "Gmail",
-        "DemistoRESTAPI",
-        "PANWComprehensiveInvestigation",
-        "GmailSingleUser",
-        "AutoFocus",
-        "MicrosoftGraphMail",
-        "PortScan"
-    ]
 }
