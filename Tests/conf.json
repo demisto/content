@@ -2038,10 +2038,6 @@
             "playbookID": "ExtractDomainFromEmailTest"
         },
         {
-            "playbookID": "Account Enrichment - Generic v2 - Test",
-            "integrations": "activedir"
-        },
-        {
             "playbookID": "Extract Indicators From File - Generic v2 - Test",
             "integrations": "Image OCR",
             "timeout": 300,
