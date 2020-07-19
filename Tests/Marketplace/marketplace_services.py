@@ -882,7 +882,7 @@ class Pack(object):
                 PackFolders.INDICATOR_FIELDS.value: "indicatorfield",
                 PackFolders.REPORTS.value: "report",
                 PackFolders.INDICATOR_TYPES.value: "reputation",
-                PackFolders.LAYOUTS.value: "layout",
+                PackFolders.LAYOUTS.value: "layoutscontainer",
                 PackFolders.CLASSIFIERS.value: "classifier",
                 PackFolders.WIDGETS.value: "widget"
             }
@@ -988,11 +988,13 @@ class Pack(object):
                             'enhancementScriptNames': content_item.get('enhancementScriptNames', [])
                         })
                     elif current_directory == PackFolders.LAYOUTS.value:
-                        folder_collected_items.append({
-                            'typeId': content_item.get('typeId', ""),
-                            'kind': content_item.get('kind', ""),
-                            'version': 'v2' if 'tabs' in content_item.get('layout', {}) else 'v1'
-                        })
+                        layout_metadata = {
+                            'name': content_item.get('name', '')
+                        }
+                        layout_description = content_item.get('description')
+                        if layout_description is not None:
+                            layout_metadata['description'] = layout_description
+                        folder_collected_items.append(layout_metadata)
                     elif current_directory == PackFolders.CLASSIFIERS.value:
                         folder_collected_items.append({
                             'name': content_item.get('name') or content_item.get('id', ""),

@@ -174,5 +174,6 @@
     },
     "typeId": "Employee Health Check",
     "version": -1,
-	"fromVersion": "5.5.0"
+	"fromVersion": "5.5.0",
+    "toVersion": "5.9.9"
 }
