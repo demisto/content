@@ -22,5 +22,6 @@
     "closureScript": "",
     "disabled": false,
     "reputationCalc": 0,
-    "fromVersion": "4.5.0"
+    "fromVersion": "4.5.0",
+    "layout": "Panorama Best Practice Assessment"
 }
