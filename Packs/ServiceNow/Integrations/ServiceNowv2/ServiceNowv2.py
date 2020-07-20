@@ -1,8 +1,9 @@
 import shutil
 import traceback
-from typing import List, Tuple, Dict, Callable, Any
+import dateparser
+from typing import List, Tuple, Dict, Callable, Any, Optional
 
-from CommonServerPython import *
+
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -88,6 +89,54 @@ DEFAULT_RECORD_FIELDS = {
     'sys_created_on': 'CreatedAt'
 }
 
+def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
+    """Converts an XSOAR argument to a timestamp (seconds from epoch)
+
+    This function is used to quickly validate an argument provided to XSOAR
+    via ``demisto.args()`` into an ``int`` containing a timestamp (seconds
+    since epoch). It will throw a ValueError if the input is invalid.
+    If the input is None, it will throw a ValueError if required is ``True``,
+    or ``None`` if required is ``False.
+
+    :type arg: ``Any``
+    :param arg: argument to convert
+
+    :type arg_name: ``str``
+    :param arg_name: argument name
+
+    :type required: ``bool``
+    :param required:
+        throws exception if ``True`` and argument provided is None
+
+    :return:
+        returns an ``int`` containing a timestamp (seconds from epoch) if conversion works
+        returns ``None`` if arg is ``None`` and required is set to ``False``
+        otherwise throws an Exception
+    :rtype: ``Optional[int]``
+    """
+
+    if arg is None:
+        if required is True:
+            raise ValueError(f'Missing "{arg_name}"')
+        return None
+
+    if isinstance(arg, str) and arg.isdigit():
+        # timestamp is a str containing digits - we just convert it to int
+        return int(arg)
+    if isinstance(arg, str):
+        # we use dateparser to handle strings either in ISO8601 format, or
+        # relative time stamps.
+        # For example: format 2019-10-23T00:00:00 or "3 days", etc
+        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+        if date is None:
+            # if d is None it means dateparser failed to parse it
+            raise ValueError(f'Invalid date: {arg_name}')
+
+        return int(date.timestamp())
+    if isinstance(arg, (int, float)):
+        # Convert to int if the input is a float
+        return int(arg)
+    raise ValueError(f'Invalid date: "{arg_name}"')
 
 def get_server_url(server_url: str) -> str:
     url = server_url
@@ -432,55 +481,41 @@ class Client(BaseClient):
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             }
-
-        max_retries = 3
-        num_of_tries = 0
-        while num_of_tries < max_retries:
-            if file:
-                # Not supported in v2
-                url = url.replace('v2', 'v1')
-                try:
-                    file_entry = file['id']
-                    file_name = file['name']
-                    shutil.copy(demisto.getFilePath(file_entry)['path'], file_name)
-                    with open(file_name, 'rb') as f:
-                        res = requests.request(method, url, headers=headers, data=body, params=params,
-                                               files={'file': f}, auth=(self._username, self._password),
-                                               verify=self._verify, proxies=self._proxies)
-                    shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
-                except Exception as err:
-                    raise Exception('Failed to upload file - ' + str(err))
-            else:
-                res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {},
-                                       params=params,
-                                       auth=(self._username, self._password),
-                                       verify=self._verify, proxies=self._proxies)
-
+        if file:
+            # Not supported in v2
+            url = url.replace('v2', 'v1')
             try:
-                json_res = res.json()
+                file_entry = file['id']
+                file_name = file['name']
+                shutil.copy(demisto.getFilePath(file_entry)['path'], file_name)
+                with open(file_name, 'rb') as f:
+                    res = requests.request(method, url, headers=headers, data=body, params=params, files={'file': f},
+                                           auth=(self._username, self._password), verify=self._verify,
+                                           proxies=self._proxies)
+                shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
             except Exception as err:
-                if not res.content:
-                    return ''
-                raise Exception(f'Error parsing reply - {str(res.content)} - {str(err)}')
+                raise Exception('Failed to upload file - ' + str(err))
+        else:
+            res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {}, params=params,
+                                   auth=(self._username, self._password), verify=self._verify, proxies=self._proxies)
 
-            if 'error' in json_res:
-                message = json_res.get('error', {}).get('message')
-                details = json_res.get('error', {}).get('detail')
-                if message == 'No Record found':
-                    return {'result': []}  # Return an empty results array
-                if res.status_code == 401:
-                    demisto.debug(f'Got status code 401 - {json_res}. Retrying ...')
-                else:
-                    raise Exception(f'ServiceNow Error: {message}, details: {details}')
+        try:
+            json_res = res.json()
+        except Exception as err:
+            if not res.content:
+                return ''
+            raise Exception(f'Error parsing reply - {str(res.content)} - {str(err)}')
 
-            if res.status_code < 200 or res.status_code >= 300:
-                if res.status_code != 401 or num_of_tries == (max_retries - 1):
-                    raise Exception(
-                        f'Got status code {str(res.status_code)} with url {url} with body {str(res.content)}'
-                        f' with headers {str(res.headers)}')
-            else:
-                break
-            num_of_tries += 1
+        if 'error' in json_res:
+            message = json_res.get('error', {}).get('message')
+            details = json_res.get('error', {}).get('detail')
+            if message == 'No Record found':
+                return {'result': []}  # Return an empty results array
+            raise Exception(f'ServiceNow Error: {message}, details: {details}')
+
+        if res.status_code < 200 or res.status_code >= 300:
+            raise Exception(f'Got status code {str(res.status_code)} with url {url} with body {str(res.content)}'
+                            f' with headers {str(res.headers)}')
 
         return json_res
 
@@ -1794,7 +1829,7 @@ def fetch_incidents(client: Client) -> list:
     return incidents
 
 
-def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]:
+def test_module(client: Client, *_):
     # Validate fetch_time parameter is valid (if not, parse_date_range will raise the error message)
     parse_date_range(client.fetch_time, '%Y-%m-%d %H:%M:%S')
 
@@ -1809,8 +1844,8 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]
             raise ValueError(f"The timestamp field [{client.timestamp_field}] does not exist in the ticket.")
         if client.incident_name not in ticket:
             raise ValueError(f"The field [{client.incident_name}] does not exist in the ticket.")
-
-    return 'ok', {}, {}, True
+    demisto.results('ok')
+    return '', {}, {}
 
 
 def get_remote_data_command(client: Client, args: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -1840,7 +1875,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any]) -> List[Dict[s
     )
     demisto.debug(f'last_update is {last_update}')
 
-    ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
+    ticket_type = client.ticket_type
     number = str(args.get('number', ''))
     custom_fields = split_fields(str(args.get('custom_fields', '')))
 
@@ -1869,8 +1904,26 @@ def get_remote_data_command(client: Client, args: Dict[str, Any]) -> List[Dict[s
     else:
         demisto.debug(f'ticket is updated: {ticket}')
 
-    # get latest comments
+    # get latest comments and files
     entries = []
+    attachments_res = client.get_ticket_attachments(ticket_id)
+    if 'result' in attachments_res:
+        attachments = attachments_res['result']
+        for attachment in attachments:
+            entry_time = arg_to_timestamp(
+                arg=attachment.get('sys_created_on'),
+                arg_name='sys_created_on',
+                required=False
+            )
+
+        file_entries = client.get_ticket_attachment_entries(result.get('result').get('sys_id', ''))
+        if file_entries:
+            for file_ in file_entries:
+                if file_.get('File') == attachment.get('file_name'):
+                    if last_update > entry_time:
+                        continue
+                    else:
+                        entries.append(file_)
 
     sys_param_limit = args.get('limit', client.sys_param_limit)
     sys_param_offset = args.get('offset', client.sys_param_offset)
@@ -1882,9 +1935,9 @@ def get_remote_data_command(client: Client, args: Dict[str, Any]) -> List[Dict[s
 
     if not comments_result or 'result' not in comments_result:
         demisto.debug(f'Pull result is {ticket}')
-        return [ticket]
+        return [ticket] + entries
 
-    for note in comments_result.get('result', []):
+    for note in comments_result.get('result'):
         entry_time = arg_to_timestamp(
             arg=note.get('sys_created_on'),
             arg_name='sys_created_on',
@@ -1917,7 +1970,6 @@ def get_remote_data_command(client: Client, args: Dict[str, Any]) -> List[Dict[s
         })
 
     demisto.debug(f'Pull result is {ticket} + {entries}')
-
     return [ticket] + entries
 
 
@@ -1945,15 +1997,19 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     incident_changed = args.get('incidentChanged')
     ticket_id = args.get('remoteId')
     org_status = args.get('status')
+    delta = args.get('delta')
+
+    if delta:
+        demisto.debug(f'Got the following delta keys {str(list(delta.keys()))}')
 
     ticket_type = client.ticket_type
     if incident_changed:
         fields = get_ticket_fields(data, ticket_type=ticket_type)
 
-        demisto.debug(f'Sending update request to server {ticket_type}, {ticket_id}, {fields}\n')
-        result = client.update(ticket_type, ticket_id, fields)
+        demisto.debug(f'Sending update request to server {ticket_type}, {ticket_id}, {fields}')
+        result = client.update(ticket_type, ticket_id, fields, {})
 
-        demisto.info(f'Ticket Update result {result}')
+        demisto.info(f'Ticket Update result {result}\n')
 
     if len(entries) > 0:
         demisto.debug(f'New entries {entries}\n')
@@ -1967,7 +2023,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     return ticket_id
 
 
-def get_mapping_fields_command(client: Client) -> AllSchemesTypesMappingObject:
+def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
     """get-mapping-fields command: Returns the list of fields for an incident type
     :type client: ``Client``
     :param Client: XSOAR client to use
@@ -1979,7 +2035,7 @@ def get_mapping_fields_command(client: Client) -> AllSchemesTypesMappingObject:
         A ``Dict[str, Any]`` object with keys as field names and description as values
     :rtype: ``Dict[str, Any]``
     """
-    all_mappings = AllSchemesTypesMappingObject()
+    all_mappings = GetMappingFieldsResponse()
     incident_fields: List[dict] = client.send_request(f'table/{client.ticket_type}?sysparm_limit=1', 'GET')
 
     incident_type_scheme = SchemeTypeMapping(type_name=client.ticket_type)
@@ -1988,9 +2044,10 @@ def get_mapping_fields_command(client: Client) -> AllSchemesTypesMappingObject:
     ticket = incident_fields.get('result')[0]
     for field in ticket:
         incident_field = SchemeMappingField(field)
-        incident_type_scheme.add_field(incident_field)
 
+        incident_type_scheme.add_field(incident_field)
     all_mappings.add_scheme_type(incident_type_scheme)
+
     return all_mappings
 
 
@@ -2012,7 +2069,7 @@ def main():
         sc_api = f'/api/sn_sc/{version}/'
     else:
         api = '/api/now/'
-        sc_api = '/api/sn_sc/'
+        sc_api = f'/api/sn_sc/'
     server_url = params.get('url')
     sc_server_url = f'{get_server_url(server_url)}{sc_api}'
     server_url = f'{get_server_url(server_url)}{api}'
@@ -2022,7 +2079,7 @@ def main():
     sysparm_limit = int(params.get('fetch_limit', 10))
     timestamp_field = params.get('timestamp_field', 'opened_at')
     ticket_type = params.get('ticket_type', 'incident')
-    incident_name = params.get('incident_name', 'number') or 'number'
+    incident_name = params.get('incident_name', 'number')
     get_attachments = params.get('get_attachments', False)
 
     raise_exception = False
@@ -2063,9 +2120,9 @@ def main():
         elif command == 'servicenow-get-ticket':
             demisto.results(get_ticket_command(client, args))
         elif command == 'get-remote-data':
-            demisto.results(get_remote_data_command(client, demisto.args(), demisto.params()))
+            return_results(get_remote_data_command(client, demisto.args()))
         elif command == 'update-remote-system':
-            demisto.results(update_remote_system_command(client, demisto.args()))
+            return_results(update_remote_system_command(client, demisto.args()))
         elif demisto.command() == 'get-mapping-fields':
             return_results(get_mapping_fields_command(client))
         elif command in commands:

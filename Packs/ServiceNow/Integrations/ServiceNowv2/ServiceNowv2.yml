@@ -2213,8 +2213,34 @@ script:
     description: Returns the list of fields for an incident type
     execution: false
     name: get-mapping-fields
-  - deprecated: false
-    description: Returns an updated incident and entries
+  - arguments:
+    - default: false
+      description: The ticket ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: Retrieve entries that were created after lastUpdate.
+      isArray: false
+      name: lastUpdate
+      required: false
+      secret: false
+    - default: false
+      description: The ticket number.
+      isArray: false
+      name: number
+      required: false
+      secret: false
+    - default: false
+      description: Custom fields.
+      isArray: false
+      name: custom_fields
+      required: false
+      secret: false
+    deprecated: false
+    description: Get remote data from a remote incident. Please note that this method
+      will not update the current incident, it's here for debugging purposes.
     execution: false
     name: get-remote-data
   dockerimage: demisto/python3:3.8.3.9324

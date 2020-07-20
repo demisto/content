@@ -2669,11 +2669,11 @@ def return_results(results):
         demisto.results(results.to_context())
         return
 
-    if isinstance(results, AllSchemesTypesMappingObject):
+    if isinstance(results, GetMappingFieldsResponse):
         demisto.results(results.extract_mapping())
         return
 
-    if isinstance(results, ObjectMirror):
+    if isinstance(results, GetRemoteDataResponse):
         demisto.results(results.extract_for_local())
         return
 
@@ -4048,37 +4048,48 @@ class DemistoException(Exception):
     pass
 
 
-class ObjectMirror(object):
-    def __init__(self, object, entries):
-        self.object = object
+class GetRemoteDateArgs:
+    def __init__(self, args):
+        self.incident_id = args['id']
+        self.last_update = args['lastUpdate']
+
+
+class UpdateRemoteSystemArgs:
+    def __init__(self, args):
+        self.data: dict = args.get('data')  # type: ignore
+        self.entries = args.get('entries')
+        self.incident_changed = args.get('incidentChanged')
+        self.incident_id = args.get('remoteId')
+        self.inc_status = args.get('status')
+        self.delta: dict = args.get('delta')
+
+
+class GetRemoteDataResponse:
+    def __init__(self, mirrored_object, entries):
+        self.mirrored_object = mirrored_object
         self.entries = entries
 
     def extract_for_local(self):
-        if self.object:
-            demisto.info(f'Updating object {self.object["id"]}')
-            return [self.object] + self.entries
-
-
-class SchemeMappingField:
-    def __init__(self, name, description=''):
-        self.name = name
-        self.description = description
-
+        if self.mirrored_object:
+            demisto.info(f'Updating object {self.mirrored_object["id"]}')
+            return [self.mirrored_object] + self.entries
 
 class SchemeTypeMapping:
     def __init__(self, type_name='', fields=None):
         self.type_name = type_name
         self.fields = fields if fields else []
 
-    def add_field(self, field):
-        self.fields.append(field)
+    def add_field(self, name, description=''):
+        self.fields.append({
+            name: description
+        })
 
     def extract_mapping(self):
         return {
-            self.type_name: { field.name: field.description for field in self.fields }
+            self.type_name: self.fields
         }
 
-class AllSchemesTypesMappingObject:
+class GetMappingFieldsResponse:
     def __init__(self, scheme_types_mapping=None):
         self.scheme_types_mappings = scheme_types_mapping if scheme_types_mapping else []
 

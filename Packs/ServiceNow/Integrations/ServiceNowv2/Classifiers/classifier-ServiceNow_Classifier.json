@@ -1,0 +1,32 @@
+{
+	"brands": null,
+	"defaultIncidentType": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "8b6d4912-9d08-4d57-849e-e457840c7b80",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {
+		"incident": "ServiceNowTicket"
+	},
+	"locked": false,
+	"logicalVersion": 0,
+	"mapping": null,
+	"name": "ServiceNow Classifier",
+	"nameRaw": "ServiceNow Classifier",
+	"packID": "",
+	"sortValues": null,
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": null,
+		"simple": "sys_class_name"
+	},
+	"type": "classification",
+	"unclassifiedCases": null,
+	"version": -1
+}
