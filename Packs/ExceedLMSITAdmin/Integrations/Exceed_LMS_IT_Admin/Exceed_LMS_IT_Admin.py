@@ -399,7 +399,11 @@ def get_user_command(client, args):
         generic_iam_context_dt: generic_iam_context_data_list
     }
 
-    readable_output = tableToMarkdown('Get EXCEED LMS User:', generic_iam_context_data_list)
+    readable_output = tableToMarkdown(name='Get EXCEED LMS User:',
+                                      t=generic_iam_context_data_list,
+                                      headers=["brand", "instanceName", "success", "active", "id", "username", "email",
+                                               "errorCode", "errorMessage", "details"],
+                                      removeNull=True)
 
     return (
         readable_output,
@@ -456,7 +460,11 @@ def create_user_command(client, args):
         generic_iam_context_dt: generic_iam_context.data
     }
 
-    readable_output = tableToMarkdown('Create Exceed LMS User:', generic_iam_context.data)
+    readable_output = tableToMarkdown(name='Create Exceed LMS User:',
+                                      t=generic_iam_context.data,
+                                      headers=["brand", "instanceName", "success", "active", "id", "username", "email",
+                                               "errorCode", "errorMessage", "details"],
+                                      removeNull=True)
     return (
         readable_output,
         outputs,
@@ -495,7 +503,6 @@ def update_user_command(client, args):
     if res.status_code == 200:
         generic_iam_context = OutputContext(success=True,
                                             iden=user_id,
-                                            details=res.headers.get('status'),
                                             active=True)
     elif res.status_code == 404:
         generic_iam_context = OutputContext(success=False,
@@ -516,7 +523,11 @@ def update_user_command(client, args):
         generic_iam_context_dt: generic_iam_context.data
     }
 
-    readable_output = tableToMarkdown('Updated ExceedLMS User:', generic_iam_context.data)
+    readable_output = tableToMarkdown(name='Updated ExceedLMS User:',
+                                      t=generic_iam_context.data,
+                                      headers=["brand", "instanceName", "success", "active", "id", "username", "email",
+                                               "errorCode", "errorMessage", "details"],
+                                      removeNull=True)
     return (
         readable_output,
         outputs,
@@ -575,7 +586,11 @@ def enable_disable_user_command(client, args):
         generic_iam_context_dt: generic_iam_context.data
     }
 
-    readable_output = tableToMarkdown(f'{format_pre_text} ExceedLMS User:', generic_iam_context.data)
+    readable_output = tableToMarkdown(name=f'{format_pre_text} ExceedLMS User:',
+                                      t=generic_iam_context.data,
+                                      headers=["brand", "instanceName", "success", "active", "id", "username", "email",
+                                               "errorCode", "errorMessage", "details"],
+                                      removeNull=True)
 
     return (
         readable_output,
