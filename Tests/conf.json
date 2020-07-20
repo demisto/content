@@ -2908,7 +2908,7 @@
         "HybridAnalysis-Test": "Issue 26599",
         "Logzio - Test": "Issue 26729",
         "Tenable.io test": "Issue 26727",
-        "Tenable.io Scan Test": "Issue 26728",
+        "Tenable.io Scan Test": "Issue 26727",
         "URL Enrichment - Generic v2 - Test": "Issue 26463"
     },
     "skipped_integrations": {
