@@ -967,7 +967,7 @@ script:
     - default: false
       description: Filter files owned by specified entities.
       isArray: false
-      name: owner
+      name: username
       required: false
       secret: false
     - auto: PREDEFINED
@@ -1309,7 +1309,7 @@ script:
     - default: false
       description: Filter entities using services with the specified SaaS ID.
       isArray: false
-      name: app
+      name: service
       required: false
       secret: false
     - default: false

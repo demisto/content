@@ -1,10 +1,5 @@
 import pytest
-import requests_mock
-from CommonServerPython import *
 from MicrosoftCloudAppSecurity import Client
-
-
-RETURN_ERROR_TARGET = 'GetListRow.return_error'
 
 
 @pytest.mark.parametrize(
@@ -15,9 +10,9 @@ RETURN_ERROR_TARGET = 'GetListRow.return_error'
         ("High", 2),
     ]
 )
-def test_convert_severity(severity, expected):
-    from MicrosoftCloudAppSecurity import convert_severity
-    res = convert_severity(severity)
+def test_demisto_severity_to_api_severity(severity, expected):
+    from MicrosoftCloudAppSecurity import demisto_severity_to_api_severity
+    res = demisto_severity_to_api_severity(severity)
     assert res == expected
 
 
@@ -29,9 +24,9 @@ def test_convert_severity(severity, expected):
         ("Resolved", 2)
     ]
 )
-def test_convert_resolution_status(resolution_status, expected):
-    from MicrosoftCloudAppSecurity import convert_resolution_status
-    res = convert_resolution_status(resolution_status)
+def test_demisto_resolution_status_to_api_resolution_status(resolution_status, expected):
+    from MicrosoftCloudAppSecurity import demisto_resolution_status_to_api_resolution_status
+    res = demisto_resolution_status_to_api_resolution_status(resolution_status)
     assert res == expected
 
 
@@ -46,9 +41,9 @@ def test_convert_resolution_status(resolution_status, expected):
         ("MDATP", 6)
     ]
 )
-def test_convert_source_type(source, expected):
-    from MicrosoftCloudAppSecurity import convert_source_type
-    res = convert_source_type(source)
+def test_demisto_source_type_to_api_source_type(source, expected):
+    from MicrosoftCloudAppSecurity import demisto_source_type_to_api_source_type
+    res = demisto_source_type_to_api_source_type(source)
     assert res == expected
 
 
@@ -65,9 +60,9 @@ def test_convert_source_type(source, expected):
 
     ]
 )
-def test_convert_file_type(file_type, expected):
-    from MicrosoftCloudAppSecurity import convert_file_type
-    res = convert_file_type(file_type)
+def test_demisto_file_type_to_api_file_type(file_type, expected):
+    from MicrosoftCloudAppSecurity import demisto_file_type_to_api_file_type
+    res = demisto_file_type_to_api_file_type(file_type)
     assert res == expected
 
 
@@ -81,9 +76,9 @@ def test_convert_file_type(file_type, expected):
         ("Public_Internet", 4)
     ]
 )
-def test_convert_file_sharing(file_sharing, expected):
-    from MicrosoftCloudAppSecurity import convert_file_sharing
-    res = convert_file_sharing(file_sharing)
+def test_demisto_sharing_options_to_api_sharing_options(file_sharing, expected):
+    from MicrosoftCloudAppSecurity import demisto_sharing_options_to_api_sharing_options
+    res = demisto_sharing_options_to_api_sharing_options(file_sharing)
     assert res == expected
 
 
@@ -98,9 +93,9 @@ def test_convert_file_sharing(file_sharing, expected):
         ("Other", 6)
     ]
 )
-def test_convert_ip_category(ip_category, expected):
-    from MicrosoftCloudAppSecurity import convert_ip_category
-    res = convert_ip_category(ip_category)
+def test_demisto_ip_category_to_api_ip_category(ip_category, expected):
+    from MicrosoftCloudAppSecurity import demisto_ip_category_to_api_ip_category
+    res = demisto_ip_category_to_api_ip_category(ip_category)
     assert res == expected
 
 
@@ -112,9 +107,9 @@ def test_convert_ip_category(ip_category, expected):
         ("No_value", None)
     ]
 )
-def test_convert_is_external(is_external, expected):
-    from MicrosoftCloudAppSecurity import convert_is_external
-    res = convert_is_external(is_external)
+def test_demisto_is_external_to_api_is_external(is_external, expected):
+    from MicrosoftCloudAppSecurity import demisto_is_external_to_api_is_external
+    res = demisto_is_external_to_api_is_external(is_external)
     assert res == expected
 
 
@@ -128,9 +123,9 @@ def test_convert_is_external(is_external, expected):
         ("Deleted", 4)
     ]
 )
-def test_convert_status(status, expected):
-    from MicrosoftCloudAppSecurity import convert_status
-    res = convert_status(status)
+def test_demisto_status_options_to_api_status_options(status, expected):
+    from MicrosoftCloudAppSecurity import demisto_status_options_to_api_status_options
+    res = demisto_status_options_to_api_status_options(status)
     assert res == expected
 
 
@@ -161,85 +156,52 @@ def test_arg_to_timestamp(arg, expected):
     assert res == expected
 
 
-expected = {'filters': {'entity.service': {'eq': 111}, 'entity.instance': {'eq': 111}, 'severity': {'eq': 0},
-                        'resolutionStatus': {'eq': 0}, 'entity.entity': {'eq':
-                        {'id': '3fa9f28b-eb0e-463a-ba7b-8089fe9991e2', 'saas': 11161, 'inst': 0}}}, 'skip': 5,
-            'limit': 10}
-request_data = {"service": "111", "instance": "111", "severity": "Low", "resolution_status": "Open", "username":
-                '{"id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2", "saas": 11161, "inst": 0}', "skip": "5", "limit": "10"}
+expected_alerts = {'filters': {'entity.service': {'eq': 111}, 'entity.instance': {'eq': 111}, 'severity': {'eq': 0},
+                   'resolutionStatus': {'eq': 0}, 'entity.entity': {'eq': {'id': '3fa9f28b-eb0e-463a-ba7b-8089fe9991e2',
+                                                                           'saas': 11161, 'inst': 0}}},
+                   'skip': 5, 'limit': 10}
+request_data_alerts = {"service": "111", "instance": "111", "severity": "Low",
+                       "username": '{"id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2", "saas": 11161, "inst": 0}',
+                       "resolution_status": "Open", "skip": "5", "limit": "10"}
+
+
+expected_activities = {'filters': {'service': {'eq': 111}, 'instance': {'eq': 111}, 'ip.address': {'eq': '8.8.8.8'},
+                       'ip.category': {'eq': 1}, 'activity.takenAction': {'eq': 'block'}, 'source': {'eq': 0}},
+                       'skip': 5, 'limit': 10}
+request_data_activities = {"service": "111", "instance": "111", "ip": "8.8.8.8", "ip_category": "Corporate",
+                           'taken_action': 'block', 'source': 'Access_control', "skip": "5", "limit": "10"}
+
+
+expected_files = {'filters': {'service': {'eq': 111}, 'instance': {'eq': 111}, 'fileType': {'eq': 0},
+                  'quarantined': {'eq': True}, 'owner.entity':
+                                 {'eq': {"id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2", "saas": 11161, "inst": 0}},
+                              'sharing': {'eq': 0}, 'extension': {'eq': 'png'}, }, 'skip': 5, 'limit': 10}
+request_data_files = {"service": "111", "instance": "111", "file_type": "Other", "username":
+                      '{"id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2", "saas": 11161, "inst": 0}', "sharing": 'Private',
+                      'extension': 'png', 'quarantined': 'True', "skip": "5", "limit": "10"}
+
+
+expected_entities = {'filters': {'app': {'eq': 111}, 'instance': {'eq': 111}, 'type': {'eq': 'user'}, 'isExternal':
+                     {'eq': True}, 'status': {'eq': 0}, 'userGroups': {'eq': '1234'}, 'isAdmin': {'eq': 'demisto'},
+                     'entity': {'eq': {"id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2", "saas": 11161, "inst": 0}}},
+                     'skip': 5, 'limit': 10}
+request_data_entities = {"service": "111", "instance": "111", "type": "user", "status": 'N/A', "username":
+                         '{"id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2", "saas": 11161, "inst": 0}', "group_id": '1234',
+                         'is_admin': 'demisto', 'is_external': 'External', "skip": "5", "limit": "10"}
 
 
 @pytest.mark.parametrize(
-    "all_params, expected",
+    "request_data_entities, url_suffix, expected",
     [
-        (request_data, expected)
+        (request_data_alerts, '/alerts/', expected_alerts),
+        (request_data_activities, '/activities/', expected_activities),
+        (request_data_files, '/files/', expected_files),
+        (request_data_entities, '/entities/', expected_entities)
     ]
 )
-def test_args_to_json_filter_list_alert(all_params, expected):
-    from MicrosoftCloudAppSecurity import args_to_json_filter_list_alert
-    res = args_to_json_filter_list_alert(all_params)
-    assert res == expected
-
-
-expected = {'filters': {'service': {'eq': 111}, 'instance': {'eq': 111}, 'ip.address': {'eq': '8.8.8.8'},
-                        'ip.category': {'eq': 1}, 'user.username': {'eq': 'dev@demistodev.onmicrosoft.com'},
-                        'activity.takenAction': {'eq': 'block'}, 'source': {'eq': 0}}, 'skip': 5, 'limit': 10}
-request_data = {"service": "111", "instance": "111", "ip": "8.8.8.8", "ip_category": "Corporate", "username":
-                'dev@demistodev.onmicrosoft.com', 'taken_action': 'block', 'source': 'Access_control',
-                "skip": "5", "limit": "10"}
-
-
-@pytest.mark.parametrize(
-    "all_params, expected",
-    [
-        (request_data, expected)
-    ]
-)
-def test_args_to_json_filter_list_activity(all_params, expected):
-    from MicrosoftCloudAppSecurity import args_to_json_filter_list_activity
-    res = args_to_json_filter_list_activity(all_params)
-    assert res == expected
-
-
-expected = {'filters': {'service': {'eq': 111}, 'instance': {'eq': 111}, 'fileType': {'eq': 0},
-                        'quarantined': {'eq': True}, 'owner.entity':
-                        {'eq': {"id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2", "saas": 11161, "inst": 0}},
-                        'sharing': {'eq': 0}, 'extension': {'eq': 'png'}, }, 'skip': 5, 'limit': 10}
-request_data = {"service": "111", "instance": "111", "file_type": "Other", "owner":
-                '{"id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2", "saas": 11161, "inst": 0}', "sharing": 'Private',
-                'extension': 'png', 'quarantined': 'True', "skip": "5", "limit": "10"}
-
-
-@pytest.mark.parametrize(
-    "all_params, expected",
-    [
-        (request_data, expected)
-    ]
-)
-def test_args_to_json_filter_list_files(all_params, expected):
-    from MicrosoftCloudAppSecurity import args_to_json_filter_list_files
-    res = args_to_json_filter_list_files(all_params)
-    assert res == expected
-
-
-expected = {'filters': {'app': {'eq': 111}, 'instance': {'eq': 111}, 'type': {'eq': 'user'},
-                        'isExternal': {'eq': True}, 'status': {'eq': 0}, 'entity':
-                        {'eq': {"id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2", "saas": 11161, "inst": 0}},
-                        'userGroups': {'eq': '1234'}, 'isAdmin': {'eq': 'demisto'}, }, 'skip': 5, 'limit': 10}
-request_data = {"app": "111", "instance": "111", "type": "user", "status": 'N/A', "username":
-                '{"id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2", "saas": 11161, "inst": 0}', "group_id": '1234',
-                'is_admin': 'demisto', 'is_external': 'External', "skip": "5", "limit": "10"}
-
-
-@pytest.mark.parametrize(
-    "all_params, expected",
-    [
-        (request_data, expected)
-    ]
-)
-def test_args_to_json_filter_list_users_accounts(all_params, expected):
-    from MicrosoftCloudAppSecurity import args_to_json_filter_list_users_accounts
-    res = args_to_json_filter_list_users_accounts(all_params)
+def test_args_to_filter(request_data_entities, url_suffix, expected):
+    from MicrosoftCloudAppSecurity import args_to_filter
+    res = args_to_filter(request_data_entities, url_suffix)
     assert res == expected
 
 
@@ -251,9 +213,9 @@ def test_args_to_json_filter_list_users_accounts(all_params, expected):
         ("", '{"filters": {"id": {"eq": ["5f06d71dba4"]}}}', "", {'filters': {'id': {'eq': ['5f06d71dba4']}}})
     ]
 )
-def test_args_to_json_dismiss_and_resolve_alerts(alert_ids, customer_filters, comment, expected):
-    from MicrosoftCloudAppSecurity import args_to_json_dismiss_and_resolve_alerts
-    res = args_to_json_dismiss_and_resolve_alerts(alert_ids, customer_filters, comment)
+def test_args_to_filter_dismiss_alerts_and_resolve_alerts(alert_ids, customer_filters, comment, expected):
+    from MicrosoftCloudAppSecurity import args_to_filter_dismiss_alerts_and_resolve_alerts
+    res = args_to_filter_dismiss_alerts_and_resolve_alerts(alert_ids, customer_filters, comment)
     assert res == expected
 
 
@@ -277,58 +239,58 @@ def test_params_to_filter(all_params, expected):
 client_mocker = Client(base_url='https://demistodev.eu2.portal.cloudappsecurity.com/api/v1')
 
 
-def test_alerts_list_command(requests_mock):
-    from MicrosoftCloudAppSecurity import alerts_list_command
+def test_list_alerts_command(requests_mock):
+    from MicrosoftCloudAppSecurity import list_alerts_command
     requests_mock.get('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/5f06d71dba4289d0602ba5ac',
                       json=ALERT_BY_ID_DATA)
-    res = alerts_list_command(client_mocker, {'alert_id': '5f06d71dba4289d0602ba5ac'})
+    res = list_alerts_command(client_mocker, {'alert_id': '5f06d71dba4289d0602ba5ac'})
     context = res.to_context().get('EntryContext')
     assert context.get('MicrosoftCloudAppSecurity.Alert(val.alert_id == obj.alert_id)') == ALERT_BY_ID_DATA
 
 
-def test_alert_dismiss_bulk_command(requests_mock):
-    from MicrosoftCloudAppSecurity import alert_dismiss_bulk_command
+def test_bulk_dismiss_alert_command(requests_mock):
+    from MicrosoftCloudAppSecurity import bulk_dismiss_alert_command
     requests_mock.post('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/dismiss_bulk/',
                        json=DISMISSED_BY_ID_DATA)
-    res = alert_dismiss_bulk_command(client_mocker, {'alert_ids': '5f06d71dba4289d0602ba5ac'})
+    res = bulk_dismiss_alert_command(client_mocker, {'alert_ids': '5f06d71dba4289d0602ba5ac'})
     context = res.to_context().get('EntryContext')
     assert context.get('MicrosoftCloudAppSecurity.AlertDismiss(val.alert_ids == obj.alert_ids)') == DISMISSED_BY_ID_DATA
 
 
-def test_alert_resolve_bulk_command(requests_mock):
-    from MicrosoftCloudAppSecurity import alert_resolve_bulk_command
+def test_bulk_resolve_alert_command(requests_mock):
+    from MicrosoftCloudAppSecurity import bulk_resolve_alert_command
     requests_mock.post('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/resolve/',
                        json=RESOLVED_BY_ID_DATA)
-    res = alert_resolve_bulk_command(client_mocker, {'alert_ids': '5f06d71dba4289d0602ba5ac'})
+    res = bulk_resolve_alert_command(client_mocker, {'alert_ids': '5f06d71dba4289d0602ba5ac'})
     context = res.to_context().get('EntryContext')
     assert context.get('MicrosoftCloudAppSecurity.AlertResolve(val.alert_ids == obj.alert_ids)') == RESOLVED_BY_ID_DATA
 
 
-def test_activities_list_command(requests_mock):
-    from MicrosoftCloudAppSecurity import activities_list_command
+def test_list_activities_command(requests_mock):
+    from MicrosoftCloudAppSecurity import list_activities_command
     requests_mock.get('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/activities/'
                       '97134000_15600_97ee2049-893e-4c9d-a312-08d82b46faf7',
                       json=ACTIVITIES_BY_ID_DATA)
-    res = activities_list_command(client_mocker, {'activity_id': '97134000_15600_97ee2049-893e-4c9d-a312-08d82b46faf7'})
+    res = list_activities_command(client_mocker, {'activity_id': '97134000_15600_97ee2049-893e-4c9d-a312-08d82b46faf7'})
     context = res.to_context().get('EntryContext')
     assert ACTIVITIES_BY_ID_DATA == context.get('MicrosoftCloudAppSecurity.Activities'
                                                 '(val.activity_id == obj.activity_id)')
 
 
-def test_files_list_command(requests_mock):
-    from MicrosoftCloudAppSecurity import files_list_command
+def test_list_files_command(requests_mock):
+    from MicrosoftCloudAppSecurity import list_files_command
     requests_mock.get('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/files/5f077ebfc3b664209dae1f6b',
                       json=FILES_BY_ID_DATA)
-    res = files_list_command(client_mocker, {'file_id': '5f077ebfc3b664209dae1f6b'})
+    res = list_files_command(client_mocker, {'file_id': '5f077ebfc3b664209dae1f6b'})
     context = res.to_context().get('EntryContext')
     assert context.get('MicrosoftCloudAppSecurity.Files(val.file_id == obj.file_id)') == FILES_BY_ID_DATA
 
 
-def test_users_accounts_list_command(requests_mock):
-    from MicrosoftCloudAppSecurity import users_accounts_list_command
+def test_list_users_accounts_command(requests_mock):
+    from MicrosoftCloudAppSecurity import list_users_accounts_command
     requests_mock.get('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/entities/',
                       json=ENTITIES_BY_USERNAME_DATA)
-    res = users_accounts_list_command(client_mocker,
+    res = list_users_accounts_command(client_mocker,
                                       {'username': '{ "id": "7e14f6a3-185d-49e3-85e8-40a33d90dc90",'
                                                    ' "saas": 11161, "inst": 0 }'})
     context = res.to_context().get('EntryContext')
@@ -522,7 +484,8 @@ ACTIVITIES_BY_ID_DATA = {
         "ClientIP": "82.166.99.178",
         "UserKey": "i:0h.f|membership|100300009abc2878@live.com",
         "Version": 1,
-        "ObjectId": "https://demistodev-my.sharepoint.com/personal/avishai_demistodev_onmicrosoft_com/Documents/iban example.docx",
+        "ObjectId": "https://demistodev-my.sharepoint.com/personal/avishai_demistodev_onmicrosoft_com"
+                    "/Documents/iban example.docx",
         "CorrelationId": "3055679f-0048-2000-2b2a-29e5b1098433",
         "UserId": "avishai@demistodev.onmicrosoft.com",
         "ListItemUniqueId": "141133f2-6710-4f65-9c3b-c840a8d71483",
@@ -602,7 +565,8 @@ FILES_BY_ID_DATA = {
     "driveId": "cac4b654-5fcf-44f0-818e-479cf8ae42ac|ac8c3025-8b97-4758-ac74-c4b7c5c04ea0",
     "scanVersion": 4,
     "parentId": "cac4b654-5fcf-44f0-818e-479cf8ae42ac|8f83a489-34b7-4bb6-a331-260d1291ef6b",
-    "alternateLink": "https://demistodev-my.sharepoint.com/personal/avishai_demistodev_onmicrosoft_com/Documents/20200325_104025.jpg.txt",
+    "alternateLink": "https://demistodev-my.sharepoint.com/personal/avishai_demistodev_onmicrosoft_com"
+                     "/Documents/20200325_104025.jpg.txt",
     "isFolder": False,
     "fileType": [
         4,
@@ -668,7 +632,8 @@ FILES_BY_ID_DATA = {
         },
         "scopeId": "D853886D-DDEE-4A5D-BCB9-B6F072BC1413",
         "isFolder": False,
-        "encodedAbsUrl": "https://demistodev-my.sharepoint.com/personal/avishai_demistodev_onmicrosoft_com/Documents/20200325_104025.jpg.txt"
+        "encodedAbsUrl": "https://demistodev-my.sharepoint.com/personal/avishai_demistodev_onmicrosoft_com/Documents/"
+                         "20200325_104025.jpg.txt"
     },
     "siteCollection": "/personal/avishai_demistodev_onmicrosoft_com",
     "sitePath": "/personal/avishai_demistodev_onmicrosoft_com",
@@ -787,7 +752,8 @@ ENTITIES_BY_USERNAME_DATA = {
                     "_id": "5e6fa9ace2367fc6340f4864",
                     "id": "000000200000000000000000",
                     "name": "External users",
-                    "description": "Either a user who is not a member of any of the managed domains you configured in General settings or a third-party app",
+                    "description": "Either a user who is not a member of any of the managed domains you configured in "
+                                   "General settings or a third-party app",
                     "usersCount": 106
                 }
             ],

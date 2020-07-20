@@ -15,6 +15,7 @@ requests.packages.urllib3.disable_warnings()
 # CONSTANTS
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 MAX_INCIDENTS_TO_FETCH = 200
+DEFAULT_INCIDENT_TO_FETCH = 50
 
 
 class Client(BaseClient):
@@ -182,26 +183,30 @@ def str_to_bool(string):
     return string.lower() == 'true'
 
 
-def build_filter_and_url_to_search_with(url_suffix, customer_filters, args, command_id=''):
-    request_data = {}
-    if command_id:
-        url_suffix += command_id
-    elif customer_filters:
-        request_data = json.loads(customer_filters)
-        return_error(request_data)
-    else:
-        request_data = args_to_json_filter_list_alert(args)
-    return url_suffix, request_data
+def generate_specific_key_by_command_name(url_suffix):
+    service_key, instance_key, username_key = '', '', ''
+    if url_suffix == '/entities/':
+        service_key, instance_key, username_key = 'app', 'instance', 'entity'
+    elif url_suffix == '/files/':
+        service_key, instance_key, username_key = 'service', 'instance', 'owner.entity'
+    elif url_suffix == '/alerts/':
+        service_key, instance_key, username_key = 'entity.service', 'entity.instance', 'entity.entity'
+    elif url_suffix == '/activities/':
+        service_key, instance_key, username_key = 'service', 'instance', 'entity'
+    return service_key, instance_key, username_key
 
 
-def args_to_json_filter_list_activity(all_params):
+def args_to_filter(arguments, url_suffix):
+    service_key, instance_key, username_key = generate_specific_key_by_command_name(url_suffix)
     request_data = {}
     filters = {}
-    for key, value in all_params.items():
+    for key, value in arguments.items():
         if key in ['skip', 'limit']:
             request_data[key] = int(value)
-        if key in ['service', 'instance']:
-            filters[key] = {'eq': int(value)}
+        if key == 'service':
+            filters[service_key] = {'eq': int(value)}
+        if key == 'instance':
+            filters[instance_key] = {'eq': int(value)}
         if key == 'source':
             filters[key] = {'eq': demisto_source_type_to_api_source_type(value)}
         if key == 'ip_category':
@@ -209,40 +214,13 @@ def args_to_json_filter_list_activity(all_params):
         if key == 'ip':
             filters['ip.address'] = {'eq': value}
         if key == 'username':
-            filters['user.username'] = {'eq': value}
+            filters[username_key] = {'eq': json.loads(value)}
         if key == 'taken_action':
             filters['activity.takenAction'] = {'eq': value}
-    request_data['filters'] = filters
-    return request_data
-
-
-def args_to_json_filter_list_alert(all_params):
-    request_data = {}
-    filters = {}
-    for key, value in all_params.items():
-        if key in ['skip', 'limit']:
-            request_data[key] = int(value)
-        if key in ['service', 'instance']:
-            filters[f'entity.{key}'] = {'eq': int(value)}
         if key == 'severity':
             filters[key] = {'eq': demisto_severity_to_api_severity(value)}
         if key == 'resolution_status':
             filters['resolutionStatus'] = {'eq': demisto_resolution_status_to_api_resolution_status(value)}
-        if key == 'username':
-            filters['entity.entity'] = {'eq': json.loads(value)}
-    request_data['filters'] = filters
-    return request_data
-
-
-def args_to_json_filter_list_files(all_params):
-    request_data = {}
-    filters = {}
-
-    for key, value in all_params.items():
-        if key in ['skip', 'limit']:
-            request_data[key] = int(value)
-        if key in ['service', 'instance']:
-            filters[key] = {'eq': int(value)}
         if key == 'file_type':
             filters['fileType'] = {'eq': demisto_file_type_to_api_file_type(value)}
         if key == 'sharing':
@@ -251,24 +229,8 @@ def args_to_json_filter_list_files(all_params):
             filters[key] = {'eq': value}
         if key == 'quarantined':
             filters[key] = {'eq': str_to_bool(value)}
-        if key == 'owner':
-            filters['owner.entity'] = {'eq': json.loads(value)}
-    request_data['filters'] = filters
-    return request_data
-
-
-def args_to_json_filter_list_users_accounts(all_params):
-    request_data = {}
-    filters = {}
-    for key, value in all_params.items():
-        if key in ['skip', 'limit']:
-            request_data[key] = int(value)
-        if key in ['app', 'instance']:
-            filters[key] = {'eq': int(value)}
         if key == 'type':
             filters[key] = {'eq': value}
-        if key == 'username':
-            filters['entity'] = {'eq': json.loads(value)}
         if key == 'group_id':
             filters['userGroups'] = {'eq': value}
         if key == 'is_admin':
@@ -279,6 +241,17 @@ def args_to_json_filter_list_users_accounts(all_params):
             filters[key] = {'eq': demisto_status_options_to_api_status_options(value)}
     request_data['filters'] = filters
     return request_data
+
+
+def build_filter_and_url_to_search_with(url_suffix, customer_filters, arguments, command_id=''):
+    request_data = {}
+    if command_id:
+        url_suffix += command_id
+    elif customer_filters:
+        request_data = json.loads(customer_filters)
+    else:
+        request_data = args_to_filter(arguments, url_suffix)
+    return request_data, url_suffix
 
 
 def args_to_filter_dismiss_alerts_and_resolve_alerts(alert_ids, customer_filters, comments):
@@ -295,28 +268,28 @@ def args_to_filter_dismiss_alerts_and_resolve_alerts(alert_ids, customer_filters
     return request_data
 
 
-def params_to_filter(params):
+def params_to_filter(parameters):
     """
     Turns the parameters to filters.
     Args:
-        params: The parameters that should to be filters.
+        parameters: The parameters that should to be filters.
     Returns:
         The filter we built using the parameters.
     """
     filters = {}
-    if 'severity' in params.keys():
-        filters['severity'] = {'eq': demisto_severity_to_api_severity(params['severity'])}
-    if 'resolution_status' in params.keys():
-        filters['resolutionStatus'] = {'eq': demisto_resolution_status_to_api_resolution_status(
-                                                                                       params['resolution_status'])}
-    if 'service' in params.keys():
-        filters['entity.service'] = {'eq': (int(params['service']))}
-    if 'instance' in params.keys():
-        filters['entity.instance'] = {'eq': (int(params['instance']))}
+    if 'severity' in parameters.keys():
+        filters['severity'] = {'eq': demisto_severity_to_api_severity(parameters['severity'])}
+    if 'resolution_status' in parameters.keys():
+        filters['resolutionStatus'] = {'eq': demisto_resolution_status_to_api_resolution_status(parameters
+                                                                                                ['resolution_status'])}
+    if 'service' in parameters.keys():
+        filters['entity.service'] = {'eq': (int(parameters['service']))}
+    if 'instance' in parameters.keys():
+        filters['entity.instance'] = {'eq': (int(parameters['instance']))}
     return filters
 
 
-def latest_created_to_start_from(last_fetch, first_fetch_time):
+def calculate_fetch_start_time(last_fetch, first_fetch_time):
     if last_fetch is None:
         last_fetch = first_fetch_time
     else:
@@ -340,10 +313,10 @@ def list_alerts_command(client, args):
     url_suffix = '/alerts/'
     alert_id = args.get('alert_id')
     customer_filters = args.get('customer_filters')
-    args = assign_params(skip=args.get('skip'), limit=args.get('limit'), severity=args.get('severity'),
-                         service=args.get('service'), instance=args.get('instance'),
-                         resolution_status=args.get('resolution_status'), username=args.get('username'))
-    url_suffix, request_data = build_filter_and_url_to_search_with(url_suffix, customer_filters, args, alert_id)
+    arguments = assign_params(skip=args.get('skip'), limit=args.get('limit'), severity=args.get('severity'),
+                              service=args.get('service'), instance=args.get('instance'),
+                              resolution_status=args.get('resolution_status'), username=args.get('username'))
+    request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, customer_filters, arguments, alert_id)
     alerts = client.list_alerts(url_suffix, request_data)
     return CommandResults(
         readable_output=alerts,
@@ -385,11 +358,11 @@ def list_activities_command(client, args):
     url_suffix = '/activities/'
     activity_id = args.get('activity_id')
     customer_filters = args.get('customer_filters')
-    args = assign_params(skip=args.get('skip'), limit=args.get('limit'), service=args.get('service'),
-                         instance=args.get('instance'), ip=args.get('ip'), ip_category=args.get('ip_category'),
-                         username=args.get('username'), taken_action=args.get('taken_action'),
-                         source=args.get('source'))
-    url_suffix, request_data = build_filter_and_url_to_search_with(url_suffix, customer_filters, args, activity_id)
+    arguments = assign_params(skip=args.get('skip'), limit=args.get('limit'), service=args.get('service'),
+                              instance=args.get('instance'), ip=args.get('ip'), ip_category=args.get('ip_category'),
+                              username=args.get('username'), taken_action=args.get('taken_action'),
+                              source=args.get('source'))
+    request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, customer_filters, arguments, activity_id)
     activities = client.list_activities(url_suffix, request_data)
     return CommandResults(
         readable_output=activities,
@@ -403,11 +376,11 @@ def list_files_command(client, args):
     url_suffix = '/files/'
     file_id = args.get('file_id')
     customer_filters = args.get('customer_filters')
-    args = assign_params(skip=args.get('skip'), limit=args.get('limit'), service=args.get('service'),
-                         instance=args.get('instance'), file_type=args.get('file_type'), owner=args.get('owner'),
-                         sharing=args.get('sharing'), extension=args.get('extension'),
-                         quarantined=args.get('quarantined'))
-    url_suffix, request_data = build_filter_and_url_to_search_with(url_suffix, customer_filters, args, file_id)
+    arguments = assign_params(skip=args.get('skip'), limit=args.get('limit'), service=args.get('service'),
+                              instance=args.get('instance'), file_type=args.get('file_type'),
+                              username=args.get('username'), sharing=args.get('sharing'),
+                              extension=args.get('extension'), quarantined=args.get('quarantined'))
+    request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, customer_filters, arguments, file_id)
     files = client.list_files(url_suffix, request_data)
     return CommandResults(
         readable_output=files,
@@ -420,11 +393,11 @@ def list_files_command(client, args):
 def list_users_accounts_command(client, args):
     url_suffix = '/entities/'
     customer_filters = args.get('customer_filters')
-    args = assign_params(skip=args.get('skip'), limit=args.get('limit'), service=args.get('service'),
-                         instance=args.get('instance'), type=args.get('type'), username=args.get('username'),
-                         group_id=args.get('group_id'), is_admin=args.get('is_admin'), status=args.get('status'),
-                         is_external=args.get('is_external'))
-    url_suffix, request_data = build_filter_and_url_to_search_with(url_suffix, customer_filters, args)
+    arguments = assign_params(skip=args.get('skip'), limit=args.get('limit'), service=args.get('service'),
+                              instance=args.get('instance'), type=args.get('type'), username=args.get('username'),
+                              group_id=args.get('group_id'), is_admin=args.get('is_admin'), status=args.get('status'),
+                              is_external=args.get('is_external'))
+    request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, customer_filters, arguments)
     users_accounts = client.list_users_accounts(url_suffix, request_data)
     return CommandResults(
         readable_output=users_accounts,
@@ -434,35 +407,26 @@ def list_users_accounts_command(client, args):
     )
 
 
-def validate_max_result(max_results):
+def preparing_max_result(max_results):
     if not max_results:
-        return 50
+        return DEFAULT_INCIDENT_TO_FETCH
     elif max_results > MAX_INCIDENTS_TO_FETCH:
         return MAX_INCIDENTS_TO_FETCH
     return int(max_results)
 
 
-def validate_first_fetch(first_fetch):
+def preparing_first_fetch(first_fetch):
     if not first_fetch:
         first_fetch = '3 days'
     first_fetch_time = arg_to_timestamp(first_fetch)
     return first_fetch_time
 
 
-def fetch_incidents(client, max_results, last_run, first_fetch, filters):
-    max_results = validate_max_result(max_results)
-    first_fetch_time = validate_first_fetch(first_fetch)
-    last_fetch = last_run.get('last_fetch')
-    latest_created_time = latest_created_to_start_from(last_fetch, first_fetch_time)
+def alerts_to_incidents_and_fetch_start_from(alerts, fetch_start_time):
     incidents = []
-    filters["date"] = {"gte": latest_created_time}
-    alerts = client.list_incidents(filters, limit=max_results)
     for alert in alerts['data']:
         incident_created_time = (alert['timestamp'])
-        if last_fetch:
-            if incident_created_time <= last_fetch:
-                continue
-        incident_created_datetime = datetime.fromtimestamp(incident_created_time / 1000.0).isoformat() + 'Z'
+        incident_created_datetime = datetime.fromtimestamp(incident_created_time / 1000.0).isoformat()
         incident_occurred = incident_created_datetime.split('.')
         incident = {
             'name': alert['title'],
@@ -470,9 +434,21 @@ def fetch_incidents(client, max_results, last_run, first_fetch, filters):
             'rawJSON': json.dumps(alert)
         }
         incidents.append(incident)
-        if incident_created_time > latest_created_time:
-            latest_created_time = incident_created_time
-    next_run = {'last_fetch': latest_created_time}
+        if incident_created_time > fetch_start_time:
+            fetch_start_time = incident_created_time
+    return incidents, fetch_start_time
+
+
+def fetch_incidents(client, max_results, last_run, first_fetch, filters):
+    max_results = preparing_max_result(max_results)
+    first_fetch_time = preparing_first_fetch(first_fetch)
+    last_fetch = last_run.get('last_fetch')
+    fetch_start_time = calculate_fetch_start_time(last_fetch, first_fetch_time)
+    filters["date"] = {"gte": fetch_start_time}
+    alerts = client.list_incidents(filters, limit=max_results)
+
+    incidents, fetch_start_time = alerts_to_incidents_and_fetch_start_from(alerts, fetch_start_time)
+    next_run = {'last_fetch': fetch_start_time}
     return next_run, incidents
 
 
