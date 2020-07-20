@@ -43,7 +43,6 @@ class GCPConfig(object):
                        "DemistoLocking",
                        "ImageOCR",
                        "WhereIsTheEgg",
-                       "FeedAutofocus",
                        "AutoFocus",
                        "UrlScan",
                        "Active_Directory_Query",
@@ -63,8 +62,7 @@ class GCPConfig(object):
                        "ExportIndicators",
                        "Malware",
                        "DefaultPlaybook",
-                       "AccessInvestigation",
-                       "CalculateTimeDifference"
+                       "AccessInvestigation"
                        ]  # cores packs list
 
 
