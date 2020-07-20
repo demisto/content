@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: Trend Micro Apex
+  id: Trend Micro Apex_copy
   version: -1
 configuration:
 - display: Server URL (e.g. https://vxsuz5.manage.trendmicro.com)
@@ -26,7 +26,7 @@ configuration:
 description: Trend Micro Apex central automation to manage agents and User-Defined
   Suspicious Objects
 display: Trend Micro Apex (Beta)
-name: Trend Micro Apex
+name: Trend Micro Apex_copy
 script:
   commands:
   - arguments:
@@ -54,23 +54,23 @@ script:
     description: Retrieve a list of User-Defined Suspicious Objects from the Apex
       Central server.
     execution: false
-    name: trendmicro-apex-usdo-list
+    name: trendmicro-apex-udso-list
     outputs:
-    - contextPath: TrendMicroApex.USDO.type
-      description: 'Indicator type of the USDO object, for example: ip, file, file_sha1,
+    - contextPath: TrendMicroApex.UDSO.type
+      description: 'Indicator type of the UDSO object, for example: ip, file, file_sha1,
         url, domain.'
       type: String
-    - contextPath: TrendMicroApex.USDO.content
-      description: Indicator content of the USDO object.
+    - contextPath: TrendMicroApex.UDSO.content
+      description: Indicator content of the UDSO object.
       type: String
-    - contextPath: TrendMicroApex.USDO.notes
-      description: Indicator notes of the USDO object.
+    - contextPath: TrendMicroApex.UDSO.notes
+      description: Indicator notes of the UDSO object.
       type: String
-    - contextPath: TrendMicroApex.USDO.scan_action
-      description: 'Scan action of the USDO object, for example: log, block, quarantine.'
+    - contextPath: TrendMicroApex.UDSO.scan_action
+      description: 'Scan action of the UDSO object, for example: log, block, quarantine.'
       type: String
-    - contextPath: TrendMicroApex.USDO.expiration_utc_date
-      description: Expiration date of the USDO object in UTC.
+    - contextPath: TrendMicroApex.UDSO.expiration_utc_date
+      description: Expiration date of the UDSO object in UTC.
       type: Date
   - arguments:
     - auto: PREDEFINED
@@ -120,10 +120,10 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Add suspicious file, file SHA-1, IP address, domain, or URL objects
-      to the User-Defined Suspicious Object list.
+    description: Add suspicious file SHA-1, IP address, domain, or URL objects to
+      the User-Defined Suspicious Object list.
     execution: false
-    name: trendmicro-apex-usdo-add
+    name: trendmicro-apex-udso-add
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -147,7 +147,7 @@ script:
     description: Delete suspicious file SHA-1, IP address, domain, or URL objects
       from the User-Defined Suspicious Object list.
     execution: false
-    name: trendmicro-apex-usdo-delete
+    name: trendmicro-apex-udso-delete
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -244,14 +244,309 @@ script:
     description: Restore an isolated agent connection to the network.
     execution: false
     name: trendmicro-apex-restore
-  dockerimage: demisto/pyjwt3:1.0.0.4946
+  - arguments:
+    - default: false
+      description: 'The log ID of the first record to query. Note: For Pattern Update
+        Status and Engine Update Status logs, the value of page_token must be "0".'
+      isArray: false
+      name: page_token
+      required: false
+      secret: false
+    - default: false
+      description: The date/time of the first record to query (UNIX timestamp).
+      isArray: false
+      name: since_time
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of log data to retrieve.
+      isArray: false
+      name: log_type
+      predefined:
+      - Data Loss Prevention
+      - Device Control
+      - Behavior Monitoring
+      - Virus/Malware
+      - Spyware/Grayware
+      - Web Violation
+      - Content Violation
+      - Network Content Inspection
+      - C&C Callback
+      - Suspicious File Information
+      - Predictive Machine Learning
+      - Virtual Analyzer Detections
+      - Application Control
+      - Managed Product User Access
+      - Attack Discovery
+      - Pattern Update Status
+      - Engine Update Status
+      - Product Auditing Events
+      - Intrusion Prevention
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves a maximum of 1000 logs of detection types from the server.
+      The `Pattern Update Status` and `Engine Update Status` logs returns all logs
+      (no maximum) from the specified "since_time"
+    execution: false
+    name: trendmicro-apex-list-logs
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Log
+      description: 'The scan action to perform. Can be ''Log'', ''Block'' or ''Quarantine''.
+        Default is ''Log''. '
+      isArray: false
+      name: file_scan_action
+      predefined:
+      - Log
+      - Block
+      - Quarantine
+      required: true
+      secret: false
+    - default: false
+      description: Additional information.
+      isArray: false
+      name: note
+      required: true
+      secret: false
+    - default: false
+      description: The entry id of the file to upload.
+      isArray: false
+      name: entry_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds the uploaded file information to the User-Defined Suspicious
+      Objects list. If the file is already exist, it will be updated with the new
+      arguments.
+    execution: false
+    name: trendmicro-apex-udso-file-add
+  - arguments:
+    - default: false
+      description: The GUID of the managed product server.
+      isArray: false
+      name: entity_id
+      required: false
+      secret: false
+    - default: false
+      description: The IP address of the endpoint.
+      isArray: false
+      name: ip_address
+      required: false
+      secret: false
+    - default: false
+      description: The MAC address of the endpoint.
+      isArray: false
+      name: mac_address
+      required: false
+      secret: false
+    - default: false
+      description: The name of the endpoint.
+      isArray: false
+      name: host_name
+      required: false
+      secret: false
+    - default: false
+      description: The Trend Micro product name.
+      isArray: false
+      name: product
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves a list of managed product servers reporting to Apex Central.
+    execution: false
+    name: trendmicro-apex-managed-servers-list
+  - arguments:
+    - default: false
+      description: The GUID of the Security Agent.
+      isArray: false
+      name: entity_id
+      required: false
+      secret: false
+    - default: false
+      description: The IP address of the endpoint.
+      isArray: false
+      name: ip_address
+      required: false
+      secret: false
+    - default: false
+      description: The MAC address of the endpoint.
+      isArray: false
+      name: mac_address
+      required: false
+      secret: false
+    - default: false
+      description: The name of the endpoint.
+      isArray: false
+      name: host_name
+      required: false
+      secret: false
+    - default: false
+      description: The Trend Micro product name.
+      isArray: false
+      name: product
+      required: false
+      secret: false
+    - default: false
+      description: The GUID of the product server that manages the Security Agent.
+      isArray: false
+      name: managing_server_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves a list of Security Agents.
+    execution: false
+    name: trendmicro-apex-security-agents-list
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: Number of records to retrieve.
+      isArray: false
+      name: limit
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Page where to start retrieving records.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: Filter the agents by endpoint name (partial string match).
+      isArray: false
+      name: filter_by_endpoint_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter the agents by endpoint type. Can be 'Desktop' or 'Server'.
+      isArray: false
+      name: filter_by_endpoint_type
+      predefined:
+      - Desktop
+      - Server
+      required: false
+      secret: false
+    - default: false
+      description: 'Filter the agents by endpoint IP address range represented by
+        comma separated ranges list. Example: "Starting_IP_Address,Ending_IP_Address"'
+      isArray: false
+      name: filter_by_ip_address
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter the agents by operating system
+      isArray: false
+      name: filter_by_operating_system
+      predefined:
+      - Windows XP
+      - Windows Vista
+      - Windows 7
+      - Windows 8
+      - Windows 10
+      - Windows 2000
+      - Windows 2003
+      - Windows 2008
+      - Windows 2012
+      - Windows 2016
+      - iOS
+      - Mac OS
+      - Android
+      - Symbian
+      - Windows Mobile
+      - Windows General
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves a list of Security Agents with the Endpoint Sensor feature
+      enabled.
+    execution: false
+    name: trendmicro-apex-endpoint-sensors-list
+  - arguments:
+    - default: false
+      description: |
+        Terminate the process in a specific agents. For each agent, need to specify the server guid that manages it. for example:
+      isArray: false
+      name: agent_guids
+      required: false
+      secret: false
+    - default: false
+      description: |
+        Terminate the process in all agents in the servers list.
+      isArray: false
+      name: server_guids
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: process_name
+      description: Comma separated SHA1 values of the objects to terminate.
+      isArray: false
+      name: processes_to_terminate
+      predefined:
+      - Name of the object to terminate.
+      required: true
+      secret: false
+    deprecated: false
+    description: Terminates the processes specified on Security Agent endpoints.
+    execution: false
+    name: trendmicro-apex-process-terninate
+  - arguments:
+    - default: false
+      description: A comma separated list of agent guid strings of the endpoints managed
+        by the target server argument.
+      isArray: false
+      name: agent_guid_list
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: server_guid
+      required: true
+      secret: false
+    - default: false
+      description: The name of the investigation.
+      isArray: false
+      name: investigation_name
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a new Live Investigation via file information
+    execution: false
+    name: trendmicro-apex-create-live-investigation-from-file
+  - deprecated: false
+    execution: false
+    name: trendmicro-apex-create-live-investigation-from-registry
+  - deprecated: false
+    execution: false
+    name: trendmicro-apex-create-custom-live-investigation
+  - deprecated: false
+    execution: false
+    name: trendmicro-apex-create-scheduled-investigation
+  - deprecated: false
+    execution: false
+    name: trendmicro-apex-historical-investigation-create
+  - deprecated: false
+    execution: false
+    name: trendmicro-apex-investigation-result-list
+  - deprecated: false
+    execution: false
+    name: trendmicro-apex-investigation-result-list-by-status
+  dockerimage: devtesting/pycef:1.0.0.1595168264
+  feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 tests:
 - No test
 beta: true
