@@ -36,19 +36,19 @@ commonfields:
 enabled: true
 name: GetListRow
 outputs:
-- contextPath: GetListRow.Result.Header
+- contextPath: GetListRow.Header
   description: Header to search in.
   type: String
-- contextPath: GetListRow.Result.Value
+- contextPath: GetListRow.Value
   description: Value to search for.
   type: String
-- contextPath: GetListRow.Result.ListName
+- contextPath: GetListRow.ListName
   description: The name of the list to search in.
   type: String
-- contextPath: GetListRow.Result.ParseAll
+- contextPath: GetListRow.ParseAll
   description: Parse all the list into the context.
   type: String
-- contextPath: GetListRow.Result
+- contextPath: GetListRow.Results
   description: All parse results of the list.
   type: UnKnown
 script: '-'
