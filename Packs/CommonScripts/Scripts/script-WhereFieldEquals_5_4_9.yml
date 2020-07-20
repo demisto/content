@@ -2,6 +2,7 @@ commonfields:
   id: WhereFieldEquals
   version: -1
 name: WhereFieldEquals
+toversion: 5.4.9
 script: |+
   var value = args.value;
   var field = args.field;
