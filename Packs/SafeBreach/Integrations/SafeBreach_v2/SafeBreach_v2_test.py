@@ -86,7 +86,7 @@ def test_rerun_insight(requests_mock, mocker):
 
     response = {
         "data": {
-            "name": "Insight (Demisto) - Test",
+            "name": "Insight (XSOAR) - Test",
             "moveIds": [
                 1,
                 2,
@@ -116,8 +116,8 @@ def test_rerun_insight(requests_mock, mocker):
     assert demisto.results.call_count == 1
     outputs = demisto.results.call_args[0][0]
     context = outputs['EntryContext']
-    assert context['SafeBreach.Insight(val.Id == obj.Id)']['Id'] == int(INSIGHT_ID)
-    assert context['SafeBreach.Insight(val.Id == obj.Id)']['Rerun'][0]['Id'] == response['data']['runId']
+    assert context['SafeBreach.Insight(val.Id == obj.Id)'][0]['Id'] == int(INSIGHT_ID)
+    assert context['SafeBreach.Insight(val.Id == obj.Id)'][0]['Rerun'][0]['Id'] == response['data']['runId']
 
 
 def test_get_indicators(requests_mock, mocker):
