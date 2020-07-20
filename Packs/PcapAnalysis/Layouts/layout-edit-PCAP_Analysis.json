@@ -124,68 +124,6 @@
 				"sortValues": null,
 				"type": "",
 				"version": 0
-			},
-			{
-				"description": "",
-				"fields": [
-					{
-						"fieldId": "incident_dbotprediction",
-						"id": "",
-						"isVisible": true,
-						"modified": "0001-01-01T00:00:00Z",
-						"sortValues": null,
-						"version": 0
-					},
-					{
-						"fieldId": "incident_dbotpredictionprobability",
-						"id": "",
-						"isVisible": true,
-						"modified": "0001-01-01T00:00:00Z",
-						"sortValues": null,
-						"version": 0
-					},
-					{
-						"fieldId": "incident_investigationstage",
-						"id": "",
-						"isVisible": true,
-						"modified": "0001-01-01T00:00:00Z",
-						"sortValues": null,
-						"version": 0
-					},
-					{
-						"fieldId": "incident_niststage",
-						"id": "",
-						"isVisible": true,
-						"modified": "0001-01-01T00:00:00Z",
-						"sortValues": null,
-						"version": 0
-					},
-					{
-						"fieldId": "incident_sansstage",
-						"id": "",
-						"isVisible": true,
-						"modified": "0001-01-01T00:00:00Z",
-						"sortValues": null,
-						"version": 0
-					},
-					{
-						"fieldId": "incident_urlsslverification",
-						"id": "",
-						"isVisible": true,
-						"modified": "0001-01-01T00:00:00Z",
-						"sortValues": null,
-						"version": 0
-					}
-				],
-				"id": "",
-				"isVisible": true,
-				"modified": "0001-01-01T00:00:00Z",
-				"name": "Custom Fields",
-				"query": null,
-				"queryType": "",
-				"readOnly": false,
-				"type": "",
-				"version": 0
 			}
 		],
 		"system": false,
@@ -193,5 +131,6 @@
 		"version": -1
 	},
 	"typeId": "PCAP Analysis",
-	"version": -1
+	"version": -1,
+	"toVersion": "5.9.9"
 }
