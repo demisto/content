@@ -27,15 +27,12 @@ tasks:
       }
     note: false
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "1":
     id: "1"
-    taskid: 56fec5da-be8f-4285-8219-7c2f92b6a372
+    taskid: f4015a04-9597-4dfb-8761-b0d2ccfde53e
     type: regular
     task:
-      id: 56fec5da-be8f-4285-8219-7c2f92b6a372
+      id: f4015a04-9597-4dfb-8761-b0d2ccfde53e
       version: -1
       name: print a url to enrich
       description: Prints text to war room (Markdown supported)
@@ -60,9 +57,6 @@ tasks:
       }
     note: false
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "2":
     id: "2"
     taskid: 42a2f30d-fb69-44a0-801f-54150ade580e
@@ -78,7 +72,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "8"
     scriptarguments:
       all:
         simple: "yes"
@@ -96,9 +90,6 @@ tasks:
       }
     note: false
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "4":
     id: "4"
     taskid: cf819707-ae55-4aa9-8c9f-01a68decb78b
@@ -124,14 +115,11 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 545
+          "y": 720
         }
       }
     note: false
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "5":
     id: "5"
     taskid: 831976f0-615d-44c5-8e28-0e311bb397f2
@@ -166,14 +154,11 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 720
+          "y": 895
         }
       }
     note: false
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "6":
     id: "6"
     taskid: 518c6bc5-4529-4cf5-8985-30235ac57250
@@ -189,15 +174,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 910
+          "x": 480,
+          "y": 1085
         }
       }
     note: false
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "7":
     id: "7"
     taskid: a856396f-7984-4015-8f97-975b5e630c2c
@@ -218,21 +200,46 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 895
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 48259692-2804-478e-874d-4a252711beba
+    type: regular
+    task:
+      id: 48259692-2804-478e-874d-4a252711beba
+      version: -1
+      name: Sleep 30 seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      seconds:
+        simple: "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 940,
+        "height": 1115,
         "width": 810,
         "x": 50,
         "y": 50
