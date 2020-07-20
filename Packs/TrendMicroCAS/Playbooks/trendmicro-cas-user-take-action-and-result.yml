@@ -1,18 +1,19 @@
-id: 165587ad-7fca-460e-89e5-5888d13f7a22
+id: TrendMicro CAS - User take action and the result
 version: -1
-name: trendmicro-cas-user-take-action-and-result
+name: TrendMicro CAS - User take action and the result
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 1575fb03-79e5-451d-8286-7002fcfab7c1
+    taskid: d2fd10f0-e525-4271-89c0-0b278b28ea99
     type: start
     task:
-      id: 1575fb03-79e5-451d-8286-7002fcfab7c1
+      id: d2fd10f0-e525-4271-89c0-0b278b28ea99
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -31,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 16d172e7-f809-4048-83b5-cf6001ef3d42
+    taskid: c0e91676-fa52-4744-81a8-45c2c269939e
     type: regular
     task:
-      id: 16d172e7-f809-4048-83b5-cf6001ef3d42
+      id: c0e91676-fa52-4744-81a8-45c2c269939e
       version: -1
       name: user-take-action
       description: Takes actions on a batch of specified user accounts, including
@@ -67,10 +68,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: b26b4c60-f8eb-4791-86e0-d9e57ce37759
+    taskid: 7d7739d2-3a57-4338-8d3a-31c42457fefe
     type: playbook
     task:
-      id: b26b4c60-f8eb-4791-86e0-d9e57ce37759
+      id: 7d7739d2-3a57-4338-8d3a-31c42457fefe
       version: -1
       name: GenericPolling
       description: |-
@@ -127,10 +128,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 2f185299-03e0-4762-83ec-ae284adc5646
+    taskid: 0f364e8a-6fbc-4ec0-8282-40854654fd12
     type: regular
     task:
-      id: 2f185299-03e0-4762-83ec-ae284adc5646
+      id: 0f364e8a-6fbc-4ec0-8282-40854654fd12
       version: -1
       name: user-take-action-result
       description: Queries the results of actions on user accounts
@@ -178,14 +179,63 @@ inputs:
   value: {}
   required: true
   description: |-
-    ACCOUNT_DISABLE: disables a user account
-    ACCOUNT_ENABLE_MFA: enforces a user to perform a multi-factor authentication before being forced to change their password
-    ACCOUNT_RESET_PASSWORD: requests to reset the password for a user account
-  playbookInputQuery: null
+    Action to take on an email message. Options include:
+    MAIL_DELETE: deletes an email message
+    MAIL_QUARANTINE: quarantines an email message
+  playbookInputQuery:
 - key: account_user_email
   value: {}
   required: true
   description: Account user email to take action on.
-  playbookInputQuery: null
-outputs: []
-sourceplaybookid: b9d4fc2d-760f-46e9-88aa-cf324c0df772
+  playbookInputQuery:
+- key: Interval
+  value:
+    simple: "1"
+  required: false
+  description: ""
+  playbookInputQuery:
+- key: Timeout
+  value:
+    simple: "15"
+  required: false
+  description: ""
+  playbookInputQuery:
+outputs:
+- contextPath: TrendMicroCAS.UserActionResult.account_provider
+  description: Provider of the protected service
+  type: String
+- contextPath: TrendMicroCAS.UserActionResult.account_user_email
+  description: Email address used to create the user account on which an action was
+    taken
+  type: String
+- contextPath: TrendMicroCAS.UserActionResult.action_executed_at
+  description: Date and time when the action was processed
+  type: Date
+- contextPath: TrendMicroCAS.UserActionResult.action_id
+  description: Unique ID of a threat mitigation task
+  type: String
+- contextPath: TrendMicroCAS.UserActionResult.action_requested_at
+  description: Date and time when the API request containing the action was received
+  type: Date
+- contextPath: TrendMicroCAS.UserActionResult.action_type
+  description: Action taken on an email message or user account
+  type: String
+- contextPath: TrendMicroCAS.UserActionResult.batch_id
+  description: Unique ID of a Threat Mitigation API request
+  type: String
+- contextPath: TrendMicroCAS.UserActionResult.error_code
+  description: Result code of the action.
+  type: Number
+- contextPath: TrendMicroCAS.UserActionResult.error_message
+  description: String describing the result code.
+  type: String
+- contextPath: TrendMicroCAS.UserActionResult.service
+  description: Name of the protected service
+  type: String
+- contextPath: TrendMicroCAS.UserActionResult.status
+  description: 'Status of an action taken. Options include: Created: The API request
+    containing the action is received. Executing: The action is being processed. Success:
+    The action is successfully taken. Skipped: The action is skipped for certain reason.
+    For example, the same action was requested twice. Failed: The action fails'
+  type: String
+fromversion: 5.0.0

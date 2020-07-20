@@ -1,18 +1,19 @@
-id: b9d4fc2d-760f-46e9-88aa-cf324c0df772
+id: TrendMicro CAS - Email take action and the result
 version: -1
-name: trendmicro-cas-email-take-action-and-result
+name: TrendMicro CAS - Email take action and the result
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a27c43fe-4a1a-4e80-8af3-58c0b4da26c2
+    taskid: 4bd08b41-759f-496e-84a1-78e26434af1b
     type: start
     task:
-      id: a27c43fe-4a1a-4e80-8af3-58c0b4da26c2
+      id: 4bd08b41-759f-496e-84a1-78e26434af1b
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -31,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 9e703140-4b3c-4b68-80bd-a4740a677d7d
+    taskid: 5c576091-a28c-4ca2-83ca-5a302ae25f0c
     type: regular
     task:
-      id: 9e703140-4b3c-4b68-80bd-a4740a677d7d
+      id: 5c576091-a28c-4ca2-83ca-5a302ae25f0c
       version: -1
       name: email-take-action
       script: TrendMicroCAS|||trendmicro-cas-email-take-action
@@ -70,10 +71,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 7e482f8b-eaa1-4121-8b13-d5a09d43e9f6
+    taskid: 4db7670a-8f95-455e-8ade-d1bfd7bdede0
     type: playbook
     task:
-      id: 7e482f8b-eaa1-4121-8b13-d5a09d43e9f6
+      id: 4db7670a-8f95-455e-8ade-d1bfd7bdede0
       version: -1
       name: GenericPolling
       description: |-
@@ -101,13 +102,13 @@ tasks:
           transformers:
           - operator: LastArrayElement
       Interval:
-        simple: "1"
+        simple: ${inputs.Interval}
       PollingCommandArgName:
         simple: batch_id
       PollingCommandName:
         simple: trendmicro-cas-email-action-result-query
       Timeout:
-        simple: "16"
+        simple: ${inputs.Timeout}
       dt:
         simple: TrendMicroCAS.EmailActionResult(val.status!=='Success'&&val.status!=='Failed'&&val.status!=='Skipped').batch_id
     separatecontext: true
@@ -130,10 +131,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: a3c6c090-db44-469b-8bcc-e854aed5f659
+    taskid: b1daf5ff-329b-4671-8827-06d27f77cdcd
     type: regular
     task:
-      id: a3c6c090-db44-469b-8bcc-e854aed5f659
+      id: b1daf5ff-329b-4671-8827-06d27f77cdcd
       version: -1
       name: trendmicro-cas-email-action-result-query
       description: Queries the results of actions on email messages
@@ -182,28 +183,88 @@ inputs:
   required: true
   description: 'Action to take on an email message. Options include: MAIL_DELETE:
     deletes an email message MAIL_QUARANTINE: quarantines an email message.'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: mailbox
   value: {}
   required: true
   description: Email address of an email message to take action on.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: mail_messge_id
   value: {}
   required: true
   description: Internet message ID of an email message to take action on It can be
     obtained from "trendmicro-cas-email-sweep" command.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: mail_unique_id
   value: {}
   required: true
   description: Unique ID of an email message to take action on It can be obtained
     from "trendmicro-cas-email-sweep" command.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: mail_message_delivery_time
   value: {}
   required: true
   description: Date and time when an email message to take action on is sent It can
     be obtained from "trendmicro-cas-email-sweep" command.
-  playbookInputQuery: null
-outputs: []
+  playbookInputQuery:
+- key: Interval
+  value:
+    simple: "1"
+  required: false
+  description: ""
+  playbookInputQuery:
+- key: Timeout
+  value:
+    simple: "15"
+  required: false
+  description: ""
+  playbookInputQuery:
+outputs:
+- contextPath: TrendMicroCAS.EmailActionResult.account_provider
+  description: Provider of the protected service
+  type: string
+- contextPath: TrendMicroCAS.EmailActionResult.account_user_email
+  description: Email address used to create the user account on which an action
+  type: string
+- contextPath: TrendMicroCAS.EmailActionResult.action_executed_at
+  description: Date and time when the action was processed
+  type: date
+- contextPath: TrendMicroCAS.EmailActionResult.action_id
+  description: Unique ID of a threat mitigation task
+  type: string
+- contextPath: TrendMicroCAS.EmailActionResult.action_requested_at
+  description: Date and time when the API request containing the action was received
+  type: date
+- contextPath: TrendMicroCAS.EmailActionResult.action_type
+  description: Action taken on an email message or user account
+  type: string
+- contextPath: TrendMicroCAS.EmailActionResult.batch_id
+  description: Unique ID of a Threat Mitigation API request
+  type: string
+- contextPath: TrendMicroCAS.EmailActionResult.error_code
+  description: Result code of the action.
+  type: string
+- contextPath: TrendMicroCAS.EmailActionResult.error_message
+  description: String describing the result code.
+  type: number
+- contextPath: TrendMicroCAS.EmailActionResult.status
+  description: |-
+    Status of an action taken. Options include: Created: The API request
+            containing the action is received. Executing: The action is being processed.
+            Success: The action is successfully taken. Skipped: The action is skipped
+            for certain reason. For example, the same action was requested twice. Failed:
+            The action fails
+  type: string
+- contextPath: TrendMicroCAS.EmailActionResult.service
+  description: Name of the protected service
+  type: string
+- contextPath: TrendMicroCAS.EmailActionResult.mail_unique_id
+  description: Unique ID of an email message on which an action was taken.
+  type: string
+- contextPath: TrendMicroCAS.EmailActionResult.mail_message_id
+  description: Internet message ID of an email message on which an action was
+  type: string
+- contextPath: TrendMicroCAS.EmailActionResult.mailbox
+  description: Email address of an email message on which an action was taken.
+  type: string
+fromversion: 5.0.0
