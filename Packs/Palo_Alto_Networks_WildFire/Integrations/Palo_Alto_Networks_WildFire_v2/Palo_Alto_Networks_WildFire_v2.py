@@ -629,7 +629,7 @@ def wildfire_get_url_report(url: str):
         'apikey': TOKEN,
         'url': url
     }
-    entry_context = {'url': url}
+    entry_context = {'URL': url}
     try:
         result = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params, resp_type='json').get(
             'result')
@@ -647,9 +647,9 @@ def wildfire_get_url_report(url: str):
         })
         sys.exit(0)
 
-    reports = json.loads(result.get('report', None))
+    report = json.loads(result.get('report', None))
 
-    if not reports:
+    if not report:
         entry_context['Status'] = 'Pending'
         demisto.results({
             'Type': entryTypes['note'],
@@ -662,7 +662,10 @@ def wildfire_get_url_report(url: str):
             }
         })
         sys.exit(0)
-    return url, reports
+
+    entry_context['Status'] = 'Success'
+    report.add(entry_context)
+    return url, report
 
 
 @logger
