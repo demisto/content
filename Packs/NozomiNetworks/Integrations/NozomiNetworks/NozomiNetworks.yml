@@ -73,8 +73,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: You can add a filter to get exactly the assets you want. For example
-        'where ip match 10.0.1.10', 'where vendor ==  Selta Telematica S.p.a'
+      description: You can add a filter to get exactly the assets you want, to know how to filter assets using the Nozomi query language take a look at the n2os user documentation. For example 'where ip match 10.0.1.10', 'where vendor ==  Selta Telematica S.p.a'
       isArray: false
       name: filter
       required: false
