@@ -11,7 +11,7 @@
 	"itemVersion": "",
 	"keyTypeMap": {},
 	"locked": false,
-	"logicalVersion": 7,
+	"logicalVersion": 10,
 	"mapping": {
 		"ServiceNowTicket": {
 			"dontMapEventToLabels": false,
@@ -37,8 +37,34 @@
 					"simple": "closeNotes"
 				},
 				"closed_at": {
-					"complex": null,
-					"simple": "closed"
+					"complex": {
+						"accessor": "",
+						"filters": [
+							[
+								{
+									"ignoreCase": false,
+									"left": {
+										"isContext": true,
+										"value": {
+											"complex": null,
+											"simple": "closed"
+										}
+									},
+									"operator": "isAfter",
+									"right": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "0001-01-01T00:00:00Z"
+										}
+									}
+								}
+							]
+						],
+						"root": "closed",
+						"transformers": []
+					},
+					"simple": ""
 				},
 				"description": {
 					"complex": null,
@@ -58,15 +84,41 @@
 				},
 				"opened_at": {
 					"complex": null,
-					"simple": "lastOpen"
+					"simple": "servicenowopeneddate"
 				},
 				"priority": {
 					"complex": null,
 					"simple": "servicenowpriority"
 				},
 				"resolved_at": {
-					"complex": null,
-					"simple": "closed"
+					"complex": {
+						"accessor": "",
+						"filters": [
+							[
+								{
+									"ignoreCase": false,
+									"left": {
+										"isContext": true,
+										"value": {
+											"complex": null,
+											"simple": "closed"
+										}
+									},
+									"operator": "isAfter",
+									"right": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "0001-01-01T00:00:00Z"
+										}
+									}
+								}
+							]
+						],
+						"root": "closed",
+						"transformers": []
+					},
+					"simple": ""
 				},
 				"severity": {
 					"complex": {

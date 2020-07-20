@@ -1937,7 +1937,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any]) -> List[Dict[s
         demisto.debug(f'Pull result is {ticket}')
         return [ticket] + entries
 
-    for note in comments_result.get('result'):
+    for note in comments_result.get('result', []):
         entry_time = arg_to_timestamp(
             arg=note.get('sys_created_on'),
             arg_name='sys_created_on',
