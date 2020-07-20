@@ -1,12 +1,13 @@
 args:
 - default: false
-  description: Value to search for (You also need to enter header).
+  description: Value to search for. If the value is specified, a specific header must be supplied as well.
   isArray: false
   name: value
   required: false
   secret: false
 - default: false
-  description: Header to search in (You also need to enter value)/
+  description: Header to filter lines by. If the header is specified,
+               a requested value for that header must be specified as well.
   isArray: false
   name: header
   required: false
@@ -48,7 +49,7 @@ outputs:
   description: Parse all the list into the context.
   type: String
 - contextPath: GetListRow.Result
-  description: All result.
+  description: All parse results of the list.
   type: UnKnown
 script: '-'
 subtype: python3
