@@ -586,9 +586,6 @@
             "timeout": 2400
         },
         {
-            "playbookID": "WordTokenizeTest"
-        },
-        {
             "integrations": "QRadar",
             "playbookID": "test playbook - QRadarCorreltaions",
             "timeout": 600,
@@ -1158,10 +1155,6 @@
             "integrations": "EWS v2",
             "playbookID": "EWS Public Folders Test",
             "instance_names": "ewv2_regular"
-        },
-        {
-            "playbookID": "TestWordFileToIOC",
-            "timeout": 300
         },
         {
             "integrations": "Symantec Endpoint Protection V2",
