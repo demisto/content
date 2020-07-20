@@ -135,17 +135,15 @@ class Client(BaseClient):
 
 def parse_date_to_isoformat(arg: str, arg_name: str):
     """
-      Parses date_string to iso format date strings ('%Y-%m-%dT%H:%M:%SZ'). Input Can be any date that is valid or
-      'number date range unit' for Examples: (2 hours, 4 minutes, 6 month, 1 day, etc.)
+        Parses date_string to iso format date strings ('%Y-%m-%dT%H:%M:%SZ'). Input Can be any date that is valid or
+        'number date range unit' for Examples: (2 hours, 4 minutes, 6 month, 1 day, etc.)
 
-      :type arg: ``str``
-      :param arg: The date to be parsed
+        Args:
+            arg (str): The date to be parsed.
+            arg_name (str): the name of the argument for error output.
 
-      :type arg_name: ``str``
-      :param arg_name: the name of the argument for error output
-
-      :return: The parsed date in isoformat strings ('%Y-%m-%dT%H:%M:%SZ').
-      :rtype: str
+        Returns:
+            str: The parsed date in isoformat strings ('%Y-%m-%dT%H:%M:%SZ').
     """
     if arg is None:
         return None
@@ -178,45 +176,33 @@ def test_module(client: Client) -> str:
 def fetch_incidents(client: Client, max_results: int, last_run, list_services: List[str], first_fetch: str,
                     list_event_type: List[str]) -> Tuple[Dict[str, dict], List[dict]]:
     """This function retrieves new alerts every interval (default is 1 minute).
-
     This function has to implement the logic of making sure that incidents are
     fetched only onces and no incidents are missed. By default it's invoked by
-    XSOAR every minute. It will use last_run to save the timestamp of the last
+    XSOAR every minute. It will use last_run to save the timestamp and ids of the last
     incident it processed.
 
-    :type client: ``Client``
-    :param Client: HelloWorld client to use
+    Args
+        client (Client): client to use
 
-    :type max_results: ``int``
-    :param max_results: Maximum numbers of incidents per fetch
+    max_results (int): Maximum numbers of incidents per fetch
 
-    :type last_run: ``Optional[Dict[str, int]]``
-    :param last_run:
-        A dict with a key containing the latest incident created time we got
+    last_run (Optional[Dict[str, int]]): A dict with a key containing the latest incident created time we got
         from last fetch
 
-    :type first_fetch: ``str``
-    :param first_fetch:
-        If last_run is None (first time we are fetching), it contains
+    first_fetch (str): If last_run is None (first time we are fetching), it contains
         the date in iso format on when to start fetching incidents
 
-    :type list_services: ``str``
-    :param list_services:
-        liost services of the alerts to search for. Options are: 'exchange,sharepoint,onedrive,dropbox,box,googledrive,gmail,teams'
+    ist_services (str): list services of the alerts to search for. Options are: 'exchange,sharepoint,onedrive,dropbox,box,googledrive,gmail,teams'
 
-
-    :type list_event_type: ``str``
-    :param list_event_type:
-        list types of events to search for. Options are: securityrisk, virtualanalyze, ransomware, dlp
+    list_event_type (str): list types of events to search for. Options are: securityrisk, virtualanalyze, ransomware, dlp
 
     :return:
-        A tuple containing two elements:
+        Tuple[Dict[str, int], List[dict]]: A tuple containing two elements:
             next_run (``Dict[str, dict]``): Contains the timestamp that will be
                     used in ``last_run`` on the next fetch.
             incidents (``List[dict]``): List of incidents that will be created in XSOAR
-
-    :rtype: ``Tuple[Dict[str, int], List[dict]]``
     """
+
     next_run = {}
     incidents: List[Dict[str, Any]] = []
     end = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
