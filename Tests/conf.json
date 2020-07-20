@@ -639,7 +639,7 @@
         },
         {
             "integrations": "Generic SQL",
-            "playbookID": "generic-sql",
+            "playbookID": "generic-sql-oracle",
             "instance_names": "Oracle instance",
             "fromversion": "5.0.0"
         },
@@ -3061,7 +3061,8 @@
         "Image OCR": "Does not perform network traffic",
         "Server Message Block (SMB)": "Does not perform http communication",
         "Active Directory Query v2": "Does not perform http communication",
-        "dnstwist": "Does not peform http communication",
+        "dnstwist": "Does not perform http communication",
+        "Generic SQL": "Does not perform http communication",
         "VxStream": "Issue 15544",
         "PagerDuty v2": "Integration requires SSL",
         "TCPIPUtils": "Integration requires SSL",
