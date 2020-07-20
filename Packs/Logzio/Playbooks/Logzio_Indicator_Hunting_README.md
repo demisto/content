@@ -12,11 +12,10 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 * Logzio
-* Logz.io_copy
 
 ### Scripts
-* IsInternalHostName
 * SetAndHandleEmpty
+* IsInternalHostName
 * commentsToContext
 * Set
 * IsIPInRanges
@@ -49,29 +48,11 @@ Multiple fields is available by using comma\-separated  |  | Optional |
 | earliest_time | Earliest time to search.
 Examples:
 \-7d
-\-24h
-
-More examples
-https://docs.splunk.com/Documentation/Splunk/8.0.0/Search/Specifytimemodifiersinyoursearch
-
-
-For more examples view
-https://docs.splunk.com/Documentation/Splunk/8.0.0/SearchReference/SearchTimeModifiers
-
-It is recommended to set a limit for the time frame. | -7d | Optional |
+\-24h | -7d | Optional |
 | latest_time | Latest time to search.
 Examples:
 \-6d
-\-23h
-
-More examples
-https://docs.splunk.com/Documentation/Splunk/8.0.0/Search/Specifytimemodifiersinyoursearch
-
-
-For more examples view
-https://docs.splunk.com/Documentation/Splunk/8.0.0/SearchReference/SearchTimeModifiers
-
-It is recommended to set a limit for the time frame. | -1d | Optional |
+\-23h | -1d | Optional |
 | event_limit | Limit the number of events returned by query. This argument is not mandatory for the command, but is mandatory for the playbook. | 100 | Required |
 | IPFieldsToReturn | The value of the IP fields to return from Logz.io when the specified indicator is found. These values are used as inputs in the Setting IP addresses section. For example, src\_ip,dst\_ip. | sourceIpAddresses | Optional |
 | UserFieldsToReturn | The value of the username fields to return from Logz.io when the specified indicator is found. These values are used as inputs in the Setting user names section. For example: username. | sourceUserName | Optional |
@@ -80,6 +61,7 @@ It is recommended to set a limit for the time frame. | -1d | Optional |
 | SelectFields | Use this field to include additional enrichment data for the Logz.io query. If you have defined one or more investigation fields, the SelectField should not include those fields. If there are no other investigation fields defined, the SelectField must contain some value. Enter a comma\-separated list of field names as they appear in Logz.io. \* is valid value, but not recommended since it creates large output. | source,timestamp | Required |
 | InternalDomainName | The organizations internal domain name. This is provided for the script IsInternalHostName that checks if the detected host names are internal or external if the hosts contain the internal domains suffix. For example demisto.com. If there is more than one domain, use the | character to separate values such as \(demisto.com|test.com\) |  | Optional |
 | InternalHostRegex | This is provided for the script IsInternalHostName that checks if the detected host names are internal or external. if the hosts match the organizations naming convention. For example the host testpc1 will have the following regex \\w\{6\}\\d\{1\} |  | Optional |
+| TypeOfLog |  |  | Optional |
 
 ## Playbook Outputs
 ---
@@ -94,4 +76,4 @@ It is recommended to set a limit for the time frame. | -1d | Optional |
 
 ## Playbook Image
 ---
-![Logz.io Indicator Hunting](https://raw.githubusercontent.com/demisto/content/14cab9aeb5118a43188e919cc91a36438a1c5635/Packs/Logzio/doc_imgs/Logz.io_Indicator_Hunting.png)
+![Logz.io Indicator Hunting ](https://raw.githubusercontent.com/demisto/content/14cab9aeb5118a43188e919cc91a36438a1c5635/Packs/Logzio/doc_imgs/Logz.io_Indicator_Hunting.png)

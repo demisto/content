@@ -1,6 +1,6 @@
-id: Logz.io Indicator Hunting
+id: 'Logz.io Indicator Hunting '
 version: -1
-name: Logz.io Indicator Hunting
+name: 'Logz.io Indicator Hunting '
 description: |-
   This playbook queries Logz.io in order to hunt indicators such as
   File Hashes
@@ -803,10 +803,10 @@ tasks:
     ignoreworker: false
   "64":
     id: "64"
-    taskid: f9170272-68c2-4ac8-8019-c6ac5b36bf91
+    taskid: e3503061-fab6-451e-8e41-80c653d3e2b5
     type: regular
     task:
-      id: f9170272-68c2-4ac8-8019-c6ac5b36bf91
+      id: e3503061-fab6-451e-8e41-80c653d3e2b5
       version: -1
       name: Logz search with custom fields
       description: Runs an Apache Lucene query to fetch logs from your Logz.io Operations
@@ -834,7 +834,7 @@ tasks:
       {
         "position": {
           "x": 1150,
-          "y": 2075
+          "y": 2060
         }
       }
     note: false
@@ -842,17 +842,17 @@ tasks:
     ignoreworker: false
   "69":
     id: "69"
-    taskid: 89374f69-2a20-48ef-892d-c6c95d49f40e
+    taskid: e2b67808-e044-4bc6-8133-84d451d94860
     type: regular
     task:
-      id: 89374f69-2a20-48ef-892d-c6c95d49f40e
+      id: e2b67808-e044-4bc6-8133-84d451d94860
       version: -1
       name: Logzio search without custom fields
       description: Runs an Apache Lucene query on your Logz.io Operations account
-      script: Logz.io_copy|||logzio-search-logs
+      script: '|||logzio-search-logs'
       type: regular
       iscommand: true
-      brand: Logz.io_copy
+      brand: ""
     nexttasks:
       '#none#':
       - "48"
@@ -879,17 +879,17 @@ tasks:
     ignoreworker: false
   "71":
     id: "71"
-    taskid: 485623c1-a4f6-4563-8557-68c4605599a6
+    taskid: b8ff1b3f-b9f7-4155-8c98-475ba1e65120
     type: regular
     task:
-      id: 485623c1-a4f6-4563-8557-68c4605599a6
+      id: b8ff1b3f-b9f7-4155-8c98-475ba1e65120
       version: -1
       name: Logzio search without custom fields
       description: Runs an Apache Lucene query on your Logz.io Operations account
-      script: Logz.io_copy|||logzio-search-logs
+      script: '|||logzio-search-logs'
       type: regular
       iscommand: true
-      brand: Logz.io_copy
+      brand: ""
     nexttasks:
       '#none#':
       - "48"
@@ -917,17 +917,17 @@ tasks:
     ignoreworker: false
   "72":
     id: "72"
-    taskid: 5eed3c4d-a5a5-4a02-8534-81c276be88e0
+    taskid: d1ce4a13-3488-44df-8bf4-8ed8e1b78979
     type: regular
     task:
-      id: 5eed3c4d-a5a5-4a02-8534-81c276be88e0
+      id: d1ce4a13-3488-44df-8bf4-8ed8e1b78979
       version: -1
       name: Logzio search without custom fields
       description: Runs an Apache Lucene query on your Logz.io Operations account
-      script: Logz.io_copy|||logzio-search-logs
+      script: '|||logzio-search-logs'
       type: regular
       iscommand: true
-      brand: Logz.io_copy
+      brand: ""
     nexttasks:
       '#none#':
       - "48"
@@ -995,10 +995,10 @@ tasks:
     ignoreworker: false
   "78":
     id: "78"
-    taskid: 00729591-bbac-4ee4-8da2-86c1861491d8
+    taskid: 9256cde1-f471-4775-8ffd-c718094493b9
     type: regular
     task:
-      id: 00729591-bbac-4ee4-8da2-86c1861491d8
+      id: 9256cde1-f471-4775-8ffd-c718094493b9
       version: -1
       name: Logzio search with custom fields
       description: Runs an Apache Lucene query on your Logz.io Operations account
@@ -1033,10 +1033,10 @@ tasks:
     ignoreworker: false
   "79":
     id: "79"
-    taskid: d0e14fc6-0b8d-4542-878f-dd8b0019d031
+    taskid: ebd42ab1-7247-4ef0-81dd-fe7c6c3e753c
     type: regular
     task:
-      id: d0e14fc6-0b8d-4542-878f-dd8b0019d031
+      id: ebd42ab1-7247-4ef0-81dd-fe7c6c3e753c
       version: -1
       name: Logzio search with custom fields
       description: Runs an Apache Lucene query on your Logz.io Operations account
@@ -1071,10 +1071,10 @@ tasks:
     ignoreworker: false
   "80":
     id: "80"
-    taskid: d76c7924-0da1-4f6d-8895-04098705bd9c
+    taskid: 565003a5-51bb-41f2-82f8-4eb17df147bc
     type: regular
     task:
-      id: d76c7924-0da1-4f6d-8895-04098705bd9c
+      id: 565003a5-51bb-41f2-82f8-4eb17df147bc
       version: -1
       name: Logz search without custom fields
       description: Runs an Apache Lucene query to fetch logs from your Logz.io Operations
@@ -1821,14 +1821,14 @@ tasks:
     ignoreworker: false
   "119":
     id: "119"
-    taskid: 20a8e038-1fb0-4074-8fcf-c56b17e88114
+    taskid: d98f8783-1e78-491d-8a06-3f4b4e358124
     type: regular
     task:
-      id: 20a8e038-1fb0-4074-8fcf-c56b17e88114
+      id: d98f8783-1e78-491d-8a06-3f4b4e358124
       version: -1
       name: Set detected IP addresses as internal
       description: IP addresses that were found to be internal, are written to the
-        Splunk.DetectedInternalIPs context key.
+        Logzio.DetectedInternalIPs context key.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1870,14 +1870,14 @@ tasks:
     ignoreworker: false
   "120":
     id: "120"
-    taskid: b231d9a4-9453-4271-80a2-75a2ffec8ae6
+    taskid: 921a6e8c-0f1d-4b81-861b-7ce0205ef2bf
     type: regular
     task:
-      id: b231d9a4-9453-4271-80a2-75a2ffec8ae6
+      id: 921a6e8c-0f1d-4b81-861b-7ce0205ef2bf
       version: -1
       name: Set detected IP addresses as external
       description: IP addresses that were found to be external, are written to the
-        Splunk.DetectedExternalIPs context key.
+        Logzio.DetectedExternalIPs context key.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1945,10 +1945,10 @@ tasks:
     ignoreworker: false
   "122":
     id: "122"
-    taskid: 0b3c4200-1f18-444d-87a0-214b244413a7
+    taskid: 09b3a9ea-e5f1-4cdc-8afa-0bb4e1f3d3e6
     type: regular
     task:
-      id: 0b3c4200-1f18-444d-87a0-214b244413a7
+      id: 09b3a9ea-e5f1-4cdc-8afa-0bb4e1f3d3e6
       version: -1
       name: Logzio search with custom fields
       description: Runs an Apache Lucene query on your Logz.io Operations account
@@ -2531,13 +2531,13 @@ tasks:
     ignoreworker: false
   "142":
     id: "142"
-    taskid: 8aac82a3-da65-4f3a-8e84-b4ece45e0108
+    taskid: 3fd20b2c-3c80-4cd1-8729-d0b8015184f3
     type: regular
     task:
-      id: 8aac82a3-da65-4f3a-8e84-b4ece45e0108
+      id: 3fd20b2c-3c80-4cd1-8729-d0b8015184f3
       version: -1
       name: Set detected host names as internal
-      description: Host names that were found to be internal, are written to the Splunk.DetectedInternalHosts
+      description: Host names that were found to be internal, are written to the Logzio.DetectedInternalHosts
         context key.
       scriptName: SetAndHandleEmpty
       type: regular
@@ -2580,13 +2580,13 @@ tasks:
     ignoreworker: false
   "143":
     id: "143"
-    taskid: df808c40-2073-4257-809a-844e7cfc88fd
+    taskid: d32b3a01-d5e4-4c23-8454-02f0360b1a9e
     type: regular
     task:
-      id: df808c40-2073-4257-809a-844e7cfc88fd
+      id: d32b3a01-d5e4-4c23-8454-02f0360b1a9e
       version: -1
       name: Set detected host names as external
-      description: Host names that were found to be external, are written to the Splunk.DetectedExternalHosts
+      description: Host names that were found to be external, are written to the Logzio.DetectedExternalHosts
         context key.
       scriptName: SetAndHandleEmpty
       type: regular
@@ -2666,14 +2666,14 @@ tasks:
     ignoreworker: false
   "145":
     id: "145"
-    taskid: ffaa5aec-f964-4332-84b5-7a6abb9af57e
+    taskid: 328d7bc5-7cd5-4307-8a30-c7457a65d772
     type: regular
     task:
-      id: ffaa5aec-f964-4332-84b5-7a6abb9af57e
+      id: 328d7bc5-7cd5-4307-8a30-c7457a65d772
       version: -1
       name: Set detected host names as internal
       description: Hostnames that were detected as internal according to the inputs
-        are set to the Splunk.DetectedInternalHosts key. In case the domain name was
+        are set to the Logzio.DetectedInternalHosts key. In case the domain name was
         not provided in the inputs all host names will be set as internal.
       scriptName: SetAndHandleEmpty
       type: regular
@@ -3460,15 +3460,6 @@ inputs:
     Examples:
     -7d
     -24h
-
-    More examples
-    https://docs.splunk.com/Documentation/Splunk/8.0.0/Search/Specifytimemodifiersinyoursearch
-
-
-    For more examples view
-    https://docs.splunk.com/Documentation/Splunk/8.0.0/SearchReference/SearchTimeModifiers
-
-    It is recommended to set a limit for the time frame.
 - key: latest_time
   value:
     simple: -1d
@@ -3478,15 +3469,6 @@ inputs:
     Examples:
     -6d
     -23h
-
-    More examples
-    https://docs.splunk.com/Documentation/Splunk/8.0.0/Search/Specifytimemodifiersinyoursearch
-
-
-    For more examples view
-    https://docs.splunk.com/Documentation/Splunk/8.0.0/SearchReference/SearchTimeModifiers
-
-    It is recommended to set a limit for the time frame.
 - key: event_limit
   value:
     simple: "100"
@@ -3547,6 +3529,10 @@ inputs:
     detected host names are internal or external. if the hosts match the organizations
     naming convention. For example the host testpc1 will have the following regex
     \w{6}\d{1}
+- key: TypeOfLog
+  value: {}
+  required: false
+  description: ""
 outputs:
 - contextPath: Logzio.DetectedUsers
   description: Users detected based on the username field in your search.
