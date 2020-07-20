@@ -70,26 +70,36 @@ Every customer environment might have some of the insights depending on the simu
 
 ## Playbooks
 
+#### SafeBreach - Process Non-Behavioral Insights Feed  
+- This playbook automatically remediates all non-behavioral indicators generated from SafeBreach Insights. To validate the remediation, it reruns the related insights and classifies the indicators as Remediated or Not Remediated.
+A special feed based triggered job is required to initiate this playbook for every new SafeBreach generated indicator.
+
+#### SafeBreach - Process Behavioral Insights Feed (Premium)
+- This playbook processes all SafeBreach behavioral indicators. It creates an incident for each SafeBreach Insight, enriched with all the related indicators and additional SafeBreach contextual information.
+A special feed based triggered job is required to initiate this playbook for every new SafeBreach generated indicator.
+
 #### SafeBreach - Rerun Insights 
-- This playbook reruns a SafeBreach insight based on id and waits until
-it completes. Returns the updated insight object after post rerun.
+- This is a sub-playbook reruns a list of SafeBreach insights based on Insight Id and waits until they complete. Used in main SafeBreach playbooks, such as "SafeBreach - Handle Insight Incident" and "SafeBreach - Process Non-Behavioral Insights Feed".
+
+#### SafeBreach - Rerun Single Insight 
+- This playbook uses the following sub-playbooks, integrations, and scripts.
 
 #### SafeBreach - Compare and Validate Insight Indicators
-- This playbook compares Insight indicators before and after being processed.
-  It receives an Insight and it's indicators before validation, fetches updated indicators
-  after rerunning the Insight, and then compares the results to validate mitigation.
-  Indicators are classified as Remediated or Not Remediated based on their validated
-  status and the appropriate field (SafeBreach Remediation Status) is updated.
+- This playbook compares SafeBreach Insight indicators before and after the processing. It receives an insight and it's indicators before validation, fetches updated indicators after rerunning the insight, and then compares the results to validate mitigation. Indicators are classified as Remediated or Not Remediated based on their validated status and the appropriate field (SafeBreach Remediation Status) is updated.
   
-#### SafeBreach - Process Non-Behavioral Insights Feed  
-- This playbook automatically remediates all non-behavioral indicators
-  generated from SafeBreach Insights. To validate the remediation, it reruns the related
-  insights and classifies the indicators as Remediated or Not Remediated.
-  
-#### SafeBreach - Rerun Single Insight 
-- This is an auxiliary sub-playbook that reruns a single insight using
-  a specified Insight Id as an input. It is used to loop over insights as part of
-  the main rerun playbook - "SafeBreach Rerun Insights".
+#### SafeBreach - SafeBreach Create Incidents per Insight and Associate Indicators
+- This is a sub-playbook that creates incidents per SafeBreach insight, enriched with all the related indicators and additional SafeBreach insight contextual information. Used in main SafeBreach playbooks, such as "SafeBreach - Process Behavioral Insights Feed" and "SafeBreach - Process Non-Behavioral Insights Feed".  
+
+#### SafeBreach - Handle Insight Incident (Premium)
+- This playbook is triggered automatically for each SafeBreach Insight incident:
+<br>(1) Adding insight information (including suggested remediation actions);
+<br> (2) Assigning it to an analyst to remediate and either “ignore” or “validate.” Validated incidents are rerun with the related SafeBreach Insight and the results are compared to the previous indicator results. The incident is closed once all the indicators are resolved or the analyst “ignores” the incident. Unresolved indicators wait for handling by the analyst.
+
+
+
+## Dashboard (Premium) 
+SafeBreach Insights dashboard summarizes the current status of actionable insights and related indicators.
+ <BR>[<img src="https://go.safebreach.com/rs/535-IXZ-934/images/xsoar_dashboard.png">](http://google.com.au/)
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.

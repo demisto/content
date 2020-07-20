@@ -1,19 +1,21 @@
 This playbook automatically remediates all non-behavioral indicators generated from SafeBreach Insights. To validate the remediation, it reruns the related insights and classifies the indicators as Remediated or Not Remediated.
+A special feed based triggered job is required to initiate this playbook for every new SafeBreach generated indicator.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+* SafeBreach - Compare and Validate Insight Indicators
+* SafeBreach - Rerun Insights
 * Block Indicators - Generic v2
-* SafeBreach Compare and Tag Insight Indicators
-* SafeBreach - Rerun Insight
+* SafeBreach - Create Incidents per Insight and Associate Indicators
 
 ### Integrations
 * SafeBreach_v2
 
 ### Scripts
-* Set
 * Sleep
+* Set
 
 ### Commands
 * safebreach-get-insights

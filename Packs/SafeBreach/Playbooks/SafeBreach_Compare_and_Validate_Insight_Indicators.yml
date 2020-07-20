@@ -1,11 +1,12 @@
 id: SafeBreach - Compare and Validate Insight Indicators
 version: -1
 name: SafeBreach - Compare and Validate Insight Indicators
-description: This playbook compares Insight indicators before and after being processed.
-  It receives an Insight and it's indicators before validation, fetches updated indicators
-  after rerunning the Insight, and then compares the results to validate mitigation.
-  Indicators are classified as Remediated or Not Remediated based on their validated
-  status and the appropriate field (SafeBreach Remediation Status) is updated.
+description: This playbook compares SafeBreach Insight indicators before and after
+  the processing. It receives an insight and it's indicators before validation, fetches
+  updated indicators after rerunning the insight, and then compares the results to
+  validate mitigation. Indicators are classified as Remediated or Not Remediated based
+  on their validated status and the appropriate field (SafeBreach Remediation Status)
+  is updated.
 starttaskid: "0"
 tasks:
   "0":
@@ -62,14 +63,14 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 008fe8bb-93c2-4d8a-803b-76b01b27be7c
+    taskid: 4c83f511-be99-4817-85c4-26e71e9992d9
     type: regular
     task:
-      id: 008fe8bb-93c2-4d8a-803b-76b01b27be7c
+      id: 4c83f511-be99-4817-85c4-26e71e9992d9
       version: -1
-      name: Set Indicators After Validation
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+      name: Set indicators after validation
+      description: Sets "IndicatorsAfterValidation" with indicator values from insight
+        context "SafeBreach.Insight.RawRemediationData".
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -102,20 +103,21 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: f4f0abbb-2b90-4c85-8758-01e154a6cf79
+    taskid: e4f80bc6-3574-4a50-80e2-d9ee781b6430
     type: regular
     task:
-      id: f4f0abbb-2b90-4c85-8758-01e154a6cf79
+      id: e4f80bc6-3574-4a50-80e2-d9ee781b6430
       version: -1
-      name: Filter for the Remediation Indicators
-      description: Sets a value into the context with the given context key
-      scriptName: Set
+      name: Set the remediation indicator values
+      description: Extract values from indicators and set to "IndicatorsAfterValidationFiltered".
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "14"
+      - "15"
     scriptarguments:
       append: {}
       key:
@@ -141,13 +143,13 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: e713d385-5f75-4871-8e47-f34d9c75cd7e
+    taskid: 4abdae0b-141e-4b4b-80bd-9202af12ea34
     type: regular
     task:
-      id: e713d385-5f75-4871-8e47-f34d9c75cd7e
+      id: 4abdae0b-141e-4b4b-80bd-9202af12ea34
       version: -1
-      name: Extract the Remediated Indicators
-      description: Sets a value into the context with the given context key
+      name: Extract the remediated indicators
+      description: Extracts the remediated list of indicators and sets "RemediatedIndicators".
       scriptName: Set
       type: regular
       iscommand: false
@@ -189,13 +191,13 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 82588205-5aee-4ab8-8ebc-21cdb735ac61
+    taskid: f16c4b9e-0a79-4115-8af2-b7b7336dcccc
     type: regular
     task:
-      id: 82588205-5aee-4ab8-8ebc-21cdb735ac61
+      id: f16c4b9e-0a79-4115-8af2-b7b7336dcccc
       version: -1
-      name: Extract the Not Remediated Indicators
-      description: Sets a value into the context with the given context key
+      name: Extract the not remediated indicators
+      description: Extracts the not-remediated list of indicators and sets "NotRemediatedIndicators".
       scriptName: Set
       type: regular
       iscommand: false
@@ -237,13 +239,14 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 1c0d89fc-e7cd-4e6e-84f2-681b7a61e68f
+    taskid: 0300ef33-eb9f-418e-8cd0-72ada99f74f4
     type: regular
     task:
-      id: 1c0d89fc-e7cd-4e6e-84f2-681b7a61e68f
+      id: 0300ef33-eb9f-418e-8cd0-72ada99f74f4
       version: -1
-      name: Set Indicator Remediation Status as Remediated
-      description: commands.local.cmd.set.indicator
+      name: Set indicators remediation status as Remediated
+      description: Update status of XSOAR indicators with SafeBreach Remediation Status
+        "Remediated".
       script: Builtin|||setIndicator
       type: regular
       iscommand: true
@@ -377,6 +380,7 @@ tasks:
       value:
         complex:
           root: RemediatedIndicators
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -392,13 +396,14 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 43dc6ce5-7ed1-4198-8cb5-1ed903b3e0f6
+    taskid: 06a22d2a-16a4-4622-87e4-76fd9e1a5aad
     type: regular
     task:
-      id: 43dc6ce5-7ed1-4198-8cb5-1ed903b3e0f6
+      id: 06a22d2a-16a4-4622-87e4-76fd9e1a5aad
       version: -1
-      name: Set Indicator Remediation Status as Not Remediated
-      description: commands.local.cmd.set.indicator
+      name: Set indicators remediation status as Not Remediated
+      description: Update status of XSOAR indicators with SafeBreach Remediation Status
+        "Not Remediated".
       script: Builtin|||setIndicator
       type: regular
       iscommand: true
@@ -532,6 +537,7 @@ tasks:
       value:
         complex:
           root: NotRemediatedIndicators
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -547,12 +553,12 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 66f9c4d1-33af-4f19-8680-81b91ec88844
+    taskid: b79c6b09-0af6-42cd-8cf2-448c041607af
     type: regular
     task:
-      id: 66f9c4d1-33af-4f19-8680-81b91ec88844
+      id: b79c6b09-0af6-42cd-8cf2-448c041607af
       version: -1
-      name: Get Insight Remediation Data
+      name: Get insight remediation data
       description: Gets remediation data for a specific SafeBreach Insight.
       script: '|||safebreach-get-remediation-data'
       type: regular
@@ -581,15 +587,14 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 993d9910-6e55-4e9b-8fab-147b9db63678
+    taskid: 71672b76-abf9-4c4b-8982-c315fff6a2fa
     type: regular
     task:
-      id: 993d9910-6e55-4e9b-8fab-147b9db63678
+      id: 71672b76-abf9-4c4b-8982-c315fff6a2fa
       version: -1
-      name: 'Map Input Insight to Context '
-      description: 'Enables changing context in two ways. The first is to capitalize
-        the first letter of each key in following level of the context key entered.
-        The second is to change context keys to new values. '
+      name: 'Map input insight to context '
+      description: Maps the SafeBreach Insight received as an input to "SafeBreach.Insight"
+        context.
       scriptName: ChangeContext
       type: regular
       iscommand: false
@@ -621,13 +626,13 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: f734e7ef-7033-4032-8faa-a4c2e46e6707
+    taskid: bc1a107d-3bec-45db-8862-e49745b16f34
     type: regular
     task:
-      id: f734e7ef-7033-4032-8faa-a4c2e46e6707
+      id: bc1a107d-3bec-45db-8862-e49745b16f34
       version: -1
-      name: Filter for the Before Indicators
-      description: Sets a value into the context with the given context key
+      name: Filter for indicators before the validation
+      description: Maps the indicators passed as an input parameter to "IndicatorsBeforeValidationFiltered".
       scriptName: Set
       type: regular
       iscommand: false
@@ -659,19 +664,19 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 9cc51531-beb9-40b9-81c3-2102edb95768
+    taskid: d748db03-563b-4213-8b13-a089963b3ae2
     type: condition
     task:
-      id: 9cc51531-beb9-40b9-81c3-2102edb95768
+      id: d748db03-563b-4213-8b13-a089963b3ae2
       version: -1
-      name: Were Indicators Remediated?
-      description: Were Indicators Remediated?
+      name: Is there a remediated indicator?
+      description: Checks whether there are indicators that were remediated.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      Not Remediated Indicators Exist:
-      - "8"
+      '#default#':
+      - "4"
       Remediated Indicators Exist:
       - "7"
     separatecontext: false
@@ -694,6 +699,37 @@ tasks:
                         simple: IndicatorsAfterValidationFiltered
                       iscontext: true
             iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 017a55d0-28e1-48d8-8dac-4725c638c40a
+    type: condition
+    task:
+      id: 017a55d0-28e1-48d8-8dac-4725c638c40a
+      version: -1
+      name: Is there a not remediated indicator?
+      description: Checks whether there are indicators that need to be still remediated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      Not Remediated Indicators Exist:
+      - "8"
+    separatecontext: false
+    conditions:
     - label: Not Remediated Indicators Exist
       condition:
       - - operator: isExists
@@ -715,8 +751,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 590
+          "x": 710,
+          "y": 610
         }
       }
     note: false
@@ -740,12 +776,12 @@ inputs:
 - key: IndicatorsBefore
   value: {}
   required: true
-  description: Indicators extracted before remediation
+  description: Indicator values extracted from a SafeBreach Insight before remediation.
   playbookInputQuery:
 - key: Insight
   value: {}
   required: true
-  description: Insight to verify remediation for
+  description: SafeBreach insight object to verify the remediation for.
   playbookInputQuery:
 outputs:
 - contextPath: RemediatedIndicators

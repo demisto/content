@@ -1,4 +1,4 @@
-This is an auxiliary sub-playbook that reruns a single insight using a specified Insight Id as an input. It is used to loop over insights as part of the main rerun playbook - "SafeBreach Rerun Insights".
+This is a sub-playbook that reruns a single insight using a specified Insight Id as input. It is used to run insights one by one iteratively as part of the main rerun playbook - "SafeBreach Rerun Insights".
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -10,7 +10,8 @@ This playbook does not use any sub-playbooks.
 * SafeBreach v2
 
 ### Scripts
-This playbook does not use any scripts.
+* Print
+* Sleep
 
 ### Commands
 * safebreach-rerun-insight
@@ -27,16 +28,16 @@ This playbook does not use any scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| SafeBreach.Insight.Id | Insight unique ID. | unknown |
-| SafeBreach.Insight.Rerun.Name | Insight rerun test name. | unknown |
-| SafeBreach.Insight.Rerun.Id | ID of the rerun insight test. | unknown |
-| SafeBreach.Insight.Rerun.AttacksCount | Count of the attacks executed in the insight rerun test. | unknown |
-| SafeBreach.Test.Id | ID of the test. | unknown |
-| SafeBreach.Test.Name | Name of the test. | unknown |
-| SafeBreach.Test.AttacksCount | The number of attacks executed in the insight rerun test. | unknown |
-| SafeBreach.Test.Status | Test run status. For insight rerun, starts from PENDING. | unknown |
-| SafeBreach.Test.ScheduledTime | Time when the test was triggered. | unknown |
+| SafeBreach.Insight.Id | Insight unique ID. | Number |
+| SafeBreach.Insight.Rerun.Name | Insight rerun test name. | String |
+| SafeBreach.Insight.Rerun.Id | ID of the rerun insight test. | String |
+| SafeBreach.Insight.Rerun.AttacksCount | Count of the attacks executed in the insight rerun test. | Number |
+| SafeBreach.Test.Id | ID of the test. | String |
+| SafeBreach.Test.Name | Name of the test. | String |
+| SafeBreach.Test.AttacksCount | The number of attacks executed in the insight rerun test. | Number |
+| SafeBreach.Test.Status | Test run status. For insight rerun, starts from PENDING. | String |
+| SafeBreach.Test.ScheduledTime | Time when the test was triggered. | String |
 
 ## Playbook Image
 ---
-![SafeBreach Rerun Single Insight](Insert the link to your image here)
+![SafeBreach - Rerun Single Insight](Insert the link to your image here)
