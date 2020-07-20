@@ -461,4 +461,4 @@ script:
   runonce: false
 fromversion: 3.0.1
 tests:
-  - AlienVaultOTX Test
+  - No tests

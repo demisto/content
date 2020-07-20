@@ -1,0 +1,541 @@
+{
+    "id": "MITRE ATT&CK",
+    "group": "indicator",
+    "name": "MITRE ATT&CK Indicator",
+    "description": "",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "indicatorsDetails": {
+        "tabs": [
+            {
+                "id": "default-main",
+                "name": "Info",
+                "sections": [
+                    {
+                        "h": 6,
+                        "i": "default-main-comments",
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "type": "comments",
+                        "w": 1,
+                        "x": 2,
+                        "y": 3
+                    },
+                    {
+                        "h": 2,
+                        "hideName": true,
+                        "i": "default-main-relatedIncidents",
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 2,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "indicatortype",
+                                "height": 22,
+                                "id": "indicator-type",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "modified",
+                                "height": 22,
+                                "id": "indicator-modified",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "expiration",
+                                "height": 22,
+                                "id": "indicator-expiration",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "timestamp",
+                                "height": 22,
+                                "id": "indicator-timestamp",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "moved": false,
+                        "name": "Basic Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "i": "default-main-indicatorTimeline",
+                        "moved": false,
+                        "name": "Timeline",
+                        "static": false,
+                        "type": "indicatorTimeline",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "h": 3,
+                        "i": "default-main-sources",
+                        "moved": false,
+                        "name": "Sources Data",
+                        "static": false,
+                        "type": "sources",
+                        "w": 2,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039b",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "firstseen",
+                                "height": 22,
+                                "id": "indicator-first-seen",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "lastseen",
+                                "height": 22,
+                                "id": "indicator-last-seen",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "default-main-3367e550-6dd5-11ea-baf6-df533b8aa556",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "mitredescriptionmarkdown",
+                                "height": 53,
+                                "id": "41c6ca30-6dd5-11ea-baf6-df533b8aa556",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "mitredescription",
+                                "height": 22,
+                                "id": "710c7c20-74f3-11ea-b1da-d1bd2f4ff78f",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Description",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "ypjwzououe",
+                "name": "Metadata",
+                "sections": [
+                    {
+                        "displayType": "CARD",
+                        "h": 5,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "ypjwzououe-4e143430-6dd5-11ea-baf6-df533b8aa556",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "mitredescriptionmarkdown",
+                                "height": 53,
+                                "id": "7edfcfc0-6dd5-11ea-baf6-df533b8aa556",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "mitredescription",
+                                "height": 106,
+                                "id": "7557ba60-74f3-11ea-b1da-d1bd2f4ff78f",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Description",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "ypjwzououe-4f261960-6dd5-11ea-baf6-df533b8aa556",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "mitreplatforms",
+                                "height": 53,
+                                "id": "abb2b9e0-6dd5-11ea-baf6-df533b8aa556",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Platforms",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 7
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "ypjwzououe-5007c6d0-6dd5-11ea-baf6-df533b8aa556",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "mitrekillchainphases",
+                                "height": 106,
+                                "id": "af2ec140-6dd5-11ea-baf6-df533b8aa556",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Kill Chain Phases",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 4,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "ypjwzououe-50d4dad0-6dd5-11ea-baf6-df533b8aa556",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "mitreurls",
+                                "height": 53,
+                                "id": "bc538430-6df0-11ea-849f-73e5353d2f37",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "mitreexternalreferences",
+                                "height": 106,
+                                "id": "7d49b980-74f3-11ea-b1da-d1bd2f4ff78f",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "MITRE References",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 5
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "ypjwzououe-51d18a50-6dd5-11ea-baf6-df533b8aa556",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "mitrealiases",
+                                "height": 22,
+                                "id": "d6d3ba00-6df0-11ea-849f-73e5353d2f37",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Aliases",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "ypjwzououe-46872580-6de2-11ea-9c1b-ff36e343d489",
+                        "items": [
+                            {
+                                "endCol": 1,
+                                "fieldId": "mitrename",
+                                "height": 53,
+                                "id": "585a4990-6de2-11ea-9c1b-ff36e343d489",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "mitreid",
+                                "height": 53,
+                                "id": "5bcd7750-6de2-11ea-9c1b-ff36e343d489",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "associations",
+                                "height": 53,
+                                "id": "fff728f0-74fc-11ea-8472-111cc5dfbb20",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "mitretype",
+                                "height": 53,
+                                "id": "6b55e810-6de2-11ea-9c1b-ff36e343d489",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "subfeed",
+                                "height": 53,
+                                "id": "34290a10-6de3-11ea-9c1b-ff36e343d489",
+                                "index": 0,
+                                "listId": "ypjwzououe-46872580-6de2-11ea-9c1b-ff36e343d489",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "mitretype",
+                                "height": 53,
+                                "id": "ac850800-8f95-11ea-aaae-09201c5db9bc",
+                                "index": 4,
+                                "listId": "ypjwzououe-46872580-6de2-11ea-9c1b-ff36e343d489",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 6,
+                        "hideName": false,
+                        "i": "ypjwzououe-184870d0-74fd-11ea-8472-111cc5dfbb20",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "mitreextendedaliases",
+                                "height": 53,
+                                "id": "40e77540-74fd-11ea-8472-111cc5dfbb20",
+                                "index": 0,
+                                "listId": "ypjwzououe-184870d0-74fd-11ea-8472-111cc5dfbb20",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "mitreimpacttype",
+                                "height": 53,
+                                "id": "327e0910-74fd-11ea-8472-111cc5dfbb20",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "mitredefensebypassed",
+                                "height": 53,
+                                "id": "69bb1e40-74fd-11ea-8472-111cc5dfbb20",
+                                "index": 2,
+                                "listId": "ypjwzououe-184870d0-74fd-11ea-8472-111cc5dfbb20",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "mitrepermissionsrequired",
+                                "height": 53,
+                                "id": "35340150-74fd-11ea-8472-111cc5dfbb20",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "mitresystemrequirements",
+                                "height": 53,
+                                "id": "36af0890-74fd-11ea-8472-111cc5dfbb20",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "mitrecontributors",
+                                "height": 53,
+                                "id": "5033c760-74fd-11ea-8472-111cc5dfbb20",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "mitredatasources",
+                                "height": 53,
+                                "id": "46ef7eb0-74fd-11ea-8472-111cc5dfbb20",
+                                "index": 6,
+                                "listId": "ypjwzououe-46872580-6de2-11ea-9c1b-ff36e343d489",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "mitreversion",
+                                "height": 53,
+                                "id": "385a4790-74fd-11ea-8472-111cc5dfbb20",
+                                "index": 7,
+                                "listId": "ypjwzououe-184870d0-74fd-11ea-8472-111cc5dfbb20",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Extended Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "ypjwzououe-80cf0420-74fd-11ea-8472-111cc5dfbb20",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "mitredetection",
+                                "height": 106,
+                                "id": "788bb0b0-74fd-11ea-8472-111cc5dfbb20",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "MITRE Detection",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 5
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    }
+}
