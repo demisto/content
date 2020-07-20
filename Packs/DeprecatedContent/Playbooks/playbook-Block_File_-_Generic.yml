@@ -2,7 +2,7 @@ id: block_file_-_generic
 version: -1
 name: Block File - Generic
 fromversion: 4.0.0
-description: A generic playbook for blocking files from running on endpoints. This
+description: DEPRECATED. Use "Block File - Generic v2" playbook instead. A generic playbook for blocking files from running on endpoints. This
   playbook currently supports Carbon Black Enterprise Response.
 starttaskid: "0"
 tasks:
