@@ -1,5 +1,5 @@
-# IronDefense Integration for Xsoar
-The IronDefense Integration allows users to interact with IronDefense alerts within Xsoar. The 
+# IronDefense Integration for Cortex XSOAR
+The IronDefense Integration allows users to interact with IronDefense alerts within Cortex XSOAR. The 
 Integration provides the ability to rate alerts, update alert statuses, add comments to alerts, to report 
 observed bad activity, get alerts, get events, and get IronDome information.
 ## Setup
@@ -9,7 +9,7 @@ The following table describes all the parameters required to setup the Integrati
 |------------------------------------------------|---------------------------------------------------------------------------------------------------|--------------------------|
 | IronAPI Host/IP                                | The hostname or IP where IronAPI is hosted. This is provided by your IronNet Representative.      | example.ironapi.hostname |
 | IronAPI Port                                   | The port number IronAPI communicates on. This is provided by your IronNet Representative.         | 1234                     |
-| Username                                       | An IronVue user belonging to the "IronAPI Access" user group.                                     | xsoar_user@company.net |
+| Username                                       | An IronVue user belonging to the "IronAPI Access" user group.                                     | email@company.com |
 | Password                                       | The password for the IronVue user.                                                                | my_secret_password       |
 | Request Timeout (Sec)                          | The number of seconds before requests to IronAPI times out. The default value is 60 seconds.      | 60                       |
 | Dome Notification Types to Exclude             | The list of Dome Notification types to exclude. Possible values are Participant Added, Comment Added, Community Severity Changed, Community Severity Mismatched, Enterprise Severity Mismatched, Severity Suspicious, Severity Malicious, Joined High Risk, and High Cognitive System Score. | Participant Added, Comment Added |

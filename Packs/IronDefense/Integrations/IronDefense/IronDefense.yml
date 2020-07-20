@@ -21,8 +21,7 @@ configuration:
   name: requestTimeout
   required: false
   type: 0
-- defaultvalue: 'true'
-  display: Fetch incidents
+- display: Fetch incidents
   name: isFetch
   required: false
   type: 8
@@ -50,7 +49,8 @@ configuration:
   - Other
   required: false
   type: 16
-- display: Alert Notification SubCategories to Exclude, See https://ironnet.atlassian.net/wiki/x/hADvGg for values (Enter in comma separated list format)
+- display: Alert Notification SubCategories to Exclude, See https://ironnet.atlassian.net/wiki/x/hADvGg
+    for values (Enter in comma separated list format)
   name: alertSubCategories
   required: false
   type: 12
@@ -97,7 +97,8 @@ configuration:
   - Other
   required: false
   type: 16
-- display: Event Notification SubCategories to Exclude, See https://ironnet.atlassian.net/wiki/x/hADvGg for values (Enter in comma separated list format)
+- display: Event Notification SubCategories to Exclude, See https://ironnet.atlassian.net/wiki/x/hADvGg
+    for values (Enter in comma separated list format)
   name: eventSubCategories
   required: false
   type: 12
@@ -146,10 +147,10 @@ configuration:
   - High Cognitive System Score
   required: false
   type: 16
-description: The IronDefense Integration for Xsoar allows users to interact with
-  IronDefense alerts within Xsoar. The Integration provides the ability to rate
-  alerts, update alert statuses, add comments to alerts, to report observed bad activity,
-  get alerts, get events, and get IronDome information.
+description: The IronDefense Integration for Cortex XSOAR allows users to interact
+  with IronDefense alerts within Cortex XSOAR. The Integration provides the ability
+  to rate alerts, update alert statuses, add comments to alerts, to report observed
+  bad activity, get alerts, get events, and get IronDome information.
 display: IronDefense
 name: IronDefense
 script:
@@ -298,13 +299,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The start time of the observed bad activity in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
+      description: The start time of the observed bad activity in RFC 3339 format
+        (E.g. 2017-10-13T07:20:50.52Z).
       isArray: false
       name: activity_start_time
       required: true
       secret: false
     - default: false
-      description: The end time of the observed bad activity in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
+      description: The end time of the observed bad activity in RFC 3339 format (E.g.
+        2017-10-13T07:20:50.52Z).
       isArray: false
       name: activity_end_time
       required: true
@@ -438,11 +441,11 @@ script:
       isArray: false
       name: category
       predefined:
-        - C2
-        - Action
-        - Access
-        - Recon
-        - Other
+      - C2
+      - Action
+      - Access
+      - Recon
+      - Other
       required: false
       secret: false
     - default: false
@@ -457,9 +460,9 @@ script:
       isArray: false
       name: status
       predefined:
-        - Awaiting Review
-        - Under Review
-        - Closed
+      - Awaiting Review
+      - Under Review
+      - Closed
       required: false
       secret: false
     - auto: PREDEFINED
@@ -468,10 +471,10 @@ script:
       isArray: false
       name: analyst_severity
       predefined:
-        - Undecided
-        - Benign
-        - Suspicious
-        - Malicious
+      - Undecided
+      - Benign
+      - Suspicious
+      - Malicious
       required: false
       secret: false
     - auto: PREDEFINED
@@ -480,9 +483,9 @@ script:
       isArray: false
       name: analyst_expectation
       predefined:
-        - Unknown
-        - Expected
-        - Unexpected
+      - Unknown
+      - Expected
+      - Unexpected
       required: false
       secret: false
     - default: false
@@ -498,73 +501,85 @@ script:
       required: false
       secret: false
     - default: false
-      description: The minimum Alert created date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
+      description: The minimum Alert created date to filter by in RFC 3339 format
+        (E.g. 2017-10-13T07:20:50.52Z).
       isArray: false
       name: min_created
       required: false
       secret: false
     - default: false
-      description: The maximum Alert created date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
+      description: The maximum Alert created date to filter by in RFC 3339 format
+        (E.g. 2017-10-13T07:20:50.52Z).
       isArray: false
       name: max_created
       required: false
       secret: false
     - default: false
-      description: The minimum Alert updated date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
+      description: The minimum Alert updated date to filter by in RFC 3339 format
+        (E.g. 2017-10-13T07:20:50.52Z).
       isArray: false
       name: min_updated
       required: false
       secret: false
     - default: false
-      description: The maximum Alert updated date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
+      description: The maximum Alert updated date to filter by in RFC 3339 format
+        (E.g. 2017-10-13T07:20:50.52Z).
       isArray: false
       name: max_updated
       required: false
       secret: false
     - default: false
-      description: The minimum Alert first event created date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
+      description: The minimum Alert first event created date to filter by in RFC
+        3339 format (E.g. 2017-10-13T07:20:50.52Z).
       isArray: false
       name: min_first_event_created
       required: false
       secret: false
     - default: false
-      description: The maximum Alert first event created date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
+      description: The maximum Alert first event created date to filter by in RFC
+        3339 format (E.g. 2017-10-13T07:20:50.52Z).
       isArray: false
       name: max_first_event_created
       required: false
       secret: false
     - default: false
-      description: The minimum Alert last event created date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
+      description: The minimum Alert last event created date to filter by in RFC 3339
+        format (E.g. 2017-10-13T07:20:50.52Z).
       isArray: false
       name: min_last_event_created
       required: false
       secret: false
     - default: false
-      description: The maximum Alert last event created date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
+      description: The maximum Alert last event created date to filter by in RFC 3339
+        format (E.g. 2017-10-13T07:20:50.52Z).
       isArray: false
       name: max_last_event_created
       required: false
       secret: false
     - default: false
-      description: The minimum Alert first event start date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
+      description: The minimum Alert first event start date to filter by in RFC 3339
+        format (E.g. 2017-10-13T07:20:50.52Z).
       isArray: false
       name: min_first_event_start_time
       required: false
       secret: false
     - default: false
-      description: The maximum Alert first event start date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
+      description: The maximum Alert first event start date to filter by in RFC 3339
+        format (E.g. 2017-10-13T07:20:50.52Z).
       isArray: false
       name: max_first_event_start_time
       required: false
       secret: false
     - default: false
-      description: The minimum Alert last event end date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
+      description: The minimum Alert last event end date to filter by in RFC 3339
+        format (E.g. 2017-10-13T07:20:50.52Z).
       isArray: false
       name: min_last_event_end_time
       required: false
       secret: false
     - default: false
-      description: The maximum Alert last event end date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
+      description: The maximum Alert last event end date to filter by in RFC 3339
+        format (E.g. 2017-10-13T07:20:50.52Z).
       isArray: false
       name: max_last_event_end_time
       required: false
@@ -998,7 +1013,7 @@ script:
     - contextPath: IronDefense.Query.GetEvents.total
       description: The total number of results possible from the query.
       type: Number
-  dockerimage: demisto/python3:3.7.5.4002
+  dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: true
   longRunning: false
@@ -1009,3 +1024,4 @@ script:
   type: python
 tests:
 - No tests
+fromversion: 4.1.0
