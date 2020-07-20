@@ -274,6 +274,11 @@ class Client(BaseClient):
     For this HelloWorld implementation, no special attributes defined
     """
 
+
+    def do_nothing(self):
+        return
+
+
     def get_ip_reputation(self, ip: str) -> Dict[str, Any]:
         """Gets the IP reputation using the '/ip' API endpoint
 
