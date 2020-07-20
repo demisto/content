@@ -1,6 +1,7 @@
 id: WordTokenizeTest
 version: -1
 name: WordTokenizeTest
+toversion: 4.5.9
 description: Test for WordTokenize automation
 starttaskid: "0"
 tasks:
