@@ -36,4 +36,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![SafeBreach - Create Incidents per Insight and Associate Indicators](Insert the link to your image here)
+![SafeBreach - Create Incidents per Insight and Associate Indicators](https://github.com/demisto/content/raw/6af01e00312a5558e9e2fecdb22534e98414bc9c/Packs/SafeBreach/doc_imgs/SafeBreach_Create_Incidents_per_Insight_and_Associate_Indicators.png)

@@ -36,4 +36,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![SafeBreach - Compare and Validate Insight Indicators](Insert the link to your image here)
+![SafeBreach - Compare and Validate Insight Indicators](https://github.com/demisto/content/raw/6af01e00312a5558e9e2fecdb22534e98414bc9c/Packs/SafeBreach/doc_imgs/SafeBreach_Compare_and_Validate_Insight_Indicators.png)

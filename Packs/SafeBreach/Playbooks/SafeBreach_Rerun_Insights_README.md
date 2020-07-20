@@ -47,4 +47,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![SafeBreach - Rerun Insights](Insert the link to your image here)
+![SafeBreach - Rerun Insights](https://github.com/demisto/content/raw/6af01e00312a5558e9e2fecdb22534e98414bc9c/Packs/SafeBreach/doc_imgs/SafeBreach_Rerun_Insights.png)

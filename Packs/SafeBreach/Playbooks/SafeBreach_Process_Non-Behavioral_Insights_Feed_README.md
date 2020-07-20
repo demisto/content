@@ -34,4 +34,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![SafeBreach - Process Non-Behavioral Insights Feed](Insert the link to your image here)
+![SafeBreach - Process Non-Behavioral Insights Feed](https://github.com/demisto/content/raw/6af01e00312a5558e9e2fecdb22534e98414bc9c/Packs/SafeBreach/doc_imgs/SafeBreach_Process_Non-Behavioral_Insights_Feed.png)
