@@ -73,8 +73,11 @@ script:
   - name: cs-malquery-hunt
     arguments:
     - name: yara_rule
-      required: true
+      required: false
       description: A YARA rule that defines your search.
+    - name: yar_file_entry_id
+      required: false
+      description: A YAR file entry ID that contains the YARA rule which defines your search. Only one Yara rule is allowed per request.
     - name: limit
       description: Maximum number of results to be returned.
     - name: max_size
@@ -307,8 +310,8 @@ script:
     arguments:
     - name: file
       required: true
-      description: The file SHA256.
-      isArray: false
+      description: The files SHA256. Comma separated values.
+      isArray: true
     outputs:
     - contextPath: DBotScore.Score
       description: The actual score.

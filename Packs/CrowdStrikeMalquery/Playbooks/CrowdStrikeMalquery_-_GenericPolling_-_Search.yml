@@ -45,8 +45,8 @@ tasks:
     task:
       id: 03366a46-2741-4b97-80b1-ea4f8b3af0da
       version: -1
-      name: Check Input
-      description: Check which command to run.
+      name: Check input
+      description: Checks which command to run.
       type: condition
       iscommand: false
       brand: ""
@@ -104,7 +104,7 @@ tasks:
       name: Hunt
       description: "Use hunt to schedule a YARA-based search for execution. Results\
         \ can be filtered based on criteria such as file type, file size and first\
-        \ seen date.     Using hunt is a two-step process:     \0Schedule a YARA-based\
+        \ seen date. Using hunt is a two-step process: Schedule a YARA-based\
         \ search with hunt, which returns a request ID. Provide that request ID to\
         \ the cs-malquery-get-request to retrieve results."
       script: '|||cs-malquery-hunt'
@@ -236,7 +236,7 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: Malquery(val.Status == 'inprogress' ).Request_ID
+        simple: Malquery(val.Status == 'inprogress').Request_ID
     separatecontext: true
     loop:
       iscommand: false

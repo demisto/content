@@ -230,6 +230,14 @@ def fuzzy_search_command(client: Client, args: dict) -> CommandResults:
 
 def hunt_command(client: Client, args: dict) -> CommandResults:
     yara_rule = args.get('yara_rule')
+    yar_file_entry_id = args.get('yar_file_entry_id')
+    if not (yara_rule or yar_file_entry_id):
+        raise DemistoException("You must provide either a YARA rule or a YAR file in order to execute the HUNT command")
+
+    if yar_file_entry_id:
+        file_path = demisto.getFilePath(yar_file_entry_id).get("path")
+        with open(file_path, "rb") as file:
+            yara_rule = file.read().decode("utf-8")
 
     # dates format: YYYY/MM/DD
     query_filters = assign_params(limit=int(args.get('limit', '100')),
@@ -282,25 +290,34 @@ def get_request_command(client: Client, args: dict) -> CommandResults:
 
 
 def get_file_metadata_command(client: Client, args: dict):
-    file_id = args.get('file')
-    raw_response = client.get_files_metadata(file_id)
-    file = raw_response.get('resources', [])[0]
-    file_label = file.get('label')
-    sha256 = file.get('sha256')
-    dbot_score = Common.DBotScore(indicator=sha256,
-                                  indicator_type=DBotScoreType.FILE,
-                                  integration_name=VENDOR_NAME,
-                                  score=DBOT_SCORE[file_label])
-    file_entry = Common.File(sha256=sha256, dbot_score=dbot_score)
-    table_name = f'{VENDOR_NAME} File reputation'
-    human_readable = tableToMarkdown(table_name, file, removeNull=True)
+    files_ids = argToList(args.get('file'))
+    raw_response = client.get_files_metadata(files_ids)
+    files = raw_response.get('resources', [])
+    human_readable = ''
+    file_indicator_list = []
+
+    for file in files:
+        file_label = file.get('label')
+        sha256 = file.get('sha256')
+        dbot_score = Common.DBotScore(
+            indicator=sha256,
+            indicator_type=DBotScoreType.FILE,
+            integration_name=VENDOR_NAME,
+            score=DBOT_SCORE[file_label]
+        )
+        file_entry = Common.File(sha256=sha256, dbot_score=dbot_score)
+        table_name = f'{VENDOR_NAME} File reputation for: {sha256}'
+        md = tableToMarkdown(table_name, file, removeNull=True)
+        human_readable += md
+        file_indicator_list.append(file_entry)
+
     command_results = CommandResults(
         outputs_prefix='Malquery.File',
         outputs_key_field='sha256',
-        outputs=file,
+        outputs=files,
         readable_output=human_readable,
         raw_response=raw_response,
-        indicators=[file_entry])
+        indicators=file_indicator_list)
 
     return command_results
 
