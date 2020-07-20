@@ -32,7 +32,7 @@ configuration:
   hidden: false
   name: severity
   options:
-  - Law
+  - Low
   - Medium
   - High
   required: false

@@ -182,10 +182,7 @@ def convert_status(status):
 
 
 def str_to_bool(string):
-    if string.lower() == 'true':
-        return True
-    elif string.lower() == 'false':
-        return False
+    return string.lower() == 'true'
 
 
 def args_to_json_filter_list_activity(all_params):
@@ -211,6 +208,7 @@ def args_to_json_filter_list_activity(all_params):
 
 
 def args_to_json_filter_list_alert(all_params):
+    # TODO:
     request_data = {}
     filters = {}
     for key, value in all_params.items():
@@ -231,6 +229,7 @@ def args_to_json_filter_list_alert(all_params):
 def args_to_json_filter_list_files(all_params):
     request_data = {}
     filters = {}
+
     for key, value in all_params.items():
         if key in ['skip', 'limit']:
             request_data[key] = int(value)
@@ -274,15 +273,15 @@ def args_to_json_filter_list_users_accounts(all_params):
     return request_data
 
 
-def args_to_json_dismiss_and_resolve_alerts(alert_ids, customer_filters, comment):
+def args_to_json_dismiss_and_resolve_alerts(alert_ids, customer_filters, comments):
     request_data = {}
     filters = {}
 
     if alert_ids:
         id = {'eq': alert_ids.split(',')}
         filters['id'] = id
-        if comment:
-            request_data['comment'] = comment
+        if comments:
+            request_data['comment'] = comments
         request_data['filters'] = filters
     elif customer_filters:
         request_data.update(json.loads(customer_filters))
@@ -290,6 +289,13 @@ def args_to_json_dismiss_and_resolve_alerts(alert_ids, customer_filters, comment
 
 
 def params_to_filter(all_params):
+    """
+    Turns the parameters to filters.
+    Args:
+        all_params: The parameters that should to be filters.
+    Returns:
+        The filter we built using the parameters.
+    """
     filters = {}
     if 'severity' in all_params.keys():
         filters['severity'] = {'eq': convert_severity(all_params['severity'])}
@@ -302,6 +308,15 @@ def params_to_filter(all_params):
     return filters
 
 
+def latest_created_to_start_from(last_fetch, first_fetch_time):
+    if last_fetch is None:
+        last_fetch = first_fetch_time
+    else:
+        last_fetch = int(last_fetch)
+    latest_created_time = last_fetch
+    return latest_created_time
+
+
 def test_module(client):
     try:
         client.alert_list(url_suffix='/alerts/', request_data={"severity": {"eq": 0}})
@@ -309,7 +324,7 @@ def test_module(client):
         if 'Forbidden' in str(e):
             return 'Authorization Error: make sure API Key is correctly set'
         else:
-            raise e
+            return str(e)
     return 'ok'
 
 
@@ -435,12 +450,7 @@ def users_accounts_list_command(client, args):
 
 def fetch_incidents(client, max_results, last_run, first_fetch_time, filters):
     last_fetch = last_run.get('last_fetch')
-
-    if last_fetch is None:
-        last_fetch = first_fetch_time
-    else:
-        last_fetch = int(last_fetch)
-    latest_created_time = last_fetch
+    latest_created_time = latest_created_to_start_from(last_fetch, first_fetch_time)
     incidents = []
     filters["date"] = {"gte": latest_created_time}
     alerts = client.list_incidents(filters, limit=max_results)
@@ -471,9 +481,6 @@ def main():
     base_url = f'{urljoin(demisto.params().get("url"))}api/v1'
     verify_certificate = not demisto.params().get('insecure', False)
     first_fetch = demisto.params().get('first_fetch')
-    if not first_fetch:
-        first_fetch = '3 days'
-    first_fetch_time = arg_to_timestamp(first_fetch)
     proxy = demisto.params().get('proxy', False)
 
     LOG(f'Command being called is {demisto.command()}')
@@ -499,6 +506,9 @@ def main():
 
             if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
                 max_results = MAX_INCIDENTS_TO_FETCH
+            if not first_fetch:
+                first_fetch = '3 days'
+            first_fetch_time = arg_to_timestamp(first_fetch)
 
             next_run, incidents = fetch_incidents(
                 client=client,
@@ -516,7 +526,7 @@ def main():
             return_results(alert_dismiss_bulk_command(client, demisto.args()))
 
         elif demisto.command() == 'microsoft-cas-alert-resolve-bulk':
-            return_results(alert_dismiss_bulk_command(client, demisto.args()))
+            return_results(alert_resolve_bulk_command(client, demisto.args()))
 
         elif demisto.command() == 'microsoft-cas-activities-list':
             return_results(activities_list_command(client, demisto.args()))
