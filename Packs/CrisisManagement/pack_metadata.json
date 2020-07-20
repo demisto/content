@@ -19,5 +19,31 @@
     "useCases": [
         "Crisis Management"
     ],
-    "keywords": []
+    "keywords": [],
+    "dependencies": {
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "NIST": {
+            "mandatory": false,
+            "display_name": "NIST"
+        },
+        "Phishing": {
+            "mandatory": true,
+            "display_name": "Phishing"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "SANS": {
+            "mandatory": false,
+            "display_name": "SANS"
+        },
+        "MicrosoftGraphUser": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph User"
+        }
+    }
 }
