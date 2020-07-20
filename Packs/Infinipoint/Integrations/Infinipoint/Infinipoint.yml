@@ -22,11 +22,6 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: Server URL (e.g. https://console.infinipoint.io)
-  name: url
-  defaultvalue: https://console.infinipoint.io/
-  type: 0
-  required: false
 - display: Fetch incidents
   name: isFetch
   defaultvalue: ""
@@ -378,7 +373,6 @@ script:
   - name: infinipoint-get-networks
     arguments:
     - name: alias
-    - name: gateway_ip
     - name: cidr
     outputs:
     - contextPath: Infinipoint.Networks.Info.alias
