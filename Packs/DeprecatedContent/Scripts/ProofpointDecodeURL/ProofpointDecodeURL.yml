@@ -18,5 +18,5 @@ outputs:
   description: Decoded URLs
 scripttarget: 0
 tests:
-  - ProofpointDecodeURL-Test
+  - No tests
 deprecated: true

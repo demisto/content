@@ -43,7 +43,6 @@ class GCPConfig(object):
                        "DemistoLocking",
                        "ImageOCR",
                        "WhereIsTheEgg",
-                       "FeedAutofocus",
                        "AutoFocus",
                        "UrlScan",
                        "Active_Directory_Query",
@@ -63,7 +62,7 @@ class GCPConfig(object):
                        "ExportIndicators",
                        "Malware",
                        "DefaultPlaybook",
-                       "CalculateTimeDifference"
+                       "AccessInvestigation"
                        ]  # cores packs list
 
 
@@ -140,6 +139,7 @@ class PackStatus(enum.Enum):
     FAILED_REMOVING_PACK_SKIPPED_FOLDERS = "Failed to remove pack hidden and skipped folders"
     FAILED_RELEASE_NOTES = "Failed to generate changelog.json"
     FAILED_DETECTING_MODIFIED_FILES = "Failed in detecting modified files of the pack"
+    FAILED_SEARCHING_PACK_IN_INDEX = "Failed in searching pack folder in index"
 
 
 class Pack(object):
@@ -881,7 +881,7 @@ class Pack(object):
                 PackFolders.INDICATOR_FIELDS.value: "indicatorfield",
                 PackFolders.REPORTS.value: "report",
                 PackFolders.INDICATOR_TYPES.value: "reputation",
-                PackFolders.LAYOUTS.value: "layout",
+                PackFolders.LAYOUTS.value: "layoutscontainer",
                 PackFolders.CLASSIFIERS.value: "classifier",
                 PackFolders.WIDGETS.value: "widget"
             }
@@ -987,11 +987,13 @@ class Pack(object):
                             'enhancementScriptNames': content_item.get('enhancementScriptNames', [])
                         })
                     elif current_directory == PackFolders.LAYOUTS.value:
-                        folder_collected_items.append({
-                            'typeId': content_item.get('typeId', ""),
-                            'kind': content_item.get('kind', ""),
-                            'version': 'v2' if 'tabs' in content_item.get('layout', {}) else 'v1'
-                        })
+                        layout_metadata = {
+                            'name': content_item.get('name', '')
+                        }
+                        layout_description = content_item.get('description')
+                        if layout_description is not None:
+                            layout_metadata['description'] = layout_description
+                        folder_collected_items.append(layout_metadata)
                     elif current_directory == PackFolders.CLASSIFIERS.value:
                         folder_collected_items.append({
                             'name': content_item.get('name') or content_item.get('id', ""),
@@ -1238,6 +1240,31 @@ class Pack(object):
                     images_list.append(image_data)
 
         return images_list
+
+    def check_if_exists_in_index(self, index_folder_path):
+        """ Checks if pack is sub-folder of downloaded index.
+
+        Args:
+            index_folder_path (str): index folder full path.
+
+        Returns:
+            bool: whether the operation succeeded.
+            bool: whether pack exists in index folder.
+
+        """
+        task_status, exists_in_index = False, False
+
+        try:
+            if not os.path.exists(index_folder_path):
+                print_error(f"{GCPConfig.INDEX_NAME} does not exists.")
+                return task_status, exists_in_index
+
+            exists_in_index = os.path.exists(os.path.join(index_folder_path, self._pack_name))
+            task_status = True
+        except Exception as e:
+            print_error(f"Failed searching {self._pack_name} pack in {GCPConfig.INDEX_NAME}. Additional info:\n{e}")
+        finally:
+            return task_status, exists_in_index
 
     def upload_integration_images(self, storage_bucket):
         """ Uploads pack integrations images to gcs.
