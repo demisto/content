@@ -1,0 +1,51 @@
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
+
+from time import sleep
+import re
+import json
+
+
+devices = demisto.get(demisto.args(), 'devices')
+res = []
+
+if not devices:
+    res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                "Contents": "Received empty device list!"})
+    demisto.results(res)
+
+devices = ','.join(devices) if isinstance(devices, list) else devices
+
+try:
+    demisto.info("Starting backup")
+    demisto.executeCommand('CheckpointFW_CreateBackup', {'devices': devices})
+
+    current_status = ''
+    content = ''
+    while current_status.find('Local backup succeeded') == -1:
+
+        sleep(10)
+        status_entries = demisto.executeCommand('CheckpointFW_BackupStatus',
+                                                {'devices': devices})
+
+        content = status_entries[0]
+        if content:
+            content = json.dumps(content.get('Contents'))
+
+        for entry in status_entries:
+            current_status = str(demisto.get(entry, 'Contents'))
+
+    demisto.info(content)
+    demisto.info("Backup completed. Starting to download backup file to war room.")
+
+    file_path = re.findall(r'/.*\.tgz', current_status)[0]
+
+    file_status = demisto.executeCommand('copy-from', {'file': file_path,
+                                                       'using': devices,
+                                                       'timeout': 60})
+    demisto.info("File was downloaded to war room. File status:", file_status)
+    demisto.results(file_status)
+
+except Exception as e:
+    demisto.results(e)

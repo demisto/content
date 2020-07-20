@@ -1,0 +1,19 @@
+args:
+- default: false
+  description: List of RemoteAccess instances of the checkpoint firewall appliances
+    to back up
+  isArray: false
+  name: devices
+  required: true
+  secret: false
+comment: Downlad CheckPoint policy backup to Demisto war room
+commonfields:
+  id: c7944409-cd37-40c8-acf9-4987a44682a1
+  version: -1
+enabled: false
+name: download_checkpoint_backup
+script: '-'
+subtype: python3
+system: false
+timeout: '0'
+type: python
