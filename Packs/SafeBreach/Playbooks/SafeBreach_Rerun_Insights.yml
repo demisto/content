@@ -1,4 +1,4 @@
-id: SafeBreach - Rerun Insights
+id: SafeBreach Rerun Insights
 version: -1
 name: SafeBreach - Rerun Insights
 description: This is a sub-playbook reruns a list of SafeBreach insights based on

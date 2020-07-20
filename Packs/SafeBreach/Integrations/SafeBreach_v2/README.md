@@ -92,14 +92,14 @@ A special feed based triggered job is required to initiate this playbook for eve
 
 #### SafeBreach - Handle Insight Incident (Premium)
 - This playbook is triggered automatically for each SafeBreach Insight incident:
-<br>(1) Adding insight information (including suggested remediation actions);
-<br> (2) Assigning it to an analyst to remediate and either “ignore” or “validate.” Validated incidents are rerun with the related SafeBreach Insight and the results are compared to the previous indicator results. The incident is closed once all the indicators are resolved or the analyst “ignores” the incident. Unresolved indicators wait for handling by the analyst.
+    1. Adding insight information (including suggested remediation actions);
+    2. Assigning it to an analyst to remediate and either “ignore” or “validate.” Validated incidents are rerun with the related SafeBreach Insight and the results are compared to the previous indicator results. The incident is closed once all the indicators are resolved or the analyst “ignores” the incident. Unresolved indicators wait for handling by the analyst.
 
 
 
 ## Dashboard (Premium) 
 SafeBreach Insights dashboard summarizes the current status of actionable insights and related indicators.
- <BR>[<img src="https://go.safebreach.com/rs/535-IXZ-934/images/xsoar_dashboard.png">](http://google.com.au/)
+ [<img src="https://go.safebreach.com/rs/535-IXZ-934/images/xsoar_dashboard.png">](XSOAR SafeBreach Dashboard)
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
