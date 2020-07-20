@@ -16,5 +16,69 @@
     "useCases": [
         "SANS"
     ],
-    "keywords": []
+    "keywords": [],
+    "dependencies": {
+        "MicrosoftGraphListener": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Mail Single User"
+        },
+        "Active_Directory_Query": {
+            "mandatory": false,
+            "display_name": "Active Directory Query"
+        },
+        "EWSMailSender": {
+            "mandatory": false,
+            "display_name": "EWS Mail Sender"
+        },
+        "GmailSingleUser": {
+            "mandatory": false,
+            "display_name": "Gmail Single User (Beta)"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "MailSenderNew": {
+            "mandatory": false,
+            "display_name": "Mail Sender (New)"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "Compliance": {
+            "mandatory": true,
+            "display_name": "Compliance"
+        },
+        "BruteForce": {
+            "mandatory": true,
+            "display_name": "Brute Force"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "Gmail": {
+            "mandatory": false,
+            "display_name": "Gmail"
+        },
+        "MicrosoftGraphMail": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Mail"
+        }
+    },
+    "displayedImages": [
+        "MicrosoftGraphListener",
+        "Active_Directory_Query",
+        "EWSMailSender",
+        "GmailSingleUser",
+        "CommonScripts",
+        "MailSenderNew",
+        "CommonPlaybooks",
+        "Compliance",
+        "BruteForce",
+        "CommonTypes",
+        "Gmail",
+        "MicrosoftGraphMail"
+    ]
 }
