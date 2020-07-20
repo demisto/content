@@ -454,49 +454,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "19":
-    id: "19"
-    taskid: aa4d0849-3369-4811-810b-34d8d098ec5c
-    type: regular
-    task:
-      id: aa4d0849-3369-4811-810b-34d8d098ec5c
-      version: -1
-      name: Download url Report - HTML
-      script: Joe Security|||joe-download-report
-      type: regular
-      iscommand: true
-      brand: Joe Security
-    scriptarguments:
-      type:
-        simple: html
-      webid:
-        complex:
-          root: ${Joe
-          accessor: Analysis(val.Status == "finished")}
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "0"
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: WebID
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 60,
-          "y": 900
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
