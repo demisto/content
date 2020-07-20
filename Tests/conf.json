@@ -586,6 +586,10 @@
             "timeout": 2400
         },
         {
+            "playbookID": "WordTokenizeTest",
+            "toversion":  "4.5.0"
+        },
+        {
             "integrations": "QRadar",
             "playbookID": "test playbook - QRadarCorreltaions",
             "timeout": 600,
