@@ -18,18 +18,6 @@ def test_start_time_return_value():
     assert start_time({'last_fetch': 1540390400000}) == "1540390400000"
 
 
-def test_fetch_incidents_test():
-    i, last_fetch = fetch_incidents(
-        st='1392048072242',
-        risk='12',
-        fetch_also_n2os_incidents=False,
-        test_mode=True
-    )
-
-    assert last_fetch is None
-    assert len(i) == 0
-
-
 def test_start_time_return_timestamp():
     time = start_time({})
     assert time is not None
@@ -148,7 +136,7 @@ def test_also_n2os_incidents_filter_true(obj, expected):
 
 
 def test_find_assets(requests_mock):
-    result = find_assets({}, client=__get_client(
+    result = find_assets({}, __get_client(
         [
             {
                 'json': __load_test_data('./test_data/find_assets.json'),
@@ -187,7 +175,7 @@ def test_assets_limit_from_args_none():
 def test_find_assets_empty(requests_mock):
     result = find_assets(
         {'filter': ' | where level == 4'},
-        client=__get_client(
+        __get_client(
             [
                 {
                     'json': __load_test_data('./test_data/empty_find_asset.json'),
@@ -271,7 +259,7 @@ def test_ip_from_mac_not_found(requests_mock):
 def test_query_count_alerts(requests_mock):
     result = query(
         {'query': 'alerts | count'},
-        client=__get_client(
+        __get_client(
             [
                 {
                     'json': __load_test_data('./test_data/alive.json'),

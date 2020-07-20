@@ -277,8 +277,8 @@ def humanize_api_error(error):
 
 
 def fetch_incidents(
+        client,
         st=None,
-        client=None,
         last_run=None,
         last_id=None,
         risk=None,
@@ -286,25 +286,24 @@ def fetch_incidents(
         test_mode=False
 ):
     st = st or start_time(demisto.getLastRun(), demisto.params().get('fetchTime', '7 days').strip())
-    client = client or get_client()
     last_run = last_run or demisto.getLastRun()
     last_id = last_id or get_last_id(demisto.getLastRun())
     risk = risk or demisto.params().get('riskFrom', None)
     fetch_also_n2os_incidents = fetch_also_n2os_incidents or demisto.params().get('fecthAlsoIncidents', False)
 
-    if test_mode:
-        return [], None  # cause we want just field validation from test fetch
-
-    demisto_incidents, last_fetch, last_id_returned = incidents(st, last_id, last_run, risk, fetch_also_n2os_incidents, client)
-
-    ack_alerts(nozomi_alerts_ids_from_demisto_incidents(demisto_incidents), client)
-
+    demisto_incidents, last_fetch, last_id_returned = \
+        incidents(st, last_id, last_run, risk, fetch_also_n2os_incidents, client)
     demisto.setLastRun({'last_fetch': last_fetch, 'last_id': last_id_returned})
-    demisto.incidents(demisto_incidents)
+
+    if not test_mode:
+        ack_alerts(nozomi_alerts_ids_from_demisto_incidents(demisto_incidents), client)
+        demisto.incidents(demisto_incidents)
+
     return demisto_incidents, last_fetch
 
 
-def is_alive(client=get_client()):
+def is_alive(client):
+    client = client or get_client()
     error = None
     try:
         client.http_get_request(f'{QUERY_ALERTS_PATH} | count')
@@ -314,15 +313,15 @@ def is_alive(client=get_client()):
     return humanize_api_error(error) if error else 'ok'
 
 
-def close_incidents_as_change(args, client=get_client()):
+def close_incidents_as_change(args, client):
     return close_alerts(args, 'learn_rules', client)
 
 
-def close_incidents_as_security(args, client=get_client()):
+def close_incidents_as_security(args, client):
     return close_alerts(args, 'delete_rules', client)
 
 
-def query(args, client=get_client()):
+def query(args, client):
     title = f'{INTEGRATION_NAME} - Results for Query'
     response = client.http_get_request(
         f'{QUERY_PATH}{args.get("query", "")} | head {DEFAULT_HEAD_QUERY}')
@@ -346,7 +345,7 @@ def query(args, client=get_client()):
     }
 
 
-def find_assets(args, head=DEFAULT_HEAD_ASSETS, client=get_client()):
+def find_assets(args, client, head=DEFAULT_HEAD_ASSETS):
     title = f'{INTEGRATION_NAME} - Results for Find Assets'
     limit = assets_limit_from_args(args)
     result = []  # type: List[dict]
@@ -385,7 +384,7 @@ def find_assets(args, head=DEFAULT_HEAD_ASSETS, client=get_client()):
     }
 
 
-def find_ip_by_mac(args, client=get_client()):
+def find_ip_by_mac(args, client):
     mac = args.get("mac", "")
     only_nodes_confirmed = args.get("only_nodes_confirmed", True)
     result_error = False
@@ -420,24 +419,25 @@ def find_ip_by_mac(args, client=get_client()):
 
 def main():
     try:
+        client = get_client()
         if demisto.command() == 'fetch-incidents':
-            fetch_incidents()
+            fetch_incidents(client)
         elif demisto.command() == 'test-module':
             if demisto.params().get('isFetch'):
-                fetch_incidents(test_mode=True)
+                fetch_incidents(client, test_mode=True)
                 demisto.results('ok')
             else:
-                demisto.results(is_alive())
+                demisto.results(is_alive(client))
         elif demisto.command() == 'nozomi-close-incidents-as-change':
-            return_results(CommandResults(**close_incidents_as_change(demisto.args())))
+            return_results(CommandResults(**close_incidents_as_change(demisto.args(), client)))
         elif demisto.command() == 'nozomi-close-incidents-as-security':
-            return_results(CommandResults(**close_incidents_as_security(demisto.args())))
+            return_results(CommandResults(**close_incidents_as_security(demisto.args(), client)))
         elif demisto.command() == 'nozomi-find-assets':
-            return_results(CommandResults(**find_assets(demisto.args())))
+            return_results(CommandResults(**find_assets(demisto.args(), client)))
         elif demisto.command() == 'nozomi-query':
-            return_results(CommandResults(**query(demisto.args())))
+            return_results(CommandResults(**query(demisto.args(), client)))
         elif demisto.command() == 'nozomi-find-ip-by-mac':
-            return_results(CommandResults(**find_ip_by_mac(demisto.args())))
+            return_results(CommandResults(**find_ip_by_mac(demisto.args(), client)))
     except Exception as e:
         demisto.error(f'nozomi: got an error {e}')
         return_error(str(e))
