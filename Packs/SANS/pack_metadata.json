@@ -66,19 +66,5 @@
             "mandatory": false,
             "display_name": "Microsoft Graph Mail"
         }
-    },
-    "displayedImages": [
-        "MicrosoftGraphListener",
-        "Active_Directory_Query",
-        "EWSMailSender",
-        "GmailSingleUser",
-        "CommonScripts",
-        "MailSenderNew",
-        "CommonPlaybooks",
-        "Compliance",
-        "BruteForce",
-        "CommonTypes",
-        "Gmail",
-        "MicrosoftGraphMail"
-    ]
+    }
 }
