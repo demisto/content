@@ -2836,8 +2836,12 @@
             "integrations": "Deep Instinct",
             "playbookID": "Deep_Instinct-Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Prisma Cloud IT Admin",
+            "playbookID": "PrismaCloudITAdmin-Test",
+            "timeout": 500
         }
-
     ],
     "skipped_tests": {
         "CuckooTest": "Issue 25601",
