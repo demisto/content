@@ -1,4 +1,4 @@
-from typing import Dict, Tuple, List
+from typing import Dict, Tuple, List, Any
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -14,7 +14,45 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
-def incident_priority_to_dbot_score(score: int):
+def parse_date_range_expire_date(date_range):
+    """
+      Parses date_range string to a tuple date strings (start, end). Input must be in format 'number date_range_unit')
+      Examples: (2 hours, 4 minutes, 6 month, 1 day, etc.)
+
+      :type date_range: ``str``
+      :param date_range: The date range to be parsed (required)
+
+      :return: The parsed date range.
+      :rtype: ``(datetime.datetime, datetime.datetime)`` or ``(int, int)`` or ``(str, str)``
+    """
+    range_split = date_range.split(' ')
+    if len(range_split) != 2:
+        return_error('date_range must be "number date_range_unit", examples: (2 hours, 4 minutes,6 months, 1 day, '
+                     'etc.)')
+
+    number = int(range_split[0])
+    if not range_split[1] in ['minute', 'minutes', 'hour', 'hours', 'day', 'days', 'month', 'months', 'year', 'years']:
+        return_error('The unit of date_range is invalid. Must be minutes, hours, days, months or years')
+
+    start_time = datetime.now() + timedelta(hours=0)
+    end_time = datetime.now() + timedelta(hours=0)
+
+    unit = range_split[1]
+    if 'minute' in unit:
+        end_time = start_time + timedelta(minutes=number)
+    elif 'hour' in unit:
+        end_time = start_time + timedelta(hours=number)
+    elif 'day' in unit:
+        end_time = start_time + timedelta(days=number)
+    elif 'month' in unit:
+        end_time = start_time + timedelta(days=number * 30)
+    elif 'year' in unit:
+        end_time = start_time + timedelta(days=number * 365)
+
+    return str(time.mktime(end_time.timetuple()) * 1000)
+
+
+def incident_priority_to_dbot_score(score: float) -> int:
     """Converts the CyberArk score to DBot score representation,
     while the CyberArk score is a value between 0.0-100.0 and the DBot score is 1,2 or 3.
     Can be one of:
@@ -25,11 +63,10 @@ def incident_priority_to_dbot_score(score: int):
 
     if 0 <= score <= 35:
         return 1
-    if 35 < score <= 75:
+    elif 35 < score <= 75:
         return 2
-    if 75 < score <= 100:
+    elif 75 < score <= 100:
         return 3
-    demisto.info(f'CyberArk PAS incident score: {score} is not known. Setting as unknown(DBotScore of 0).')
     return 0
 
 
@@ -49,10 +86,11 @@ class Client(BaseClient):
     Client to use in the CrowdStrikeFalconX integration. Uses BaseClient
     """
 
-    def __init__(self, server_url: str, username: str, password: str, use_ssl: bool, proxy: bool):
+    def __init__(self, server_url: str, username: str, password: str, use_ssl: bool, proxy: bool, max_fetch: int):
         super().__init__(base_url=server_url, verify=use_ssl, proxy=proxy)
         self._username = username
         self._password = password
+        self._max_fetch = max_fetch
         self._token = self._generate_token()
         self._headers = {'Authorization': self._token, 'Content-Type': 'application/json'}
 
@@ -173,7 +211,7 @@ class Client(BaseClient):
         url_suffix = f"/PasswordVault/api/Users/{user_id}"
 
         # json is not defined for this response, therefore we wish to get the "text" value back
-        return self._http_request("DELETE", url_suffix, resp_type='text')
+        self._http_request("DELETE", url_suffix, resp_type='text')
 
     def get_users(self,
                   filter: str,
@@ -193,7 +231,7 @@ class Client(BaseClient):
                       ):
         url_suffix = f"/PasswordVault/WebServices/PIMServices.svc/Users/{user_id}"
 
-        return self._http_request("PUT", url_suffix, resp_type='text')
+        self._http_request("PUT", url_suffix, resp_type='text')
 
     def get_list_safes(self):
         url_suffix = "/PasswordVault/api/Safes"
@@ -312,7 +350,7 @@ class Client(BaseClient):
         return self._http_request("POST", url_suffix, json_data=body)
 
     def add_account(self,
-                    account_name: list,
+                    account_name: str,
                     address: str,
                     username: str,
                     platform_id: str,
@@ -394,14 +432,14 @@ class Client(BaseClient):
                            ):
         url_suffix = f"/PasswordVault/WebServices/PIMServices.svc/Safes/{safe_name}/Members/{member_name}"
 
-        return self._http_request("DELETE", url_suffix, resp_type='text')
+        self._http_request("DELETE", url_suffix, resp_type='text')
 
     def delete_account(self,
                        account_id: str,
                        ):
         url_suffix = f"/PasswordVault/api/Accounts/{account_id}"
 
-        return self._http_request("DELETE", url_suffix, resp_type='text')
+        self._http_request("DELETE", url_suffix, resp_type='text')
 
     def get_list_accounts(self,
                           search: str,
@@ -426,7 +464,7 @@ class Client(BaseClient):
         body = {
             "ChangeEntireGroup": "true"
         }
-        return self._http_request("POST", url_suffix, json_data=body, resp_type='text')
+        self._http_request("POST", url_suffix, json_data=body, resp_type='text')
 
     def change_credentials_set_new_password(self,
                                             account_id: str,
@@ -437,7 +475,7 @@ class Client(BaseClient):
             "ChangeImmediately": "true" == "true",
             "NewCredentials": new_credentials,
         }
-        return self._http_request("POST", url_suffix, json_data=body, resp_type='text')
+        self._http_request("POST", url_suffix, json_data=body, resp_type='text')
 
     def change_credentials_in_vault_only(self,
                                          account_id: str,
@@ -447,21 +485,21 @@ class Client(BaseClient):
         body = {
             "NewCredentials": new_credentials,
         }
-        return self._http_request("POST", url_suffix, json_data=body, resp_type='text')
+        self._http_request("POST", url_suffix, json_data=body, resp_type='text')
 
     def verify_credentials(self,
                            account_id: str,
                            ):
         url_suffix = f"/PasswordVault/WebServices/PIMServices.svc/Accounts/{account_id}/VerifyCredentials"
 
-        return self._http_request("POST", url_suffix, resp_type='text')
+        self._http_request("POST", url_suffix, resp_type='text')
 
     def reconcile_credentials(self,
                               account_id: str,
                               ):
         url_suffix = f"/PasswordVault/API/Accounts/{account_id}/Reconcile"
 
-        return self._http_request("POST", url_suffix, resp_type='text')
+        self._http_request("POST", url_suffix, resp_type='text')
 
     def update_account(self,
                        account_id: str,
@@ -503,9 +541,8 @@ def test_module(
     """
     If a client was made then an accesses token was successfully reached,
     therefor the username and password are valid and a connection was made
-    additionally, checks if not using all the optional quota
     :param client: the client object with an access token
-    :return: ok if got a valid accesses token and not all the quota is used at the moment
+    :return: ok if got a valid accesses token
     """
     client._logout()
     return "ok"
@@ -529,11 +566,37 @@ def add_user_command(
         profession: str = "",
         distinguished_name: str = "",
         location: str = "\\"
-):
+) -> CommandResults:
+    """Add a new user to the vault.
+    :param client: The client object with an access token
+    :param username: The name of the user.
+    :param user_type: User type according to the license.
+    :param non_authorized_interfaces: The CyberArkPAS interfaces that this user is not authorized to.
+    :param expiry_date: The date when the user expires as timestamp.
+    :param password: The password that the user will use to log on for the first time.
+    :param change_password_on_the_next_logon: Whether or not the user must change their password from the second
+        log on onward.
+    :param password_never_expires: Whether the user’s password will not expire unless they decide
+        to change it.
+    :param vault_authorization: The user permissions.
+    :param description: Notes and comments.
+    :param email: The user's email addresses.
+    :param first_name: The user's first name.
+    :param last_name: The user's last name.
+    :param enable_user: Whether the user will be enabled upon creation.
+    :param profession: The user’s profession.
+    :param distinguished_name: The user’s distinguished name.
+    :param location: The location in the vault where the user will be created.
+    :return: CommandResults
+    """
     non_authorized_interfaces_list = argToList(non_authorized_interfaces)
     vault_authorization_list = argToList(vault_authorization)
+    if expiry_date:
+        expiry_date_epoch = parse_date_range_expire_date(expiry_date)
+    else:
+        expiry_date_epoch = ""
 
-    response = client.add_user(username, user_type, non_authorized_interfaces_list, expiry_date, password,
+    response = client.add_user(username, user_type, non_authorized_interfaces_list, expiry_date_epoch, password,
                                change_password_on_the_next_logon, password_never_expires, vault_authorization_list,
                                description, email, first_name, last_name, enable_user, profession, distinguished_name,
                                location)
@@ -565,11 +628,36 @@ def update_user_command(
         profession: str = "",
         distinguished_name: str = "",
         location: str = "\\"
-):
+) -> CommandResults:
+    """Updates an existing vault user.
+    :param client: The client object with an access token
+    :param user_id: The user's unique ID.
+    :param username: The name of the user.
+    :param user_type: User type according to the license.
+    :param non_authorized_interfaces: The CyberArkPAS interfaces that this user is not authorized to.
+    :param expiry_date: The date when the user expires as timestamp.
+    :param change_password_on_the_next_logon: Whether or not the user must change their password from the second
+        log on onward.
+    :param password_never_expires: Whether the user’s password will not expire unless they decide
+        to change it.
+    :param vault_authorization: The user permissions.
+    :param description: Notes and comments.
+    :param email: The user's email addresses.
+    :param first_name: The user's first name.
+    :param last_name: The user's last name.
+    :param enable_user: Whether the user will be enabled upon creation.
+    :param profession: The user’s profession.
+    :param distinguished_name: The user’s distinguished name.
+    :param location: The location in the vault where the user will be created.
+    :return: CommandResults
+    """
     non_authorized_interfaces_list = argToList(non_authorized_interfaces)
     vault_authorization_list = argToList(vault_authorization)
-
-    response = client.update_user(user_id, username, user_type, non_authorized_interfaces_list, expiry_date,
+    if expiry_date:
+        expiry_date_epoch = parse_date_range_expire_date(expiry_date)
+    else:
+        expiry_date_epoch = ""
+    response = client.update_user(user_id, username, user_type, non_authorized_interfaces_list, expiry_date_epoch,
                                   change_password_on_the_next_logon, password_never_expires, vault_authorization_list,
                                   description, email, first_name, last_name, enable_user, profession,
                                   distinguished_name,
@@ -587,26 +675,33 @@ def update_user_command(
 def delete_user_command(
         client: Client,
         user_id: str,
-):
-    response = client.delete_user(user_id)
+) -> CommandResults:
+    """Delete a specific user in the vault.
+    :param client: The client object with an access token
+    :param user_id: The user's unique ID.
+    :return: CommandResults
+    """
     # the response should be an empty string, if an error raised it would be catch in the main block
-    # should never enter to the else block, extra precautions if something want wrong
-    if not response:
-        return CommandResults(
-            readable_output=f"User {user_id} was deleted",
-            outputs_prefix=f'CyberArkPAS.Users.{user_id}',
-            outputs_key_field='id',
-            outputs={"id": user_id, "deleted": True}
-        )
-    else:
-        return response
+    client.delete_user(user_id)
+    return CommandResults(
+        readable_output=f"User {user_id} was deleted",
+        outputs_prefix=f'CyberArkPAS.Users.{user_id}',
+        outputs_key_field='id',
+        outputs={"id": user_id, "deleted": True}
+    )
 
 
 def get_users_command(
         client: Client,
         filter: str = "",
         search: str = "",
-):
+) -> CommandResults:
+    """Returns a list of all existing users in the vault.
+    :param client: The client object with an access token
+    :param filter: Retrieve users using filters.
+    :param search: Search by the values.
+    :return: CommandResults
+    """
     response = client.get_users(filter, search)
     total_users = response.get("Total")
     headline = f"There are {total_users} users"
@@ -624,17 +719,24 @@ def get_users_command(
 def activate_user_command(
         client: Client,
         user_id: str,
-):
-    response = client.activate_user(user_id)
-    if not response:
-        return f"User {user_id} was activated"
-    else:
-        return response
+) -> str:
+    """Activate an existing vault user who was suspended after entering incorrect credentials multiple times.
+    :param client: The client object with an access token
+    :param user_id: The user's unique ID.
+    :return: CommandResults
+    """
+    # the response should be an empty string, if an error raised it would be catch in the main block
+    client.activate_user(user_id)
+    return f"User {user_id} was activated"
 
 
 def get_list_safes_command(
         client: Client,
 ):
+    """Returns information about all of the user’s Safes in the vault.
+    :param client: The client object with an access token
+    :return: CommandResults
+    """
     response = client.get_list_safes()
     total_safes = response.get("Total")
     headline = f"There are {total_safes} safes"
@@ -649,20 +751,6 @@ def get_list_safes_command(
     return results
 
 
-def get_safe_by_name_command(
-        client: Client,
-        safe_name: str,
-):
-    response = client.get_safe_by_name(safe_name)
-    results = CommandResults(
-        raw_response=response,
-        outputs_prefix=f'CyberArkPAS.Safes.{safe_name}',
-        outputs_key_field='SafeName',
-        outputs=response
-    )
-    return results
-
-
 def add_safe_command(
         client: Client,
         safe_name: str,
@@ -672,7 +760,18 @@ def add_safe_command(
         number_of_versions_retention: str = "",
         number_of_days_retention: str = "",
         location: str = ""
-):
+) -> CommandResults:
+    """Add a new safe to the vault.
+    :param client: The client object with an access token
+    :param safe_name: Name of a safe to create.
+    :param description: Description of the new safe.
+    :param OLAC_enabled: Whether or not to enable Object Level Access Control for the new safe.
+    :param managing_cmp: The name of the CPM user who will manage the new safe.
+    :param number_of_versions_retention: The number of retained versions of every password that is stored in the safe.
+    :param number_of_days_retention: The number of days for which password versions are saved in the safe.
+    :param location: The location of the safe.
+    :return: CommandResults
+    """
     response = client.add_safe(safe_name, description, OLAC_enabled, managing_cmp, number_of_versions_retention,
                                number_of_days_retention, location)
     results = CommandResults(
@@ -694,7 +793,19 @@ def update_safe_command(
         number_of_versions_retention: str = "",
         number_of_days_retention: str = "",
         location: str = ""
-):
+) -> CommandResults:
+    """Update a single safe in the vault.
+    :param client: The client object with an access token
+    :param safe_name: The name of the safe that will be updated.
+    :param safe_new_name: The new name of the safe.
+    :param description: Description of the new safe.
+    :param OLAC_enabled: Whether or not to enable Object Level Access Control for the new safe.
+    :param managing_cmp: The name of the CPM user who will manage the new safe.
+    :param number_of_versions_retention: The number of retained versions of every password that is stored in the safe.
+    :param number_of_days_retention: The number of days for which password versions are saved in the safe.
+    :param location: The location of the safe.
+    :return: CommandResults
+    """
     response = client.update_safe(safe_name, safe_new_name, description, OLAC_enabled, managing_cmp,
                                   number_of_versions_retention,
                                   number_of_days_retention, location)
@@ -710,25 +821,50 @@ def update_safe_command(
 def delete_safe_command(
         client: Client,
         safe_name: str,
-):
-    response = client.delete_safe(safe_name)
+) -> CommandResults:
+    """Delete a safe from the vault.
+    :param client: The client object with an access token
+    :param safe_name: Name of the safe that will be deleted.
+    :return: CommandResults
+    """
     # the response should be an empty string, if an error raised it would be catch in the main block
-    # should never enter to the else block, extra precautions if something want wrong
-    if not response:
-        return CommandResults(
-            readable_output=f"Safe {safe_name} was deleted",
-            outputs_prefix=f'CyberArkPAS.Safes.{safe_name}',
-            outputs_key_field='SafeName',
-            outputs={"SafeName": safe_name, "deleted": True}
-        )
-    else:
-        return response
+    client.delete_safe(safe_name)
+    return CommandResults(
+        readable_output=f"Safe {safe_name} was deleted",
+        outputs_prefix=f'CyberArkPAS.Safes.{safe_name}',
+        outputs_key_field='SafeName',
+        outputs={"SafeName": safe_name, "deleted": True}
+    )
+
+
+def get_safe_by_name_command(
+        client: Client,
+        safe_name: str,
+) -> CommandResults:
+    """Return information about a specific safe in the vault.
+    :param client: The client object with an access token
+    :param safe_name: The name of the safe about which information is returned.
+    :return: CommandResults
+    """
+    response = client.get_safe_by_name(safe_name)
+    results = CommandResults(
+        raw_response=response,
+        outputs_prefix=f'CyberArkPAS.Safes.{safe_name}',
+        outputs_key_field='SafeName',
+        outputs=response
+    )
+    return results
 
 
 def list_safe_members_command(
         client: Client,
         safe_name: str
-):
+) -> CommandResults:
+    """Return a list of the members of the safe.
+    :param client: The client object with an access token
+    :param safe_name: The name of the safe whose safe members will be listed.
+    :return: CommandResults
+    """
     response = client.list_safe_members(safe_name)
     total_safe_members = response.get("Total")
     headline = f"There are {total_safe_members} safe members for {safe_name}"
@@ -751,7 +887,17 @@ def add_safe_member_command(
         membership_expiration_date: str = "",
         permissions: str = "",
         search_in: str = ""
-):
+) -> CommandResults:
+    """Add an existing user as a safe member.
+    :param client: The client object with an access token
+    :param safe_name: The name of the safe to add a member to.
+    :param member_name: The name of the user to add as a Safe member.
+    :param requests_authorization_level: Requests authorization level, can be 0/1/2.
+    :param membership_expiration_date: MM|DD|YY or empty if there is no expiration date.
+    :param permissions: User’s permissions in the safe.
+    :param search_in: Search for the member in the vault or domain.
+    :return: CommandResults
+    """
     permissions_list = argToList(permissions)
     response = client.add_safe_member(safe_name, member_name, requests_authorization_level, membership_expiration_date,
                                       permissions_list, search_in)
@@ -771,7 +917,16 @@ def update_safe_member_command(
         requests_authorization_level: str = "0",
         membership_expiration_date: str = "",
         permissions: str = "",
-):
+) -> CommandResults:
+    """Update an existing safe member.
+    :param client: The client object with an access token
+    :param safe_name: Name of the safe to which the safe member belongs.
+    :param member_name: Member name that will be updated.
+    :param requests_authorization_level: Requests authorization level, can be 0/1/2.
+    :param membership_expiration_date: MM|DD|YY or empty if there is no expiration date.
+    :param permissions: User’s permissions in the safe.
+    :return: CommandResults
+    """
     permissions_list = argToList(permissions)
     response = client.update_safe_member(safe_name, member_name, requests_authorization_level,
                                          membership_expiration_date, permissions_list)
@@ -788,24 +943,26 @@ def delete_safe_member_command(
         client: Client,
         safe_name: str,
         member_name: str,
-):
-    response = client.delete_safe_member(safe_name, member_name)
+) -> CommandResults:
+    """Remove a specific member from a safe.
+    :param client: The client object with an access token
+    :param safe_name: Name of the safe to which the safe member belongs.
+    :param member_name: The name of the safe member to delete from the safe’s list of members.
+    :return: CommandResults
+    """
     # the response should be an empty string, if an error raised it would be catch in the main block
-    # should never enter to the else block, extra precautions if something want wrong
-    if not response:
-        return CommandResults(
-            readable_output=f"Member {member_name} was deleted from {safe_name} safe",
-            outputs_prefix=f'CyberArkPAS.{safe_name}.{member_name}',
-            outputs_key_field='MemberName',
-            outputs={"MemberName": member_name, "deleted": True}
-        )
-    else:
-        return response
+    client.delete_safe_member(safe_name, member_name)
+    return CommandResults(
+        readable_output=f"Member {member_name} was deleted from {safe_name} safe",
+        outputs_prefix=f'CyberArkPAS.{safe_name}.{member_name}',
+        outputs_key_field='MemberName',
+        outputs={"MemberName": member_name, "deleted": True}
+    )
 
 
 def add_account_command(
         client: Client,
-        account_name: list = "",
+        account_name: str = "",
         address: str = "",
         username: str = "",
         platform_id: str = "",
@@ -816,11 +973,28 @@ def add_account_command(
         automatic_management_enabled: str = "true",
         manual_management_reason: str = "",
         remote_machines: str = "",
-        access_restricted_to_temote_machines: str = "true"
-):
+        access_restricted_to_remote_machines: str = "true"
+) -> CommandResults:
+    """Add a new privileged account or SSH key to the vault.
+    :param client: The client object with an access token
+    :param account_name: The name of the account.
+    :param address: The name or address of the machine where the account will be used.
+    :param username: The account username.
+    :param platform_id: The platform assigned to this account.
+    :param safe_name: The safe where the account will be created.
+    :param password: The password value.
+    :param secret_type: The type of password.
+    :param properties: Object containing key-value pairs to associate with the account,
+     as defined by the account platform. e.g.- {"Location": "IT", "OwnerName": "MSSPAdmin"}
+    :param automatic_management_enabled: Whether the account secret is automatically managed by the CPM.
+    :param manual_management_reason: Reason for disabling automatic secret management.
+    :param remote_machines: List of remote machines, separated by semicolons.
+    :param access_restricted_to_remote_machines: Whether or not to restrict access only to specified remote machines.
+    :return: CommandResults
+    """
     response = client.add_account(account_name, address, username, platform_id, safe_name, password, secret_type,
                                   properties, automatic_management_enabled, manual_management_reason, remote_machines,
-                                  access_restricted_to_temote_machines)
+                                  access_restricted_to_remote_machines)
     results = CommandResults(
         raw_response=response,
         outputs_prefix=f'CyberArkPAS.Accounts.{response.get("id")}',
@@ -837,7 +1011,16 @@ def update_account_command(
         address: str = "",
         username: str = "",
         platform_id: str = "",
-):
+) -> CommandResults:
+    """Update an existing account's details.
+    :param client: The client object with an access token
+    :param account_id: The unique id of the account to update.
+    :param account_name: The name of the account.
+    :param address: The name or address of the machine where the account will be used.
+    :param username: The account username.
+    :param platform_id: The platform assigned to this account.
+    :return: CommandResults
+    """
     response = client.update_account(account_id, account_name, address, username, platform_id)
     results = CommandResults(
         raw_response=response,
@@ -851,19 +1034,20 @@ def update_account_command(
 def delete_account_command(
         client: Client,
         account_id: str = "",
-):
-    response = client.delete_account(account_id)
+) -> CommandResults:
+    """Delete a specific account in the vault.
+    :param client: The client object with an access token
+    :param account_id: The unique id of the account to delete.
+    :return: CommandResults
+    """
     # the response should be an empty string, if an error raised it would be catch in the main block
-    # should never enter to the else block, extra precautions if something want wrong
-    if not response:
-        return CommandResults(
-            readable_output=f"Account {account_id} was deleted",
-            outputs_prefix=f'CyberArkPAS.Accounts.{account_id}',
-            outputs_key_field='id',
-            outputs={"id": account_id, "deleted": True}
-        )
-    else:
-        return response
+    client.delete_account(account_id)
+    return CommandResults(
+        readable_output=f"Account {account_id} was deleted",
+        outputs_prefix=f'CyberArkPAS.Accounts.{account_id}',
+        outputs_key_field='id',
+        outputs={"id": account_id, "deleted": True}
+    )
 
 
 def get_list_accounts_command(
@@ -873,7 +1057,16 @@ def get_list_accounts_command(
         offset: str = "0",
         limit: str = "50",
         filter: str = "",
-):
+) -> CommandResults:
+    """Return a list of all the accounts in the vault.
+    :param client: The client object with an access token
+    :param search: List of keywords to search for in accounts. Separated with a space, e.g- Windows admin
+    :param sort: Property or properties by which to sort returned accounts.
+    :param offset: Offset of the first account that is returned in the collection of results.
+    :param limit: Maximum number of returned accounts.
+    :param filter: Search for accounts filtered by a specific safe.
+    :return: CommandResults
+    """
     response = client.get_list_accounts(search, sort, offset, limit, filter)
     total_accounts = response.get("count")
     accounts = response.get("value")
@@ -891,7 +1084,12 @@ def get_list_accounts_command(
 def get_list_account_activity_command(
         client: Client,
         account_id: str = "",
-):
+) -> CommandResults:
+    """Returns the activities of a specific account that is identified by its account id.
+    :param client: The client object with an access token
+    :param account_id: The id of the account whose activities will be retrieved.
+    :return: CommandResults
+    """
     response = client.get_list_account_activity(account_id)
     results = CommandResults(
         raw_response=response,
@@ -905,58 +1103,104 @@ def get_list_account_activity_command(
 def change_credentials_random_password_command(
         client: Client,
         account_id: str,
-):
-    response = client.change_credentials_random_password(account_id)
-    if not response:
-        return f"The password in the account {account_id} was changed"
-    else:
-        return response
+) -> str:
+    """Mark an account for an immediate credentials change by the CPM to a new random value.
+    :param client: The client object with an access token
+    :param account_id: The unique ID of the account.
+    :return: Action was succeeded notice
+    """
+    client.change_credentials_random_password(account_id)
+    return f"The password in the account {account_id} was changed"
 
 
 def change_credentials_set_new_password_command(
         client: Client,
         account_id: str,
         new_credentials: str,
-):
-    response = client.change_credentials_set_new_password(account_id, new_credentials)
-    if not response:
-        return f"The password in the account {account_id} was changed"
-    else:
-        return response
+) -> str:
+    """Enables users to set the account's credentials to use for the next CPM change.
+    :param client: The client object with an access token
+    :param account_id: The unique ID of the account.
+    :param new_credentials: The new account credentials that will be allocated to the account in the vault.
+    :return: Action was succeeded notice
+    """
+    client.change_credentials_set_new_password(account_id, new_credentials)
+    return f"The password in the account {account_id} was changed"
 
 
 def change_credentials_in_vault_only_command(
         client: Client,
         account_id: str,
         new_credentials: str,
-):
-    response = client.change_credentials_in_vault_only(account_id, new_credentials)
-    if not response:
-        return f"The password in the account {account_id} was changed"
-    else:
-        return response
+) -> str:
+    """Enables users to set account credentials and change them in the vault.
+    :param client: The client object with an access token
+    :param account_id: The unique ID of the account.
+    :param new_credentials: The new account credentials that will be allocated to the account in the vault.
+    :return: Action was succeeded notice
+    """
+    client.change_credentials_in_vault_only(account_id, new_credentials)
+    return f"The password in the account {account_id} was changed"
 
 
 def verify_credentials_command(
         client: Client,
         account_id: str,
-):
-    response = client.verify_credentials(account_id)
-    if not response:
-        return f"The account {account_id} was marked for verification by the CPM"
-    else:
-        return response
+) -> str:
+    """Mark an account for verification by the CPM.
+    :param client: The client object with an access token
+    :param account_id: The unique ID of the account.
+    :return: Action was succeeded notice
+    """
+    client.verify_credentials(account_id)
+    return f"The account {account_id} was marked for verification by the CPM"
 
 
 def reconcile_credentials_command(
         client: Client,
         account_id: str,
-):
-    response = client.reconcile_credentials(account_id)
-    if not response:
-        return f"The account {account_id} was marked for automatic reconciliation by the CPM."
-    else:
-        return response
+) -> str:
+    """Marks an account for automatic reconciliation by the CPM.
+    :param client: The client object with an access token
+    :param account_id: The unique ID of the account.
+    :return: Action was succeeded notice
+    """
+    client.reconcile_credentials(account_id)
+    return f"The account {account_id} was marked for automatic reconciliation by the CPM."
+
+
+def get_security_events_command(
+        client: Client,
+        start_time: str,
+        limit: str
+) -> CommandResults:
+    """Returns all PTA security events.
+    :param client: The client object with an access token
+    :param start_time: The starting date to get the security events from as timestamp.
+    :param limit: The number of events that will be shown, from newest to oldest.
+    :return: Action was succeeded notice
+    """
+
+    start, _ = parse_date_range(start_time)
+    start_time_timestamp = str(date_to_timestamp(start))
+
+    events_data = client.get_security_events(start_time_timestamp)
+
+    if not events_data:
+        return CommandResults(
+            outputs="No events were found"
+        )
+
+    if limit:
+        events_data = events_data[0:int(limit)]
+
+    results = CommandResults(
+        outputs=events_data,
+        raw_response=events_data,
+        outputs_prefix=f'CyberArkPAS.Accounts',
+        outputs_key_field='id',
+    )
+    return results
 
 
 def fetch_incidents(client: Client, last_run: dict,  first_fetch_time: str, query: str,  max_fetch: str = '50')\
@@ -964,15 +1208,19 @@ def fetch_incidents(client: Client, last_run: dict,  first_fetch_time: str, quer
 
     if not last_run:  # if first time fetching
         start_time, _ = parse_date_range(first_fetch_time)
-        start_time_timestamp = date_to_timestamp(start_time)
+        start_time_timestamp = str(date_to_timestamp(start_time))
         next_run = {
-            'time': str(start_time_timestamp),
+            'time': start_time_timestamp,
             'last_event_ids': []
         }
     else:
         next_run = last_run
 
     events_data = client.get_security_events(next_run.get("time"))
+
+    if not events_data:
+        return next_run, []
+
     filtered_events_data = filter_by_query(events_data, int(query))
 
     # the events are sorted from the newest to the oldest so first we reverse the list
@@ -996,7 +1244,7 @@ def fetch_incidents(client: Client, last_run: dict,  first_fetch_time: str, quer
                 incident = {
                     'name': f"CyberArk PAS Incident: {event_id}.",
                     'occurred': timestamp_to_datestring(event_updated_time),
-                    'severity': incident_priority_to_dbot_score(int(event_data.get('score'))),
+                    'severity': incident_priority_to_dbot_score(float(event_data.get('score'))),
                     'rawJSON': json.dumps(event_data)
                 }
                 incidents.append(incident)
@@ -1008,7 +1256,7 @@ def fetch_incidents(client: Client, last_run: dict,  first_fetch_time: str, quer
 
         if new_event_ids and event_updated_time:
             next_run = {
-                'time': event_updated_time,
+                'time': str(event_updated_time),
                 'last_event_ids': json.dumps(new_event_ids)  # save the event IDs from the last fetch
             }
     demisto.debug(f'CyberArk PAS last fetch data: {str(next_run)}')
@@ -1033,39 +1281,41 @@ def main():
     commands = {
         'test-module': test_module,
 
-        'cyberark-pas-add-user': add_user_command,
-        'cyberark-pas-update-user': update_user_command,
-        'cyberark-pas-delete-user': delete_user_command,
-        'cyberark-pas-get-users': get_users_command,
-        'cyberark-pas-activate-user': activate_user_command,
+        'cyberark-pas-user-add': add_user_command,
+        'cyberark-pas-user-update': update_user_command,
+        'cyberark-pas-user-delete': delete_user_command,
+        'cyberark-pas-users-list': get_users_command,
+        'cyberark-pas-user-activate': activate_user_command,
 
-        'cyberark-pas-add-safe': add_safe_command,
-        'cyberark-pas-update-safe': update_safe_command,
-        'cyberark-pas-delete-safe': delete_safe_command,
-        'cyberark-pas-get-list-safes': get_list_safes_command,
-        'cyberark-pas-get-safe-by-name': get_safe_by_name_command,
+        'cyberark-pas-safe-add': add_safe_command,
+        'cyberark-pas-safe-update': update_safe_command,
+        'cyberark-pas-safe-delete': delete_safe_command,
+        'cyberark-pas-safes-list': get_list_safes_command,
+        'cyberark-pas-safe-get-by-name': get_safe_by_name_command,
 
-        'cyberark-pas-add-safe-member': add_safe_member_command,
-        'cyberark-pas-update-safe-member': update_safe_member_command,
-        'cyberark-pas-delete-safe-member': delete_safe_member_command,
-        'cyberark-pas-list-safe-members': list_safe_members_command,
+        'cyberark-pas-safe-member-add': add_safe_member_command,
+        'cyberark-pas-safe-member-update': update_safe_member_command,
+        'cyberark-pas-safe-member-delete': delete_safe_member_command,
+        'cyberark-pas-safe-members-list': list_safe_members_command,
 
-        'cyberark-pas-add-account': add_account_command,
-        'cyberark-pas-update-account': update_account_command,
-        'cyberark-pas-delete-account': delete_account_command,
-        'cyberark-pas-get-list-accounts': get_list_accounts_command,
-        'cyberark-pas-get-list-account-activity': get_list_account_activity_command,
+        'cyberark-pas-account-add': add_account_command,
+        'cyberark-pas-account-update': update_account_command,
+        'cyberark-pas-account-delete': delete_account_command,
+        'cyberark-pas-accounts-list': get_list_accounts_command,
+        'cyberark-pas-account-get-list-activity': get_list_account_activity_command,
 
-        'cyberark-pas-change-credentials-random-password': change_credentials_random_password_command,
-        'cyberark-pas-change-credentials-set-new-password': change_credentials_set_new_password_command,
-        'cyberark-pas-change-credentials-in-vault-only': change_credentials_in_vault_only_command,
-        'cyberark-pas-verify-credentials': verify_credentials_command,
-        'cyberark-pas-reconcile-credentials': reconcile_credentials_command,
+        'cyberark-pas-credentials-change-random-password': change_credentials_random_password_command,
+        'cyberark-pas-credentials-change-set-new-password': change_credentials_set_new_password_command,
+        'cyberark-pas-credentials-change-in-vault-only': change_credentials_in_vault_only_command,
+        'cyberark-pas-credentials-verify': verify_credentials_command,
+        'cyberark-pas-credentials-reconcile': reconcile_credentials_command,
 
+        'cyberark-pas-security-events-get': get_security_events_command,
     }
 
     try:
-        client = Client(server_url=url, username=username, password=password, use_ssl=use_ssl, proxy=proxy)
+        client = Client(server_url=url, username=username, password=password, use_ssl=use_ssl, proxy=proxy,
+                        max_fetch=int(max_fetch))
 
         if command in commands:
             return_results(commands[command](client, **demisto.args()))  # type: ignore[operator]
@@ -1088,7 +1338,7 @@ def main():
         try:
             client._logout()
         except Exception as err:
-            demisto.info("CyberArk PAS error: " + str(err))
+            demisto.info(f"CyberArk PAS error: {str(err)}")
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

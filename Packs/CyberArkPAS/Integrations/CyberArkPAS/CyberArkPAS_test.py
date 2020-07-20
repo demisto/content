@@ -18,93 +18,93 @@ from Packs.CyberArkPAS.Integrations.CyberArkPAS.test_data.http_resonses import A
 
 ADD_USER_ARGS = {
   "change_password_on_the_next_logon": "true",
-  "description": "new user for test",
-  "email": "usertest@test.com",
-  "enable_user": "true",
-  "first_name": "user",
-  "last_name": "test",
-  "password": "12345Aa",
-  "password_never_expires": "false",
-  "profession": "testing integrations",
-  "username": "TestUser"
+    "description": "new user for test",
+    "email": "usertest@test.com",
+    "enable_user": "true",
+    "first_name": "user",
+    "last_name": "test",
+    "password": "12345Aa",
+    "password_never_expires": "false",
+    "profession": "testing integrations",
+    "username": "TestUser"
 }
 
 UPDATE_USER_ARGS = {
-  "change_password_on_the_next_logon": "true",
-  "description": "updated description",
-  "email": "update@test.com",
-  "enable_user": "true",
-  "first_name": "test1",
-  "last_name": "updated-name",
-  "password_never_expires": "false",
-  "profession": "test1",
-  "user_id": "123",
-  "username": "TestUser1"
+    "change_password_on_the_next_logon": "true",
+    "description": "updated description",
+    "email": "update@test.com",
+    "enable_user": "true",
+    "first_name": "test1",
+    "last_name": "updated-name",
+    "password_never_expires": "false",
+    "profession": "test1",
+    "user_id": "123",
+    "username": "TestUser1"
 }
 
 GET_USER_ARGS = {
-  "filter": "filteroption",
-  "search": "searchoption"
+    "filter": "filteroption",
+    "search": "searchoption"
 }
 
 ADD_SAFE_ARGS = {
-  "description": "safe for tests",
-  "number_of_days_retention": "100",
-  "safe_name": "TestSafe"
+    "description": "safe for tests",
+    "number_of_days_retention": "100",
+    "safe_name": "TestSafe"
 }
 
 UPDATE_SAFE_ARGS = {
-  "description": "UpdatedSafe",
-  "number_of_days_retention": "150",
-  "safe_name": "TestSafe",
-  "safe_new_name": "UpdatedName"
+    "description": "UpdatedSafe",
+    "number_of_days_retention": "150",
+    "safe_name": "TestSafe",
+    "safe_new_name": "UpdatedName"
 }
 
 GET_SAFE_BY_NAME_ARGS = {
-  "safe_name": "TestSafe"
+    "safe_name": "TestSafe"
 }
 
 ADD_SAFE_MEMBER_ARGS = {
-  "member_name": "TestUser",
-  "requests_authorization_level": "0",
-  "safe_name": "TestSafe"
+    "member_name": "TestUser",
+    "requests_authorization_level": "0",
+    "safe_name": "TestSafe"
 }
 
 UPDATE_SAFE_MEMBER_ARGS = {
-  "member_name": "TestUser",
-  "permissions": "UseAccounts",
-  "requests_authorization_level": "0",
-  "safe_name": "TestSafe"
+    "member_name": "TestUser",
+    "permissions": "UseAccounts",
+    "requests_authorization_level": "0",
+    "safe_name": "TestSafe"
 }
 
 LIST_SAFE_MEMBER_ARGS = {
-  "safe_name": "TestSafe"
+    "safe_name": "TestSafe"
 }
 
 
 ADD_ACCOUNT_ARGS = {
-  "account_name": "TestAccount1",
-  "address": "/",
-  "automatic_management_enabled": "true",
-  "password": "12345Aa",
-  "platform_id": "WinServerLocal",
-  "safe_name": "TestSafe",
-  "secret_type": "password",
-  "username": "TestUser"
+    "account_name": "TestAccount1",
+    "address": "/",
+    "automatic_management_enabled": "true",
+    "password": "12345Aa",
+    "platform_id": "WinServerLocal",
+    "safe_name": "TestSafe",
+    "secret_type": "password",
+    "username": "TestUser"
 }
 
 UPDATE_ACCOUNT_ARGS = {
-  "account_id": "77_4",
-  "account_name": "NewName"
+    "account_id": "77_4",
+    "account_name": "NewName"
 }
 
 GET_LIST_ACCOUNT_ARGS = {
-  "limit": "2",
-  "offset": "0"
+    "limit": "2",
+    "offset": "0"
 }
 
 GET_LIST_ACCOUNT_ACTIVITIES_ARGS = {
-  "account_id": "77_4"
+    "account_id": "77_4"
 }
 
 
@@ -141,7 +141,7 @@ def test_cyberark_aim_commands(command, args, http_response, context, mocker):
     """
     mocker.patch.object(Client, '_generate_token')
     client = Client(server_url="https://api.cyberark.com/", username="user1", password="12345", use_ssl=False,
-                    proxy=False)
+                    proxy=False, max_fetch=50)
 
     mocker.patch.object(Client, '_http_request', return_value=http_response)
 
@@ -162,11 +162,11 @@ def test_fetch_incidents(mocker):
     """
     mocker.patch.object(Client, '_generate_token')
     client = Client(server_url="https://api.cyberark.com/", username="user1", password="12345", use_ssl=False,
-                    proxy=False)
+                    proxy=False, max_fetch=50)
 
     mocker.patch.object(Client, '_http_request', return_value=GET_SECURITY_EVENTS_RAW_RESPONSE)
 
-    a, incidents = fetch_incidents(client, {}, "3 days", "0", "2")
+    _, incidents = fetch_incidents(client, {}, "3 days", "0", "2")
     assert incidents == INCIDENTS
 
 
@@ -183,10 +183,11 @@ def test_fetch_incidents_with_an_incident_that_was_shown_before(mocker):
         """
     mocker.patch.object(Client, '_generate_token')
     client = Client(server_url="https://api.cyberark.com/", username="user1", password="12345", use_ssl=False,
-                    proxy=False)
+                    proxy=False, max_fetch=50)
 
     mocker.patch.object(Client, '_http_request', return_value=GET_SECURITY_EVENTS_RAW_RESPONSE)
     # the last run dict is the same we would have got if we run the prev test before
     last_run = {'time': 1594573600000, 'last_event_ids': '["5f0b3064e4b0ba4baf5c1113", "5f0b4320e4b0ba4baf5c2b05"]'}
     _, incidents = fetch_incidents(client, last_run, "3 days", "0", "1")
     assert incidents == INCIDENTS2
+
