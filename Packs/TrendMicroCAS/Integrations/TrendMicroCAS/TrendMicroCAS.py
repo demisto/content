@@ -363,7 +363,7 @@ def email_take_action_command(client, args):
     result = client.email_take_action(action_type, mailbox, mail_message_id, mail_unique_id, mail_message_delivery_time)
     output = {
         'action_type': action_type,
-        'mailbox': argToList(mailbox),
+        'mailbox': mailbox,
         'batch_id': result.get('batch_id'),
         'traceId': result.get('traceId')
     }
@@ -438,7 +438,7 @@ def blocked_lists_update_command(client, args):
 
     result = client.blocked_lists_update(action_type, senders_list, urls_list, filehashes_list)
     rules = assign_params(senders=senders_list, urls=urls_list, filehashes=filehashes_list)
-    readable_output = tableToMarkdown(f'{action_type} Blocked List successfully', rules)
+    readable_output = tableToMarkdown(result.get('message'), rules)
 
     return CommandResults(
         readable_output=readable_output,
