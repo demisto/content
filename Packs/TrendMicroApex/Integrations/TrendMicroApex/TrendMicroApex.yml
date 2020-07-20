@@ -538,7 +538,7 @@ script:
   - deprecated: false
     execution: false
     name: trendmicro-apex-investigation-result-list-by-status
-  dockerimage: devtesting/pycef:1.0.0.1595168264
+  dockerimage: devdemisto/pycef:1.0.0.9919
   feed: false
   isfetch: false
   longRunning: false
