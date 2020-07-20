@@ -293,9 +293,9 @@ def fetch_incidents(
 
     demisto_incidents, last_fetch, last_id_returned = \
         incidents(st, last_id, last_run, risk, fetch_also_n2os_incidents, client)
-    demisto.setLastRun({'last_fetch': last_fetch, 'last_id': last_id_returned})
 
     if not test_mode:
+        demisto.setLastRun({'last_fetch': last_fetch, 'last_id': last_id_returned})
         ack_alerts(nozomi_alerts_ids_from_demisto_incidents(demisto_incidents), client)
         demisto.incidents(demisto_incidents)
 
@@ -303,7 +303,6 @@ def fetch_incidents(
 
 
 def is_alive(client):
-    client = client or get_client()
     error = None
     try:
         client.http_get_request(f'{QUERY_ALERTS_PATH} | count')
