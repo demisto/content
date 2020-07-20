@@ -23,13 +23,13 @@ def where_field_equals(args):
     if len(found_matches) == 1:
         return found_matches[0]
 
-    return found_matches
+    return json.dumps(found_matches, separators=(',', ':'))
 
 
 def main():
     args = demisto.args()
     hr_string = where_field_equals(args)
-    return_outputs(readable_output=str(hr_string))
+    return_outputs(readable_output=hr_string)
 
 
 # python2 uses __builtin__ python3 uses builtins
