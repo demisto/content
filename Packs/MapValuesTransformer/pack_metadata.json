@@ -1,0 +1,16 @@
+{
+    "name": "MapValuesTransformer",
+    "description": "Provides a transformer script to map a value that is present in one list, to a value in another list.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-07-18T09:40:13Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

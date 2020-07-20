@@ -1,0 +1,28 @@
+commonfields:
+  id: MapValuesTransformer
+  version: 15
+vcShouldKeepItemLegacyProdMachine: false
+name: MapValuesTransformer
+script: ''
+type: python
+tags:
+- transformer
+- string
+comment: |-
+  This script will convert a value into another value using 2 lists. The input value is searched in the first list (input_values). If it exists, the value from the second list (mapped_values) at the same index is retutrned. If there is no match, the original value is returned.
+
+  This script will force the input value to be a string and the input_values and mapped_values to also be strings.
+enabled: true
+args:
+- name: input_values
+  required: true
+  description: Comma separated values to map from.
+- name: mapped_values
+  required: true
+  description: Comma separated values to map to.
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.8.3.9324
+runas: DBotWeakRole
