@@ -2895,7 +2895,7 @@
         "Create Phishing Classifier V2 ML Test": "Issue 26341",
         "DuoAdmin API test playbook": "Issue 24937",
         "Mail Sender (New) Test": "Issue 25602",
-        "HTTPListRedirects Basic Test": "Issue 26617",
+        "HTTPListRedirects Basic Test": "Issue 26459",
         "SMB test": "Issue 26454",
         "Infocyte-Test": "Issue 26445",
         "Account Enrichment - Generic v2 - Test": "Issue 26452",
@@ -2904,7 +2904,12 @@
         "Google Chronicle Backstory Asset - Test": "Issue 26460",
         "Keylight v2 - Test": "Issue 26462",
         "AutoFocus V2 test": "Issue 26464",
-        "PAN-OS Create Or Edit Rule Test": "Issue 26465"
+        "PAN-OS Create Or Edit Rule Test": "Issue 26465",
+        "HybridAnalysis-Test": "Issue 26599",
+        "Logzio - Test": "Issue 26729",
+        "Tenable.io test": "Issue 26727",
+        "Tenable.io Scan Test": "Issue 26727",
+        "URL Enrichment - Generic v2 - Test": "Issue 26463"
     },
     "skipped_integrations": {
         
