@@ -267,9 +267,9 @@ def test_get_file_metadata_command(mocker):
     hr = '| Arcyess | 484872 | PE32 | 2014/05/09 | malware | 43c596cabeb4c1d335ce53c3c7c4c392 | ' \
          'b32c34ab09e8c20e1ed93a72bcc5424a982d3042 | accc6794951290467e01b7676e8b4ba177076d54f836589ea7d3298cdf6fc995 |'
     outputs = [{'sha256': 'accc6794951290467e01b7676e8b4ba177076d54f836589ea7d3298cdf6fc995',
-               'sha1': 'b32c34ab09e8c20e1ed93a72bcc5424a982d3042', 'md5': '43c596cabeb4c1d335ce53c3c7c4c392',
-               'filesize': 484872,
-               'label': 'malware', 'family': 'Arcyess', 'first_seen': '2014/05/09', 'filetype': 'PE32'}]
+                'sha1': 'b32c34ab09e8c20e1ed93a72bcc5424a982d3042', 'md5': '43c596cabeb4c1d335ce53c3c7c4c392',
+                'filesize': 484872,
+                'label': 'malware', 'family': 'Arcyess', 'first_seen': '2014/05/09', 'filetype': 'PE32'}]
     mocker.patch.object(client, 'get_files_metadata',
                         return_value=util_load_json('test_data/get_metadata_raw_response.json'))
     result = get_file_metadata_command(client,
