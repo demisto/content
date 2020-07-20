@@ -11,6 +11,8 @@
         "Network Security"
     ],
     "tags": [],
-    "useCases": ["Brute Force"],
+    "useCases": [
+        "Brute Force"
+    ],
     "keywords": []
 }
