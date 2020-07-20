@@ -587,7 +587,7 @@
         },
         {
             "playbookID": "WordTokenizeTest",
-            "toversion":  "4.5.0"
+            "toversion":  "4.5.9"
         },
         {
             "integrations": "QRadar",
