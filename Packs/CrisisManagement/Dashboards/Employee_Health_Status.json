@@ -39,7 +39,7 @@
                 "widgetType": "pie",
                 "query": "type:employee",
                 "sort": null,
-                "isPredefined": false,
+                "isPredefined": true,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
                     "toDate": "0001-01-01T00:00:00Z",
@@ -155,7 +155,7 @@
                 "widgetType": "pie",
                 "query": "type:employee and -employeeresponsestatus:\"\"",
                 "sort": null,
-                "isPredefined": false,
+                "isPredefined": true,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
                     "toDate": "0001-01-01T00:00:00Z",
@@ -271,7 +271,7 @@
                 "widgetType": "table",
                 "query": "type:employee and (employeehealthstatus:\"I am not feeling well\")",
                 "sort": null,
-                "isPredefined": false,
+                "isPredefined": true,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
                     "toDate": "0001-01-01T00:00:00Z",
@@ -320,7 +320,7 @@
             }
         }
     ],
-    "fromVersion": "5.5.0",
+    "fromVersion": "6.0.0",
     "description": "",
-    "isPredefined": false
+    "isPredefined": true
 }

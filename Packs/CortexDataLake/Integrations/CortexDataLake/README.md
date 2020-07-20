@@ -65,7 +65,7 @@ Runs a query on the Cortex logging service.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | A free-text SQL query. For example, query="SELECT * FROM `firewall.traffic` limit 10". There are multiple tables in Loggings, for example: threat, traffic, and so on. Refer to the Cortex Logging service schema reference for the full list. | Optional |
+| query | A free-text SQL query. For example, query="SELECT * FROM \`firewall.traffic\` limit 10". There are multiple tables in Loggings, for example: threat, traffic, and so on. Refer to the Cortex Logging service schema reference for the full list. | Optional |
 | limit | The number of logs to return. Default is 10 | Optional | 
  
 
@@ -776,7 +776,8 @@ Searches the Cortex panw.threat table, which is the threat logs table for PAN-OS
 | File.Type | String | The file type, as determined by libmagic (same as displayed in file entries). | 
 
 
-##### Command Example
+##### Command Examples
+```!cdl-query-threat-logs query="is_packet_capture = true AND severity = \"Critical\"" fields=pcap limit=10```
 ```!cdl-query-threat-logs action="allow" fields="vendor_name,log_source,rule_matched,dest_location,log_time" time_range="10 days" limit="1"```
 
 ##### Context Example

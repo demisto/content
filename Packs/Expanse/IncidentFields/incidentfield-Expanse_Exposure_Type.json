@@ -1,15 +1,14 @@
 {
 	"associatedToAll": false,
 	"associatedTypes": [
-		"Expanse Appearance",
-		"Expanse Behavior"
+		"Expanse Appearance"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
 	"cliName": "expanseexposuretype",
 	"closeForm": false,
 	"columns": null,
-	"content": false,
+	"content": true,
 	"defaultRows": null,
 	"description": "",
 	"editForm": true,

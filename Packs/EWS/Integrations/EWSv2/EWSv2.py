@@ -495,9 +495,9 @@ def get_account_autodiscover(account_email, access_type=ACCESS_TYPE):
             )
             account.root.effective_rights.read  # pylint: disable=E1101
             return account
-        except Exception as original_exc:
+        except Exception as e:
             # fixing flake8 correction where original_exc is assigned but unused
-            original_exc = original_exc
+            original_exc = e
             pass
 
     try:
@@ -508,7 +508,7 @@ def get_account_autodiscover(account_email, access_type=ACCESS_TYPE):
         return_error("Auto discovery failed. Check credentials or configure manually")
 
     autodiscover_result = create_context_dict(account)
-    if autodiscover_result == context_dict:
+    if autodiscover_result == context_dict and original_exc:
         raise original_exc  # pylint: disable=E0702
 
     if account_email == ACCOUNT_EMAIL:
@@ -1983,11 +1983,12 @@ def test_module():
         global IS_TEST_MODULE
         IS_TEST_MODULE = True
         account = get_account(ACCOUNT_EMAIL)
-        if not account.root.effective_rights.read:  # pylint: disable=E1101
+        folder = get_folder_by_path(account, FOLDER_NAME, IS_PUBLIC_FOLDER)
+        if not folder.effective_rights.read:  # pylint: disable=E1101
             raise Exception("Success to authenticate, but user has no permissions to read from the mailbox. "
                             "Need to delegate the user permissions to the mailbox - "
                             "please read integration documentation and follow the instructions")
-        get_folder_by_path(account, FOLDER_NAME, IS_PUBLIC_FOLDER).test_access()
+        folder.test_access()
     except ErrorFolderNotFound as e:
         if "Top of Information Store" in e.message:
             raise Exception(
@@ -2145,7 +2146,7 @@ def sub_main():
             error_message += "\nFull debug log:\n" + debug_log
 
         if demisto.command() == 'fetch-incidents':
-            raise
+            raise Exception(str(e) + traceback.format_exc())
         if demisto.command() == 'ews-search-mailbox' and isinstance(e, ValueError):
             return_error(message="Selected invalid field, please specify valid field name.", error=e)
         if IS_TEST_MODULE:

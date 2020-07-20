@@ -3181,9 +3181,8 @@ def parse_email_headers(header, raw=False):
 def get_msg_mail_format(msg_dict):
     try:
         return msg_dict.get('Headers', 'Content-type:').split('Content-type:')[1].split(';')[0]
-    except ValueError:
-        return ''
-    except IndexError:
+    except Exception as e:
+        demisto.debug('Got exception while trying to get msg mail format - {}'.format(str(e)))
         return ''
 
 
@@ -3416,7 +3415,7 @@ def unfold(s):
     return re.sub(r'[ \t]*[\r\n][ \t\r\n]*', ' ', s).strip(' ')
 
 
-def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, max_depth=3):
+def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, max_depth=3, bom=False):
     global ENCODINGS_TYPES
     global IS_NESTED_EML
 
@@ -3428,6 +3427,9 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
         file_data = emlFile.read()
         if b64:
             file_data = b64decode(file_data)
+        if bom:
+            # decode bytes taking into account BOM and re-encode to utf-8
+            file_data = file_data.decode("utf-8-sig").encode("utf-8")
 
         parser = HeaderParser()
         headers = parser.parsestr(file_data)
@@ -3651,7 +3653,8 @@ def main():
         if is_error(result):
             return_error(get_error(result))
 
-        file_type = result[0]['FileMetadata'].get('info', '')
+        file_metadata = result[0]['FileMetadata']
+        file_type = file_metadata.get('info', '') or file_metadata.get('type', '')
 
     except Exception as ex:
         return_error(
@@ -3665,8 +3668,14 @@ def main():
             email_data, attached_emails = handle_msg(file_path, file_name, parse_only_headers, max_depth)
             output = create_email_output(email_data, attached_emails)
 
-        elif 'rfc 822 mail' in file_type_lower or 'smtp mail' in file_type_lower or 'multipart/signed' in file_type_lower:
-            email_data, attached_emails = handle_eml(file_path, False, file_name, parse_only_headers, max_depth)
+        elif any(eml_candidate in file_type_lower for eml_candidate in
+                 ['rfc 822 mail', 'smtp mail', 'multipart/signed', 'message/rfc822']):
+            if 'unicode (with bom) text' in file_type_lower:
+                email_data, attached_emails = handle_eml(
+                    file_path, False, file_name, parse_only_headers, max_depth, bom=True
+                )
+            else:
+                email_data, attached_emails = handle_eml(file_path, False, file_name, parse_only_headers, max_depth)
             output = create_email_output(email_data, attached_emails)
 
         elif ('ascii text' in file_type_lower or 'unicode text' in file_type_lower

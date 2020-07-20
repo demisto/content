@@ -1,7 +1,7 @@
 import pytest
 
 from CommonServerPython import *
-from FindSimilarIncidents import main
+from FindSimilarIncidents import main, get_incidents_by_keys
 
 default_args = {
     'hoursBack': 5,
@@ -78,6 +78,21 @@ def execute_command(command, args=None):
             return []
     else:
         return []
+
+
+def test_get_incident_by_keys(mocker):
+    similar_incident_keys = {u'testint': 1111}
+    time_field = 'created'
+    incident_time = '2020-05-19T21:36:53.193257495Z'
+    incident_id = 9
+    hours_back = 72.0
+    ignore_closed = True
+    max_number_of_results = 1000
+    extra_query = None
+    applied_condition = 'AND'
+    mocker.patch.object(demisto, 'executeCommand')
+    get_incidents_by_keys(similar_incident_keys, time_field, incident_time, incident_id, hours_back, ignore_closed,
+                          max_number_of_results, extra_query, applied_condition)
 
 
 def test_similar_incidents_fields(mocker):

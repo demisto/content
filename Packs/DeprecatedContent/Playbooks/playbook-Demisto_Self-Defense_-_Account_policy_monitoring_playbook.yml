@@ -1,7 +1,7 @@
 id: Demisto_Self-Defense_-_Account_policy_monitoring_playbook
 version: -1
 name: Demisto Self-Defense - Account policy monitoring playbook
-description: Get list of Demisto users through the REST API, and alert if any non-SAML user accounts are found.
+description: DEPRECATED. Get list of Demisto users through the REST API, and alert if any non-SAML user accounts are found.
 fromversion: 3.5.0
 starttaskid: "0"
 tasks:

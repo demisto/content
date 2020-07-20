@@ -3,20 +3,21 @@ Create and Manage Azure Virtual Machines
 <br/>
 This integration was integrated and tested with Azure Compute API Version: 2017-12-01.
 </p>
-<h2>Detailed Description</h2>
+<h2>Authentication</h2>
+For more details about the authentication used in this integration, see <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication">Microsoft Integrations - Authentication</a>.
+
 <ul>
-<li>To allow us access to Azure Compute, an admin has to approve our app using an admin consent flow, by clicking on the following <a href="https://oproxy.demisto.ninja/ms-azure-compute)">link</a>.</li>
 <li>After authorizing the Demisto app, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields. After giving consent, the application has to have a role assigned so it can access the relevant resources per subscription. </li>
 <li>In order to assign a role to the application after consent was given: 
   <ul>
     <li>Go to the Azure Portal UI.</li>
     <li>Go to Subscriptions, and then Access Control (IAM).</li>
     <li>Click Add.</li>
-    <li>Select a role that includes the following permissions:</li>
+    <li>Select a role that includes the following permissions:
     <ul>
       <li>Microsoft.Compute/virtualMachines/*</li>
       <li>Microsoft.Network/networkInterfaces/read</li>
-    </ul>
+    </ul> </li>
     <li>Select the Azure Secruity Center application.</li>
   </ul>
 </li>
@@ -37,12 +38,14 @@ This integration was integrated and tested with Azure Compute API Version: 2017-
    <li><strong>Default Subscription ID</strong></li>
    <li><strong>Use system proxy</strong></li>
    <li><strong>Trust any certificate (not secure)</strong></li>
+   <li><strong>Use a self-deployed Azure Application</strong></li>
     </ul>
   </li>
   <li>
     Click&nbsp;<strong>Test</strong>&nbsp;to validate the new instance.
   </li>
 </ol>
+
 <div class="cl-preview-section">
   <h2 id="commands">Commands</h2>
 </div>

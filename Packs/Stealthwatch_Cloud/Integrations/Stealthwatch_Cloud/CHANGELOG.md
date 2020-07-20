@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+Fixed an issue where the ***sw-update-alert*** command was not updating the alert as expected.
 
 
 ## [20.4.0] - 2020-04-14

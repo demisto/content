@@ -13,16 +13,16 @@ The web server for the integration runs within a long-running Docker container. 
  - It's important that the port is opened for outside communication and that the port is not being used, meaning that no service is listening on it. Therefore, the default port, 443, should not be used.
  - For additional security, we recommend placing the Teams integration webserver behind a reverse proxy (such as NGINX).
  - By default, the web server that the integration starts provides services in HTTP. For communication to be in HTTPS you need to provide a certificate and private key in the following format:
- ```
- `-----BEGIN CERTIFICATE-----`
- `...`
- `-----END CERTIFICATE-----`
-```
- ```
- `-----BEGIN PRIVATE KEY-----`
- `...`
- `-----END PRIVATE KEY-----`
-```
+    ```
+     -----BEGIN CERTIFICATE-----
+     ...
+     -----END CERTIFICATE-----
+    ```
+    ```
+     -----BEGIN PRIVATE KEY-----
+     ...
+     -----END PRIVATE KEY-----
+    ```
  - Microsoft does not support self-signed certificates and requires a chain-trusted certificate issued by a trusted CA.
  
 ## Setup Examples
@@ -35,6 +35,11 @@ The messaging endpoint needs to be: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGR
 The integration instance name, `teams` in this example, needs to be configured in the [Configure Microsoft Teams on Demisto](#configure-microsoft-teams-on-demisto) step.
 
 The port to be configured in [Configure Microsoft Teams on Demisto](#configure-microsoft-teams-on-demisto) step should be any available port that is not used by another service.
+
+In addition, make sure ***Instance execute external*** is enabled. 
+
+1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
+2. In the **Server Configuration** section, verify that the ***instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>*** (`instance.execute.external.teams` in this example) key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>* and set the value to *true*. See the following [reference article](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
 
  - Note: This option is available from Cortex XSOAR v5.5.0 and later.
 
@@ -116,7 +121,7 @@ Before you can create an instance of the Microsoft Teams integration in Demisto,
   - To enable calling capabilities on the Bot enter the same URL to the **Calling endpoints** section.
 14. From the left-side navigation pane, under Finish, click **Test and distribute**.
 15. To download the new bot file, which now includes App Details, click **Download**.
-16. Navigate to Store, and click **Upload a custom app > Upload for <yourOrganization>**, and select the ZIP file you downloaded.
+16. Navigate to Store, and click **Upload a custom app > Upload for ORGANIZATION-NAME**, and select the ZIP file you downloaded.
 
 ### Grant the Demisto Bot Permissions in Microsoft Graph
 
@@ -124,8 +129,7 @@ Before you can create an instance of the Microsoft Teams integration in Demisto,
 2. Search for and click **Demisto Bot**.
 3. Click **API permissions > Add a permission > Microsoft Graph > Application permissions**.
 4. For the following permissions, search for,  select the checkbox and click **Add permissions**.
-  - User.ReadWrite.All
-  - Directory.ReadWrite.All
+  - User.Read.All
   - Group.ReadWrite.All
   - Calls.Initiate.All
   - Calls.InitiateGroupCall.All
@@ -143,7 +147,7 @@ Before you can create an instance of the Microsoft Teams integration in Demisto,
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Name | The integration instance name.<br>If using Cortex XSOAR rerouting configuration, insert here the instance name you configured in the messaging endpoint. | True |
+| Name | The integration instance name.<br />If using Cortex XSOAR rerouting configuration, insert here the instance name you configured in the messaging endpoint. | True |
 | bot_id | Bot ID | True |
 | bot_password | Bot Password | True |
 | team | Default team - team to which messages and notifications are sent. If a team is specified as a command argument, it overrides this parameter | True |
@@ -185,9 +189,7 @@ To mention a user in the message, add a semicolon ";" at the end of the user men
 
 ##### Required Permissions
 
-`Group.ReadWrite.All`
-`User.ReadWrite.All`
-`Directory.ReadWrite.All`
+`Group.Read.All`
 
 ##### Input
 
@@ -222,8 +224,6 @@ Mirrors the Demisto investigation to the specified Microsoft Teams channel.
 ##### Required Permissions
 
 `Group.ReadWrite.All`
-`User.ReadWrite.All`
-`Directory.ReadWrite.All`
 
 ##### Input
 
@@ -233,7 +233,7 @@ Mirrors the Demisto investigation to the specified Microsoft Teams channel.
 | autoclose | Whether to auto-close the channel when the incident is closed in Demisto. If "true", the channel will be auto-closed. Default is "true". | Optional | 
 | direction | The mirroring direction. Can be "FromDemisto", "ToDemisto", or "Both". | Optional | 
 | team | The team in which to mirror the Demisto investigation. If not specified, the default team configured in the integration parameters will be used. | Optional | 
-| channel_name | The name of the channel. The default is "incident-<incidentID>". | Optional | 
+| channel_name | The name of the channel. The default is "incident-INCIDENTID". | Optional | 
 
 
 ##### Context Output
@@ -259,8 +259,6 @@ Deletes the specified Microsoft Teams channel.
 ##### Required Permissions
 
 `Group.ReadWrite.All`
-`User.ReadWrite.All`
-`Directory.ReadWrite.All`
 
 ##### Input
 
@@ -350,9 +348,8 @@ Adds a member (user) to a private channel.
 
 ##### Required Permissions
 
-`Group.ReadWrite.All`
-`User.ReadWrite.All`
-`Directory.ReadWrite.All`
+`User.Read.All`
+`ChannelMember.ReadWrite.All`
 
 ##### Input
 
@@ -385,8 +382,6 @@ Creates a new channel in a Microsoft Teams team.
 ##### Required Permissions
 
 `Group.ReadWrite.All`
-`User.ReadWrite.All`
-`Directory.ReadWrite.All`
 
 ##### Input
 
@@ -422,28 +417,31 @@ You can send the message `help` in order to see the supported commands:
 
 ## Troubleshooting
 
-The integration works by spinning up a webserver that listens to events and data posted to it from Microsoft Teams.
+1. The integration works by spinning up a webserver that listens to events and data posted to it from Microsoft Teams.
 
-If you see the error message `Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly.`, then it means that the tenant ID was never posted to the webserver, which should happen for the first time when the bot is added to the configured team.
+    If you see the error message `Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly.`, then it means that the tenant ID was never posted to the webserver, which should happen for the first time when the bot is added to the configured team.
+    
+    This probably means that there is a connection issue, and the webserver does not intercept the HTTPS queries from Microsoft Teams.
+    
+    In order to troubleshoot, first verify the Docker container is up and running and publish the configured port to the outside world:
+    
+    From the Cortex XSOAR / Cortex XSOAR engine machine run: `docker ps | grep teams`
+    
+    You should see the following, assuming port 7000 is used:
+    
+    `988fdf341127        demisto/teams:1.0.0.6483      "python /tmp/pyrunne…"   6 seconds ago       Up 4 seconds        0.0.0.0:7000->7000/tcp   demistoserver_pyexecLongRunning-b60c04f9-754e-4b68-87ed-8f8113419fdb-demistoteams1.0.0.6483--26` 
+     
+    If the Docker container is up and running, try running cURL queries, to verify the webserver is up and running and listens on the configured URL:
+    
+     - To the messaging endpoint from a separate box.
+     - From the Cortex XSOAR machine to localhost.
+     
+       - Note: The webserver supports only POST method queries.
+       
+    If the cURL queries were sent successfully, you should see in Cortex XSOAR logs the following line: `Finished processing Microsoft Teams activity successfully`
 
-This probably means that there is a connection issue, and the webserver does not intercept the HTTPS queries from Microsoft Teams.
 
-In order to troubleshoot, first verify the Docker container is up and running and publish the configured port to the outside world:
-
-From the Cortex XSOAR / Cortex XSOAR engine machine run: `docker ps | grep teams`
-
-You should see the following, assuming port 7000 is used:
-
-`988fdf341127        demisto/teams:1.0.0.6483      "python /tmp/pyrunne…"   6 seconds ago       Up 4 seconds        0.0.0.0:7000->7000/tcp   demistoserver_pyexecLongRunning-b60c04f9-754e-4b68-87ed-8f8113419fdb-demistoteams1.0.0.6483--26` 
- 
-If the Docker container is up and running, try running cURL queries, to verify the webserver is up and running and listens on the configured URL:
-
- - To the messaging endpoint from a separate box.
- - From the Cortex XSOAR machine to localhost.
- 
-   - Note: The webserver supports only POST method queries.
-   
-If the cURL queries were sent successfully, you should see in Cortex XSOAR logs the following line: `Finished processing Microsoft Teams activity successfully`
+2. If you see the following error message: `Error in API call to Microsoft Teams: [403] - UnknownError`, then it means the AAD application has insufficient permissions.
 
 ## Download Demisto Bot
 

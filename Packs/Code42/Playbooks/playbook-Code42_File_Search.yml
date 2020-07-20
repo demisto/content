@@ -374,3 +374,5 @@ outputs:
   description: Hostname where file event was captured
 sourceplaybookid: Code42 File Search
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

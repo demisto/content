@@ -55,18 +55,18 @@ configuration:
   name: credentials
   required: false
   type: 9
-- additionalinfo: If selected, indicator values that don't conform to PAN-OS expectations
-    will be reformatted, otherwise the indicator values will be dropped.
-  defaultvalue: 'true'
-  display: Enforce PAN-OS Compatibility
-  name: panos_compatible
-  required: false
-  type: 8
 - additionalinfo: If selected, a URL that includes a port number will be reformatted
     to remove the port. For example, 'www.example.com:9999/path' would become 'www.example.com/path'.
   defaultvalue: 'true'
   display: Strip Ports from URLs
   name: url_port_stripping
+  required: false
+  type: 8
+- additionalinfo: If selected, any URL entry that
+    is not compliant with PAN-OS EDL URL format is dropped instead of being rewritten.
+  display: PAN-OS URL Format Drop Invalid Entries
+  hidden: false
+  name: drop_invalids
   required: false
   type: 8
 - defaultvalue: Don't Collapse
@@ -112,6 +112,17 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
+      defaultValue: False
+      description: If True, any URL entry that is not compliant with PAN-OS EDL URL format is dropped instead of being rewritten.
+      isArray: false
+      name: drop_invalids
+      predefined:
+        - 'False'
+        - 'True'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       defaultValue: Don't Collapse
       description: Whether to collapse IPs to ranges or CIDRs.
       isArray: false
@@ -120,6 +131,13 @@ script:
       - Don't Collapse
       - To CIDRS
       - To Ranges
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The starting entry index from which to export the indicators.
+      isArray: false
+      name: offset
       required: false
       secret: false
     deprecated: false

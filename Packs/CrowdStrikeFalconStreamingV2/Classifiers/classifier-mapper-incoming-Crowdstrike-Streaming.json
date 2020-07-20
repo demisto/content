@@ -1,0 +1,52 @@
+{
+	"id": "crowdstrike-streaming-api-mapper",
+    "name": "CrowdStrike Falcon Streaming - Incoming Mapper",
+    "type": "mapping-incoming",
+    "description": "Maps incoming CrowdStrike Falcon event fields.",
+	"version": -1,
+	"defaultIncidentType": "",
+	"mapping": {
+		"Malware": {
+			"internalMapping": {
+				"Dest": {
+					"simple": "event.ComputerName",
+					"complex": null
+				},
+				"Dest NT Domain": {
+					"simple": "event.MachineDomain",
+					"complex": null
+				},
+				"File Hash": {
+					"simple": "event.MD5String",
+					"complex": null
+				},
+				"File Name": {
+					"simple": "event.FileName",
+					"complex": null
+				},
+				"File Path": {
+					"simple": "event.FilePath",
+					"complex": null
+				},
+				"User": {
+					"simple": "event.UserName",
+					"complex": null
+				},
+				"Vendor Product": {
+					"simple": "\"CrowdStrike\"",
+					"complex": null
+				},
+				"details": {
+					"simple": "event.DetectDescription",
+					"complex": null
+				},
+				"name": {
+					"simple": "event.DetectName",
+					"complex": null
+				}
+			},
+			"dontMapEventToLabels": true
+		}
+	},
+	"fromVersion": "6.0.0"
+}

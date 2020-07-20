@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed a bug in the ***cdl-query-logs*** when no records are found for a given query.
 
 ## [20.5.0] - 2020-05-12
   - Fixed exception parsing.

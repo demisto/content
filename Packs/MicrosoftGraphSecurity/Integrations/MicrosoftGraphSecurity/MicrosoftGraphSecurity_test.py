@@ -214,7 +214,49 @@ def test_get_alert_details_command(mocker, args, expected_hr):
 
 
 def test_search_alerts_command(mocker):
+    """
+    Unit test
+    Given
+    - search-alerts command
+    - command args
+    - command raw response
+    When
+    - mock the Client's search_alerts command.
+    Then
+    - run the search alerts command using the Client.
+    Validate the contents of the output.
+    """
     from MicrosoftGraphSecurity import search_alerts_command
     mocker.patch.object(client_mocker, 'search_alerts', return_value=ALERTS_RAW_RESPONSE)
     _, ec, _ = search_alerts_command(client_mocker, {'severity': 'medium'})
     assert ec == EXPECTED_ALERTS_OUTPUT
+
+
+def test_fetch_incidents_command(mocker):
+    """
+    Unit test
+    Given
+    - fetch incidents command
+    - command args
+    - command raw response
+    When
+    - mock the parse_date_range.
+    - mock the Client's search_alerts command.
+    Then
+    - run the fetch incidents command using the Client.
+    Validate the length of the results and the different fields of the fetched incidents.
+    """
+    from MicrosoftGraphSecurity import fetch_incidents
+    mocker.patch('MicrosoftGraphSecurity.parse_date_range', return_value=("2020-04-19 08:14:21", 'never mind'))
+    mocker.patch.object(client_mocker, 'search_alerts', return_value=ALERTS_RAW_RESPONSE)
+    incidents = fetch_incidents(client_mocker, fetch_time='1 hour', fetch_limit=10, providers='', filter='')
+    assert len(incidents) == 3
+    assert incidents[0].get('severity') == 2
+    assert incidents[2].get('occurred') == '2020-04-20T16:54:50.2722072Z'
+
+    incidents = fetch_incidents(client_mocker, fetch_time='1 hour', fetch_limit=1, providers='', filter='')
+    assert len(incidents) == 1
+    assert incidents[0].get('name') == 'test alert - da637218501473413212_-1554891308'
+
+    incidents = fetch_incidents(client_mocker, fetch_time='1 hour', fetch_limit=0, providers='', filter='')
+    assert len(incidents) == 0

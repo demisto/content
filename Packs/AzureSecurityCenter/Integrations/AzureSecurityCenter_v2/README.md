@@ -1,12 +1,11 @@
-<p>
 Unified security management and advanced threat protection across hybrid cloud workloads.
 
-</p>
 <h2>Use Case</h2>
 With Security Center, you can apply security policies across your workloads, limit your exposure to threats, and detect and respond to attacks.
-<h2>Detailed Description</h2>
-<ul>
-<li>To allow us access to Azure Security Center, an admin has to approve our app using an admin consent flow, by clicking on the following [link](https://oproxy.demisto.ninja/ms-azure-sc).</li>
+
+<h2>Authentication</h2>
+For more details about the authentication used in this integration, see <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication">Microsoft Integrations - Authentication</a>.
+
 <li>After authorizing the Demisto app, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields. After giving consent, the application has to have a role assigned so it can access the relevant resources per subscription. </li>
 <li>In order to assign a role to the application after consent was given: 
   <ul>
@@ -231,7 +230,6 @@ With Security Center, you can apply security policies across your workloads, lim
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
  alt="image" width="749" height="412"></a>
  -->
-</p>
 
 <h3>2. azure-sc-update-atp</h3>
 <hr>
@@ -510,8 +508,8 @@ With Security Center, you can apply security policies across your workloads, lim
     ]
 }
 </pre>
+
 <h5>Human Readable Output</h5>
-<p>
 <h3>Azure Security Center - Update Auto Provisioning Setting</h3>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -533,7 +531,6 @@ With Security Center, you can apply security policies across your workloads, lim
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
  alt="image" width="749" height="412"></a>
  -->
-</p>
 
 <h3>5. azure-sc-get-aps</h3>
 <hr>
@@ -625,7 +622,6 @@ With Security Center, you can apply security policies across your workloads, lim
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p>
 <h3>Azure Security Center - Get Auto Provisioning Setting</h3>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -649,7 +645,6 @@ With Security Center, you can apply security policies across your workloads, lim
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
  alt="image" width="749" height="412"></a>
  -->
-</p>
 
 <h3>6. azure-sc-list-aps</h3>
 <hr>
@@ -736,7 +731,6 @@ With Security Center, you can apply security policies across your workloads, lim
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p>
 <h3>Azure Security Center - List Auto Provisioning Settings</h3>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -760,7 +754,6 @@ With Security Center, you can apply security policies across your workloads, lim
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
  alt="image" width="749" height="412"></a>
  -->
-</p>
 
 <h3>7. azure-sc-list-jit</h3>
 <hr>
@@ -854,7 +847,6 @@ With Security Center, you can apply security policies across your workloads, lim
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
  alt="image" width="749" height="412"></a>
  -->
-</p>
 
 <h3>8. azure-sc-list-storage</h3>
 <hr>
@@ -942,7 +934,6 @@ With Security Center, you can apply security policies across your workloads, lim
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p>
 <h3>Azure Security Center - List Storage Accounts</h3>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -976,7 +967,6 @@ With Security Center, you can apply security policies across your workloads, lim
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
  alt="image" width="749" height="412"></a>
  -->
-</p>
 
 <h3>9. azure-list-subscriptions</h3>
 <hr>
@@ -1041,7 +1031,6 @@ There are no input arguments for this command.
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p>
 <h3>Azure Security Center - Subscriptions</h3>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -1083,7 +1072,6 @@ There are no input arguments for this command.
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
  alt="image" width="749" height="412"></a>
  -->
-</p>
 
 <h3>10. azure-sc-list-location</h3>
 <hr>
@@ -1116,7 +1104,6 @@ There are no context output for this command.
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p>
 <h3>Azure Security Center - List Locations</h3>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -1140,6 +1127,5 @@ There are no context output for this command.
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
  alt="image" width="749" height="412"></a>
  -->
-</p>
 <h2>Additional Information</h2>
 <span>For more information regarding roles, see <a href="https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal">the microsoft documentation.</a></span>

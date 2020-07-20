@@ -4,7 +4,8 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     query_tickets_command, add_link_command, add_comment_command, upload_file_command, get_ticket_notes_command, \
     get_record_command, update_record_command, create_record_command, delete_record_command, query_table_command, \
     list_table_fields_command, query_computers_command, get_table_name_command, add_tag_command, query_items_command, \
-    get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents
+    get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents, main
+from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_QUERY_TICKETS, RESPONSE_ADD_LINK, \
     RESPONSE_ADD_COMMENT, RESPONSE_UPLOAD_FILE, RESPONSE_GET_TICKET_NOTES, RESPONSE_GET_RECORD, \
@@ -20,6 +21,8 @@ from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPL
     EXPECTED_CREATE_RECORD, EXPECTED_QUERY_TABLE, EXPECTED_LIST_TABLE_FIELDS, EXPECTED_QUERY_COMPUTERS, \
     EXPECTED_GET_TABLE_NAME, EXPECTED_UPDATE_TICKET_ADDITIONAL, EXPECTED_QUERY_TABLE_SYS_PARAMS, EXPECTED_ADD_TAG, \
     EXPECTED_QUERY_ITEMS, EXPECTED_ITEM_DETAILS, EXPECTED_CREATE_ITEM_ORDER, EXPECTED_DOCUMENT_ROUTE
+
+import demistomock as demisto
 
 
 def test_get_server_url():
@@ -93,10 +96,11 @@ def test_split_fields():
     (query_table_command, {'table_name': "alm_asset", 'fields': "asset_tag,sys_updated_by,display_name",
                            'query': "display_nameCONTAINSMacBook", 'limit': 3}, RESPONSE_QUERY_TABLE,
      EXPECTED_QUERY_TABLE, False),
-    (query_table_command, {'table_name': "sc_task", 'system_params':
-        "sysparm_display_value=all;sysparm_exclude_reference_link=True;sysparm_query=number=TASK0000001",
-                           'fields': "approval,state,escalation,number,description"},
-     RESPONSE_QUERY_TABLE_SYS_PARAMS, EXPECTED_QUERY_TABLE_SYS_PARAMS, False),
+    (query_table_command, {
+        'table_name': "sc_task", 'system_params':
+        'sysparm_display_value=all;sysparm_exclude_reference_link=True;sysparm_query=number=TASK0000001',
+        'fields': "approval,state,escalation,number,description"
+    }, RESPONSE_QUERY_TABLE_SYS_PARAMS, EXPECTED_QUERY_TABLE_SYS_PARAMS, False),
     (list_table_fields_command, {'table_name': "alm_asset"}, RESPONSE_LIST_TABLE_FIELDS, EXPECTED_LIST_TABLE_FIELDS,
      False),
     (query_computers_command, {'computer_id': '1234'}, RESPONSE_QUERY_COMPUTERS, EXPECTED_QUERY_COMPUTERS, False),
@@ -233,3 +237,167 @@ def test_fetch_incidents_with_incident_name(mocker):
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
     incidents = fetch_incidents(client)
     assert incidents[0].get('name') == 'ServiceNow Incident Unable to access Oregon mail server. Is it down?'
+
+
+def test_incident_name_is_initialized(mocker, requests_mock):
+    """
+    Given:
+     - Integration instance initialized with fetch enabled and without changing incident name
+
+    When:
+     - Clicking on Test button (running test-module)
+
+    Then:
+     - Verify expected exception is raised as default incident name value is not in response
+    """
+    url = 'https://test.service-now.com'
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={
+            'isFetch': True,
+            'url': url,
+            'credentials': {
+                'identifier': 'identifier',
+                'password': 'password',
+            },
+            'incident_name': None
+        }
+    )
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+
+    def return_error_mock(message, error):
+        raise
+
+    mocker.patch('ServiceNowv2.return_error', side_effect=return_error_mock)
+    requests_mock.get(
+        f'{url}/api/now/table/incident?sysparm_limit=1',
+        json={
+            'result': [{
+                'opened_at': 'sometime'
+            }]
+        }
+    )
+    with pytest.raises(ValueError) as e:
+        main()
+    assert str(e.value) == 'The field [number] does not exist in the ticket.'
+
+
+def test_not_authenticated_retry_positive(requests_mock, mocker):
+    """
+    Given
+    - ServiceNow client
+
+    When
+    - Sending HTTP request and getting 401 status code (not authenticated) twice, followed by 200 status code (success)
+
+    Then
+    - Verify debug messages
+    - Ensure the send_request function runs successfully without exceptions
+    """
+    mocker.patch.object(demisto, 'debug')
+    client = Client('http://server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
+                    'incident_name')
+    requests_mock.get('http://server_url', [
+        {
+            'status_code': 401,
+            'json': {
+                'error': {'message': 'User Not Authenticated', 'detail': 'Required to provide Auth information'},
+                'status': 'failure'
+            }
+        },
+        {
+            'status_code': 401,
+            'json': {
+                'error': {'message': 'User Not Authenticated', 'detail': 'Required to provide Auth information'},
+                'status': 'failure'
+            }
+        },
+        {
+            'status_code': 200,
+            'json': {}
+        }
+    ])
+    assert client.send_request('') == {}
+    assert demisto.debug.call_count == 2
+    debug = demisto.debug.call_args_list
+    expected_debug_msg = "Got status code 401 - {'error': {'message': 'User Not Authenticated', " \
+                         "'detail': 'Required to provide Auth information'}, 'status': 'failure'}. Retrying ..."
+    assert debug[0][0][0] == expected_debug_msg
+    assert debug[1][0][0] == expected_debug_msg
+
+
+def test_not_authenticated_retry_negative(requests_mock, mocker):
+    """
+    Given
+    - ServiceNow client
+
+    When
+    - Sending HTTP request and getting 401 status code (not authenticated) 3 times
+
+    Then
+    - Verify debug messages
+    - Ensure the send_request function fails and raises expected error message
+    """
+    mocker.patch.object(demisto, 'debug')
+    client = Client('http://server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
+                    'incident_name')
+    requests_mock.get('http://server_url', [
+        {
+            'status_code': 401,
+            'json': {
+                'error': {'message': 'User Not Authenticated', 'detail': 'Required to provide Auth information'},
+                'status': 'failure'
+            }
+        },
+        {
+            'status_code': 401,
+            'json': {
+                'error': {'message': 'User Not Authenticated', 'detail': 'Required to provide Auth information'},
+                'status': 'failure'
+            }
+        },
+        {
+            'status_code': 401,
+            'json': {
+                'error': {'message': 'User Not Authenticated', 'detail': 'Required to provide Auth information'},
+                'status': 'failure'
+            }
+        }
+    ])
+    with pytest.raises(Exception) as ex:
+        client.send_request('')
+    assert str(ex.value) == "Got status code 401 with url http://server_url with body b'{\"error\": {\"message\": " \
+                            "\"User Not Authenticated\", \"detail\": \"Required to provide Auth information\"}, " \
+                            "\"status\": \"failure\"}' with headers {}"
+    assert demisto.debug.call_count == 3
+    debug = demisto.debug.call_args_list
+    expected_debug_msg = "Got status code 401 - {'error': {'message': 'User Not Authenticated', " \
+                         "'detail': 'Required to provide Auth information'}, 'status': 'failure'}. Retrying ..."
+    assert debug[0][0][0] == expected_debug_msg
+    assert debug[1][0][0] == expected_debug_msg
+    assert debug[2][0][0] == expected_debug_msg
+
+
+def test_test_module(mocker):
+    """Unit test
+    Given
+    - test module command
+    - command args
+    - command raw response
+    When
+    - mock the parse_date_range.
+    - mock the Client's send_request.
+    Then
+    - run the test module command using the Client
+    Validate the content of the HumanReadable.
+    """
+    mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
+    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+                    'sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    ticket_type='incident', get_attachments=False, incident_name='description')
+    mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
+    result = module(client)
+    assert result[0] == 'ok'

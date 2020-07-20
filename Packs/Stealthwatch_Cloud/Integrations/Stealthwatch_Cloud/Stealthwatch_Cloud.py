@@ -32,7 +32,7 @@ if not demisto.params()['proxy']:
     del os.environ['https_proxy']
 
 
-def http_request(method, url_suffix, params_dict, headers, data=None):
+def http_request(method, url_suffix, params_dict=None, headers=DEFAULT_HEADERS, data=None):
     req_params = {}  # type: Dict[Any,Any]
     if params_dict is not None:
         req_params.update(params_dict)
@@ -127,13 +127,13 @@ def show_alert_command():
     }
 
 
-def update_alert(alert_id, params):
+def update_alert(alert_id, data):
     """
     Updates alert by specific id
     """
 
     api_endpoint = "/alerts/alert/{}/".format(alert_id)
-    return http_request('PUT', api_endpoint, params, DEFAULT_HEADERS)
+    return http_request('PUT', api_endpoint, data=json.dumps(data))
 
 
 def update_alert_command():

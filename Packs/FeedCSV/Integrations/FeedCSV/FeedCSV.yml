@@ -61,7 +61,14 @@ configuration:
   required: false
   type: 8
   defaultvalue: ""
-- additionalinfo: Type of the indicator in the feed.
+- additionalinfo: If selected, the indicator type will be auto detected for each indicator.
+  defaultvalue: 'true'
+  display: Auto detect indicator type
+  name: auto_detect_type
+  required: false
+  type: 8
+- additionalinfo: Type of the indicator in the feed, If auto-detect is checked then
+    the value set as Indicator Type will be ignored.
   display: Indicator Type
   name: indicator_type
   required: false
@@ -85,8 +92,8 @@ configuration:
   name: ignore_regex
   required: false
   type: 0
-- additionalinfo: The names to apply to the fields in the CSV feed. The name for the field containing the indicator should be "value".
-  defaultvalue: value
+- additionalinfo: The names to apply to the fields in the CSV feed. The name for the
+    field containing the indicator should be "value".
   display: Field Names
   name: fieldnames
   required: false
@@ -120,6 +127,11 @@ configuration:
   name: skipinitialspace
   required: false
   type: 8
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
 - defaultvalue: ''
   display: Trust any certificate (not secure)
   name: insecure
@@ -143,7 +155,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The indicator type.
+      description: The indicator type. If the configuration parameter 'Auto detect
+        indicator type' is marked true for the integration instance, then this value
+        will be ignored.
       isArray: false
       name: indicator_type
       required: false
@@ -162,7 +176,7 @@ script:
     - contextPath: CSV.Indicator.rawJSON
       description: The indicator rawJSON value.
       type: Unknown
-  dockerimage: demisto/python3:3.8.1.6120
+  dockerimage: demisto/jmespath:1.0.0.8854
   feed: true
   isfetch: false
   longRunning: false

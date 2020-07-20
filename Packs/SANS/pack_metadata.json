@@ -1,24 +1,20 @@
 {
     "name": "SANS",
     "description": "This pack contains playbooks that follow the phases to handling an incident as described in the SANS Institute Incident Handler's Handbook.",
-    "support": "Cortex XSOAR",
-    "serverMinVersion": "5.0.0",
-    "currentVersion": "1.0.0",
+    "support": "xsoar",
+    "currentVersion": "1.0.2",
     "author": "Cortex XSOAR",
-    "url": "",
+    "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
         "Case Management"
     ],
     "tags": [
-        "SANS"
+        "Incident Handling"
     ],
     "created": "2020-05-03T13:07:27Z",
-    "updated": "2020-05-03T13:07:27Z",
-    "beta": false,
-    "deprecated": false,
-    "certification": "certified",
-    "useCases": [],
-    "keywords": [],
-    "dependencies": {}
+    "useCases": [
+        "SANS"
+    ],
+    "keywords": []
 }

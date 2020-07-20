@@ -33,40 +33,49 @@ class Client(BaseClient):
             A list of objects, containing the indicators.
         """
         result = []
+        domains = []
+        ipv4s = []
+        ipv4cidrs = []
         r = self._http_request('GET', url_suffix='', full_url=self._base_url, resp_type='text')
 
         soup = BeautifulSoup(r, 'html.parser')
 
-        def subs(text):
-            patterns = (('comp', 'com p'), ('comm', 'com m'), ('comf', 'com f'), ('\*\.', ''), ('\n', ''))
-            for e in patterns:
-                text = re.sub(e[0], e[1], text)
-            return text
+        table_rows = soup.select("tbody tr")
+        for row in table_rows:
+            found_domains = [string.strip() for string in row.strings if re.search(
+                r'(microsoft\.(com|net))|'
+                r'microsoftonline\.com|'
+                r'officeconfig\.msocdn\.com|'
+                r'config\.office\.com|'
+                r'graph\.windows\.net',
+                string)]
+            if found_domains:
+                domains += found_domains
+                for string in row.strings:
+                    string = string.strip()
+                    if re.match(ipv4cidrRegex, string):
+                        ipv4cidrs.append(string)
+                    elif re.match(ipv4Regex, string):
+                        ipv4s.append(string)
 
-        try:
-            scraped_domains: List = sum([subs(cell.text).rstrip().split() for cell in soup.select(
-                "tbody tr td") if re.findall(r'microsoft\.(com|net)', cell.text)], [])
-            for domain in scraped_domains:
-                result.append({
-                    "value": domain,
-                    'type': FeedIndicatorType.DomainGlob if '*' in domain else FeedIndicatorType.Domain,
-                    "FeedURL": self._base_url
-                })
-
-        except requests.exceptions.SSLError as err:
-            demisto.debug(str(err))
-            raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n'
-                            f'Check your not secure parameter.\n\n{err}')
-        except requests.ConnectionError as err:
-            demisto.debug(str(err))
-            raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n'
-                            f'Check your Server URL parameter.\n\n{err}')
-        except requests.exceptions.HTTPError as err:
-            demisto.debug(str(err))
-            raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n')
-        except ValueError as err:
-            demisto.debug(str(err))
-            raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {err}')
+        for domain in domains:
+            result.append({
+                "value": domain,
+                'type': FeedIndicatorType.DomainGlob if '*' in domain else FeedIndicatorType.Domain,
+                "FeedURL": self._base_url
+            })
+        for ipv4 in ipv4s:
+            result.append({
+                "value": ipv4,
+                'type': FeedIndicatorType.IP,
+                "FeedURL": self._base_url
+            })
+        for cidr in ipv4cidrs:
+            result.append({
+                "value": cidr,
+                'type': FeedIndicatorType.CIDR,
+                "FeedURL": self._base_url
+            })
 
         return result
 

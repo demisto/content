@@ -1,0 +1,63 @@
+id: Logz.Io Handle Alert
+version: -1
+name: Logz.Io Handle Alert
+description: Handles a Logz.io Alert by retrieving the events that generated it.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 5f47e87e-3541-417a-8e87-d43578a1b7e9
+    type: start
+    task:
+      id: 5f47e87e-3541-417a-8e87-d43578a1b7e9
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 130\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: deac1c83-3d9c-4bbb-870e-33eb475ed5a6
+    type: regular
+    task:
+      id: deac1c83-3d9c-4bbb-870e-33eb475ed5a6
+      version: -1
+      name: Retrieve Logz.io events that triggered the alert
+      description: Returns the raw logs that triggered the security rule in Logz.io.
+      script: '|||logzio-get-logs-by-event-id'
+      type: regular
+      iscommand: true
+      brand: ''
+    scriptarguments:
+      id:
+        complex:
+          root: inputs.AlertEventID
+      size: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 280\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 245,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 130\n\
+  \    }\n  }\n}"
+inputs:
+- key: AlertEventID
+  value:
+    complex:
+      root: incident
+      accessor: logzioalerteventid
+  required: true
+  description: Logz.Io Alert Event ID
+outputs: []
+fromversion: 5.0.0
+tests:
+ -  No tests

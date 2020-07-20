@@ -9,9 +9,11 @@ import subprocess
 
 RETURN_ERROR_TARGET = 'ConvertFile.return_error'
 
-# set logging to DEBUG for better understanding when the tests fails
+
 @pytest.fixture(autouse=True)
 def set_logging(caplog):
+    """set logging to DEBUG for better understanding when the tests fails
+    """
     caplog.set_level(logging.DEBUG)  # easier to debug if the test fails
 
 

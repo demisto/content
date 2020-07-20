@@ -1,4 +1,8 @@
 ## [Unreleased]
+Fixed an issue where indicators were duplicated in the context data.
+
+
+## [20.5.2] - 2020-05-26
 Fixed an issue where indicators with custom indicator statuses, indicator types, event types and attachment types would raise an error.
 
 

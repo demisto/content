@@ -71,7 +71,6 @@ def last_run_data():
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
 def test_fetch_incidents(mocker, client, emails_data, expected_incident, last_run_data):
-    mocker.patch('MicrosoftGraphListener.get_now_utc', return_value='2019-11-12T15:01:00Z')
     mocker.patch.object(client.ms_client, 'http_request', return_value=emails_data)
     mocker.patch.object(demisto, "info")
     result_next_run, result_incidents = client.fetch_incidents(last_run_data)
