@@ -217,7 +217,6 @@ def args_to_json_filter_list_activity(all_params):
 
 
 def args_to_json_filter_list_alert(all_params):
-    # TODO:
     request_data = {}
     filters = {}
     for key, value in all_params.items():
