@@ -2,8 +2,8 @@ import demistomock as demisto
 from CommonServerPython import *
 import json
 import requests
-import dateparser
 import traceback
+import dateparser
 from typing import Any, Dict, Tuple, List, Optional, cast
 
 # Disable insecure warnings
@@ -116,6 +116,56 @@ class Client(BaseClient):
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def arg_to_timestamp(arg, arg_name, required=False):
+    """Converts an XSOAR argument to a timestamp (seconds from epoch)
+
+    This function is used to quickly validate an argument provided to XSOAR
+    via ``demisto.args()`` into an ``int`` containing a timestamp (seconds
+    since epoch). It will throw a ValueError if the input is invalid.
+    If the input is None, it will throw a ValueError if required is ``True``,
+    or ``None`` if required is ``False.
+
+    :type arg: ``Any``
+    :param arg: argument to convert
+
+    :type arg_name: ``str``
+    :param arg_name: argument name
+
+    :type required: ``bool``
+    :param required:
+        throws exception if ``True`` and argument provided is None
+
+    :return:
+        returns an ``int`` containing a timestamp (seconds from epoch) if conversion works
+        returns ``-1`` if arg is ``None`` and required is set to ``False``
+        otherwise throws an Exception
+    :rtype: ``Optional[int]``
+    """
+
+    if arg is None:
+        if required is True:
+            raise ValueError(f'Missing "{arg_name}"')
+        return -1
+
+    if isinstance(arg, str) and arg.isdigit():
+        # timestamp is a str containing digits - we just convert it to int
+        return int(arg)
+    if isinstance(arg, str):
+        # we use dateparser to handle strings either in ISO8601 format, or
+        # relative time stamps.
+        # For example: format 2019-10-23T00:00:00 or "3 days", etc
+        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+        if date is None:
+            # if d is None it means dateparser failed to parse it
+            raise ValueError(f'Invalid date: {arg_name}')
+
+        return int(date.timestamp())
+    if isinstance(arg, (int, float)):
+        # Convert to int if the input is a float
+        return int(arg)
+    raise ValueError(f'Invalid date: "{arg_name}"')
 
 
 def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
@@ -454,6 +504,11 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
 
     :rtype: ``List[Dict[str, Any]]``
     """
+    args['lastUpdate'] = arg_to_timestamp(
+        arg=args.get('lastUpdate'),
+        arg_name='lastUpdate',
+        required=True
+    )
     remote_args = GetRemoteDateArgs(args)
     demisto.debug(f'Getting update for remote [{remote_args.incident_id}]')
 
