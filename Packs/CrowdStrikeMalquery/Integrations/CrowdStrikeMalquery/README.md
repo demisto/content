@@ -1,5 +1,5 @@
 Use the MalQuery Integration to query the contents of over a half-billion binary files, both clean and malicious, that are part of Falcon MalQuery's corpus.
-This integration was integrated and tested with version v1 of CrowdStrikeMalquery
+This integration was integrated and tested with version xx of CrowdStrikeMalquery
 ## Configure CrowdStrikeMalquery on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -41,8 +41,8 @@ Use exact-search to search Falcon MalQuery for a combination of hex patterns and
 | min_size | Minimum file size. e.g. 128000, 1.3 KB, 8mb. | Optional | 
 | max_date | Limit results to files first seen before this date. The format is YYYY/MM/DD - 2018/01/31. | Optional | 
 | min_date | Limit results to files first seen after this date. The format is YYYY/MM/DD - 2018/01/31. | Optional | 
-| filter_filetypes | Limit results to files of certain types such as EMAIL, PCAP, PDF, PE32. Full list can be found in the documentation. Comma seperated values. | Optional | 
-| filter_meta | Specify a subset of metadata fields to return in the results. Possible values - sha256, md5, type, size, first_seen, label, family. Comma seperated values. | Optional | 
+| filter_filetypes | Limit results to files of certain types such as EMAIL, PCAP, PDF, PE32. Full list can be found in the documentation. Comma separated values. | Optional | 
+| filter_meta | Specify a subset of metadata fields to return in the results. Possible values - sha256, md5, type, size, first_seen, label, family. Comma separated values. | Optional | 
 
 
 #### Context Output
@@ -87,14 +87,15 @@ Use hunt to schedule a YARA-based search for execution. Results can be filtered 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| yara_rule | A YARA rule that defines your search. | Required | 
+| yara_rule | A YARA rule that defines your search. | Optional | 
+| yar_file_entry_id | A YAR file entry ID that contains the YARA rule which defines your search. Only one Yara rule is allowed per request. | Optional | 
 | limit | Maximum number of results to be returned. | Optional | 
 | max_size | Maximum file size. The value can be specified either in bytes or in multiples of KB/MB/GB. e.g. 128000, 1.3 KB, 8mb. | Optional | 
 | min_size | Minimum file size. e.g. 128000, 1.3 KB, 8mb. | Optional | 
 | max_date | Limit results to files first seen before this date. The format is YYYY/MM/DD - 2018/01/31. | Optional | 
 | min_date | Limit results to files first seen after this date. The format is YYYY/MM/DD - 2018/01/31. | Optional | 
-| filter_filetypes | Limit results to files of certain types such as EMAIL, PCAP, PDF, PE32. Full list can be found in the documentation. Comma seperated values. | Optional | 
-| filter_meta | Specify a subset of metadata fields to return in the results. Possible values - sha256, md5, type, size, first_seen, label, family. Comma seperated values. | Optional | 
+| filter_filetypes | Limit results to files of certain types such as EMAIL, PCAP, PDF, PE32. Full list can be found in the documentation. Comma separated values. | Optional | 
+| filter_meta | Specify a subset of metadata fields to return in the results. Possible values - sha256, md5, type, size, first_seen, label, family. Comma separated values. | Optional | 
 
 
 #### Context Output
@@ -140,7 +141,7 @@ Search Falcon MalQuery quickly, but with more potential for false positives. Sea
 | ascii | ASCII pattern to search. e.g. CrowdStrike. | Optional | 
 | wide | Wide string pattern to search. e.g. CrowdStrike. | Optional | 
 | limit | Maximum number of results to be returned. | Optional | 
-| filter_meta | Specify a subset of metadata fields to return in the results. Possible values - sha256, md5, type, size, first_seen, label, family. Comma seperated values. | Optional | 
+| filter_meta | Specify a subset of metadata fields to return in the results. Possible values - sha256, md5, type, size, first_seen, label, family. Comma separated values. | Optional | 
 
 
 #### Context Output
@@ -380,10 +381,6 @@ Get information about search and download quotas in your environment.
 
 #### Human Readable Output
 
->### Quota Data
->|hunt_count|download_count|monitor_count|hunt_limit|download_limit|monitor_limit|refresh_time|days_left|
->|---|---|---|---|---|---|---|---|
->| 49 | 50 | 0 | 100 | 50 | 10 | 2020-07-01T00:00:00Z | 0 |
 
 
 ### cs-malquery-samples-multidownload
@@ -446,7 +443,7 @@ Download a file indexed by MalQuery. Specify the file using its SHA256. Only one
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_id | Hex pattern to search. e.g. deadbeef0102 (for bytes de, ad, be, ef, 01, 02). | Required | 
+| file_id | The file SHA256. | Required | 
 
 
 #### Context Output
@@ -542,7 +539,7 @@ Retrieve indexed files metadata by their hash.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | The file SHA256. | Required | 
+| file | The files SHA256. Comma separated values. | Required | 
 
 
 #### Context Output
