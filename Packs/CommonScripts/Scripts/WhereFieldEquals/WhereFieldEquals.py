@@ -23,7 +23,7 @@ def where_field_equals(args):
     if len(found_matches) == 1:
         return found_matches[0]
 
-    return json.dumps(found_matches, separators=(',', ':'))
+    return json.dumps(found_matches, separators=(',', ':'), ensure_ascii=False)
 
 
 def main():

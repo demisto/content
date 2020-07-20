@@ -21,8 +21,9 @@ class WhereFieldEquals(unittest.TestCase):
             "getField":
             "name"
         }
-        expected_result = ['מה זה', '172.0.0.2']
+        expected_result = '["מה זה","172.0.0.2"]'
         recieved_result = where_field_equals(args)
+
         assert expected_result == recieved_result
 
     def test_where_field_equals_latin_i(self):
@@ -43,7 +44,7 @@ class WhereFieldEquals(unittest.TestCase):
             "getField":
             "name"
         }
-        expected_result = ['łłłłł', '172.0.0.2']
+        expected_result = '["łłłłł","172.0.0.2"]'
         recieved_result = where_field_equals(args)
         assert expected_result == recieved_result
 
@@ -63,7 +64,7 @@ class WhereFieldEquals(unittest.TestCase):
             "equalTo":
             "IP"
         }
-        expected_result = [{'name': 'Testing', 'type': 'IP'}, {'name': '172.0.0.2', 'type': 'IP'}]
+        expected_result = '[{"name":"Testing","type":"IP"},{"name":"172.0.0.2","type":"IP"}]'
 
         recieved_result = where_field_equals(args)
         assert expected_result == recieved_result
