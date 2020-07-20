@@ -9,7 +9,7 @@ This integration was integrated and tested with version 3.1 of Group-IB TDS Poly
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| server | Server URL \(e.g., https://huntbox.group\-ib.com\) | True |
+| server | Server URL (e.g., `https://huntbox.group-ib.com\`) | True |
 | api_key | API Key | True |
 | report_language | Default reports language | True |
 | insecure | Trust any certificate \(insecure\) | False |
