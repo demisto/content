@@ -1,4 +1,4 @@
-Blocks IP addresses and URLs using Palo Alto Networks Panorama or Firewall External Dynamic Lists.
+DEPRECATED. Use "PAN-OS - Block IP and URL - External Dynamic List v2" playbook instead. Blocks IP addresses and URLs using Palo Alto Networks Panorama or Firewall External Dynamic Lists.
 It checks if the EDL configuration is in place with the `PAN-OS EDL Setup` sub-playbook (otherwise the list will be configured), and adds the input IP addresses and URLs to the relevant lists.
 
 ## Dependencies

@@ -1,0 +1,498 @@
+commonfields:
+  id: Infocyte
+  version: -1
+name: Infocyte
+display: Infocyte
+category: Endpoint
+description: Infocyte can pivot off incidents to automate triage, validate events
+  with forensic data and enabling dynamic response actions against any or all host
+  using both agentless or agented endpoint access.
+configuration:
+- display: Instance Name (e.g., https://<cname>.infocyte.com)
+  name: InstanceName
+  type: 0
+  required: true
+  additionalinfo: 'Your Infocyte Instance name is the cname of the URL: https://<cname>.infocyte.com'
+- display: API Key
+  name: APIKey
+  type: 4
+  required: true
+  additionalinfo: https://yourinstance.infocyte.com/profile/access-tokens
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  defaultvalue: '10'
+  type: 0
+- display: Initial fetch time (days)
+  name: first_fetch
+  required: false
+  defaultvalue: '3'
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+script:
+  script: ''
+  type: powershell
+  commands:
+  - name: infocyte-scan-host
+    description: Initiates a scan (forensic collection) of the specified endpoint
+    arguments:
+    - name: target
+      required: true
+      description: Hostname or IP address of the target endpoint.
+    outputs:
+    - contextPath: Infocyte.Task.userTaskId
+      description: Task ID used with the infocyte-get-taskstatus command. This ID is returned from any async command/task.
+      type: string
+    - contextPath: Infocyte.Task.type
+      description: Task type (SCAN or RESPONSE).
+      type: string
+    - contextPath: Infocyte.Task.target
+      description: Hostname or IP address of the provided target.
+      type: string
+  - name: infocyte-isolate-host
+    description: Isolates a host to only communicate to Infocyte and other security
+      tools.
+    arguments:
+    - name: target
+      required: true
+      description: Hostname or IP address of the target endpoint.
+    outputs:
+    - contextPath: Infocyte.Task.userTaskId
+      description: Task ID used with taskstatus.
+      type: string
+    - contextPath: Infocyte.Task.type
+      description: Task type (SCAN or RESPONSE)
+      type: string
+    - contextPath: Infocyte.Task.target
+      description: Hostname or IP address of the provided target.
+      type: string
+    - contextPath: Infocyte.Task.extensionName
+      description: Name of the extension that was run.
+      type: string
+    execution: true
+  - name: infocyte-restore-host
+    description: Restores an isolated host.
+    arguments:
+    - name: target
+      required: true
+      description: Hostname or IP address of the target endpoint.
+    outputs:
+    - contextPath: Infocyte.Task.userTaskId
+      description: Task ID used with the infocyte-get-taskstatus command. This ID is returned from any async command/task.
+      type: string
+    - contextPath: Infocyte.Task.type
+      description: Task type (SCAN or RESPONSE).
+      type: string
+    - contextPath: Infocyte.Task.target
+      description: Hostname or IP address of the provided target.
+      type: string
+    - contextPath: Infocyte.Task.extensionName
+      description: Name of the extension that was run.
+      type: string
+  - name: infocyte-collect-evidence
+    description: Collects Forensic Evidence to an S3 bucket (data files, event logs, etc.)
+    arguments:
+    - name: target
+      required: true
+      description: Hostname or IP address of the target endpoint.
+    outputs:
+    - contextPath: Infocyte.Task.userTaskId
+      description: Task ID used with the infocyte-get-taskstatus command. This ID is returned from any async command/task.
+      type: string
+    - contextPath: Infocyte.Task.type
+      description: Task type (SCAN or RESPONSE).
+      type: string
+    - contextPath: Infocyte.Task.target
+      description: Hostname or IP address of the provided target.
+      type: string
+    - contextPath: Infocyte.Task.extensionName
+      description: Name of the extension that was run.
+      type: string
+  - name: infocyte-kill-process
+    description: Kills a process on the target endpoint.
+    arguments:
+    - name: target
+      required: true
+      description: Hostname or IP address of the target endpoint.
+    - name: processName
+      description: Name of process to search for and kill on the target endpoint.
+    - name: sha1
+      description: SHA1 hash of the process image to search for and kill.
+    - name: processId
+      description: Pid of the process to search for and kill on the target endpoint.
+    - name: processPath
+      description: Path of the process to search for and kill on the target endpoint.
+    execution: true
+  - name: infocyte-recover-file
+    description: Recovers a file on an endpoint to your defined recovery point (S3,
+      FTP, share).
+    arguments:
+    - name: target
+      required: true
+      description: Hostname or IP address of the target endpoint.
+    - name: paths
+      description: Paths of the files to recover from the target endpoint.
+      required: true
+      isArray: true
+    outputs:
+    - contextPath: Infocyte.Task.userTaskId
+      description: Task ID used with the infocyte-get-taskstatus command. This ID is returned from any async command/task.
+      type: string
+    - contextPath: Infocyte.Task.type
+      description: Task type (SCAN or RESPONSE).
+      type: string
+    - contextPath: Infocyte.Task.target
+      description: Hostname or IP address of the provided target.
+      type: string
+    - contextPath: Infocyte.Task.extensionName
+      description: Name of the extension that was run.
+      type: string
+  - name: infocyte-run-response
+    description: Runs the named Infocyte extension on the target host.
+    arguments:
+    - name: target
+      required: true
+      description: Hostname or IP address of the target endpoint.
+    - name: extensionName
+      required: true
+      description: Name of the extension loaded in Infocyte to run on the target host.
+    outputs:
+    - contextPath: Infocyte.Task.userTaskId
+      description: Task ID used with the infocyte-get-taskstatus command. This ID is returned from any async command/task.
+      type: string
+    - contextPath: Infocyte.Task.type
+      description: Task type (SCAN or RESPONSE).
+      type: string
+    - contextPath: Infocyte.Task.target
+      description: Hostname or IP address of the provided target.
+      type: string
+    - contextPath: Infocyte.Task.extensionName
+      description: Name of the extension that was run.
+      type: string
+  - name: infocyte-get-taskstatus
+    description: Gets the status of an Infocyte task (scan, response action, etc.).
+    arguments:
+    - name: userTaskId
+      description: Task ID used with the infocyte-get-taskstatus command. This ID is returned from any async command/task.
+      required: true
+    outputs:
+    - contextPath: Infocyte.Task.userTaskId
+      description: Task ID used with the infocyte-get-taskstatus command. This ID is returned from any async command/task.
+      type: string
+    - contextPath: Infocyte.Task.scanId
+      description: Infocyte ID used to look up the data associated with a specific
+        scan, collection, or action. scanIds are returned by the infocyte-get-taskstatus command and are present
+        in all job-based data schemas.
+      type: string
+    - contextPath: Infocyte.Task.type
+      description: Task type (SCAN or RESPONSE).
+      type: string
+    - contextPath: Infocyte.Task.progress
+      description: Percent completed.
+      type: number
+    - contextPath: Infocyte.Task.message
+      description: Message regarding the the current status.
+      type: string
+    - contextPath: Infocyte.Task.status
+      description: Current status of the task (created, active, completed, cancelled, or
+        failed).
+      type: string
+    - contextPath: Infocyte.Task.timeElapsed
+      description: Seconds since the task was created.
+      type: number
+  - name: infocyte-get-scanresult
+    description: Retrieves metadata and results for a scan that was run against multiple hosts.
+    arguments:
+    - name: scanId
+      description: Infocyte ID used to look up the data associated with a specific
+        scan, collection, or action. scanIds are returned by the infocyte-get-taskstatus command and are present
+        in all job-based data schemas.
+      required: true
+    outputs:
+    - contextPath: Infocyte.Scan.scanId
+      description: Infocyte ID used to look up the data associated with a specific
+        scan, collection, or action. scanIds are returned by the infocyte-get-taskstatus command and are present
+        in all job-based data schemas.
+      type: string
+    - contextPath: Infocyte.Scan.completedOn
+      description: Time the scan was completed on the target.
+      type: date
+    - contextPath: Infocyte.Scan.alertCount
+      description: Number of alerts associated with the scan of the host.
+      type: number
+    - contextPath: Infocyte.Scan.compromisedObjects
+      description: Number of bad files, artifacts, and events found in the scan.
+      type: number
+    - contextPath: Infocyte.Scan.objectCount
+      description: Total number of files, artifacts, and events collected in the scan.
+      type: number
+    - contextPath: Infocyte.Scan.Host.hostname
+      description: Hostname of the host.
+      type: string
+    - contextPath: Infocyte.Scan.Host.ip
+      description: IP address of the host.
+      type: string
+    - contextPath: Infocyte.Scan.Host.osVersion
+      description: Operating system of host.
+      type: string
+    - contextPath: Infocyte.Scan.Alert.id
+      description: Infocyte alert ID.
+      type: string
+    - contextPath: Infocyte.Scan.Alert.name
+      description: Name of the alerted file or alert.
+      type: string
+    - contextPath: Infocyte.Scan.Alert.type
+      description: Type of object or artifact (process, module, artifact, autostart, script, etc.).
+      type: string
+    - contextPath: Infocyte.Scan.Alert.threatName
+      description: Threat category assigned by extension logic (Good, Low risk, Unknown,
+        Suspicious, or Bad).
+      type: string
+    - contextPath: Infocyte.Scan.Alert.threatScore
+      description: Confidence score (0-10). 0 is lowest confidence, 10 is highest confidence.
+      type: number
+    - contextPath: Infocyte.Scan.Alert.avPositive
+      description: Number of engines and threat intel sources flagging the object
+        as bad.
+      type: number
+    - contextPath: Infocyte.Scan.Alert.avTotal
+      description: Number of engines and threat intel sources that analyzed the object.
+      type: number
+    - contextPath: Infocyte.Scan.Alert.synapseScore
+      description: Infocyte proprietary machine learning score on maliciousness.
+        Negative (especially below -1) indicates backdoor or remote access tool features (generally bad), positive is good.
+      type: number
+    - contextPath: Infocyte.Scan.Alert.size
+      description: Size of the object/file in bytes.
+      type: number
+    - contextPath: Infocyte.Scan.Alert.flagname
+      description: Name of the user assigned flag in Infocyte on this artifact.
+      type: string
+    - contextPath: Infocyte.Scan.Alert.flagWeight
+      description: User-assigned score assigned to the flag (0-10). 0 is least critical, 10 is most critical.
+      type: number
+    - contextPath: Infocyte.Scan.Alert.hostname
+      description: Hostname of the target host.
+      type: string
+    - contextPath: Infocyte.Scan.Alert.sha1
+      description: SHA1 hash (fileRepId) of the file.
+      type: string
+  - name: infocyte-get-hostscanresult
+    description: Retrieves results for a scan that was run on a target host.
+    arguments:
+    - name: scanId
+      description: Infocyte ID used to look up the data associated with a specific
+        scan, collection, or action. scanIds are returned by the infocyte-get-taskstatus command and are present
+        in all job-based data schemas.
+      required: true
+    - name: target
+      description: Hostname or IP address of the target endpoint.
+    outputs:
+    - contextPath: Infocyte.Scan.scanId
+      description: Infocyte ID used to look up the data associated with a specific
+        scan, collection, or action. scanIds are returned by the infocyte-get-taskstatus command and are present
+        in all job-based data schemas.
+      type: string
+    - contextPath: Infocyte.Scan.hostId
+      description: Infocyte ID assigned to the target host.
+      type: string
+    - contextPath: Infocyte.Scan.os
+      description: Operating system of the target host.
+      type: string
+    - contextPath: Infocyte.Scan.compromised
+      description: Flagged if system found a malicious item.
+      type: boolean
+    - contextPath: Infocyte.Scan.alertCount
+      description: Number of alerts associated with the scan of the host.
+      type: number
+    - contextPath: Infocyte.Scan.hostname
+      description: Hostname of the target host.
+      type: string
+    - contextPath: Infocyte.Scan.ip
+      description: IP address of the target host.
+      type: string
+    - contextPath: Infocyte.Scan.compromisedObjects
+      description: Number of bad files, artifacts, and events found in the scan.
+      type: number
+    - contextPath: Infocyte.Scan.objectCount
+      description: Total number of files, artifacts, and events inspected or collected in the scan.
+      type: number
+    - contextPath: Infocyte.Scan.Alert.id
+      description: Infocyte alert ID.
+      type: string
+    - contextPath: Infocyte.Scan.Alert.name
+      description: Name of the alerted file or alert.
+      type: string
+    - contextPath: Infocyte.Scan.Alert.type
+      description: Type of object or artifact (process, module, artifact, autostart, script, etc.).
+      type: string
+    - contextPath: Infocyte.Scan.Alert.threatName
+      description: Threat category assigned by extension logic (Good, Low risk, Unknown,
+        Suspicious, or Bad).
+      type: string
+    - contextPath: Infocyte.Scan.Alert.threatScore
+      description: Confidence score (0-10). 0 is lowest confidence, 10 is highest confidence.
+      type: number
+    - contextPath: Infocyte.Scan.Alert.avPositive
+      description: Number of engines and threat intel sources flagging the object
+        as bad.
+      type: number
+    - contextPath: Infocyte.Scan.Alert.avTotal
+      description: Number of engines and threat intel sources that analyzed the object.
+      type: number
+    - contextPath: Infocyte.Scan.Alert.synapseScore
+      description: Infocyte proprietary machine learning score on maliciousness.
+        Negative (especially below -1) indicates backdoor or remote access tool features (generally bad), positive is good.
+      type: number
+    - contextPath: Infocyte.Scan.Alert.size
+      description: Size of the object/file in bytes.
+      type: number
+    - contextPath: Infocyte.Scan.Alert.flagname
+      description: Name of the user assigned flag in Infocyte on this artifact.
+      type: string
+    - contextPath: Infocyte.Scan.Alert.flagWeight
+      description: User-assigned score assigned to the flag (0-10). 0 is least critical, 10 is most critical.
+      type: number
+    - contextPath: Infocyte.Scan.Alert.sha1
+      description: SHA1 hash (fileRepId) of the file.
+      type: string
+  - name: infocyte-get-responseresult
+    description: "Gets the results of a response action."
+    arguments:
+    - name: scanId
+      description: Infocyte ID used to look up the data associated with a specific
+        scan, collection, or action. scanIds are returned by the infocyte-get-taskstatus command and are present
+        in all job-based data schemas.
+      required: true
+    - name: target
+      description: Hostname or IP address of the target endpoint.
+    outputs:
+    - contextPath: Infocyte.Response.scanId
+      description: Infocyte ID used to look up the data associated with a specific
+        scan, collection, or action. scanIds are returned by the infocyte-get-taskstatus command and are present
+        in all job-based data schemas.
+      type: string
+    - contextPath: Infocyte.Response.hostId
+      description: Infocyte ID assigned to the target host.
+      type: string
+    - contextPath: Infocyte.Response.os
+      description: Operating system of the target host.
+      type: string
+    - contextPath: Infocyte.Response.success
+      description: Flag if extension successfully ran and completed (not necessarily
+        if it performed everything or found something).
+      type: boolean
+    - contextPath: Infocyte.Response.threatStatus
+      description: Threat category assigned by extension logic (Good, Low risk, Unknown,
+        Suspicious, or Bad).
+      type: string
+    - contextPath: Infocyte.Response.compromised
+      description: Flagged if the system found a malicious item.
+      type: boolean
+    - contextPath: Infocyte.Response.completedOn
+      description: Datetime stamp when the action was completed.
+      type: date
+    - contextPath: Infocyte.Response.messages
+      description: Logs of the response action taking place on the target endpoint.
+      type: string
+    - contextPath: Infocyte.Response.hostname
+      description: Hostname of the target host.
+      type: string
+    - contextPath: Infocyte.Response.ip
+      description: IP address of the target host.
+      type: string
+    - contextPath: Infocyte.Response.extensionId
+      description: ID of the Infocyte extension being run.
+      type: string
+    - contextPath: Infocyte.Response.extensionName
+      description: Name of the extension that was run.
+      type: string
+  - name: infocyte-get-alerts
+    description: Retrieves alerts triggered since the last alert was pulled.
+    arguments:
+    - name: alertId
+      description: Infocyte alert ID to look up.
+      required: false
+    - name: lastAlertId
+      description: The alert ID from which to start fetching.
+      required: false
+    - name: max
+      description: Maximum number of alerts to fetch.
+      required: false
+    outputs:
+    - contextPath: Infocyte.Alert.id
+      description: Infocyte alert ID.
+      type: string
+    - contextPath: Infocyte.Alert.scanId
+      description: Infocyte scan ID from which the alert originated.
+      type: string
+    - contextPath: Infocyte.Alert.name
+      description: Name of the alerted file or alert.
+      type: string
+    - contextPath: Infocyte.Alert.type
+      description: Type of object or artifact (process, module, artifact, autostart, script, etc.).
+      type: string
+    - contextPath: Infocyte.Alert.threatName
+      description: Threat category assigned by extension logic (Good, Low risk, Unknown,
+        Suspicious, or Bad).
+      type: string
+    - contextPath: Infocyte.Alert.hasAvScan
+      description: True if it has been scanned by AV and/or sandbox malware engines.
+      type: boolean
+    - contextPath: Infocyte.Alert.threatScore
+      description: Confidence score (0-10). 0 is lowest confidence, 10 is highest confidence.
+      type: number
+    - contextPath: Infocyte.Alert.avPositive
+      description: Number of engines and threat intel sources flagging the object
+        as bad.
+      type: number
+    - contextPath: Infocyte.Alert.avTotal
+      description: Number of engines and threat intel sources that analyzed the object.
+      type: number
+    - contextPath: Infocyte.Alert.synapseScore
+      description: Infocyte proprietary machine learning score on maliciousness.
+        Negative (especially below -1) indicates backdoor or remote access tool features (generally bad), positive is good
+      type: number
+    - contextPath: Infocyte.Alert.size
+      description: Size of the object/file in bytes.
+      type: number
+    - contextPath: Infocyte.Alert.flagname
+      description: Name of user assigned flag in Infocyte on this artifact
+      type: string
+    - contextPath: Infocyte.Alert.flagWeight
+      description: User-assigned score assigned to the flag (0-10). 0 is least critical, 10 is most critical.
+      type: number
+    - contextPath: Infocyte.Alert.createdOn
+      description: Datetime stamp of when the alert was created.
+      type: date
+    - contextPath: Infocyte.Alert.hostname
+      description: Hostname of the target host.
+      type: string
+    - contextPath: Infocyte.Alert.sha1
+      description: SHA1 hash (fileRepId) of the file.
+      type: string
+    - contextPath: Infocyte.Alert.signed
+      description: Valid and unexpired digital signature on the file.
+      type: boolean
+    - contextPath: Infocyte.Alert.managed
+      description: Whether the file has been hash validated as part of a Linux package manager.
+      type: boolean
+  dockerimage: demisto/pwsh-infocyte:1.0.4.9337
+  runonce: false
+  isfetch: true
+fromversion: 5.5.0

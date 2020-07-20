@@ -2,7 +2,6 @@
     "name": "DeepInstinct",
     "description": "At Deep Instinct, we prevent what others can’t find.",
     "support": "partner",
-    "serverMinVersion": "5.0.0",
     "currentVersion": "1.0.0",
     "author": "Deep Instinct",
     "url": "",
@@ -14,11 +13,6 @@
         "DeepInstinct"
     ],
     "created": "2020-04-13T09:41:59Z",
-    "updated": "2020-04-13T09:41:59Z",
-    "beta": false,
-    "deprecated": false,
     "useCases": [],
-    "keywords": [],
-    "price": "0",
-    "dependencies": {}
+    "keywords": []
 }
