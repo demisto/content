@@ -4050,7 +4050,7 @@ class DemistoException(Exception):
 
 class GetRemoteDateArgs:
     def __init__(self, args):
-        self.incident_id = args['id']
+        self.remote_incident_id = args['id']
         self.last_update = args['lastUpdate']
 
 
@@ -4059,7 +4059,7 @@ class UpdateRemoteSystemArgs:
         self.data: dict = args.get('data')  # type: ignore
         self.entries = args.get('entries')
         self.incident_changed = args.get('incidentChanged')
-        self.incident_id = args.get('remoteId')
+        self.remote_incident_id = args.get('remoteId')
         self.inc_status = args.get('status')
         self.delta: dict = args.get('delta')
 

@@ -510,7 +510,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
         required=True
     )
     remote_args = GetRemoteDateArgs(args)
-    demisto.debug(f'Getting update for remote [{remote_args.incident_id}]')
+    demisto.debug(f'Getting update for remote [{remote_args.remote_incident_id}]')
 
     categories = params.get('categories', None)
     if categories:
@@ -523,7 +523,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
     else:
         tags = None
 
-    incident = client.get_incident(incident_id=remote_args.incident_id)  # type: ignore
+    incident = client.get_incident(incident_id=remote_args.remote_incident_id)  # type: ignore
     # If incident was modified before we last updated, no need to return it
     modified = arg_to_timestamp(
         arg=incident.get('modified'),
@@ -542,7 +542,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
         remote_args.last_update = occurred + 1  # in case new entries created less than a minute after incident creation
 
     entries = client.get_incident_entries(
-        incident_id=remote_args.incident_id,  # type: ignore
+        incident_id=remote_args.remote_incident_id,  # type: ignore
         from_date=remote_args.last_update * 1000,
         max_results=100,
         categories=categories,
@@ -573,7 +573,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
         })
 
     if remote_args.last_update >= modified and not formatted_entries:
-        demisto.debug(f'Nothing new in the incident, incident id {remote_args.incident_id}')
+        demisto.debug(f'Nothing new in the incident, incident id {remote_args.remote_incident_id}')
         incident = {}  # this empties out the incident, which will result in not updating the local one
 
     mirror_data = GetRemoteDataResponse(
@@ -606,14 +606,14 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     if parsed_args.delta:
         demisto.debug(f'Got the following delta keys {str(list(parsed_args.delta.keys()))}')
 
-    demisto.debug(f'Sending incident with remote ID [{parsed_args.incident_id}] to remote system\n')
+    demisto.debug(f'Sending incident with remote ID [{parsed_args.remote_incident_id}] to remote system\n')
 
-    new_incident_id: str = parsed_args.incident_id  # type: ignore
+    new_incident_id: str = parsed_args.remote_incident_id  # type: ignore
     updated_incident = {}
-    if not parsed_args.incident_id or parsed_args.incident_changed:
-        if parsed_args.incident_id:
+    if not parsed_args.remote_incident_id or parsed_args.incident_changed:
+        if parsed_args.remote_incident_id:
             # First, get the incident as we need the version
-            old_incident = client.get_incident(incident_id=parsed_args.incident_id)
+            old_incident = client.get_incident(incident_id=parsed_args.remote_incident_id)
             for changed_key in parsed_args.delta.keys():
                 old_incident[changed_key] = parsed_args.delta[changed_key]  # type: ignore
 
@@ -632,7 +632,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
         demisto.debug(f'Got back ID [{new_incident_id}]')
 
     else:
-        demisto.debug(f'Skipping updating remote incident fields [{parsed_args.incident_id}] as it is '
+        demisto.debug(f'Skipping updating remote incident fields [{parsed_args.remote_incident_id}] as it is '
                       f'not new nor changed.')
 
     if parsed_args.entries:
