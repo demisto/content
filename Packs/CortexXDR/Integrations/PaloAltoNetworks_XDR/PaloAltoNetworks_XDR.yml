@@ -1585,7 +1585,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Runs a scan on selected endpoints. To scan all endpoints,
+    description: Runs a scan on a selected endpoint. To scan all endpoints,
       run this command with no filters.
     execution: true
     name: xdr-endpoint-scan
