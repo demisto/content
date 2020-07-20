@@ -99,7 +99,7 @@ A special feed based triggered job is required to initiate this playbook for eve
 
 ## Dashboard (Premium) 
 SafeBreach Insights dashboard summarizes the current status of actionable insights and related indicators.
- [<img src="https://go.safebreach.com/rs/535-IXZ-934/images/xsoar_dashboard.png">](XSOAR SafeBreach Dashboard)
+ ![https://go.safebreach.com/rs/535-IXZ-934/images/xsoar_dashboard.png](https://go.safebreach.com/rs/535-IXZ-934/images/xsoar_dashboard.png)
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
