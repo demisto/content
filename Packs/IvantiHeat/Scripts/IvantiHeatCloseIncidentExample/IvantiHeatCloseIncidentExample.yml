@@ -5,7 +5,7 @@ name: IvantiHeatCloseIncidentExample
 script: ''
 type: python
 tags: []
-comment: This sample script that demonstrates how close an incident in Ivanti Heat.
+comment: This is a sample script that demonstrates how to close an incident in Ivanti Heat.
   The script generates data of the closed incident in JSON format and writes it to the IvantiHeat.CloseIncidentJSON
   context path.
 enabled: true

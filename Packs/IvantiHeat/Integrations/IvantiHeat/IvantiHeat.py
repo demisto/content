@@ -33,6 +33,11 @@ class Client(BaseClient):
 
 
 def test_module(client):
+    first_fetch_time = demisto.params().get('fetch_time', '3 days').strip()
+    if demisto.params().get('isFetch', False):
+        # Validate fetch_time parameter is valid (if not, parse_date_range will raise the error message)
+        parse_date_range(first_fetch_time, '%Y-%m-%d %H:%M:%S')
+
     client.do_request('GET', 'odata/businessobject/incidents')
     return 'ok'
 
@@ -89,19 +94,15 @@ def update_object_command(client, args):
     rec_id = args.get('rec-id')
     fields = args.get('fields')
 
-    body = {}
-
     try:
         fields = json.loads(fields)
     except Exception:
         raise Exception(f'Failed to parse fields as JSON data, received object:\n{fields}')
 
-    for key in fields.keys():
-        body[key] = fields[key]
-
     raw_res = client.do_request('PUT', f'odata/businessobject/{object_type}(\'{rec_id}\')', json_data=fields)
 
-    human_readable = tableToMarkdown(f'{rec_id} updated successfully', t=raw_res, headers=OBJECT_HEADERS, removeNull=True)
+    human_readable = tableToMarkdown(f'{rec_id} updated successfully', t=raw_res, headers=OBJECT_HEADERS,
+                                     removeNull=True)
     entry_context = {f'IvantiHeat.{object_type}(val.RecId===obj.RecId)': raw_res}
     return human_readable, entry_context, raw_res
 
@@ -142,7 +143,7 @@ def upload_attachment_command(client, args):
         entry_context = {'IvantiHeat.Attachment':
                          {'RecId': rec_id, 'AttachmentId': attachment_id, 'FileName': file_name}}
         return f'{file_name} uploaded successfully, attachment ID: {attachment_id}', entry_context, raw_res
-    return f'Upload attachment {rec_id} failed', {}, {}
+    raise Exception(f'Upload attachment {rec_id} failed')
 
 
 @logger
@@ -240,10 +241,6 @@ def main():
 
     # How much time before the first fetch to retrieve incidents
     first_fetch_time = demisto.params().get('fetch_time', '3 days').strip()
-
-    if demisto.params().get('isFetch', False):
-        # Validate fetch_time parameter is valid (if not, parse_date_range will raise the error message)
-        parse_date_range(first_fetch_time, '%Y-%m-%d %H:%M:%S')
 
     proxy = demisto.params().get('proxy', False)
 
