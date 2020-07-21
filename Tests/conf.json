@@ -587,7 +587,7 @@
         },
         {
             "playbookID": "WordTokenizeTest",
-            "toversion":  "4.5.9"
+            "toversion": "4.5.9"
         },
         {
             "integrations": "QRadar",
@@ -2914,7 +2914,8 @@
         "Logzio - Test": "Issue 26729",
         "Tenable.io test": "Issue 26727",
         "Tenable.io Scan Test": "Issue 26727",
-        "URL Enrichment - Generic v2 - Test": "Issue 26463"
+        "URL Enrichment - Generic v2 - Test": "Issue 26463",
+        "Fidelis-Test": "Issue 26453"
     },
     "skipped_integrations": {
         
