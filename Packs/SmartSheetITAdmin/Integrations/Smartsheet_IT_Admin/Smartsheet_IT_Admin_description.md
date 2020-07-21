@@ -1,0 +1,4 @@
+Click the "Account" button in the upper-right corner of the Smartsheet screen, and then click "Personal Settings". Click the "API Access" tab. Click the "Generate new access token" button to obtain an access token.
+This integration needs smartsheet-sdk. A new Docker image is needed to package together the smartsheet-sdk dependencies. Following python modules should be included as dependencies  while creating the Docker Image-
+enum34, requests, six ,python-dateutil, sphinx, sphinx_rtd_theme, setuptools-scm, gitchangelog mako, collective.checkdocs
+ For any questions, reach out to the #demisto-developers channel on the DFIR Community on Slack (https://dfircommunity.slack.com)
