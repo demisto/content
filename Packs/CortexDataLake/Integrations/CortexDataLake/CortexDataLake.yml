@@ -1517,6 +1517,395 @@ script:
     - contextPath: CDL.Logging.Threat.SourcePort
       description: Source port utilized by the session.
       type: Number
+  - arguments:
+    - default: false
+      description: Original source IP address. Enter an IP address or an array of
+        IP addresses for which to search, for example 1.1.1.1,2.2.2.2.
+      isArray: false
+      name: source_ip
+      required: false
+      secret: false
+    - default: false
+      description: Original destination IP address. Enter an IP address or an array
+        of IP addresses for which to search, for example 1.1.1.1,2.2.2.2.
+      isArray: false
+      name: dest_ip
+      required: false
+      secret: false
+    - default: false
+      description: Name of the security policy rule that the network traffic matched.
+        Enter a rule name or array of rule names to search.
+      isArray: false
+      name: rule_matched
+      required: false
+      secret: false
+    - default: false
+      description: The networking zone from which the traffic originated. Enter zone
+        or array of zones to search.
+      isArray: false
+      name: from_zone
+      required: false
+      secret: false
+    - default: false
+      description: Networking zone to which the traffic was sent. Enter zone or array
+        of zones to search.
+      isArray: false
+      name: to_zone
+      required: false
+      secret: false
+    - default: false
+      description: Source port utilized by the session. Enter a port or array of ports
+        to search.
+      isArray: false
+      name: source_port
+      required: false
+      secret: false
+    - default: false
+      description: Network traffic's destination port. Enter a port or array of ports
+        to search.
+      isArray: false
+      name: dest_port
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The action that the firewall took for the network traffic. Enter
+        an action or array of actions to search.
+      isArray: false
+      name: action
+      predefined:
+      - unknown
+      - n-a
+      - aged-out
+      - decoder
+      - tcp-reuse
+      - resources-unavailable
+      - tcp-fin
+      - tcp-rst-from-server
+      - tcp-rst-from-client
+      - policy-deny
+      - threat
+      - decrypt-error
+      - decrypt-unsupport-param
+      - decrypt-cert-validation
+      - request-timeout
+      - shutdown-from-endpoint
+      - abort-from-endpoint
+      - split-tunnel
+      required: false
+      secret: false
+    - default: false
+      description: Free input query to search. This is the WHERE part of the query.
+        so an example will be !cdl-query-url-logs query="source_ip.value LIKE '192.168.1.*'
+        AND dest_ip.value = '192.168.1.12'"
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: all
+      description: The fields that are selected in the query. Selection can be "all"
+        (same as *) or listing of specific fields in the table. List of fields can
+        be found after viewing all the outputed fields with all.
+      isArray: true
+      name: fields
+      predefined:
+      - vendor_name
+      - log_source
+      - log_source_id
+      - log_source_name
+      - customer_id
+      - log_time
+      - log_source_tz_offset
+      - log_type
+      - sub_type
+      - source_ip
+      - source_port
+      - dest_ip
+      - dest_port
+      - protocol
+      - threat_id
+      - threat_name
+      - threat_category
+      - cloud_hostname
+      - direction_of_attack
+      - url_domain
+      - url_idx
+      - file_name
+      - cloud
+      - file_sha_256
+      - file_type
+      - sender_of_virus
+      - recipient_of_virus
+      - subject_of_email
+      - report_id
+      - verdict
+      - vendor_severity
+      - severity
+      - pcap
+      - pcap_id
+      - sig_flags
+      - url_category
+      - action
+      - action_flags
+      - app
+      - app_category
+      - characteristics_of_app
+      - container_of_app
+      - dg_hier_level_1
+      - dg_hier_level_2
+      - dg_hier_level_3
+      - dg_hier_level_4
+      - dest_uuid
+      - dest_location
+      - dest_user
+      - dest_user_info
+      - is_exported
+      - is_forwarded
+      - from_zone
+      - http2_connection
+      - inbound_if
+      - inbound_if_details
+      - is_saas_app
+      - is_dup_log
+      - is_prisma_branch
+      - is_prisma_mobile
+      - log_set
+      - monitor_tag_imei
+      - nat_dest_port
+      - nat_dest
+      - nat_source_port
+      - nat_source
+      - non_standard_dest_port
+      - outbound_if
+      - outbound_if_details
+      - parent_session_id
+      - parent_start_time
+      - count_of_repeats
+      - risk_of_app
+      - rule_matched
+      - rule_matched_uuid
+      - sanctioned_state_of_app
+      - sequence_no
+      - session_id
+      - source_uuid
+      - source_location
+      - source_user
+      - source_user_info
+      - app_sub_category
+      - technology_of_app
+      - time_generated
+      - to_zone
+      - tunnel
+      - tunneled_app
+      - tunnelid_imsi
+      - users
+      - vsys_id
+      - vsys
+      - vsys_name
+      - flags
+      - is_decrypt_mirror
+      - is_sym_return
+      - is_container
+      - is_server_to_client
+      - is_client_to_server
+      - is_transaction
+      - is_non_std_dest_port
+      - is_captive_portal
+      - is_nat
+      - is_proxy
+      - is_packet_capture
+      - is_phishing
+      - is_mptcp_on
+      - is_recon_excluded
+      - is_url_denied
+      - is_tunnel_inspected
+      - is_source_x_fwded
+      - is_ipv6
+      - container_id
+      - pod_namespace
+      - pod_name
+      - source_device_class
+      - source_device_vendor
+      - source_device_model
+      - source_device_os
+      - source_device_mac
+      - dest_device_class
+      - dest_device_vendor
+      - dest_device_model
+      - dest_device_os
+      - dest_device_mac
+      - content_version
+      - dynusergroup_name
+      - ingestion_time
+      - record_size
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '''1970-01-01 00:00:00'''
+      description: The query start time. For example, start_time="2018-04-26 00:00:00"
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: true
+      description: The query end time. For example, end_time="2018-04-26 00:00:00"
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: First log time (<number> <time unit>, e.g., 12 hours, 7 days, 3
+        months, 1 year)
+      isArray: false
+      name: time_range
+      predefined:
+      - minutes
+      - days
+      - weeks
+      required: false
+      secret: false
+    - default: false
+      description: The number of logs to return. Default is 5.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Searches the URL table
+    execution: false
+    name: cdl-query-url-logs
+    outputs:
+    - contextPath: CDL.Logging.URL.SessionID
+      description: Identifies the firewall's internal identifier for a specific network
+        session.
+      type: String
+    - contextPath: CDL.Logging.URL.Action
+      description: Identifies the action that the firewall took for the network traffic.
+      type: String
+    - contextPath: CDL.Logging.URL.App
+      description: Application associated with the network traffic.
+      type: String
+    - contextPath: CDL.Logging.URL.PcapID
+      description: Packet capture (pcap) ID. This is used to correlate threat pcap
+        files with extended pcaps taken as a part of the session flow. All threat
+        logs will contain either a pcap_id of 0 (no associated pcap) , or an ID referencing
+        the extended pcap file.
+      type: String
+    - contextPath: CDL.Logging.URL.DestinationPort
+      description: Network traffic's destination port. If this value is 0, then the
+        app is using its standard port.
+      type: String
+    - contextPath: CDL.Logging.URL.AppCategory
+      description: Identifies the high-level family of the application.
+      type: String
+    - contextPath: CDL.Logging.URL.AppSubCategory
+      description: Identifies the application's subcategory. The subcategoryis related
+        to the application's category, which is identified in category_of_app.
+      type: String
+    - contextPath: CDL.Logging.URL.SourceLocation
+      description: Source country or internal region for private addresses.
+      type: String
+    - contextPath: CDL.Logging.URL.DestinationLocation
+      description: Destination country or internal region for private addresses.
+      type: String
+    - contextPath: CDL.Logging.URL.ToZone
+      description: Networking zone to which the traffic was sent.
+      type: String
+    - contextPath: CDL.Logging.URL.FromZone
+      description: The networking zone from which the traffic originated.
+      type: String
+    - contextPath: CDL.Logging.URL.Protocol
+      description: IP protocol associated with the session.
+      type: String
+    - contextPath: CDL.Logging.URL.DestinationIP
+      description: Original destination IP address.
+      type: String
+    - contextPath: CDL.Logging.URL.SourceIP
+      description: Original source IP address.
+      type: String
+    - contextPath: CDL.Logging.URL.RuleMatched
+      description: Unique identifier for the security policy rule that the network
+        traffic matched.
+      type: String
+    - contextPath: CDL.Logging.URL.ThreatCategory
+      description: Threat category of the detected threat.
+      type: String
+    - contextPath: CDL.Logging.URL.ThreatName
+      description: Threat name of the detected threat.
+      type: String
+    - contextPath: CDL.Logging.URL.Subtype
+      description: Identifies the log subtype.
+      type: String
+    - contextPath: CDL.Logging.URL.LogTime
+      description: Time the log was received in Cortex Data Lake.
+      type: String
+    - contextPath: CDL.Logging.URL.LogSourceName
+      description: Name that uniquely identifies the source of the log.
+      type: String
+    - contextPath: CDL.Logging.URL.Denied
+      description: Indicates whether the session was denied due to a URL filtering
+        rule.
+      type: Boolean
+    - contextPath: CDL.Logging.URL.Category
+      description: The URL category.
+      type: String
+    - contextPath: CDL.Logging.URL.SourcePort
+      description: Source port utilized by the session.
+      type: Number
+    - contextPath: CDL.Logging.URL.Url
+      description: The name of the internet domain that was visited in this session.
+      type: String
+    - contextPath: CDL.Logging.URL.Uri
+      description: The URI address
+      type: String
+    - contextPath: CDL.Logging.URL.ContentType
+      description: Content type of the HTTP response data.
+      type: String
+    - contextPath: CDL.Logging.URL.HTTPMethod
+      description: |-
+        The HTTP Method used
+        in the web request
+      type: String
+    - contextPath: CDL.Logging.URL.Severity
+      description: Severity associated with the event.
+      type: String
+    - contextPath: CDL.Logging.URL.UserAgent
+      description: |-
+        The web browser that the user
+        used to access the URL.
+      type: String
+    - contextPath: CDL.Logging.URL.RefererProtocol
+      description: The protocol used in the HTTP REFERER header field.
+      type: Number
+    - contextPath: CDL.Logging.URL.RefererPort
+      description: The port used in the HTTP REFERER header field.
+      type: Number
+    - contextPath: CDL.Logging.URL.RefererFQDN
+      description: |-
+        The full domain name used in the HTTP REFERER
+        header field.
+      type: String
+    - contextPath: CDL.Logging.URL.RefererURL
+      description: The url used in the HTTP REFERER header field.
+      type: String
+    - contextPath: CDL.Logging.URL.SrcUser
+      description: The username that initiated the network traffic.
+      type: String
+    - contextPath: CDL.Logging.URL.SrcUserInfo
+      description: The initiated user info.
+      type: String
+    - contextPath: CDL.Logging.URL.DstUser
+      description: The username to which the network traffic was destined.
+      type: String
+    - contextPath: CDL.Logging.URL.DstUserInfo
+      description: The destination user info.
+      type: String
+    - contextPath: CDL.Logging.URL.TechnologyOfApp
+      description: The networking technology used by the identified application.
+      type: String
   dockerimage: demisto/python_pancloud_v2:1.0.0.8888
   feed: false
   isfetch: true

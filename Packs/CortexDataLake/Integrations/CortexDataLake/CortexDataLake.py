@@ -105,7 +105,6 @@ class Client(BaseClient):
         """
         query_data = {'query': self.add_instance_id_to_query(query),
                       'language': 'csql'}
-        print(query)
         query_service = self.initial_query_service()
         response = query_service.create_query(query_params=query_data, enforce_json=True)
         query_result = response.json()
@@ -327,6 +326,59 @@ def threat_context_transformer(row_content: dict) -> dict:
     }
 
 
+def url_context_transformer(row_content: dict) -> dict:
+    """
+    This function retrieves data from a row of raw data into context path locations
+
+    Args:
+        row_content: a dict representing raw data of a row
+
+    Returns:
+        a dict with context paths and their corresponding value
+    """
+
+    return {
+        'SessionID': row_content.get('session_id'),
+        'Action': row_content.get('action', {}).get('value'),
+        'App': row_content.get('app'),
+        'PcapID': row_content.get('pcap_id'),
+        'DestinationPort': row_content.get('dest_port'),
+        'AppCategory': row_content.get('app_category'),
+        'AppSubcategory': row_content.get('app_sub_category'),
+        'SourceLocation': row_content.get('source_location'),
+        'DestinationLocation': row_content.get('dest_location'),
+        'ToZone': row_content.get('to_zone'),
+        'FromZone': row_content.get('from_zone'),
+        'Protocol': row_content.get('protocol', {}).get('value'),
+        'DestinationIP': row_content.get('dest_ip', {}).get('value'),
+        'SourceIP': row_content.get('source_ip', {}).get('value'),
+        'RuleMatched': row_content.get('rule_matched'),
+        'ThreatCategory': row_content.get('threat_category', {}).get('value'),
+        'ThreatName': row_content.get('threat_name'),
+        'Subtype': row_content.get('sub_type', {}).get('value'),
+        'LogTime': human_readable_time_from_epoch_time(row_content.get('log_time', 0)),
+        'LogSourceName': row_content.get('log_source_name'),
+        'Denied': row_content.get('is_url_denied'),
+        'Category': row_content.get('url_category', {}).get('value'),
+        'SourcePort': row_content.get('source_port'),
+        'URL': row_content.get('url_domain'),
+        'URI': row_content.get('uri'),
+        'ContentType': row_content.get('content_type'),
+        'HTTPMethod': row_content.get('http_method', {}).get('value'),
+        'Severity': row_content.get('severity'),
+        'UserAgent': row_content.get('user_agent'),
+        'RefererProtocol': row_content.get('referer_protocol', {}).get('value'),
+        'RefererPort': row_content.get('referer_port'),
+        'RefererFQDN': row_content.get('referer_fqdn'),
+        'RefererURL': row_content.get('referer_url_path'),
+        'SrcUser': row_content.get('source_user'),
+        'SrcUserInfo': row_content.get('source_user_info'),
+        'DstUser': row_content.get('dest_user'),
+        'DstUserInfo': row_content.get('dest_user_info'),
+        'TechnologyOfApp': row_content.get('technology_of_app'),
+    }
+
+
 def records_to_human_readable_output(fields: str, table_name: str, results: list) -> str:
     """
     This function gets all relevant data for the human readable output of a specific table.
@@ -431,21 +483,26 @@ def build_where_clause(args: dict) -> str:
         # if query arg is supplied than we just need to parse it and only it
         return args['query'].strip()
 
-    # TODO: Make sure the query includes "OR" between source ip to dest ip
-
     where_clause = ''
-    if 'ip' in args.keys():
+    if args.get('ip'):
         ips = {'source_ip.value': args.get('ip'), 'dest_ip.value': args.get('ip')}
-        del args['ip']
         for key, values in ips.items():
-            ips_values_list: list = argToList(values)
-
+            ips_values_list = argToList(args.get('ip'))
             where_clause += ' OR '.join([f'({key} = "{value}")' for value in ips_values_list])
+            where_clause += ' OR '
+        where_clause = where_clause.rstrip(' OR ')
 
-    if 'port' in args.keys():
-        # TODO: Add support for port arg
-        args['source_port'] = args.get('port')
-        args['dest_port'] = args.get('port')
+    if args.get('ip') and args.get('port'):
+        del args['ip']
+        where_clause += ' AND '
+
+    if args.get('port'):
+        ports = {'source_port': args.get('port'), 'dest_port': args.get('port')}
+        for key, values in ports.items():
+            ports_values_list = argToList(args.get('port'))
+            where_clause += ' OR '.join([f'({key} = {value})' for value in ports_values_list])
+            where_clause += ' OR '
+        where_clause = where_clause.rstrip(' OR ')
         del args['port']
 
     # We want to add only keys that are part of the query
@@ -691,6 +748,18 @@ def query_threat_logs_command(args: dict, client: Client) -> Tuple[str, dict, Li
     return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
 
 
+def query_url_logs_command(args: dict, client: Client) -> Tuple[str, dict, List[Dict[str, Any]]]:
+    """
+    The function of the command that queries firewall.url table
+
+        Returns: a Demisto's entry with all the parsed data
+    """
+    query_table_name: str = 'url'
+    context_transformer_function = url_context_transformer
+    table_context_path: str = 'CDL.Logging.URL'
+    return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
+
+
 def query_table_logs(args: dict,
                      client: Client,
                      table_name: str,
@@ -791,6 +860,8 @@ def main():
             return_outputs(*query_traffic_logs_command(args, client))
         elif command == 'cdl-query-threat-logs':
             return_outputs(*query_threat_logs_command(args, client))
+        elif command == 'cdl-query-url-logs':
+            return_outputs(*query_url_logs_command(args, client))
         elif command == 'fetch-incidents':
             first_fetch_timestamp = params.get('first_fetch_timestamp', '24 hours').strip()
             fetch_severity = params.get('firewall_severity')
