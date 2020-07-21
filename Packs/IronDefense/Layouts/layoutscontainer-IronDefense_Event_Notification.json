@@ -1,14 +1,11 @@
 {
-    "typeId": "IronDefense Event Notification",
-    "kind": "details",
-    "layout": {
-        "id": "IronDefense Event Notification",
-        "version": -1,
-        "modified": "2020-07-16T08:06:52.269069747-04:00",
-        "name": "",
-        "kind": "details",
-        "typeId": "IronDefense Event Notification",
-        "system": false,
+    "id": "IronDefense Event Notification",
+    "group": "incident",
+    "name": "IronDefense Event Notification",
+    "description": "IronDefense Event Notification Layout",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "detailsV2": {
         "sections": [
             {
                 "id": "",
@@ -610,8 +607,5 @@
                 "queryType": ""
             }
         ]
-    },
-    "version": -1,
-    "fromVersion": "5.0.0",
-    "toVersion": "5.9.9"
+    }
 }

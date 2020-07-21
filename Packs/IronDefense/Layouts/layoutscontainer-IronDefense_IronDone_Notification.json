@@ -1,14 +1,11 @@
 {
-    "typeId": "IronDefense Event Notification",
-    "kind": "details",
-    "layout": {
-        "id": "IronDefense Event Notification",
-        "version": -1,
-        "modified": "2020-07-16T08:06:52.269069747-04:00",
-        "name": "",
-        "kind": "details",
-        "typeId": "IronDefense Event Notification",
-        "system": false,
+    "id": "IronDefense IronDome Notification",
+    "group": "incident",
+    "name": "IronDefense IronDome Notification",
+    "description": "IronDefense IronDome Notification Layout",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "detailsV2": {
         "sections": [
             {
                 "id": "",
@@ -23,189 +20,77 @@
                         "id": "",
                         "version": 0,
                         "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensealertid",
+                        "fieldId": "incident_irondefenseirondomeid",
                         "isVisible": true
                     },
                     {
                         "id": "",
                         "version": 0,
                         "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefenseeventid",
+                        "fieldId": "incident_irondefensealertids",
                         "isVisible": true
                     },
                     {
                         "id": "",
                         "version": 0,
                         "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensecategory",
+                        "fieldId": "incident_irondefenseirondomecategory",
                         "isVisible": true
                     },
                     {
                         "id": "",
                         "version": 0,
                         "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensesubcategory",
+                        "fieldId": "incident_irondefensedometags",
                         "isVisible": true
                     },
                     {
                         "id": "",
                         "version": 0,
                         "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefenseseverity",
+                        "fieldId": "incident_irondefensehighcognitivesystemdetails",
                         "isVisible": true
                     },
                     {
                         "id": "",
                         "version": 0,
                         "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefenseconfidence",
+                        "fieldId": "incident_irondefensemismatchdetails",
                         "isVisible": true
                     },
                     {
                         "id": "",
                         "version": 0,
                         "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefenseprimaryappprotocol",
+                        "fieldId": "incident_irondefenseseveritydetails",
                         "isVisible": true
                     },
                     {
                         "id": "",
                         "version": 0,
                         "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensesecondaryappprotocol",
+                        "fieldId": "incident_irondefenseseveritymaliciousdetails",
                         "isVisible": true
                     },
                     {
                         "id": "",
                         "version": 0,
                         "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefenseappdomins",
+                        "fieldId": "incident_irondefenseseveritysuspiciousdetails",
                         "isVisible": true
                     },
                     {
                         "id": "",
                         "version": 0,
                         "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensebytesin",
+                        "fieldId": "incident_irondefensecommentdetails",
                         "isVisible": true
                     },
                     {
                         "id": "",
                         "version": 0,
                         "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensebytesout",
-                        "isVisible": true
-                    },
-                    {
-                        "id": "",
-                        "version": 0,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensetotalbytes",
-                        "isVisible": true
-                    },
-                    {
-                        "id": "",
-                        "version": 0,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensesrcip",
-                        "isVisible": true
-                    },
-                    {
-                        "id": "",
-                        "version": 0,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensedstip",
-                        "isVisible": true
-                    },
-                    {
-                        "id": "",
-                        "version": 0,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensedstport",
-                        "isVisible": true
-                    },
-                    {
-                        "id": "",
-                        "version": 0,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensesrcentityattribute",
-                        "isVisible": true
-                    },
-                    {
-                        "id": "",
-                        "version": 0,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensesrcentityattributetype",
-                        "isVisible": true
-                    },
-                    {
-                        "id": "",
-                        "version": 0,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensedstentityattribute",
-                        "isVisible": true
-                    },
-                    {
-                        "id": "",
-                        "version": 0,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensesrcnetworkid",
-                        "isVisible": true
-                    },
-                    {
-                        "id": "",
-                        "version": 0,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensedstnetworkid",
-                        "isVisible": true
-                    },
-                    {
-                        "id": "",
-                        "version": 0,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensedomesharedtime",
-                        "isVisible": true
-                    },
-                    {
-                        "id": "",
-                        "version": 0,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensestarttime",
-                        "isVisible": true
-                    },
-                    {
-                        "id": "",
-                        "version": 0,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefenseendtime",
-                        "isVisible": true
-                    },
-                    {
-                        "id": "",
-                        "version": 0,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefenseisblacklisted",
-                        "isVisible": true
-                    },
-                    {
-                        "id": "",
-                        "version": 0,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefenseiswhitelisted",
-                        "isVisible": true
-                    },
-                    {
-                        "id": "",
-                        "version": 0,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefenserawdataformat",
-                        "isVisible": true
-                    },
-                    {
-                        "id": "",
-                        "version": 0,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensevueurl",
+                        "fieldId": "incident_irondefensecreated",
                         "isVisible": true
                     }
                 ],
@@ -610,8 +495,5 @@
                 "queryType": ""
             }
         ]
-    },
-    "version": -1,
-    "fromVersion": "5.0.0",
-    "toVersion": "5.9.9"
+    }
 }

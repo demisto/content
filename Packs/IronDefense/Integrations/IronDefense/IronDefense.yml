@@ -1025,3 +1025,5 @@ script:
 tests:
 - No tests
 fromversion: 4.1.0
+defaultClassifier: IronDefense
+defaultMapperIn: IronDefense-mapper

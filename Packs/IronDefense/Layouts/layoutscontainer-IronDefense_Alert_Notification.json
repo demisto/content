@@ -1,14 +1,11 @@
 {
-    "typeId": "IronDefense Event Notification",
-    "kind": "details",
-    "layout": {
-        "id": "IronDefense Event Notification",
-        "version": -1,
-        "modified": "2020-07-16T08:06:52.269069747-04:00",
-        "name": "",
-        "kind": "details",
-        "typeId": "IronDefense Event Notification",
-        "system": false,
+    "id": "IronDefense Alert Notification",
+    "group": "incident",
+    "name": "IronDefense Alert Notification",
+    "description": "IronDefense Alert Notification Layout",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "detailsV2": {
         "sections": [
             {
                 "id": "",
@@ -30,7 +27,7 @@
                         "id": "",
                         "version": 0,
                         "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefenseeventid",
+                        "fieldId": "incident_irondefensestatus",
                         "isVisible": true
                     },
                     {
@@ -58,140 +55,56 @@
                         "id": "",
                         "version": 0,
                         "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefenseconfidence",
+                        "fieldId": "incident_irondefenseanalystexpectation",
                         "isVisible": true
                     },
                     {
                         "id": "",
                         "version": 0,
                         "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefenseprimaryappprotocol",
+                        "fieldId": "incident_irondefenseanalystseverity",
                         "isVisible": true
                     },
                     {
                         "id": "",
                         "version": 0,
                         "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensesecondaryappprotocol",
+                        "fieldId": "incident_irondefenseaggregationcriteria",
                         "isVisible": true
                     },
                     {
                         "id": "",
                         "version": 0,
                         "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefenseappdomins",
+                        "fieldId": "incident_irondefenseeventcount",
                         "isVisible": true
                     },
                     {
                         "id": "",
                         "version": 0,
                         "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensebytesin",
+                        "fieldId": "incident_irondefensecreated",
                         "isVisible": true
                     },
                     {
                         "id": "",
                         "version": 0,
                         "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensebytesout",
+                        "fieldId": "incident_irondefenseupdated",
                         "isVisible": true
                     },
                     {
                         "id": "",
                         "version": 0,
                         "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensetotalbytes",
+                        "fieldId": "incident_irondefensefirsteventcreated",
                         "isVisible": true
                     },
                     {
                         "id": "",
                         "version": 0,
                         "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensesrcip",
-                        "isVisible": true
-                    },
-                    {
-                        "id": "",
-                        "version": 0,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensedstip",
-                        "isVisible": true
-                    },
-                    {
-                        "id": "",
-                        "version": 0,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensedstport",
-                        "isVisible": true
-                    },
-                    {
-                        "id": "",
-                        "version": 0,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensesrcentityattribute",
-                        "isVisible": true
-                    },
-                    {
-                        "id": "",
-                        "version": 0,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensesrcentityattributetype",
-                        "isVisible": true
-                    },
-                    {
-                        "id": "",
-                        "version": 0,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensedstentityattribute",
-                        "isVisible": true
-                    },
-                    {
-                        "id": "",
-                        "version": 0,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensesrcnetworkid",
-                        "isVisible": true
-                    },
-                    {
-                        "id": "",
-                        "version": 0,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensedstnetworkid",
-                        "isVisible": true
-                    },
-                    {
-                        "id": "",
-                        "version": 0,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensedomesharedtime",
-                        "isVisible": true
-                    },
-                    {
-                        "id": "",
-                        "version": 0,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefensestarttime",
-                        "isVisible": true
-                    },
-                    {
-                        "id": "",
-                        "version": 0,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefenseendtime",
-                        "isVisible": true
-                    },
-                    {
-                        "id": "",
-                        "version": 0,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefenseisblacklisted",
-                        "isVisible": true
-                    },
-                    {
-                        "id": "",
-                        "version": 0,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "fieldId": "incident_irondefenseiswhitelisted",
+                        "fieldId": "incident_irondefenselasteventcreated",
                         "isVisible": true
                     },
                     {
@@ -610,8 +523,5 @@
                 "queryType": ""
             }
         ]
-    },
-    "version": -1,
-    "fromVersion": "5.0.0",
-    "toVersion": "5.9.9"
-}
+    }
+ }
