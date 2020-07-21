@@ -1,21 +1,12 @@
 {
-    "typeId": "SafeBreach Insight",
-    "version": -1,
-    "TypeName": "SafeBreach Insight",
-    "kind": "details",
-    "fromVersion": "5.0.0",
-    "layout": {
-        "TypeName": "",
-        "id": "SafeBreach Insight",
-        "kind": "details",
-        "name": "",
-        "system": false,
+	"id": "SafeBreach Insight",
+	"group": "incident",
+	"name": "SafeBreach Insight",
+	"description": "",
+	"version": -1,
+	"fromVersion": "6.0.0",
+    "detailsV2": {
         "tabs": [
-            {
-                "id": "summary",
-                "name": "Legacy Summary",
-                "type": "summary"
-            },
             {
                 "id": "caseinfoid",
                 "name": "Incident Info",
@@ -559,10 +550,6 @@
                 "name": "Canvas",
                 "type": "canvas"
             }
-        ],
-        "typeId": "SafeBreach Insight",
-        "version": -1
-    },
-    "toVersion": "5.9.9",
-    "layouts": "SafeBreach Simulation"
+        ]
+    }
 }
