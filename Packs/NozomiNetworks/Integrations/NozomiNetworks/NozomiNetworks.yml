@@ -1,0 +1,217 @@
+category: Network Security
+commonfields:
+  id: Nozomi Networks
+  version: -1
+configuration:
+- additionalinfo: Your Nozomi Networks appliance endpoint URL
+    appliance
+  defaultvalue: https://nozomi_instance.com
+  display: Endpoint url
+  name: endpoint
+  required: true
+  type: 0
+- additionalinfo: A user having APIs access privileges credentials.
+  display: Username
+  hidden: false
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  hidden: false
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- additionalinfo: 'Set the time frame to get incidents by. Default is 7 days. Other examples: 30 seconds, 1 minute, 4 hours, 2 days...'
+  defaultvalue: 7 days
+  display: Get incidents from last
+  hidden: false
+  name: fetchTime
+  required: false
+  type: 0
+- additionalinfo: Will only fetch incident with a risk higher or equal to the selected value.
+  defaultvalue: '1'
+  display: Get incidents from risk level
+  hidden: false
+  name: riskFrom
+  options:
+  - '1'
+  - '2'
+  - '3'
+  - '4'
+  - '5'
+  - '6'
+  - '7'
+  - '8'
+  - '9'
+  - '10'
+  required: false
+  type: 15
+- additionalinfo: In the Nozomi platform, alerts are single events and incidents are an aggregation of alerts. By default only alerts will be fetched by CORTEX XSOAR, however, if selected, incidents will also be fetched.
+  display: Fetch also Nozomi incidents
+  hidden: false
+  name: fecthAlsoIncidents
+  required: false
+  type: 8
+description: |-
+  The Nozomi Networks Guardian platform is a hardware or virtual appliance that is used to monitor OT/IoT/IT networks. It combines asset discovery, network visualization, vulnerability assessment, risk monitoring and threat detection in a single solution.
+    This integration is used to gather alerts and assets information from Nozomi.
+display: Nozomi Networks
+name: Nozomi Networks
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: You can add a filter to get exactly the assets you want, to know how to filter assets using the Nozomi query language take a look at the n2os user documentation. For example 'where ip match 10.0.1.10', 'where vendor ==  Selta Telematica S.p.a'
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Maximun number of assets get from Nozomi, can't be bigger than
+        100
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: This command permits you to get some assets from Nozomi, you can
+      use the query filter to to refine your search. With the limits you can decide
+      the max number of assets you can retrieve from Nozomi, the limit can't be bigger
+      than 100.
+    execution: false
+    name: nozomi-find-assets
+    outputs:
+    - contextPath: Nozomi.Asset.id
+      description: uniq id of an asset
+      type: String
+    - contextPath: Nozomi.Asset.level
+      description: network layer
+      type: Number
+    - contextPath: Nozomi.Asset.capture_device
+      description: source from which the asset was captured
+      type: String
+    - contextPath: Nozomi.Asset.ip
+      description: array of asset ip
+      type: Unknown
+    - contextPath: Nozomi.Asset.mac_address
+      description: array of asset mac address
+      type: Unknown
+    - contextPath: Nozomi.asset.mac_vendor
+      description: array of mac vendor
+      type: Unknown
+    - contextPath: os
+      description: operating system
+      type: String
+    - contextPath: vendor
+      description: asset vendor
+      type: String
+    - contextPath: Nozomi.Asset.firmware_version
+      description: firmaware version
+      type: String
+    - contextPath: serial_number
+      description: serial number
+      type: String
+    - contextPath: product_name
+      description: product name
+      type: String
+    - contextPath: type
+      description: asset type as 'OT_device'
+      type: String
+    - contextPath: protocols
+      description: array of asset protocols
+      type: Unknown
+  - arguments:
+    - default: false
+      description: List of IDs to close as security
+      isArray: true
+      name: ids
+      required: false
+      secret: false
+    deprecated: false
+    description: Close incidents as security
+    execution: false
+    name: nozomi-close-incidents-as-security
+  - arguments:
+    - default: false
+      description: List of IDs to close as change.
+      isArray: true
+      name: ids
+      required: false
+      secret: false
+    deprecated: false
+    description: Close incidents as change
+    execution: false
+    name: nozomi-close-incidents-as-change
+  - arguments:
+    - default: false
+      defaultValue: alerts | count
+      description: 'A valid query, to learn how to create a Nozomi query you can take a look into the Nozomi Networks user documentation'
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    deprecated: false
+    description: |-
+      Can execute a nozomi query to get all the information you want.
+      A query can be something like that: "alerts | select id name status ack | where status == open"
+      Take a look to n2os manual to know how to do a query.
+    execution: false
+    name: nozomi-query
+    outputs:
+    - contextPath: Nozomi.Query.Result
+      description: An array of items
+      type: Unknown
+  - arguments:
+    - default: false
+      defaultValue: ''''''
+      description: a mac address
+      isArray: false
+      name: mac
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: 'True'
+      description: 'This argument permit you to return only the nodes IPs from a mac address of nodes having the status to "confirmed". Default value is True.'
+      isArray: false
+      name: only_nodes_confirmed
+      predefined:
+      - 'True'
+      - 'False'
+      required: true
+      secret: false
+    deprecated: false
+    description: Find a node ip from a mac address
+    execution: false
+    name: nozomi-find-ip-by-mac
+    outputs:
+    - contextPath: Nozomi.IpByMac.ips
+      description: Array of ips found for the mac address passed, empty if not found.
+      type: Unknown
+    - contextPath: Nozomi.IpByMac.mac
+      description: Mac found the ips.
+      type: String
+  dockerimage: demisto/python3:3.8.3.9324
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests - partner instance test in NonCircleFolder
