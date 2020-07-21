@@ -14,7 +14,7 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBAL VARS '''
 BASE_URL = "https://console.infinipoint.io"
 MAX_INCIDENTS_TO_FETCH = 1000
-GLOBAL_COMMAND_CONFIG = {
+COMMANDS_CONFIG = {
     "infinipoint-get-assets-programs": {
         "args": {
             "name": "contains",
@@ -271,18 +271,6 @@ def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]
     raise ValueError(f'Invalid number: "{arg_name}"')
 
 
-def add_to_results(current_results_array, request_result):
-    """
-    function to add the current API call results to the results array
-    input: original results array, request object as json
-    output: merged arrays
-    """
-    try:
-        return current_results_array + request_result['items']
-    except Exception as e:
-        return_error(f"Failed to add results!\nError message:\n{e}")
-
-
 def fetch_incidents(client, last_run: Dict[str, int], first_fetch_time: Optional[int]):
     max_results = arg_to_int(
         arg=demisto.params().get('max_fetch'),
@@ -308,7 +296,7 @@ def fetch_incidents(client, last_run: Dict[str, int], first_fetch_time: Optional
         'offset': last_fetch
     }
 
-    alerts = infinipoint_command(client, args, GLOBAL_COMMAND_CONFIG['infinipoint-get-events'])
+    alerts = infinipoint_command(client, args, COMMANDS_CONFIG['infinipoint-get-events'])
 
     if not isinstance(alerts, List):
         for alert in alerts.outputs:
@@ -349,21 +337,24 @@ def test_module(route, base_url, insecure, headers):
     res.raise_for_status()
 
 
-def infinipoint_command(client, args, optional_args, pagination=True):
+def infinipoint_command(client: Client, args=None, optional_args=None, pagination=True):
     rules = None
     cve = []
     method = "POST"
+
+    # Cancel pagination if necessary
     if "pagination" in optional_args:
         pagination = optional_args['pagination']
 
+    # Pass arguments as is
     if "pass_args" in optional_args:
         rules = args
-
+    # Move request type to GET
     elif "get_req" in optional_args:
         optional_args['route'] = optional_args['route'].format(**args)
-
         method = "GET"
 
+    # Change url - Post request
     elif "format_route" in optional_args:
         optional_args['route'] = optional_args['route'].format(**args)
 
@@ -377,10 +368,12 @@ def infinipoint_command(client, args, optional_args, pagination=True):
 
     if res:
         for node in res:
+            # Handle time format - convert to ISO from epoch
             if '$time' in node and isinstance(node['$time'], int):
                 created_time_ms = int(node.get('$time', '0')) * 1000
                 node['$time'] = timestamp_to_datestring(created_time_ms)
 
+        # CVE reputation
         if "cve_id" in res:
             cve = [Common.CVE(
                 id=res['cve_id'],
@@ -396,14 +389,11 @@ def infinipoint_command(client, args, optional_args, pagination=True):
                               indicators=cve)
 
 
-def run_queries_command(client, args, optional_args):
-    id = args.get('id')
+def run_queries_command(client: Client, args: Dict, optional_args=None):
     target = args.get('target')
-    node = {'id': id}
-
+    node = {'id': args.get('id')}
     if target:
-        node['target'] = {'ids': target}
-
+        node['target'] = {'ids': args.get('target')}
     res = client.call_api(route=optional_args['route'], rules=node, pagination=False)
     if res:
         command_results = CommandResults(
@@ -446,10 +436,12 @@ def main():
                 first_fetch_time=FIRST_FETCH_TIME)
 
         elif demisto.command() == "infinipoint-run-queries":
-            return_results(run_queries_command(client, demisto.args(), GLOBAL_COMMAND_CONFIG["infinipoint-run-queries"]))
+            return_results(run_queries_command(client=client, args=demisto.args(),
+                                               optional_args=COMMANDS_CONFIG["infinipoint-run-queries"]))
 
-        elif demisto.command() in GLOBAL_COMMAND_CONFIG:
-            return_results(infinipoint_command(client, demisto.args(), GLOBAL_COMMAND_CONFIG[demisto.command()]))
+        elif demisto.command() in COMMANDS_CONFIG:
+            return_results(infinipoint_command(client=client, args=demisto.args(),
+                                               optional_args=COMMANDS_CONFIG[demisto.command()]))
 
     except Exception as e:
         err_msg = f'Error - Infinipoint Integration [{e}]'

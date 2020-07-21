@@ -1,6 +1,6 @@
 import json
 import io
-from Infinipoint import GLOBAL_COMMAND_CONFIG as GLOBAL
+from Infinipoint import COMMANDS_CONFIG
 
 BASE_URL = 'https://test.com'
 PAGE_SIZE = 100
@@ -13,20 +13,6 @@ MAX_INCIDENTS_TO_FETCH = 1000
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
-
-# GLOBAL_COMMAND_DETAIL = {
-#     "infinipoint-get-assets-programs": {
-#         "args": {
-#             "name": "contains",
-#             "device_risk": "contains",
-#             "publisher": "contains",
-#             "version": "contains"
-#         },
-#         "route": "/api/assets/programs",
-#         "outputs_prefix": "Infinipoint.Assets.Programs",
-#         "outputs_key_field": "name"
-#     }
-# }
 
 
 def test_get_programs_command(requests_mock):
@@ -46,31 +32,8 @@ def test_get_programs_command(requests_mock):
             'Authentication': 'Bearer some_api_key'
         }
     )
-    response = infinipoint_command(client, args, GLOBAL['infinipoint-get-assets-programs'], False)
+    response = infinipoint_command(client, args, COMMANDS_CONFIG['infinipoint-get-assets-programs'], False)
     assert response.outputs[0]['name'] == mock_response[0]['name']
-
-# def test_get_programs_command(requests_mock):
-#     from Infinipoint import infinipoint_command, Client
-#
-#     mock_response = util_load_json('test_data/get_assets_programs.json')
-#
-#     requests_mock.post('http://test.com/api/assets/programs',
-#                        json=mock_response)
-#
-#     args = {"name": "VMware"}
-#
-#     client = Client(
-#         base_url='http://test.com',
-#         verify=False,
-#         headers={
-#             'Authentication': 'Bearer some_api_key'
-#         }
-#     )
-#
-#     response = infinipoint_command(client, '/api/assets/programs', args, 'Infinipoint.Assets.Programs',
-#                                    'name', pagination=False)
-#
-#     assert response.outputs[0]['name'] == mock_response[0]['name']
 
 
 def test_get_hardware_command(requests_mock):
@@ -86,7 +49,7 @@ def test_get_hardware_command(requests_mock):
             'Authentication': 'Bearer some_api_key'
         }
     )
-    response = infinipoint_command(client, args, GLOBAL['infinipoint-get-assets-hardware'], pagination=False)
+    response = infinipoint_command(client, args, COMMANDS_CONFIG['infinipoint-get-assets-hardware'], pagination=False)
     assert response.outputs[0]['os_type'] == mock_response[0]['os_type']
 
 
@@ -103,7 +66,7 @@ def test_get_cloud_command(requests_mock):
             'Authentication': 'Bearer some_api_key'
         }
     )
-    response = infinipoint_command(client, args, GLOBAL['infinipoint-get-assets-cloud'], pagination=False)
+    response = infinipoint_command(client, args, COMMANDS_CONFIG['infinipoint-get-assets-cloud'], pagination=False)
     assert response.outputs[0]['os_type'] == mock_response[0]['os_type']
 
 
@@ -120,7 +83,7 @@ def test_get_users_command(requests_mock):
             'Authentication': 'Bearer some_api_key'
         }
     )
-    response = infinipoint_command(client, args, GLOBAL['infinipoint-get-assets-users'], pagination=False)
+    response = infinipoint_command(client, args, COMMANDS_CONFIG['infinipoint-get-assets-users'], pagination=False)
     assert response.outputs[0]['username'] == mock_response[0]['username']
 
 
@@ -139,7 +102,7 @@ def test_get_devices_command(requests_mock):
             'Authentication': 'Bearer some_api_key'
         }
     )
-    response = infinipoint_command(client, args, GLOBAL['infinipoint-get-device'], pagination=False)
+    response = infinipoint_command(client, args, COMMANDS_CONFIG['infinipoint-get-device'], pagination=False)
     assert response.outputs[0]['agentVersion'] == mock_response[0]['agentVersion']
 
 
@@ -158,7 +121,7 @@ def test_get_vulnerable_devices_command(requests_mock):
             'Authentication': 'Bearer some_api_key'
         }
     )
-    response = infinipoint_command(client, args, GLOBAL['infinipoint-get-vulnerable-devices'], pagination=False)
+    response = infinipoint_command(client, args, COMMANDS_CONFIG['infinipoint-get-vulnerable-devices'], pagination=False)
     assert response.outputs[0]['os_name'] == mock_response[0]['os_name']
 
 
@@ -177,7 +140,7 @@ def test_get_tag_command(requests_mock):
             'Authentication': 'Bearer some_api_key'
         }
     )
-    response = infinipoint_command(client, args, GLOBAL['infinipoint-get-tag'], pagination=False)
+    response = infinipoint_command(client, args, COMMANDS_CONFIG['infinipoint-get-tag'], pagination=False)
     assert response.outputs[0]['name'] == mock_response[0]['name']
 
 
@@ -196,7 +159,7 @@ def test_get_networks_command(requests_mock):
             'Authentication': 'Bearer some_api_key'
         }
     )
-    response = infinipoint_command(client, args, GLOBAL['infinipoint-get-networks'], pagination=False)
+    response = infinipoint_command(client, args, COMMANDS_CONFIG['infinipoint-get-networks'], pagination=False)
     assert response.outputs[0]['alias'] == mock_response[0]['alias']
 
 
@@ -215,7 +178,7 @@ def test_get_queries_command(requests_mock):
             'Authentication': 'Bearer some_api_key'
         }
     )
-    response = infinipoint_command(client, args, GLOBAL['infinipoint-get-queries'], pagination=False)
+    response = infinipoint_command(client, args, COMMANDS_CONFIG['infinipoint-get-queries'], pagination=False)
     assert response.outputs[0]['name'] == mock_response[0]['name']
 
 
@@ -234,7 +197,7 @@ def test_run_queries_command(requests_mock):
             'Authentication': 'Bearer some_api_key'
         }
     )
-    response = run_queries_command(client, args, GLOBAL['infinipoint-run-queries'])
+    response = run_queries_command(client, args, COMMANDS_CONFIG['infinipoint-run-queries'])
     assert response.outputs['name'] == mock_response['name']
 
 
@@ -253,7 +216,7 @@ def test_device_details_command(requests_mock):
             'Authentication': 'Bearer some_api_key'
         }
     )
-    response = infinipoint_command(client, args, GLOBAL['infinipoint-get-device-details'], pagination=False)
+    response = infinipoint_command(client, args, COMMANDS_CONFIG['infinipoint-get-device-details'], pagination=False)
     assert response.outputs['$device'] == mock_response['$device']
 
 
@@ -272,5 +235,5 @@ def test_cve_command(requests_mock):
             'Authentication': 'Bearer some_api_key'
         }
     )
-    response = infinipoint_command(client, args, GLOBAL['infinipoint-get-cve'], pagination=False)
+    response = infinipoint_command(client, args, COMMANDS_CONFIG['infinipoint-get-cve'], pagination=False)
     assert response.outputs['cve_id'] == mock_response['cve_id']
