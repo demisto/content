@@ -18,6 +18,69 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 MAX_INCIDENTS_TO_FETCH = 200
 DEFAULT_INCIDENT_TO_FETCH = 50
 
+SEVERITY_OPTIONS = {
+    'Low': 0,
+    'Medium': 1,
+    'High': 2
+}
+
+RESOLUTION_STATUS_OPTIONS = {
+    'Open': 0,
+    'Dismissed': 1,
+    'Resolved': 2
+}
+
+# Note that number 4 is missing
+SOURCE_TYPE_OPTIONS = {
+    'Access_control': 0,
+    'Session_control': 1,
+    'App_connector': 2,
+    'App_connector_analysis': 3,
+    'Discovery': 5,
+    'MDATP': 6
+}
+
+FILE_TYPE_OPTIONS = {
+    'Other': 0,
+    'Document': 1,
+    'Spreadsheet': 2,
+    'Presentation': 3,
+    'Text': 4,
+    'Image': 5,
+    'Folder': 6
+}
+
+FILE_SHARING_OPTIONS = {
+    'Private': 0,
+    'Internal': 1,
+    'External': 2,
+    'Public': 3,
+    'Public_Internet': 4
+}
+
+IP_CATEGORY_OPTIONS = {
+    'Corporate': 1,
+    'Administrative': 2,
+    'Risky': 3,
+    'VPN': 4,
+    'Cloud_provider': 5,
+    'Other': 6
+}
+
+IS_EXTERNAL_OPTIONS = {
+    'External': True,
+    'Internal': False,
+    'No_value': None
+}
+
+STATUS_OPTIONS = {
+    'N/A': 0,
+    'Staged': 1,
+    'Active': 2,
+    'Suspended': 3,
+    'Deleted': 4
+}
+
 
 class Client(BaseClient):
     """
@@ -94,96 +157,6 @@ def arg_to_timestamp(arg):
         return int(arg)
 
 
-def demisto_severity_to_api_severity(severity):
-    severity_options = {
-        'Low': 0,  # low severity
-        'Medium': 1,  # medium severity
-        'High': 2  # high severity
-    }
-    return severity_options[severity]
-
-
-def demisto_resolution_status_to_api_resolution_status(resolution_status):
-    resolution_status_options = {
-        'Open': 0,
-        'Dismissed': 1,
-        'Resolved': 2
-    }
-    return resolution_status_options[resolution_status]
-
-
-def demisto_source_type_to_api_source_type(source):
-    source_type_option = {
-        'Access_control': 0,
-        'Session_control': 1,
-        'App_connector': 2,
-        'App_connector_analysis': 3,
-        'Discovery': 5,
-        'MDATP': 6
-    }
-    return source_type_option[source]
-
-
-def demisto_file_type_to_api_file_type(file_type):
-    file_type_option = {
-        'Other': 0,
-        'Document': 1,
-        'Spreadsheet': 2,
-        'Presentation': 3,
-        'Text': 4,
-        'Image': 5,
-        'Folder': 6
-    }
-    return file_type_option[file_type]
-
-
-def demisto_sharing_options_to_api_sharing_options(sharing):
-    file_sharing_options = {
-        'Private': 0,
-        'Internal': 1,
-        'External': 2,
-        'Public': 3,
-        'Public_Internet': 4
-    }
-    return file_sharing_options[sharing]
-
-
-def demisto_ip_category_to_api_ip_category(ip_category):
-    ip_category_option = {
-        'Corporate': 1,
-        'Administrative': 2,
-        'Risky': 3,
-        'VPN': 4,
-        'Cloud_provider': 5,
-        'Other': 6
-    }
-    return ip_category_option[ip_category]
-
-
-def demisto_is_external_to_api_is_external(is_external):
-    is_external_option = {
-        'External': True,
-        'Internal': False,
-        'No_value': None
-    }
-    return is_external_option[is_external]
-
-
-def demisto_status_options_to_api_status_options(status):
-    status_options = {
-        'N/A': 0,
-        'Staged': 1,
-        'Active': 2,
-        'Suspended': 3,
-        'Deleted': 4,
-    }
-    return status_options[status]
-
-
-def str_to_bool(string):
-    return string.lower() == 'true'
-
-
 def generate_specific_key_by_command_name(url_suffix):
     service_key, instance_key, username_key = '', '', ''
     if url_suffix == '/entities/':
@@ -209,9 +182,9 @@ def args_to_filter(arguments, url_suffix):
         if key == 'instance':
             filters[instance_key] = {'eq': int(value)}
         if key == 'source':
-            filters[key] = {'eq': demisto_source_type_to_api_source_type(value)}
+            filters[key] = {'eq': SOURCE_TYPE_OPTIONS[value]}
         if key == 'ip_category':
-            filters['ip.category'] = {'eq': demisto_ip_category_to_api_ip_category(value)}
+            filters['ip.category'] = {'eq': IP_CATEGORY_OPTIONS[value]}
         if key == 'ip':
             filters['ip.address'] = {'eq': value}
         if key == 'username':
@@ -219,17 +192,17 @@ def args_to_filter(arguments, url_suffix):
         if key == 'taken_action':
             filters['activity.takenAction'] = {'eq': value}
         if key == 'severity':
-            filters[key] = {'eq': demisto_severity_to_api_severity(value)}
+            filters[key] = {'eq': SEVERITY_OPTIONS[value]}
         if key == 'resolution_status':
-            filters['resolutionStatus'] = {'eq': demisto_resolution_status_to_api_resolution_status(value)}
+            filters['resolutionStatus'] = {'eq': RESOLUTION_STATUS_OPTIONS[value]}
         if key == 'file_type':
-            filters['fileType'] = {'eq': demisto_file_type_to_api_file_type(value)}
+            filters['fileType'] = {'eq': FILE_TYPE_OPTIONS[value]}
         if key == 'sharing':
-            filters[key] = {'eq': demisto_sharing_options_to_api_sharing_options(value)}
+            filters[key] = {'eq': FILE_SHARING_OPTIONS[value]}
         if key == 'extension':
             filters[key] = {'eq': value}
         if key == 'quarantined':
-            filters[key] = {'eq': str_to_bool(value)}
+            filters[key] = {'eq': argToBoolean(value)}
         if key == 'type':
             filters[key] = {'eq': value}
         if key == 'group_id':
@@ -237,9 +210,9 @@ def args_to_filter(arguments, url_suffix):
         if key == 'is_admin':
             filters['isAdmin'] = {'eq': value}
         if key == 'is_external':
-            filters['isExternal'] = {'eq': demisto_is_external_to_api_is_external(value)}
+            filters['isExternal'] = {'eq': IS_EXTERNAL_OPTIONS[value]}
         if key == 'status':
-            filters[key] = {'eq': demisto_status_options_to_api_status_options(value)}
+            filters[key] = {'eq': STATUS_OPTIONS[value]}
 
         request_data['filters'] = filters
     return request_data
@@ -280,24 +253,14 @@ def params_to_filter(parameters):
     """
     filters = {}
     if 'severity' in parameters.keys():
-        filters['severity'] = {'eq': demisto_severity_to_api_severity(parameters['severity'])}
+        filters['severity'] = {'eq': SEVERITY_OPTIONS[parameters['severity']]}
     if 'resolution_status' in parameters.keys():
-        filters['resolutionStatus'] = {'eq': demisto_resolution_status_to_api_resolution_status(parameters
-                                                                                                ['resolution_status'])}
+        filters['resolutionStatus'] = {'eq': RESOLUTION_STATUS_OPTIONS[parameters['resolution_status']]}
     if 'service' in parameters.keys():
         filters['entity.service'] = {'eq': (int(parameters['service']))}
     if 'instance' in parameters.keys():
         filters['entity.instance'] = {'eq': (int(parameters['instance']))}
     return filters
-
-
-def calculate_fetch_start_time(last_fetch, first_fetch_time):
-    if last_fetch is None:
-        last_fetch = first_fetch_time
-    else:
-        last_fetch = int(last_fetch)
-    latest_created_time = last_fetch
-    return latest_created_time
 
 
 def test_module(client):
@@ -409,7 +372,16 @@ def list_users_accounts_command(client, args):
     )
 
 
-def preparing_max_result(max_results):
+def calculate_fetch_start_time(last_fetch, first_fetch_time):
+    if last_fetch is None:
+        last_fetch = first_fetch_time
+    else:
+        last_fetch = int(last_fetch)
+    latest_created_time = last_fetch
+    return latest_created_time
+
+
+def get_max_result_number(max_results):
     if not max_results:
         return DEFAULT_INCIDENT_TO_FETCH
     elif max_results > MAX_INCIDENTS_TO_FETCH:
@@ -417,7 +389,7 @@ def preparing_max_result(max_results):
     return int(max_results)
 
 
-def preparing_first_fetch(first_fetch):
+def get_first_fetch_time(first_fetch):
     if not first_fetch:
         first_fetch = '3 days'
     first_fetch_time = arg_to_timestamp(first_fetch)
@@ -442,8 +414,8 @@ def alerts_to_incidents_and_fetch_start_from(alerts, fetch_start_time):
 
 
 def fetch_incidents(client, max_results, last_run, first_fetch, filters):
-    max_results = preparing_max_result(max_results)
-    first_fetch_time = preparing_first_fetch(first_fetch)
+    max_results = get_max_result_number(max_results)
+    first_fetch_time = get_first_fetch_time(first_fetch)
     last_fetch = last_run.get('last_fetch')
     fetch_start_time = calculate_fetch_start_time(last_fetch, first_fetch_time)
     filters["date"] = {"gte": fetch_start_time}
