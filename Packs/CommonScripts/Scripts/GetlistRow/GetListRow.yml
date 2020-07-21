@@ -7,8 +7,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: Header to filter lines by. If the header is specified, a requested
-  value for that header must be specified as well.
+  description: Header to filter lines by. If the header is specified, a requested value for that header must be specified as well.
   isArray: false
   name: header
   required: false
