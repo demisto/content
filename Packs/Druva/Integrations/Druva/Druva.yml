@@ -155,7 +155,9 @@ script:
     - contextPath: Druva.quarantinedSnapshots.snapshotID
       description: ID of the quarantined snapshot
       type: string
-    description: Delete a quarantined Snapshot
+    description: 'Delete a quarantined Snapshot. Warning: Snapshots once deleted can
+      not be recovered.'
+    execution: true
   - name: druva-endpoint-search-file-hash
     arguments:
     - name: sha1_checksum
@@ -190,7 +192,10 @@ script:
         restore data to the same location from which it was backed up. 3) If you want
         to restore the data at a custom location, specify absolute path of the location.
         Example - /Users/username/Desktop'
-    description: Restore Data to a replacement device
+    description: 'Restore Data to a replacement device. Delete a quarantined Snapshot.
+      Warning: This command will restore your endpoint data from a prior day snapshot.
+      Any changes since the snapshot date may be lost.'
+    execution: true
   - name: druva-endpoint-check-restore-status
     arguments:
     - name: restore_id
@@ -202,7 +207,10 @@ script:
     - name: resource_id
       required: true
       description: ID of endpoint resource to be decommissioned
-    description: Remote Wipe Infected Endpoint Resource
+    description: 'Remote Wipe Infected Endpoint Resource. Delete a quarantined Snapshot.
+      Warning: This command will remote wipe data from the end point. This action
+      can not be undone.'
+    execution: true
   dockerimage: demisto/python3:3.8.3.9324
   isfetch: false
   runonce: false
