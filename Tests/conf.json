@@ -586,7 +586,8 @@
             "timeout": 2400
         },
         {
-            "playbookID": "WordTokenizeTest"
+            "playbookID": "WordTokenizeTest",
+            "toversion":  "4.5.9"
         },
         {
             "integrations": "QRadar",
@@ -639,7 +640,7 @@
         },
         {
             "integrations": "Generic SQL",
-            "playbookID": "generic-sql",
+            "playbookID": "generic-sql-oracle",
             "instance_names": "Oracle instance",
             "fromversion": "5.0.0"
         },
@@ -676,6 +677,11 @@
             "playbookID": "palo_alto_panorama_test_pb",
             "timeout": 1000,
             "nightly": true
+        },
+        {
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_firewall_9.0",
+            "playbookID": "PAN-OS URL Filtering enrichment - Test"
         },
         {
             "integrations": "Tenable.io",
@@ -1158,10 +1164,6 @@
             "integrations": "EWS v2",
             "playbookID": "EWS Public Folders Test",
             "instance_names": "ewv2_regular"
-        },
-        {
-            "playbookID": "TestWordFileToIOC",
-            "timeout": 300
         },
         {
             "integrations": "Symantec Endpoint Protection V2",
@@ -2038,10 +2040,6 @@
             "playbookID": "ExtractDomainFromEmailTest"
         },
         {
-            "playbookID": "Account Enrichment - Generic v2 - Test",
-            "integrations": "activedir"
-        },
-        {
             "playbookID": "Extract Indicators From File - Generic v2 - Test",
             "integrations": "Image OCR",
             "timeout": 300,
@@ -2811,6 +2809,15 @@
             "fromversion": "5.0.0"
         },
         {
+            "playbookID": "PCAP File Carving Test",
+            "instance_names": "virus_total_general",
+            "integrations": [
+                "VirusTotal",
+                "WildFire-v2"
+            ],
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "VirusTotal",
             "instance_names": "virus_total_general",
             "playbookID": "PCAP Parsing And Indicator Enrichment Test",
@@ -2860,7 +2867,6 @@
         "Test-Shodan_v2": "Issue 23370",
         "Symantec Deepsight Test": "Issue 22971",
         "Cybereason Test": "Issue 22683",
-        "test-Expanse": "Issue 26248",
         "TestProofpointFeed": "Issue 22229",
         "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
@@ -2894,7 +2900,21 @@
         "Create Phishing Classifier V2 ML Test": "Issue 26341",
         "DuoAdmin API test playbook": "Issue 24937",
         "Mail Sender (New) Test": "Issue 25602",
-        "HTTPListRedirects Basic Test": "Issue 26617"
+        "HTTPListRedirects Basic Test": "Issue 26459",
+        "SMB test": "Issue 26454",
+        "Infocyte-Test": "Issue 26445",
+        "Account Enrichment - Generic v2 - Test": "Issue 26452",
+        "Office365_Feed_Test": "Issue 26455",
+        "DBotCreatePhishingClassifierV2FromFile-Test": "Issue 26456",
+        "Google Chronicle Backstory Asset - Test": "Issue 26460",
+        "Keylight v2 - Test": "Issue 26462",
+        "AutoFocus V2 test": "Issue 26464",
+        "PAN-OS Create Or Edit Rule Test": "Issue 26465",
+        "HybridAnalysis-Test": "Issue 26599",
+        "Logzio - Test": "Issue 26729",
+        "Tenable.io test": "Issue 26727",
+        "Tenable.io Scan Test": "Issue 26727",
+        "URL Enrichment - Generic v2 - Test": "Issue 26463"
     },
     "skipped_integrations": {
         
@@ -2908,7 +2928,6 @@
         "Deep Instinct": "The partner didn't provide an instance",
         "Cofense Triage v2": "No instance - partner integration",
         "ArcSight Logger": "Issue 24303",
-        "AttackIQFireDrill": "Issue 24281",
         "MxToolBox": "No instance",
         "Skyformation": "No instance, old partner",
         "Prisma Access": "Instance will be provided soon by Lior and Prasen",
@@ -2950,7 +2969,6 @@
         "fireeye": "Issue 19839",
         "DomainTools": "Issue 8298",
         "Remedy On-Demand": "Issue 19835",
-        "DomainTools Iris": "Issue 20433",
         "Check Point": "Issue 18643",
         "Preempt": "Issue 20268",
         "iDefense": "Issue 20095",
@@ -2963,7 +2981,6 @@
         "AlienVault USM Anywhere": "Issue #18273",
         "Tufin": "Issue 16441",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
-        "MimecastV2": "Issue 14593",
         "Netskope": "instance is down",
         "Farsight DNSDB": "Issue 15512",
         "Service Manager": "Expired license",
@@ -3035,6 +3052,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "Infocyte": "Proxy issues",
         "SNDBOX": "Submits a file - tests that send files shouldn't be mocked",
         "Joe Security": "Submits a file - tests that send files shouldn't be mocked",
         "Maltiverse": "issue 24335",
@@ -3050,7 +3068,8 @@
         "Image OCR": "Does not perform network traffic",
         "Server Message Block (SMB)": "Does not perform http communication",
         "Active Directory Query v2": "Does not perform http communication",
-        "dnstwist": "Does not peform http communication",
+        "dnstwist": "Does not perform http communication",
+        "Generic SQL": "Does not perform http communication",
         "VxStream": "Issue 15544",
         "PagerDuty v2": "Integration requires SSL",
         "TCPIPUtils": "Integration requires SSL",
