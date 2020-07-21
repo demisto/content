@@ -1624,7 +1624,7 @@ def get_remote_data_command(client, args):
 
     incident_data = get_incident_extra_data_command(client, {"incident_id": remote_args.remote_incident_id,
                                                              "alerts_limit": 1000})[2]
-    current_modified_time = int(incident_data.get('modification_time'))/1000
+    current_modified_time = int(incident_data.get('modification_time')) / 1000
     if arg_to_timestamp(current_modified_time, 'modification_time') > \
             arg_to_timestamp(remote_args.last_update, 'last_update'):
         return GetRemoteDataResponse(
