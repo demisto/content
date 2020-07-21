@@ -2,12 +2,7 @@
 	"id": "3b99ce96-278e-4345-8442-f6f7c4a52b8f",
 	"version": -1,
 	"modified": "2020-07-01T20:37:00.535753097-04:00",
-	"commitMessage": "",
-	"shouldPublish": false,
-	"shouldCommit": false,
-	"shouldPush": false,
 	"defaultIncidentType": "",
-	"instanceId": "9ad78516-f6aa-444b-8759-692c176edd32",
 	"mapping": {
 		"IronDefense Alert Notification": {
 			"internalMapping": {
@@ -722,5 +717,5 @@
 		"event": "IronDefense Event Notification"
 	},
 	"brandName": "IronDefense",
-	"instanceName": "IronDefense_instance_1"
+	"toVersion": "5.9.9"
 }
