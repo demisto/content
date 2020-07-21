@@ -137,7 +137,7 @@ COMMANDS_CONFIG = {
             "offset": "contains",
             "limit": "contains"
         },
-        "route": "/api/demisto/incidents",
+        "route": "/api/demisto/eventss",
         "outputs_prefix": "Infinipoint.Compliance.Incidents",
         "outputs_key_field": "deviceID",
         "pagination": False,
