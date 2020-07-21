@@ -78,6 +78,7 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
     Returns:
         str: extracted index folder full path.
         Blob: google cloud storage object that represents index.zip blob.
+        str: downloaded index generation.
 
     """
     index_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
@@ -85,18 +86,18 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
 
     index_blob = storage_bucket.blob(index_storage_path)
     index_folder_path = os.path.join(extract_destination_path, GCPConfig.INDEX_NAME)
+    index_generation = 0  # Setting to 0 makes the operation succeed only if there are no live versions of the blob
 
     if not os.path.exists(extract_destination_path):
         os.mkdir(extract_destination_path)
 
     if not index_blob.exists():
         os.mkdir(index_folder_path)
-        return index_folder_path, index_blob
+        return index_folder_path, index_blob, index_generation
 
-    # index zip should never be cached in the memory, should be updated version
-    index_blob.cache_control = "no-cache,max-age=0"
-    index_blob.download_to_filename(download_index_path)
     index_blob.reload()
+    index_generation = index_blob.generation
+    index_blob.download_to_filename(download_index_path, if_generation_match=index_generation)
 
     if os.path.exists(download_index_path):
         with ZipFile(download_index_path, 'r') as index_zip:
@@ -109,7 +110,7 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
         os.remove(download_index_path)
         print(f"Finished downloading and extracting {GCPConfig.INDEX_NAME} file to {extract_destination_path}")
 
-        return index_folder_path, index_blob
+        return index_folder_path, index_blob, index_generation
     else:
         print_error(f"Failed to download {GCPConfig.INDEX_NAME}.zip file from cloud storage.")
         sys.exit(1)
@@ -224,7 +225,8 @@ def clean_non_existing_packs(index_folder_path, private_packs, storage_bucket):
     return False
 
 
-def upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs):
+def upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs,
+                            current_commit_hash, index_generation):
     """Upload updated index zip to cloud storage.
 
     Args:
@@ -233,13 +235,16 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
         index_blob (Blob): google cloud storage object that represents index.zip blob.
         build_number (str): circleCI build number, used as an index revision.
         private_packs (list): List of private packs and their price.
+        current_commit_hash (str): last commit hash of head.
+        index_generation (str): downloaded index generation.
 
     """
     with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json"), "w+") as index_file:
         index = {
             'revision': build_number,
             'modified': datetime.utcnow().strftime(Metadata.DATE_FORMAT),
-            'packs': private_packs
+            'packs': private_packs,
+            'commit': current_commit_hash
         }
         json.dump(index, index_file, indent=4)
 
@@ -247,8 +252,9 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
     index_zip_path = shutil.make_archive(base_name=index_folder_path, format="zip",
                                          root_dir=extract_destination_path, base_dir=index_zip_name)
 
+    index_blob.reload()
     index_blob.cache_control = "no-cache,max-age=0"  # disabling caching for index blob
-    index_blob.upload_from_filename(index_zip_path)
+    index_blob.upload_from_filename(index_zip_path, if_generation_match=index_generation)
 
     shutil.rmtree(index_folder_path)
     print_color(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.", LOG_COLORS.GREEN)
@@ -392,8 +398,8 @@ def update_index_with_priced_packs(private_storage_bucket, extract_destination_p
     private_packs = []
 
     try:
-        private_index_path, _ = download_and_extract_index(private_storage_bucket,
-                                                           os.path.join(extract_destination_path, 'private'))
+        private_index_path, _, _ = download_and_extract_index(private_storage_bucket,
+                                                              os.path.join(extract_destination_path, 'private'))
         private_packs = get_private_packs(private_index_path)
         add_private_packs_to_index(index_folder_path, private_index_path)
         print("Finished updating index with priced packs")
@@ -469,6 +475,66 @@ def get_recent_commits_data(content_repo):
         str: previous commit of origin/master (origin/master~1)
     """
     return content_repo.head.commit.hexsha, content_repo.commit('origin/master~1').hexsha
+
+
+def check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, remote_previous_commit_hash,
+                              storage_bucket):
+    """ Checks stored at index.json commit hash and compares it to current commit hash. In case no packs folders were
+    added/modified/deleted, all other steps are not performed.
+
+    Args:
+        index_folder_path (str): index folder full path.
+        content_repo (git.repo.base.Repo): content repo object.
+        current_commit_hash (str): last commit hash of head.
+        remote_previous_commit_hash (str): previous commit of origin/master (origin/master~1)
+        storage_bucket: public storage bucket.
+
+    """
+    skipping_build_task_message = "Skipping Upload Packs To Marketplace Storage Step."
+
+    try:
+        if storage_bucket.name != GCPConfig.PRODUCTION_BUCKET:
+            print("Skipping index update check in non production bucket")
+            return
+
+        if not os.path.exists(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")):
+            # will happen only in init bucket run
+            print_warning(f"{GCPConfig.INDEX_NAME}.json not found in {GCPConfig.INDEX_NAME} folder")
+            return
+
+        with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")) as index_file:
+            index_json = json.load(index_file)
+
+        index_commit_hash = index_json.get('commit', remote_previous_commit_hash)
+
+        try:
+            index_commit = content_repo.commit(index_commit_hash)
+        except Exception as e:
+            # not updated build will receive this exception because it is missing more updated commit
+            print_warning(f"Index is already updated. Additional info:\n {e}")
+            print_warning(skipping_build_task_message)
+            sys.exit()
+
+        current_commit = content_repo.commit(current_commit_hash)
+
+        if current_commit.committed_datetime <= index_commit.committed_datetime:
+            print_warning(f"Current commit {current_commit.hexsha} committed time: {current_commit.committed_datetime}")
+            print_warning(f"Index commit {index_commit.hexsha} committed time: {index_commit.committed_datetime}")
+            print_warning("Index is already updated.")
+            print_warning(skipping_build_task_message)
+            sys.exit()
+
+        for changed_file in current_commit.diff(index_commit):
+            if changed_file.a_path.startswith(PACKS_FOLDER):
+                print(f"Found changed packs between index commit {index_commit.hexsha} and {current_commit.hexsha}")
+                break
+        else:
+            print_warning(f"No changes found between index commit {index_commit.hexsha} and {current_commit.hexsha}")
+            print_warning(skipping_build_task_message)
+            sys.exit()
+    except Exception as e:
+        print_error(f"Failed in checking status of index. Additional info:\n {e}")
+        sys.exit(1)
 
 
 def print_packs_summary(packs_list):
@@ -584,7 +650,11 @@ def main():
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
     # download and extract index from public bucket
-    index_folder_path, index_blob = download_and_extract_index(storage_bucket, extract_destination_path)
+    index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
+                                                                                 extract_destination_path)
+
+    check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, remote_previous_commit_hash,
+                              storage_bucket)
 
     if private_bucket_name:  # Add private packs to the index
         private_storage_bucket = storage_client.bucket(private_bucket_name)
@@ -707,7 +777,8 @@ def main():
     upload_core_packs_config(storage_bucket, build_number, index_folder_path)
 
     # finished iteration over content packs
-    upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs)
+    upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs,
+                            current_commit_hash, index_generation)
 
     # upload id_set.json to bucket
     upload_id_set(storage_bucket, id_set_path)
