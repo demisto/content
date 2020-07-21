@@ -10,9 +10,8 @@ This integration was integrated and tested with version xx of Infinipoint
 | --- | --- | --- |
 | access_key | Access Key | True |
 | private_key | Private Key | True |
-| url | Server URL \(e.g. https://console.infinipoint.io\) | False |
 | isFetch | Fetch incidents | False |
-| incidentType | Incident type | False |
+| incident_type | Incident type | False |
 | max_fetch | Maximum number of incidents per fetch | False |
 | first_fetch | First fetch time | False |
 | insecure | Trust any certificate \(not secure\) | False |
@@ -302,7 +301,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alias |  | Optional | 
-| gateway_ip |  | Optional | 
 | cidr |  | Optional | 
 
 
@@ -628,7 +626,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 
 
-### infinipoint-get-device-details 
+### infinipoint-get-device-details
 ***
  
 

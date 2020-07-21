@@ -12,7 +12,8 @@ requests.packages.urllib3.disable_warnings()
 
 
 ''' GLOBAL VARS '''
-BASE_URL = "https://console.infinipoint.io"
+# BASE_URL = "https://console.infinipoint.io"
+BASE_URL = "https://dev.infinipoint.dev"
 MAX_INCIDENTS_TO_FETCH = 1000
 COMMANDS_CONFIG = {
     "infinipoint-get-assets-programs": {
@@ -137,7 +138,7 @@ COMMANDS_CONFIG = {
             "offset": "contains",
             "limit": "contains"
         },
-        "route": "/api/demisto/eventss",
+        "route": "/api/demisto/events",
         "outputs_prefix": "Infinipoint.Compliance.Incidents",
         "outputs_key_field": "deviceID",
         "pagination": False,
@@ -282,6 +283,7 @@ def fetch_incidents(client, last_run: Dict[str, int], first_fetch_time: Optional
         max_results = MAX_INCIDENTS_TO_FETCH
 
     last_fetch = last_run.get('last_fetch', None)
+    subscription = demisto.params().get('incident_type', 'event, alert')
 
     if last_fetch is None:
         last_fetch = first_fetch_time
@@ -298,21 +300,23 @@ def fetch_incidents(client, last_run: Dict[str, int], first_fetch_time: Optional
 
     alerts = infinipoint_command(client, args, COMMANDS_CONFIG['infinipoint-get-events'])
 
-    if not isinstance(alerts, List):
+    # if not isinstance(alerts, None):
+    if alerts:
         for alert in alerts.outputs:
-            incident_created_time = int(alert.get('timestamp', '0'))
-            incident_created_time_ms = incident_created_time * 1000
+            if alert.get("subscription") in subscription:
+                incident_created_time = int(alert.get('timestamp', '0'))
+                incident_created_time_ms = incident_created_time * 1000
 
-            incident = {
-                'name': f'Infinipoint {alert.get("name")}',
-                'type': f'Infinipoint {alert.get("type")}',
-                'occurred': timestamp_to_datestring(incident_created_time_ms),
-                'rawJSON': json.dumps(alert.get('rawJSON'))
-            }
+                incident = {
+                    'name': f'Infinipoint {alert.get("name")}',
+                    'type': f'Infinipoint {alert.get("type")}',
+                    'occurred': timestamp_to_datestring(incident_created_time_ms),
+                    'rawJSON': json.dumps(alert.get('rawJSON'))
+                }
 
-            incidents.append(incident)
-            if incident_created_time > latest_created_time:
-                latest_created_time = incident_created_time
+                incidents.append(incident)
+                if incident_created_time > latest_created_time:
+                    latest_created_time = incident_created_time
 
     next_run = {'last_fetch': latest_created_time}
 
@@ -407,33 +411,33 @@ def run_queries_command(client: Client, args: Dict, optional_args=None):
 
 
 def main():
-    INSECURE = demisto.params().get('insecure', False)
-    ACCESS_KEY = demisto.params().get('access_key')
-    PRIVATE_KEY = demisto.params().get('private_key')
-    FIRST_FETCH_TIME = arg_to_timestamp(arg=demisto.params().get('first_fetch', '3 days'),
+    insecure = demisto.params().get('insecure', False)
+    access_key = demisto.params().get('access_key')
+    private_key = demisto.params().get('private_key')
+    first_fetch_time = arg_to_timestamp(arg=demisto.params().get('first_fetch', '3 days'),
                                         arg_name='First fetch time', required=True)
-    PROXY = demisto.params().get('proxy', False)
+    proxy = demisto.params().get('proxy', False)
     # MAX_INCIDENTS_TO_FETCH = 1000
 
     demisto.info(f'command is {demisto.command()}')
 
     try:
-        headers = get_auth_headers(ACCESS_KEY, PRIVATE_KEY)
+        headers = get_auth_headers(access_key, private_key)
         client = Client(
             base_url=BASE_URL,
-            verify=INSECURE,
+            verify=insecure,
             headers=headers,
-            proxy=PROXY)
+            proxy=proxy)
 
         if demisto.command() == 'test-module':
-            test_module("/api/auth/health/", BASE_URL, INSECURE, headers)
+            test_module("/api/auth/health/", BASE_URL, insecure, headers)
             demisto.results('ok')
 
         elif demisto.command() == 'fetch-incidents':
             fetch_incidents(
                 client=client,
                 last_run=demisto.getLastRun(),
-                first_fetch_time=FIRST_FETCH_TIME)
+                first_fetch_time=first_fetch_time)
 
         elif demisto.command() == "infinipoint-run-queries":
             return_results(run_queries_command(client=client, args=demisto.args(),

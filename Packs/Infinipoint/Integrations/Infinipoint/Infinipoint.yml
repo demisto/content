@@ -7,10 +7,21 @@ category: Network Security
 image: data:image/png;base64,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fZ1YWvulcBp7+94AJR3cKsxHTvfVmWCGd1EbeL3gG/0V0cc+RGBAIAAnNxM3/F1ljJGHDjJuL+BwCjk4sTWeoMZAZ9qiSZpTCsGXb9ZdFU9O/TR0JpQFHZzo/H48Clt5C6YkgutWd+dZCCmogt2IwMBEIMaL+SEsw0M4B07ucQ9HV9jBaXvhoGdA790eOos7uW51G1YtD9O6ixy9HRw+AAqdby+iy+wTz1Q9ErWbPOaJABHwRCCZ3+tSX4HDWZvD6ZR2cNo8ODkZKv8hh84iDu73kH+s1lXm6OHgHobOubK9p4w+9iUCRKACBJKIoUfNxkP6YzidF1McTzAHJ6eQzCt2qxOh81ro25qiM6+D2ww5/w46LuRKYxsHtwYR6cVlo8QKLidFEgEikIaAzFfBUXwID+9lOMoWlecazieogzP1J45EnFOPugg674S+dhHl02h3O9pfADom3hMvLlWQDAfXB5tE503QtwB0VEhHWoHpFEkEiEBeBJKh7IjkC555u5RuF49XY2WSHRHSW+BQDk+OUpav7NaUkj2EsqKJObGaVFINESACRIAIEAEiQASIABEgAkSACBABIkAEiAARIAJEgAgQASJABIgAESACRIAIEAEiQASIABEgAkSACBABIkAEiAARIAJEgAgQASJABIgAESACRIAIEAEiQASIABEgAkSACBABIkAEiAARIAJEgAgQASJABIgAESACRIAIEAEiQASIABEgAkSACBABIkAEiAARIAJEgAgQASJABIgAESACRIAIEAEiQASIABEgAkSACBABIkAEiAARIAJEgAgQASJABIgAESACRIAIEAEiQASIABEgAkSACBABIkAEiAARIAJEgAgQASKQB4H/B08emnzJyKP9AAAAAElFTkSuQmCC
 description: Use the Infinipoint integration to retrieve security and policy incompliance
   events, vulnerabilities or incidents. Investigate and respond to events in real-time.
-detaileddescription: |-
-  ## Hello World
-  - This text is markdown
-  - Here you should explain how to configure the instance in Demisto
+detaileddescription: "## Generate Infinipoint API Key:\nTo generate Infinipoint API
+  Key, go to the API Keys tab in the Tenant Settings page under the settings menu.\nClick
+  \"Generate API Key\" to create a new API Key.\nGenerating an API Key will allow
+  you to use Infinipoint's APIs by generating JWT tokens.\n\nEmail: support@infinipoint.io\n\n####\n-V#1
+  -V-where to find api key in the pro ? until UI ... \nV#2 -V- change name of page
+  size with info - Gilad ? Can we remove this ? yes\nV#3 -V- add proxy - handle_proxy
+  - add to yml file as well ? \nV#4 -@@ https://xsoar.pan.dev/docs/integrations/integration-cache
+  - add store token ?? NO \nV#5 -@@ timestamp_to_datestring -> \nV #6 -@ remove the
+  $ -> ?? not now - stay \nV#7 -V- https://xsoar.pan.dev/docs/integrations/context-and-outputs#return-cve-reputation
+  \n#8 -V- unitest \n#9 -V- https://xsoar.pan.dev/docs/playbooks/generic-polling\n#10
+  - custom icednt type - https://xsoar.pan.dev/docs/incidents/incident-customize-incident-layout
+  \nV#11 -V- add luminate intgraion - add discovery details  \n\n\n\nunitesting -
+  Take a look at my unitesting here: \n\nWhen I tried to run \"demisto-sdk lint -i
+  Packs/Infinipoint\" I get 1 fail on this test. \nAnd the reason is there are missing
+  parameters like \"BASE_URL\" and ect"
 configuration:
 - display: Access Key
   name: access_key
@@ -27,11 +38,14 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: Incident type
-  name: incidentType
-  defaultvalue: ""
-  type: 13
+- display: "Incident type"
+  name: 'incident_type'
+  defaultvalue: Events,Alerts
+  type: 16
   required: false
+  options:
+  - events
+  - alerts
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: "10"
@@ -49,8 +63,9 @@ configuration:
   required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
+  defaultvalue: ""
   type: 8
+  required: false
 script:
   type: python
   commands:
@@ -60,28 +75,20 @@ script:
     - name: device_risk
     outputs:
     - contextPath: Infinipoint.Vulnerability.Devices.$device
-      description: ''
       type: String
     - contextPath: Infinipoint.Vulnerability.Devices.$host
-      description: ''
       type: String
     - contextPath: Infinipoint.Vulnerability.Devices.cve_id
-      description: ''
       type: Unknown
     - contextPath: Infinipoint.Vulnerability.Devices.device_risk
-      description: ''
       type: Number
     - contextPath: Infinipoint.Vulnerability.Devices.device_risk_type
-      description: ''
       type: Number
     - contextPath: Infinipoint.Vulnerability.Devices.software_name
-      description: ''
       type: Unknown
     - contextPath: Infinipoint.Vulnerability.Devices.vulnerability_count
-      description: ''
       type: Number
   - name: infinipoint-get-assets-programs
-    description: ''
     arguments:
     - name: name
       auto: PREDEFINED
@@ -97,37 +104,26 @@ script:
       - Software version
     outputs:
     - contextPath: Infinipoint.Assets.Programs.items.$device
-      description: ''
       type: String
     - contextPath: Infinipoint.Assets.Programs.items.$host
-      description: ''
       type: String
     - contextPath: Infinipoint.Assets.Programs.items.$time
-      description: ''
       type: Number
     - contextPath: Infinipoint.Assets.Programs.items.$type
-      description: ''
       type: String
     - contextPath: Infinipoint.Assets.Programs.items.name
-      description: ''
       type: String
     - contextPath: Infinipoint.Assets.Programs.items.os_type
-      description: ''
       type: String
     - contextPath: Infinipoint.Assets.Programs.items.program_exists
-      description: ''
       type: String
     - contextPath: Infinipoint.Assets.Programs.items.publisher
-      description: ''
       type: String
     - contextPath: Infinipoint.Assets.Programs.items.version
-      description: ''
       type: String
     - contextPath: Infinipoint.Assets.Programs.items.install_update_date
-      description: ''
       type: Date
     - contextPath: Infinipoint.Assets.Programs.itemsTotal
-      description: ''
       type: Number
   - name: infinipoint-get-cve
     arguments:
@@ -135,10 +131,8 @@ script:
       required: true
     outputs:
     - contextPath: Infinipoint.Cve.Details.campaign_intelligence.apt
-      description: ''
       type: String
     - contextPath: Infinipoint.Cve.Details.campaign_intelligence.description
-      description: ''
       type: String
     - contextPath: Infinipoint.Cve.Details.campaign_intelligence.targeted_countries
       type: String
@@ -642,101 +636,70 @@ script:
       type: Number
   - name: infinipoint-get-device-details
     arguments:
-      - name: discoveryId
-        required: true
+    - name: discoveryId
+      required: true
     outputs:
     - contextPath: Infinipoint.Device.Details.$device
-      description: ''
       type: String
     - contextPath: Infinipoint.Device.Details.$type
-      description: ''
       type: String
     - contextPath: Infinipoint.Device.Details._key
-      description: ''
       type: String
     - contextPath: Infinipoint.Device.Details.archive
-      description: ''
       type: Number
     - contextPath: Infinipoint.Device.Details.building
-      description: ''
       type: String
     - contextPath: Infinipoint.Device.Details.classification
-      description: ''
       type: String
     - contextPath: Infinipoint.Device.Details.department
-      description: ''
       type: String
     - contextPath: Infinipoint.Device.Details.email
-      description: ''
       type: String
     - contextPath: Infinipoint.Device.Details.enroll_date
-      description: ''
       type: Date
     - contextPath: Infinipoint.Device.Details.first_seen
-      description: ''
       type: Number
     - contextPath: Infinipoint.Device.Details.hidden
-      description: ''
       type: Number
     - contextPath: Infinipoint.Device.Details.host_name.name
-      description: ''
       type: String
     - contextPath: Infinipoint.Device.Details.host_name.value
-      description: ''
       type: String
     - contextPath: Infinipoint.Device.Details.jamf_tag
-      description: ''
       type: String
     - contextPath: Infinipoint.Device.Details.last_report_date
-      description: ''
       type: Number
     - contextPath: Infinipoint.Device.Details.last_seen
-      description: ''
       type: Number
     - contextPath: Infinipoint.Device.Details.mac_address.name
-      description: ''
       type: String
     - contextPath: Infinipoint.Device.Details.mac_address.value
-      description: ''
       type: String
     - contextPath: Infinipoint.Device.Details.model
-      description: ''
       type: String
     - contextPath: Infinipoint.Device.Details.name_tag
-      description: ''
       type: String
     - contextPath: Infinipoint.Device.Details.os_name.name
-      description: ''
       type: String
     - contextPath: Infinipoint.Device.Details.os_name.value
-      description: ''
       type: String
     - contextPath: Infinipoint.Device.Details.phone_number
-      description: ''
       type: String
     - contextPath: Infinipoint.Device.Details.position
-      description: ''
       type: String
     - contextPath: Infinipoint.Device.Details.providers
-      description: ''
       type: String
     - contextPath: Infinipoint.Device.Details.room
-      description: ''
       type: String
     - contextPath: Infinipoint.Device.Details.serial
-      description: ''
       type: String
     - contextPath: Infinipoint.Device.Details.site
-      description: ''
       type: String
     - contextPath: Infinipoint.Device.Details.udid
-      description: ''
       type: String
     - contextPath: Infinipoint.Device.Details.unique_id
-      description: ''
       type: String
     - contextPath: Infinipoint.Device.Details.username
-      description: ''
       type: String
   dockerimage: demisto/pyjwt3:1.0.0.8871
   isfetch: true
