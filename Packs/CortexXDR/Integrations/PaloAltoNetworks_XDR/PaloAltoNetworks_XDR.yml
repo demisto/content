@@ -1449,7 +1449,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: String that represents the file’s hash. Must be a valid SHA256 hash.
+      description: String that represents the file’s hash. Must be a valid SHA256
+        hash.
       isArray: false
       name: file_hash
       required: true
@@ -1484,7 +1485,8 @@ script:
     name: xdr-get-quarantine-status
   - arguments:
     - default: false
-      description: String that represents the file in hash. Must be a valid SHA256 hash.
+      description: String that represents the file in hash. Must be a valid SHA256
+        hash.
       isArray: false
       name: file_hash
       required: true
@@ -1585,10 +1587,34 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Runs a scan on selected endpoints. To scan all endpoints,
-      run this command with no filters.
+    description: Runs a scan on selected endpoints. To scan all endpoints, run this
+      command with no filters.
     execution: true
     name: xdr-endpoint-scan
+  - deprecated: false
+    description: Get mapping fields from remote incident.
+    execution: false
+    name: get-mapping-fields
+  - arguments:
+    - default: false
+      description: The remote incident id
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: UTC timestamp in seconds. The incident is only updated if it was
+        modified after the last update time.
+      isArray: false
+      name: lastUpdate
+      required: false
+      secret: false
+    deprecated: false
+    description: Get remote data from a remote incident. Please note that this method
+      will not update the current incident, it's here for debugging purposes.
+    execution: false
+    name: get-remote-data
   dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: true
@@ -1598,6 +1624,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 4.1.0
 tests:
-  - Test XDR Playbook
+- Test XDR Playbook
+fromversion: 4.1.0

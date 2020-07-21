@@ -16,6 +16,17 @@ NONCE_LENGTH = 64
 API_KEY_LENGTH = 128
 
 INTEGRATION_CONTEXT_BRAND = 'PaloAltoNetworksXDR'
+XDR_INCIDENT_TYPE_NAME = 'Cortex XDR Incident'
+
+XDR_INCIDENT_FIELDS = {
+    "status": "Current status of the incident: \"new\",\"under_investigation\",\"resolved_threat_handled\","
+              "\"resolved_known_issue\",\"resolved_duplicate\",\"resolved_false_positive\",\"resolved_other\"",
+    "assigned_user_mail": "Email address of the assigned user.",
+    "assigned_user_pretty_name": "Full name of the user assigned to the incident.",
+    "resolve_comment": "Comments entered by the user when the incident was resolved.",
+    "manual_severity": "Incident severity assigned by the user. "
+                       "This does not affect the calculated severity low medium high",
+}
 
 
 def convert_epoch_to_milli(timestamp):
@@ -1600,6 +1611,55 @@ def endpoint_scan_command(client, args):
     )
 
 
+def get_mapping_fields_command():
+    xdr_incident_type_scheme = SchemeTypeMapping(type_name=XDR_INCIDENT_TYPE_NAME)
+    for field in XDR_INCIDENT_FIELDS:
+        xdr_incident_type_scheme.add_field(name=field, description=XDR_INCIDENT_FIELDS[field])
+
+    return GetMappingFieldsResponse(xdr_incident_type_scheme)
+
+
+def get_remote_data_command(client, args):
+    remote_args = GetRemoteDateArgs(args)
+
+    incident_data = get_incident_extra_data_command(client, {"incident_id": remote_args.remote_incident_id,
+                                                             "alerts_limit": 1000})[2]
+    current_modified_time = int(incident_data.get('modification_time'))/1000
+    if arg_to_timestamp(current_modified_time, 'modification_time') > \
+            arg_to_timestamp(remote_args.last_update, 'last_update'):
+        return GetRemoteDataResponse(
+            mirrored_object=incident_data,
+            entries=[]
+        )
+
+    else:
+        # no new data modified so not updating the incident
+        return GetRemoteDataResponse(
+            mirrored_object={},
+            entries=[]
+        )
+
+
+def update_remote_system_command(client, args):
+    remote_args = UpdateRemoteSystemArgs(args)
+    if remote_args.delta and remote_args.incident_changed:
+        demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update XDR '
+                      f'incident {remote_args.remote_incident_id}')
+        update_args = remote_args.delta.copy()
+        if 'assigned_user_mail' in remote_args.delta and remote_args.delta.get('assigned_user_mail') is None:
+            update_args['unassign_user'] = False
+
+        update_args['incident_id'] = remote_args.incident_id
+        demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}] to XDR\n')
+        update_incident_command(client, update_args)
+
+    else:
+        demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
+                      f'as it is not new nor changed')
+
+    return remote_args.incident_id
+
+
 def fetch_incidents(client, first_fetch_time, last_run: dict = None):
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
@@ -1614,12 +1674,35 @@ def fetch_incidents(client, first_fetch_time, last_run: dict = None):
 
     for raw_incident in raw_incidents:
         incident_id = raw_incident.get('incident_id')
+        all_incident_extra_data = get_incident_extra_data_command(client, {"incident_id": incident_id,
+                                                                           "alerts_limit": 1000})[2]
+        incident_alerts = all_incident_extra_data.get('alerts')
+        incident_file_artifacts = all_incident_extra_data.get('file_artifacts')
+        incident_data = all_incident_extra_data.get('incident')
+
         description = raw_incident.get('description')
         occurred = timestamp_to_datestring(raw_incident['creation_time'], TIME_FORMAT + 'Z')
         incident = {
             'name': f'#{incident_id} - {description}',
             'occurred': occurred,
-            'rawJSON': json.dumps(raw_incident)
+            'rawJSON': json.dumps(raw_incident),
+            'XDR_Incident_ID': incident_id,
+            'XDR_Detection_Time': incident_data.get('detection_time'),
+            'XDR_Status': incident_data.get('status'),
+            'XDR_Severity': incident_data.get('severity'),
+            'XDR_Description': description,
+            'XDR_Assigned_User_Email': incident_data.get('assigned_user_mail'),
+            'XDR_Assigned_User_Pretty_Name': incident_data.get('assigned_user_pretty_name'),
+            'XDR_Alert_Count': incident_data.get('alert_count'),
+            'XDR_Low_Severity_Alert_Count': incident_data.get('low_severity_alert_count'),
+            'XDR_Medium_Severity_Alert_Count': incident_data.get('med_severity_alert_count'),
+            'XDR_High_Severity_Alert_Count': incident_data.get('high_severity_alert_count'),
+            'XDR_User_Count': incident_data.get('user_count'),
+            'XDR_Host_Count': incident_data.get('host_count'),
+            'XDR_Notes': incident_data.get('notes'),
+            'XDR_URL': incident_data.get('xdr_url'),
+            'XDR_Alerts': incident_alerts,
+            'XDR Network Artifacts': incident_file_artifacts,
         }
 
         # Update last run and add incident if the incident is newer than last fetch
@@ -1735,6 +1818,16 @@ def main():
 
         elif demisto.command() == 'xdr-endpoint-scan':
             return_outputs(*endpoint_scan_command(client, demisto.args()))
+
+        elif demisto.command() == 'get-mapping-fields':
+            return_results(get_mapping_fields_command())
+
+        elif demisto.command() == 'get-remote-data':
+            return_results(get_remote_data_command(client, demisto.args()))
+
+        elif demisto.command() == 'update-remote-system':
+            return_results(update_remote_system_command(client, demisto.args()))
+
     except Exception as err:
         if demisto.command() == 'fetch-incidents':
             LOG(str(err))

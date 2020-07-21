@@ -3,8 +3,6 @@ This script will be appended to each server script before being executed.
 Please notice that to add custom common code, add it to the CommonServerUserPython script.
 Note that adding code to CommonServerUserPython can override functions in CommonServerPython
 """
-from __future__ import print_function
-
 import base64
 import json
 import logging
@@ -20,7 +18,7 @@ from collections import OrderedDict
 from datetime import datetime, timedelta
 from abc import abstractmethod
 
-import demistomock as demisto
+
 
 # imports something that can be missed from docker image
 try:
@@ -78,6 +76,16 @@ class EntryType(object):
     WARNING = 11
     MAP_ENTRY_TYPE = 15
     WIDGET = 17
+
+
+class IncidentStatus(object):
+    """
+    Enum: contains all the incidents status types (e.g. pending, active, done, archive)
+    """
+    PENDING = 0
+    ACTIVE = 1
+    DONE = 2
+    ARCHIVE = 3
 
 
 # DEPRECATED - use EntryFormat enum instead
@@ -2660,6 +2668,14 @@ def return_results(results):
         demisto.results(results.to_context())
         return
 
+    if isinstance(results, GetMappingFieldsResponse):
+        demisto.results(results.extract_mapping())
+        return
+
+    if isinstance(results, GetRemoteDataResponse):
+        demisto.results(results.extract_for_local())
+        return
+
     demisto.results(results)
 
 
@@ -4029,3 +4045,63 @@ def update_integration_context(context, object_keys=None, sync=True):
 
 class DemistoException(Exception):
     pass
+
+
+class GetRemoteDateArgs:
+    def __init__(self, args):
+        self.incident_id = args['id']
+        self.last_update = args['lastUpdate']
+
+
+class UpdateRemoteSystemArgs:
+    def __init__(self, args):
+        self.data: dict = args.get('data')  # type: ignore
+        self.entries = args.get('entries')
+        self.incident_changed = args.get('incidentChanged')
+        self.incident_id = args.get('remoteId')
+        self.inc_status = args.get('status')
+        self.delta: dict = args.get('delta')
+
+
+class GetRemoteDataResponse:
+    def __init__(self, mirrored_object, entries):
+        self.mirrored_object = mirrored_object
+        self.entries = entries
+
+    def extract_for_local(self):
+        if self.mirrored_object:
+            demisto.info(f'Updating object {self.mirrored_object["id"]}')
+            return [self.mirrored_object] + self.entries
+
+
+class SchemeTypeMapping:
+    def __init__(self, type_name='', fields=None):
+        self.type_name = type_name
+        self.fields = fields if fields else {}
+
+    def add_field(self, name, description=''):
+        self.fields.update({
+            name: description
+        })
+
+    def extract_mapping(self):
+        return {
+            self.type_name: self.fields
+        }
+
+class GetMappingFieldsResponse:
+    def __init__(self, scheme_types_mapping=None):
+        self.scheme_types_mappings = scheme_types_mapping if scheme_types_mapping else []
+        if not isinstance(self.scheme_types_mappings, list):
+            self.scheme_types_mappings = [self.scheme_types_mappings]
+
+
+    def add_scheme_type(self, scheme_type_mapping):
+        self.scheme_types_mappings.append(scheme_type_mapping)
+
+    def extract_mapping(self):
+        all_mappings = dict()
+        for scheme_types_mapping in self.scheme_types_mappings:
+            all_mappings.update(scheme_types_mapping.extract_mapping())
+
+        return all_mappings
