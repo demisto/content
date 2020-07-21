@@ -1623,7 +1623,8 @@ def get_remote_data_command(client, args):
     remote_args = GetRemoteDateArgs(args)
 
     incident_data = get_incident_extra_data_command(client, {"incident_id": remote_args.remote_incident_id,
-                                                             "alerts_limit": 1000})[2]
+                                                             "alerts_limit": 1000})[2].get('incident')
+    incident_data['id'] = incident_data.get('incident_id')
     current_modified_time = int(incident_data.get('modification_time')) / 1000
     if arg_to_timestamp(current_modified_time, 'modification_time') > \
             arg_to_timestamp(remote_args.last_update, 'last_update'):
@@ -1649,7 +1650,7 @@ def update_remote_system_command(client, args):
         if 'assigned_user_mail' in remote_args.delta and remote_args.delta.get('assigned_user_mail') is None:
             update_args['unassign_user'] = False
 
-        update_args['incident_id'] = remote_args.incident_id
+        update_args['incident_id'] = remote_args.remote_incident_id
         demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}] to XDR\n')
         update_incident_command(client, update_args)
 
@@ -1674,35 +1675,34 @@ def fetch_incidents(client, first_fetch_time, last_run: dict = None):
 
     for raw_incident in raw_incidents:
         incident_id = raw_incident.get('incident_id')
-        all_incident_extra_data = get_incident_extra_data_command(client, {"incident_id": incident_id,
-                                                                           "alerts_limit": 1000})[2]
-        incident_alerts = all_incident_extra_data.get('alerts')
-        incident_file_artifacts = all_incident_extra_data.get('file_artifacts')
-        incident_data = all_incident_extra_data.get('incident')
+        incident_data = get_incident_extra_data_command(client, {"incident_id": incident_id,
+                                                                 "alerts_limit": 1000})[2].get('incident')
 
         description = raw_incident.get('description')
         occurred = timestamp_to_datestring(raw_incident['creation_time'], TIME_FORMAT + 'Z')
         incident = {
             'name': f'#{incident_id} - {description}',
             'occurred': occurred,
-            'rawJSON': json.dumps(raw_incident),
-            'XDR_Incident_ID': incident_id,
-            'XDR_Detection_Time': incident_data.get('detection_time'),
-            'XDR_Status': incident_data.get('status'),
-            'XDR_Severity': incident_data.get('severity'),
-            'XDR_Description': description,
-            'XDR_Assigned_User_Email': incident_data.get('assigned_user_mail'),
-            'XDR_Assigned_User_Pretty_Name': incident_data.get('assigned_user_pretty_name'),
-            'XDR_Alert_Count': incident_data.get('alert_count'),
-            'XDR_Low_Severity_Alert_Count': incident_data.get('low_severity_alert_count'),
-            'XDR_Medium_Severity_Alert_Count': incident_data.get('med_severity_alert_count'),
-            'XDR_High_Severity_Alert_Count': incident_data.get('high_severity_alert_count'),
-            'XDR_User_Count': incident_data.get('user_count'),
-            'XDR_Host_Count': incident_data.get('host_count'),
-            'XDR_Notes': incident_data.get('notes'),
-            'XDR_URL': incident_data.get('xdr_url'),
-            'XDR_Alerts': incident_alerts,
-            'XDR Network Artifacts': incident_file_artifacts,
+            'rawJSON': json.dumps(incident_data),
+            'xdrincidentid': incident_id,
+            'xdrdetectiontime': incident_data.get('detection_time'),
+            'xdrstatus': incident_data.get('status'),
+            'xdrseverity': incident_data.get('severity'),
+            'xdrdescription': description,
+            'xdrassigneduseremail': incident_data.get('assigned_user_mail'),
+            'xdrassigneduserprettyname': incident_data.get('assigned_user_pretty_name'),
+            'xdralertcount': incident_data.get('alert_count'),
+            'xdrlowseverityalertcount': incident_data.get('low_severity_alert_count'),
+            'xdrmediumseverityalertcount': incident_data.get('med_severity_alert_count'),
+            'xdrhighseverityalertcount': incident_data.get('high_severity_alert_count'),
+            'xdrusercount': incident_data.get('user_count'),
+            'xdrhostcount': incident_data.get('host_count'),
+            'xdrnotes': incident_data.get('notes'),
+            'xdrurl': incident_data.get('xdr_url'),
+            'xdralerts': incident_data.get('alerts'),
+            'xdrresolvecomment': incident_data.get('resolve_comment'),
+            'xdrnetworkartifacts': incident_data.get('network_artifacts'),
+            'xdrfileartifacts': incident_data.get('file_artifacts'),
         }
 
         # Update last run and add incident if the incident is newer than last fetch
