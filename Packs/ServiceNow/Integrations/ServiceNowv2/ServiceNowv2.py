@@ -2015,9 +2015,14 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
         demisto.debug(f'New entries {entries}\n')
 
         for entry in entries:
+            demisto.info(f'Sending entry ' + entry.get('id') + ', type: ' + str(entry.get('type')))
+            if entry.get('type') == 3:
+                path_res = demisto.getFilePath(entry.get('id'))
+                file_name = path_res.get('name')
+                client.upload_file(ticket_id, entry.get('id'), file_name, ticket_type)
+
             key = 'comments'
             text = str(entry.get('contents', ''))
-
             client.add_comment(ticket_id, ticket_type, key, text)
 
     return ticket_id
