@@ -1,5 +1,5 @@
-id: fce4731f-9e5e-43e5-85eb-0584cc447686
-version: 64
+id: CyberTotal Auto Enrichment - CyCraft
+version: -1
 name: CyberTotal Auto Enrichment - CyCraft
 description: 'This playbook automatically enriches indicators (including IPs, URLs,
   domains; MD5, SHA-1, and SHA-256 file hashes). Playbook input: the indicators you
@@ -17,6 +17,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -398,6 +399,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -584,7 +586,7 @@ inputs:
   required: false
   description: The input domain will be searched automatically on CyberTotal to retrieve
     reputation data.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: IP
   value:
     complex:
@@ -593,7 +595,7 @@ inputs:
   required: false
   description: The input IP will be searched automatically on CyberTotal and to retrieve
     reputation data.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: URL
   value:
     complex:
@@ -602,7 +604,7 @@ inputs:
   required: false
   description: The input URL will be searched automatically on CyberTotal to retrieve
     reputation data.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: MD5
   value:
     complex:
@@ -611,7 +613,7 @@ inputs:
   required: false
   description: The input MD5 will be searched automatically on CyberTotal to retrieve
     reputation data.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: SHA1
   value:
     complex:
@@ -620,7 +622,7 @@ inputs:
   required: false
   description: The input SHA1 will be searched automatically on CyberTotal to retrieve
     reputation data.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: SHA256
   value:
     complex:
@@ -629,7 +631,9 @@ inputs:
   required: false
   description: The input SHA256 will be searched automatically on CyberTotal to retrieve
     reputation data.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
-sourceplaybookid: 1c314256-6db3-43a7-8aa7-113451a87105
 quiet: true
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
