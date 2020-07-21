@@ -1,8 +1,7 @@
-import demistomock as demisto
+""" IMPORTS """
 from CommonServerPython import *
 from CommonServerUserPython import *
-
-""" IMPORTS """
+from demistomock import *
 import base64
 import json
 import re
@@ -20,7 +19,7 @@ FILTERED_OUT_STATUSES = [2, ]
 VERIFY = demisto.params()['insecure'] is False
 requests.packages.urllib3.disable_warnings()
 VERSION = demisto.params()['version']
-IS_V2_API = VERSION in ['10.2', '10.3', '11.1']
+IS_V2_API = VERSION in ['10.2', '10.3', '11.1', '11.2', '11.3']
 
 ESM_URL = demisto.params()['ip'] + ":" + demisto.params()['port']
 USERNAME = demisto.params()['credentials']['identifier']
@@ -599,6 +598,34 @@ class NitroESM(object):
 
         return res
 
+    def get_watchlists(self):
+        """get all watchlists names"""
+        cmd = 'sysGetWatchlists?hidden="true"&dynamic="ture"&writeOnly="true"&indexedOnly="true"'
+
+        return self.cmdquery(cmd)
+
+    def add_watchlist_values(self, watchlist_id, watchlist_values):
+        values_number = len(watchlist_values)
+        watchlist_details = {
+            'watchlist': watchlist_id,
+            'values': watchlist_values
+        }
+        cmd = 'sysAddWatchlistValues'
+        query = json.dumps(watchlist_details)
+        self.cmdquery(cmd, query, no_answer=True)
+        return 'Watchlist Id:%s succesefully updated with %d values' % (watchlist_id, values_number)
+
+    def remove_watchlist_values(self, watchlist_id, watchlist_values):
+        values_number = len(watchlist_values)
+        watchlist_details = {
+            'watchlist': watchlist_id,
+            'values': watchlist_values
+        }
+        cmd = 'sysRemoveWatchlistValues'
+        query = json.dumps(watchlist_details)
+        self.cmdquery(cmd, query, no_answer=True)
+        return '%d values were succesefully removed from Watchlist Id:%s ' % (values_number, watchlist_id)
+
 
 @logger
 def alarms_to_entry(alarms):
@@ -848,6 +875,34 @@ def users_to_entry(users):
     }
 
 
+@logger
+def watchlists_to_entry(watchlists):
+    if not watchlists:
+        return 'No Watchlists were found'
+
+    headers = ['ID', 'Name', 'Type', 'ValuesNumber', 'IsDynamic', 'IsActive']
+    fixed_watchlists = []
+    for watchlist in watchlists:
+        fixed_watchlists.append({
+            'ID': watchlist['id'],
+            'Name': watchlist['name'],
+            'Type': watchlist['type']['name'],
+            'ValuesNumber': watchlist['valueCount'],
+            'IsDynamic': watchlist['dynamic'],
+            'IsActive': watchlist['active'],
+        })
+
+    context = {'EsmWatchlists(val.ID && val.ID == obj.ID)': fixed_watchlists}
+    return {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': fixed_watchlists,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tblToMd('Watchlists:', fixed_watchlists, headers),
+        'EntryContext': context
+    }
+
+
 def main():
     esm = NitroESM(ESM_URL, USERNAME, PASSWORD)
     try:
@@ -934,8 +989,8 @@ def main():
             sys.exit(0)
 
         elif demisto.command() == 'test-module':
-            if VERSION not in ['10.0', '10.1', '10.2', '10.3', '11.1']:
-                final_result = 'version must be one of 10.x, got %s' % (VERSION,)
+            if VERSION not in ['10.0', '10.1', '10.2', '10.3', '11.1', '11.2', '11.3']:
+                final_result = 'version must be one of 10.x, or 11.x got %s' % (VERSION,)
             else:
                 esm.fetch_all_fields()
                 final_result = 'ok'
@@ -1037,6 +1092,24 @@ def main():
         elif demisto.command() == 'esm-get-user-list':
             res = esm.get_users()
             final_result = users_to_entry(res)
+
+        elif demisto.command() == 'esm-get-watchlists':
+            res = esm.get_watchlists()
+            final_result = watchlists_to_entry(res)
+
+        elif demisto.command() == 'esm-add-watchlist-values':
+            args = demisto.args()
+            watchlist_id = demisto.get(args, 'id')
+            watchlist_values = demisto.get(args, 'values').split(',')
+            res = esm.add_watchlist_values(watchlist_id, watchlist_values)
+            final_result = res
+
+        elif demisto.command() == 'esm-remove-watchlist-values':
+            args = demisto.args()
+            watchlist_id = demisto.get(args, 'id')
+            watchlist_values = demisto.get(args, 'values').split(',')
+            res = esm.remove_watchlist_values(watchlist_id, watchlist_values)
+            final_result = res
 
         elif demisto.command() == 'esm-fetch-alarms':
             args = demisto.args()

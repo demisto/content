@@ -720,6 +720,49 @@ script:
     - contextPath: EsmAlarmEvent.Cases.Summary
       description: Case summary
       type: string
+  - name: esm-get-watchlists
+    arguments: []
+    outputs:
+      - contextPath: EsmWatchlists.ID
+        description: The Id of the watchlist
+        type: string
+      - contextPath: EsmWatchlists.Type
+        description: The type of the watchlist
+        type: string
+      - contextPath: EsmWatchlists.ValuesNumber
+        description: The number of values in the watchlist
+        type: number
+      - contextPath: EsmWatchlists.IsDynamic
+        description: Is the watchlist dynamic
+        type: boolean
+      - contextPath: EsmWatchlists.IsActive
+        description: Is the watchlist active
+        type: boolean
+    description: Gets the names of the watchlists
+  - name: esm-add-watchlist-values
+    arguments:
+      - name: id
+        required: true
+        description: ID of the watchlist we want to add values to. ID can be retrieved
+          with the "esm-get-watchlists" command.
+      - name: values
+        required: true
+        description: 'Coma separated values of the data we want to add to the watchlist.
+        Example: "1.1.1.1,2.2.2.2". Please add the correct type of values to correct
+        watchlist type.'
+    description: 'Add values to an existing watchlist. '
+  - name: esm-remove-watchlist-values
+    arguments:
+      - name: id
+        required: true
+        description: ID of the watchlist we want to remove values from. ID can be retrieved
+          with the "esm-get-watchlists" command.
+      - name: values
+        required: true
+        description: 'Coma separated values of the data we want to remove from the watchlist.
+        Example: "1.1.1.1,2.2.2.2". Please add the correct type of values to correct
+        watchlist type.'
+    description: 'Add values from an existing watchlist. '
   isfetch: true
   runonce: false
   script: '-'
