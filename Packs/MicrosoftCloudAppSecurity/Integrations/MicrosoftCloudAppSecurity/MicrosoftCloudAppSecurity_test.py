@@ -419,7 +419,7 @@ ACTIVITIES_BY_ID_DATA = {
     },
     "internals": {
         "otherIPs": [
-            "82.166.99.178"
+            "8.8.8.8"
         ]
     },
     "mainInfo": {
@@ -482,7 +482,7 @@ ACTIVITIES_BY_ID_DATA = {
         "UserType": 0,
         "Workload": "OneDrive",
         "ClientIP": "82.166.99.178",
-        "UserKey": "i:0h.f|membership|100300009abc2878@live.com",
+        "UserKey": "11111",
         "Version": 1,
         "ObjectId": "https://demistodev-my.sharepoint.com/personal/avishai_demistodev_onmicrosoft_com"
                     "/Documents/iban example.docx",
