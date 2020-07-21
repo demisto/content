@@ -679,6 +679,11 @@
             "nightly": true
         },
         {
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_firewall_9.0",
+            "playbookID": "PAN-OS URL Filtering enrichment - Test"
+        },
+        {
             "integrations": "Tenable.io",
             "playbookID": "Tenable.io test"
         },
