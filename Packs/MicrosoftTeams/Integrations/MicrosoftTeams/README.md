@@ -410,10 +410,14 @@ Note: Like every message in a mirrored channel, in order for it to be passed to 
 
 For example, in order to check the reputation of the IP address 8.8.8.8, run the following: `@Demisto Bot !ip ip=8.8.8.8`
 
+![image](./doc_files/cmd.png)
+
 ## Direct messages commands
 You can chat with the bot in direct messages in order to retrieve data (list incidents and tasks) and run operations (create incident and mirror an investigation) related to Cortex XSOAR.
 
 You can send the message `help` in order to see the supported commands:
+
+![image](./doc_files/dm.png)
 
 ## Troubleshooting
 
