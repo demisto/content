@@ -3053,6 +3053,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "ThreatConnect v2": "Issue 26794",
         "Infocyte": "Proxy issues",
         "SNDBOX": "Submits a file - tests that send files shouldn't be mocked",
         "Joe Security": "Submits a file - tests that send files shouldn't be mocked",
