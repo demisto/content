@@ -562,5 +562,6 @@
         ],
         "typeId": "SafeBreach Insight",
         "version": -1
-    }
+    },
+    "toVersion": "5.9.9"
 }
