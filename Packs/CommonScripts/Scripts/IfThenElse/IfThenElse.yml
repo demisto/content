@@ -27,3 +27,5 @@ scripttarget: 0
 pswd: ""
 runonce: false
 runas: DBotWeakRole
+tests:
+- IfThenElse-Test
