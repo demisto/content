@@ -1,0 +1,246 @@
+category: IT Services
+commonfields:
+  id: Smartsheet IT Admin
+  version: -1
+configuration:
+- additionalinfo: An optional custom mapping that takes custom values in the SCIM
+    data into the integration.
+  defaultvalue: ""
+  display: Custom Mapping for Create User
+  name: customMappingCreateUser
+  required: false
+  type: 12
+- additionalinfo: An optional custom mapping that takes custom values in the SCIM
+    data into the integration.
+  defaultvalue: ""
+  display: Custom Mapping for UpdateUser
+  name: customMappingUpdateUser
+  required: false
+  type: 12
+- additionalinfo: Authorization token to connect to the Smartsheet API
+  defaultvalue: ""
+  display: Authorization
+  name: Authorization
+  required: false
+  type: 4
+description: "Smartsheet Integration consists of set of endpoints that allows the\
+  \ customers to do the following-\n1.\tGet / Retrieve user information from Smartsheet\n\
+  2.\tCreate a user in Smartsheet\n3.\tUpdate a user\n4.\tDisable a user"
+display: Smartsheet IT Admin
+name: Smartsheet IT Admin
+script:
+  commands:
+  - arguments:
+    - description: SCIM content in JSON format
+      name: scim
+      required: true
+    - description: An optional custom mapping that takes custom values in the SCIM
+        data into the integration.
+      name: customMapping
+    description: This command creates the user based on the scim and custom map passed
+      in argument.
+    name: create-user
+    outputs:
+    - contextPath: CreateUser
+      description: Command context path
+      type: Unknown
+    - contextPath: CreateUser.brand
+      description: Name of the Integration
+      type: string
+    - contextPath: CreateUser.instanceName
+      description: Name of the instance used for testing
+      type: string
+    - contextPath: CreateUser.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: CreateUser.active
+      description: 'Gives the active status of user. Can be true of false. '
+      type: string
+    - contextPath: CreateUser.id
+      description: Value of id passed as argument
+      type: string
+    - contextPath: CreateUser.email
+      description: Value of email ID passed as argument
+      type: string
+    - contextPath: CreateUser.errorCode
+      description: 'HTTP error response code '
+      type: number
+    - contextPath: CreateUser.errorMessage
+      description: Reason why the API is failed
+      type: string
+    - contextPath: CreateUser.details
+      description: Gives the user information if the API is success else error information
+      type: string
+  - arguments:
+    - description: Old SCIM content in JSON format
+      name: oldScim
+      required: true
+    - description: New SCIM content in JSON format
+      name: newScim
+      required: true
+    - description: An optional custom mapping that takes custom values in the SCIM
+        data into the integration.
+      name: customMapping
+    description: Update a user
+    name: update-user
+    outputs:
+    - contextPath: UpdateUser
+      description: Command context path
+      type: Unknown
+    - contextPath: UpdateUser.brand
+      description: Name of the Integration
+      type: string
+    - contextPath: UpdateUser.instanceName
+      description: Name of the instance used for testing
+      type: string
+    - contextPath: UpdateUser.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: UpdateUser.active
+      description: 'Gives the active status of user. Can be true of false. '
+      type: string
+    - contextPath: UpdateUser.id
+      description: Value of id passed as argument
+      type: string
+    - contextPath: UpdateUser.email
+      description: Value of email ID passed as argument
+      type: string
+    - contextPath: UpdateUser.errorCode
+      description: HTTP error response code
+      type: number
+    - contextPath: UpdateUser.errorMessage
+      description: ' Reason why the API is failed'
+      type: string
+    - contextPath: UpdateUser.details
+      description: Gives the user information if the API is success else error information
+      type: string
+  - arguments:
+    - description: SCIM User JSON with id populated. Only user?s id will be used for
+        lookup.
+      name: scim
+      required: true
+    description: Retrieve the user details based on id.
+    name: get-user
+    outputs:
+    - contextPath: GetUser
+      description: Command context path
+      type: Unknown
+    - contextPath: GetUser.status
+      description: 'User status, set to one of the following values: ACTIVE, DECLINED,
+        or PENDING'
+      type: string
+    - contextPath: GetUser.brand
+      description: User?s brand name.
+      type: string
+    - contextPath: GetUser.details
+      description: Gives the user information if the API is success else error information
+      type: string
+    - contextPath: 'GetUser.email '
+      description: 'User?s email address. '
+      type: string
+    - contextPath: 'GetUser.errorCode '
+      description: 'Error code in the case of exception.  Example: 404'
+      type: number
+    - contextPath: 'GetUser.errorMessage '
+      description: 'Error message in the case of exception. Example: ?User not Found?'
+      type: string
+    - contextPath: 'GetUser.Users.id '
+      description: 'User?s id '
+      type: string
+    - contextPath: GetUser.instanceName
+      description: Instance name for the Integration.
+      type: string
+    - contextPath: GetUser.success
+      description: Success status. Can be True or False
+      type: boolean
+  - arguments:
+    - description: SCIM User JSON with user_id whose user details needs to be removed.
+      name: scim
+      required: true
+    - description: 'Any custom field / entity not covered by scim. Example: removeFromSharing,
+        transferSheets and transferTo.'
+      name: customMapping
+    description: This command removes the user.
+    name: disable-user
+    outputs:
+    - contextPath: DisableUser
+      description: Command context path
+      type: Unknown
+    - contextPath: DisableUser.status
+      description: 'User status, set to one of the following values: ACTIVE, DECLINED,
+        or PENDING'
+      type: string
+    - contextPath: DisableUser.brand
+      description: User?s brand name.
+      type: string
+    - contextPath: DisableUser.details
+      description: User?s details including id, email, firtsName, lastName, groupAdmin
+        etc.
+      type: string
+    - contextPath: 'DisableUser.email '
+      description: 'User?s email address. '
+      type: string
+    - contextPath: 'DisableUser.errorCode '
+      description: 'Error code in the case of exception.  Example: 404'
+      type: number
+    - contextPath: 'DisableUser.errorMessage '
+      description: 'Error message in the case of exception. Example: ?User not Found?'
+      type: string
+    - contextPath: 'DisableUser.Users.id '
+      description: 'User?s id '
+      type: string
+    - contextPath: DisableUser.instanceName
+      description: Instance name for the Integration.
+      type: string
+    - contextPath: DisableUser.success
+      description: Success status. Can be True or False
+      type: boolean
+  - arguments:
+    - description: SCIM content in JSON format
+      name: scim
+      required: true
+    - description: An optional custom mapping that takes custom values in the SCIM
+        data into the integration.
+      name: customMapping
+    description: This command creates the user based on the scim and custom map passed
+      in argument.
+    name: enable-user
+    outputs:
+    - contextPath: EnableUser
+      description: Command context path
+      type: Unknown
+    - contextPath: EnableUser.brand
+      description: Name of the Integration
+      type: String
+    - contextPath: EnableUser.instanceName
+      description: Name of the instance used for testing
+      type: String
+    - contextPath: EnableUser.success
+      description: Status of the result. Can be true or false.
+      type: Boolean
+    - contextPath: EnableUser.active
+      description: 'Gives the active status of user. Can be true of false. '
+      type: String
+    - contextPath: EnableUser.id
+      description: Value of id passed as argument
+      type: String
+    - contextPath: EnableUser.email
+      description: Value of email ID passed as argument
+      type: String
+    - contextPath: EnableUser.errorCode
+      description: 'HTTP error response code '
+      type: Number
+    - contextPath: EnableUser.errorMessage
+      description: Reason why the API is failed
+      type: String
+    - contextPath: EnableUser.details
+      description: Gives the user information if the API is success else error information
+      type: String
+  dockerimage: demisto/smartsheet:1.0.0.9945
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
