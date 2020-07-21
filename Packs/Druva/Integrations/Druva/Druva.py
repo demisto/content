@@ -26,6 +26,10 @@ class Client(BaseClient):
         access_token = responseJson.get('access_token')
         headers = {'Authorization': 'Bearer' + " " + access_token}
         self._headers = headers
+        
+    def test_apiModule(self):
+        return self._http_request(method='GET', url_suffix='/realize/ransomwarerecovery/v1/quarantineranges',
+                                  resp_type='response')
 
     def get_quarantineRanges(self):
         return self._http_request(method='GET', url_suffix='/realize/ransomwarerecovery/v1/quarantineranges',
@@ -80,6 +84,14 @@ class Client(BaseClient):
     def post_decommission(self, resource_id):
         url_suffix = 'https://apis.druva.com/insync/endpoints/v1/devices/' + str(resource_id) + '/decommission'
         return self._http_request(method='POST', url_suffix=url_suffix, resp_type='response')
+
+def test_module(clientObj):
+    response = clientObj.test_apiModule()
+    statusCode = response.status_code
+    if (statusCode == 200):
+        return ("ok")
+    else:
+        raise RuntimeError('Error: ' + str(response.status_code))
 
 
 def Druva_ListQuarantineRanges_Command(clientObj):
@@ -277,7 +289,7 @@ def main():
             from_date = demisto.args().get('from_date')
             to_date = demisto.args().get('to_date')
             return_outputs(*Druva_QuarantineResource_Command(clientObj, resource_id, resource_type, from_date, to_date))
-            # return_outputs(*Druva_ListQuarantineRanges_Command(clientObj))
+            return_outputs(*Druva_ListQuarantineRanges_Command(clientObj))
 
         if command == 'druva-delete-quarantine-range':
             resource_id = demisto.args().get('resource_id')
@@ -300,7 +312,7 @@ def main():
             return_outputs(*Druva_UpdateQuarantineRange_Command(clientObj,
                                                                 resource_id, resource_type, range_id, from_date,
                                                                 to_date))
-            # return_outputs(*Druva_ListQuarantineRanges_Command(clientObj))
+            return_outputs(*Druva_ListQuarantineRanges_Command(clientObj))
 
         if command == 'druva-list-quarantine-snapshots':
             resource_id = demisto.args().get('resource_id')
@@ -331,6 +343,10 @@ def main():
         if command == 'druva-endpoint-decommission':
             resource_id = demisto.args().get('resource_id')
             return_outputs(*Druva_Decommission(clientObj, resource_id))
+            
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration Test button.
+            return_outputs(test_module(clientObj))
 
     except Exception as e:
         return_error('Failed to execute:' + command + 'Error:' + str(e))
