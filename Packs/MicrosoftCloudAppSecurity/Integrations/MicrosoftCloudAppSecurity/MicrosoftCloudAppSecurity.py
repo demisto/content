@@ -87,7 +87,7 @@ def arg_to_timestamp(arg):
     if isinstance(arg, str) and arg.isdigit():
         return int(arg)
     if isinstance(arg, str):
-        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
         return int(date.timestamp())
     if isinstance(arg, (int, float)):
         return int(arg)
