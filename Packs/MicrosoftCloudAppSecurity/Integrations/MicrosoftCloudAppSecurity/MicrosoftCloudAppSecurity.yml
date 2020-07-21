@@ -1426,216 +1426,322 @@ script:
       description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.collaborators.type
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.UniqueId
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.ServerRelativeUrl
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.Name
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.TimeLastModified
+      description:
       type: Date
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.TimeCreated
+      description:
       type: Date
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.Author.name
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.Author.idInSiteCollection
+      description:
       type: Date
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.Author.sipAddress
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.Author.sourceBitmask
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.Author.trueEmail
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.Author.externalUser
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.Author.oneDriveEmail
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.Author.LoginName
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.Author.Email
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.Author.Title
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.LinkingUrl
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.parentUniqueId
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.roleAssignments.Member.Id
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.roleAssignments.Member.IsHiddenInUI
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.roleAssignments.Member.LoginName
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.roleAssignments.Member.Title
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.roleAssignments.Member.PrincipalType
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.roleAssignments.Member.AllowMembersEditMembership
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.roleAssignments.Member.AllowRequestToJoinLeave
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.roleAssignments.Member.AutoAcceptRequestToJoinLeave
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.roleAssignments.Member.Description
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.roleAssignments.Member.OnlyAllowMembersViewMembership
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.roleAssignments.Member.OwnerTitle
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.roleAssignments.Member.RequestToJoinLeaveEmailSetting
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.roleAssignments.RoleDefinitionBindings.results.BasePermissions.High
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.roleAssignments.RoleDefinitionBindings.results.BasePermissions.Low
+      description:
       type: Date
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.roleAssignments.RoleDefinitionBindings.results.Hidden
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.roleAssignments.RoleDefinitionBindings.results.Id
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.roleAssignments.RoleDefinitionBindings.results.Name
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.roleAssignments.RoleDefinitionBindings.results.Order
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.roleAssignments.RoleDefinitionBindings.results.RoleTypeKind
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.roleAssignments.PrincipalId
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.scopeId
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.hasUniqueRoleAssignments
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.isFolder
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.encodedAbsUrl
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.siteCollection
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sitePath
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.filePath
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.spDomain
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.siteCollectionId
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.facl
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.fstat
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.unseenScans
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.fileStatus
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.name_l
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.snapshotLastModifiedDate
+      description:
       type: Date
     - contextPath: MicrosoftCloudAppSecurity.Files.data.originalId
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.enriched
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.display_collaborators.label
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.display_collaborators.type
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.display_collaborators.id
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.display_collaborators.allowRemoveCollaborator
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.appName
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.actions.task_name
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.actions.display_title
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.actions.type
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.actions.governance_type
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.Files.data.actions.bulk_support
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.actions.has_icon
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.actions.display_description.template
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.actions.display_description.parameters.fileType.template
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.actions.display_description.parameters.fileName
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.actions.bulk_display_description
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.actions.preview_only
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.actions.display_alert_text
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.actions.display_alert_success_text
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.actions.is_blocking
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.Files.data.actions.confirm_button_style
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.actions.optional_notify
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.Files.data.actions.uiGovernanceCategory
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.actions.alert_display_title
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.Files.data.actions.confirmation_button_text
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.Files.data.actions.confirmation_link
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.Files.data.actions.display_description.parameters.folderWarning
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.actions.display_description
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.Files.data.fileSize
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.fileType
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.mimeType
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.fileExtension
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.Length
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.ModifiedBy.Title
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.ModifiedBy.LoginName
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.ModifiedBy.Email
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.ftype
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.lastNrtTimestamp
+      description:
       type: Date
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.urlFromMetadata
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.roleAssignments.Member.Email
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.roleAssignments.Member.Expiration
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.roleAssignments.Member.IsEmailAuthenticationGuestUser
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.roleAssignments.Member.IsShareByEmailGuestUser
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.roleAssignments.Member.IsSiteAdmin
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.roleAssignments.Member.UserId.NameId
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.roleAssignments.Member.UserId.NameIdIssuer
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.roleAssignments.Member.UserPrincipalName
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.Files.data.sharepointItem.roleAssignments.Member.UserId
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.Files.hasNext
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.max
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.total
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Files.moreThanTotal
+      description:
       type: Number
   - arguments:
     - default: false
@@ -1729,238 +1835,355 @@ script:
     name: microsoft-cas-users-accounts-list
     outputs:
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.type
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.status
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.displayName
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.id
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data._id
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.sid
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.appData.appId
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.appData.name
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.appData.saas
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.appData.instance
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.isAdmin
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.isExternal
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.email
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.role
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.organization
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.lastSeen
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.domain
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.scoreTrends
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.threatScore
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.idType
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.isFake
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.ii
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.actions.task_name
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.actions.display_title
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.actions.type
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.actions.governance_type
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.actions.bulk_support
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.actions.has_icon
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.actions.display_description.template
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.actions.display_description.parameters.user
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.actions.bulk_display_description
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.actions.preview_only
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.actions.display_alert_text
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.actions.display_alert_success_text
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.actions.is_blocking
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.actions.confirm_button_style
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.actions.optional_notify
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.actions.uiGovernanceCategory
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.actions.alert_display_title
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.actions.confirmation_button_text
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.actions.confirmation_link
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.actions.display_description
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.username
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.sctime
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts._id
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.i
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.ii
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.inst
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.saas
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.t
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.dn
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.ext
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.s
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.aliases
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.isFake
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.pa
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.em
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.sub.20892
+      description:
       type: Date
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.sub.15600
+      description:
       type: Date
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.ls
+      description:
       type: Date
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.p
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.appData.appId
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.appData.name
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.appData.saas
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.appData.instance
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.actions.task_name
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.actions.display_title
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.actions.type
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.actions.governance_type
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.actions.bulk_support
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.actions.has_icon
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.actions.display_description
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.actions.bulk_display_description
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.actions.preview_only
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.actions.display_alert_text
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.actions.display_alert_success_text
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.actions.is_blocking
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.actions.confirm_button_style
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.actions.optional_notify
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.actions.uiGovernanceCategory
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.actions.alert_display_title
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.actions.confirmation_button_text
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.actions.confirmation_link
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.userGroups._id
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.userGroups.id
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.userGroups.name
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.userGroups.description
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.userGroups.usersCount
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.userGroups.appId
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.scoreTrends.20200705.alert.m365
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.scoreTrends.20200706.alert.m365
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.scoreTrends.20200707.alert.m365
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.scoreTrends.20200708.alert.m365
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.scoreTrends.20200709.alert.m365
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.scoreTrends.20200710.alert.m365
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.scoreTrends.20200711.alert.m365
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.scoreTrends.20200712.alert.m365
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.scoreTrends.20200713.alert.m365
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.scoreTrends.20200714.alert.m365
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.scoreTrends.20200715.alert.m365
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.scoreTrends.20200719.alert.m365
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.sub.28375
+      description:
       type: Date
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.sub.20893
+      description:
       type: Date
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.sub.25275
+      description:
       type: Date
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.appData.lastSeen
+      description:
       type: Date
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.threatScoreHistory.dateFormatted
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.threatScoreHistory.dateUtc
+      description:
       type: Date
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.threatScoreHistory.score
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.threatScoreHistory.percentile
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.threatScoreHistory.breakdown.alert.m365
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.subApps.appId
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.subApps.name
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.subApps.lastSeen
+      description:
       type: Date
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.hasNext
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.max
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.total
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.moreThanTotal
+      description:
       type: Number
   dockerimage: demisto/python3:3.8.3.9324
   feed: false
@@ -1971,5 +2194,3 @@ script:
   script: '-'
   subtype: python3
   type: python
-tests:
-- No tests
