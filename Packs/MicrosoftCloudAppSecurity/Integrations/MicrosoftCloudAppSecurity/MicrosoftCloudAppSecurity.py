@@ -199,7 +199,7 @@ def generate_specific_key_by_command_name(url_suffix):
 def args_to_filter(arguments, url_suffix):
     service_key, instance_key, username_key = generate_specific_key_by_command_name(url_suffix)
     request_data = {}
-    filters = {}
+    filters = dict()
     for key, value in arguments.items():
         if key in ['skip', 'limit']:
             request_data[key] = int(value)
@@ -239,7 +239,8 @@ def args_to_filter(arguments, url_suffix):
             filters['isExternal'] = {'eq': demisto_is_external_to_api_is_external(value)}
         if key == 'status':
             filters[key] = {'eq': demisto_status_options_to_api_status_options(value)}
-    request_data['filters'] = filters
+
+        request_data['filters'] = filters
     return request_data
 
 
