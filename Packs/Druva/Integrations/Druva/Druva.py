@@ -217,7 +217,6 @@ def Druva_SearchbyFileHash_Command(clientObj, sha1_checksum):
 def Druva_Restore_Endpoint(clientObj, source_resourceid, target_resourceid, restore_location):
     response = clientObj.post_restoreToEndpoint(source_resourceid, target_resourceid, restore_location)
     statusCode = response.status_code
-    responseJson = response.json()
     if (statusCode == 200):
         responseJson = response.json()
         readable_output = tableToMarkdown('Restore Job Initiated', responseJson['restores'])
@@ -231,7 +230,6 @@ def Druva_Restore_Endpoint(clientObj, source_resourceid, target_resourceid, rest
 def Druva_Restore_Status(clientObj, restore_id):
     response = clientObj.get_restoreStatus(restore_id)
     statusCode = response.status_code
-    responseJson = response.json()
     if (statusCode == 200):
         responseJson = response.json()
         readable_output = tableToMarkdown('Restore Job Status', responseJson)
@@ -245,8 +243,8 @@ def Druva_Restore_Status(clientObj, restore_id):
 def Druva_Decommission(clientObj, resource_id):
     response = clientObj.post_decommission(resource_id)
     statusCode = response.status_code
-    responseJson = response.json()
     if (statusCode == 200):
+        responseJson = response.json()
         headers = ['Resource ID']
         readable_output = tableToMarkdown('Device Decomission Request', str(resource_id), headers=headers)
         outputs = {"Druva.decomissionedResource(val.resource_id == obj.resource_id)": str(resource_id)}
