@@ -12,8 +12,7 @@ requests.packages.urllib3.disable_warnings()
 
 
 ''' GLOBAL VARS '''
-# BASE_URL = "https://console.infinipoint.io"
-BASE_URL = "https://dev.infinipoint.dev"
+BASE_URL = "https://console.infinipoint.io"
 MAX_INCIDENTS_TO_FETCH = 1000
 COMMANDS_CONFIG = {
     "infinipoint-get-assets-programs": {
