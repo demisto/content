@@ -1,4 +1,5 @@
 import json
+from typing import Dict, Any
 
 import dateparser
 import demistomock as demisto
@@ -198,8 +199,8 @@ def generate_specific_key_by_command_name(url_suffix):
 
 def args_to_filter(arguments, url_suffix):
     service_key, instance_key, username_key = generate_specific_key_by_command_name(url_suffix)
-    request_data = {}
-    filters = dict()
+    request_data: Dict[str, Any] = {}
+    filters = {}
     for key, value in arguments.items():
         if key in ['skip', 'limit']:
             request_data[key] = int(value)
