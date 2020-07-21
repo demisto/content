@@ -1,9 +1,8 @@
 !druva-find-device search_string=sah
 !druva-list-quarantine-ranges
-!druva-quarantine-resource resource_id=3335062 resource_type=Endpoint from_date=2020-03-01 to_date=2020-03-10
-!druva-view-quarantine-range range_id=354 resource_id=3335062
-!druva-update-quarantine-range range_id=354 resource_id=3335062 from_date=2020-02-01 to_date=2020-02-10 resource_type=Endpoint
-!druva-list-quarantine-snapshots range_id=354 resource_id=3335062
-!druva-delete-quarantined-snapshot range_id=354 resource_id=3335062 snapshot_id=12345-67891011-12345
-!druva-delete-quarantine-range range_id=354 resource_id=3335062
-!druva-endpoint-search-file-hash sha1_checksum=ea00a57fc80d1e288f625ad365cc69061bbcb6dc
+!druva-quarantine-resource resource_id=4497505 resource_type=Endpoint from_date=2020-03-01 to_date=2020-03-10
+!druva-view-quarantine-range range_id=415 resource_id=4497505
+!druva-update-quarantine-range range_id=415 resource_id=4497505 from_date=2020-07-13 to_date=2020-07-15 resource_type=Endpoint
+!druva-list-quarantine-snapshots range_id=415 resource_id=4497505
+!druva-delete-quarantined-snapshot range_id=415 resource_id=4497505 snapshot_id=MTMyNzQtV2VkIEp1bCAxNSAxMTozODoyMCAyMDIw
+!druva-endpoint-search-file-hash sha1_checksum=cec8ad914b1e9db83626b98e8d98512616975fdf

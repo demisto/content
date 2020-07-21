@@ -26,7 +26,7 @@ class Client(BaseClient):
         access_token = responseJson.get('access_token')
         headers = {'Authorization': 'Bearer' + " " + access_token}
         self._headers = headers
-        
+
     def test_apiModule(self):
         return self._http_request(method='GET', url_suffix='/realize/ransomwarerecovery/v1/quarantineranges',
                                   resp_type='response')
@@ -84,6 +84,7 @@ class Client(BaseClient):
     def post_decommission(self, resource_id):
         url_suffix = 'https://apis.druva.com/insync/endpoints/v1/devices/' + str(resource_id) + '/decommission'
         return self._http_request(method='POST', url_suffix=url_suffix, resp_type='response')
+
 
 def test_module(clientObj):
     response = clientObj.test_apiModule()
@@ -341,7 +342,7 @@ def main():
         if command == 'druva-endpoint-decommission':
             resource_id = demisto.args().get('resource_id')
             return_outputs(*Druva_Decommission(clientObj, resource_id))
-            
+
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_outputs(test_module(clientObj))

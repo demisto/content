@@ -1,5 +1,5 @@
-Druva Ransomware Response Playbook
-This integration was integrated and tested with Druva Ransomware Response module on Druva Public Cloud
+Druva Ransomware Response Integration provides an API based orchestration framework for Druva Ransomware Recovery customers. The integration allows Druva customers to respond immediately in case of a security incident and recovery their backed up data with Confidence
+This integration was integrated and tested with Realize Ransomwary Recovery module of Druva Public Cloud 
 ## Configure Druva Ransomware Response on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -48,32 +48,14 @@ Finds Device ID for specific hostname
 ```
 {
     "Druva": {
-        "Resource": [
-            {
-                "orgID": -1,
-                "resourceID": 3335062,
-                "resourceName": "Sahil\u2019s MacBook Pro",
-                "resourceParent": "Sanket Parlikar",
-                "resourceStatus": "enabled",
-                "resourceType": "Endpoint"
-            },
-            {
-                "orgID": -1,
-                "resourceID": 3359444,
-                "resourceName": "Sahil\u2019s MacBook Pro",
-                "resourceParent": "PM Demo User",
-                "resourceStatus": "disabled",
-                "resourceType": "Endpoint"
-            },
-            {
-                "orgID": -1,
-                "resourceID": 3996977,
-                "resourceName": "SahilG-MBP",
-                "resourceParent": "PM Demo User",
-                "resourceStatus": "enabled",
-                "resourceType": "Endpoint"
-            }
-        ]
+        "Resource": {
+            "orgID": -1,
+            "resourceID": 4497505,
+            "resourceName": "SahilG-MBP",
+            "resourceParent": "Druva Integrations",
+            "resourceStatus": "enabled",
+            "resourceType": "Endpoint"
+        }
     }
 }
 ```
@@ -83,9 +65,7 @@ Finds Device ID for specific hostname
 >### Found Druva Devices
 >|orgID|resourceID|resourceName|resourceParent|resourceStatus|resourceType|
 >|---|---|---|---|---|---|
->| -1 | 3335062 | Sahil’s MacBook Pro | Sanket Parlikar | enabled | Endpoint |
->| -1 | 3359444 | Sahil’s MacBook Pro | PM Demo User | disabled | Endpoint |
->| -1 | 3996977 | SahilG-MBP | PM Demo User | enabled | Endpoint |
+>| -1 | 4497505 | SahilG-MBP | Druva Integrations | enabled | Endpoint |
 
 
 ### druva-list-quarantine-ranges
@@ -122,80 +102,19 @@ Lists all quarantine ranges in your environment
 ```
 {
     "Druva": {
-        "activeQuarantineRanges": [
-            {
-                "fromDate": "2020-06-01",
-                "orgID": -1,
-                "rangeID": 353,
-                "recoveryStatus": "None",
-                "resourceID": 3673398,
-                "resourceName": "ElizabethS-MBA",
-                "resourceParent": "PM Demo User",
-                "resourcePlatform": "darwin",
-                "resourceType": "Endpoint",
-                "toDate": "NA"
-            },
-            {
-                "fromDate": "2020-06-22",
-                "orgID": -1,
-                "rangeID": 321,
-                "recoveryStatus": "None",
-                "resourceID": 877976,
-                "resourceName": "DDSPL1251",
-                "resourceParent": "Pronoy Sd",
-                "resourcePlatform": "win32",
-                "resourceType": "Endpoint",
-                "toDate": "2020-06-24"
-            },
-            {
-                "fromDate": "2020-06-15",
-                "orgID": -1,
-                "rangeID": 290,
-                "recoveryStatus": "None",
-                "resourceID": 4312962,
-                "resourceName": "SGOYAL-WIN10VM",
-                "resourceParent": "PM Demo User",
-                "resourcePlatform": "win32",
-                "resourceType": "Endpoint",
-                "toDate": "2020-06-15"
-            },
-            {
-                "fromDate": "2020-04-01",
-                "orgID": -1,
-                "rangeID": 273,
-                "recoveryStatus": "None",
-                "resourceID": 3673398,
-                "resourceName": "ElizabethS-MBA",
-                "resourceParent": "PM Demo User",
-                "resourcePlatform": "darwin",
-                "resourceType": "Endpoint",
-                "toDate": "2020-05-29"
-            },
-            {
-                "fromDate": "2020-05-01",
-                "orgID": 3,
-                "rangeID": 281,
-                "recoveryStatus": "None",
-                "resourceID": 81,
-                "resourceName": "WIN-CL87GB0P0H2#bset81",
-                "resourceParent": "WIN-CL87GB0P0H2",
-                "resourcePlatform": "NA",
-                "resourceType": "File Server",
-                "toDate": "NA"
-            },
-            {
-                "fromDate": "2020-04-01",
-                "orgID": 4133,
-                "rangeID": 233,
-                "recoveryStatus": "None",
-                "resourceID": 28604,
-                "resourceName": "Downloads",
-                "resourceParent": "winnode1",
-                "resourcePlatform": "NA",
-                "resourceType": "File Server",
-                "toDate": "NA"
-            }
-        ]
+        "activeQuarantineRanges": {
+            "fromDate": "2020-07-13",
+            "orgID": -1,
+            "rangeID": 415,
+            "recoveryStatus": "None",
+            "resourceID": 4497505,
+            "resourceName": "SahilG-MBP",
+            "resourceParent": "Druva Integrations",
+            "resourcePlatform": "darwin",
+            "resourceType": "Endpoint",
+            "toDate": "2020-07-15",
+            "workload": "endpoints"
+        }
     }
 }
 ```
@@ -203,14 +122,9 @@ Lists all quarantine ranges in your environment
 #### Human Readable Output
 
 >### Active quarantined Ranges
->|fromDate|orgID|rangeID|recoveryStatus|resourceID|resourceName|resourceParent|resourcePlatform|resourceType|toDate|
->|---|---|---|---|---|---|---|---|---|---|
->| 2020-06-01 | -1 | 353 | None | 3673398 | ElizabethS-MBA | PM Demo User | darwin | Endpoint | NA |
->| 2020-06-22 | -1 | 321 | None | 877976 | DDSPL1251 | Pronoy Sd | win32 | Endpoint | 2020-06-24 |
->| 2020-06-15 | -1 | 290 | None | 4312962 | SGOYAL-WIN10VM | PM Demo User | win32 | Endpoint | 2020-06-15 |
->| 2020-04-01 | -1 | 273 | None | 3673398 | ElizabethS-MBA | PM Demo User | darwin | Endpoint | 2020-05-29 |
->| 2020-05-01 | 3 | 281 | None | 81 | WIN-CL87GB0P0H2#bset81 | WIN-CL87GB0P0H2 | NA | File Server | NA |
->| 2020-04-01 | 4133 | 233 | None | 28604 | Downloads | winnode1 | NA | File Server | NA |
+>|fromDate|orgID|rangeID|recoveryStatus|resourceID|resourceName|resourceParent|resourcePlatform|resourceType|toDate|workload|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 2020-07-13 | -1 | 415 | None | 4497505 | SahilG-MBP | Druva Integrations | darwin | Endpoint | 2020-07-15 | endpoints |
 
 
 ### druva-quarantine-resource
@@ -239,13 +153,41 @@ Quarantine a resource
 
 
 #### Command Example
-```!druva-quarantine-resource resource_id=3335062 resource_type=Endpoint from_date=2020-03-01 to_date=2020-03-10```
+```!druva-quarantine-resource resource_id=4497505 resource_type=Endpoint from_date=2020-03-01 to_date=2020-03-10```
 
 #### Context Example
 ```
 {
     "Druva": {
-        "QuarantinedRangeID": "354"
+        "QuarantinedRangeID": "445",
+        "activeQuarantineRanges": [
+            {
+                "fromDate": "2020-03-01",
+                "orgID": -1,
+                "rangeID": 445,
+                "recoveryStatus": "None",
+                "resourceID": 4497505,
+                "resourceName": "SahilG-MBP",
+                "resourceParent": "Druva Integrations",
+                "resourcePlatform": "darwin",
+                "resourceType": "Endpoint",
+                "toDate": "2020-03-10",
+                "workload": "endpoints"
+            },
+            {
+                "fromDate": "2020-07-13",
+                "orgID": -1,
+                "rangeID": 415,
+                "recoveryStatus": "None",
+                "resourceID": 4497505,
+                "resourceName": "SahilG-MBP",
+                "resourceParent": "Druva Integrations",
+                "resourcePlatform": "darwin",
+                "resourceType": "Endpoint",
+                "toDate": "2020-07-15",
+                "workload": "endpoints"
+            }
+        ]
     }
 }
 ```
@@ -255,7 +197,12 @@ Quarantine a resource
 >### Resource quarantined successfully
 >|RangeID|
 >|---|
->| 354 |
+>| 445 |
+>### Active quarantined Ranges
+>|fromDate|orgID|rangeID|recoveryStatus|resourceID|resourceName|resourceParent|resourcePlatform|resourceType|toDate|workload|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 2020-03-01 | -1 | 445 | None | 4497505 | SahilG-MBP | Druva Integrations | darwin | Endpoint | 2020-03-10 | endpoints |
+>| 2020-07-13 | -1 | 415 | None | 4497505 | SahilG-MBP | Druva Integrations | darwin | Endpoint | 2020-07-15 | endpoints |
 
 
 ### druva-delete-quarantine-range
@@ -319,24 +266,25 @@ View Quarantine Range Details
 There is no context output for this command.
 
 #### Command Example
-```!druva-view-quarantine-range range_id=354 resource_id=3335062```
+```!druva-view-quarantine-range range_id=415 resource_id=4497505```
 
 #### Context Example
 ```
 {
     "Druva": {
         "viewedQuarantineRange": {
-            "addedTime": "2020-06-26T12:38:39Z",
-            "fromDate": "2020-03-01",
+            "addedTime": "2020-07-13T07:58:46Z",
+            "fromDate": "2020-07-13",
             "orgID": -1,
-            "rangeID": 354,
+            "rangeID": 415,
             "recoveryStatus": "None",
-            "resourceID": 3335062,
-            "resourceName": "Sahil\u2019s MacBook Pro",
-            "resourceParent": "Sanket Parlikar",
+            "resourceID": 4497505,
+            "resourceName": "SahilG-MBP",
+            "resourceParent": "Druva Integrations",
             "resourcePlatform": "darwin",
             "resourceType": "Endpoint",
-            "toDate": "2020-03-10"
+            "toDate": "2020-07-15",
+            "workload": "endpoints"
         }
     }
 }
@@ -345,9 +293,9 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Range Details
->|addedTime|fromDate|orgID|rangeID|recoveryStatus|resourceID|resourceName|resourceParent|resourcePlatform|resourceType|toDate|
->|---|---|---|---|---|---|---|---|---|---|---|
->| 2020-06-26T12:38:39Z | 2020-03-01 | -1 | 354 | None | 3335062 | Sahil’s MacBook Pro | Sanket Parlikar | darwin | Endpoint | 2020-03-10 |
+>|addedTime|fromDate|orgID|rangeID|recoveryStatus|resourceID|resourceName|resourceParent|resourcePlatform|resourceType|toDate|workload|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 2020-07-13T07:58:46Z | 2020-07-13 | -1 | 415 | None | 4497505 | SahilG-MBP | Druva Integrations | darwin | Endpoint | 2020-07-15 | endpoints |
 
 
 ### druva-update-quarantine-range
@@ -377,13 +325,41 @@ Updates an existing Quarantine Range
 
 
 #### Command Example
-```!druva-update-quarantine-range range_id=354 resource_id=3335062 from_date=2020-02-01 to_date=2020-02-10 resource_type=Endpoint```
+```!druva-update-quarantine-range range_id=415 resource_id=4497505 from_date=2020-07-13 to_date=2020-07-15 resource_type=Endpoint```
 
 #### Context Example
 ```
 {
     "Druva": {
-        "updatedQuarantineRange": "354"
+        "activeQuarantineRanges": [
+            {
+                "fromDate": "2020-07-13",
+                "orgID": -1,
+                "rangeID": 415,
+                "recoveryStatus": "None",
+                "resourceID": 4497505,
+                "resourceName": "SahilG-MBP",
+                "resourceParent": "Druva Integrations",
+                "resourcePlatform": "darwin",
+                "resourceType": "Endpoint",
+                "toDate": "2020-07-15",
+                "workload": "endpoints"
+            },
+            {
+                "fromDate": "2020-03-01",
+                "orgID": -1,
+                "rangeID": 445,
+                "recoveryStatus": "None",
+                "resourceID": 4497505,
+                "resourceName": "SahilG-MBP",
+                "resourceParent": "Druva Integrations",
+                "resourcePlatform": "darwin",
+                "resourceType": "Endpoint",
+                "toDate": "2020-03-10",
+                "workload": "endpoints"
+            }
+        ],
+        "updatedQuarantineRange": "415"
     }
 }
 ```
@@ -393,7 +369,12 @@ Updates an existing Quarantine Range
 >### Range updated successfully
 >|RangeID|
 >|---|
->| 354 |
+>| 415 |
+>### Active quarantined Ranges
+>|fromDate|orgID|rangeID|recoveryStatus|resourceID|resourceName|resourceParent|resourcePlatform|resourceType|toDate|workload|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 2020-07-13 | -1 | 415 | None | 4497505 | SahilG-MBP | Druva Integrations | darwin | Endpoint | 2020-07-15 | endpoints |
+>| 2020-03-01 | -1 | 445 | None | 4497505 | SahilG-MBP | Druva Integrations | darwin | Endpoint | 2020-03-10 | endpoints |
 
 
 ### druva-list-quarantine-snapshots
@@ -421,15 +402,336 @@ List all quarantine Snapshots for a quarantine range
 
 
 #### Command Example
-``` ```
+```!druva-list-quarantine-snapshots range_id=415 resource_id=4497505```
+
+#### Context Example
+```
+{
+    "Druva": {
+        "quarantinedSnapshots": [
+            {
+                "alertTypes": [],
+                "createdFiles": 0,
+                "deletedFiles": 0,
+                "encryptedFiles": 0,
+                "name": "Jul 15 2020, 14:15",
+                "snapshotID": "MTMyNzQtV2VkIEp1bCAxNSAxNDoxNTo0OCAyMDIw",
+                "snapshotName": "Jul 15 2020, 14:15",
+                "snapshotSize": 105355564,
+                "status": "Snapshot Quarantined",
+                "totalFilesImpacted": 0,
+                "updatedFiles": 0
+            },
+            {
+                "alertTypes": [],
+                "createdFiles": 0,
+                "deletedFiles": 0,
+                "encryptedFiles": 0,
+                "name": "Jul 15 2020, 13:15",
+                "snapshotID": "MTMyNzQtV2VkIEp1bCAxNSAxMzoxNToyNiAyMDIw",
+                "snapshotName": "Jul 15 2020, 13:15",
+                "snapshotSize": 105355564,
+                "status": "Snapshot Quarantined",
+                "totalFilesImpacted": 0,
+                "updatedFiles": 0
+            },
+            {
+                "alertTypes": [],
+                "createdFiles": 0,
+                "deletedFiles": 0,
+                "encryptedFiles": 0,
+                "name": "Jul 15 2020, 11:38",
+                "snapshotID": "MTMyNzQtV2VkIEp1bCAxNSAxMTozODoyMCAyMDIw",
+                "snapshotName": "Jul 15 2020, 11:38",
+                "snapshotSize": 105355564,
+                "status": "Snapshot Quarantined",
+                "totalFilesImpacted": 0,
+                "updatedFiles": 0
+            },
+            {
+                "alertTypes": [],
+                "createdFiles": 0,
+                "deletedFiles": 0,
+                "encryptedFiles": 0,
+                "name": "Jul 15 2020, 10:38",
+                "snapshotID": "MTMyNzQtV2VkIEp1bCAxNSAxMDozODowNiAyMDIw",
+                "snapshotName": "Jul 15 2020, 10:38",
+                "snapshotSize": 105355564,
+                "status": "Snapshot Quarantined",
+                "totalFilesImpacted": 0,
+                "updatedFiles": 0
+            },
+            {
+                "alertTypes": [],
+                "createdFiles": 0,
+                "deletedFiles": 0,
+                "encryptedFiles": 0,
+                "name": "Jul 15 2020, 06:51",
+                "snapshotID": "MTMyNzQtV2VkIEp1bCAxNSAwNjo1MTo0NSAyMDIw",
+                "snapshotName": "Jul 15 2020, 06:51",
+                "snapshotSize": 105355564,
+                "status": "Snapshot Quarantined",
+                "totalFilesImpacted": 0,
+                "updatedFiles": 0
+            },
+            {
+                "alertTypes": [],
+                "createdFiles": 0,
+                "deletedFiles": 0,
+                "encryptedFiles": 0,
+                "name": "Jul 15 2020, 00:02",
+                "snapshotID": "MTMyNzQtV2VkIEp1bCAxNSAwMDowMjo0NyAyMDIw",
+                "snapshotName": "Jul 15 2020, 00:02",
+                "snapshotSize": 105355564,
+                "status": "Snapshot Quarantined",
+                "totalFilesImpacted": 0,
+                "updatedFiles": 0
+            },
+            {
+                "alertTypes": [],
+                "createdFiles": 0,
+                "deletedFiles": 0,
+                "encryptedFiles": 0,
+                "name": "Jul 14 2020, 23:02",
+                "snapshotID": "MTMyNzQtVHVlIEp1bCAxNCAyMzowMjozNSAyMDIw",
+                "snapshotName": "Jul 14 2020, 23:02",
+                "snapshotSize": 105355564,
+                "status": "Snapshot Quarantined",
+                "totalFilesImpacted": 0,
+                "updatedFiles": 0
+            },
+            {
+                "alertTypes": [],
+                "createdFiles": 0,
+                "deletedFiles": 0,
+                "encryptedFiles": 0,
+                "name": "Jul 14 2020, 22:02",
+                "snapshotID": "MTMyNzQtVHVlIEp1bCAxNCAyMjowMjoyMSAyMDIw",
+                "snapshotName": "Jul 14 2020, 22:02",
+                "snapshotSize": 105355564,
+                "status": "Snapshot Quarantined",
+                "totalFilesImpacted": 0,
+                "updatedFiles": 0
+            },
+            {
+                "alertTypes": [],
+                "createdFiles": 0,
+                "deletedFiles": 0,
+                "encryptedFiles": 0,
+                "name": "Jul 14 2020, 21:02",
+                "snapshotID": "MTMyNzQtVHVlIEp1bCAxNCAyMTowMjowNyAyMDIw",
+                "snapshotName": "Jul 14 2020, 21:02",
+                "snapshotSize": 105355564,
+                "status": "Snapshot Quarantined",
+                "totalFilesImpacted": 0,
+                "updatedFiles": 0
+            },
+            {
+                "alertTypes": [],
+                "createdFiles": 0,
+                "deletedFiles": 0,
+                "encryptedFiles": 0,
+                "name": "Jul 14 2020, 20:01",
+                "snapshotID": "MTMyNzQtVHVlIEp1bCAxNCAyMDowMTo1MCAyMDIw",
+                "snapshotName": "Jul 14 2020, 20:01",
+                "snapshotSize": 105355564,
+                "status": "Snapshot Quarantined",
+                "totalFilesImpacted": 0,
+                "updatedFiles": 0
+            },
+            {
+                "alertTypes": [],
+                "createdFiles": 0,
+                "deletedFiles": 0,
+                "encryptedFiles": 0,
+                "name": "Jul 14 2020, 19:01",
+                "snapshotID": "MTMyNzQtVHVlIEp1bCAxNCAxOTowMTozNiAyMDIw",
+                "snapshotName": "Jul 14 2020, 19:01",
+                "snapshotSize": 105355564,
+                "status": "Snapshot Quarantined",
+                "totalFilesImpacted": 0,
+                "updatedFiles": 0
+            },
+            {
+                "alertTypes": [],
+                "createdFiles": 0,
+                "deletedFiles": 0,
+                "encryptedFiles": 0,
+                "name": "Jul 14 2020, 18:01",
+                "snapshotID": "MTMyNzQtVHVlIEp1bCAxNCAxODowMToyNCAyMDIw",
+                "snapshotName": "Jul 14 2020, 18:01",
+                "snapshotSize": 105355564,
+                "status": "Snapshot Quarantined",
+                "totalFilesImpacted": 0,
+                "updatedFiles": 0
+            },
+            {
+                "alertTypes": [],
+                "createdFiles": 0,
+                "deletedFiles": 0,
+                "encryptedFiles": 0,
+                "name": "Jul 14 2020, 17:01",
+                "snapshotID": "MTMyNzQtVHVlIEp1bCAxNCAxNzowMToxMCAyMDIw",
+                "snapshotName": "Jul 14 2020, 17:01",
+                "snapshotSize": 105355564,
+                "status": "Snapshot Quarantined",
+                "totalFilesImpacted": 0,
+                "updatedFiles": 0
+            },
+            {
+                "alertTypes": [],
+                "createdFiles": 0,
+                "deletedFiles": 0,
+                "encryptedFiles": 0,
+                "name": "Jul 14 2020, 16:00",
+                "snapshotID": "MTMyNzQtVHVlIEp1bCAxNCAxNjowMDo1NSAyMDIw",
+                "snapshotName": "Jul 14 2020, 16:00",
+                "snapshotSize": 105355564,
+                "status": "Snapshot Quarantined",
+                "totalFilesImpacted": 0,
+                "updatedFiles": 0
+            },
+            {
+                "alertTypes": [],
+                "createdFiles": 0,
+                "deletedFiles": 0,
+                "encryptedFiles": 0,
+                "name": "Jul 14 2020, 15:00",
+                "snapshotID": "MTMyNzQtVHVlIEp1bCAxNCAxNTowMDo0MSAyMDIw",
+                "snapshotName": "Jul 14 2020, 15:00",
+                "snapshotSize": 105355564,
+                "status": "Snapshot Quarantined",
+                "totalFilesImpacted": 0,
+                "updatedFiles": 0
+            },
+            {
+                "alertTypes": [],
+                "createdFiles": 0,
+                "deletedFiles": 0,
+                "encryptedFiles": 0,
+                "name": "Jul 14 2020, 14:00",
+                "snapshotID": "MTMyNzQtVHVlIEp1bCAxNCAxNDowMDoyOCAyMDIw",
+                "snapshotName": "Jul 14 2020, 14:00",
+                "snapshotSize": 105355564,
+                "status": "Snapshot Quarantined",
+                "totalFilesImpacted": 0,
+                "updatedFiles": 0
+            },
+            {
+                "alertTypes": [],
+                "createdFiles": 0,
+                "deletedFiles": 0,
+                "encryptedFiles": 0,
+                "name": "Jul 14 2020, 13:00",
+                "snapshotID": "MTMyNzQtVHVlIEp1bCAxNCAxMzowMDoxMyAyMDIw",
+                "snapshotName": "Jul 14 2020, 13:00",
+                "snapshotSize": 105355564,
+                "status": "Snapshot Quarantined",
+                "totalFilesImpacted": 0,
+                "updatedFiles": 0
+            },
+            {
+                "alertTypes": [],
+                "createdFiles": 0,
+                "deletedFiles": 0,
+                "encryptedFiles": 0,
+                "name": "Jul 14 2020, 11:59",
+                "snapshotID": "MTMyNzQtVHVlIEp1bCAxNCAxMTo1OTo1NiAyMDIw",
+                "snapshotName": "Jul 14 2020, 11:59",
+                "snapshotSize": 105355564,
+                "status": "Snapshot Quarantined",
+                "totalFilesImpacted": 0,
+                "updatedFiles": 0
+            },
+            {
+                "alertTypes": [],
+                "createdFiles": 0,
+                "deletedFiles": 0,
+                "encryptedFiles": 0,
+                "name": "Jul 14 2020, 10:55",
+                "snapshotID": "MTMyNzQtVHVlIEp1bCAxNCAxMDo1NTo0MiAyMDIw",
+                "snapshotName": "Jul 14 2020, 10:55",
+                "snapshotSize": 105355564,
+                "status": "Snapshot Quarantined",
+                "totalFilesImpacted": 0,
+                "updatedFiles": 0
+            },
+            {
+                "alertTypes": [],
+                "createdFiles": 0,
+                "deletedFiles": 0,
+                "encryptedFiles": 0,
+                "name": "Jul 14 2020, 09:55",
+                "snapshotID": "MTMyNzQtVHVlIEp1bCAxNCAwOTo1NToxOSAyMDIw",
+                "snapshotName": "Jul 14 2020, 09:55",
+                "snapshotSize": 105355564,
+                "status": "Snapshot Quarantined",
+                "totalFilesImpacted": 0,
+                "updatedFiles": 0
+            },
+            {
+                "alertTypes": [],
+                "createdFiles": 0,
+                "deletedFiles": 0,
+                "encryptedFiles": 0,
+                "name": "Jul 14 2020, 08:55",
+                "snapshotID": "MTMyNzQtVHVlIEp1bCAxNCAwODo1NTowNCAyMDIw",
+                "snapshotName": "Jul 14 2020, 08:55",
+                "snapshotSize": 105355564,
+                "status": "Snapshot Quarantined",
+                "totalFilesImpacted": 0,
+                "updatedFiles": 0
+            },
+            {
+                "alertTypes": [],
+                "createdFiles": 67,
+                "deletedFiles": 0,
+                "encryptedFiles": 0,
+                "name": "Jul 13 2020, 01:02",
+                "snapshotID": "MTMyNzQtTW9uIEp1bCAxMyAwMTowMjoyNSAyMDIw",
+                "snapshotName": "Jul 13 2020, 01:02",
+                "snapshotSize": 228657822,
+                "status": "Snapshot Quarantined",
+                "totalFilesImpacted": 67,
+                "updatedFiles": 0
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Quarantined Snapshots
+>|alertTypes|createdFiles|deletedFiles|encryptedFiles|name|snapshotID|snapshotName|snapshotSize|status|totalFilesImpacted|updatedFiles|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>|  | 0 | 0 | 0 | Jul 15 2020, 14:15 | MTMyNzQtV2VkIEp1bCAxNSAxNDoxNTo0OCAyMDIw | Jul 15 2020, 14:15 | 105355564 | Snapshot Quarantined | 0 | 0 |
+>|  | 0 | 0 | 0 | Jul 15 2020, 13:15 | MTMyNzQtV2VkIEp1bCAxNSAxMzoxNToyNiAyMDIw | Jul 15 2020, 13:15 | 105355564 | Snapshot Quarantined | 0 | 0 |
+>|  | 0 | 0 | 0 | Jul 15 2020, 11:38 | MTMyNzQtV2VkIEp1bCAxNSAxMTozODoyMCAyMDIw | Jul 15 2020, 11:38 | 105355564 | Snapshot Quarantined | 0 | 0 |
+>|  | 0 | 0 | 0 | Jul 15 2020, 10:38 | MTMyNzQtV2VkIEp1bCAxNSAxMDozODowNiAyMDIw | Jul 15 2020, 10:38 | 105355564 | Snapshot Quarantined | 0 | 0 |
+>|  | 0 | 0 | 0 | Jul 15 2020, 06:51 | MTMyNzQtV2VkIEp1bCAxNSAwNjo1MTo0NSAyMDIw | Jul 15 2020, 06:51 | 105355564 | Snapshot Quarantined | 0 | 0 |
+>|  | 0 | 0 | 0 | Jul 15 2020, 00:02 | MTMyNzQtV2VkIEp1bCAxNSAwMDowMjo0NyAyMDIw | Jul 15 2020, 00:02 | 105355564 | Snapshot Quarantined | 0 | 0 |
+>|  | 0 | 0 | 0 | Jul 14 2020, 23:02 | MTMyNzQtVHVlIEp1bCAxNCAyMzowMjozNSAyMDIw | Jul 14 2020, 23:02 | 105355564 | Snapshot Quarantined | 0 | 0 |
+>|  | 0 | 0 | 0 | Jul 14 2020, 22:02 | MTMyNzQtVHVlIEp1bCAxNCAyMjowMjoyMSAyMDIw | Jul 14 2020, 22:02 | 105355564 | Snapshot Quarantined | 0 | 0 |
+>|  | 0 | 0 | 0 | Jul 14 2020, 21:02 | MTMyNzQtVHVlIEp1bCAxNCAyMTowMjowNyAyMDIw | Jul 14 2020, 21:02 | 105355564 | Snapshot Quarantined | 0 | 0 |
+>|  | 0 | 0 | 0 | Jul 14 2020, 20:01 | MTMyNzQtVHVlIEp1bCAxNCAyMDowMTo1MCAyMDIw | Jul 14 2020, 20:01 | 105355564 | Snapshot Quarantined | 0 | 0 |
+>|  | 0 | 0 | 0 | Jul 14 2020, 19:01 | MTMyNzQtVHVlIEp1bCAxNCAxOTowMTozNiAyMDIw | Jul 14 2020, 19:01 | 105355564 | Snapshot Quarantined | 0 | 0 |
+>|  | 0 | 0 | 0 | Jul 14 2020, 18:01 | MTMyNzQtVHVlIEp1bCAxNCAxODowMToyNCAyMDIw | Jul 14 2020, 18:01 | 105355564 | Snapshot Quarantined | 0 | 0 |
+>|  | 0 | 0 | 0 | Jul 14 2020, 17:01 | MTMyNzQtVHVlIEp1bCAxNCAxNzowMToxMCAyMDIw | Jul 14 2020, 17:01 | 105355564 | Snapshot Quarantined | 0 | 0 |
+>|  | 0 | 0 | 0 | Jul 14 2020, 16:00 | MTMyNzQtVHVlIEp1bCAxNCAxNjowMDo1NSAyMDIw | Jul 14 2020, 16:00 | 105355564 | Snapshot Quarantined | 0 | 0 |
+>|  | 0 | 0 | 0 | Jul 14 2020, 15:00 | MTMyNzQtVHVlIEp1bCAxNCAxNTowMDo0MSAyMDIw | Jul 14 2020, 15:00 | 105355564 | Snapshot Quarantined | 0 | 0 |
+>|  | 0 | 0 | 0 | Jul 14 2020, 14:00 | MTMyNzQtVHVlIEp1bCAxNCAxNDowMDoyOCAyMDIw | Jul 14 2020, 14:00 | 105355564 | Snapshot Quarantined | 0 | 0 |
+>|  | 0 | 0 | 0 | Jul 14 2020, 13:00 | MTMyNzQtVHVlIEp1bCAxNCAxMzowMDoxMyAyMDIw | Jul 14 2020, 13:00 | 105355564 | Snapshot Quarantined | 0 | 0 |
+>|  | 0 | 0 | 0 | Jul 14 2020, 11:59 | MTMyNzQtVHVlIEp1bCAxNCAxMTo1OTo1NiAyMDIw | Jul 14 2020, 11:59 | 105355564 | Snapshot Quarantined | 0 | 0 |
+>|  | 0 | 0 | 0 | Jul 14 2020, 10:55 | MTMyNzQtVHVlIEp1bCAxNCAxMDo1NTo0MiAyMDIw | Jul 14 2020, 10:55 | 105355564 | Snapshot Quarantined | 0 | 0 |
+>|  | 0 | 0 | 0 | Jul 14 2020, 09:55 | MTMyNzQtVHVlIEp1bCAxNCAwOTo1NToxOSAyMDIw | Jul 14 2020, 09:55 | 105355564 | Snapshot Quarantined | 0 | 0 |
+>|  | 0 | 0 | 0 | Jul 14 2020, 08:55 | MTMyNzQtVHVlIEp1bCAxNCAwODo1NTowNCAyMDIw | Jul 14 2020, 08:55 | 105355564 | Snapshot Quarantined | 0 | 0 |
+>|  | 67 | 0 | 0 | Jul 13 2020, 01:02 | MTMyNzQtTW9uIEp1bCAxMyAwMTowMjoyNSAyMDIw | Jul 13 2020, 01:02 | 228657822 | Snapshot Quarantined | 67 | 0 |
 
 
 ### druva-delete-quarantined-snapshot
 ***
-Delete a quarantined Snapshot
+Delete a quarantined Snapshot. Warning: Snapshots once deleted can not be recovered.
 
 
 #### Base Command
@@ -452,10 +754,19 @@ Delete a quarantined Snapshot
 
 
 #### Command Example
-``` ```
+```!druva-delete-quarantined-snapshot range_id=415 resource_id=4497505 snapshot_id=MTMyNzQtV2VkIEp1bCAxNSAxMTozODoyMCAyMDIw```
+
+#### Context Example
+```
+{}
+```
 
 #### Human Readable Output
 
+>### Snapshot Deleted successfully
+>|Snapshot ID|
+>|---|
+>| MTMyNzQtV2VkIEp1bCAxNSAxMTozODoyMCAyMDIw |
 
 
 ### druva-endpoint-search-file-hash
@@ -484,25 +795,105 @@ Search a file use SHA1 checksum
 
 
 #### Command Example
-```!druva-endpoint-search-file-hash sha1_checksum=ea00a57fc80d1e288f625ad365cc69061bbcb6dc```
+```!druva-endpoint-search-file-hash sha1_checksum=cec8ad914b1e9db83626b98e8d98512616975fdf```
 
 #### Context Example
 ```
 {
     "Druva": {
-        "searchEndpointsFileHashResults": {
-            "creationTime": "2014-09-30T19:16:28Z",
-            "dataSource": "Devices",
-            "deviceID": 3335062,
-            "fileName": "basic-test.js",
-            "fileSize": 1347,
-            "folderPath": "/Users/sahilgoyal/Desktop/wdc/webdataconnector/node_modules/colors/tests",
-            "modificationTime": "2014-09-30T19:16:28Z",
-            "objectID": "eyJ2ZXJzaW9uIjoyMCwiZHZlciI6MCwiZnNldGRpciI6Ii9Vc2Vycy9zYWhpbGdveWFsL0Rlc2t0b3Avd2RjIiwidW5pcXVlX25vIjoiMEAwMDAwMkAwMDBMOCIsInNwYXRoIjoid2RjL3dlYmRhdGFjb25uZWN0b3Ivbm9kZV9tb2R1bGVzL2NvbG9ycy90ZXN0cyIsImRvY2lkIjoiblBJUUFKYmpNZ0F3UURBd01EQXlRREF3TUV3NCIsInNpZCI6ODMxLCJkaWQiOjMzMzUwNjJ9",
-            "sha1Checksum": "ea00a57fc80d1e288f625ad365cc69061bbcb6dc",
-            "storageID": 831,
-            "userID": 1110684
-        }
+        "searchEndpointsFileHashResults": [
+            {
+                "creationTime": "2020-05-11T23:49:17Z",
+                "dataSource": "Devices",
+                "deviceID": 4464953,
+                "fileName": "file-example_PDF_1MB.pdf",
+                "fileSize": 1042157,
+                "folderPath": "C:\\Users\\sahil\\Documents\\zip_10MB\\zip_10MB",
+                "modificationTime": "2020-05-11T23:49:10Z",
+                "objectID": "eyJ2ZXJzaW9uIjoxNiwiZHZlciI6MCwiZnNldGRpciI6IkM6XFxVc2Vyc1xcc2FoaWxcXERvY3VtZW50cyIsInVuaXF1ZV9ubyI6IjBAMDAwMDEwMDAwMFxcIiwic3BhdGgiOiJ7e015IERvY3VtZW50c319L3ppcF8xME1CL3ppcF8xME1CIiwiZG9jaWQiOiJ2ajB6QURraFJBQXdRREF3TURBeE1EQXdNREJjIiwic2lkIjoxMzI3NCwiZGlkIjo0NDY0OTUzfQ==",
+                "sha1Checksum": "cec8ad914b1e9db83626b98e8d98512616975fdf",
+                "storageID": 13274,
+                "userID": 3358142
+            },
+            {
+                "creationTime": "2020-05-11T23:49:17Z",
+                "dataSource": "Devices",
+                "deviceID": 4464953,
+                "fileName": "file-example_PDF_1MB.pdf",
+                "fileSize": 1042157,
+                "folderPath": "C:\\Users\\sahil\\Documents\\zip_10MB\\zip_10MB",
+                "modificationTime": "2020-05-11T23:49:10Z",
+                "objectID": "eyJ2ZXJzaW9uIjoxNiwiZHZlciI6MTcsImZzZXRkaXIiOiJDOlxcVXNlcnNcXHNhaGlsXFxEb2N1bWVudHMiLCJ1bmlxdWVfbm8iOiIwQDAwMDAxQDAwMDEwIiwic3BhdGgiOiJEb2N1bWVudHMxL3ppcF8xME1CL3ppcF8xME1CIiwiZG9jaWQiOiJ2ajB6QURraFJBQXdRREF3TURBeFFEQXdNREV3Iiwic2lkIjoxMzI3NCwiZGlkIjo0NDY0OTUzfQ==",
+                "sha1Checksum": "cec8ad914b1e9db83626b98e8d98512616975fdf",
+                "storageID": 13274,
+                "userID": 3358142
+            },
+            {
+                "creationTime": "2020-05-11T23:49:20Z",
+                "dataSource": "Devices",
+                "deviceID": 4464953,
+                "fileName": "file-example_PDF_1MB.pdf",
+                "fileSize": 1042157,
+                "folderPath": "C:\\Users\\sahil\\Desktop\\zip_10MB\\zip_10MB",
+                "modificationTime": "2020-05-11T23:49:10Z",
+                "objectID": "eyJ2ZXJzaW9uIjoxNiwiZHZlciI6MTcsImZzZXRkaXIiOiJDOlxcVXNlcnNcXHNhaGlsXFxEZXNrdG9wIiwidW5pcXVlX25vIjoiMEAwMDAwMVAwMDAxWCIsInNwYXRoIjoiRGVza3RvcDEvemlwXzEwTUIvemlwXzEwTUIiLCJkb2NpZCI6InZqMHpBRGtoUkFBd1FEQXdNREF4VURBd01ERlkiLCJzaWQiOjEzMjc0LCJkaWQiOjQ0NjQ5NTN9",
+                "sha1Checksum": "cec8ad914b1e9db83626b98e8d98512616975fdf",
+                "storageID": 13274,
+                "userID": 3358142
+            },
+            {
+                "creationTime": "2020-05-11T23:49:20Z",
+                "dataSource": "Devices",
+                "deviceID": 4464953,
+                "fileName": "file-example_PDF_1MB.pdf",
+                "fileSize": 1042157,
+                "folderPath": "C:\\Users\\sahil\\Desktop\\zip_10MB\\zip_10MB",
+                "modificationTime": "2020-05-11T23:49:10Z",
+                "objectID": "eyJ2ZXJzaW9uIjoxNiwiZHZlciI6MCwiZnNldGRpciI6IkM6XFxVc2Vyc1xcc2FoaWxcXERlc2t0b3AiLCJ1bmlxdWVfbm8iOiIwQDAwMDAxYDAwMDBgIiwic3BhdGgiOiJ7e0Rlc2t0b3B9fS96aXBfMTBNQi96aXBfMTBNQiIsImRvY2lkIjoidmowekFEa2hSQUF3UURBd01EQXhZREF3TURCZyIsInNpZCI6MTMyNzQsImRpZCI6NDQ2NDk1M30=",
+                "sha1Checksum": "cec8ad914b1e9db83626b98e8d98512616975fdf",
+                "storageID": 13274,
+                "userID": 3358142
+            },
+            {
+                "creationTime": "2020-05-11T23:49:20Z",
+                "dataSource": "Devices",
+                "deviceID": 4464953,
+                "fileName": "file-example_PDF_1MB.pdf",
+                "fileSize": 1042157,
+                "folderPath": "C:\\Users\\sahil\\Desktop\\zip_10MB\\zip_10MB",
+                "modificationTime": "2020-05-11T23:49:10Z",
+                "objectID": "eyJ2ZXJzaW9uIjoxNiwiZHZlciI6MTcsImZzZXRkaXIiOiJDOlxcVXNlcnNcXHNhaGlsIiwidW5pcXVlX25vIjoiMEAwMDAwMjAwMDNsbCIsInNwYXRoIjoic2FoaWwvRGVza3RvcC96aXBfMTBNQi96aXBfMTBNQiIsImRvY2lkIjoidmowekFEa2hSQUF3UURBd01EQXlNREF3TTJ4cyIsInNpZCI6MTMyNzQsImRpZCI6NDQ2NDk1M30=",
+                "sha1Checksum": "cec8ad914b1e9db83626b98e8d98512616975fdf",
+                "storageID": 13274,
+                "userID": 3358142
+            },
+            {
+                "creationTime": "2020-05-11T23:49:17Z",
+                "dataSource": "Devices",
+                "deviceID": 4464953,
+                "fileName": "file-example_PDF_1MB.pdf",
+                "fileSize": 1042157,
+                "folderPath": "C:\\Users\\sahil\\Documents\\zip_10MB\\zip_10MB",
+                "modificationTime": "2020-05-11T23:49:10Z",
+                "objectID": "eyJ2ZXJzaW9uIjoxNiwiZHZlciI6MTcsImZzZXRkaXIiOiJDOlxcVXNlcnNcXHNhaGlsIiwidW5pcXVlX25vIjoiMEAwMDAwMjAwMDNuNCIsInNwYXRoIjoic2FoaWwvRG9jdW1lbnRzL3ppcF8xME1CL3ppcF8xME1CIiwiZG9jaWQiOiJ2ajB6QURraFJBQXdRREF3TURBeU1EQXdNMjQwIiwic2lkIjoxMzI3NCwiZGlkIjo0NDY0OTUzfQ==",
+                "sha1Checksum": "cec8ad914b1e9db83626b98e8d98512616975fdf",
+                "storageID": 13274,
+                "userID": 3358142
+            },
+            {
+                "creationTime": "2017-08-12T06:22:30Z",
+                "dataSource": "Devices",
+                "deviceID": 4464953,
+                "fileName": "file-example_PDF_1MB.pdf",
+                "fileSize": 1042157,
+                "folderPath": "C:\\Users\\sahil\\Downloads\\zip_10MB\\zip_10MB",
+                "modificationTime": "2020-05-11T23:49:10Z",
+                "objectID": "eyJ2ZXJzaW9uIjoxNiwiZHZlciI6MTcsImZzZXRkaXIiOiJDOlxcVXNlcnNcXHNhaGlsIiwidW5pcXVlX25vIjoiMEAwMDAwMjAwMDNvTCIsInNwYXRoIjoic2FoaWwvRG93bmxvYWRzL3ppcF8xME1CL3ppcF8xME1CIiwiZG9jaWQiOiJ2ajB6QURraFJBQXdRREF3TURBeU1EQXdNMjlNIiwic2lkIjoxMzI3NCwiZGlkIjo0NDY0OTUzfQ==",
+                "sha1Checksum": "cec8ad914b1e9db83626b98e8d98512616975fdf",
+                "storageID": 13274,
+                "userID": 3358142
+            }
+        ]
     }
 }
 ```
@@ -512,12 +903,18 @@ Search a file use SHA1 checksum
 >### Search Results
 >|creationTime|dataSource|deviceID|fileName|fileSize|folderPath|modificationTime|objectID|sha1Checksum|storageID|userID|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| 2014-09-30T19:16:28Z | Devices | 3335062 | basic-test.js | 1347 | /Users/sahilgoyal/Desktop/wdc/webdataconnector/node_modules/colors/tests | 2014-09-30T19:16:28Z | eyJ2ZXJzaW9uIjoyMCwiZHZlciI6MCwiZnNldGRpciI6Ii9Vc2Vycy9zYWhpbGdveWFsL0Rlc2t0b3Avd2RjIiwidW5pcXVlX25vIjoiMEAwMDAwMkAwMDBMOCIsInNwYXRoIjoid2RjL3dlYmRhdGFjb25uZWN0b3Ivbm9kZV9tb2R1bGVzL2NvbG9ycy90ZXN0cyIsImRvY2lkIjoiblBJUUFKYmpNZ0F3UURBd01EQXlRREF3TUV3NCIsInNpZCI6ODMxLCJkaWQiOjMzMzUwNjJ9 | ea00a57fc80d1e288f625ad365cc69061bbcb6dc | 831 | 1110684 |
+>| 2020-05-11T23:49:17Z | Devices | 4464953 | file-example_PDF_1MB.pdf | 1042157 | C:\Users\sahil\Documents\zip_10MB\zip_10MB | 2020-05-11T23:49:10Z | eyJ2ZXJzaW9uIjoxNiwiZHZlciI6MCwiZnNldGRpciI6IkM6XFxVc2Vyc1xcc2FoaWxcXERvY3VtZW50cyIsInVuaXF1ZV9ubyI6IjBAMDAwMDEwMDAwMFxcIiwic3BhdGgiOiJ7e015IERvY3VtZW50c319L3ppcF8xME1CL3ppcF8xME1CIiwiZG9jaWQiOiJ2ajB6QURraFJBQXdRREF3TURBeE1EQXdNREJjIiwic2lkIjoxMzI3NCwiZGlkIjo0NDY0OTUzfQ== | cec8ad914b1e9db83626b98e8d98512616975fdf | 13274 | 3358142 |
+>| 2020-05-11T23:49:17Z | Devices | 4464953 | file-example_PDF_1MB.pdf | 1042157 | C:\Users\sahil\Documents\zip_10MB\zip_10MB | 2020-05-11T23:49:10Z | eyJ2ZXJzaW9uIjoxNiwiZHZlciI6MTcsImZzZXRkaXIiOiJDOlxcVXNlcnNcXHNhaGlsXFxEb2N1bWVudHMiLCJ1bmlxdWVfbm8iOiIwQDAwMDAxQDAwMDEwIiwic3BhdGgiOiJEb2N1bWVudHMxL3ppcF8xME1CL3ppcF8xME1CIiwiZG9jaWQiOiJ2ajB6QURraFJBQXdRREF3TURBeFFEQXdNREV3Iiwic2lkIjoxMzI3NCwiZGlkIjo0NDY0OTUzfQ== | cec8ad914b1e9db83626b98e8d98512616975fdf | 13274 | 3358142 |
+>| 2020-05-11T23:49:20Z | Devices | 4464953 | file-example_PDF_1MB.pdf | 1042157 | C:\Users\sahil\Desktop\zip_10MB\zip_10MB | 2020-05-11T23:49:10Z | eyJ2ZXJzaW9uIjoxNiwiZHZlciI6MTcsImZzZXRkaXIiOiJDOlxcVXNlcnNcXHNhaGlsXFxEZXNrdG9wIiwidW5pcXVlX25vIjoiMEAwMDAwMVAwMDAxWCIsInNwYXRoIjoiRGVza3RvcDEvemlwXzEwTUIvemlwXzEwTUIiLCJkb2NpZCI6InZqMHpBRGtoUkFBd1FEQXdNREF4VURBd01ERlkiLCJzaWQiOjEzMjc0LCJkaWQiOjQ0NjQ5NTN9 | cec8ad914b1e9db83626b98e8d98512616975fdf | 13274 | 3358142 |
+>| 2020-05-11T23:49:20Z | Devices | 4464953 | file-example_PDF_1MB.pdf | 1042157 | C:\Users\sahil\Desktop\zip_10MB\zip_10MB | 2020-05-11T23:49:10Z | eyJ2ZXJzaW9uIjoxNiwiZHZlciI6MCwiZnNldGRpciI6IkM6XFxVc2Vyc1xcc2FoaWxcXERlc2t0b3AiLCJ1bmlxdWVfbm8iOiIwQDAwMDAxYDAwMDBgIiwic3BhdGgiOiJ7e0Rlc2t0b3B9fS96aXBfMTBNQi96aXBfMTBNQiIsImRvY2lkIjoidmowekFEa2hSQUF3UURBd01EQXhZREF3TURCZyIsInNpZCI6MTMyNzQsImRpZCI6NDQ2NDk1M30= | cec8ad914b1e9db83626b98e8d98512616975fdf | 13274 | 3358142 |
+>| 2020-05-11T23:49:20Z | Devices | 4464953 | file-example_PDF_1MB.pdf | 1042157 | C:\Users\sahil\Desktop\zip_10MB\zip_10MB | 2020-05-11T23:49:10Z | eyJ2ZXJzaW9uIjoxNiwiZHZlciI6MTcsImZzZXRkaXIiOiJDOlxcVXNlcnNcXHNhaGlsIiwidW5pcXVlX25vIjoiMEAwMDAwMjAwMDNsbCIsInNwYXRoIjoic2FoaWwvRGVza3RvcC96aXBfMTBNQi96aXBfMTBNQiIsImRvY2lkIjoidmowekFEa2hSQUF3UURBd01EQXlNREF3TTJ4cyIsInNpZCI6MTMyNzQsImRpZCI6NDQ2NDk1M30= | cec8ad914b1e9db83626b98e8d98512616975fdf | 13274 | 3358142 |
+>| 2020-05-11T23:49:17Z | Devices | 4464953 | file-example_PDF_1MB.pdf | 1042157 | C:\Users\sahil\Documents\zip_10MB\zip_10MB | 2020-05-11T23:49:10Z | eyJ2ZXJzaW9uIjoxNiwiZHZlciI6MTcsImZzZXRkaXIiOiJDOlxcVXNlcnNcXHNhaGlsIiwidW5pcXVlX25vIjoiMEAwMDAwMjAwMDNuNCIsInNwYXRoIjoic2FoaWwvRG9jdW1lbnRzL3ppcF8xME1CL3ppcF8xME1CIiwiZG9jaWQiOiJ2ajB6QURraFJBQXdRREF3TURBeU1EQXdNMjQwIiwic2lkIjoxMzI3NCwiZGlkIjo0NDY0OTUzfQ== | cec8ad914b1e9db83626b98e8d98512616975fdf | 13274 | 3358142 |
+>| 2017-08-12T06:22:30Z | Devices | 4464953 | file-example_PDF_1MB.pdf | 1042157 | C:\Users\sahil\Downloads\zip_10MB\zip_10MB | 2020-05-11T23:49:10Z | eyJ2ZXJzaW9uIjoxNiwiZHZlciI6MTcsImZzZXRkaXIiOiJDOlxcVXNlcnNcXHNhaGlsIiwidW5pcXVlX25vIjoiMEAwMDAwMjAwMDNvTCIsInNwYXRoIjoic2FoaWwvRG93bmxvYWRzL3ppcF8xME1CL3ppcF8xME1CIiwiZG9jaWQiOiJ2ajB6QURraFJBQXdRREF3TURBeU1EQXdNMjlNIiwic2lkIjoxMzI3NCwiZGlkIjo0NDY0OTUzfQ== | cec8ad914b1e9db83626b98e8d98512616975fdf | 13274 | 3358142 |
 
 
 ### druva-endpoint-initiate-restore
 ***
-Restore Data to a replacement device
+Restore Data to a replacement device. Delete a quarantined Snapshot. Warning: This command will restore your endpoint data from a prior day snapshot. Any changes since the snapshot date may be lost.
 
 
 #### Base Command
@@ -571,7 +968,7 @@ There is no context output for this command.
 
 ### druva-endpoint-decommission
 ***
-Remote Wipe Infected Endpoint Resource
+Remote Wipe Infected Endpoint Resource. Delete a quarantined Snapshot. Warning: This command will remote wipe data from the end point. This action can not be undone.
 
 
 #### Base Command
