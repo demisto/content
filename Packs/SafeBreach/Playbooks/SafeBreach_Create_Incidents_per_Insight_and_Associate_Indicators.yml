@@ -664,7 +664,7 @@ tasks:
         complex:
           root: inputs.indicators
           transformers:
-          - operator: 4229835a-a014-4c54-8e59-184ee12fcdd1
+          - operator: JoinListsOfDicts
             args:
               key:
                 value:
@@ -676,7 +676,7 @@ tasks:
               rightkey:
                 value:
                   simple: Id
-          - operator: 2035b5a0-6090-44fe-8059-aa8e04427def
+          - operator: ListGroupBy
             args:
               keys:
                 value:
@@ -725,7 +725,7 @@ tasks:
         complex:
           root: inputs.indicators
           transformers:
-          - operator: 4229835a-a014-4c54-8e59-184ee12fcdd1
+          - operator: JoinListsOfDicts
             args:
               key:
                 value:
