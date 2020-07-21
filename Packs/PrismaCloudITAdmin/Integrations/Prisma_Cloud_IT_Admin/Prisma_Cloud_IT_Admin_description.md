@@ -1,0 +1,2 @@
+How to configure the integration
+The Username and Password which is used while creating the Prisma cloud account will be used as credentials here. For any questions, reach out to the #demisto-developers channel on the DFIR Community on Slack (https://dfircommunity.slack.com)
