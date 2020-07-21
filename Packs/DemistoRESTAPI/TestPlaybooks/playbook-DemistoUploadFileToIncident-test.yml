@@ -47,7 +47,7 @@ tasks:
     scriptarguments:
       body: {}
       filename:
-        simple: image.png
+        simple: MicrosoftCloudAppSecurity_image.png
       headers: {}
       insecure: {}
       method:
@@ -99,7 +99,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: image.png
+                  simple: MicrosoftCloudAppSecurity_image.png
           accessor: EntryID
       incident_id:
         complex:
