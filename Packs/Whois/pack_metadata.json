@@ -2,7 +2,7 @@
     "name": "Whois",
     "description": "This pack Provides data enrichment for domains.",
     "support": "Cortex XSOAR",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.1.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,7 +10,9 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "TIM"
+    ],
     "useCases": [],
     "keywords": [],
     "dependencies": {

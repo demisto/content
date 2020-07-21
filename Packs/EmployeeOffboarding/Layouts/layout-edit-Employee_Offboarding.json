@@ -139,5 +139,6 @@
 		"version": -1
 	},
 	"typeId": "Employee Offboarding",
-	"version": -1
+	"version": -1,
+	"toVersion": "5.9.9"
 }

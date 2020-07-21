@@ -1734,6 +1734,16 @@
 <td style="width: 72px;">Optional</td>
 </tr>
 <tr>
+<td style="width: 144px;">source_zone</td>
+<td style="width: 524px;">A comma-separated list of source zones..</td>
+<td style="width: 72px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 144px;">destination_zone</td>
+<td style="width: 524px;">A comma-separated list of source zones..</td>
+<td style="width: 72px;">Optional</td>
+</tr>
+<tr>
 <td style="width: 144px;">negate_source</td>
 <td style="width: 524px;">Whether to negate the source (address, address group); "Yes" or "No".</td>
 <td style="width: 72px;">Optional</td>
@@ -4580,6 +4590,21 @@
 <td style="width: 260px;">Panorama.Monitor.Application</td>
 <td style="width: 55px;">String</td>
 <td style="width: 426px;">Application associated with the session.</td>
+</tr>
+<tr>
+<td style="width: 260px;">Panorama.Monitor.Bytes</td>
+<td style="width: 55px;">String</td>
+<td style="width: 426px;">Total log bytes.</td>
+</tr>
+<tr>
+<td style="width: 260px;">Panorama.Monitor.BytesReceived</td>
+<td style="width: 55px;">String</td>
+<td style="width: 426px;">Log bytes received.</td>
+</tr>
+<tr>
+<td style="width: 260px;">Panorama.Monitor.BytesSent</td>
+<td style="width: 55px;">String</td>
+<td style="width: 426px;">Log bytes sent.</td>
 </tr>
 <tr>
 <td style="width: 260px;">Panorama.Monitor.Category</td>

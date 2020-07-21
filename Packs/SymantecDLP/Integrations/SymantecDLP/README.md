@@ -8,6 +8,15 @@ Symantec Data Loss Prevention let's you discover, monitor and protect your sensi
 <li>Symantec DLP 15.7: <a href="https://apidocs.symantec.com/home/DLP15.7#_creating_a_user_and_role_for_an_incident_reporting_api_client"> Creating a user and role for an Incident Reporting API client</a></li>
 </ul>
 </p>
+<p>
+If you are using an AD User to authenticate as the API user make sure to follow the proper naming convention of:
+<pre>
+&lt;Username&gt;:&lt;Active_Directory_Domain_In_Upper_Case&gt;
+OR
+&lt;Role&gt;\&lt;Username&gt;:&lt;Active_Directory_Domain_In_Upper_Case&gt;
+</pre>
+More details at: <a href="https://knowledge.broadcom.com/external/article/159761/unable-to-authenticate-to-reporting-api.html">https://knowledge.broadcom.com/external/article/159761/unable-to-authenticate-to-reporting-api.html</a>
+</p>
 <h2>Fetch Incidents</h2>
 <p>The Symantec Data Loss Prevention integration is configured to fetch incidents and integrate them into Demisto's incidents and has the fetch limit parameter.</p>
 <h2>Configure Symantec Data Loss Prevention on Demisto</h2>
