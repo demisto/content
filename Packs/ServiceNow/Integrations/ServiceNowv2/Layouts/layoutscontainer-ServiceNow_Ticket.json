@@ -1,22 +1,9 @@
 {
-	"TypeName": "ServiceNowTicket",
-	"kind": "details",
-	"layout": {
+	"close": null,
+	"description": "",
+	"details": null,
+	"detailsV2": {
 		"TypeName": "",
-		"commitMessage": "",
-		"fromServerVersion": "6.0.0",
-		"id": "ServiceNowTicket",
-		"itemVersion": "",
-		"kind": "details",
-		"locked": false,
-		"modified": "2020-07-19T09:46:51.659290089Z",
-		"name": "",
-		"packID": "",
-		"prevKind": "details",
-		"prevTypeId": "ServiceNowTicket",
-		"shouldCommit": false,
-		"sortValues": null,
-		"system": false,
 		"tabs": [
 			{
 				"id": "summary",
@@ -487,8 +474,8 @@
 						"name": "Ticket Status",
 						"static": false,
 						"w": 1,
-						"x": 1,
-						"y": 0
+						"x": 0,
+						"y": 2
 					},
 					{
 						"displayType": "ROW",
@@ -557,7 +544,7 @@
 						"moved": false,
 						"name": "Ticket Info",
 						"static": false,
-						"w": 1,
+						"w": 2,
 						"x": 0,
 						"y": 0
 					},
@@ -580,20 +567,13 @@
 								"startCol": 0
 							},
 							{
+								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "servicenowduedate",
 								"height": 22,
 								"id": "f03d1a90-c9a3-11ea-9075-c575f8e27f6d",
 								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "servicenownotify",
-								"height": 22,
-								"id": "ba4863e0-c9a3-11ea-9075-c575f8e27f6d",
-								"index": 2,
+								"listId": "yyrfzsc55n-c526fba0-c9a3-11ea-9075-c575f8e27f6d",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -602,6 +582,15 @@
 								"fieldId": "servicenowescalation",
 								"height": 22,
 								"id": "b850b290-c9a3-11ea-9075-c575f8e27f6d",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "servicenownotify",
+								"height": 22,
+								"id": "ba4863e0-c9a3-11ea-9075-c575f8e27f6d",
 								"index": 3,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -614,8 +603,8 @@
 						"name": "Ticket Handling",
 						"static": false,
 						"w": 1,
-						"x": 2,
-						"y": 0
+						"x": 1,
+						"y": 2
 					},
 					{
 						"displayType": "ROW",
@@ -659,7 +648,7 @@
 						"static": false,
 						"w": 1,
 						"x": 0,
-						"y": 2
+						"y": 4
 					}
 				],
 				"type": "custom"
@@ -689,13 +678,25 @@
 				"name": "Canvas",
 				"type": "canvas"
 			}
-		],
-		"toServerVersion": "",
-		"typeId": "ServiceNowTicket",
-		"vcShouldIgnore": false,
-		"vcShouldKeepItemLegacyProdMachine": false,
-		"version": 7
+		]
 	},
-	"typeId": "ServiceNowTicket",
+	"edit": null,
+	"fromServerVersion": "",
+	"group": "incident",
+	"id": "ServiceNow Ticket",
+	"indicatorsDetails": null,
+	"indicatorsQuickView": null,
+	"itemVersion": "",
+	"locked": false,
+	"mobile": null,
+	"name": "ServiceNow Ticket",
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"quickView": null,
+	"sortValues": null,
+	"system": false,
+	"toServerVersion": "",
 	"version": -1
 }

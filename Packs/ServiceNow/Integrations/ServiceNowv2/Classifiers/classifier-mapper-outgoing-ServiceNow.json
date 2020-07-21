@@ -16,10 +16,6 @@
 		"ServiceNowTicket": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"assigned_to": {
-					"complex": null,
-					"simple": "servicenowassignedto"
-				},
 				"assignment_group": {
 					"complex": null,
 					"simple": "servicenowassignmentgroup"
