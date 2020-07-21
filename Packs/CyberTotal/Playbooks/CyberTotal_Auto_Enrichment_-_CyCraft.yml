@@ -1,5 +1,5 @@
-id: CyberTotal Auto Enrichment - CyCraft
-version: -1
+id: fce4731f-9e5e-43e5-85eb-0584cc447686
+version: 64
 name: CyberTotal Auto Enrichment - CyCraft
 description: 'This playbook automatically enriches indicators (including IPs, URLs,
   domains; MD5, SHA-1, and SHA-256 file hashes). Playbook input: the indicators you
@@ -17,7 +17,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -208,10 +207,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 5e62d551-ae5b-4179-85b8-985e7b7cf5a7
+    taskid: 3df71e1f-c3d6-4879-8bc8-281020bdaab3
     type: regular
     task:
-      id: 5e62d551-ae5b-4179-85b8-985e7b7cf5a7
+      id: 3df71e1f-c3d6-4879-8bc8-281020bdaab3
       version: -1
       name: Run IP Enrichment
       description: Return IP information and reputation
@@ -355,10 +354,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: b19a3b48-dc6a-4a4f-8c7b-59b188a680e8
+    taskid: 30c7040d-ec78-4252-847b-1bafbe1e5fbf
     type: regular
     task:
-      id: b19a3b48-dc6a-4a4f-8c7b-59b188a680e8
+      id: 30c7040d-ec78-4252-847b-1bafbe1e5fbf
       version: -1
       name: Run MD5 Enrichment
       description: Return file's information and reputation
@@ -370,6 +369,8 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
+      file:
+        simple: ${inputs.MD5}
       hash:
         simple: ${inputs.MD5}
       threshold: {}
@@ -397,7 +398,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -448,10 +448,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 952bfdf9-f556-4094-8d72-85a0936f4a49
+    taskid: 9f372c7a-d595-4f93-815d-e21a6ba66b85
     type: regular
     task:
-      id: 952bfdf9-f556-4094-8d72-85a0936f4a49
+      id: 9f372c7a-d595-4f93-815d-e21a6ba66b85
       version: -1
       name: Run SHA1 Enrichment
       description: Return file's information and reputation
@@ -463,6 +463,8 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
+      file:
+        simple: ${inputs.SHA1}
       hash:
         simple: ${inputs.SHA1}
       threshold: {}
@@ -516,10 +518,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: e30f009c-660f-4192-81c8-9c71b8f2f24f
+    taskid: 5347324a-8c8f-44ca-8259-e26a09fdd3f9
     type: regular
     task:
-      id: e30f009c-660f-4192-81c8-9c71b8f2f24f
+      id: 5347324a-8c8f-44ca-8259-e26a09fdd3f9
       version: -1
       name: Run SHA256 Enrichment
       description: Return file's information and reputation
@@ -531,6 +533,8 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
+      file:
+        simple: ${inputs.SHA256}
       hash:
         simple: ${inputs.SHA256}
       threshold: {}
@@ -580,7 +584,7 @@ inputs:
   required: false
   description: The input domain will be searched automatically on CyberTotal to retrieve
     reputation data.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: IP
   value:
     complex:
@@ -589,7 +593,7 @@ inputs:
   required: false
   description: The input IP will be searched automatically on CyberTotal and to retrieve
     reputation data.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: URL
   value:
     complex:
@@ -598,7 +602,7 @@ inputs:
   required: false
   description: The input URL will be searched automatically on CyberTotal to retrieve
     reputation data.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: MD5
   value:
     complex:
@@ -607,7 +611,7 @@ inputs:
   required: false
   description: The input MD5 will be searched automatically on CyberTotal to retrieve
     reputation data.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: SHA1
   value:
     complex:
@@ -616,7 +620,7 @@ inputs:
   required: false
   description: The input SHA1 will be searched automatically on CyberTotal to retrieve
     reputation data.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: SHA256
   value:
     complex:
@@ -625,9 +629,7 @@ inputs:
   required: false
   description: The input SHA256 will be searched automatically on CyberTotal to retrieve
     reputation data.
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs: []
+sourceplaybookid: 1c314256-6db3-43a7-8aa7-113451a87105
 quiet: true
-fromversion: 5.0.0
-tests:
-- No tests (auto formatted)

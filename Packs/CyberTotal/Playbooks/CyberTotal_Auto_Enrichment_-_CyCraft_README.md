@@ -13,10 +13,10 @@ This playbook does not use any sub-playbooks.
 * Exists
 
 ### Commands
-* domain
-* url
 * ip
+* url
 * file
+* domain
 
 ## Playbook Inputs
 ---

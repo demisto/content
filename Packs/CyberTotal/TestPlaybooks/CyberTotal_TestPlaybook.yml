@@ -1,5 +1,5 @@
 id: CyberTotal_TestPlaybook
-version: 7
+version: 20
 name: CyberTotal_TestPlaybook
 starttaskid: "0"
 tasks:
@@ -187,10 +187,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: ceed046a-a7d0-4339-85c8-be983e613cdd
+    taskid: 87297b8d-ae5d-4c5e-8822-dade1823ed9f
     type: regular
     task:
-      id: ceed046a-a7d0-4339-85c8-be983e613cdd
+      id: 87297b8d-ae5d-4c5e-8822-dade1823ed9f
       version: -1
       name: file
       description: Return file's information and reputation
@@ -202,6 +202,10 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
+      file:
+        complex:
+          root: File
+          accessor: MD5
       hash:
         complex:
           root: File
