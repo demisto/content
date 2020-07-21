@@ -87,6 +87,7 @@ script:
     name: microsoft-cas-alert-dismiss-bulk
     outputs:
     - contextPath: MicrosoftCloudAppSecurity.AlertDismiss.dismissed
+      description:
       type: Number
   - arguments:
     - default: false
@@ -161,76 +162,112 @@ script:
     name: microsoft-cas-alerts-list
     outputs:
     - contextPath: MicrosoftCloudAppSecurity.Alert.data._id
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alert.data.timestamp
+      description:
       type: Date
     - contextPath: MicrosoftCloudAppSecurity.Alert.data.entities.id
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Alert.data.entities.label
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alert.data.entities.policyType
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alert.data.entities.type
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alert.data.entities.em
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alert.data.entities.entityType
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Alert.data.entities.inst
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Alert.data.entities.pa
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alert.data.entities.saas
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Alert.data.title
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alert.data.description
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alert.data.stories
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Alert.data.policy.id
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alert.data.policy.label
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alert.data.policy.policyType
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alert.data.policy.type
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alert.data.contextId
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alert.data.threatScore
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Alert.data.isSystemAlert
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Alert.data.statusValue
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Alert.data.severityValue
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Alert.data.idValue
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Alert.data.URL
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alert.data.handledByUser
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.Alert.data.comment
+      description:
       type: Unknown
     - contextPath: MicrosoftCloudAppSecurity.Alert.data.resolveTime
+      description:
       type: Date
     - contextPath: MicrosoftCloudAppSecurity.Alert.data.entities.policySubType
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alert.data.policy.policySubType
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alert.data.entities.triggeredAlert
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Alert.data.isPreview
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Alert.hasNext
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Alert.max
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Alert.total
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Alert.moreThanTotal
+      description:
       type: Number
   - arguments:
     - default: false
@@ -259,6 +296,7 @@ script:
     name: microsoft-cas-alert-resolve-bulk
     outputs:
     - contextPath: MicrosoftCloudAppSecurity.AlertResolve.resolved
+      description:
       type: Number
   - arguments:
     - default: false
@@ -364,34 +402,49 @@ script:
     name: microsoft-cas-activities-list
     outputs:
     - contextPath: MicrosoftCloudAppSecurity.Activities.data._id
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Activities.data.tenantId
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Activities.data.aadTenantId
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Activities.data.appId
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Activities.data.saasId
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Activities.data.timestamp
+      description:
       type: Date
     - contextPath: MicrosoftCloudAppSecurity.Activities.data.timestampRaw
+      description:
       type: Date
     - contextPath: MicrosoftCloudAppSecurity.Activities.data.instantiation
+      description:
       type: Date
     - contextPath: MicrosoftCloudAppSecurity.Activities.data.instantiationRaw
+      description:
       type: Date
     - contextPath: MicrosoftCloudAppSecurity.Activities.data.created
+      description:
       type: Date
     - contextPath: MicrosoftCloudAppSecurity.Activities.data.createdRaw
+      description:
       type: Date
     - contextPath: MicrosoftCloudAppSecurity.Activities.data.eventType
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Activities.data.eventTypeValue
+      description:
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Activities.data.eventRouting.scubaUnpacker
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Activities.data.eventRouting.lograbber
+      description:
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Activities.data.eventRouting.auditing
       type: Number
