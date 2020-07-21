@@ -8368,38 +8368,40 @@ def create_outputs(whois_result, domain, query=None):
 
 
 def domain_command():
-    domain = demisto.args().get('domain')
-    whois_result = get_whois(domain)
-    md, standard_ec, dbot_score = create_outputs(whois_result, domain)
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['markdown'],
-        'Contents': str(whois_result),
-        'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
-        'EntryContext': {
-            'Domain(val.Name && val.Name == obj.Name)': standard_ec,
-            'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor && val.Vendor == obj.Vendor)':
-                dbot_score
-        }
-    })
+    domains = demisto.args().get('domain', [])
+    for domain in argToList(domains):
+        whois_result = get_whois(domain)
+        md, standard_ec, dbot_score = create_outputs(whois_result, domain)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': str(whois_result),
+            'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
+            'EntryContext': {
+                'Domain(val.Name && val.Name == obj.Name)': standard_ec,
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor && val.Vendor == obj.Vendor)':
+                    dbot_score
+            }
+        })
 
 
 def whois_command():
-    query = demisto.args().get('query')
-    domain = get_domain_from_query(query)
-    whois_result = get_whois(domain)
-    md, standard_ec, dbot_score = create_outputs(whois_result, domain, query)
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['markdown'],
-        'Contents': str(whois_result),
-        'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
-        'EntryContext': {
-            'Domain(val.Name && val.Name == obj.Name)': standard_ec,
-            'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor && val.Vendor == obj.Vendor)':
-                dbot_score
-        }
-    })
+    queries = demisto.args().get('query', [])
+    for query in argToList(queries):
+        domain = get_domain_from_query(query)
+        whois_result = get_whois(domain)
+        md, standard_ec, dbot_score = create_outputs(whois_result, domain, query)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': str(whois_result),
+            'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
+            'EntryContext': {
+                'Domain(val.Name && val.Name == obj.Name)': standard_ec,
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor && val.Vendor == obj.Vendor)':
+                    dbot_score
+            }
+        })
 
 
 def test_command():
