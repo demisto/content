@@ -377,7 +377,7 @@ ACTIVITIES_BY_ID_DATA = {
         "auditing": True
     },
     "device": {
-        "clientIP": "82.166.99.178",
+        "clientIP": "8.8.8.8",
         "userAgent": "OneDriveMpc-Transform_Thumbnail/1.0",
         "countryCode": "IL"
     },
@@ -481,7 +481,7 @@ ACTIVITIES_BY_ID_DATA = {
         "Operation": "FilePreviewed",
         "UserType": 0,
         "Workload": "OneDrive",
-        "ClientIP": "82.166.99.178",
+        "ClientIP": "8.8.8.8",
         "UserKey": "11111",
         "Version": 1,
         "ObjectId": "https://demistodev-my.sharepoint.com/personal/avishai_demistodev_onmicrosoft_com"
@@ -602,7 +602,7 @@ FILES_BY_ID_DATA = {
     ],
     "collaborators": [],
     "sharepointItem": {
-        "UniqueId": "56aa5551-0c4c-42d7-93f1-57ccdca766aa",
+        "UniqueId": "111111111111111",
         "ServerRelativeUrl": "/personal/avishai_demistodev_onmicrosoft_com/Documents/20200325_104025.jpg.txt",
         "Name": "20200325_104025.jpg.txt",
         "Length": 149,
