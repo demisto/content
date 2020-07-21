@@ -1,15 +1,11 @@
 {
-    "typeId": "SafeBreach Process",
+    "id": "SafeBreach URL",
+    "group": "indicator",
+    "name": "SafeBreach URL",
+    "description": "",
     "version": -1,
-    "TypeName": "SafeBreach Process",
-    "kind": "indicatorsDetails",
-    "fromVersion": "5.0.0",
-    "layout": {
-        "TypeName": "SafeBreach Process",
-        "id": "SafeBreach Process",
-        "kind": "indicatorsDetails",
-        "name": "",
-        "system": false,
+    "fromVersion": "6.0.0",
+    "indicatorsDetails": {
         "tabs": [
             {
                 "id": "default-main",
@@ -289,9 +285,6 @@
                 ],
                 "type": "custom"
             }
-        ],
-        "typeId": "SafeBreach Process",
-        "version": -1
-    },
-    "toVersion": "5.9.9"
+        ]
+    }
 }
