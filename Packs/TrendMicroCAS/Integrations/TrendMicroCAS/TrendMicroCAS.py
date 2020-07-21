@@ -183,18 +183,13 @@ def fetch_incidents(client: Client, max_results: int, last_run, list_services: L
 
     Args
         client (Client): client to use
-
-    max_results (int): Maximum numbers of incidents per fetch
-
-    last_run (Optional[Dict[str, int]]): A dict with a key containing the latest incident created time we got
-        from last fetch
-
-    first_fetch (str): If last_run is None (first time we are fetching), it contains
-        the date in iso format on when to start fetching incidents
-
-    ist_services (str): list services of the alerts to search for. Options are: 'exchange,sharepoint,onedrive,dropbox,box,googledrive,gmail,teams'
-
-    list_event_type (str): list types of events to search for. Options are: securityrisk, virtualanalyze, ransomware, dlp
+        max_results (int): Maximum numbers of incidents per fetch
+        last_run (Optional[Dict[str, int]]): A dict with a key containing the latest incident created time we got
+            from last fetch
+        first_fetch (str): If last_run is None (first time we are fetching), it contains
+            the date in iso format on when to start fetching incidents
+        ist_services (str): list services of the alerts to search for. Options are: 'exchange,sharepoint,onedrive,dropbox,box,googledrive,gmail,teams'
+        list_event_type (str): list types of events to search for. Options are: securityrisk, virtualanalyze, ransomware, dlp
 
     :return:
         Tuple[Dict[str, int], List[dict]]: A tuple containing two elements:
@@ -268,8 +263,8 @@ def security_events_list_command(client, args):
             message = event.get('message')
             message['log_item_id'] = event.get('log_item_id')
             message_list.append(message)
-
-        readable_output = tableToMarkdown(f'{event_type} events in {service}', message_list)
+        headers = ['log_item_id', 'detection_time', 'security_risk_name', 'affected_user', 'action', 'action_result']
+        readable_output = tableToMarkdown(f'{event_type} events in {service}', message_list, headers=headers)
 
         return CommandResults(
             readable_output=readable_output,
@@ -308,7 +303,10 @@ def email_sweep_command(client, args):
     if not value:
         return "not find emails"
     else:
-        readable_output = tableToMarkdown('search results', value)
+
+        headers = ["mail_message_delivery_time", "mail_message_id", "mail_message_sender", "mail_message_subject",
+                   "mail_unique_id", "mailbox"]
+        readable_output = tableToMarkdown('search results', value, headers=headers)
 
         return CommandResults(
             readable_output=readable_output,
@@ -371,7 +369,8 @@ def user_action_result_command(client, args):
     result = client.user_action_result_query(batch_id, start, end, limit)
 
     actions = result.get('actions')
-    readable_output = tableToMarkdown('action result', actions)
+    headers = ["action_id", "status", "action_type", "account_user_email", "action_executed_at", "error_message"]
+    readable_output = tableToMarkdown('action result', actions, headers=headers)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='TrendMicroCAS.UserActionResult',
@@ -389,7 +388,8 @@ def email_action_result_command(client, args):
     result = client.email_action_result_query(batch_id, start, end, limit)
 
     actions = result.get('actions')
-    readable_output = tableToMarkdown('action result', actions)
+    headers = ["action_id", "status", "action_type", "account_user_email", "action_executed_at", "error_message"]
+    readable_output = tableToMarkdown('action result', actions, headers=headers)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='TrendMicroCAS.EmailActionResult',
