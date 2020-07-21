@@ -1,0 +1,16 @@
+{
+    "name": "PiHole",
+    "description": "PiHole",
+    "support": "developer",
+    "currentVersion": "1.0.0",
+    "author": "Harri Ruuttila",
+    "url": "",
+    "email": "harri@ruuttila.com",
+    "created": "2020-07-21T16:45:57Z",
+    "categories": [
+        "IT Services"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
