@@ -159,3 +159,6 @@ ignore=BA101
 
 [file:playbook-Search_Endpoints_By_Hash_-_Generic_4_5.yml]
 ignore=BA101
+
+[file:playbook-QRadar_-_Get_offense_correlations_.yml]
+ignore=BA101
