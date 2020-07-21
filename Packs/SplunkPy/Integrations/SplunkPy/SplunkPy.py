@@ -477,7 +477,7 @@ def fetch_incidents(service):
 
     earliest_fetch_time_fieldname = demisto.params().get("earliest_fetch_time_fieldname", "index_earliest")
     latest_fetch_time_fieldname = demisto.params().get("latest_fetch_time_fieldname", "index_latest")
-
+    demisto.debug('SPLUNK_DEBUG_MSG: earliest_fetch_time_fieldname={}  |  latest_fetch_time_fieldname={}'.format(str(last_run), str(now)))
     kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
                       latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
 
