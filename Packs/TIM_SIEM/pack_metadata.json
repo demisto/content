@@ -1,19 +1,31 @@
 {
-  "name": "TIM - SIEM",
-  "description": "TIM threat intel management package for sending indiactors to SIEM.",
-  "support": "xsoar",
-  "currentVersion": "1.0.0",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
-  "created": "2020-05-13T14:21:01Z",
-  "categories": [
-    "Data Enrichment & Threat Intelligence"
-  ],
-  "tags": [
-    "TIM",
-    "SIEM"
-  ],
-  "useCases": [],
-  "keywords": []
+    "name": "TIM - SIEM Integration",
+    "description": "TIM threat intel management package for sending indiactors to SIEM.",
+    "support": "xsoar",
+    "currentVersion": "1.0.2",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-05-13T14:21:01Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "TIM",
+        "SIEM"
+    ],
+    "useCases": [
+        "Threat Intelligence Management"
+    ],
+    "keywords": [],
+    "dependencies": {
+        "QRadar": {
+            "mandatory": false,
+            "display_name": "IBM QRadar"
+        },
+        "ArcSightESM": {
+            "mandatory": false,
+            "display_name": "ArcSight ESM"
+        }
+    }
 }

@@ -22,13 +22,9 @@
 	"content": true,
 	"group": 0,
 	"hidden": false,
-	"associatedTypes": [
-		"GDPR Data Breach",
-		"Impossible Traveler",
-		"Port Scan"
-	],
+	"associatedTypes": [],
 	"systemAssociatedTypes": null,
-	"associatedToAll": false,
+	"associatedToAll": true,
 	"unmapped": false,
 	"unsearchable": false,
 	"caseInsensitive": true,

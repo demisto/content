@@ -1,6 +1,5 @@
 id: Calculate Severity - Generic v2
 version: -1
-fromversion: 4.5.0
 name: Calculate Severity - Generic v2
 description: |-
   Calculate and assign the incident severity based on the highest returned severity level from the following calculations:
@@ -13,15 +12,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3eded69b-617e-4212-86b7-2537474285f3
+    taskid: d3a3d290-90e0-4101-8f6c-aaa23bcc3e1c
     type: start
     task:
-      id: 3eded69b-617e-4212-86b7-2537474285f3
+      id: d3a3d290-90e0-4101-8f6c-aaa23bcc3e1c
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -39,12 +38,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: 016add21-2f55-4108-8a61-18fc346d5bfd
+    taskid: cf430274-2565-4433-8dfe-a25a621b0a7c
     type: regular
     task:
-      id: 016add21-2f55-4108-8a61-18fc346d5bfd
+      id: cf430274-2565-4433-8dfe-a25a621b0a7c
       version: -1
       name: Set incident severity to "Low"
       description: Sets the incident severity to "Low".
@@ -218,12 +219,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: 7c197cbc-c107-49e4-8744-4907a39ee6c5
+    taskid: 4def42ba-2984-40f3-83c0-ec484edc3b97
     type: regular
     task:
-      id: 7c197cbc-c107-49e4-8744-4907a39ee6c5
+      id: 4def42ba-2984-40f3-83c0-ec484edc3b97
       version: -1
       name: Set incident severity to "Medium"
       description: Sets the incident severity to "Medium".
@@ -399,12 +402,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: 9bca9c1e-ea09-4015-8e64-f40b4c3e2fa2
+    taskid: 132c16ae-fb69-4752-8f79-77923b14ca8c
     type: regular
     task:
-      id: 9bca9c1e-ea09-4015-8e64-f40b4c3e2fa2
+      id: 132c16ae-fb69-4752-8f79-77923b14ca8c
       version: -1
       name: Set incident severity to "High"
       description: Sets the incident severity to "High".
@@ -576,18 +581,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    taskid: 483350d5-ab17-44cd-87b3-0e2360ce3577
+    taskid: 8ee3e05c-0da8-405d-8bb8-a2d7bbf7789f
     type: title
     task:
-      id: 483350d5-ab17-44cd-87b3-0e2360ce3577
+      id: 8ee3e05c-0da8-405d-8bb8-a2d7bbf7789f
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -599,12 +606,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: 8a3a57a3-6b38-44e5-8d33-3b4dfc0965ab
+    taskid: c7b36df3-1ae7-4b18-819f-9b85d96c4858
     type: regular
     task:
-      id: 8a3a57a3-6b38-44e5-8d33-3b4dfc0965ab
+      id: c7b36df3-1ae7-4b18-819f-9b85d96c4858
       version: -1
       name: Set incident severity to "Critical"
       description: Sets the incident severity to "Critical".
@@ -773,12 +782,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "15":
     id: "15"
-    taskid: f0d6dc7b-0638-4a10-82eb-8e81360a0062
+    taskid: bbfdfe72-13f4-48a2-8cbb-79fd7952704b
     type: condition
     task:
-      id: f0d6dc7b-0638-4a10-82eb-8e81360a0062
+      id: bbfdfe72-13f4-48a2-8cbb-79fd7952704b
       version: -1
       name: Determine incident severity
       description: Determines the severity level based on the highest result of all
@@ -989,12 +1000,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
-    taskid: 69f21366-2cbf-4803-8090-ec97bc904a2f
+    taskid: 740266f8-5732-4285-81a1-d19dbea15988
     type: regular
     task:
-      id: 69f21366-2cbf-4803-8090-ec97bc904a2f
+      id: 740266f8-5732-4285-81a1-d19dbea15988
       version: -1
       name: Get current incident severity
       description: Sets the current severity of the incident in the context.
@@ -1026,18 +1039,19 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "18":
     id: "18"
-    taskid: 774bb421-1d10-4c1e-8228-8e1d33544fd2
+    taskid: 29bad58f-8797-49ff-8681-68363fc8e9a5
     type: playbook
     task:
-      id: 774bb421-1d10-4c1e-8228-8e1d33544fd2
+      id: 29bad58f-8797-49ff-8681-68363fc8e9a5
       version: -1
       name: Calculate Severity - Critical Assets v2
-      description: "Determines if a critical assest is associated with the invesigation.
-        The playbook returns a severity level of \"Critical\" if a critical asset
-        is associated with the investigation.\n\nThis playbook verifies if a user
-        account or an endpoint is part of a critical list or a critical AD group. "
+      description: |-
+        Determines if a critical assest is associated with the invesigation. The playbook returns a severity level of "Critical" if at least one critical asset is associated with the investigation.
+        Critical assets refer to: users, user groups, endpoints and endpoint groups.
       playbookName: Calculate Severity - Critical Assets v2
       type: playbook
       iscommand: false
@@ -1076,6 +1090,7 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -1086,14 +1101,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "19":
     id: "19"
-    taskid: d1938384-3c5b-4620-88a2-f559f1e720f4
+    taskid: b20ff842-f44e-4314-8d7a-ce51e1d69c16
     type: playbook
     task:
-      id: d1938384-3c5b-4620-88a2-f559f1e720f4
+      id: b20ff842-f44e-4314-8d7a-ce51e1d69c16
       version: -1
-      name: Calculate Severity -  DBotScore v2
+      name: Calculate Severity By Highest DBotScore
       description: Calculates the incident severity level according to the highest
         indicator DBotScore.
       playbookName: Calculate Severity By Highest DBotScore
@@ -1112,6 +1129,7 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -1122,16 +1140,18 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "24":
     id: "24"
-    taskid: f5cdef97-77e2-438b-898e-a4f0a22e343b
+    taskid: 1a13e3e0-18fb-4c0f-8866-9d56b0df1017
     type: playbook
     task:
-      id: f5cdef97-77e2-438b-898e-a4f0a22e343b
+      id: 1a13e3e0-18fb-4c0f-8866-9d56b0df1017
       version: -1
-      name: Calculate Severity - Email Authenticity
-      description: Calculates a severity score according to the verdict coming from
-        the CheckEmailAuthenticity script.
+      name: Calculate Severity By Email Authenticity
+      description: Calculates a severity according to the verdict coming from the
+        CheckEmailAuthenticity script.
       playbookName: Calculate Severity By Email Authenticity
       type: playbook
       iscommand: false
@@ -1148,6 +1168,7 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -1158,12 +1179,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "25":
     id: "25"
-    taskid: 429d77e2-31e3-4796-8b53-655951abeedf
+    taskid: e042ddb9-d13d-492a-8ac4-95edfbf9a927
     type: regular
     task:
-      id: 429d77e2-31e3-4796-8b53-655951abeedf
+      id: e042ddb9-d13d-492a-8ac4-95edfbf9a927
       version: -1
       name: Set incident severity level to "Unknown"
       description: Sets the incident severity to "Unknown".
@@ -1332,6 +1355,9 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -1357,21 +1383,25 @@ inputs:
       root: DBotScore
   required: false
   description: 'Array of all indicators associated with the incident. '
+  playbookInputQuery:
 - key: CriticalUsers
   value:
     simple: admin,administrator
   required: false
   description: CSV of usernames of critical users.
+  playbookInputQuery:
 - key: CriticalEndpoints
   value:
     simple: admin
   required: false
   description: CSV of hostnames of critical endpoints.
+  playbookInputQuery:
 - key: CriticalGroups
   value:
     simple: admins,administrators
   required: false
   description: CSV of DN names of critical AD groups.
+  playbookInputQuery:
 - key: Account
   value:
     complex:
@@ -1380,6 +1410,7 @@ inputs:
       - operator: uniq
   required: false
   description: User accounts to check against the critical lists.
+  playbookInputQuery:
 - key: Endpoint
   value:
     complex:
@@ -1388,6 +1419,7 @@ inputs:
       - operator: uniq
   required: false
   description: Endpoints to check against the CriticalEndpoints list.
+  playbookInputQuery:
 - key: EmailAuthenticityCheck
   value:
     complex:
@@ -1398,6 +1430,7 @@ inputs:
   required: false
   description: 'Indicates the email authenticity resulting from the EmailAuthenticityCheck
     script. Possible values are: Pass, Fail, Suspicious, and Undetermined.'
+  playbookInputQuery:
 outputs:
 - contextPath: CriticalAssets
   description: All critical assets involved in the incident.
@@ -1414,5 +1447,6 @@ outputs:
 - contextPath: CriticalAssets.CriticalUserGroups
   description: Critical user-groups involved in the incident.
   type: unknown
+fromversion: 4.5.0
 tests:
-  - Calculate Severity - Generic v2 - Test
+- Calculate Severity - Generic v2 - Test
