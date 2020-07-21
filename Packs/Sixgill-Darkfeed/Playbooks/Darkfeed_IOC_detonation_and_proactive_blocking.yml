@@ -895,8 +895,8 @@ tasks:
     task:
       id: ee84f104-02fd-4019-84df-da964ea89117
       version: -1
-      name: Darkfeed Threat hunting/research
-      playbookName: Darkfeed Threat hunting/research
+      name: Darkfeed Threat hunting-research
+      playbookName: Darkfeed Threat hunting-research
       type: playbook
       iscommand: false
       brand: ""
@@ -1146,7 +1146,8 @@ inputs:
   playbookInputQuery:
 outputs: []
 quiet: true
-description: Download malicious files from a Darkfeed IOC, detonate them in automated sandboxes, and extract and block any additional indicators and files.
+description: Download malicious files from a Darkfeed IOC, detonate them in automated
+  sandboxes, and extract and block any additional indicators and files.
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

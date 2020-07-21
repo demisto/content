@@ -1839,7 +1839,9 @@ inputs:
   description: Domain from Darkfeed
   playbookInputQuery:
 outputs: []
-description: Automatically discover and enrich indicators with the same actor and source as the triggering IOC. Search for and isolate any compromised endpoints and proactively block IOCs from entering your network.
+description: Automatically discover and enrich indicators with the same actor and
+  source as the triggering IOC. Search for and isolate any compromised endpoints and
+  proactively block IOCs from entering your network.
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
