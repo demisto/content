@@ -1,371 +1,361 @@
 {
-	"TypeName": "Domain",
-	"kind": "indicatorsQuickView",
-	"layout": {
-		"TypeName": "",
-		"commitMessage": "",
-		"fromVersion": "5.5.0",
-		"id": "f437ab4a-d045-4c43-896b-b703c41252ca",
-		"itemVersion": "",
-		"kind": "indicatorsQuickView",
-		"locked": false,
-		"modified": "2020-07-07T09:34:40.516310377Z",
-		"name": "",
-		"packID": "",
-		"prevKind": "indicatorsQuickView",
-		"prevTypeId": "f437ab4a-d045-4c43-896b-b703c41252ca",
-		"shouldCommit": false,
-		"sortValues": null,
-		"system": false,
-		"tabs": [
-			{
-				"id": "indicator-quick-view-info",
-				"name": "Info",
-				"sections": [
-					{
-						"h": 1,
-						"hideName": true,
-						"i": "indicator-quick-view-info-expirationStatus",
-						"moved": false,
-						"name": "Expiration Status",
-						"static": false,
-						"type": "expirationStatus",
-						"w": 1,
-						"x": 0,
-						"y": 0
-					},
-					{
-						"h": 2,
-						"i": "indicator-quick-view-info-reputationSources",
-						"moved": false,
-						"name": "Reputation",
-						"static": false,
-						"type": "reputationSources",
-						"w": 1,
-						"x": 0,
-						"y": 2
-					},
-					{
-						"displayType": "ROW",
-						"h": 1,
-						"hideItemTitleOnlyOne": true,
-						"i": "indicator-quick-view-info-tags-section",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "tags",
-								"height": 53,
-								"id": "indicator-quick-view-info-tags-field",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "trafficlightprotocol",
-								"height": 22,
-								"id": "91449140-c02e-11ea-8c96-378efcdc37ad",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Tags and TLP",
-						"static": false,
-						"w": 1,
-						"x": 0,
-						"y": 1
-					},
-					{
-						"h": 2,
-						"i": "indicator-quick-view-info-relatedIncidents",
-						"moved": false,
-						"name": "Related Incidents",
-						"static": false,
-						"type": "relatedIncidents",
-						"w": 1,
-						"x": 0,
-						"y": 11
-					},
-					{
-						"h": 3,
-						"i": "indicator-quick-view-info-comments",
-						"moved": false,
-						"name": "Comments",
-						"static": false,
-						"type": "comments",
-						"w": 1,
-						"x": 0,
-						"y": 13
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
-						"i": "indicator-quick-view-info-0a79c120-ba21-11ea-96e1-0b84fdedf11e",
-						"items": [
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "indicatortype",
-								"height": 22,
-								"id": "f466ed80-c034-11ea-b496-ed7c34e038e0",
-								"index": 0,
-								"listId": "indicator-quick-view-info-0a79c120-ba21-11ea-96e1-0b84fdedf11e",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "source",
-								"height": 22,
-								"id": "28b83770-ba21-11ea-96e1-0b84fdedf11e",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "internal",
-								"height": 22,
-								"id": "35cff650-ba21-11ea-96e1-0b84fdedf11e",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dns",
-								"height": 22,
-								"id": "2de0dd60-ba21-11ea-96e1-0b84fdedf11e",
-								"index": 3,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "malwarefamily",
-								"height": 22,
-								"id": "30d78820-ba21-11ea-96e1-0b84fdedf11e",
-								"index": 4,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Domain details",
-						"static": false,
-						"w": 1,
-						"x": 0,
-						"y": 4
-					},
-					{
-						"displayType": "ROW",
-						"h": 5,
-						"hideName": false,
-						"i": "indicator-quick-view-info-a810bfc0-c02e-11ea-8c96-378efcdc37ad",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "creationdate",
-								"height": 22,
-								"id": "753fa550-c030-11ea-a61c-5571f8e7e32f",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "expirationdate",
-								"height": 22,
-								"id": "967625f0-c030-11ea-a61c-5571f8e7e32f",
-								"index": 1,
-								"listId": "indicator-quick-view-info-a810bfc0-c02e-11ea-8c96-378efcdc37ad",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "domainstatus",
-								"height": 22,
-								"id": "9ed20a70-c030-11ea-a61c-5571f8e7e32f",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "adminname",
-								"height": 22,
-								"id": "7da5ea10-c030-11ea-a61c-5571f8e7e32f",
-								"index": 3,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "admincountry",
-								"height": 22,
-								"id": "835d6280-c030-11ea-a61c-5571f8e7e32f",
-								"index": 4,
-								"listId": "indicator-quick-view-info-a810bfc0-c02e-11ea-8c96-378efcdc37ad",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "adminemail",
-								"height": 22,
-								"id": "84f1be20-c030-11ea-a61c-5571f8e7e32f",
-								"index": 5,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "adminphone",
-								"height": 22,
-								"id": "8601f5a0-c030-11ea-a61c-5571f8e7e32f",
-								"index": 6,
-								"listId": "indicator-quick-view-info-a810bfc0-c02e-11ea-8c96-378efcdc37ad",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "nameservers",
-								"height": 22,
-								"id": "a4a56f50-c030-11ea-a61c-5571f8e7e32f",
-								"index": 7,
-								"listId": "indicator-quick-view-info-a810bfc0-c02e-11ea-8c96-378efcdc37ad",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "organization",
-								"height": 22,
-								"id": "ac70d3a0-c030-11ea-a61c-5571f8e7e32f",
-								"index": 8,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "registrantname",
-								"height": 22,
-								"id": "ba6d9b50-c030-11ea-a61c-5571f8e7e32f",
-								"index": 9,
-								"listId": "indicator-quick-view-info-a810bfc0-c02e-11ea-8c96-378efcdc37ad",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "registrantcountry",
-								"height": 22,
-								"id": "b7932b20-c030-11ea-a61c-5571f8e7e32f",
-								"index": 10,
-								"listId": "indicator-quick-view-info-a810bfc0-c02e-11ea-8c96-378efcdc37ad",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "registrantemail",
-								"height": 22,
-								"id": "b8fa0e20-c030-11ea-a61c-5571f8e7e32f",
-								"index": 11,
-								"listId": "indicator-quick-view-info-a810bfc0-c02e-11ea-8c96-378efcdc37ad",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "registrantphone",
-								"height": 22,
-								"id": "bca2cad0-c030-11ea-a61c-5571f8e7e32f",
-								"index": 12,
-								"listId": "indicator-quick-view-info-a810bfc0-c02e-11ea-8c96-378efcdc37ad",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "registrarname",
-								"height": 22,
-								"id": "c31b9770-c030-11ea-a61c-5571f8e7e32f",
-								"index": 13,
-								"listId": "indicator-quick-view-info-a810bfc0-c02e-11ea-8c96-378efcdc37ad",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "registrarabuseemail",
-								"height": 22,
-								"id": "be4e09d0-c030-11ea-a61c-5571f8e7e32f",
-								"index": 14,
-								"listId": "indicator-quick-view-info-a810bfc0-c02e-11ea-8c96-378efcdc37ad",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "registrarabusephone",
-								"height": 22,
-								"id": "c212da00-c030-11ea-a61c-5571f8e7e32f",
-								"index": 15,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "subdomains",
-								"height": 22,
-								"id": "dd088df0-c030-11ea-b496-ed7c34e038e0",
-								"index": 16,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Whois",
-						"static": false,
-						"w": 1,
-						"x": 0,
-						"y": 6
-					}
-				],
-				"type": "custom"
-			}
-		],
-		"toVersion": "5.9.9",
-		"typeId": "f437ab4a-d045-4c43-896b-b703c41252ca",
-		"vcShouldIgnore": false,
-		"vcShouldKeepItemLegacyProdMachine": false,
-		"version": 7
-	},
-	"typeId": "f437ab4a-d045-4c43-896b-b703c41252ca",
-	"version": -1
+    "TypeName": "Domain",
+    "kind": "indicatorsQuickView",
+    "layout": {
+        "TypeName": "",
+        "id": "f437ab4a-d045-4c43-896b-b703c41252ca",
+        "kind": "indicatorsQuickView",
+        "modified": "2020-07-07T09:34:40.516310377Z",
+        "name": "",
+        "system": false,
+        "tabs": [
+            {
+                "id": "indicator-quick-view-info",
+                "name": "Info",
+                "sections": [
+                    {
+                        "h": 1,
+                        "hideName": true,
+                        "i": "indicator-quick-view-info-expirationStatus",
+                        "moved": false,
+                        "name": "Expiration Status",
+                        "static": false,
+                        "type": "expirationStatus",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "indicator-quick-view-info-reputationSources",
+                        "moved": false,
+                        "name": "Reputation",
+                        "static": false,
+                        "type": "reputationSources",
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideItemTitleOnlyOne": true,
+                        "i": "indicator-quick-view-info-tags-section",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 53,
+                                "id": "indicator-quick-view-info-tags-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "trafficlightprotocol",
+                                "height": 22,
+                                "id": "91449140-c02e-11ea-8c96-378efcdc37ad",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Tags and TLP",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 1
+                    },
+                    {
+                        "h": 2,
+                        "i": "indicator-quick-view-info-relatedIncidents",
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 1,
+                        "x": 0,
+                        "y": 11
+                    },
+                    {
+                        "h": 3,
+                        "i": "indicator-quick-view-info-comments",
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "type": "comments",
+                        "w": 1,
+                        "x": 0,
+                        "y": 13
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "indicator-quick-view-info-0a79c120-ba21-11ea-96e1-0b84fdedf11e",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "indicatortype",
+                                "height": 22,
+                                "id": "f466ed80-c034-11ea-b496-ed7c34e038e0",
+                                "index": 0,
+                                "listId": "indicator-quick-view-info-0a79c120-ba21-11ea-96e1-0b84fdedf11e",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "source",
+                                "height": 22,
+                                "id": "28b83770-ba21-11ea-96e1-0b84fdedf11e",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "internal",
+                                "height": 22,
+                                "id": "35cff650-ba21-11ea-96e1-0b84fdedf11e",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dns",
+                                "height": 22,
+                                "id": "2de0dd60-ba21-11ea-96e1-0b84fdedf11e",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "malwarefamily",
+                                "height": 22,
+                                "id": "30d78820-ba21-11ea-96e1-0b84fdedf11e",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Domain details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 5,
+                        "hideName": false,
+                        "i": "indicator-quick-view-info-a810bfc0-c02e-11ea-8c96-378efcdc37ad",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "creationdate",
+                                "height": 22,
+                                "id": "753fa550-c030-11ea-a61c-5571f8e7e32f",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "expirationdate",
+                                "height": 22,
+                                "id": "967625f0-c030-11ea-a61c-5571f8e7e32f",
+                                "index": 1,
+                                "listId": "indicator-quick-view-info-a810bfc0-c02e-11ea-8c96-378efcdc37ad",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "domainstatus",
+                                "height": 22,
+                                "id": "9ed20a70-c030-11ea-a61c-5571f8e7e32f",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "adminname",
+                                "height": 22,
+                                "id": "7da5ea10-c030-11ea-a61c-5571f8e7e32f",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "admincountry",
+                                "height": 22,
+                                "id": "835d6280-c030-11ea-a61c-5571f8e7e32f",
+                                "index": 4,
+                                "listId": "indicator-quick-view-info-a810bfc0-c02e-11ea-8c96-378efcdc37ad",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "adminemail",
+                                "height": 22,
+                                "id": "84f1be20-c030-11ea-a61c-5571f8e7e32f",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "adminphone",
+                                "height": 22,
+                                "id": "8601f5a0-c030-11ea-a61c-5571f8e7e32f",
+                                "index": 6,
+                                "listId": "indicator-quick-view-info-a810bfc0-c02e-11ea-8c96-378efcdc37ad",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "nameservers",
+                                "height": 22,
+                                "id": "a4a56f50-c030-11ea-a61c-5571f8e7e32f",
+                                "index": 7,
+                                "listId": "indicator-quick-view-info-a810bfc0-c02e-11ea-8c96-378efcdc37ad",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "organization",
+                                "height": 22,
+                                "id": "ac70d3a0-c030-11ea-a61c-5571f8e7e32f",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "registrantname",
+                                "height": 22,
+                                "id": "ba6d9b50-c030-11ea-a61c-5571f8e7e32f",
+                                "index": 9,
+                                "listId": "indicator-quick-view-info-a810bfc0-c02e-11ea-8c96-378efcdc37ad",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "registrantcountry",
+                                "height": 22,
+                                "id": "b7932b20-c030-11ea-a61c-5571f8e7e32f",
+                                "index": 10,
+                                "listId": "indicator-quick-view-info-a810bfc0-c02e-11ea-8c96-378efcdc37ad",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "registrantemail",
+                                "height": 22,
+                                "id": "b8fa0e20-c030-11ea-a61c-5571f8e7e32f",
+                                "index": 11,
+                                "listId": "indicator-quick-view-info-a810bfc0-c02e-11ea-8c96-378efcdc37ad",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "registrantphone",
+                                "height": 22,
+                                "id": "bca2cad0-c030-11ea-a61c-5571f8e7e32f",
+                                "index": 12,
+                                "listId": "indicator-quick-view-info-a810bfc0-c02e-11ea-8c96-378efcdc37ad",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "registrarname",
+                                "height": 22,
+                                "id": "c31b9770-c030-11ea-a61c-5571f8e7e32f",
+                                "index": 13,
+                                "listId": "indicator-quick-view-info-a810bfc0-c02e-11ea-8c96-378efcdc37ad",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "registrarabuseemail",
+                                "height": 22,
+                                "id": "be4e09d0-c030-11ea-a61c-5571f8e7e32f",
+                                "index": 14,
+                                "listId": "indicator-quick-view-info-a810bfc0-c02e-11ea-8c96-378efcdc37ad",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "registrarabusephone",
+                                "height": 22,
+                                "id": "c212da00-c030-11ea-a61c-5571f8e7e32f",
+                                "index": 15,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "subdomains",
+                                "height": 22,
+                                "id": "dd088df0-c030-11ea-b496-ed7c34e038e0",
+                                "index": 16,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Whois",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 6
+                    }
+                ],
+                "type": "custom"
+            }
+        ],
+        "typeId": "f437ab4a-d045-4c43-896b-b703c41252ca",
+        "version": -1
+    },
+    "typeId": "f437ab4a-d045-4c43-896b-b703c41252ca",
+    "version": -1,
+    "fromVersion": "5.5.0",
+    "toVersion": "5.9.9"
 }
