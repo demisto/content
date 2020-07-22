@@ -481,6 +481,31 @@ class Client(BaseClient):
         response = self._http_request("POST", self.suffix, headers=headers, data=json.dumps(request_data))
         return response
 
+    def create_custom_investigation(self,
+                                      investigation_name: str, scan_type: str, time_range_type: str,
+                                      agent_guids: Dict = {}, server_guids: List = [], scan_schedule_guid: str = "",
+                                      scan_schedule_id: str = "", time_range_start: str = "", time_range_end: str = ""):
+
+        payload = self.build_investigation_payload(investigation_name, scan_type, time_range_type, agent_guids,
+                                                   server_guids, scan_schedule_guid, scan_schedule_id, time_range_start,
+                                                   time_range_end)
+
+        payload["registryCriteria"] = self.create_registry_criteria(registry_key, registry_name, match_option,
+                                                                    registry_data)
+
+        request_data = {
+            "Url": "V1/Task/CreateScan",
+            "TaskType": 4,  # For Endpoint Sensor, the value is always 4.
+            "Payload": payload
+        }
+
+        headers = {
+            'Content-Type': 'application/json;charset=utf-8',
+            'Authorization': 'Bearer ' + self.create_jwt_token(http_method='POST', api_path=self.suffix,
+                                                               headers='', request_body=json.dumps(request_data))}
+
+        response = self._http_request("POST", self.suffix, headers=headers, data=json.dumps(request_data))
+        return response
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
@@ -727,12 +752,23 @@ def create_investigation_from_registry(client: Client, args):
     response = client.create_registry_investigation(**assign_params(**args))
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='TrendMicroApex.EndpointSensorSecurityAgent',
+        outputs_prefix='TrendMicroApex.RegistryInvestigation',
         outputs=human_readable_table,
         outputs_key_field='',
         raw_response=response
     )
 
+
+def create_custom_live_investigation(client: Client, args):
+    client.suffix = '/WebApp/OSCE_iES/OsceIes/ApiEntry'
+    response = client.create_custom_investigation(**assign_params(**args))
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='TrendMicroApex.CustomInvestigation',
+        outputs=human_readable_table,
+        outputs_key_field='',
+        raw_response=response
+    )
 
 # def fetch_incidents(client: Client, last_run: Dict[str, int],
 #                     first_fetch_time: Optional[int], log_types: List[str]) -> Tuple[Dict[str, int], List[dict]]:
@@ -865,6 +901,9 @@ def main():
 
         elif command == 'trendmicro-apex-create-live-investigation-from-registry':
             return_results(create_investigation_from_registry(client, demisto.args()))
+
+        elif command == 'trendmicro-apex-create-custom-live-investigation':
+            return_results(create_custom_live_investigation(client, demisto.args()))
 
     except ValueError as e:
         return_error(f'Error from TrendMicro Apex integration: {str(e)}', e)

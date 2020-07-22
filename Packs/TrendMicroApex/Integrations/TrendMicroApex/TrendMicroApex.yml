@@ -780,6 +780,7 @@ script:
     execution: false
     name: trendmicro-apex-create-live-investigation-from-registry
   - deprecated: false
+    description: Creates a new custom live Investigation.
     execution: false
     name: trendmicro-apex-create-custom-live-investigation
   - deprecated: false
