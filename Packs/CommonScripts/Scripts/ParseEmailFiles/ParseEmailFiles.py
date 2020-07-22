@@ -3193,9 +3193,12 @@ def is_valid_header_to_parse(header):
 def create_headers_map(msg_dict_headers):
     headers = []
     headers_map = dict()  # type: dict
+
+    if not msg_dict_headers:
+        return headers, headers_map
+
     header_key = 'initial key'
     header_value = 'initial header'
-
     for header in msg_dict_headers.split('\n'):
         if is_valid_header_to_parse(header):
             if not header[0] == ' ' and not header[0] == '\t':
@@ -3372,13 +3375,13 @@ def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
 
     msg_dict = msg.as_dict(max_depth)
     mail_format_type = get_msg_mail_format(msg_dict)
-    headers, headers_map = create_headers_map(msg_dict['Headers'])
+    headers, headers_map = create_headers_map(msg_dict.get('Headers'))
 
     email_data = {
         'To': msg_dict['To'],
         'CC': msg_dict['CC'],
         'From': msg_dict['From'],
-        'Subject': headers_map['Subject'],
+        'Subject': headers_map.get('Subject'),
         'HTML': msg_dict['HTML'],
         'Text': msg_dict['Text'],
         'Headers': headers,
