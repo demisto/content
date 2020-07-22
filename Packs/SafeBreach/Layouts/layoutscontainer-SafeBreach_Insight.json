@@ -2,7 +2,7 @@
     "id": "SafeBreach Insight",
     "group": "incident",
     "name": "SafeBreach Insight",
-    "description": "SafeBreach custom incident layout with an extended section with a simulation information",
+    "description": "SafeBreach custom incident layout with an extended section with an insight information",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {
