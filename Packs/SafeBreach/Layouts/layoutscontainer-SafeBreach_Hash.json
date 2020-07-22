@@ -2,7 +2,7 @@
     "id": "SafeBreach Hash",
     "group": "indicator",
     "name": "SafeBreach Hash",
-    "description": "",
+    "description": "SafeBreach custom indicator layout with an extended section with a simulated indicator information",
     "version": -1,
     "fromVersion": "6.0.0",
     "indicatorsDetails": {

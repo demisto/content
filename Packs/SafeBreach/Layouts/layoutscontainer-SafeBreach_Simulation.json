@@ -2,7 +2,7 @@
     "id": "SafeBreach Simulation",
     "group": "incident",
     "name": "SafeBreach Simulation",
-    "description": "",
+    "description": "SafeBreach custom incident layout with an extended section with a simulation information",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {
