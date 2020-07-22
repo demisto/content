@@ -1,17 +1,29 @@
 {
-	"TypeName": "domainRepUnified",
+	"TypeName": "Domain",
 	"kind": "indicatorsDetails",
 	"layout": {
 		"TypeName": "",
-		"id": "domainRepUnified",
+		"commitMessage": "",
+		"fromVersion": "5.5.0",
+		"id": "f437ab4a-d045-4c43-896b-b703c41252ca",
+		"itemVersion": "1.0.1",
 		"kind": "indicatorsDetails",
-		"modified": "2020-07-02T10:03:32.758057+03:00",
+		"locked": false,
+		"modified": "2020-07-13T10:40:53.152289238Z",
 		"name": "",
+		"packID": "",
+		"packPropagationLabels": [
+			"all"
+		],
+		"prevKind": "indicatorsDetails",
+		"prevTypeId": "f437ab4a-d045-4c43-896b-b703c41252ca",
+		"shouldCommit": false,
+		"sortValues": null,
 		"system": false,
 		"tabs": [
 			{
 				"id": "default-main",
-				"name": "Info",
+				"name": "Summary",
 				"sections": [
 					{
 						"h": 2,
@@ -65,11 +77,11 @@
 						"type": "relatedIncidents",
 						"w": 2,
 						"x": 0,
-						"y": 3
+						"y": 9
 					},
 					{
 						"displayType": "ROW",
-						"h": 3,
+						"h": 2,
 						"i": "default-main-indicatorTimeline",
 						"items": [
 							{
@@ -94,8 +106,8 @@
 						"static": false,
 						"type": "indicatorTimeline",
 						"w": 1,
-						"x": 2,
-						"y": 2
+						"x": 1,
+						"y": 7
 					},
 					{
 						"displayType": "ROW",
@@ -105,7 +117,7 @@
 							{
 								"endCol": 2,
 								"fieldId": "indicatortype",
-								"height": 24,
+								"height": 22,
 								"id": "indicator-type",
 								"index": 0,
 								"sectionItemType": "field",
@@ -114,7 +126,7 @@
 							{
 								"endCol": 2,
 								"fieldId": "source",
-								"height": 24,
+								"height": 22,
 								"id": "indicator-source",
 								"index": 1,
 								"sectionItemType": "field",
@@ -122,18 +134,18 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "comment",
-								"height": 48,
-								"id": "indicator-comment",
+								"fieldId": "dns",
+								"height": 22,
+								"id": "08c614d0-ac6e-11e9-8443-17259235cee7",
 								"index": 2,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
-								"fieldId": "dns",
-								"height": 24,
-								"id": "08c614d0-ac6e-11e9-8443-17259235cee7",
+								"fieldId": "malwarefamily",
+								"height": 22,
+								"id": "2c4d6340-ac6e-11e9-8443-17259235cee7",
 								"index": 3,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -141,7 +153,7 @@
 							{
 								"endCol": 2,
 								"fieldId": "internal",
-								"height": 24,
+								"height": 22,
 								"id": "262cc8c0-ac6e-11e9-8443-17259235cee7",
 								"index": 4,
 								"sectionItemType": "field",
@@ -149,10 +161,10 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "malwarefamily",
-								"height": 24,
-								"id": "2c4d6340-ac6e-11e9-8443-17259235cee7",
-								"index": 6,
+								"fieldId": "comment",
+								"height": 22,
+								"id": "indicator-comment",
+								"index": 5,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
@@ -166,7 +178,7 @@
 					},
 					{
 						"displayType": "ROW",
-						"h": 2,
+						"h": 6,
 						"hideName": false,
 						"i": "default-main-3b60c080-ac6d-11e9-8443-17259235cee7",
 						"items": [
@@ -182,20 +194,35 @@
 								"startCol": 0
 							},
 							{
-								"endCol": 2,
-								"fieldId": "adminphone",
-								"height": 22,
-								"id": "4f4addb0-ac6d-11e9-8443-17259235cee7",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
+								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "expirationdate",
 								"height": 22,
 								"id": "1d42d510-ac6e-11e9-8443-17259235cee7",
+								"index": 1,
+								"listId": "default-main-3b60c080-ac6d-11e9-8443-17259235cee7",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "domainstatus",
+								"height": 22,
+								"id": "a55eb190-ac6d-11e9-8443-17259235cee7",
 								"index": 2,
+								"listId": "default-main-3b60c080-ac6d-11e9-8443-17259235cee7",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "organization",
+								"height": 22,
+								"id": "3d11d670-ac6e-11e9-8443-17259235cee7",
+								"index": 3,
+								"listId": "default-main-3b60c080-ac6d-11e9-8443-17259235cee7",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -205,8 +232,19 @@
 								"fieldId": "adminname",
 								"height": 22,
 								"id": "4cfef1e0-ac6d-11e9-8443-17259235cee7",
-								"index": 3,
-								"listId": "3b60c080-ac6d-11e9-8443-17259235cee7",
+								"index": 4,
+								"listId": "default-main-3b60c080-ac6d-11e9-8443-17259235cee7",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "admincountry",
+								"height": 22,
+								"id": "45460420-ac6d-11e9-8443-17259235cee7",
+								"index": 5,
+								"listId": "default-main-3b60c080-ac6d-11e9-8443-17259235cee7",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -216,25 +254,16 @@
 								"fieldId": "adminemail",
 								"height": 22,
 								"id": "4a7cb3d0-ac6d-11e9-8443-17259235cee7",
-								"index": 4,
-								"listId": "3b60c080-ac6d-11e9-8443-17259235cee7",
+								"index": 6,
+								"listId": "default-main-3b60c080-ac6d-11e9-8443-17259235cee7",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
-								"fieldId": "admincountry",
+								"fieldId": "adminphone",
 								"height": 22,
-								"id": "45460420-ac6d-11e9-8443-17259235cee7",
-								"index": 5,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "domainstatus",
-								"height": 22,
-								"id": "a55eb190-ac6d-11e9-8443-17259235cee7",
+								"id": "4f4addb0-ac6d-11e9-8443-17259235cee7",
 								"index": 7,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -250,19 +279,10 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "organization",
-								"height": 22,
-								"id": "3d11d670-ac6e-11e9-8443-17259235cee7",
-								"index": 9,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
 								"fieldId": "registrantname",
 								"height": 22,
 								"id": "6735a620-ac6e-11e9-8443-17259235cee7",
-								"index": 10,
+								"index": 9,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -271,7 +291,7 @@
 								"fieldId": "registrantcountry",
 								"height": 22,
 								"id": "421456c0-ac6e-11e9-8443-17259235cee7",
-								"index": 11,
+								"index": 10,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -280,7 +300,7 @@
 								"fieldId": "registrantemail",
 								"height": 22,
 								"id": "43fd13f0-ac6e-11e9-8443-17259235cee7",
-								"index": 12,
+								"index": 11,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -289,7 +309,7 @@
 								"fieldId": "registrantphone",
 								"height": 22,
 								"id": "46140d10-ac6e-11e9-8443-17259235cee7",
-								"index": 13,
+								"index": 12,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -298,7 +318,7 @@
 								"fieldId": "registrarname",
 								"height": 22,
 								"id": "541fc8e0-ac6e-11e9-8443-17259235cee7",
-								"index": 14,
+								"index": 13,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -307,7 +327,7 @@
 								"fieldId": "registrarabuseemail",
 								"height": 22,
 								"id": "4d52e8d0-ac6e-11e9-8443-17259235cee7",
-								"index": 15,
+								"index": 14,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -316,7 +336,7 @@
 								"fieldId": "registrarabusephone",
 								"height": 22,
 								"id": "529cd260-ac6e-11e9-8443-17259235cee7",
-								"index": 16,
+								"index": 15,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -325,16 +345,7 @@
 								"fieldId": "subdomains",
 								"height": 22,
 								"id": "59648250-ac6e-11e9-8443-17259235cee7",
-								"index": 17,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "aggregatedreliability",
-								"height": 24,
-								"id": "b49a3ba0-6f8d-11ea-aeac-6dbd1bcce63e",
-								"index": 18,
+								"index": 16,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
@@ -347,13 +358,13 @@
 						"static": false,
 						"w": 1,
 						"x": 0,
-						"y": 7
+						"y": 3
 					},
 					{
 						"h": 1,
 						"hideName": true,
 						"i": "default-main-7cd6ae20-3d55-11ea-9dff-c57e8949d2f9",
-						"items": [],
+						"items": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -369,7 +380,7 @@
 						"h": 1,
 						"hideName": true,
 						"i": "default-main-7e194040-3d55-11ea-9dff-c57e8949d2f9",
-						"items": [],
+						"items": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -382,9 +393,9 @@
 						"y": 0
 					},
 					{
-						"h": 4,
+						"h": 5,
 						"i": "default-main-92b129a0-3d55-11ea-9dff-c57e8949d2f9",
-						"items": [],
+						"items": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -394,7 +405,7 @@
 						"type": "comments",
 						"w": 1,
 						"x": 2,
-						"y": 5
+						"y": 4
 					},
 					{
 						"columns": [
@@ -448,9 +459,9 @@
 								"width": 200
 							}
 						],
-						"h": 2,
+						"h": 3,
 						"i": "default-main-9d6507e0-3d55-11ea-9dff-c57e8949d2f9",
-						"items": [],
+						"items": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -458,12 +469,12 @@
 						"name": "Sources",
 						"static": false,
 						"type": "sources",
-						"w": 2,
-						"x": 0,
-						"y": 5
+						"w": 1,
+						"x": 1,
+						"y": 4
 					},
 					{
-						"displayType": "ROW",
+						"displayType": "CARD",
 						"h": 2,
 						"hideItemTitleOnlyOne": true,
 						"hideName": false,
@@ -472,63 +483,202 @@
 							{
 								"endCol": 2,
 								"fieldId": "tags",
-								"height": 24,
+								"height": 53,
 								"id": "b5f10770-4e6f-11ea-8bf6-67db400d7da5",
 								"index": 0,
 								"sectionItemType": "field",
 								"startCol": 0
+							},
+							{
+								"args": {
+									"field": {
+										"simple": "Tags"
+									}
+								},
+								"endCol": 1,
+								"fieldId": "",
+								"height": 53,
+								"id": "19860320-a9b1-11ea-8355-9d16c102e609",
+								"index": 1,
+								"name": "Add tags",
+								"scriptId": "Builtin|||appendIndicatorField",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "trafficlightprotocol",
+								"height": 22,
+								"id": "8ba247b0-b6dc-11ea-b517-556a78361c2e",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"field": {
+										"simple": "Tags"
+									}
+								},
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "",
+								"height": 53,
+								"id": "24f2f830-a9b1-11ea-8355-9d16c102e609",
+								"index": 1,
+								"listId": "default-main-ab202b50-4e6f-11ea-8bf6-67db400d7da5",
+								"name": "Remove tags",
+								"scriptId": "Builtin|||removeIndicatorField",
+								"sectionItemType": "button",
+								"startCol": 1
 							}
 						],
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
 						"moved": false,
-						"name": "Tags",
+						"name": "Tags and Sharing",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 1
+					},
+					{
+						"h": 2,
+						"i": "default-main-07ce5650-a9b1-11ea-8355-9d16c102e609",
+						"items": null,
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Community Score",
+						"query": "PositiveDetectionsVSDetectionEngines",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamicIndicator",
+						"w": 1,
+						"x": 2,
+						"y": 9
+					},
+					{
+						"displayType": "ROW",
+						"h": 1,
+						"hideName": false,
+						"i": "default-main-47ba2af0-a9b1-11ea-8355-9d16c102e609",
+						"items": [
+							{
+								"args": {},
+								"endCol": 1,
+								"fieldId": "",
+								"height": 44,
+								"id": "531370f0-a9b1-11ea-8355-9d16c102e609",
+								"index": 0,
+								"name": "Enrich indicator",
+								"scriptId": "Builtin|||enrichIndicators",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"endCol": 2,
+								"fieldId": "",
+								"height": 44,
+								"id": "389b4150-bf71-11ea-b085-3f354e53d3e6",
+								"index": 1,
+								"name": "Expire indicator",
+								"scriptId": "Builtin|||expireIndicators",
+								"sectionItemType": "button",
+								"startCol": 1
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Actions",
 						"static": false,
 						"w": 1,
 						"x": 2,
 						"y": 0
 					},
 					{
-						"displayType": "CARD",
-						"h": 2,
-						"i": "default-main-8f374040-6f49-11ea-a717-9facf5f245ed",
-						"items": [],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Custom Details",
-						"static": false,
-						"type": "customDetails",
-						"w": 1,
-						"x": 0,
-						"y": 9
-					},
-					{
-						"displayType": "CARD",
-						"h": 2,
-						"i": "default-main-93588850-6f49-11ea-a717-9facf5f245ed",
+						"description": "Highest Reliability",
+						"displayType": "ROW",
+						"h": 1,
+						"hideItemTitleOnlyOne": true,
+						"hideName": true,
+						"i": "default-main-c7cc1e10-a9b1-11ea-8355-9d16c102e609",
 						"items": [
 							{
 								"endCol": 2,
-								"fieldId": "threatcategory",
-								"height": 24,
-								"id": "1cf1e851-4e74-11ea-8bf6-67db400d7da6",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "threatcategoryconfidence",
-								"height": 24,
-								"id": "1cf1e870-4e74-11ea-8bf6-67db400d7da6",
+								"fieldId": "aggregatedreliability",
+								"height": 22,
+								"id": "ecf00580-a9b1-11ea-8355-9d16c102e609",
 								"index": 0,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
 						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Highest Reliability",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 3
+					},
+					{
+						"displayType": "CARD",
+						"h": 1,
+						"hideName": false,
+						"i": "default-main-9f554f50-b6dc-11ea-b517-556a78361c2e",
+						"items": [
+							{
+								"endCol": 1,
+								"fieldId": "assigneduser",
+								"height": 53,
+								"id": "ab2aca30-b6dc-11ea-b517-556a78361c2e",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "assignedrole",
+								"height": 53,
+								"id": "afe60850-b6dc-11ea-b517-556a78361c2e",
+								"index": 1,
+								"listId": "default-main-9f554f50-b6dc-11ea-b517-556a78361c2e",
+								"sectionItemType": "field",
+								"startCol": 1
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Assignee",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 3
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"hidden": false,
+				"id": "xvk17miids",
+				"name": "Additional Details",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 9,
+						"i": "xvk17miids-b038b490-bc60-11ea-a5c9-f34e96a12550",
+						"items": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -537,44 +687,35 @@
 						"static": false,
 						"type": "extendedDetails",
 						"w": 2,
-						"x": 1,
-						"y": 9
+						"x": 0,
+						"y": 0
 					},
 					{
 						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
-						"i": "default-main-00755e60-bc32-11ea-9755-ebbaf4d3af4d",
-						"items": [
-							{
-								"endCol": 6,
-								"fieldId": "feedrelatedindicators",
-								"height": 106,
-								"id": "0eb6d030-bc32-11ea-9755-ebbaf4d3af4d",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
+						"h": 9,
+						"i": "xvk17miids-b3283360-bc60-11ea-a5c9-f34e96a12550",
+						"items": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
 						"moved": false,
-						"name": "Feed Related Indicators",
+						"name": "Custom Details",
 						"static": false,
-						"w": 3,
-						"x": 0,
-						"y": 11
+						"type": "customDetails",
+						"w": 1,
+						"x": 2,
+						"y": 0
 					}
 				],
 				"type": "custom"
 			}
 		],
-		"typeId": "domainRepUnified",
-		"version": -1
+		"toVersion": "5.9.9",
+		"typeId": "f437ab4a-d045-4c43-896b-b703c41252ca",
+		"vcShouldIgnore": false,
+		"vcShouldKeepItemLegacyProdMachine": false,
+		"version": 16
 	},
-	"typeId": "domainRepUnified",
-	"version": -1,
-	"fromVersion": "5.5.0",
-	"toVersion": "5.9.9"
+	"typeId": "f437ab4a-d045-4c43-896b-b703c41252ca",
+	"version": -1
 }
