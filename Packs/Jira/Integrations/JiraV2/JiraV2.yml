@@ -169,7 +169,7 @@ script:
     - name: projectKey
       description: The project key with which to associate the issue.
     - name: issueTypeName
-      description: ' Select an issue type by name, for example: "Problem". '
+      description: 'Select an issue type by name, for example: "Problem".'
     - name: issueTypeId
       description: Select an issue type by its numeric ID.
     - name: projectName
@@ -177,7 +177,7 @@ script:
     - name: description
       description: A description of the issue.
     - name: labels
-      description: 'A CSV list of labels. '
+      description: 'A CSV list of labels.'
     - name: priority
       description: 'The priority name, for example: "High" or "Medium".'
     - name: dueDate
@@ -216,7 +216,7 @@ script:
       required: true
       description: The comment body.
     - name: visibility
-      description: 'The roles that can view the comment, for example: "Administrators". '
+      description: 'The roles that can view the comment, for example: "Administrators".'
     description: Adds a new comment to an existing Jira issue.
   - name: jira-issue-add-link
     arguments:
@@ -253,9 +253,9 @@ script:
     - name: description
       description: The description of the issue.
     - name: labels
-      description: ' A CSV list of labels. '
+      description: 'A CSV list of labels.'
     - name: priority
-      description: ' A priorty name, for example "High" or "Medium". '
+      description: 'A priority name, for example "High" or "Medium".'
     - name: dueDate
       description: The due date for the issue (in the format 2018-03-11).
     - name: assignee
