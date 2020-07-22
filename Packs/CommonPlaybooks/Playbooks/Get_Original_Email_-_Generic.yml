@@ -229,5 +229,4 @@ outputs:
   description: The headers of the email.
 fromversion: 4.0.0
 tests:
-- Phishing v2 Test - Attachment
-- Phishing v2 Test - Inline
+- Phishing v2 - Test - Incident Starter
