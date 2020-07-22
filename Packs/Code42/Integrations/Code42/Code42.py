@@ -3,6 +3,7 @@ from CommonServerPython import *
 
 """ IMPORTS """
 import json
+import os
 import requests
 import py42.sdk
 import py42.settings
@@ -149,12 +150,6 @@ def _get_all_high_risk_employees_from_page(page, risk_tags):
     return res
 
 
-def _try_convert_str_list_to_list(str_list):
-    if isinstance(str_list, str):
-        return str_list.split(",")
-    return str_list
-
-
 class Code42Client(BaseClient):
     """
     Client will implement the service API, should not contain Cortex XSOAR logic.
@@ -171,7 +166,15 @@ class Code42Client(BaseClient):
             if not self._sdk
             else None
         )
+
+        if not proxy:
+            _clear_env_var_if_exists('HTTP_PROXY')
+            _clear_env_var_if_exists('HTTPS_PROXY')
+            _clear_env_var_if_exists('http_proxy')
+            _clear_env_var_if_exists('https_proxy')
+
         py42.settings.set_user_agent_suffix("Cortex XSOAR")
+        py42.settings.verify_ssl_certs = verify
 
     def _get_sdk(self):
         if self._sdk is None:
@@ -219,19 +222,19 @@ class Code42Client(BaseClient):
         return user_id
 
     def add_user_risk_tags(self, username, risk_tags):
-        risk_tags = _try_convert_str_list_to_list(risk_tags)
+        risk_tags = argToList(risk_tags)
         user_id = self._get_user_id(username)
         self._get_sdk().detectionlists.add_user_risk_tags(user_id, risk_tags)
         return user_id
 
     def remove_user_risk_tags(self, username, risk_tags):
-        risk_tags = _try_convert_str_list_to_list(risk_tags)
+        risk_tags = argToList(risk_tags)
         user_id = self._get_user_id(username)
         self._get_sdk().detectionlists.remove_user_risk_tags(user_id, risk_tags)
         return user_id
 
     def get_all_high_risk_employees(self, risk_tags, results, filter_type):
-        risk_tags = _try_convert_str_list_to_list(risk_tags)
+        risk_tags = argToList(risk_tags)
         results = int(results) if results else 50
         filter_type = filter_type if filter_type else "OPEN"
         res = []
@@ -327,7 +330,7 @@ class Code42Client(BaseClient):
             page_json = json.loads(org_page.text)
             orgs = page_json.get("orgs")
             for org in orgs:
-                if org.get("orgName") == org_name:
+                if org.get("orgName", "") == org_name:
                     return org
         raise Code42OrgNotFoundError(org_name)
 
@@ -529,7 +532,7 @@ def _create_hash_filter(hash_arg):
 
 def _create_exposure_filter(exposure_arg):
     # Because the CLI can't accept lists, convert the args to a list if the type is string.
-    exposure_arg = [arg.strip() for arg in exposure_arg.split(",")]
+    exposure_arg = argToList(exposure_arg)
     if "All" in exposure_arg:
         return ExposureType.exists()
     return ExposureType.is_in(exposure_arg)
@@ -656,6 +659,11 @@ def _convert_date_arg_to_epoch(date_arg):
     return (
         datetime.strptime(date_arg, "%Y-%m-%dT%H:%M:%S.%f") - datetime.utcfromtimestamp(0)
     ).total_seconds()
+
+
+def _clear_env_var_if_exists(var):
+    if os.environ.get(var):
+        del os.environ[var]
 
 
 @logger
@@ -1354,7 +1362,7 @@ def create_client():
     )
 
 
-def run_code42_integration():
+def main():
     client = create_client()
     commands = get_command_map()
     command_key = demisto.command()
@@ -1365,10 +1373,6 @@ def run_code42_integration():
         handle_fetch_command(client)
     elif command_key in commands:
         run_command(lambda: commands[command_key](client, demisto.args()))
-
-
-def main():
-    run_code42_integration()
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

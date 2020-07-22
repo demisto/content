@@ -55,15 +55,36 @@ class ElasticsearchClient:
 
     def _elasticsearch_builder(self):
         """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
-        return Elasticsearch(hosts=[self._server], connection_class=RequestsHttpConnection, http_auth=self._http_auth,
-                             verify_certs=self._insecure, proxies=self._proxy, api_key=self._api_key)
+        es = Elasticsearch(hosts=[self._server], connection_class=RequestsHttpConnection, http_auth=self._http_auth,
+                           verify_certs=self._insecure, proxies=self._proxy, api_key=self._api_key)
+        # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
+        if self._api_key and hasattr(es, 'transport'):
+            es.transport.get_connection().session.headers['authorization'] = self._get_api_key_header_val(self._api_key)
+        return es
 
     def send_test_request(self):
         headers = {
             'Content-Type': "application/json"
         }
-        return requests.get(self._server, auth=self._http_auth, verify=self._insecure, headers=headers,
-                            proxies=self._proxy)
+        if self._api_key:
+            headers['authorization'] = self._get_api_key_header_val(self._api_key)
+            auth = None
+        else:
+            auth = self._http_auth
+        return requests.get(self._server, verify=self._insecure, headers=headers, proxies=self._proxy, auth=auth)
+
+    @staticmethod
+    def _get_api_key_header_val(api_key):
+        """
+        Check the type of the passed api_key and return the correct header value
+        for the `API Key authentication
+        <https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-api-key.html>`
+        :arg api_key, either a tuple or a base64 encoded string
+        """
+        if isinstance(api_key, (tuple, list)):
+            s = "{0}:{1}".format(api_key[0], api_key[1]).encode('utf-8')
+            return "ApiKey " + base64.b64encode(s).decode('utf-8')
+        return "ApiKey " + api_key
 
 
 def extract_api_from_username_password(username, password):

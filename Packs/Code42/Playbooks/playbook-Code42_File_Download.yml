@@ -27,8 +27,27 @@ inputs:
   required: false
   value: {}
 name: Code42 File Download
-outputs: []
-sourceplaybookid: Code42 File Search
+outputs:
+- contextPath: File.Size
+  description: The size of the file.
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+- contextPath: File.SHA256
+  description: The SHA256 hash of the file.
+- contextPath: File.Name
+  description: The name of the file.
+- contextPath: File.SSDeep
+  description: The SSDeep hash of the file.
+- contextPath: File.EntryID
+  description: The entry ID of the file.
+- contextPath: File.Info
+  description: File information.
+- contextPath: File.Type
+  description: The file type.
+- contextPath: File.MD5
+  description: The MD5 hash of the file.
+- contextPath: File.Extension
+  description: The file extension.
 starttaskid: "0"
 tasks:
   "0":
@@ -43,12 +62,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 6d1ecdee-78b1-4275-8411-f802589a0a45
+      description: ""
+      id: f45944a7-0362-48e3-8adb-7022ef46ef0e
       iscommand: false
       name: ""
       version: -1
-      description: ""
-    taskid: 6d1ecdee-78b1-4275-8411-f802589a0a45
+    taskid: f45944a7-0362-48e3-8adb-7022ef46ef0e
     timertriggers: []
     type: start
     view: |-
@@ -97,12 +116,12 @@ tasks:
     task:
       brand: ""
       description: Checks to see if a Code42 Integration is active.
-      id: dc6b6ed4-b67e-46b2-8bf5-b2fbbc2e0d8e
+      id: 22138dd2-186a-4001-83b5-006026235ffc
       iscommand: false
       name: Is Code42 Integration Active?
       type: condition
       version: -1
-    taskid: dc6b6ed4-b67e-46b2-8bf5-b2fbbc2e0d8e
+    taskid: 22138dd2-186a-4001-83b5-006026235ffc
     timertriggers: []
     type: condition
     view: |-
@@ -110,44 +129,6 @@ tasks:
         "position": {
           "x": 377.5,
           "y": 195
-        }
-      }
-  "2":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: inputs.SHA256
-          operator: isNotEmpty
-      label: "yes"
-    id: "2"
-    ignoreworker: false
-    nexttasks:
-      '#default#':
-      - "7"
-      "yes":
-      - "5"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Checks to see if a SHA256 hash exists in the inputs.
-      id: 7b90d431-46df-45ae-8e2c-d2e888bd6d9c
-      iscommand: false
-      name: Does SHA256 Exist?
-      type: condition
-      version: -1
-    taskid: 7b90d431-46df-45ae-8e2c-d2e888bd6d9c
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 592.5,
-          "y": 545
         }
       }
   "3":
@@ -158,27 +139,37 @@ tasks:
             value:
               simple: inputs.MD5
           operator: isNotEmpty
-      label: "yes"
+      label: MD5
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.SHA256
+          operator: isNotEmpty
+      label: SHA256
     id: "3"
     ignoreworker: false
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
+      - "7"
+      MD5:
       - "6"
+      SHA256:
+      - "5"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Checks to see if a MD5 hash exists in the inputs.
-      id: a6ccfe5a-31b5-4bb1-81c4-6eeadf53420e
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      id: 3d40417b-2a78-4c8d-877c-10fa9b4d9d84
       iscommand: false
-      name: Does MD5 Exist?
+      name: What type of hash was supplied?
       type: condition
       version: -1
-    taskid: a6ccfe5a-31b5-4bb1-81c4-6eeadf53420e
+    taskid: 3d40417b-2a78-4c8d-877c-10fa9b4d9d84
     timertriggers: []
     type: condition
     view: |-
@@ -211,20 +202,20 @@ tasks:
     task:
       brand: Code42
       description: Downloads a file from Code42 servers.
-      id: 577615d3-3345-4ecc-8a37-a7d36ae6f898
+      id: 3b2c3188-d267-4e9d-8f27-54993aa266ee
       iscommand: true
       name: Code42 Download by SHA256
       script: Code42|||code42-download-file
       type: regular
       version: -1
-    taskid: 577615d3-3345-4ecc-8a37-a7d36ae6f898
+    taskid: 3b2c3188-d267-4e9d-8f27-54993aa266ee
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 720
+          "x": 630,
+          "y": 600
         }
       }
   "6":
@@ -250,20 +241,20 @@ tasks:
     task:
       brand: Code42
       description: Downloads a file from Code42 servers.
-      id: c1c84eb4-4b64-41d0-8b07-99be768b4c53
+      id: 6b09d948-56b3-4236-87d5-06469c6a67b2
       iscommand: true
       name: Code42 Download by MD5
       script: Code42|||code42-download-file
       type: regular
       version: -1
-    taskid: c1c84eb4-4b64-41d0-8b07-99be768b4c53
+    taskid: 6b09d948-56b3-4236-87d5-06469c6a67b2
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 720
+          "x": 100,
+          "y": 590
         }
       }
   "7":
@@ -275,20 +266,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 05d51ceb-6a80-4e24-8264-f43e2865ffdb
+      description: ""
+      id: a31058a7-f7d7-4c3b-8d52-633b15b8b385
       iscommand: false
       name: Complete
       type: title
       version: -1
-      description: ""
-    taskid: 05d51ceb-6a80-4e24-8264-f43e2865ffdb
+    taskid: a31058a7-f7d7-4c3b-8d52-633b15b8b385
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 895
+          "x": 377.5,
+          "y": 775
         }
       }
 version: -1
@@ -297,9 +288,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 910,
-        "width": 922.5,
-        "x": 50,
+        "height": 790,
+        "width": 910,
+        "x": 100,
         "y": 50
       }
     }
