@@ -2900,7 +2900,6 @@
         "Create Phishing Classifier V2 ML Test": "Issue 26341",
         "DuoAdmin API test playbook": "Issue 24937",
         "Mail Sender (New) Test": "Issue 25602",
-        "HTTPListRedirects Basic Test": "Issue 26459",
         "SMB test": "Issue 26454",
         "Infocyte-Test": "Issue 26445",
         "Account Enrichment - Generic v2 - Test": "Issue 26452",
