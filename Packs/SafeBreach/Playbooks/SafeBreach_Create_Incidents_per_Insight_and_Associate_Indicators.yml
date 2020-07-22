@@ -9,10 +9,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f0629741-ab12-47b5-8d84-750847d21eff
+    taskid: 03c0010c-5dea-4f32-881f-f659de6faecc
     type: start
     task:
-      id: f0629741-ab12-47b5-8d84-750847d21eff
+      id: 03c0010c-5dea-4f32-881f-f659de6faecc
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: a2002bd8-4cff-4657-8cd0-96a23bcce091
+    taskid: d531fce6-97b9-453f-8186-b4fb03027a4d
     type: title
     task:
-      id: a2002bd8-4cff-4657-8cd0-96a23bcce091
+      id: d531fce6-97b9-453f-8186-b4fb03027a4d
       version: -1
       name: End
       type: title
@@ -61,10 +61,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 45d05fd2-1654-4e48-8519-bf208ec36dff
+    taskid: 7b456a66-2288-4687-86e6-610ccff88c35
     type: regular
     task:
-      id: 45d05fd2-1654-4e48-8519-bf208ec36dff
+      id: 7b456a66-2288-4687-86e6-610ccff88c35
       version: -1
       name: Create SafeBreach Insight incidents
       description: Create a new incident of type SafeBreach Insight for each insight
@@ -583,10 +583,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 7f261e35-9c8e-41e3-841d-af1e8d836e94
+    taskid: f7f44e73-f5dd-4ad8-834f-d57f1395e672
     type: regular
     task:
-      id: 7f261e35-9c8e-41e3-841d-af1e8d836e94
+      id: f7f44e73-f5dd-4ad8-834f-d57f1395e672
       version: -1
       name: Get created incident object
       description: Get SafeBreach Insight incident by id.
@@ -641,10 +641,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: d5aba322-72b4-4558-8ba9-6011fd4740ae
+    taskid: 8cefa09b-f706-4f27-8011-5b515010de71
     type: regular
     task:
-      id: d5aba322-72b4-4558-8ba9-6011fd4740ae
+      id: 8cefa09b-f706-4f27-8011-5b515010de71
       version: -1
       name: Join indicators and insights by insight ids
       description: Sets "JoinedIndicators" with combined data from insights and indicators.
@@ -701,10 +701,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: 4344137d-f34f-496a-8cd0-a28a844df75b
+    taskid: 9ab9e486-a0d3-44e5-8344-06f0593b09e2
     type: regular
     task:
-      id: 4344137d-f34f-496a-8cd0-a28a844df75b
+      id: 9ab9e486-a0d3-44e5-8344-06f0593b09e2
       version: -1
       name: Merge indicators and insights data
       description: Sets "IndicatorsWithIncidents" with combined data from indicator
@@ -753,10 +753,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: 302eb7be-fe8a-4f1a-87b3-e3a93697613d
+    taskid: 2d2ca0e1-ef0e-4157-8c63-f96bbb7cb6a2
     type: regular
     task:
-      id: 302eb7be-fe8a-4f1a-87b3-e3a93697613d
+      id: 2d2ca0e1-ef0e-4157-8c63-f96bbb7cb6a2
       version: -1
       name: Associate indicators to incident
       description: Associate an indicator to a given incident. All indicators joined
@@ -794,10 +794,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 4979ede0-76c3-4837-832e-6f4442a13c87
+    taskid: f5cc0906-9817-429b-86d1-71a63acbc44e
     type: regular
     task:
-      id: 4979ede0-76c3-4837-832e-6f4442a13c87
+      id: f5cc0906-9817-429b-86d1-71a63acbc44e
       version: -1
       name: Get insight by ids
       description: Gets SafeBreach Insights for specified insight ids.

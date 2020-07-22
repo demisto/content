@@ -23,6 +23,5 @@
     "closureScript": "",
     "disabled": false,
     "reputationCalc": 0,
-    "fromVersion": "6.0.0",
-    "layout": "Phishing"
+    "fromVersion": "6.0.0"
 }

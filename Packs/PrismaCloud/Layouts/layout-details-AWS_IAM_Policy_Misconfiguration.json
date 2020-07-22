@@ -692,6 +692,5 @@
 		"version": -1
 	},
 	"typeId": "AWS IAM Policy Misconfiguration",
-	"version": -1,
-	"toVersion": "5.9.9"
+	"version": -1
 }

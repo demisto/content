@@ -268,6 +268,7 @@ def main():
             except OSError as e:
                 if e.errno != errno.EEXIST:
                     raise e
+                pass
             try:
                 folders_to_remove.append(output_folder)
                 cpy_file_path = f'{output_folder}/ReadPDF.pdf'

@@ -12,7 +12,6 @@ import requests.exceptions
 from demisto_client.demisto_api.rest import ApiException
 import demisto_client
 import json
-from Tests.tools import update_server_configuration
 
 from demisto_sdk.commands.common.tools import print_error, print_warning, print_color, LOG_COLORS
 from demisto_sdk.commands.common.constants import PB_Status
@@ -423,7 +422,7 @@ def __set_server_keys(client, prints_manager, integration_params, integration_na
     if 'server_keys' not in integration_params:
         return
 
-    prints_manager.add_print_job('Setting server keys for integration: {}'.format(integration_name),
+    prints_manager.add_print_job(f'Setting server keys for integration: {integration_name}',
                                  print_color, 0, LOG_COLORS.GREEN)
 
     data = {
@@ -434,11 +433,20 @@ def __set_server_keys(client, prints_manager, integration_params, integration_na
     for key, value in integration_params.get('server_keys').items():
         data['data'][key] = value
 
-    update_server_configuration(
-        client=client,
-        server_configuration=integration_params.get('server_keys'),
-        error_msg='Failed to set server keys'
-    )
+    response_data, status_code, _ = demisto_client.generic_request_func(self=client, path='/system/config',
+                                                                        method='POST', body=data)
+
+    try:
+        result_object = ast.literal_eval(response_data)
+    except ValueError as err:
+        print_error(
+            'failed to parse response from demisto. response is {}.\nError:\n{}'.format(response_data, err))
+        return
+
+    if status_code >= 300 or status_code < 200:
+        message = result_object.get('message', '')
+        msg = "Failed to set server keys " + str(status_code) + '\n' + message
+        print_error(msg)
 
 
 def __delete_integration_instance_if_determined_by_name(client, instance_name, prints_manager, thread_index=0):

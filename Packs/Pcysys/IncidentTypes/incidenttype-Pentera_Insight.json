@@ -21,6 +21,5 @@
 	"closureScript": "",
 	"disabled": false,
 	"reputationCalc": 0,
-	"fromVersion": "5.0.0",
-	"layout": "Pentera Insight"
+	"fromVersion": "5.0.0"
 }

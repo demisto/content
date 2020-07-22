@@ -1,4 +1,4 @@
-DEPRECATED. Use "Dedup - Generic v2" playbook instead. Identifies duplicate incidents using one of the supported methods.
+Identifies duplicate incidents using one of the supported methods.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

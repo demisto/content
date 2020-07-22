@@ -1,4 +1,4 @@
-Deprecated. Uses the latest Threat Intelligence to look for malicious C&C communications.
+Uses the latest Threat Intelligence to look for malicious C&C communications.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

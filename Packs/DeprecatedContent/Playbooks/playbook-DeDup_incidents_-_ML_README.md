@@ -1,4 +1,4 @@
-DEPRECATED. Checks for duplicate incidents of the current incident, and closes it if a duplicate has been found. This is accomplished though the `machine-learning find duplicates` automation.
+Checks for duplicate incidents of the current incident, and closes it if a duplicate has been found. This is accomplished though the `machine-learning find duplicates` automation.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

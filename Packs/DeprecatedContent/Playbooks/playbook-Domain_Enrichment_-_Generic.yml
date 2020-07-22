@@ -3,7 +3,7 @@ version: -1
 name: Domain Enrichment - Generic
 fromversion: 3.6.0
 description: |-
-  DEPRECATED. Use "Domain Enrichment - Generic v2" playbook instead. Enrich Domain using one or more integrations.
+  Enrich Domain using one or more integrations.
 
   Domain enrichment includes:
   * Domain reputation

@@ -1,18 +1,19 @@
 id: Domain Enrichment - Generic v2 - Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
+fromversion: 4.1.0
 name: Domain Enrichment - Generic v2 - Test
 description: A test for the Domain Enrichment - Generic v2 playbook.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2187ceab-08e1-44de-84a4-d3fd9a66ffcc
+    taskid: 02acc377-4ee9-4f26-88db-5a0a702ebd7a
     type: start
     task:
-      id: 2187ceab-08e1-44de-84a4-d3fd9a66ffcc
+      id: 02acc377-4ee9-4f26-88db-5a0a702ebd7a
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -29,14 +30,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "1":
     id: "1"
-    taskid: 2e208031-5056-4086-856b-eb8e8aa1b6e7
+    taskid: 2a204919-f35d-4c0f-85a0-83dfccccaa1d
     type: playbook
     task:
-      id: 2e208031-5056-4086-856b-eb8e8aa1b6e7
+      id: 2a204919-f35d-4c0f-85a0-83dfccccaa1d
       version: -1
       name: Domain Enrichment - Generic v2
       playbookName: Domain Enrichment - Generic v2
@@ -58,7 +57,6 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
-      max: 0
     view: |-
       {
         "position": {
@@ -69,14 +67,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "2":
     id: "2"
-    taskid: d4ddca44-207c-40eb-822b-72a58b6a721f
+    taskid: 1119feb2-183c-45b3-87dd-a1dfe7a5b9be
     type: regular
     task:
-      id: d4ddca44-207c-40eb-822b-72a58b6a721f
+      id: 1119feb2-183c-45b3-87dd-a1dfe7a5b9be
       version: -1
       name: Clear context
       description: Clear the context for a fresh start of the test.
@@ -106,14 +102,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "3":
     id: "3"
-    taskid: 8d6249de-f314-476f-81d4-b36adb4838dd
+    taskid: af78f53f-2c12-4084-8549-f1bd5eebb3ef
     type: regular
     task:
-      id: 8d6249de-f314-476f-81d4-b36adb4838dd
+      id: af78f53f-2c12-4084-8549-f1bd5eebb3ef
       version: -1
       name: Set domains in context
       description: Sets a value into the context with the given context key
@@ -142,14 +136,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "4":
     id: "4"
-    taskid: 0f33d7b6-d2b8-4083-8836-7394ebc2dfd6
+    taskid: a04fa368-1c51-423d-859d-ad2554298dfe
     type: condition
     task:
-      id: 0f33d7b6-d2b8-4083-8836-7394ebc2dfd6
+      id: a04fa368-1c51-423d-859d-ad2554298dfe
       version: -1
       name: Has a domain category been found?
       description: Checks if Cisco Umbrella Investigate fetched a category for the
@@ -194,14 +186,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "5":
     id: "5"
-    taskid: 8dfaf081-52b9-4b8d-8f03-3f309d468e97
+    taskid: a327a491-40ce-4df3-8954-5397d032f753
     type: regular
     task:
-      id: 8dfaf081-52b9-4b8d-8f03-3f309d468e97
+      id: a327a491-40ce-4df3-8954-5397d032f753
       version: -1
       name: Make test fail
       description: Prints an error entry with a given message
@@ -227,16 +217,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "6":
     id: "6"
-    taskid: ee41c5fd-a1ac-4368-8557-c73b5e992518
+    taskid: 16b5b5ab-cb4f-4672-832c-0b9e2f93254d
     type: title
     task:
-      id: ee41c5fd-a1ac-4368-8557-c73b5e992518
+      id: 16b5b5ab-cb4f-4672-832c-0b9e2f93254d
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -251,8 +240,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},

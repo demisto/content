@@ -12,7 +12,7 @@
     "col2": "value3"
   },
   {
-    "col1": "",
+    "col1": null,
     "col2": "value4"
   }
 ]

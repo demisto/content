@@ -216,13 +216,13 @@ Returns a list of the assets that accessed the input artifact (IP, domain, MD5, 
 ```
 
 ##### Human Readable Output
->### Assets related to artifact - bing.com
->|Host Name|Host IP|Host MAC|First Accessed Time|Last Accessed Time|
->|---|---|---|---|---|
->| james-anderson-laptop | - | - | 2018-10-18T04:38:44Z | 2020-02-14T07:13:33Z |
->| roger-buchmann-pc | - | - | 2018-10-18T02:01:51Z | 2020-02-13T22:25:27Z |
->
->View assets in Chronicle
+### Assets related to artifact - bing.com
+|Host Name|Host IP|Host MAC|First Accessed Time|Last Accessed Time|
+|---|---|---|---|---|
+| james-anderson-laptop | - | - | 2018-10-18T04:38:44Z | 2020-02-14T07:13:33Z |
+| roger-buchmann-pc | - | - | 2018-10-18T02:01:51Z | 2020-02-13T22:25:27Z |
+
+[View assets in Chronicle]({})
 
 
 ### 3. ip
@@ -1000,11 +1000,11 @@ List all of the events discovered within your enterprise on a particular device 
 ```
 
 ##### Human Readable Output
->### Event(s) Details
->|Event Timestamp|Event Type|Principal Asset Identifier|Target Asset Identifier|Queried Domain|
->|---|---|---|---|---|
->| 2020-01-01T23:59:38Z | NETWORK_DNS | ray-xxx-laptop | 8.8.8.8 | ninthdecimal.com |
->
->View events in Chronicle
->
->Maximum number of events specified in page_size has been returned. There might still be more events in your Chronicle account. >To fetch the next set of events, execute the command with the start time as 2020-01-01T23:59:38Z
+### Event(s) Details
+|Event Timestamp|Event Type|Principal Asset Identifier|Target Asset Identifier|Queried Domain|
+|---|---|---|---|---|
+| 2020-01-01T23:59:38Z | NETWORK_DNS | ray-xxx-laptop | 8.8.8.8 | ninthdecimal.com |
+
+[View events in Chronicle]([''])
+
+Maximum number of events specified in page_size has been returned. There might still be more events in your Chronicle account. To fetch the next set of events, execute the command with the start time as 2020-01-01T23:59:38Z

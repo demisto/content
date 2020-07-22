@@ -1,4 +1,4 @@
-DEPRECATED. Use "Account Enrichment - Generic v2.1" playbook instead. Enriches accounts using one or more integration.
+Enriches accounts using one or more integration.
 
 Supported integrations:
 - Active Directory

@@ -616,6 +616,5 @@
 		"version": -1
 	},
 	"typeId": "GDPR Data Breach",
-	"version": -1,
-	"toVersion": "5.9.9"
+	"version": -1
 }

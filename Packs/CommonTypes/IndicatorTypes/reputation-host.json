@@ -291,6 +291,5 @@
         }
     },
     "manualMapping": null,
-    "fileHashesPriority": null,
-    "layout": "hostRep"
+    "fileHashesPriority": null
 }

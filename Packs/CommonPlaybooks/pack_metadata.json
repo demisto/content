@@ -2,7 +2,7 @@
     "name": "Common Playbooks",
     "description": "Frequently used playbooks pack.",
     "support": "xsoar",
-    "currentVersion": "1.6.1",
+    "currentVersion": "1.6.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -51,6 +51,10 @@
         "CrowdStrikeIntel": {
             "mandatory": false,
             "display_name": "CrowdStrike Falcon Intel"
+        },
+        "CalculateTimeDifference": {
+            "mandatory": true,
+            "display_name": "Calculate Time Difference"
         },
         "Cylance_Protect": {
             "mandatory": false,
@@ -255,10 +259,6 @@
         "EWS": {
             "mandatory": false,
             "display_name": "EWS"
-        },
-        "Zimperium": {
-            "mandatory": false,
-            "display_name": "Zimperium"
         },
         "XForceExchange": {
             "mandatory": false,

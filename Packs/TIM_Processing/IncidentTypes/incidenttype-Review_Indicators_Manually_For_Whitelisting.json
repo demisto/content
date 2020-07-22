@@ -20,6 +20,5 @@
 	"preProcessingScript": "",
 	"closureScript": "",
 	"disabled": false,
-	"reputationCalc": 0,
-	"layout": "Review Indicators Manually For Whitelisting"
+	"reputationCalc": 0
 }

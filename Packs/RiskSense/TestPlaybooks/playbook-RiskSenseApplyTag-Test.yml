@@ -88,7 +88,7 @@ tasks:
     scriptarguments:
       assettype:
         simple: host
-      exclude: {}
+      exclusive_operator: {}
       fieldname:
         simple: id
       operator: {}

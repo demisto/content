@@ -1,4 +1,4 @@
-DEPRECATED. Use "Domain Enrichment - Generic v2" playbook instead. Enriches domains using one or more integrations.
+Enriches domains using one or more integrations.
 
 Domain enrichment includes:
 * Domain reputation

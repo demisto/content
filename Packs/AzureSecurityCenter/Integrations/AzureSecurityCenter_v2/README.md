@@ -2,17 +2,15 @@ Unified security management and advanced threat protection across hybrid cloud w
 
 <h2>Use Case</h2>
 With Security Center, you can apply security policies across your workloads, limit your exposure to threats, and detect and respond to attacks.
-
-<h2>Authentication</h2>
-For more details about the authentication used in this integration, see <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication">Microsoft Integrations - Authentication</a>.
-
+<h2>Detailed Description</h2>
+<li>To allow us access to Azure Security Center, an admin has to approve our app using an admin consent flow, by clicking on the following [link](https://oproxy.demisto.ninja/ms-azure-sc).</li>
 <li>After authorizing the Demisto app, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields. After giving consent, the application has to have a role assigned so it can access the relevant resources per subscription. </li>
 <li>In order to assign a role to the application after consent was given: 
   <ul>
     <li>Go to the Azure Portal UI.</li>
     <li>Go to Subscriptions, and then Access Control (IAM).</li>
     <li>Click Add.</li>
-    <li>Select a role that includes the following permissions:</li>
+    <li>Select a role that includes the following permissions:
     <ul>
       <li>Microsoft.Security/locations/read</li>
       <li>Microsoft.Security/alerts/read</li>
@@ -23,7 +21,7 @@ For more details about the authentication used in this integration, see <a href=
       <li>Microsoft.Security/informationProtectionPolicies/read</li>
       <li>Microsoft.Security/locations/jitNetworkAccessPolicies/*</li>
       <li>Microsoft.Security/locations/jitNetworkAccessPolicies/initiate/action</li>
-    </ul>
+    </ul></li>
     <li>Select the Azure Secruity Center application.</li>
   </ul>
 </li>
@@ -49,6 +47,14 @@ For more details about the authentication used in this integration, see <a href=
     Click&nbsp;<strong>Test</strong>&nbsp;to validate the new instance.
   </li>
 </ol>
+
+<h2>Use a Self-Deployed Azure Application</h2>
+<p>To use a self-configured Azure application, a need to add a new Azure App Registration in the Azure Portal. To add the registration refer to the
+<a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app">Microsoft documentation</a></p>
+<p>The Tenant ID, Client ID, and Client secret are required for the integration. When you configure the integration in Demisto enter those parameters in the appropriate fields (instead of how you received them from the admin consent in the current doc).<p>ID - Client ID<br>
+Token - Tenant ID<br>
+Key - Client Secret</p>
+
 <h2>Commands</h2>
 <p>
   You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.

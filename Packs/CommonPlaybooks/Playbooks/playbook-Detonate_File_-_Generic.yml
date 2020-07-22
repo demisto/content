@@ -88,19 +88,6 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
-    scriptarguments:
-      Comments: {}
-      File:
-        complex:
-          root: inputs.File
-      InternetAccess:
-        simple: "True"
-      Interval:
-        simple: "1"
-      ReportFileType: {}
-      Systems: {}
-      Timeout:
-        simple: "15"
     separatecontext: true
     loop:
       iscommand: false
@@ -393,8 +380,7 @@ tasks:
       - "3"
     scriptarguments:
       File:
-        complex:
-          root: inputs.File
+        simple: ${inputs.File}
       interval:
         simple: "1"
       timeout:
@@ -446,7 +432,7 @@ tasks:
     scriptarguments:
       File:
         complex:
-          root: inputs.File
+          root: File
       Interval:
         simple: "1"
       Timeout:
@@ -494,7 +480,7 @@ tasks:
         simple: "100"
       File:
         complex:
-          root: inputs.File
+          root: File
       InternetAccess:
         simple: "True"
       Interval:
@@ -543,7 +529,7 @@ tasks:
     scriptarguments:
       File:
         complex:
-          root: inputs.File
+          root: File
       Interval:
         simple: "1"
       Timeout:
@@ -587,14 +573,6 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
-    scriptarguments:
-      File:
-        complex:
-          root: inputs.File
-      Interval:
-        simple: "1"
-      Timeout:
-        simple: "30"
     separatecontext: true
     loop:
       iscommand: false
@@ -632,7 +610,7 @@ tasks:
     scriptarguments:
       File:
         complex:
-          root: inputs.File
+          root: File
           transformers:
           - operator: uniq
       archive_password: {}

@@ -395,7 +395,7 @@ tasks:
       method:
         simple: GET
       password:
-        simple: password
+        simple: '{TOMMED}XRtZxOlNL94AsNpmMETExkfGyAfUSfYOECPhFktT2ppvsllQUwKdrmD6qvQ4cWb5/OWE/B1i148/jDhjE6NpGA=='
       proxy: {}
       url:
         simple: https://postman-echo.com/basic-auth

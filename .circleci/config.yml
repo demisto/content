@@ -38,9 +38,9 @@ parameters:
 references:
   environment: &environment
     environment:
-      CONTENT_VERSION: "20.7.1"
+      CONTENT_VERSION: "20.7.0"
       SERVER_VERSION: "5.5.0"
-      GIT_SHA1: "4ee42cb22bae137d2691868674001436e61f1b3c" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "1f9f72106210397ee6134fd4a82b07876226e584" # guardrails-disable-line disable-secrets-detection
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
@@ -49,7 +49,7 @@ references:
       CONTRIB_BRANCH: << pipeline.parameters.contrib_branch >>
       CONTRIB_PACK_NAME: << pipeline.parameters.contrib_pack_name >>
       # Giving different names to the following pipeline parameters to avoid collision, handling such collision case
-      # is done in 'Setup Environment' step.
+      # is done in 'Prepare Environment' step.
       TIME_TO_LIVE_PARAMETER: << pipeline.parameters.time_to_live >>
       NIGHTLY_PARAMETER: << pipeline.parameters.nightly >>
       INSTANCE_TESTS_PARAMETER: << pipeline.parameters.instance_tests >>
@@ -71,13 +71,11 @@ references:
   attach_workspace: &attach_workspace
     attach_workspace:
       at: *workspace_root
-
   add_ssh_keys: &add_ssh_keys
     add_ssh_keys:
       fingerprints:
         - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
         - "f5:25:6a:e5:ac:4b:84:fb:60:54:14:82:f1:e9:6c:f9" # disable-secrets-detection
-
   prepare_environment: &prepare_environment
     run:
       name: Prepare Environment
@@ -145,11 +143,9 @@ references:
         unzip -q "$CIRCLE_ARTIFACTS/content_test.zip" -d "test_content_dir"
         zip -j "$CIRCLE_ARTIFACTS/all_content.zip" test_content_dir/*
         rm -r test_content_dir
-
   restore_cache: &restore_cache
     restore_cache:
       key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
-
   destroy_instances: &destroy_instances
     run:
       name: Destroy Instances
@@ -184,13 +180,12 @@ references:
       paths:
         - project
 
-  secrets: &secrets
+  Secrets: &Secrets
     run:
       name: Secrets
       when: always
       command: |
         demisto-sdk secrets --post-commit --ignore-entropy
-
   validate_files_and_yaml: &validate_files_and_yaml
     run:
       name: Validate Files and Yaml
@@ -207,7 +202,6 @@ references:
 
         [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD="false" || CHECK_BACKWARD="true"
         ./Tests/scripts/validate.sh
-
   run_unit_testing_and_lint: &run_unit_testing_and_lint
     run:
       name: Run Unit Testing and Lint
@@ -220,8 +214,8 @@ references:
         echo "flake8 py3 version: $(python3 -m flake8 --version)"
         echo "bandit py2 version: $(python2 -m bandit --version 2>&1)"
         echo "bandit py3 version: $(python3 -m bandit --version 2>&1)"
-        echo "vulture py2 version: $(python2 -m vulture --version 2>&1)"
-        echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
+        echo "vulture py2 version: $(python2 -m vulture --version) 2>&1"
+        echo "vulture py3 version: $(python3 -m vulture --version) 2>&1"
         SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
         mkdir ./unit-tests
         if [ -n "$SHOULD_LINT_ALL" ]; then
@@ -230,7 +224,6 @@ references:
         else
           demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
         fi
-
   infrastructure_testing: &infrastructure_testing
     run:
       name: Infrastructure testing
@@ -242,14 +235,12 @@ references:
         if [ -n "${DEMISTO_SDK_NIGHTLY}" ] ; then
           ./Tests/scripts/sdk_pylint_check.sh
         fi
-
   create_id_set: &create_id_set
     run:
       name: Create ID Set
       when: always
       command: |
         demisto-sdk create-id-set -o ./Tests/id_set.json
-
   build_content_descriptor: &build_content_descriptor
     run:
       name: Build Content Descriptor
@@ -263,14 +254,12 @@ references:
             # new release notes summary generator in packs format
             python3 Utils/release_notes_generator.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM --output $CIRCLE_ARTIFACTS/packs-release-notes.md
         fi
-
   common_server_documentation: &common_server_documentation
     run:
       name: Common Server Documentation
       when: always
       command: |
         ./Documentation/commonServerDocs.sh
-
   collect_test_list_and_content_packs: &collect_test_list_and_content_packs
     run:
       name: Collect Test List And Content Packs
@@ -284,14 +273,12 @@ references:
 
         [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
         python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY
-
   calculate_packs_dependencies: &calculate_packs_dependencies
     run:
       name: Calculate Packs Dependencies
       when: always
       command: |
         python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/id_set.json -o $CIRCLE_ARTIFACTS/packs_dependencies.json
-
   update_tests_step: &update_tests_step
     run:
       name: Update Tests step
@@ -299,31 +286,14 @@ references:
       command: |
         python3 ./Tests/scripts/update_conf_json.py
         cp "./Tests/conf.json" "$CIRCLE_ARTIFACTS/conf.json"
-
-  get_contribution_pack: &get_contribution_pack
-    when:
-      condition: << pipeline.parameters.contrib_branch >>
-      steps:
-        - run:
-            name: Get Contributor pack
-            when: always
-            command: |
-                USER=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
-                BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
-                PACK=$(echo $CONTRIB_BRANCH | cut -d ":" -f 3)
-                echo 'Copy the changes from the contributor branch $USER/$BRANCH in the pack $PACK'
-                git remote add $USER git@github.com:$USER/content.git
-                git fetch $USER $BRANCH
-                git checkout $USER/$BRANCH $PACK
-                exit 0
-
 jobs:
-  Setup Environment:
+  Prepare Environment:
     <<: *container_config
-    resource_class: medium
+    resource_class: medium+
     <<: *environment
     steps:
       - checkout
+      - setup_remote_docker
       - *restore_cache
       - *prepare_environment
       - save_cache:
@@ -331,13 +301,27 @@ jobs:
             - venv
             - node_modules
           key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
-      - *get_contribution_pack
+      - when:
+          condition: << pipeline.parameters.contrib_branch >>
+          steps:
+            - run:
+                name: Get Contributor pack
+                when: always
+                command: |
+                    USER=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
+                    BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
+                    PACK=$(echo $CONTRIB_BRANCH | cut -d ":" -f 3)
+                    echo 'Copy the changes from the contributor branch $USER/$BRANCH in the pack $PACK'
+                    git remote add $USER git@github.com:$USER/content.git
+                    git fetch $USER $BRANCH
+                    git checkout $USER/$BRANCH $PACK
+                    exit 0
       - *add_ssh_keys
       - *persist_to_workspace
 
   Run Unit Testing And Lint:
     <<: *container_config
-    resource_class: medium
+    resource_class: medium+
     <<: *environment
     steps:
       - *attach_workspace
@@ -361,17 +345,18 @@ jobs:
             - *store_artifacts
   Run Validations:
     <<: *container_config
-    resource_class: medium
+    resource_class: medium+
     <<: *environment
     steps:
       - *attach_workspace
       - unless:
           condition: << pipeline.parameters.instance_tests >>
           steps:
+            - setup_remote_docker
             - *restore_cache
             - *add_ssh_keys
             - *prepare_environment
-            - *secrets
+            - *Secrets
             - *validate_files_and_yaml
             - run:
                 name: Content Docs Site
@@ -440,10 +425,12 @@ jobs:
     <<: *environment
     steps:
       - checkout
+      - setup_remote_docker
       - *restore_cache
       - *prepare_environment
-      - *get_contribution_pack
+      - *restore_cache
       - *add_ssh_keys
+      - *prepare_environment
       - *update_tests_step
       - *create_id_set
       - *build_content_descriptor
@@ -538,20 +525,7 @@ jobs:
     resource_class: medium
     <<: *environment
     steps:
-      - when:
-          condition:
-            or:
-              - << pipeline.parameters.instance_tests >>
-              - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
-              - << pipeline.parameters.nightly >>
-              - << pipeline.parameters.non_ami_run >>
-          steps:
-            - run:
-                name: Not running this job
-                when: always
-                command: |
-                  echo "Not running this job when triggered with one of instance_tests, contrib_branch, demisto_sdk_nightly, nightly or non_ami_run"
+      - setup_remote_docker
       - unless:
           condition:
             or:
@@ -599,20 +573,7 @@ jobs:
     resource_class: medium
     <<: *environment
     steps:
-      - when:
-          condition:
-            or:
-              - << pipeline.parameters.instance_tests >>
-              - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
-              - << pipeline.parameters.nightly >>
-              - << pipeline.parameters.non_ami_run >>
-          steps:
-            - run:
-                name: Not running this job
-                when: always
-                command: |
-                  echo "Not running this job when triggered with one of instance_tests, contrib_branch, demisto_sdk_nightly, nightly or non_ami_run"
+      - setup_remote_docker
       - unless:
           condition:
             or:
@@ -659,20 +620,7 @@ jobs:
     resource_class: medium
     <<: *environment
     steps:
-      - when:
-          condition:
-            or:
-              - << pipeline.parameters.instance_tests >>
-              - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
-              - << pipeline.parameters.nightly >>
-              - << pipeline.parameters.non_ami_run >>
-          steps:
-            - run:
-                name:  Not running this job
-                when: always
-                command: |
-                  echo "Not running this job when triggered with one of instance_tests, contrib_branch, demisto_sdk_nightly, nightly or non_ami_run"
+      - setup_remote_docker
       - unless:
           condition:
             or:
@@ -680,7 +628,6 @@ jobs:
               - << pipeline.parameters.contrib_branch >>
               - << pipeline.parameters.demisto_sdk_nightly >>
               - << pipeline.parameters.nightly >>
-              - << pipeline.parameters.non_ami_run >>
           steps:
             - *attach_workspace
             - *restore_cache
@@ -691,14 +638,17 @@ jobs:
                 shell: /bin/bash
                 when: always
                 command: |
-                  python3 ./Tests/scripts/wait_until_server_ready.py "Demisto GA"
+                  if ./Tests/scripts/is_ami.sh ;
+                    then
+                      python3 ./Tests/scripts/wait_until_server_ready.py "Demisto GA"
+                    else
+                      python3 ./Tests/scripts/wait_until_server_ready.py "Demisto"
+                  fi
             - run:
                 name: Run Tests - Server 5.0
                 shell: /bin/bash
                 when: always
                 command: |
-                  echo 'export INSTANCE_ROLE="Demisto GA"' >> $BASH_ENV
-                  source $BASH_ENV
                   export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto GA"')
                   echo "Demisto GA filter=$TEMP"
                   if [[ "$TEMP" == "false" ]];
@@ -710,8 +660,9 @@ jobs:
                     then
                       echo 'export INSTANCE_ROLE="Demisto GA"' >> $BASH_ENV
                     else
-                      echo "Not AMI run, can't run on this version"
+                      'export INSTANCE_ROLE="master"' >> $BASH_ENV
                   fi
+                  source $BASH_ENV
                   ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
 
             - *destroy_instances
@@ -721,20 +672,7 @@ jobs:
     resource_class: medium
     <<: *environment
     steps:
-      - when:
-          condition:
-            or:
-              - << pipeline.parameters.instance_tests >>
-              - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
-              - << pipeline.parameters.nightly >>
-              - << pipeline.parameters.non_ami_run >>
-          steps:
-            - run:
-                name: Not running this job
-                when: always
-                command: |
-                  echo "Not running this job when triggered with one of instance_tests, contrib_branch, demisto_sdk_nightly, nightly or non_ami_run"
+      - setup_remote_docker
       - unless:
           condition:
             or:
@@ -784,22 +722,13 @@ jobs:
     resource_class: medium
     <<: *environment
     steps:
-      - when:
-          condition:
-            or:
-              - << pipeline.parameters.instance_tests >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
-          steps:
-            - run:
-                name: Not running this job
-                when: always
-                command: |
-                  echo "Not running this job when triggered with one of instance_tests or demisto_sdk_nightly"
+      - setup_remote_docker
       - unless:
           condition:
             or:
               - << pipeline.parameters.instance_tests >>
               - << pipeline.parameters.demisto_sdk_nightly >>
+              - << pipeline.parameters.non_ami_run >>
           steps:
             - *attach_workspace
             - *add_ssh_keys
@@ -809,18 +738,15 @@ jobs:
                 shell: /bin/bash
                 when: always
                 command: |
-                  if ./Tests/scripts/is_ami.sh ;
-                    then
-                      python3 ./Tests/scripts/wait_until_server_ready.py "Demisto Marketplace"
-                  else
-                      python3 ./Tests/scripts/wait_until_server_ready.py "Demisto"
-                  fi
+                  python3 ./Tests/scripts/wait_until_server_ready.py "Demisto Marketplace"
             - run:
                 name: Run Tests - Demisto 6.0
                 shell: /bin/bash
                 when: always
                 no_output_timeout: 5h
                 command: |
+                  echo 'export INSTANCE_ROLE="Demisto Marketplace"' >> $BASH_ENV
+                  source $BASH_ENV
                   export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto Marketplace"')
                   echo "Demisto Marketplace filter=$TEMP"
                   if [[ "$TEMP" == "false" ]];
@@ -830,15 +756,13 @@ jobs:
                   fi
                   if ./Tests/scripts/is_ami.sh ;
                     then
-                      echo 'export INSTANCE_ROLE="Demisto Marketplace"' >> $BASH_ENV
+                      ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
+                      export RETVAL=$?
+                      cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
+                      exit $RETVAL
                   else
-                    echo 'export INSTANCE_ROLE="master"' >> $BASH_ENV
+                      echo "Not AMI run, can't run on this version"
                   fi
-                  source $BASH_ENV
-                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
-                  export RETVAL=$?
-                  cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
-                  exit $RETVAL
             - run:
                 name: Upload Packs To Marketplace Storage
                 command: |
@@ -869,6 +793,7 @@ jobs:
     resource_class: medium
     <<: *environment
     steps:
+      - setup_remote_docker
       - *attach_workspace
       - *add_ssh_keys
       - *prepare_environment
@@ -907,9 +832,10 @@ jobs:
     <<: *environment
     steps:
       - checkout
+      - setup_remote_docker
       - *restore_cache
       - *prepare_environment
-      - *secrets
+      - *Secrets
       - *validate_files_and_yaml
       - *run_unit_testing_and_lint
       - *infrastructure_testing
@@ -933,17 +859,17 @@ workflows:
   version: 2
   commit:
     jobs:
-      - Setup Environment
+      - Prepare Environment
       - Create Instances:
           filters:
             branches:
               ignore: /pull\/[0-9]+/
       - Run Unit Testing And Lint:
           requires:
-            - Setup Environment
+            - Prepare Environment
       - Run Validations:
           requires:
-            - Setup Environment
+            - Prepare Environment
       - Server 4_1:
           filters:
             branches:
@@ -1007,17 +933,17 @@ workflows:
               only:
                 - master
     jobs:
-      - Setup Environment:
+      - Prepare Environment:
           context: nightly_env
       - Create Instances:
           context: nightly_env
       - Run Unit Testing And Lint:
           context: nightly_env
           requires:
-            - Setup Environment
+            - Prepare Environment
       - Run Validations:
           requires:
-            - Setup Environment
+            - Prepare Environment
       - Server 6_0:
           requires:
             - Create Instances

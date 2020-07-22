@@ -322,7 +322,7 @@ tasks:
       '#none#':
       - "27"
     scriptarguments:
-      exclude: {}
+      exclusivity: {}
       fieldname: {}
       operator: {}
       page: {}

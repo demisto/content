@@ -1,7 +1,7 @@
 {
   "name": "Google Cloud Functions",
   "description": "Google Cloud Functions",
-  "support": "xsoar",
+  "support": "Cortex XSOAR",
   "currentVersion": "1.0.0",
   "author": "Cortex XSOAR",
   "url": "https://www.paloaltonetworks.com/cortex",

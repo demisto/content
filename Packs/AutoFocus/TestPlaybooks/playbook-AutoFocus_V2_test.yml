@@ -1121,7 +1121,7 @@ tasks:
       - "16"
     scriptarguments:
       seconds:
-        simple: "40"
+        simple: "15"
     separatecontext: false
     view: |-
       {
@@ -1280,7 +1280,7 @@ tasks:
       - "35"
     scriptarguments:
       seconds:
-        simple: "100"
+        simple: "60"
     separatecontext: false
     view: |-
       {

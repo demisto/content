@@ -1,4 +1,4 @@
-DEPRECATED. Use "DBot Create Phishing Classifier V2" playbook instead. Creates a phishing classifier using machine learning technique, based on the email content.
+Creates a phishing classifier using machine learning technique, based on the email content.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

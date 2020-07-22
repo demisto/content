@@ -423,6 +423,5 @@
 		"version": -1
 	},
 	"typeId": "Claroty Security Incident",
-	"version": -1,
-	"toVersion": "5.9.9"
+	"version": -1
 }

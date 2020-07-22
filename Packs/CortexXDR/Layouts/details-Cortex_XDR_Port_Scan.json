@@ -781,6 +781,5 @@
 		"version": -1
 	},
 	"typeId": "Cortex XDR Port Scan",
-	"version": -1,
-	"toVersion": "5.9.9"
+	"version": -1
 }

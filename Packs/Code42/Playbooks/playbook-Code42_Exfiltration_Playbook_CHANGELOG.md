@@ -1,5 +1,4 @@
 ## [Unreleased]
-Automated the manual step of retrieving file contents using the Code42 File Download playbook.
 
 
 ## [20.3.3] - 2020-03-18

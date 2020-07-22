@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-echo "CIRCLE_BRANCH: $CIRCLE_BRANCH CHECK_BACKWARD: $CHECK_BACKWARD CI: $CI DEMISTO_README_VALIDATION: $DEMISTO_README_VALIDATION"
-
 if [[ $CIRCLE_BRANCH = master ]];
   then
     demisto-sdk validate -a

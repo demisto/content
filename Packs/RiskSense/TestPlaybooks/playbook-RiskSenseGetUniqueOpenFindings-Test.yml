@@ -83,7 +83,7 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      exclude:
+      exclusivity:
         simple: "false"
       fieldname:
         simple: title

@@ -11,7 +11,7 @@
 	"id": "Expanse Behavior",
 	"locked": false,
 	"name": "Expanse Behavior",
-	"playbookId": "Expanse Behavior Severity Update",
+	"playbookId": "ExpanseParseRawIncident",
 	"preProcessingScript": "",
 	"readonly": false,
 	"reputationCalc": 0,

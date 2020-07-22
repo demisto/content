@@ -8,11 +8,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "Zimperium",
-            "playbookID": "Zimperium_Test",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "ServiceDeskPlus",
             "playbookID": "Service Desk Plus Test"
         },
@@ -586,8 +581,7 @@
             "timeout": 2400
         },
         {
-            "playbookID": "WordTokenizeTest",
-            "toversion": "4.5.9"
+            "playbookID": "WordTokenizeTest"
         },
         {
             "integrations": "QRadar",
@@ -640,7 +634,7 @@
         },
         {
             "integrations": "Generic SQL",
-            "playbookID": "generic-sql-oracle",
+            "playbookID": "generic-sql",
             "instance_names": "Oracle instance",
             "fromversion": "5.0.0"
         },
@@ -649,6 +643,13 @@
             "playbookID": "generic-sql-mssql-encrypted-connection",
             "instance_names": "Microsoft SQL instance using encrypted connection",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_firewall",
+            "playbookID": "palo_alto_firewall_test_pb",
+            "timeout": 1000,
+            "nightly": true
         },
         {
             "integrations": "Panorama",
@@ -677,11 +678,6 @@
             "playbookID": "palo_alto_panorama_test_pb",
             "timeout": 1000,
             "nightly": true
-        },
-        {
-            "integrations": "Panorama",
-            "instance_names": "palo_alto_firewall_9.0",
-            "playbookID": "PAN-OS URL Filtering enrichment - Test"
         },
         {
             "integrations": "Tenable.io",
@@ -907,8 +903,16 @@
             "nightly": true
         },
         {
+            "integrations": "epo",
+            "playbookID": "Test Playbook McAfee ePO"
+        },
+        {
             "integrations": "McAfee DXL",
             "playbookID": "McAfee DXL - Test"
+        },
+        {
+            "integrations": "activedir",
+            "playbookID": "calculate_severity_-_critical_assets_-_test"
         },
         {
             "playbookID": "TextFromHTML_test_playbook"
@@ -1164,6 +1168,10 @@
             "integrations": "EWS v2",
             "playbookID": "EWS Public Folders Test",
             "instance_names": "ewv2_regular"
+        },
+        {
+            "playbookID": "TestWordFileToIOC",
+            "timeout": 300
         },
         {
             "integrations": "Symantec Endpoint Protection V2",
@@ -1677,6 +1685,10 @@
             "playbookID": "ReadFile test"
         },
         {
+            "integrations": "TruSTAR",
+            "playbookID": "TruSTAR Test"
+        },
+        {
             "integrations": "AlphaSOC Wisdom",
             "playbookID": "AlphaSOC-Wisdom-Test"
         },
@@ -1692,8 +1704,7 @@
         {
             "integrations": "Infocyte",
             "playbookID": "Infocyte-Test",
-            "timeout": 1200,
-            "fromversion": "5.5.0"
+            "timeout": 1200
         },
         {
             "integrations": "Qualys",
@@ -2038,6 +2049,10 @@
         },
         {
             "playbookID": "ExtractDomainFromEmailTest"
+        },
+        {
+            "playbookID": "Account Enrichment - Generic v2 - Test",
+            "integrations": "activedir"
         },
         {
             "playbookID": "Extract Indicators From File - Generic v2 - Test",
@@ -2809,15 +2824,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "playbookID": "PCAP File Carving Test",
-            "instance_names": "virus_total_general",
-            "integrations": [
-                "VirusTotal",
-                "WildFire-v2"
-            ],
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "VirusTotal",
             "instance_names": "virus_total_general",
             "playbookID": "PCAP Parsing And Indicator Enrichment Test",
@@ -2843,11 +2849,6 @@
             "integrations": "TruSTAR v2",
             "playbookID": "TruSTAR v2-Test",
             "timeout": 500
-        },
-        {
-            "integrations": "Blueliv ThreatCompass",
-            "playbookID": "Blueliv_ThreatCompass_test",
-            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
@@ -2867,6 +2868,8 @@
         "Test-Shodan_v2": "Issue 23370",
         "Symantec Deepsight Test": "Issue 22971",
         "Cybereason Test": "Issue 22683",
+        "Bluecat Address Manager test": "Issue 22616",
+        "test-Expanse": "Issue 26248",
         "TestProofpointFeed": "Issue 22229",
         "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
@@ -2874,6 +2877,7 @@
         "TestUptycs": "Issue 19750",
         "InfoArmorVigilanteATITest": "Test issue 17358",
         "ArcSight Logger test": "Issue 19117",
+        "TruSTAR Test": "Issue 19777",
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
@@ -2896,31 +2900,10 @@
         "GCS Bucket Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "GCS Object Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "Send Email To Recipients": "used in EWS Mail Sender Test 2 as sub playbook",
-        "Cortex XDR - IOC - Test": "issue #25598",
-        "Create Phishing Classifier V2 ML Test": "Issue 26341",
-        "DuoAdmin API test playbook": "Issue 24937",
-        "Mail Sender (New) Test": "Issue 25602",
-        "SMB test": "Issue 26454",
-        "Infocyte-Test": "Issue 26445",
-        "Account Enrichment - Generic v2 - Test": "Issue 26452",
-        "Office365_Feed_Test": "Issue 26455",
-        "DBotCreatePhishingClassifierV2FromFile-Test": "Issue 26456",
-        "Google Chronicle Backstory Asset - Test": "Issue 26460",
-        "Keylight v2 - Test": "Issue 26462",
-        "AutoFocus V2 test": "Issue 26464",
-        "PAN-OS Create Or Edit Rule Test": "Issue 26465",
-        "HybridAnalysis-Test": "Issue 26599",
-        "Logzio - Test": "Issue 26729",
-        "Tenable.io test": "Issue 26727",
-        "Tenable.io Scan Test": "Issue 26727",
-        "URL Enrichment - Generic v2 - Test": "Issue 26463",
-        "Fidelis-Test": "Issue 26453",
-        "ThreatConnect v2 - Test": "Issue 26782",
-        "Pwned v2 test": "Issue 26601",
-        "Email Address Enrichment - Generic v2.1 - Test": "Issue 26785"
+        "Cortex XDR - IOC - Test": "issue #25598"
     },
     "skipped_integrations": {
-        
+
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Symantec Management Center": "Issue 23960",
         "PerceptionPoint": "Issue 25795",
@@ -2928,9 +2911,11 @@
         "Traps": "Issue 24122",
         "McAfee Advanced Threat Defense": "Issue 16909",
         "CrowdStrike Falcon X": "Issue 26209",
+        "Cisco Umbrella Investigate": "Issue 24338",
         "Deep Instinct": "The partner didn't provide an instance",
         "Cofense Triage v2": "No instance - partner integration",
         "ArcSight Logger": "Issue 24303",
+        "AttackIQFireDrill": "Issue 24281",
         "MxToolBox": "No instance",
         "Skyformation": "No instance, old partner",
         "Prisma Access": "Instance will be provided soon by Lior and Prasen",
@@ -2972,6 +2957,7 @@
         "fireeye": "Issue 19839",
         "DomainTools": "Issue 8298",
         "Remedy On-Demand": "Issue 19835",
+        "DomainTools Iris": "Issue 20433",
         "Check Point": "Issue 18643",
         "Preempt": "Issue 20268",
         "iDefense": "Issue 20095",
@@ -2984,6 +2970,7 @@
         "AlienVault USM Anywhere": "Issue #18273",
         "Tufin": "Issue 16441",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
+        "MimecastV2": "Issue 14593",
         "Netskope": "instance is down",
         "Farsight DNSDB": "Issue 15512",
         "Service Manager": "Expired license",
@@ -3011,12 +2998,11 @@
         "VxStream": "Issue #23795",
         "Bambenek Consulting Feed": "Issue 26184",
         "AWS - Athena - Beta": "Issue 19834",
-        "Blueliv ThreatCompass": "Community contribution",
-        
+
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tenable.sc": "unstable instance",
-        
+
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Issue 25650",
         "XFE_v2": "Issue 22715",
@@ -3025,14 +3011,14 @@
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "Issue 26266",
-        
+
         "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer",
         "SafeBreach v2": "it is a partner integration, no instance",
         "IllusiveNetworks": "supported by partner",
         "Humio": "supported by the partner",
         "Digital Guardian": "partner integration",
-        
+
         "_comment5": "~~~ OTHER ~~~",
         "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
         "Cisco ASA": "Issue 25741",
@@ -3055,8 +3041,6 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
-        "ThreatConnect v2": "Issue 26794",
-        "Infocyte": "Proxy issues",
         "SNDBOX": "Submits a file - tests that send files shouldn't be mocked",
         "Joe Security": "Submits a file - tests that send files shouldn't be mocked",
         "Maltiverse": "issue 24335",
@@ -3072,8 +3056,7 @@
         "Image OCR": "Does not perform network traffic",
         "Server Message Block (SMB)": "Does not perform http communication",
         "Active Directory Query v2": "Does not perform http communication",
-        "dnstwist": "Does not perform http communication",
-        "Generic SQL": "Does not perform http communication",
+        "dnstwist": "Does not peform http communication",
         "VxStream": "Issue 15544",
         "PagerDuty v2": "Integration requires SSL",
         "TCPIPUtils": "Integration requires SSL",
@@ -3192,7 +3175,7 @@
         "Cortex Data Lake"
     ],
     "docker_thresholds": {
-        
+
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {

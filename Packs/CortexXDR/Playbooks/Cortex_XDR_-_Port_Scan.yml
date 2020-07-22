@@ -39,10 +39,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 8277520e-1e78-403a-8914-018cd06cc1f3
     type: title
     task:
@@ -67,10 +65,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: dd99e02f-59f3-403d-86ed-0c56428cd7ad
     type: regular
     task:
@@ -104,10 +100,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "15":
-    id: "15"
+  '15':
+    id: '15'
     taskid: fb9bb58b-4c96-4820-84a6-ea829168c785
     type: regular
     task:
@@ -149,10 +143,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "24":
-    id: "24"
+  '24':
+    id: '24'
     taskid: 7a7a6ec8-c9fa-415a-87bc-bc507762e35e
     type: regular
     task:
@@ -195,10 +187,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "32":
-    id: "32"
+  '32':
+    id: '32'
     taskid: 9de655f8-11e9-4297-8a3d-90b5c7878c91
     type: condition
     task:
@@ -226,10 +216,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "34":
-    id: "34"
+  '34':
+    id: '34'
     taskid: 5ade44c2-fea8-45bf-81fd-a1f00699998a
     type: regular
     task:
@@ -255,10 +243,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "37":
-    id: "37"
+  '37':
+    id: '37'
     taskid: 60870224-e9dc-4cab-8f05-eaf6e832a45c
     type: regular
     task:
@@ -296,10 +282,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "40":
-    id: "40"
+  '40':
+    id: '40'
     taskid: 73644573-1b41-4de6-847a-036fa9003a86
     type: regular
     task:
@@ -356,10 +340,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "42":
-    id: "42"
+  '42':
+    id: '42'
     taskid: 8cbe42bf-2e02-4201-8a2a-10d019de3b5f
     type: title
     task:
@@ -384,10 +366,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "45":
-    id: "45"
+  '45':
+    id: '45'
     taskid: 21793aba-c2ca-4961-85e9-10b3ff85b818
     type: regular
     task:
@@ -426,10 +406,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "46":
-    id: "46"
+  '46':
+    id: '46'
     taskid: d9ea6596-fcd4-4f66-8bae-e6d654b358d4
     type: regular
     task:
@@ -467,10 +445,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "48":
-    id: "48"
+  '48':
+    id: '48'
     taskid: 55653c88-b81f-4477-84ad-c0b928f57b61
     type: condition
     task:
@@ -515,10 +491,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "49":
-    id: "49"
+  '49':
+    id: '49'
     taskid: c15ebabb-7bd3-420f-8a0e-e98c9b1a0407
     type: regular
     task:
@@ -556,10 +530,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "50":
-    id: "50"
+  '50':
+    id: '50'
     taskid: 8d3ea69c-7a79-4d44-8316-4b8e628791ca
     type: regular
     task:
@@ -616,10 +588,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "51":
-    id: "51"
+  '51':
+    id: '51'
     taskid: fe20e8a9-9913-4989-8337-1cc117319cf4
     type: regular
     task:
@@ -677,10 +647,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "52":
-    id: "52"
+  '52':
+    id: '52'
     taskid: 3c6b03b5-80b2-4526-8a5d-4571103d4f6e
     type: regular
     task:
@@ -705,10 +673,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "54":
-    id: "54"
+  '54':
+    id: '54'
     taskid: 658cbdbe-d7d7-4575-86dc-03de7c56e103
     type: condition
     task:
@@ -747,11 +713,9 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "59":
-    id: "59"
-    taskid: 7cf215e5-3e44-4611-8896-763e0008e031
+  '59':
+    id: '59'
+    taskid: e02d1a26-fc02-47af-8409-b98f7206acb0
     type: playbook
     task:
       id: e02d1a26-fc02-47af-8409-b98f7206acb0
@@ -809,7 +773,6 @@ tasks:
       iscommand: false
       exitCondition: ''
       wait: 1
-      max: 0
     view: |-
       {
         "position": {
@@ -820,10 +783,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-  "60":
-    id: "60"
+  '60':
+    id: '60'
     taskid: 94865e07-4176-494c-815b-36d6e15aee37
     type: title
     task:
@@ -848,10 +809,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "61":
-    id: "61"
+  '61':
+    id: '61'
     taskid: 53c86ada-28b3-46de-8da2-e799b8a88bd9
     type: playbook
     task:
@@ -901,7 +860,6 @@ tasks:
       iscommand: false
       exitCondition: ''
       wait: 1
-      max: 0
     view: |-
       {
         "position": {
@@ -912,10 +870,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "62":
-    id: "62"
+  '62':
+    id: '62'
     taskid: 564342aa-8759-4b57-81c9-f8251f7362b7
     type: regular
     task:
@@ -953,10 +909,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "63":
-    id: "63"
+  '63':
+    id: '63'
     taskid: 6d49f70a-f26a-4fa6-80e9-70a448ad330a
     type: regular
     task:
@@ -994,10 +948,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "64":
-    id: "64"
+  '64':
+    id: '64'
     taskid: 612da2fe-8435-4296-860c-3f3406c69d9d
     type: condition
     task:
@@ -1034,10 +986,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "65":
-    id: "65"
+  '65':
+    id: '65'
     taskid: ef28b658-0ec9-4697-8b88-2d48a854d590
     type: regular
     task:
@@ -1062,10 +1012,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "66":
-    id: "66"
+  '66':
+    id: '66'
     taskid: 36ca3b97-fe38-46cd-80e9-1e2ec5967245
     type: regular
     task:
@@ -1108,10 +1056,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "67":
-    id: "67"
+  '67':
+    id: '67'
     taskid: 7f35d238-c12d-4a4d-8882-f60193205889
     type: condition
     task:
@@ -1149,10 +1095,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "68":
-    id: "68"
+  '68':
+    id: '68'
     taskid: da2051e1-6927-4981-8029-bb62d9aa8b3b
     type: condition
     task:
@@ -1193,10 +1137,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "69":
-    id: "69"
+  '69':
+    id: '69'
     taskid: d788391d-43fe-46d8-86de-104abc8ccb81
     type: regular
     task:
@@ -1221,10 +1163,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "70":
-    id: "70"
+  '70':
+    id: '70'
     taskid: bc083d17-bb8e-484e-8e41-a0bbb1ef4a51
     type: playbook
     task:
@@ -1268,7 +1208,6 @@ tasks:
       iscommand: false
       exitCondition: ''
       wait: 1
-      max: 0
     view: |-
       {
         "position": {
@@ -1279,10 +1218,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "71":
-    id: "71"
+  '71':
+    id: '71'
     taskid: 4aa93eea-6c1f-4581-836b-0fdbe9add734
     type: playbook
     task:
@@ -1308,10 +1245,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "72":
-    id: "72"
+  '72':
+    id: '72'
     taskid: 158f2967-e083-4320-80b9-c59a5457e271
     type: condition
     task:
@@ -1352,10 +1287,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "73":
-    id: "73"
+  '73':
+    id: '73'
     taskid: 019f9c6b-61aa-4aab-85c2-b92bab3899bb
     type: regular
     task:
@@ -1381,10 +1314,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "75":
-    id: "75"
+  '75':
+    id: '75'
     taskid: 4830e0a6-14de-40fb-8b7a-331a28311f0b
     type: condition
     task:
@@ -1460,10 +1391,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "76":
-    id: "76"
+  '76':
+    id: '76'
     taskid: b9dc1315-c732-4365-8561-999d8662de3d
     type: regular
     task:
@@ -1517,10 +1446,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "77":
-    id: "77"
+  '77':
+    id: '77'
     taskid: 286f079f-f592-420f-881f-f2af0405ab41
     type: condition
     task:
@@ -1581,10 +1508,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "78":
-    id: "78"
+  '78':
+    id: '78'
     taskid: b1d73a2e-7823-4147-80ed-f666ad970851
     type: regular
     task:
@@ -1610,10 +1535,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "79":
-    id: "79"
+  '79':
+    id: '79'
     taskid: b69262ea-4383-4218-824b-e13233a2c5a1
     type: playbook
     task:
@@ -1658,7 +1581,6 @@ tasks:
       iscommand: false
       exitCondition: ''
       wait: 1
-      max: 0
     view: |-
       {
         "position": {
@@ -1669,10 +1591,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "80":
-    id: "80"
+  '80':
+    id: '80'
     taskid: 11521065-d8aa-4e7e-8b53-2c77657f6ba7
     type: regular
     task:
@@ -1741,10 +1661,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "81":
-    id: "81"
+  '81':
+    id: '81'
     taskid: 51b45449-8567-4a5f-871e-ee3f197b067f
     type: regular
     task:
@@ -1778,10 +1696,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "82":
-    id: "82"
+  '82':
+    id: '82'
     taskid: 15bc7cde-88d7-4ff6-8389-64f1b0a2ef6b
     type: regular
     task:
@@ -1819,10 +1735,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "83":
-    id: "83"
+  '83':
+    id: '83'
     taskid: 0c124ca8-5d37-4e19-83a1-53f67beef180
     type: regular
     task:
@@ -1856,10 +1770,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "84":
-    id: "84"
+  '84':
+    id: '84'
     taskid: 366c1ef2-5cb7-4dc2-8b26-8cde056e287c
     type: regular
     task:
@@ -1909,10 +1821,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "86":
-    id: "86"
+  '86':
+    id: '86'
     taskid: f0f2d1d0-d4c1-4089-8ed9-31e88ea93610
     type: title
     task:
@@ -1937,10 +1847,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "87":
-    id: "87"
+  '87':
+    id: '87'
     taskid: 0818dc59-3276-4a92-86b3-20a0c006774c
     type: title
     task:
@@ -1965,10 +1873,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "88":
-    id: "88"
+  '88':
+    id: '88'
     taskid: a6627a56-c465-4d96-8e3e-4f1ed0ed6bbb
     type: title
     task:
@@ -1993,10 +1899,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "89":
-    id: "89"
+  '89':
+    id: '89'
     taskid: 43adfaa6-26d4-4f0b-8429-90088ffa1094
     type: title
     task:
@@ -2021,10 +1925,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "90":
-    id: "90"
+  '90':
+    id: '90'
     taskid: 887a43af-e9fe-4c60-85ca-611d319676f0
     type: title
     task:
@@ -2049,10 +1951,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "91":
-    id: "91"
+  '91':
+    id: '91'
     taskid: 9f4c3903-549c-4273-8a45-b98e203a2dc3
     type: playbook
     task:
@@ -2083,7 +1983,6 @@ tasks:
       iscommand: false
       exitCondition: ''
       wait: 1
-      max: 0
     view: |-
       {
         "position": {
@@ -2094,10 +1993,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "92":
-    id: "92"
+  '92':
+    id: '92'
     taskid: cb51a083-1e21-44b5-8901-116962d8c5b5
     type: regular
     task:
@@ -2399,10 +2296,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "93":
-    id: "93"
+  '93':
+    id: '93'
     taskid: 4a2b9672-7df4-496d-8852-9669a2b078ac
     type: regular
     task:
@@ -2722,10 +2617,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "94":
-    id: "94"
+  '94':
+    id: '94'
     taskid: 87e6b32a-23a6-4aed-8103-6ffdbe0d2928
     type: regular
     task:
@@ -3030,10 +2923,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "95":
-    id: "95"
+  '95':
+    id: '95'
     taskid: 1fc18b5e-5f11-47f6-8f94-f8bad97fc719
     type: regular
     task:
@@ -3070,10 +2961,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "96":
-    id: "96"
+  '96':
+    id: '96'
     taskid: 0dfd512e-ddfc-40ab-879c-301b55822d1a
     type: title
     task:
@@ -3095,8 +2984,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {

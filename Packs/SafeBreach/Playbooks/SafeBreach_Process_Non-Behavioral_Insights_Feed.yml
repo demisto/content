@@ -441,7 +441,7 @@ tasks:
       '#default#':
       - "3"
       More indicators to remediate:
-      - "23"
+      - "25"
     separatecontext: false
     conditions:
     - label: More indicators to remediate
@@ -462,61 +462,6 @@ tasks:
         "position": {
           "x": 490,
           "y": 860
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "23":
-    id: "23"
-    taskid: bf9fd680-6d44-485b-8fc0-8d19419ab6f0
-    type: playbook
-    task:
-      id: bf9fd680-6d44-485b-8fc0-8d19419ab6f0
-      version: -1
-      name: SafeBreach - Create Incidents per Insight and Associate Indicators
-      description: This is a sub-playbook that creates incidents per SafeBreach insight,
-        enriched with all the related indicators and additional SafeBreach insight
-        contextual information. Used in main SafeBreach playbooks, such as "SafeBreach
-        - Process Behavioral Insights Feed" and "SafeBreach - Process Non-Behavioral
-        Insights Feed".
-      playbookName: SafeBreach - Create Incidents per Insight and Associate Indicators
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      indicators:
-        complex:
-          root: playbookQuery
-          filters:
-          - - operator: in
-              left:
-                value:
-                  simple: playbookQuery.value
-                iscontext: true
-              right:
-                value:
-                  simple: NotRemediatedIndicators
-                iscontext: true
-      insightIds:
-        complex:
-          root: InsightIds
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 1100
         }
       }
     note: false
@@ -568,9 +513,77 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "25":
+    id: "25"
+    taskid: 805fe301-1f29-412e-8ec9-a25c1e2ef316
+    type: playbook
+    task:
+      id: 805fe301-1f29-412e-8ec9-a25c1e2ef316
+      version: -1
+      name: SafeBreach - Create Incidents per Insight and Associate Indicators
+      description: This is a sub-playbook that creates incidents per SafeBreach insight,
+        enriched with all the related indicators and additional SafeBreach insight
+        contextual information. Used in main SafeBreach playbooks, such as "SafeBreach
+        - Process Behavioral Insights Feed" and "SafeBreach - Process Non-Behavioral
+        Insights Feed".
+      playbookName: SafeBreach - Create Incidents per Insight and Associate Indicators
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      indicators:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+              right:
+                value:
+                  simple: NotRemediatedIndicators
+                iscontext: true
+      insightIds:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+              right:
+                value:
+                  simple: NotRemediatedIndicators
+                iscontext: true
+          accessor: CustomFields.safebreachinsightids
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "24_3_#default#": 0.9
+    },
     "paper": {
       "dimensions": {
         "height": 2315,

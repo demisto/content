@@ -83,7 +83,7 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      exclude: {}
+      exclusivity: {}
       fieldname: {}
       operator: {}
       page: {}

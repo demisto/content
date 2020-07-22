@@ -1213,7 +1213,7 @@ tasks:
     task:
       id: 5288d043-c7c7-4005-8817-bd91e3871227
       version: -1
-      name: Find similar incidents by fields
+      name: Find similar incidents
       description: |-
         Finds similar incidents by common incident keys, labels, custom fields or context keys.
         It's highly recommended to use incident keys if possible (e.g., "type" for the same incident type).
@@ -1234,9 +1234,7 @@ tasks:
       maxResults: {}
       similarContextKeys: {}
       similarCustomFields: {}
-      similarIncidentFields:
-        complex:
-          root: inputs.similarIncidentFields
+      similarIncidentFields: {}
       similarIncidentKeys: {}
       similarLabelsKeys: {}
       skipMissingValues: {}
@@ -1286,30 +1284,6 @@ tasks:
           right:
             value:
               simple: "yes"
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Demisto REST API
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
     view: |-
       {
         "position": {
@@ -1359,7 +1333,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: true
+    skipunavailable: false
     quietmode: 0
   "43":
     id: "43"
@@ -1788,8 +1762,7 @@ inputs:
   description: Incident ID.
   playbookInputQuery:
 - key: similarIncidentFields
-  value:
-    simple: xdrdescription
+  value: {}
   required: false
   description: A comma-separated list of similar incident fields keys.
   playbookInputQuery:

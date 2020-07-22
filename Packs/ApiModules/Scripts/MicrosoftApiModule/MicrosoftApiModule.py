@@ -82,7 +82,7 @@ class MicrosoftClient(BaseClient):
         Overrides Base client request function, retrieves and adds to headers access token before sending the request.
 
         Returns:
-            Response from api according to resp_type. The default is `json` (dict or list).
+            requests.Response: The http response
         """
         token = self.get_access_token()
         default_headers = {

@@ -332,6 +332,5 @@
     },
     "typeId": "Pentera Insight",
     "version": -1,
-    "fromVersion": "5.0.0",
-    "toVersion": "5.9.9"
+    "fromVersion": "5.0.0"
 }

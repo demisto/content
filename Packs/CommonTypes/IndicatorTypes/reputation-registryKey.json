@@ -129,6 +129,5 @@
         }
     },
     "manualMapping": null,
-    "fileHashesPriority": null,
-    "layout": "registryKey"
+    "fileHashesPriority": null
 }

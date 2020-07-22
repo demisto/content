@@ -1,4 +1,4 @@
-Deprecated. Collects data from endpoints for IR purposes. Will use whichever integrations are configured and available.
+Collects data from endpoints for IR purposes. Will use whichever integrations are configured and available.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

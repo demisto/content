@@ -455,6 +455,5 @@
 			}
 		},
   "manualMapping": null,
-  "fileHashesPriority": null,
-  "layout": "domainRepUnified"
+  "fileHashesPriority": null
 }

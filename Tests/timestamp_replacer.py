@@ -213,6 +213,7 @@ class TimestampReplacer:
             json_body (dict): The request body to modify.
         '''
         original_content = deepcopy(json_body)
+        body = json_body
         modified = False
         keys_to_replace = self.json_keys
         print('{}'.format(keys_to_replace))

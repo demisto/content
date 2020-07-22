@@ -1,20 +1,24 @@
 <!-- HTML_DOC -->
 <p>Use the Microsoft Graph Calendar integration to create, and manage different calendars and events according to your requirements.</p>
-
-<h2>Authentication</h2>
-For more details about the authentication used in this integration, see <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication">Microsoft Integrations - Authentication</a>.
-
-<h3>Required Permissions</h3>
+<h2 id="h_d0642479-95d1-4f92-b2da-f6c16c3e48b2">Detailed Description</h2>
+<ul>
+<li>To allow access to Microsoft Graph Calendar, an administrator has to approve the Demisto app using an admin consent flow, by clicking <a href="https://oproxy.demisto.ninja/ms-graph-calendar" target="_self">here</a>.</li>
+<li>After authorizing the Demisto app, you will get an ID, Token, and Key, which needs to be added to the integration instance configuration's corresponding fields.</li>
+</ul>
+<h2>Required Permissions in the MS Graph Groups App:</h2>
 <ul>
 <li>Directory.ReadWrite.All - Delegated</li>
 <li>Directory.ReadWrite.All - Application</li>
-<li>Group.ReadWrite.All - Application</li>
+<li>Group.ReadWrite.All - Application
+<ul>
 <li>Calendars.Read - Delegated</li>
 <li>Calendars.Read - Application</li>
 <li>Calendars.ReadWrite - Delegated</li>
 <li>Calendars.ReadWrite - Application</li>
 </ul>
-<h2>Configure Microsoft Graph Calendar on Cortex XSOAR</h2>
+</li>
+</ul>
+<h2>Configure Microsoft Graph Calendar on Demisto</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong>  &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Microsoft Graph Calendar.</li>
@@ -33,6 +37,15 @@ For more details about the authentication used in this integration, see <a href=
 </li>
 <li>Click <strong>Test</strong> to validate the new instance.</li>
 </ol>
+
+<h2>Use a self deployed Azure application</h2>
+<p>To use a self configured Azure application, a new Azure App Registration should be added in the Azure Portal. To add such registration, refer to the following Microsoft article:
+<a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app">https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app</a></p>
+<p>The Tenant ID, Client ID and Client secret are needed for the integration.
+To configure the integration in Demisto to use the application, place those parameters in the following manner (instead of you received from the admin consent in the current doc):
+<p>ID - Client ID<br>
+Token - Tenant ID<br>
+Key - Client Secret</p></p>
 
 <h2>Commands</h2>
 <p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>

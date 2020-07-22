@@ -216,7 +216,7 @@ def send_request(method, url, headers=AUTH_HEADERS, params=None, data=None):
     except HTTPError:
         if res is not None:
             try:
-                err_json = unicode_to_str_recur(res.json())
+                err_json = res.json()
             except ValueError:
                 raise Exception('Error code {err}\nContent: {cnt}'.format(err=res.status_code, cnt=res.content))
 
@@ -237,7 +237,7 @@ def send_request(method, url, headers=AUTH_HEADERS, params=None, data=None):
     except ValueError:
         LOG('Got unexpected response from QRadar. Raw response: {}'.format(res.text))
         raise DemistoException('Got unexpected response from QRadar')
-    return unicode_to_str_recur(json_body)
+    return json_body
 
 
 def send_request_no_error_handling(headers, method, params, url, data):
