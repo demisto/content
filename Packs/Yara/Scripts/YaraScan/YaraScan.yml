@@ -54,3 +54,4 @@ subtype: python3
 runonce: false
 dockerimage: demisto/yarapy:1.0.0.5648
 runas: DBotWeakRole
+toversion: 4.1.9

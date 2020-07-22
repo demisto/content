@@ -35,3 +35,4 @@ type: python
 dockerimage: demisto/python3:3.8.3.9324
 tests:
 - IsUrlPartOfDomain Test
+toversion: 4.1.9

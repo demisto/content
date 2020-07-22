@@ -38,8 +38,7 @@ configuration:
   defaultvalue: 24 hours
   type: 0
   required: false
-- display: Alerts to fetch per run; note that increasing this value may result in
-    slow performance if too many results are returned at once
+- display: Alerts to fetch per run; note that increasing this value may result in slow performance if too many results are returned at once
   name: fetch_limit
   defaultvalue: "10"
   type: 0
@@ -204,17 +203,12 @@ script:
     - contextPath: File.Hostname
       description: The hostname where the file event was captured.
       type: string
-    description: Searches for a file in Security Data by JSON query, hash, username,
-      device hostname, exfiltration type, or a combination of parameters. At least
-      one argument must be passed in the command. If a JSON argument is passed,
-      it will be used to the exclusion of other parameters, otherwise parameters will
-      be combined with an AND clause.
+    description: Searches for a file in Security Data by JSON query, hash, username, device hostname, exfiltration type, or a combination of parameters. At least one argument must be passed in the command. If a JSON argument is passed, it will be used to the exclusion of other parameters, otherwise parameters will be combined with an AND clause.
   - name: code42-alert-get
     arguments:
     - name: id
       required: true
-      description: The alert ID to retrieve. Alert IDs are associated with alerts that
-        are fetched via fetch-incidents.
+      description: The alert ID to retrieve. Alert IDs are associated with alerts that are fetched via fetch-incidents.
     outputs:
     - contextPath: Code42.SecurityAlert.Username
       description: The username associated with the alert.
@@ -277,8 +271,7 @@ script:
     arguments:
     - name: id
       required: true
-      description: The alert ID to resolve. Alert IDs are associated with alerts that
-        are fetched via fetch-incidents.
+      description: The alert ID to resolve. Alert IDs are associated with alerts that are fetched via fetch-incidents.
     outputs:
     - contextPath: Code42.SecurityAlert.ID
       description: The alert ID of the resolved alert.
@@ -288,3 +281,4 @@ script:
   isfetch: true
   runonce: false
   subtype: python3
+toversion: 4.1.9

@@ -18,14 +18,12 @@ args:
   required: false
   secret: false
 - default: false
-  description: Enter 'yes' (or any other value) if the ZIP file is last ZIP file in
-    the War Room.
+  description: Enter 'yes' (or any other value) if the ZIP file is last ZIP file in the War Room.
   isArray: false
   name: lastZipFileInWarroom
   required: false
   secret: false
-comment: Unzip a file using fileName or entryID to specify a file. Unzipped files
-  will be loaded to the War Room and names will be put into the context.
+comment: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
 commonfields:
   id: UnzipFile
   version: -1
@@ -48,3 +46,4 @@ tests:
 - ZipFile-Test
 - UnzipFile-Test
 subtype: python2
+toversion: 4.1.9

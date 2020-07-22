@@ -28,3 +28,4 @@ scripttarget: 0
 subtype: python3
 runonce: false
 runas: DBotWeakRole
+toversion: 4.1.9

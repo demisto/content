@@ -22,3 +22,4 @@ type: python
 dockerimage: demisto/python3:3.8.1.5734
 tests:
 - CreateIndicatorFromSTIXTest
+toversion: 4.1.9

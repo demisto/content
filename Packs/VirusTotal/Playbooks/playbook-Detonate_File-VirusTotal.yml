@@ -442,4 +442,5 @@ outputs:
   type: String
 fromversion: 4.0.0
 tests:
-  - vt-detonate test
+- vt-detonate test
+toversion: 4.1.9

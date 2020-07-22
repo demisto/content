@@ -215,12 +215,12 @@ inputs:
   value:
     simple: "false"
   required: false
-  description: Removes the query string part from indicators, when the rules can be
-    applied.
+  description: Removes the query string part from indicators, when the rules can be applied.
 - key: Indicator type
   value: {}
   required: false
   description: Filter the indicators by indicator type.
 outputs: []
 tests:
-  - PhishLabsTestPopulateIndicators
+- PhishLabsTestPopulateIndicators
+toversion: 4.1.9

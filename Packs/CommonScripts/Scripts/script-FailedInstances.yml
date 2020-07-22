@@ -3,11 +3,14 @@ commonfields:
   version: -1
 fromversion: 4.0.0
 name: FailedInstances
-script: |
+script: >
   var INTERNAL_MODULES_BRANDS = ['Scripts', 'Builtin'];
 
+
   var failedInstances = [];
+
   var all = getModules();
+
 
   Object.keys(all).forEach(function(m) {
       if (all[m].state === 'active' && all[m].defaultIgnored !== 'true' && INTERNAL_MODULES_BRANDS.indexOf(all[m].brand) === -1) {
@@ -33,12 +36,15 @@ script: |
       }
   });
 
+
   var hr;
+
   if (failedInstances.length === 0) {
       hr = '### All active instances are available! ✅';
   } else {
       hr = tableToMarkdown('Failed Instances:', failedInstances, ['instance', 'brand', 'category', 'information']);
   }
+
 
   return {
       Type: entryTypes.note,
@@ -49,8 +55,7 @@ script: |
   };
 type: javascript
 tags: []
-comment: Executes test for all integration instances available and returns a detailed
-  table about failed integration instances
+comment: Executes test for all integration instances available and returns a detailed table about failed integration instances
 enabled: true
 outputs:
 - contextPath: FailedInstances.instance
@@ -69,3 +74,4 @@ scripttarget: 0
 system: true
 timeout: 10.8µs
 runonce: false
+toversion: 4.1.9

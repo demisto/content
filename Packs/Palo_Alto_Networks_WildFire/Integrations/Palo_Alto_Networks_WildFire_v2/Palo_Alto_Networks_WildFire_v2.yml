@@ -168,8 +168,8 @@ script:
     - name: verbose
       auto: PREDEFINED
       predefined:
-        - "true"
-        - "false"
+      - "true"
+      - "false"
       description: Receive extended information from WildFire.
       defaultValue: "false"
     outputs:
@@ -290,8 +290,7 @@ script:
   - name: wildfire-get-verdicts
     arguments:
     - name: EntryID
-      description: EntryID of the text file that contains multiple hashes. Limit is
-        500 hashes.
+      description: EntryID of the text file that contains multiple hashes. Limit is 500 hashes.
       isArray: true
     - name: hash_list
       description: A list of hashes to get verdicts for.
@@ -321,8 +320,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: number
-    description: Returns a verdict regarding multiple hashes, stored in a TXT file or
-      given as list.
+    description: Returns a verdict regarding multiple hashes, stored in a TXT file or given as list.
   - name: wildfire-upload-url
     arguments:
     - name: upload
@@ -359,3 +357,4 @@ script:
   subtype: python3
 tests:
 - Wildfire Test
+toversion: 4.1.9
