@@ -3,31 +3,37 @@ version: -1
 name: Illusive - Data Enrichment
 description: This playbook is used for automatic enrichment of incidents in the organization
   network, with Illusive's set of forensics and data
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: be6b2a8f-97d6-4cd8-8657-8839adb655aa
     type: start
     task:
       id: be6b2a8f-97d6-4cd8-8657-8839adb655aa
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '8'
+      - "8"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 310,\n    \"y\": -270\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": -270
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '1':
-    id: '1'
+  "1":
+    id: "1"
     taskid: 7db944b3-07a9-419f-80f5-5ea881eff680
     type: regular
     task:
@@ -41,7 +47,7 @@ tasks:
       brand: IllusiveNetworks
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     scriptarguments:
       has_forensics: {}
       hostnames: {}
@@ -51,14 +57,20 @@ tasks:
       offset: {}
       start_date: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 660,\n    \"y\": 370\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 370
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '2':
-    id: '2'
+  "2":
+    id: "2"
     taskid: 2ac198a3-76a7-4234-8e76-dcc61bbe993e
     type: condition
     task:
@@ -68,15 +80,15 @@ tasks:
       description: Check If incident has forensics
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '15'
-      yes:
-      - '3'
+      - "15"
+      "yes":
+      - "3"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -85,15 +97,21 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'true'
-    view: "{\n  \"position\": {\n    \"x\": 660,\n    \"y\": 515\n  }\n}"
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 515
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '3':
-    id: '3'
+  "3":
+    id: "3"
     taskid: 0f5549ae-a6ac-4190-8258-fe9d1de6e788
     type: regular
     task:
@@ -107,21 +125,27 @@ tasks:
       brand: IllusiveNetworks
     nexttasks:
       '#none#':
-      - '27'
+      - "27"
     scriptarguments:
       incident_id:
         simple: ${inputs.illusive_incident_id}
       limit: {}
       offset: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 650,\n    \"y\": 770\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 770
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '5':
-    id: '5'
+  "5":
+    id: "5"
     taskid: 81693faf-e408-4d97-85f9-7e58f6856385
     type: playbook
     task:
@@ -133,10 +157,10 @@ tasks:
       playbookName: Illusive-Collect-Forensics-On-Demand
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '11'
+      - "11"
     scriptarguments:
       end_date: {}
       'fqdn_or_ip ':
@@ -145,17 +169,23 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": -280,\n    \"y\": 400\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -280,
+          "y": 400
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '6':
-    id: '6'
+  "6":
+    id: "6"
     taskid: afeb322b-49a0-4111-84cf-7adb048d1659
     type: condition
     task:
@@ -165,29 +195,35 @@ tasks:
       description: Check what input was inserted to playbook
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '5'
-      yes:
-      - '1'
+      - "5"
+      "yes":
+      - "1"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
             value:
               simple: inputs.illusive_incident_id
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 100\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 100
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '8':
-    id: '8'
+  "8":
+    id: "8"
     taskid: 53fb022e-65e8-4cec-85ed-31972ec74ddc
     type: condition
     task:
@@ -198,15 +234,15 @@ tasks:
         OR fqdn_or_ip'
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '29'
-      yes:
-      - '6'
+      - "29"
+      "yes":
+      - "6"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -228,14 +264,20 @@ tasks:
             value:
               simple: inputs.fqdn_or_ip
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 310,\n    \"y\": -120\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": -120
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '11':
-    id: '11'
+  "11":
+    id: "11"
     taskid: e0955273-9460-4318-8567-4ea7c8375d2b
     type: regular
     task:
@@ -249,7 +291,7 @@ tasks:
       brand: IllusiveNetworks
     nexttasks:
       '#none#':
-      - '13'
+      - "13"
     scriptarguments:
       has_forensics: {}
       hostnames: {}
@@ -259,14 +301,20 @@ tasks:
       offset: {}
       start_date: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -280,\n    \"y\": 610\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -280,
+          "y": 610
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '13':
-    id: '13'
+  "13":
+    id: "13"
     taskid: 86788284-8fa5-4b81-88f3-4f5db1ac0fa8
     type: regular
     task:
@@ -280,13 +328,19 @@ tasks:
       brand: IllusiveNetworks
     nexttasks:
       '#none#':
-      - '22'
+      - "22"
     scriptarguments:
       event_id:
         simple: ${Illusive.Forensics.Evidence.eventId}
     continueonerror: true
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -50,\n    \"y\": 830\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 830
+        }
+      }
     note: false
     evidencedata:
       description:
@@ -296,8 +350,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '14':
-    id: '14'
+  "14":
+    id: "14"
     taskid: 9311652d-a40e-42c2-8ad0-6f7095a51f94
     type: regular
     task:
@@ -311,7 +365,7 @@ tasks:
       brand: IllusiveNetworks
     nexttasks:
       '#none#':
-      - '20'
+      - "20"
     scriptarguments:
       event_id:
         complex:
@@ -324,11 +378,17 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: 'true'
+                  simple: "true"
           accessor: Incident.Event.eventId
     continueonerror: true
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 650,\n    \"y\": 1275\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 1275
+        }
+      }
     note: false
     evidencedata:
       description:
@@ -338,8 +398,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '15':
-    id: '15'
+  "15":
+    id: "15"
     taskid: 4c2e4b5e-cc1b-4d84-89d1-0d7549d80e53
     type: playbook
     task:
@@ -351,10 +411,10 @@ tasks:
       playbookName: Illusive-Collect-Forensics-On-Demand
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '13'
+      - "13"
     scriptarguments:
       end_date: {}
       'fqdn_or_ip ':
@@ -363,17 +423,23 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": 160,\n    \"y\": 610\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 610
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '18':
-    id: '18'
+  "18":
+    id: "18"
     taskid: 4548edac-abd0-4d0e-800f-7c99700ff6fc
     type: regular
     task:
@@ -387,7 +453,7 @@ tasks:
       brand: IllusiveNetworks
     nexttasks:
       '#none#':
-      - '14'
+      - "14"
     scriptarguments:
       end_date: {}
       incident_id:
@@ -395,7 +461,13 @@ tasks:
       start_date: {}
     continueonerror: true
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 650,\n    \"y\": 1110\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 1110
+        }
+      }
     note: false
     evidencedata:
       description:
@@ -405,8 +477,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '20':
-    id: '20'
+  "20":
+    id: "20"
     taskid: 1c795cbe-e2e2-46d4-8a1a-5522e9af554e
     type: regular
     task:
@@ -420,7 +492,7 @@ tasks:
       brand: IllusiveNetworks
     nexttasks:
       '#none#':
-      - '23'
+      - "23"
     scriptarguments:
       event_id:
         complex:
@@ -433,11 +505,17 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: 'true'
+                  simple: "true"
           accessor: Incident.Event.eventId
     continueonerror: true
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 650,\n    \"y\": 1440\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 1440
+        }
+      }
     note: false
     evidencedata:
       description:
@@ -447,8 +525,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '22':
-    id: '22'
+  "22":
+    id: "22"
     taskid: 51b411d2-7f4e-45c3-87e1-4eeb8cf8aa9b
     type: regular
     task:
@@ -462,13 +540,19 @@ tasks:
       brand: IllusiveNetworks
     nexttasks:
       '#none#':
-      - '24'
+      - "24"
     scriptarguments:
       event_id:
         simple: ${Illusive.Forensics.Evidence.eventId}
     continueonerror: true
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -50,\n    \"y\": 1015\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 1015
+        }
+      }
     note: false
     evidencedata:
       description:
@@ -478,8 +562,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '23':
-    id: '23'
+  "23":
+    id: "23"
     taskid: a70497cc-ca4a-479a-8615-323c9bca701f
     type: regular
     task:
@@ -493,7 +577,7 @@ tasks:
       brand: IllusiveNetworks
     nexttasks:
       '#none#':
-      - '29'
+      - "29"
     scriptarguments:
       artifact_type: {}
       event_id:
@@ -507,11 +591,17 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: 'true'
+                  simple: "true"
           accessor: Incident.Event.eventId
     continueonerror: true
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 650,\n    \"y\": 1600\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 1600
+        }
+      }
     note: false
     evidencedata:
       description:
@@ -521,8 +611,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '24':
-    id: '24'
+  "24":
+    id: "24"
     taskid: d731a875-9484-4e5e-84f4-f29adf4065a8
     type: regular
     task:
@@ -536,14 +626,20 @@ tasks:
       brand: IllusiveNetworks
     nexttasks:
       '#none#':
-      - '29'
+      - "29"
     scriptarguments:
       artifact_type: {}
       event_id:
         simple: ${Illusive.Forensics.Evidence.eventId}
     continueonerror: true
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -50,\n    \"y\": 1190\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 1190
+        }
+      }
     note: false
     evidencedata:
       description:
@@ -553,8 +649,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '26':
-    id: '26'
+  "26":
+    id: "26"
     taskid: 90caca65-46f5-4abd-8570-d9e1d57a2fd7
     type: regular
     task:
@@ -568,7 +664,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '18'
+      - "18"
     scriptarguments:
       accountgroups: {}
       accountid: {}
@@ -964,14 +1060,20 @@ tasks:
       xdrurl: {}
       xdrusercount: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1090,\n    \"y\": 1110\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1090,
+          "y": 1110
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '27':
-    id: '27'
+  "27":
+    id: "27"
     taskid: 7e688c93-6b25-4def-8fb2-4187ea531b67
     type: condition
     task:
@@ -981,15 +1083,15 @@ tasks:
       description: 'Check if incident type is "Illusive Networks Incident" '
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '18'
-      yes:
-      - '26'
+      - "18"
+      "yes":
+      - "26"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -999,14 +1101,20 @@ tasks:
           right:
             value:
               simple: Illusive Networks Incident
-    view: "{\n  \"position\": {\n    \"x\": 650,\n    \"y\": 945\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 945
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '29':
-    id: '29'
+  "29":
+    id: "29"
     taskid: 3f3ca51a-ff07-449d-881a-3bc54ee704b0
     type: title
     task:
@@ -1015,29 +1123,47 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 260,\n    \"y\": 1850\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 1850
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 2185,\n      \"width\": 1750,\n      \"x\": -280,\n      \"y\"\
-  : -270\n    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2185,
+        "width": 1750,
+        "x": -280,
+        "y": -270
+      }
+    }
+  }
 inputs:
 - key: illusive_incident_id
   value:
-    simple: '34'
+    simple: ${incident.illusivenetworksid}
   required: false
-  description: "Illusive incident ID\n"
+  description: |
+    Illusive incident ID
   playbookInputQuery:
 - key: fqdn_or_ip
-  value: {}
+  value:
+    simple: ${Endpoint.Hostname}
   required: false
-  description: "The endpoint's fqdn or IP address\n"
+  description: |
+    The endpoint's fqdn or IP address
   playbookInputQuery:
 outputs:
 - contextPath: Illusive.Incident.incidentId
@@ -1056,7 +1182,10 @@ outputs:
   description: The user who last reviewed the incident
   type: string
 - contextPath: Illusive.Incident.deceptionFamilies
-  description: "The deception families of the\ndeceptions used to trigger\nthe incident"
+  description: |-
+    The deception families of the
+    deceptions used to trigger
+    the incident
   type: string
 - contextPath: Illusive.Incident.riskInsights.stepsToCrownJewel
   description: The compromised host's lateral distance from Crown Jewels

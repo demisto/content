@@ -450,55 +450,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "39":
-    id: "39"
-    taskid: ca6cfbed-9a21-4c4a-8203-82e8a5f46611
-    type: regular
-    task:
-      id: ca6cfbed-9a21-4c4a-8203-82e8a5f46611
-      version: -1
-      name: Sum Incident Total Score
-      description: Sets a value into the context with the given context key
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "53"
-    scriptarguments:
-      append: {}
-      key:
-        simple: Illusive.IncidentEscalationPlaybook.incidentScore
-      stringify: {}
-      value:
-        complex:
-          root: incident_score
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: incident_score.status
-                iscontext: true
-              right:
-                value:
-                  simple: "true"
-          accessor: value
-          transformers:
-          - operator: SumList
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 310,
-          "y": 1400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "45":
     id: "45"
     taskid: 359de34a-4728-41bc-801a-f0950b4b9960
@@ -514,7 +465,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "39"
+      - "79"
     scriptarguments:
       append:
         simple: "true"
@@ -562,7 +513,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "39"
+      - "79"
     scriptarguments:
       append:
         simple: "true"
@@ -804,7 +755,7 @@ tasks:
       {
         "position": {
           "x": 310,
-          "y": 1565
+          "y": 1560
         }
       }
     note: false
@@ -1026,7 +977,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "39"
+      - "79"
     scriptarguments:
       append:
         simple: "true"
@@ -1063,7 +1014,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "39"
+      - "79"
     scriptarguments:
       append:
         simple: "true"
@@ -1301,7 +1252,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "39"
+      - "79"
     scriptarguments:
       append:
         simple: "true"
@@ -1338,7 +1289,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "39"
+      - "79"
     scriptarguments:
       append:
         simple: "true"
@@ -4038,6 +3989,61 @@ tasks:
         "position": {
           "x": 280,
           "y": 2110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "79":
+    id: "79"
+    taskid: f6118e96-23b9-431b-899a-63ba9349cae3
+    type: regular
+    task:
+      id: f6118e96-23b9-431b-899a-63ba9349cae3
+      version: -1
+      name: Sum Incident Total Score
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Illusive.IncidentEscalationPlaybook.incidentScore
+      stringify: {}
+      value:
+        complex:
+          root: incident_score
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: incident_score.status
+                iscontext: true
+              right:
+                value:
+                  simple: "true"
+          accessor: value
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: "0"
+          - operator: SumList
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 1390
         }
       }
     note: false
