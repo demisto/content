@@ -797,6 +797,6 @@ def test_create_headers_map_with_headers():
         'Attachments': u'image002.png,image003.png,image004.png,image001.png', 'Headers': None, 'Text': u'Hi',
         'Subject': u'test'
     }
-    headers, headers_map = create_headers_map(msg_dict)
+    headers, headers_map = create_headers_map(msg_dict.get('Headers'))
     assert headers == []
     assert headers_map == {}
