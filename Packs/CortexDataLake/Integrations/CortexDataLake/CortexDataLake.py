@@ -518,7 +518,6 @@ def build_where_clause(args: dict) -> str:
         field = args_dict[key]
         or_statements.append(' OR '.join([f'{field} = {value}' for value in non_string_values_list]))
     where_clause += ' AND '.join([f'({or_statement})' for or_statement in or_statements if or_statement])
-    print(where_clause)
     return where_clause
 
 

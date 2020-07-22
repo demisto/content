@@ -85,9 +85,9 @@ def test_build_where_clause_ip_port():
     test_cases = [({'query': 'Test'}, 'Test'),
                   ({'ip': 'ip1,ip2',
                     'port': '555,888'},
-                   '(source_ip.value = "ip1" OR dest_ip.value = "ip1") OR '
-                   '(source_ip.value = "ip2" OR dest_ip.value = "ip2") '
-                   'AND (source_port = 555 OR dest_port = 555) OR (source_port = 888 OR dest_port = 888)'
+                   '(source_ip.value = "ip1" OR dest_ip.value = "ip1" OR '
+                   'source_ip.value = "ip2" OR dest_ip.value = "ip2") '
+                   'AND (source_port = 555 OR dest_port = 555 OR source_port = 888 OR dest_port = 888)'
                    ),
                   ({'source_ip': 'ip1', 'non_relevant_arg': 'value'}, '(source_ip.value = "ip1")')]
     for args, expected_result in test_cases:
