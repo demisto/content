@@ -1,6 +1,6 @@
 {
     "id": "sixgill-mitre-attack-techniques",
-    "version": 1,
+    "version": -1,
     "modified": "2020-06-14T06:18:25.004781666Z",
     "name": "Sixgill Mitre ATT\u0026CK Techniques",
     "dataType": "indicators",

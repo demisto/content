@@ -1,6 +1,6 @@
 {
     "id": "sixgill-darkfeed-collected-iocs",
-    "version": 1,
+    "version": -1,
     "modified": "2020-06-02T06:46:56.579743988Z",
     "name": "Sixgill Darkfeed - Collected IOCs",
     "dataType": "indicators",

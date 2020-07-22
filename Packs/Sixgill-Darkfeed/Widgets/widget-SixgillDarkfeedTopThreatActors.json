@@ -1,6 +1,6 @@
 {
     "id": "sixgill-darkfeed-top-10-threat-actors",
-    "version": 1,
+    "version": -1,
     "modified": "2020-06-14T06:03:16.831524681Z",
     "name": "Sixgill Darkfeed - Top 10 Threat Actors",
     "dataType": "indicators",

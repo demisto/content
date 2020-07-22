@@ -1,6 +1,6 @@
 {
     "id": "sixgill-darkfeed-mitre-attack-tactics",
-    "version": 1,
+    "version": -1,
     "modified": "2020-06-10T15:16:15.479365269Z",
     "name": "Sixgill Darkfeed - Mitre ATT\u0026CK Tactics",
     "dataType": "indicators",
