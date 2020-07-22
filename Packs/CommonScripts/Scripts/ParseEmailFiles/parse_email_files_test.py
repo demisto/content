@@ -777,7 +777,7 @@ def test_create_headers_map_empty_headers():
     }
     headers, headers_map = create_headers_map(msg_dict)
     assert headers == []
-    assert headers_map = {}
+    assert headers_map == {}
 
 
 def test_create_headers_map_with_headers():

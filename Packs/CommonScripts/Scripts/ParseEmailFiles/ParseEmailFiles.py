@@ -3191,7 +3191,7 @@ def is_valid_header_to_parse(header):
 
 
 def create_headers_map(msg_dict_headers):
-    headers = []
+    headers = []  # type: list
     headers_map = dict()  # type: dict
 
     if not msg_dict_headers:
