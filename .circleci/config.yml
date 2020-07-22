@@ -314,6 +314,7 @@ references:
                 echo 'Copy the changes from the contributor branch $USER/$BRANCH in the pack $PACK'
                 git remote add $USER git@github.com:$USER/content.git
                 git fetch $USER $BRANCH
+                rm -rf $PACK
                 git checkout $USER/$BRANCH $PACK
                 exit 0
 
