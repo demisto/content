@@ -77,7 +77,7 @@ Runs a query on the Cortex logging service.
                 "App": "not-applicable",
                 "AppCategory": "unknown",
                 "CharacteristicOfApp": [],
-                "DestinationIP": "172.16.0.255",
+                "DestinationIP": "172.16.7.7",
                 "DestinationLocation": "172.16.0.0-172.31.255.255",
                 "FileName": null,
                 "FileSHA256": null,
@@ -189,7 +189,7 @@ Runs a query on the Cortex logging service, according to preset queries.
                         "5",
                         "8"
                     ],
-                    "DestinationIP": "90.203.63.138",
+                    "DestinationIP": "3.3.3.3",
                     "DestinationLocation": "GB",
                     "DestinationPort": 143,
                     "Direction": "server to client",
@@ -212,7 +212,7 @@ Runs a query on the Cortex logging service, according to preset queries.
                     "RiskOfApp": 4,
                     "RuleMatched": "taplog",
                     "SessionID": 75787,
-                    "SourceIP": "10.154.209.185",
+                    "SourceIP": "10.1.1.1",
                     "SourceLocation": "10.0.0.0-10.255.255.255",
                     "SourcePort": 11094,
                     "SubcategoryOfApp": "email",
@@ -223,7 +223,7 @@ Runs a query on the Cortex logging service, according to preset queries.
                     "ToZone": "TapZone",
                     "URLCategory": "any",
                     "URLDomain": null,
-                    "Users": "10.154.209.185",
+                    "Users": "10.1.1.1",
                     "VendorSeverity": "Critical",
                     "Vsys": "vsys1",
                     "VsysID": 1
@@ -239,7 +239,7 @@ Runs a query on the Cortex logging service, according to preset queries.
 >### Logs threat table
 >|Action|App|AppCategory|CharacteristicOfApp|DestinationIP|DestinationLocation|DestinationPort|Direction|FileName|Flags|FromZone|IsNat|IsPhishing|IsURLDenied|LogSourceID|LogSourceName|LogTime|NatDestination|NatDestinationPort|NatSource|NatSourcePort|PcapID|Protocol|RiskOfApp|RuleMatched|SessionID|SourceIP|SourceLocation|SourcePort|SubcategoryOfApp|Subtype|ThreatCategory|ThreatID|TimeGenerated|ToZone|URLCategory|Users|VendorSeverity|Vsys|VsysID|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| reset-both | imap | collaboration | 3,<br/>4,<br/>5,<br/>8 | 90.203.63.138 | GB | 143 | server to client | GTPu3.Xls | 8192 | TapZone | false | false | false | 007251000070976 | gw | 2020-03-16T11:52:54 | 0.0.0.0 | 0 | 0.0.0.0 | 0 | 0 | tcp | 4 | taplog | 75787 | 10.154.209.185 | 10.0.0.0-10.255.255.255 | 11094 | email | vulnerability | overflow | 33411 | 2020-03-16T11:52:39 | TapZone | any | 10.154.209.185 | Critical | vsys1 | 1 |
+>| reset-both | imap | collaboration | 3,<br/>4,<br/>5,<br/>8 | 10.1.1.1 | GB | 143 | server to client | GTPu3.Xls | 8192 | TapZone | false | false | false | 007251000070976 | gw | 2020-03-16T11:52:54 | 0.0.0.0 | 0 | 0.0.0.0 | 0 | 0 | tcp | 4 | taplog | 75787 | 10.1.1.1 | 10.0.0.0-10.255.255.255 | 11094 | email | vulnerability | overflow | 33411 | 2020-03-16T11:52:39 | TapZone | any | 10.1.1.1 | Critical | vsys1 | 1 |
 
 
 ### cdl-get-social-applications
@@ -324,7 +324,7 @@ Runs a query on the Cortex logging service, according to preset queries.
                         "6",
                         "8"
                     ],
-                    "DestinationIP": "84.125.151.128",
+                    "DestinationIP": "1.1.1.1",
                     "DestinationLocation": "ES",
                     "DestinationPort": 80,
                     "IsNat": null,
@@ -343,7 +343,7 @@ Runs a query on the Cortex logging service, according to preset queries.
                     "SessionEndReason": "n-a",
                     "SessionID": 425765,
                     "SessionStartIP": "2020-02-24T11:52:45",
-                    "SourceIP": "10.154.1.114",
+                    "SourceIP": "10.5.5.5",
                     "SourceLocation": "10.0.0.0-10.255.255.255",
                     "SourcePort": 1627,
                     "SubcategoryOfApp": "social-networking",
@@ -355,7 +355,7 @@ Runs a query on the Cortex logging service, according to preset queries.
                     "Tunnel": "N/A",
                     "TunneledApp": "tunneled-app",
                     "URLCategory": "social-networking",
-                    "Users": "10.154.1.114",
+                    "Users": "10.5.5.5",
                     "Vsys": "vsys1",
                     "VsysID": 1
                 },
@@ -370,7 +370,7 @@ Runs a query on the Cortex logging service, according to preset queries.
                         "6",
                         "8"
                     ],
-                    "DestinationIP": "79.84.136.222",
+                    "DestinationIP": "4.4.4.4",
                     "DestinationLocation": "FR",
                     "DestinationPort": 80,
                     "IsNat": null,
@@ -389,7 +389,7 @@ Runs a query on the Cortex logging service, according to preset queries.
                     "SessionEndReason": "n-a",
                     "SessionID": 564870,
                     "SessionStartIP": "2019-11-16T11:52:45",
-                    "SourceIP": "10.154.0.35",
+                    "SourceIP": "10.6.6.6",
                     "SourceLocation": "10.0.0.0-10.255.255.255",
                     "SourcePort": 9369,
                     "SubcategoryOfApp": "social-networking",
@@ -401,7 +401,7 @@ Runs a query on the Cortex logging service, according to preset queries.
                     "Tunnel": "N/A",
                     "TunneledApp": "tunneled-app",
                     "URLCategory": "social-networking",
-                    "Users": "10.154.0.35",
+                    "Users": "10.6.6.6",
                     "Vsys": "vsys1",
                     "VsysID": 1
                 }
@@ -416,8 +416,8 @@ Runs a query on the Cortex logging service, according to preset queries.
 >### Logs traffic table
 >|Action|App|AppCategory|CharacteristicOfApp|DestinationIP|DestinationLocation|DestinationPort|LogSourceID|LogSourceName|LogTime|NatDestination|NatDestinationPort|NatSource|NatSourcePort|Packets|Protocol|RiskOfApp|RuleMatched|SessionEndReason|SessionID|SessionStartIP|SourceIP|SourceLocation|SourcePort|SubcategoryOfApp|Subtype|TimeGenerated|ToZone|TotalBytes|TotalTimeElapsed|Tunnel|TunneledApp|URLCategory|Users|Vsys|VsysID|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| allow | facebook-base | collaboration | 3,<br/>4,<br/>5,<br/>6,<br/>8 | 84.125.151.128 | ES | 80 | 007251000070976 | gw | 2020-02-24T11:53:04 | 0.0.0.0 | 0 | 0.0.0.0 | 0 | 7 | tcp | 4 | taplog | n-a | 425765 | 2020-02-24T11:52:45 | 10.154.1.114 | 10.0.0.0-10.255.255.255 | 1627 | social-networking | start | 2020-02-24T11:52:45 | TapZone | 946 | 0 | N/A | tunneled-app | social-networking | 10.154.1.114 | vsys1 | 1 |
->| allow | facebook-base | collaboration | 3,<br/>4,<br/>5,<br/>6,<br/>8 | 79.84.136.222 | FR | 80 | 007251000070976 | gw | 2019-11-16T11:52:49 | 0.0.0.0 | 0 | 0.0.0.0 | 0 | 7 | tcp | 4 | taplog | n-a | 564870 | 2019-11-16T11:52:45 | 10.154.0.35 | 10.0.0.0-10.255.255.255 | 9369 | social-networking | start | 2019-11-16T11:52:45 | TapZone | 946 | 0 | N/A | tunneled-app | social-networking | 10.154.0.35 | vsys1 | 1 |
+>| allow | facebook-base | collaboration | 3,<br/>4,<br/>5,<br/>6,<br/>8 | 1.1.1.1 | ES | 80 | 007251000070976 | gw | 2020-02-24T11:53:04 | 0.0.0.0 | 0 | 0.0.0.0 | 0 | 7 | tcp | 4 | taplog | n-a | 425765 | 2020-02-24T11:52:45 | 105 | 10.0.0.0-10.255.255.255 | 1627 | social-networking | start | 2020-02-24T11:52:45 | TapZone | 946 | 0 | N/A | tunneled-app | social-networking | 10.5.5.5 | vsys1 | 1 |
+>| allow | facebook-base | collaboration | 3,<br/>4,<br/>5,<br/>6,<br/>8 | 4.4.4.4 | FR | 80 | 007251000070976 | gw | 2019-11-16T11:52:49 | 0.0.0.0 | 0 | 0.0.0.0 | 0 | 7 | tcp | 4 | taplog | n-a | 564870 | 2019-11-16T11:52:45 | 10.6.6.6 | 10.0.0.0-10.255.255.255 | 9369 | social-networking | start | 2019-11-16T11:52:45 | TapZone | 946 | 0 | N/A | tunneled-app | social-networking | 10.6.6.6 | vsys1 | 1 |
 
 
 ### cdl-search-by-file-hash
@@ -911,7 +911,7 @@ header field. |
 
 
 #### Command Example
-```!cdl-query-url-logs action="alert" ip="125.25.184.177" limit="1"```
+```!cdl-query-url-logs action="alert" ip="1.1.1.1" limit="1"```
 
 #### Context Example
 ```
