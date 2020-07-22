@@ -23,6 +23,43 @@ configuration:
   name: proxy
   required: false
   type: 8
+- defaultvalue: 3 days
+  display: First fetch time
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+- display: Fetch incidents
+  hidden: false
+  name: isFetch
+  required: false
+  type: 8
+- display: The type of log data to retrieve. The 'Pattern Update Status' and 'Engine
+    Update Status' log types returns all logs (no maximum) from the specified "fetch_time"
+  hidden: false
+  name: log_type
+  options:
+  - Data Loss Prevention
+  - Device Control
+  - Behavior Monitoring
+  - Virus/Malware
+  - Spyware/Grayware
+  - Web Violation
+  - Content Violation
+  - Network Content Inspection
+  - C&C Callback
+  - Suspicious File Information
+  - Predictive Machine Learning
+  - Virtual Analyzer Detections
+  - Application Control
+  - Managed Product User Access
+  - Attack Discovery
+  - Pattern Update Status
+  - Engine Update Status
+  - Product Auditing Events
+  - Intrusion Prevention
+  required: false
+  type: 16
 description: Trend Micro Apex central automation to manage agents and User-Defined
   Suspicious Objects
 display: Trend Micro Apex (Beta)
@@ -470,57 +507,276 @@ script:
     name: trendmicro-apex-endpoint-sensors-list
   - arguments:
     - default: false
-      description: |
-        Terminate the process in a specific agents. For each agent, need to specify the server guid that manages it. for example:
+      description: 'Json formatted agents to terminate the process in. The key is
+        the serverGuid, and the value is a list of agentGuid strings of the endpoints
+        managed by the target server. for example: {serverGuid : [agentGuid]}. If
+        both agent_guids and server_guids care empty, the request targets all agents.'
       isArray: false
       name: agent_guids
       required: false
       secret: false
     - default: false
-      description: |
-        Terminate the process in all agents in the servers list.
-      isArray: false
-      name: server_guids
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: process_name
       description: Comma separated SHA1 values of the objects to terminate.
       isArray: false
       name: processes_to_terminate
       predefined:
-      - Name of the object to terminate.
+      - ''
       required: true
+      secret: false
+    - default: false
+      description: Filter the agents by endpoint name (partial string match).
+      isArray: false
+      name: filter_by_endpoint_name
+      required: false
+      secret: false
+    - default: false
+      description: Filter the agents by endpoint type. Can be 'Desktop' or 'Server'.
+      isArray: false
+      name: filter_by_endpoint_type
+      required: false
+      secret: false
+    - default: false
+      description: 'Filter the agents by endpoint IP address range represented by
+        comma separated ranges list. Example: "Starting_IP_Address,Ending_IP_Address"'
+      isArray: false
+      name: filter_by_endpoint_ip_address
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter the agents by operating system.
+      isArray: false
+      name: filter_by_endpoint_operating_system
+      predefined:
+      - Windows XP
+      - Windows Vista
+      - Windows 7
+      - Windows 8
+      - Windows 10
+      - Windows 2000
+      - Windows 2003
+      - Windows 2008
+      - Windows 2012
+      - Windows 2016
+      required: false
+      secret: false
+    - default: false
+      description: Terminate the process in all agents in the servers list. If both
+        agent_guids and server_guids are empty, the termination request targets all
+        agents.
+      isArray: false
+      name: server_guids
+      required: false
+      secret: false
+    - default: false
+      description: File name of the object to terminate.
+      isArray: false
+      name: object_name
+      required: false
       secret: false
     deprecated: false
-    description: Terminates the processes specified on Security Agent endpoints.
+    description: Terminates the processes specified on Security Agent endpoints. If
+      choosing one of the filter, there is no need to specify the agent_guids parameter.
     execution: false
-    name: trendmicro-apex-process-terninate
+    name: trendmicro-apex-process-terminate
   - arguments:
     - default: false
-      description: A comma separated list of agent guid strings of the endpoints managed
-        by the target server argument.
+      description: 'Json formatted agents to create the investigation in. The key
+        is the serverGuid, and the value is a list of agentGuid strings of the endpoints
+        managed by the target server. for example: {serverGuid : [agentGuid]}. If
+        both agent_guids and server_guids care empty, the request targets all agents.'
       isArray: false
-      name: agent_guid_list
-      required: true
+      name: agent_guids
+      required: false
       secret: false
     - default: false
+      description: Create an investigation in all agents in the servers list. If both
+        agent_guids and server_guids are empty, the termination request targets all
+        agents.
       isArray: false
-      name: server_guid
-      required: true
+      name: server_guids
+      required: false
       secret: false
     - default: false
       description: The name of the investigation.
       isArray: false
       name: investigation_name
+      required: true
+      secret: false
+    - default: false
+      description: Entry id of the file criteria.
+      isArray: false
+      name: entry_id
+      required: true
+      secret: false
+    - default: false
+      description: Criteria encoded in SHA1 hash format. Use the IoC bucket hash ID
+        if created by the Apex Central IoC bucket (for IoC and YARA).
+      isArray: false
+      name: criteria_hash_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Method used for the investigation.
+      isArray: false
+      name: scan_type
+      predefined:
+      - Custom criteria
+      - Windows registry
+      - YARA rule file
+      - IOC rule file
+      - Disk IOC rule file
+      required: true
+      secret: false
+    - default: false
+      description: GUID of the scheduled investigation, if the investigation is triggered
+        by a schedule.
+      isArray: false
+      name: scan_schedule_guid
+      required: false
+      secret: false
+    - default: false
+      description: ID of the scheduled investigation, if the investigation is triggered
+        by a schedule.
+      isArray: false
+      name: scan_schedule_Id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Period to be investigated. Can be 'Any' or 'Specific'. If choosing
+        the Specific type, values for time_range_end and time_range.start arguments
+        are required.
+      isArray: false
+      name: time_range_type
+      predefined:
+      - Any
+      - Specific
+      required: true
+      secret: false
+    - default: false
+      description: The time when the investigation ends.
+      isArray: false
+      name: time_range_end
+      required: false
+      secret: false
+    - default: false
+      description: The time when the investigation starts.
+      isArray: false
+      name: time_range_start
       required: false
       secret: false
     deprecated: false
-    description: Creates a new Live Investigation via file information
+    description: Creates a new live Investigation via file information.
     execution: false
     name: trendmicro-apex-create-live-investigation-from-file
-  - deprecated: false
+  - arguments:
+    - default: false
+      description: 'Json formatted agents to create the investigation in. The key
+        is the serverGuid, and the value is a list of agentGuid strings of the endpoints
+        managed by the target server. for example: {serverGuid : [agentGuid]}. If
+        both agent_guids and server_guids care empty, the request targets all agents.'
+      isArray: false
+      name: agent_guids
+      required: false
+      secret: false
+    - default: false
+      description: Create an investigation in all agents in the servers list. If both
+        agent_guids and server_guids are empty, the termination request targets all
+        agents.
+      isArray: false
+      name: server_guids
+      required: false
+      secret: false
+    - default: false
+      description: The name of the investigation.
+      isArray: false
+      name: investigation_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Method used for the investigation.
+      isArray: false
+      name: scan_type
+      predefined:
+      - Custom criteria
+      - Windows registry
+      - YARA rule file
+      - IOC rule file
+      - Disk IOC rule file
+      required: true
+      secret: false
+    - default: false
+      description: GUID of the scheduled investigation, if the investigation is triggered
+        by a schedule.
+      isArray: false
+      name: scan_schedule_guid
+      required: false
+      secret: false
+    - default: false
+      description: ID of the scheduled investigation, if the investigation is triggered
+        by a schedule.
+      isArray: false
+      name: scan_schedule_Id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Period to be investigated. Can be 'Any' or 'Specific'. If choosing
+        the Specific type, values for time_range_end and time_range.start arguments
+        are required.
+      isArray: false
+      name: time_range_type
+      predefined:
+      - Any
+      - Specific
+      required: true
+      secret: false
+    - default: false
+      description: The time when the investigation ends.
+      isArray: false
+      name: time_range_end
+      required: false
+      secret: false
+    - default: false
+      description: The time when the investigation starts.
+      isArray: false
+      name: time_range_start
+      required: false
+      secret: false
+    - default: false
+      description: Value of registry key.
+      isArray: false
+      name: registry key
+      required: true
+      secret: false
+    - default: false
+      description: Value of registry name.
+      isArray: false
+      name: registry name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Indicates the operator used for the investigation.
+      isArray: false
+      name: match_option
+      predefined:
+      - Equal
+      - Data contains
+      - Data does not contain
+      required: true
+      secret: false
+    - default: false
+      description: Value of registry data.
+      isArray: false
+      name: registry_data
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a new live Investigation via registry information.
     execution: false
     name: trendmicro-apex-create-live-investigation-from-registry
   - deprecated: false
@@ -538,7 +794,7 @@ script:
   - deprecated: false
     execution: false
     name: trendmicro-apex-investigation-result-list-by-status
-  dockerimage: devdemisto/pycef:1.0.0.9919
+  dockerimage: devdemisto/pycef:1.0.0.9953
   feed: false
   isfetch: false
   longRunning: false
