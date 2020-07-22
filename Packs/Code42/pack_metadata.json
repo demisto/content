@@ -14,5 +14,8 @@
         "Recommended by Cortex XSOAR"
     ],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "githubUser": [
+        "nathanhunstad"
+    ]
 }
