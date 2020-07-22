@@ -24,7 +24,6 @@ args:
   required: true
   description: Return this value if 'equals' is false
 scripttarget: 0
-pswd: ""
 runonce: false
 runas: DBotWeakRole
 tests:
