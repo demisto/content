@@ -1,5 +1,5 @@
 Integrate with Sepio Prime
-This integration was integrated and tested with version xx of Sepio
+This integration was integrated and tested with version 20.07.22.0958 of Sepio
 ## Configure Sepio on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -8,7 +8,7 @@ This integration was integrated and tested with version xx of Sepio
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL \(e.g. https://sepio\-prime\) | True |
+| url | Server URL \(e.g. https://sepio\-prime.com\) | True |
 | credentials | Username | True |
 | isFetch | Fetch incidents | False |
 | incidentType | Incident type | False |
@@ -23,6 +23,8 @@ This integration was integrated and tested with version xx of Sepio
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+For the commands sepio-set-agent-mode, sepio-set-peripherals-mode you need user with Manager profile,
+other commands need user with User profile.
 ### sepio-query-agents
 ***
 Get Agents
@@ -65,16 +67,42 @@ Get Agents
 
 
 #### Command Example
-```!sepio-query-agents uuid=BFEBFBFF000806EAL1HF8C4003Z ip_address=192.168.100.120 host_identifier=DESKTOP-ANTONY has_known_attack_tools=False has_unapproved_peripherals=False has_vulnerable_peripherals=False limit=1000```
+```!sepio-query-agents uuid=BFEBFBFF000806EAL1HF8C4003Z ip_address=192.168.10.107 host_identifier=DESKTOP-ANTONY has_known_attack_tools=False has_unapproved_peripherals=False has_vulnerable_peripherals=False limit=1000```
 
 #### Context Example
 ```
-{}
+{
+    "Sepio": {
+        "Agent": {
+            "HardwareModel": "LENOVO  20KS0039IV||2||",
+            "HasKnownAttackTools": false,
+            "HasUnapprovedPeripherals": false,
+            "HasVulnerablePeripherals": false,
+            "HostIdentifier": "DESKTOP-ANTONY",
+            "IpAddress": "192.168.10.107",
+            "LastConfiguration": "2020-07-21T17:56:52.75193",
+            "LastUpdate": "2020-07-21T17:56:52.751994",
+            "License": "Activated",
+            "NicInfo": [
+                "E8:6A:64:72:C2:BF||Realtek||Realtek PCIe GbE Family Controller",
+                "A0:A4:C5:14:DA:CF||Intel Corporation||Intel(R) Dual Band Wireless-AC 3165"
+            ],
+            "OsVersion": "Windows 10 Pro 64-bit",
+            "Status": "Free",
+            "UUID": "BFEBFBFF000806EAL1HF8C4003Z",
+            "Version": "3.0.18.0"
+        }
+    }
+}
 ```
 
 #### Human Readable Output
 
->null
+>### Agents
+>|UUID|IpAddress|HostIdentifier|HasUnapprovedPeripherals|HasVulnerablePeripherals|HasKnownAttackTools|
+>|---|---|---|---|---|---|
+>| BFEBFBFF000806EAL1HF8C4003Z | 192.168.10.107 | DESKTOP-ANTONY | false | false | false |
+
 
 ### sepio-query-peripherals
 ***
@@ -106,6 +134,7 @@ Get Peripherals
 | Sepio.Peripheral.HostIdentifier | string | Sepio Agent’s instance assigned textual name. usually derived from the HOST name of the workstation.  This is not a unique identifier of the Sepio Agent’s instance. | 
 | Sepio.Peripheral.HostUUID | string | Sepio Agent’s instance unique identifier. | 
 | Sepio.Peripheral.DeviceID | string | Sepio device unique identifier. | 
+| Sepio.Peripheral.DeviceIcon | string | Indication of the device type. | 
 | Sepio.Peripheral.DeviceType | string | Textual text indication of the device type. | 
 | Sepio.Peripheral.VID | string | Peripheral device VendorID. | 
 | Sepio.Peripheral.VendorName | string | Peripheral device vendor Name. | 
@@ -128,6 +157,7 @@ Get Peripherals
         "Peripheral": [
             {
                 "DeviceID": "USB\\VID_046D&PID_C31C\\5&20DBD6CE&0&1",
+                "DeviceIcon": 0,
                 "DeviceType": "NO_DEV",
                 "HostIdentifier": "DESKTOP-ANTONY",
                 "HostUUID": "BFEBFBFF000806EAL1HF8C4003Z",
@@ -136,13 +166,14 @@ Get Peripherals
                 "IsVulnerablePeripheral": false,
                 "PID": "C31C",
                 "ProductName": "Keyboard K120",
-                "SerialNumber": "",
+                "SerialNumber": null,
                 "Status": "OK",
                 "VID": "046D",
                 "VendorName": "Logitech, Inc."
             },
             {
                 "DeviceID": "USB\\VID_046D&PID_C31C&MI_00\\6&284FE535&0&0000",
+                "DeviceIcon": 1,
                 "DeviceType": "Keyboard",
                 "HostIdentifier": "DESKTOP-ANTONY",
                 "HostUUID": "BFEBFBFF000806EAL1HF8C4003Z",
@@ -151,13 +182,14 @@ Get Peripherals
                 "IsVulnerablePeripheral": false,
                 "PID": "C31C",
                 "ProductName": "Keyboard K120",
-                "SerialNumber": "",
+                "SerialNumber": null,
                 "Status": "OK",
                 "VID": "046D",
                 "VendorName": "Logitech, Inc."
             },
             {
                 "DeviceID": "USB\\VID_046D&PID_C31C&MI_01\\6&284FE535&0&0001",
+                "DeviceIcon": 14,
                 "DeviceType": "HID",
                 "HostIdentifier": "DESKTOP-ANTONY",
                 "HostUUID": "BFEBFBFF000806EAL1HF8C4003Z",
@@ -166,52 +198,7 @@ Get Peripherals
                 "IsVulnerablePeripheral": false,
                 "PID": "C31C",
                 "ProductName": "Keyboard K120",
-                "SerialNumber": "",
-                "Status": "OK",
-                "VID": "046D",
-                "VendorName": "Logitech, Inc."
-            },
-            {
-                "DeviceID": "USB\\VID_046D&PID_C31C\\5&20DBD6CE&0&3",
-                "DeviceType": "NO_DEV",
-                "HostIdentifier": "DESKTOP-ANTONY",
-                "HostUUID": "BFEBFBFF000806EAL1HF8C4003Z",
-                "IsKnownAttackTool": false,
-                "IsUnapprovedPeripheral": false,
-                "IsVulnerablePeripheral": false,
-                "PID": "C31C",
-                "ProductName": "Keyboard K120",
-                "SerialNumber": "",
-                "Status": "OK",
-                "VID": "046D",
-                "VendorName": "Logitech, Inc."
-            },
-            {
-                "DeviceID": "USB\\VID_046D&PID_C31C&MI_00\\6&2DC83EB&0&0000",
-                "DeviceType": "Keyboard",
-                "HostIdentifier": "DESKTOP-ANTONY",
-                "HostUUID": "BFEBFBFF000806EAL1HF8C4003Z",
-                "IsKnownAttackTool": false,
-                "IsUnapprovedPeripheral": false,
-                "IsVulnerablePeripheral": false,
-                "PID": "C31C",
-                "ProductName": "Keyboard K120",
-                "SerialNumber": "",
-                "Status": "OK",
-                "VID": "046D",
-                "VendorName": "Logitech, Inc."
-            },
-            {
-                "DeviceID": "USB\\VID_046D&PID_C31C&MI_01\\6&2DC83EB&0&0001",
-                "DeviceType": "HID",
-                "HostIdentifier": "DESKTOP-ANTONY",
-                "HostUUID": "BFEBFBFF000806EAL1HF8C4003Z",
-                "IsKnownAttackTool": false,
-                "IsUnapprovedPeripheral": false,
-                "IsVulnerablePeripheral": false,
-                "PID": "C31C",
-                "ProductName": "Keyboard K120",
-                "SerialNumber": "",
+                "SerialNumber": null,
                 "Status": "OK",
                 "VID": "046D",
                 "VendorName": "Logitech, Inc."
@@ -229,9 +216,6 @@ Get Peripherals
 >| BFEBFBFF000806EAL1HF8C4003Z | USB\VID_046D&PID_C31C\5&20DBD6CE&0&1 | OK | false | false | false |
 >| BFEBFBFF000806EAL1HF8C4003Z | USB\VID_046D&PID_C31C&MI_00\6&284FE535&0&0000 | OK | false | false | false |
 >| BFEBFBFF000806EAL1HF8C4003Z | USB\VID_046D&PID_C31C&MI_01\6&284FE535&0&0001 | OK | false | false | false |
->| BFEBFBFF000806EAL1HF8C4003Z | USB\VID_046D&PID_C31C\5&20DBD6CE&0&3 | OK | false | false | false |
->| BFEBFBFF000806EAL1HF8C4003Z | USB\VID_046D&PID_C31C&MI_00\6&2DC83EB&0&0000 | OK | false | false | false |
->| BFEBFBFF000806EAL1HF8C4003Z | USB\VID_046D&PID_C31C&MI_01\6&2DC83EB&0&0001 | OK | false | false | false |
 
 
 ### sepio-query-switches
@@ -280,11 +264,11 @@ Get Switches
             "IosVersion": "12.2(52)SE",
             "IpAddress": "192.168.100.25",
             "IsAlarmed": false,
-            "LastUpdate": "07/02/2020 18:26:37",
+            "LastUpdate": "07/21/2020 17:34:26",
             "Model": "WS-C2960G-24TC-L",
             "Name": "sepio2960g",
             "NumberOfPorts": 24,
-            "Status": "Unable to connect",
+            "Status": "Normal",
             "SwitchID": "DC:7B:94:96:17:80_FOC1428V67S"
         }
     }
@@ -296,7 +280,7 @@ Get Switches
 >### Switches
 >|SwitchID|Status|IsAlarmed|
 >|---|---|---|
->| DC:7B:94:96:17:80_FOC1428V67S | Unable to connect | false |
+>| DC:7B:94:96:17:80_FOC1428V67S | Normal | false |
 
 
 ### sepio-query-switch-ports
@@ -333,21 +317,45 @@ Get Switch Ports
 | Sepio.Port.NumberOfMacAddresses | number | The number of MAC addresses detected on the switch port. | 
 | Sepio.Port.LinkPartners | string | List of the MAC addresses detected on the switch port \(limited to maximum of 10\) | 
 | Sepio.Port.Status | string | Current status of the switch port. | 
-| Sepio.Switch.IsAlarmed | boolean | True if the switch port is alarmed. | 
+| Sepio.Port.IsAlarmed | boolean | True if the switch port is alarmed. | 
 | Sepio.Port.AlarmInfo | string | Details about the cause of alarm \(only if alarmed\). | 
 
 
 #### Command Example
-```!sepio-query-switch-ports switch_name=sepio2960g switch_ip_address=192.168.100.25 port_id=Gi0/8 link_partner_data_contains=000C2980EA75,000C29AE0D5E```
+```!sepio-query-switch-ports switch_name=sepio2960g switch_ip_address=192.168.100.25 port_id=Gi0/17 link_partner_data_contains=042AE2D31AC0,04D590D51701```
 
 #### Context Example
 ```
-{}
+{
+    "Sepio": {
+        "Port": {
+            "AlarmInfo": "",
+            "IsAlarmed": false,
+            "LastUpdate": "2020-07-21T17:34:12.396607",
+            "LinkPartners": [
+                "0004F24ADCC5",
+                "042AE2D31AC0",
+                "04D590D51701"
+            ],
+            "Name": "HondaCB500X",
+            "NumberOfMacAddresses": 4,
+            "PortID": "Gi0/17",
+            "Status": "connected",
+            "SwitchID": "DC:7B:94:96:17:80_FOC1428V67S",
+            "SwitchIpAddress": "192.168.100.25",
+            "SwitchName": "sepio2960g"
+        }
+    }
+}
 ```
 
 #### Human Readable Output
 
->null
+>### Ports
+>|SwitchID|PortID|Status|IsAlarmed|AlarmInfo|
+>|---|---|---|---|---|
+>| DC:7B:94:96:17:80_FOC1428V67S | Gi0/17 | connected | false |  |
+
 
 ### sepio-query-system-events
 ***
@@ -384,7 +392,7 @@ Get Events
 
 
 #### Command Example
-```!sepio-query-system-events start_datetime=2020-03-01T09:01:05Z end_datetime=2020-05-10T09:28:05Z min_severity=Warning peripheral_type=1,2,3,4```
+```!sepio-query-system-events start_datetime=2020-07-16T16:50:00Z end_datetime=2020-07-21T11:02:00Z min_severity=Warning peripheral_type=1,2,3,4```
 
 #### Context Example
 ```
@@ -393,93 +401,23 @@ Get Events
         "Event": [
             {
                 "Category": "USB",
-                "CreationDatetime": "2020-03-04T11:14:28.227317",
+                "CreationDatetime": "2020-07-16T16:53:29.240559",
                 "Description": "New USB peripheral detected",
-                "Details": "[Agent] Vulnerable Device VID/PID are 046D/C077  (Logitech, Inc. M105 Optical Mouse)",
-                "EventID": 123,
-                "PeripheralType": "2",
-                "Severity": "Warning",
-                "Source": "DESKTOP-9LR722S (192.168.100.128)"
-            },
-            {
-                "Category": "USB",
-                "CreationDatetime": "2020-03-04T11:14:28.227317",
-                "Description": "New USB peripheral detected",
-                "Details": "[Agent] Vulnerable Device VID/PID are 1A40/0101  (Terminus Technology Inc. Hub)",
-                "EventID": 338,
-                "PeripheralType": "4",
-                "Severity": "Warning",
-                "Source": "DESKTOP-9LR722S (192.168.100.128)"
-            },
-            {
-                "Category": "USB",
-                "CreationDatetime": "2020-03-04T11:14:28.227317",
-                "Description": "New USB peripheral detected",
-                "Details": "[Agent] Vulnerable Device VID/PID are 045E/07F8  (Microsoft Corp. Wired Keyboard 600 (model 1576) 00)",
-                "EventID": 341,
+                "Details": "[Agent] Vulnerable Device VID/PID are 046D/C534  (Logitech, Inc. Unifying Receiver 00)",
+                "EventID": 1067,
                 "PeripheralType": "1",
                 "Severity": "Warning",
-                "Source": "DESKTOP-9LR722S (192.168.100.128)"
+                "Source": "DESKTOP-ANTONY (192.168.10.107)"
             },
             {
                 "Category": "USB",
-                "CreationDatetime": "2020-03-05T10:10:28.008277",
+                "CreationDatetime": "2020-07-16T16:53:29.240606",
                 "Description": "New USB peripheral detected",
-                "Details": "[Agent] Vulnerable Device VID/PID are 1A40/0101  (Terminus Technology Inc. Hub)",
-                "EventID": 274,
-                "PeripheralType": "4",
-                "Severity": "Warning",
-                "Source": "DESKTOP-9LR722S (192.168.100.128)"
-            },
-            {
-                "Category": "USB",
-                "CreationDatetime": "2020-03-05T10:10:28.008277",
-                "Description": "New USB peripheral detected",
-                "Details": "[Agent] Vulnerable Device VID/PID are 045E/07F8  (Microsoft Corp. Wired Keyboard 600 (model 1576) 00)",
-                "EventID": 275,
-                "PeripheralType": "1",
-                "Severity": "Warning",
-                "Source": "DESKTOP-9LR722S (192.168.100.128)"
-            },
-            {
-                "Category": "USB",
-                "CreationDatetime": "2020-03-05T10:10:29.062256",
-                "Description": "New USB peripheral detected",
-                "Details": "[Agent] Vulnerable Device VID/PID are 046D/C077  (Logitech, Inc. M105 Optical Mouse)",
-                "EventID": 276,
+                "Details": "[Agent] Vulnerable Device VID/PID are 046D/C534  (Logitech, Inc. Unifying Receiver 01)",
+                "EventID": 1068,
                 "PeripheralType": "2",
                 "Severity": "Warning",
-                "Source": "DESKTOP-9LR722S (192.168.100.128)"
-            },
-            {
-                "Category": "USB",
-                "CreationDatetime": "2020-03-05T10:12:10.285774",
-                "Description": "New USB peripheral detected",
-                "Details": "[Agent] Vulnerable Device VID/PID are 1A40/0101  (Terminus Technology Inc. Hub)",
-                "EventID": 211,
-                "PeripheralType": "4",
-                "Severity": "Warning",
-                "Source": "DESKTOP-9LR722S (192.168.100.128)"
-            },
-            {
-                "Category": "USB",
-                "CreationDatetime": "2020-03-05T10:12:11.341571",
-                "Description": "New USB peripheral detected",
-                "Details": "[Agent] Vulnerable Device VID/PID are 046D/C077  (Logitech, Inc. M105 Optical Mouse)",
-                "EventID": 221,
-                "PeripheralType": "2",
-                "Severity": "Warning",
-                "Source": "DESKTOP-9LR722S (192.168.100.128)"
-            },
-            {
-                "Category": "USB",
-                "CreationDatetime": "2020-03-05T10:12:11.341571",
-                "Description": "New USB peripheral detected",
-                "Details": "[Agent] Vulnerable Device VID/PID are 045E/07F8  (Microsoft Corp. Wired Keyboard 600 (model 1576) 00)",
-                "EventID": 220,
-                "PeripheralType": "1",
-                "Severity": "Warning",
-                "Source": "DESKTOP-9LR722S (192.168.100.128)"
+                "Source": "DESKTOP-ANTONY (192.168.10.107)"
             }
         ]
     }
@@ -491,15 +429,8 @@ Get Events
 >### Events
 >|EventID|CreationDatetime|Category|Source|Description|
 >|---|---|---|---|---|
->| 123 | 2020-03-04T11:14:28.227317 | USB | DESKTOP-9LR722S (192.168.100.128) | New USB peripheral detected |
->| 338 | 2020-03-04T11:14:28.227317 | USB | DESKTOP-9LR722S (192.168.100.128) | New USB peripheral detected |
->| 341 | 2020-03-04T11:14:28.227317 | USB | DESKTOP-9LR722S (192.168.100.128) | New USB peripheral detected |
->| 274 | 2020-03-05T10:10:28.008277 | USB | DESKTOP-9LR722S (192.168.100.128) | New USB peripheral detected |
->| 275 | 2020-03-05T10:10:28.008277 | USB | DESKTOP-9LR722S (192.168.100.128) | New USB peripheral detected |
->| 276 | 2020-03-05T10:10:29.062256 | USB | DESKTOP-9LR722S (192.168.100.128) | New USB peripheral detected |
->| 211 | 2020-03-05T10:12:10.285774 | USB | DESKTOP-9LR722S (192.168.100.128) | New USB peripheral detected |
->| 221 | 2020-03-05T10:12:11.341571 | USB | DESKTOP-9LR722S (192.168.100.128) | New USB peripheral detected |
->| 220 | 2020-03-05T10:12:11.341571 | USB | DESKTOP-9LR722S (192.168.100.128) | New USB peripheral detected |
+>| 1067 | 2020-07-16T16:53:29.240559 | USB | DESKTOP-ANTONY (192.168.10.107) | New USB peripheral detected |
+>| 1068 | 2020-07-16T16:53:29.240606 | USB | DESKTOP-ANTONY (192.168.10.107) | New USB peripheral detected |
 
 
 ### sepio-set-agent-mode
