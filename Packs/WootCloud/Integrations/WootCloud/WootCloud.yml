@@ -39,6 +39,9 @@ configuration:
       - info
       - warning
       - critical
+      - low
+      - medium
+      - high
   - display: Incident type
     name: incidentType
     required: false
