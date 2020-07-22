@@ -1,4 +1,4 @@
-Blocks files from running on endpoints. This playbook currently supports Carbon Black Enterprise Response.
+DEPRECATED. Use "Block File - Generic v2" playbook instead. Blocks files from running on endpoints. This playbook currently supports Carbon Black Enterprise Response.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

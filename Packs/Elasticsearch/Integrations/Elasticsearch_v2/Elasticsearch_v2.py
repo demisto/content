@@ -25,6 +25,7 @@ PASSWORD = demisto.params().get('credentials', {}).get('password')
 API_KEY_ID = USERNAME[len(API_KEY_PREFIX):] if USERNAME and USERNAME.startswith(API_KEY_PREFIX) else None
 if API_KEY_ID:
     USERNAME = None
+    API_KEY = (API_KEY_ID, PASSWORD)
 PROXY = demisto.params().get('proxy')
 HTTP_ERRORS = {
     400: '400 Bad Request - Incorrect or invalid parameters',
@@ -89,32 +90,35 @@ def timestamp_to_date(timestamp_string):
     return datetime.utcfromtimestamp(timestamp_number)
 
 
+def get_api_key_header_val(api_key):
+    """
+    Check the type of the passed api_key and return the correct header value
+    for the `API Key authentication
+    <https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-api-key.html>`
+    :arg api_key, either a tuple or a base64 encoded string
+    """
+    if isinstance(api_key, (tuple, list)):
+        s = "{0}:{1}".format(api_key[0], api_key[1]).encode('utf-8')
+        return "ApiKey " + base64.b64encode(s).decode('utf-8')
+    return "ApiKey " + api_key
+
+
 def elasticsearch_builder():
     """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
+    proxies = handle_proxy() if PROXY else None
     if API_KEY_ID:
-        if PROXY:
-            return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
-                                 api_key=(API_KEY_ID, PASSWORD), verify_certs=INSECURE, proxies=handle_proxy())
-
-        else:
-            return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
-                                 api_key=(API_KEY_ID, PASSWORD), verify_certs=INSECURE)
-
-    elif USERNAME:
-        if PROXY:
-            return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
-                                 http_auth=(USERNAME, PASSWORD), verify_certs=INSECURE, proxies=handle_proxy())
-
-        else:
-            return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
-                                 http_auth=(USERNAME, PASSWORD), verify_certs=INSECURE)
+        es = Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection, verify_certs=INSECURE,
+                           api_key=API_KEY, proxies=proxies)
+        # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
+        if hasattr(es, 'transport'):
+            es.transport.get_connection().session.headers['authorization'] = get_api_key_header_val(API_KEY)
+        return es
+    if USERNAME:
+        return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection, verify_certs=INSECURE,
+                             http_auth=(USERNAME, PASSWORD), proxies=proxies)
     else:
-        if PROXY:
-            return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
-                                 verify_certs=INSECURE, proxies=handle_proxy())
-
-        else:
-            return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection, verify_certs=INSECURE)
+        return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection, verify_certs=INSECURE,
+                             proxies=proxies)
 
 
 def get_hit_table(hit):
@@ -367,6 +371,8 @@ def test_func():
     headers = {
         'Content-Type': "application/json"
     }
+    if API_KEY_ID:
+        headers['authorization'] = get_api_key_header_val(API_KEY)
 
     try:
         if USERNAME:

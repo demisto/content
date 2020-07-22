@@ -234,14 +234,14 @@ def main():
     regions_list = argToList(params.get('regions'))
     services_list = argToList(params.get('services'))
     urls_list = build_urls_dict(regions_list, services_list, unique_id)
-    insecure = params.get('insecure', False)
+    use_ssl = not params.get('insecure', False)
     tags = argToList(params.get('feedTags'))
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
     try:
-        client = Client(urls_list, insecure, tags)
+        client = Client(urls_list, use_ssl, tags)
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
             'test-module': test_module,
             'office365-get-indicators': get_indicators_command
