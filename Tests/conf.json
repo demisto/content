@@ -587,7 +587,7 @@
         },
         {
             "playbookID": "WordTokenizeTest",
-            "toversion":  "4.5.9"
+            "toversion": "4.5.9"
         },
         {
             "integrations": "QRadar",
@@ -677,6 +677,11 @@
             "playbookID": "palo_alto_panorama_test_pb",
             "timeout": 1000,
             "nightly": true
+        },
+        {
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_firewall_9.0",
+            "playbookID": "PAN-OS URL Filtering enrichment - Test"
         },
         {
             "integrations": "Tenable.io",
@@ -2895,7 +2900,6 @@
         "Create Phishing Classifier V2 ML Test": "Issue 26341",
         "DuoAdmin API test playbook": "Issue 24937",
         "Mail Sender (New) Test": "Issue 25602",
-        "HTTPListRedirects Basic Test": "Issue 26459",
         "SMB test": "Issue 26454",
         "Infocyte-Test": "Issue 26445",
         "Account Enrichment - Generic v2 - Test": "Issue 26452",
@@ -2909,7 +2913,11 @@
         "Logzio - Test": "Issue 26729",
         "Tenable.io test": "Issue 26727",
         "Tenable.io Scan Test": "Issue 26727",
-        "URL Enrichment - Generic v2 - Test": "Issue 26463"
+        "URL Enrichment - Generic v2 - Test": "Issue 26463",
+        "Fidelis-Test": "Issue 26453",
+        "ThreatConnect v2 - Test": "Issue 26782",
+        "Pwned v2 test": "Issue 26601",
+        "Email Address Enrichment - Generic v2.1 - Test": "Issue 26785"
     },
     "skipped_integrations": {
         
@@ -3047,6 +3055,8 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "Cherwell": "Submits a file - tests that send files shouldn't be mocked",
+        "ThreatConnect v2": "Issue 26794",
         "Infocyte": "Proxy issues",
         "SNDBOX": "Submits a file - tests that send files shouldn't be mocked",
         "Joe Security": "Submits a file - tests that send files shouldn't be mocked",

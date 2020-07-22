@@ -1,5 +1,6 @@
 from __future__ import print_function
-from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold, handle_msg, get_msg_mail_format
+from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold, handle_msg, get_msg_mail_format, \
+    data_to_md, create_headers_map
 from CommonServerPython import entryTypes
 import demistomock as demisto
 import pytest
@@ -682,3 +683,99 @@ def test_message_rfc822_without_info(mocker):
     assert results[0][0][0]['Type'] == entryTypes['file']
     assert results[1][0][0]['Type'] == entryTypes['note']
     assert results[1][0][0]['EntryContext']['Email']['From'] == 'koko@demisto.com'
+
+
+def test_md_output_empty_body_text():
+    """
+    Given:
+     - The input email_data where the value of the 'Text' field is None.
+
+    When:
+     - Running the data_to_md command on this email_data.
+
+    Then:
+     - Validate that output the md doesn't contain a row for the 'Text' field.
+    """
+    email_data = {
+        'To': 'email1@paloaltonetworks.com',
+        'From': 'email2@paloaltonetworks.com',
+        'Text': None
+    }
+    expected = u'### Results:\n' \
+               u'* From:\temail2@paloaltonetworks.com\n' \
+               u'* To:\temail1@paloaltonetworks.com\n' \
+               u'* CC:\t\n' \
+               u'* Subject:\t\n' \
+               u'* Attachments:\t\n\n\n' \
+               u'### HeadersMap\n' \
+               u'**No entries.**\n'
+
+    md = data_to_md(email_data)
+    assert expected == md
+
+    email_data = {
+        'To': 'email1@paloaltonetworks.com',
+        'From': 'email2@paloaltonetworks.com',
+    }
+    expected = u'### Results:\n' \
+               u'* From:\temail2@paloaltonetworks.com\n' \
+               u'* To:\temail1@paloaltonetworks.com\n' \
+               u'* CC:\t\n' \
+               u'* Subject:\t\n' \
+               u'* Attachments:\t\n\n\n' \
+               u'### HeadersMap\n' \
+               u'**No entries.**\n'
+
+    md = data_to_md(email_data)
+    assert expected == md
+
+
+def test_md_output_with_body_text():
+    """
+    Given:
+     - The input email_data with a value in the 'Text' field.
+
+    When:
+     - Running the data_to_md command on this email_data.
+
+    Then:
+     - Validate that the output md contains a row for the 'Text' field.
+    """
+    email_data = {
+        'To': 'email1@paloaltonetworks.com',
+        'From': 'email2@paloaltonetworks.com',
+        'Text': '<email text>'
+    }
+    expected = u'### Results:\n' \
+               u'* From:\temail2@paloaltonetworks.com\n' \
+               u'* To:\temail1@paloaltonetworks.com\n' \
+               u'* CC:\t\n' \
+               u'* Subject:\t\n' \
+               u'* Body/Text:\t[email text]\n' \
+               u'* Attachments:\t\n\n\n' \
+               u'### HeadersMap\n' \
+               u'**No entries.**\n'
+
+    md = data_to_md(email_data)
+    assert expected == md
+
+
+def test_create_headers_map_empty_headers():
+    """
+    Given:
+     - The input headers is None.
+
+    When:
+     - Running the create_headers_map command on these  headers.
+
+    Then:
+     - Validate that the function does not fail
+    """
+    msg_dict = {
+        'From': None, 'CC': None, 'BCC': None, 'To': u'test@demisto.com', 'Depth': 0, 'HeadersMap': {},
+        'Attachments': u'image002.png,image003.png,image004.png,image001.png', 'Headers': None, 'Text': u'Hi',
+        'Subject': u'test'
+    }
+    headers, headers_map = create_headers_map(msg_dict.get('Headers'))
+    assert headers == []
+    assert headers_map == {}
