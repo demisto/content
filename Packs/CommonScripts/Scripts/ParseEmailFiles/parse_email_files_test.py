@@ -776,27 +776,6 @@ def test_create_headers_map_empty_headers():
         'Attachments': u'image002.png,image003.png,image004.png,image001.png', 'Headers': None, 'Text': u'Hi',
         'Subject': u'test'
     }
-    headers, headers_map = create_headers_map(msg_dict)
-    assert headers == []
-    assert headers_map == {}
-
-
-def test_create_headers_map_with_headers():
-    """
-    Given:
-     - The input headers is None.
-
-    When:
-     - Running the create_headers_map command on these  headers.
-
-    Then:
-     - Validate that the function does not fail
-    """
-    msg_dict = {
-        'From': None, 'CC': None, 'BCC': None, 'To': u'test@demisto.com', 'Depth': 0, 'HeadersMap': {},
-        'Attachments': u'image002.png,image003.png,image004.png,image001.png', 'Headers': None, 'Text': u'Hi',
-        'Subject': u'test'
-    }
     headers, headers_map = create_headers_map(msg_dict.get('Headers'))
     assert headers == []
     assert headers_map == {}
