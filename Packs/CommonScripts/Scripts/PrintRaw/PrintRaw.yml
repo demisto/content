@@ -14,6 +14,7 @@ enabled: true
 args:
 - name: value
   required: true
+  description: The value to be represented.
 scripttarget: 0
 subtype: python3
 runonce: false
