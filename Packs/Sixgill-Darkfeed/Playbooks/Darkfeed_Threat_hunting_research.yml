@@ -822,9 +822,9 @@ tasks:
     task:
       id: 397b2678-7686-4836-8400-385ed77d56ba
       version: -1
-      name: Search Endpoints By Hash - Generic
+      name: Search Endpoints By Hash - Generic V2
       description: Hunt using available tools
-      playbookName: Search Endpoints By Hash - Generic
+      playbookName: Search Endpoints By Hash - Generic V2
       type: playbook
       iscommand: false
       brand: ""
