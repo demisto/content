@@ -432,7 +432,7 @@ def issue_query_command(query, start_at='', max_results=None, headers=''):
 def create_issue_command():
     url = 'rest/api/latest/issue'
     issue = get_issue_fields(issue_creating=True, **demisto.args())
-    j_res = jira_req('POST', url, json.dumps(issue), resp_type='text')
+    j_res = jira_req('POST', url, json.dumps(issue), resp_type='json')
 
     md_and_context = generate_md_context_create_issue(j_res, project_key=demisto.getArg('projectKey'),
                                                       project_name=demisto.getArg('issueTypeName'))
@@ -468,7 +468,7 @@ def edit_status(issue_id, status):
 
 def get_comments_command(issue_id):
     url = f'rest/api/latest/issue/{issue_id}/comment'
-    body = jira_req('GET', url, resp_type='text')
+    body = jira_req('GET', url, resp_type='json')
     comments = []
     if body.get("comments"):
         for comment in body.get("comments"):
