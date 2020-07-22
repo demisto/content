@@ -1689,7 +1689,6 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
             message[header_name_and_value[0]] = header(header_name_and_value[1])
 
     msg = MIMEText(body, 'plain', 'utf-8')
-    message.attach(msg)
     htmlAttachments = []  # type: list
     inlineAttachments = []  # type: list
 
@@ -1703,6 +1702,7 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
     else:
         # if not html body, cannot attach cids in message
         transientFileCID = None
+        message.attach(msg)
 
     attachments = collect_attachments(entry_ids, file_names)
     manual_attachments = collect_manual_attachments()
