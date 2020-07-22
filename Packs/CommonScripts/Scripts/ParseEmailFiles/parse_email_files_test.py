@@ -1,5 +1,6 @@
 from __future__ import print_function
-from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold, handle_msg, get_msg_mail_format, data_to_md
+from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold, handle_msg, get_msg_mail_format, \
+    data_to_md, create_headers_map
 from CommonServerPython import entryTypes
 import demistomock as demisto
 import pytest
@@ -799,4 +800,3 @@ def test_create_headers_map_with_headers():
     headers, headers_map = create_headers_map(msg_dict)
     assert headers == []
     assert headers_map == {}
-
