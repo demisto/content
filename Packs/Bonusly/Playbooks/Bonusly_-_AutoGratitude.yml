@@ -1,7 +1,8 @@
 id: Bonusly - AutoGratitude
 version: -1
 name: Bonusly - AutoGratitude
-description: "AutoGratitude is a playbook to give back a positive gratitude to security engineers and developers when they successfully complete an SLA"
+description: "AutoGratitude is a playbook to give back a positive gratitude to security\
+  \ engineers and developers when they successfully complete an SLA"
 starttaskid: "0"
 tasks:
   "0":
@@ -14,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -38,6 +40,7 @@ tasks:
       id: 394a414b-5964-40c1-88d4-29f2dc915a9e
       version: -1
       name: Check SLA
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -78,6 +81,7 @@ tasks:
       id: 0896de03-9242-41af-8d15-088a52755f8b
       version: -1
       name: Did they meet the SLA Times?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -159,6 +163,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -259,28 +264,30 @@ inputs:
   value:
     simple: ${lists.Bonusly - Email To User Lookup}
   required: true
-  description: "Create a Lookup JSON List In The Lists Section Containing XSOAR Email
-    To Bonusly User\n\n{\n\"xsoar_user1@your_company.com\":\"@bonusly_user1\", \n\"xsoar_user2@paloaltonetworks.com\":\"@bonusly_user2\"\n}"
-  playbookInputQuery: null
+  description: "Create a Lookup JSON List In The Lists Section Containing XSOAR Email\
+    \ To Bonusly User\n\n{\n\"xsoar_user1@your_company.com\":\"@bonusly_user1\", \n\
+    \"xsoar_user2@paloaltonetworks.com\":\"@bonusly_user2\"\n}"
+  playbookInputQuery:
 - key: GiverEmail
   value:
     simple: bonusly_admin_user@your_company.com
   required: true
   description: 'Add a giver email or set this before hand. '
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: GiverReason
   value:
     simple: '+10 @bonusly.username #collaboration'
   required: true
   description: Add a Bonusly reason like +10 etc and a user name
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: CheckSLA
   value:
     simple: "false"
   required: false
   description: 'If Check SLA is set to true then it will first see if the owner has
     met the SLA agreement. '
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 tests:
-  -  No tests
+- No tests
+fromversion: 5.0.0
