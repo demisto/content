@@ -83,6 +83,7 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
     """
     index_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
     download_index_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_NAME}.zip")
+    print_error(f"index_storage_path is: {index_storage_path}, download_index_path is: {download_index_path}")
 
     index_blob = storage_bucket.blob(index_storage_path)
     index_folder_path = os.path.join(extract_destination_path, GCPConfig.INDEX_NAME)
@@ -91,6 +92,7 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
         os.mkdir(extract_destination_path)
 
     if not index_blob.exists():
+        print_error("The blob does not exist.")
         os.mkdir(index_folder_path)
         return index_folder_path, index_blob
 
@@ -413,8 +415,8 @@ def update_index_with_priced_packs(private_storage_bucket, extract_destination_p
     except Exception as e:
         print_error(f'Could not add private packs to the index: {str(e)}')
     finally:
-        if private_index_path:
-            shutil.rmtree(os.path.dirname(private_index_path), ignore_errors=True)
+        # if private_index_path:
+        #    shutil.rmtree(os.path.dirname(private_index_path), ignore_errors=True)
         return private_packs, private_index_path, private_index_blob
 
 
