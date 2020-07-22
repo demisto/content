@@ -1,9 +1,9 @@
 {
-    "TypeName": "IP",
+    "TypeName": "ipRep",
     "kind": "indicatorsQuickView",
     "layout": {
         "TypeName": "",
-        "id": "d7707a02-b8e3-4014-8c05-cdf08219b913",
+        "id": "ipRep",
         "kind": "indicatorsQuickView",
         "modified": "2020-07-07T08:45:52.740600849Z",
         "name": "",

@@ -1,9 +1,9 @@
 {
-    "TypeName": "Domain",
+    "TypeName": "domainRepUnified",
     "kind": "indicatorsQuickView",
     "layout": {
         "TypeName": "",
-        "id": "f437ab4a-d045-4c43-896b-b703c41252ca",
+        "id": "domainRepUnified",
         "kind": "indicatorsQuickView",
         "modified": "2020-07-07T09:34:40.516310377Z",
         "name": "",

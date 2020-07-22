@@ -1,9 +1,9 @@
 {
-    "TypeName": "File",
+    "TypeName": "unifiedFileRep",
     "kind": "indicatorsQuickView",
     "layout": {
         "TypeName": "",
-        "id": "d784a480-865d-4607-8bae-cec06af12752",
+        "id": "unifiedFileRep",
         "kind": "indicatorsQuickView",
         "modified": "2020-07-07T08:47:29.985991232Z",
         "name": "",
