@@ -263,14 +263,16 @@ def params_to_filter(parameters):
     return filters
 
 
-def test_module(client):
+def test_module(client, max_results):
     try:
-        client.alert_list(url_suffix='/alerts/', request_data={"severity": {"eq": 0}})
+        client.list_alerts(url_suffix='/alerts/', request_data={"severity": {"eq": 0}})
     except DemistoException as e:
         if 'Forbidden' in str(e):
             return 'Authorization Error: make sure API Key is correctly set'
         else:
             return str(e)
+    if max_results and int(max_results) > MAX_INCIDENTS_TO_FETCH:
+        return 'Max incident to fetch is 200'
     return 'ok'
 
 
@@ -372,9 +374,12 @@ def list_users_accounts_command(client, args):
     )
 
 
-def calculate_fetch_start_time(last_fetch, first_fetch_time):
+def calculate_fetch_start_time(last_fetch, first_fetch):
     if last_fetch is None:
-        last_fetch = first_fetch_time
+        if not first_fetch:
+            first_fetch = '3 days'
+        first_fetch_time = arg_to_timestamp(first_fetch)
+        return first_fetch_time
     else:
         last_fetch = int(last_fetch)
     latest_created_time = last_fetch
@@ -387,13 +392,6 @@ def get_max_result_number(max_results):
     elif max_results > MAX_INCIDENTS_TO_FETCH:
         return MAX_INCIDENTS_TO_FETCH
     return int(max_results)
-
-
-def get_first_fetch_time(first_fetch):
-    if not first_fetch:
-        first_fetch = '3 days'
-    first_fetch_time = arg_to_timestamp(first_fetch)
-    return first_fetch_time
 
 
 def alerts_to_incidents_and_fetch_start_from(alerts, fetch_start_time):
@@ -415,9 +413,8 @@ def alerts_to_incidents_and_fetch_start_from(alerts, fetch_start_time):
 
 def fetch_incidents(client, max_results, last_run, first_fetch, filters):
     max_results = get_max_result_number(max_results)
-    first_fetch_time = get_first_fetch_time(first_fetch)
     last_fetch = last_run.get('last_fetch')
-    fetch_start_time = calculate_fetch_start_time(last_fetch, first_fetch_time)
+    fetch_start_time = calculate_fetch_start_time(last_fetch, first_fetch)
     filters["date"] = {"gte": fetch_start_time}
     alerts = client.list_incidents(filters, limit=max_results)
 
@@ -446,7 +443,7 @@ def main():
             proxy=proxy)
 
         if demisto.command() == 'test-module':
-            result = test_module(client)
+            result = test_module(client, max_results)
             demisto.results(result)
 
         elif demisto.command() == 'fetch-incidents':

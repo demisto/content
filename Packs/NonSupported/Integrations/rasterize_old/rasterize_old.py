@@ -88,7 +88,7 @@ def rasterize_image():
     b64 = base64.b64encode(data)
     html = '<img src="data:image/png;base64, ' + b64 + '">'
     RETURN_CODE = 0
-    friendly_name = 'MicrosoftCloudAppSecurity_image.png'
+    friendly_name = 'image.png'
     f = open('htmlImage.html', 'w')
     f.write('<html style="background:white;"><body>' + html + '</body></html>')
     f.close()
