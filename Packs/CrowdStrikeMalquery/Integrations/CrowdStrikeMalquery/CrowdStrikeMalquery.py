@@ -116,7 +116,7 @@ class Client(BaseClient):
         return self.http_request(method="POST", url_suffix='/queries/exact-search/v1', json_data=body)
 
     def fuzzy_search(self, body):
-        return self.http_request(method="POST", url_suffix='/combined/fuzzy-search/v1', json_data=body, timeout=20)
+        return self.http_request(method="POST", url_suffix='/combined/fuzzy-search/v1', json_data=body, timeout=40)
 
     def hunt(self, body):
         return self.http_request(method="POST", url_suffix='/queries/hunt/v1', json_data=body)
