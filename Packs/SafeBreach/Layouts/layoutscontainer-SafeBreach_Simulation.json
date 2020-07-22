@@ -318,6 +318,5 @@
                 "type": "canvas"
             }
         ]
-    },
-    "toVersion": "5.9.9"
+    }
 }

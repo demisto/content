@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+- DEPRECATED. Use "Phishing Investigation - Generic v2" playbook instead. 
 
 ## [20.5.2] - 2020-05-26
 -
