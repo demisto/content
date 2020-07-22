@@ -979,7 +979,6 @@ if __name__ == 'builtins':
         if demisto.command() in COMMANDS.keys():
             COMMANDS[demisto.command()]()
         else:
-            LOGGER.error('Command not found: ' + demisto.command())
             return_error('Command not found: ' + demisto.command())
 
     except Exception as e:
