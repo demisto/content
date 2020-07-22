@@ -1,4 +1,4 @@
-Enriches an Endpoint hostname using one or more integrations.
+DEPRECATED. Use "Endpoint Enrichment - Generic v2.1" playbook instead. Enriches an Endpoint hostname using one or more integrations.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

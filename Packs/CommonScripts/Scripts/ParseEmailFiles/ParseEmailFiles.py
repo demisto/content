@@ -3276,14 +3276,14 @@ def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_o
     md += u"* {0}:\t{1}\n".format('To', email_data.get('To') or "")
     md += u"* {0}:\t{1}\n".format('CC', email_data.get('CC') or "")
     md += u"* {0}:\t{1}\n".format('Subject', email_data.get('Subject') or "")
-    if 'Text' in email_data:
+    if email_data.get('Text'):
         text = email_data['Text'].replace('<', '[').replace('>', ']')
         md += u"* {0}:\t{1}\n".format('Body/Text', text or "")
-    if 'HTML' in email_data:
+    if email_data.get('HTML'):
         md += u"* {0}:\t{1}\n".format('Body/HTML', email_data['HTML'] or "")
 
     md += u"* {0}:\t{1}\n".format('Attachments', email_data.get('Attachments') or "")
-    md += u"\n\n" + tableToMarkdown('HeadersMap', email_data['HeadersMap'])
+    md += u"\n\n" + tableToMarkdown('HeadersMap', email_data.get('HeadersMap'))
     return md
 
 
