@@ -494,13 +494,13 @@ def build_where_clause(args: dict) -> str:
     where_clause = ''
     if args.get('ip'):
         ips = argToList(args.pop('ip'))
-        where_clause += ' OR '.join(f'(source_ip.value = "{ip}" OR dest_ip.value = "{ip}")' for ip in ips)
+        where_clause += '(' + ' OR '.join(f'source_ip.value = "{ip}" OR dest_ip.value = "{ip}"' for ip in ips) + ')'
         if any(args.get(key) for key in args_dict) or args.get('port'):
             where_clause += ' AND '
 
     if args.get('port'):
         ports = argToList(args.pop('port'))
-        where_clause += ' OR '.join(f'(source_port = {port} OR dest_port = {port})' for port in ports)
+        where_clause += '(' + ' OR '.join(f'source_port = {port} OR dest_port = {port}' for port in ports) + ')'
         if any(args.get(key) for key in args_dict):
             where_clause += ' AND '
 
@@ -518,6 +518,7 @@ def build_where_clause(args: dict) -> str:
         field = args_dict[key]
         or_statements.append(' OR '.join([f'{field} = {value}' for value in non_string_values_list]))
     where_clause += ' AND '.join([f'({or_statement})' for or_statement in or_statements if or_statement])
+    print(where_clause)
     return where_clause
 
 
