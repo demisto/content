@@ -1,0 +1,116 @@
+category: Analytics & SIEM
+commonfields:
+  id: Azure Log Analytics
+  version: -1
+configuration:
+- display: ID (received from the authorization step - see Detailed Instructions (?)
+    section)
+  name: auth_id
+  required: true
+  type: 4
+- display: Token (received from the authorization step - see Detailed Instructions
+    (?) section)
+  name: refresh_token
+  required: true
+  type: 4
+- display: Key (received from the authorization step - see Detailed Instructions (?)
+    section)
+  name: enc_key
+  required: true
+  type: 4
+- display: Use a self-deployed Azure application
+  name: self_deployed
+  required: false
+  type: 8
+- display: Application redirect URI (for self-deployed mode)
+  name: redirect_uri
+  required: false
+  type: 0
+- display: Authorization code (received from the authorization step - see Detailed
+    Instructions (?) section)
+  name: auth_code
+  required: false
+  type: 4
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Subscription ID
+  name: subscriptionID
+  required: true
+  type: 0
+- display: Resource Group Name
+  name: resourceGroupName
+  required: true
+  type: 0
+- display: Workspace Name
+  name: workspaceName
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: ""  # TODO
+display: Azure Log Analytics (Beta)
+name: Azure Log Analytics
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The entity ID.
+      isArray: false
+      name: entity_id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of relations to return. The default value is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: A link that specifies a starting point to use for subsequent calls.
+        Using this argument overrides all of the other command arguments.
+      isArray: false
+      name: next_link
+      required: false
+      secret: false
+    name: azure-log-analytics-execute-query
+    outputs:
+    - contextPath: AzureLogAnalytics.Query.tables.name
+      description: ''
+      type: String
+    - contextPath: AzureLogAnalytics.Query.tables.columns.name
+      description: ''
+      type: String
+    - contextPath: AzureLogAnalytics.Query.tables.columns.type
+      description: ''
+      type: String
+    - contextPath: AzureLogAnalytics.Query.tables.rows
+      description: ''
+      type: String
+  - deprecated: false
+    description: Tests connectivity to Azure Log Analytics.
+    execution: false
+    name: azure-log-analytics-test
+  dockerimage: demisto/crypto:1.0.0.303
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+beta: true
+tests:
+- No test - manual test playbook-TestAzureSentinelPlaybook is available in NonCircleTests folder
