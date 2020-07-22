@@ -124,9 +124,7 @@ references:
         echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
         git config diff.renameLimit 6000
 
-        if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
-          pip3 install git+https://github.com/demisto/demisto-sdk@master
-        fi
+        pip3 install git+https://github.com/demisto/demisto-sdk@adding-option-to-ignore-missing-file
 
         echo "========== Build Parameters =========="
         set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH="
@@ -148,7 +146,7 @@ references:
 
   restore_cache: &restore_cache
     restore_cache:
-      key: venv-{{ checksum "package-lock.json" }}
+      key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
 
   destroy_instances: &destroy_instances
     run:
@@ -318,7 +316,7 @@ jobs:
           paths:
             - venv
             - node_modules
-          key: venv-{{ checksum "package-lock.json" }}
+          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
       - *get_contribution_pack
       - *add_ssh_keys
       - *persist_to_workspace
