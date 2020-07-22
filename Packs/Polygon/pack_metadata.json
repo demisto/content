@@ -10,9 +10,7 @@
     "categories": [
         "Forensics & Malware Analysis"
     ],
-    "tags": [
-        "sandbox"
-    ],
+    "tags": [],
     "useCases": [
         "Submit a file and get a report (detonation)",
         "Submit a URL and get a report (detonation)",
