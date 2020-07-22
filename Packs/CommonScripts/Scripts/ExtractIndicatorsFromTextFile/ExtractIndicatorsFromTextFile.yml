@@ -54,7 +54,7 @@ subtype: python2
 runas: DBotWeakRole
 runonce: false
 tests:
-- Extract Indicators From File - test
+- No tests - 'Extract Indicators From File - test' found in NonCircleTests
 fromversion: 4.1.0
 tags: []
 toversion: 4.1.9

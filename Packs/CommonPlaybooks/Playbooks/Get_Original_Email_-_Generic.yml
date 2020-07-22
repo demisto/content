@@ -161,6 +161,5 @@ outputs:
   description: The headers of the email.
 fromversion: 4.0.0
 tests:
-- Phishing v2 Test - Attachment
-- Phishing v2 Test - Inline
+- No tests - 'Phishing v2 Test - Attachment' and 'Phishing v2 Test - Inline' found in NonCircleTests
 toversion: 4.1.9
