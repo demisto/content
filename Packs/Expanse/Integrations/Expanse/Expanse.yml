@@ -45,6 +45,7 @@ configuration:
   name: minimum_severity
   required: false
   type: 15
+  defaultvalue: WARNING
   options:
   - ROUTINE
   - WARNING
@@ -655,7 +656,31 @@ script:
     - contextPath: Expanse.Exposures.Exposures.Provider
       description: Provider details of the Exposure
       type: Unknown
-  dockerimage: demisto/python3:3.8.2.6981
+  - arguments:
+    - default: true
+      description: The certificate common name. Fuzzy matching is done on this name, however query times can grow quite large when searching for short strings. Ex. "*.myhost.com" is a better search term than "host"
+      isArray: false
+      name: common_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns all domains which have been seen with the specified certificate.
+    execution: false
+    name: expanse-get-domains-for-certificate
+    outputs:
+    - contextPath: Expanse.IPDomains.SearchTerm
+      description: The common name that was searched.
+      type: String
+    - contextPath: Expanse.IPDomains.TotalDomainCount
+      description: The number of domains found matching the specified certificate.
+      type: Number
+    - contextPath: Expanse.IPDomains.FlatDomainList
+      description: An array of all domain names found. This is truncated at 50.
+      type: Unknown
+    - contextPath: Expanse.IPDomains.DomainList
+      description: An array of domain objects. This is truncated at 50.
+      type: Unknown
+  dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: true
   longRunning: false

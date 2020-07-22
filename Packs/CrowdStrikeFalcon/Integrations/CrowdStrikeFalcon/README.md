@@ -23,6 +23,22 @@ The CrowdStrike Falcon OAuth 2 API integration (formerly Falcon Firehose API), e
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+1.  cs-falcon-search-device
+2.  cs-falcon-get-behavior
+3.  cs-falcon-search-detection
+4.  cs-falcon-resolve-detection
+5.  cs-falcon-contain-host
+6.  cs-falcon-lift-host-containment
+7.  cs-falcon-run-command
+8.  cs-falcon-upload-script
+9.  cs-falcon-upload-file
+10. cs-falcon-delete-file
+11. cs-falcon-get-file
+12. cs-falcon-list-files
+13. cs-falcon-get-script
+14. cs-falcon-delete-script
+15. cs-falcon-list-scripts
+16. cs-falcon-run-script
 
 ### 1. Search for a device
 
@@ -68,7 +84,7 @@ Searches for devices that match the query.
 ##### Context Example
 ```
     {
-        "CrowdStrike.Device": [
+        "CrowdStrike.Device(val.ID === obj.ID)": [
             {
                 "ExternalIP": "94.188.164.68", 
                 "MacAddress": "8c-85-90-3d-ed-3e", 
@@ -237,7 +253,7 @@ or by providing the IDs of the detections.
 ##### Context Example
 ```
     {
-        "CrowdStrike.Detection": [
+        "CrowdStrike.Detection(val.ID === obj.ID)": [
             {
                 "Status": "false_positive", 
                 "ProcessStartTime": "2019-03-21T20:32:55.654489974Z", 
@@ -419,18 +435,22 @@ Sends commands to hosts.
 | command_type | The command type to run. | Required | 
 | full_command | The full command to run. | Required | 
 | scope | The scope for which to run the command. | Optional | 
-
+| target | The target for which to run the command. | Optional | 
 
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.Command.HostID | string | The ID of the host for which the command was running. | 
-| CrowdStrike.Command.Stdout | string | The standard output of the command. | 
-| CrowdStrike.Command.Stderr | string | The standard error of the command. | 
-| CrowdStrike.Command.BaseCommand | string | The base command. | 
-| CrowdStrike.Command.FullCommand | string | The full command. | 
+| CrowdStrike.Command.HostID | String | The ID of the host for which the command was running. | 
+| CrowdStrike.Command.SessionID | string | The ID of the session of the host. | 
+| CrowdStrike.Command.Stdout | String | The standard output of the command. | 
+| CrowdStrike.Command.Stderr | String | The standard error of the command. | 
+| CrowdStrike.Command.BaseCommand | String | The base command. | 
+| CrowdStrike.Command.FullCommand | String | The full command. | 
+| CrowdStrike.Command.TaskID | string | \(For single host\) The ID of the command request which has been accepted. | 
+| CrowdStrike.Command.Complete | boolean | \(For single host\) True if the command has done. | 
+| CrowdStrike.Command.NextSequenceID | number | \(For single host\) The next sequence ID. | 
 
 
 ##### Command Example
@@ -564,21 +584,20 @@ Returns files based on the IDs given. These are used for the RTR `put` command.
 ##### Context Example
 ```
 {
-    'CrowdStrike': {
-        'File': [
-            {
-                'CreatedBy': 'spongobob@demisto.com',
-                'CreatedTime': '2019-10-17T13:41:48.487520845Z',
-                'Description': 'Demisto',
-                'ID': 'le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a',
-                'ModifiedBy': 'spongobob@demisto.com',
-                'ModifiedTime': '2019-10-17T13:41:48.487521161Z',
-                'Name': 'Demisto',
-                'Permission': 'private',
-                'SHA256': '5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc',
-                'Type': 'script'
-            }
-        ]
+    'CrowdStrike.File(val.ID === obj.ID)': [
+        {
+            'CreatedBy': 'spongobob@demisto.com',
+            'CreatedTime': '2019-10-17T13:41:48.487520845Z',
+            'Description': 'Demisto',
+            'ID': 'le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a',
+            'ModifiedBy': 'spongobob@demisto.com',
+            'ModifiedTime': '2019-10-17T13:41:48.487521161Z',
+            'Name': 'Demisto',
+            'Permission': 'private',
+            'SHA256': '5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc',
+            'Type': 'script'
+        }
+    ]
 }
 ```
 
@@ -620,21 +639,20 @@ Returns Returns a list of put-file ID's that are available for the user in the `
 ##### Context Example
 ```
 {
-    'CrowdStrike': {
-        'File': [
-            {
-                'CreatedBy': 'spongobob@demisto.com',
-                'CreatedTime': '2019-10-17T13:41:48.487520845Z',
-                'Description': 'Demisto',
-                'ID': 'le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a',
-                'ModifiedBy': 'spongobob@demisto.com',
-                'ModifiedTime': '2019-10-17T13:41:48.487521161Z',
-                'Name': 'Demisto',
-                'Permission': 'private',
-                'SHA256': '5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc',
-                'Type': 'script'
-            }
-        ]
+    'CrowdStrike.File(val.ID === obj.ID)': [
+        {
+            'CreatedBy': 'spongobob@demisto.com',
+            'CreatedTime': '2019-10-17T13:41:48.487520845Z',
+            'Description': 'Demisto',
+            'ID': 'le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a',
+            'ModifiedBy': 'spongobob@demisto.com',
+            'ModifiedTime': '2019-10-17T13:41:48.487521161Z',
+            'Name': 'Demisto',
+            'Permission': 'private',
+            'SHA256': '5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc',
+            'Type': 'script'
+        }
+    ]
 }
 ```
 
@@ -683,23 +701,22 @@ Return custom scripts based on the ID. Used for the RTR `runscript` command.
 ##### Context Example
 ```
 {
-    'CrowdStrike': {
-        'Script': [
-            {
-                'CreatedBy': 'spongobob@demisto.com',
-                'CreatedTime': '2019-10-17T13:41:48.487520845Z',
-                'Description': 'Demisto',
-                'ID': 'le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a',
-                'ModifiedBy': 'spongobob@demisto.com',
-                'ModifiedTime': '2019-10-17T13:41:48.487521161Z',
-                'Name': 'Demisto',
-                'Permission': 'private',
-                'SHA256': '5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc',
-                'RunAttemptCount': 0,
-                'RunSuccessCount': 0,
-                'WriteAccess': True
-            }
-        ]
+    'CrowdStrike.Script(val.ID === obj.ID)': [
+       {
+           'CreatedBy': 'spongobob@demisto.com',
+           'CreatedTime': '2019-10-17T13:41:48.487520845Z',
+           'Description': 'Demisto',
+           'ID': 'le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a',
+           'ModifiedBy': 'spongobob@demisto.com',
+           'ModifiedTime': '2019-10-17T13:41:48.487521161Z',
+           'Name': 'Demisto',
+           'Permission': 'private',
+           'SHA256': '5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc',
+           'RunAttemptCount': 0,
+           'RunSuccessCount': 0,
+           'WriteAccess': True
+       }
+    ]
 }
 ```
 
@@ -761,23 +778,22 @@ Returns a list of custom script IDs that are available for the user in the `runs
 ##### Context Example
 ```
 {
-    'CrowdStrike': {
-        'Script': [
-            {
-                'CreatedBy': 'spongobob@demisto.com',
-                'CreatedTime': '2019-10-17T13:41:48.487520845Z',
-                'Description': 'Demisto',
-                'ID': 'le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a',
-                'ModifiedBy': 'spongobob@demisto.com',
-                'ModifiedTime': '2019-10-17T13:41:48.487521161Z',
-                'Name': 'Demisto',
-                'Permission': 'private',
-                'SHA256': '5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc',
-                'RunAttemptCount': 0,
-                'RunSuccessCount': 0,
-                'WriteAccess': True
-            }
-        ]
+    'CrowdStrike.Script(val.ID === obj.ID)': [
+        {
+            'CreatedBy': 'spongobob@demisto.com',
+            'CreatedTime': '2019-10-17T13:41:48.487520845Z',
+            'Description': 'Demisto',
+            'ID': 'le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a',
+            'ModifiedBy': 'spongobob@demisto.com',
+            'ModifiedTime': '2019-10-17T13:41:48.487521161Z',
+            'Name': 'Demisto',
+            'Permission': 'private',
+            'SHA256': '5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc',
+            'RunAttemptCount': 0,
+            'RunSuccessCount': 0,
+            'WriteAccess': True
+        }
+    ]
 }
 ```
 
@@ -835,3 +851,345 @@ Runs a script on the agent host.
 |BaseCommand|Command|HostID|Stderr|Stdout|
 |---|---|---|---|---|
 | runscript | runscript -Raw=Write-Output 'Hello, World! | 284771ee197e422d5176d6634a62b934 |  | Hello, World! |                                    Type         Size (bytes)    Size (MB)       Last Modified (UTC-5)     Created (UTC-5)          <br/>----                                     ----         ------------    ---------       ---------------------     ---------------          <br/>$Recycle.Bin                             &lt;Directory&gt;  --              --              11/27/2018 10:54:44 AM    9/15/2017 3:33:40 AM     <br/>ITAYDI                                   &lt;Directory&gt;  --              --              11/19/2018 1:31:42 PM     11/19/2018 1:31:42 PM     |
+
+
+### 17. cs-falcon-run-get-command
+***
+Batch executes `get` command across hosts to retrieve files.
+The running status you requested the `get` command can be checked with `cs-falcon-status-get-command`.
+
+##### Base Command
+
+`cs-falcon-run-get-command`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_ids | List of host agent ID’s to run RTR command on. | Required | 
+| file_path | Full path to the file that is to be retrieved from each host in the batch. | Required | 
+| optional_hosts | List of a subset of hosts we want to run the command on. | Optional | 
+| timeout | Timeout for how long to wait for the request in seconds | Optional | 
+| timeout_duration | Timeout duration for for how long to wait for the request in duration syntax | Optional | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.Command.HostID | string | The ID of the host for which the command was running. | 
+| CrowdStrike.Command.Stdout | string | The standard output of the command. | 
+| CrowdStrike.Command.Stderr | string | The standard error of the command. | 
+| CrowdStrike.Command.BaseCommand | string | The base command. | 
+| CrowdStrike.Command.TaskID | string | The ID of the command which is running on a host. | 
+| CrowdStrike.Command.GetRequestID | string | The ID of the command request which has been accepted. | 
+| CrowdStrike.Command.Complete | boolean | True if the command has done. | 
+| CrowdStrike.Command.FilePath | string | The file path. | 
+
+
+##### Command Example
+`cs-falcon-run-get-command host_ids=edfd6a04ad134c4344f8fb119a3ad88e file_path="""c:\Windows\notepad.exe"""`
+
+##### Context Example
+```
+{
+  "CrowdStrike.Command(val.TaskID === obj.TaskID)": [
+    {
+      "BaseCommand": "get",
+      "Complete": True,
+      "FilePath": "c:\\Windows\\notepad.exe",
+      "GetRequestID": "84ee4d50-f499-482e-bac6-b0e296149bbf",
+      "HostID": "edfd6a04ad134c4344f8fb119a3ad88e",
+      "Stderr": "",
+      "Stdout": "C:\\Windows\\notepad.exe",
+      "TaskID": "b5c8f140-280b-43fd-8501-9900f837510b"
+    }
+  ]
+}
+```
+
+##### Human Readable Output
+### Get command has requested for a file c:\Windows\notepad.exe
+|BaseCommand|Complete|FilePath|GetRequestID|HostID|Stderr|Stdout|TaskID|
+|---|---|---|---|---|---|---|---|
+| get | true | c:\Windows\notepad.exe | 107199bc-544c-4b0c-8f20-3094c062a115 | edfd6a04ad134c4344f8fb119a3ad88e |  | C:\Windows\notepad.exe | 9c820b97-6a60-4238-bc23-f63513970ec8 |
+
+
+
+### 18. cs-falcon-status-get-command
+***
+Retrieves the status of the batch get command which you requested at `cs-falcon-run-get-command`.
+
+##### Base Command
+
+`cs-falcon-status-get-command`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| request_ids | List of the ID to the command requested. | Required | 
+| timeout | Timeout for how long to wait for the request in seconds | Optional | 
+| timeout_duration | Timeout duration for for how long to wait for the request in duration syntax | Optional | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.File.ID | string | The ID of the file. | 
+| CrowdStrike.File.TaskID | string | The ID of the command which is running . | 
+| CrowdStrike.File.CreatedAt | date | The creation date of the file. | 
+| CrowdStrike.File.DeletedAt | date | The deletion date of the file. | 
+| CrowdStrike.File.UpdatedAt | date | The last updated date of the file. | 
+| CrowdStrike.File.Name | string | The full file name. | 
+| CrowdStrike.File.SHA256 | string | The SHA\-256 hash of the file. | 
+| CrowdStrike.File.Size | number | The size of the file in bytes. | 
+| File.Name | string | The full file name. | 
+| File.Size | number | The size of the file in bytes. | 
+| File.SHA256 | string | The SHA\-256 hash of the file. | 
+
+
+##### Command Example
+`!cs-falcon-status-get-command request_ids="84ee4d50-f499-482e-bac6-b0e296149bbf"`
+
+##### Context Example
+```
+{
+  "CrowdStrike.File(val.ID === obj.ID || val.TaskID === obj.TaskID)": [
+    {
+      "CreatedAt": "2020-05-01T16:09:00Z",
+      "DeletedAt": None,
+      "ID": 185596,
+      "Name": "\\Device\\HarddiskVolume2\\Windows\\notepad.exe",
+      "SHA256": "f1d62648ef915d85cb4fc140359e925395d315c70f3566b63bb3e21151cb2ce3",
+      "Size": 0,
+      "TaskID": "b5c8f140-280b-43fd-8501-9900f837510b",
+      "UpdatedAt": "2020-05-01T16:09:00Z"
+    }
+  ],
+  "File(val.MD5 \u0026\u0026 val.MD5 == obj.MD5 || val.SHA1 \u0026\u0026 val.SHA1 == obj.SHA1 || val.SHA256 \u0026\u0026 val.SHA256 == obj.SHA256 || val.SHA512 \u0026\u0026 val.SHA512 == obj.SHA512 || val.CRC32 \u0026\u0026 val.CRC32 == obj.CRC32 || val.CTPH \u0026\u0026 val.CTPH == obj.CTPH || val.SSDeep \u0026\u0026 val.SSDeep == obj.SSDeep)": [
+    {
+      "Name": "\\Device\\HarddiskVolume2\\Windows\\notepad.exe",
+      "SHA256": "f1d62648ef915d85cb4fc140359e925395d315c70f3566b63bb3e21151cb2ce3",
+      "Size": 0
+    }
+  ]
+}
+```
+
+##### Human Readable Output
+### CrowdStrike Falcon files
+|CreatedAt|DeletedAt|ID|Name|SHA256|Size|TaskID|UpdatedAt|
+|---|---|---|---|---|---|---|---|
+| 2020-05-01T16:09:00Z |  | 185596 | \\Device\\HarddiskVolume2\\Windows\\notepad.exe | f1d62648ef915d85cb4fc140359e925395d315c70f3566b63bb3e21151cb2ce3 | 0 | b5c8f140-280b-43fd-8501-9900f837510b | 2020-05-01T16:09:00Z |
+
+
+### 19. cs-falcon-status-command
+***
+Get status of an executed command on a host
+
+
+##### Base Command
+
+`cs-falcon-status-command`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| request_id | The ID to the command requested. | Required | 
+| sequence_id | The sequence ID in chunk requests. | Optional | 
+| scope | The scope for which to run the command. | Optional | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.Command.TaskID | string | The ID of the command request which has been accepted. | 
+| CrowdStrike.Command.Stdout | string | The standard output of the command. | 
+| CrowdStrike.Command.Stderr | string | The standard error of the command. | 
+| CrowdStrike.Command.BaseCommand | string | The base command. | 
+| CrowdStrike.Command.Complete | boolean | True if the command has done. | 
+| CrowdStrike.Command.SequenceID | number | The sequence ID in the current request. | 
+| CrowdStrike.Command.NextSequenceID | number | The sequence ID for the next request  in the chunk request. | 
+
+
+##### Command Example
+`!cs-falcon-status-command request_id="ae323961-5aa8-442e-8461-8d05c4541d7d"`
+
+##### Context Example
+```
+{
+  "CrowdStrike.Command(val.TaskID === obj.TaskID)": [
+    {
+      "BaseCommand": "ls",
+      "Complete": true,
+      "NextSequenceID": null,
+      "SequenceID": null,
+      "Stderr": "",
+      "Stdout": "Directory listing for C:\\ -\n\nName                                     Type         Size (bytes)    Size (MB)       Last Modified (UTC+9)     Created (UTC+9)          \n----                                     ----         ------------    ---------       ---------------------     ---------------          \n$Recycle.Bin                             \u003cDirectory\u003e  --              --              2020/01/10 16:05:59       2019/03/19 13:52:43      \nConfig.Msi                               \u003cDirectory\u003e  --              --              2020/05/01 23:12:50       2020/01/10 16:52:09      \nDocuments and Settings                   \u003cDirectory\u003e  --              --              2019/09/12 15:03:21       2019/09/12 15:03:21      \nPerfLogs                                 \u003cDirectory\u003e  --              --              2019/03/19 13:52:43       2019/03/19 13:52:43      \nProgram Files                            \u003cDirectory\u003e  --              --              2020/01/10 17:11:47       2019/03/19 13:52:43      \nProgram Files (x86)                      \u003cDirectory\u003e  --              --              2020/05/01 23:12:53       2019/03/19 13:52:44      \nProgramData                              \u003cDirectory\u003e  --              --              2020/01/10 17:16:51       2019/03/19 13:52:44      \nRecovery                                 \u003cDirectory\u003e  --              --              2019/09/11 20:13:59       2019/09/11 20:13:59      \nSystem Volume Information                \u003cDirectory\u003e  --              --              2019/09/12 15:08:21       2019/09/11 20:08:43      \nUsers                                    \u003cDirectory\u003e  --              --              2019/09/22 22:26:11       2019/03/19 13:37:22      \nWindows                                  \u003cDirectory\u003e  --              --              2020/05/01 23:09:08       2019/03/19 13:37:22      \npagefile.sys                             .sys         2334928896      2226.762        2020/05/02 2:10:05        2019/09/11 20:08:44      \nswapfile.sys                             .sys         268435456       256             2020/05/01 23:09:13       2019/09/11 20:08:44      \n",
+      "TaskID": "ae323961-5aa8-442e-8461-8d05c4541d7d"
+    }
+  ]
+}
+```
+
+##### Human Readable Output
+### Command status results
+|BaseCommand|Complete|Stdout|TaskID|
+|---|---|---|---|
+| ls | true | Directory listing for C:\\ ...... | ae323961-5aa8-442e-8461-8d05c4541d7d |
+
+
+### 20. cs-falcon-get-extracted-file
+***
+Get RTR extracted file contents for specified session and sha256.
+
+
+##### Base Command
+
+`cs-falcon-get-extracted-file`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_id | The host agent ID. | Required | 
+| sha256 | The SHA-256 hash of the file. | Required | 
+| filename | Filename to use for the archive name and the file within the archive. | Optional | 
+
+
+##### Context Output
+
+There is no context output for this command.
+
+
+##### Command Example
+`!cs-falcon-get-extracted-file host_id="edfd6a04ad134c4344f8fb119a3ad88e" sha256="f1d62648ef915d85cb4fc140359e925395d315c70f3566b63bb3e21151cb2ce3"`
+
+##### Context Example
+There is no context output for this command.
+
+##### Human Readable Output
+There is no human readable for this command.
+
+
+### 21. cs-falcon-list-host-files
+***
+Get a list of files for the specified RTR session on a host.
+
+
+##### Base Command
+
+`cs-falcon-list-host-files`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_id | The ID of the host agent of which it lists files in the session | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.Command.HostID | string | The ID of the host for which the command was running. | 
+| CrowdStrike.Command.TaskID | string | The ID of the command request which has been accepted. | 
+| CrowdStrike.Command.SessionID | string | The ID of the session of the host. | 
+| CrowdStrike.File.ID | string | The ID of the file. | 
+| CrowdStrike.File.CreatedAt | date | The creation date of the file. | 
+| CrowdStrike.File.DeletedAt | date | The deletion date of the file. | 
+| CrowdStrike.File.UpdatedAt | date | The last updated date of the file. | 
+| CrowdStrike.File.Name | string | The full file name. | 
+| CrowdStrike.File.SHA256 | string | The SHA\-256 hash of the file. | 
+| CrowdStrike.File.Size | number | The size of the file in bytes. | 
+| File.Name | string | The full file name. | 
+| File.Size | number | The size of the file in bytes. | 
+| File.SHA256 | string | The SHA\-256 hash of the file. | 
+
+
+##### Command Example
+`!cs-falcon-list-host-files host_id="edfd6a04ad134c4344f8fb119a3ad88e"`
+
+##### Context Example
+```
+{
+  "CrowdStrike.Command(val.TaskID === obj.TaskID)": [
+    {
+      "HostID": "edfd6a04ad134c4344f8fb119a3ad88e",
+      "SessionID": "fdd6408f-6688-441b-8659-41bcad25441c",
+      "TaskID": "1269ad9e-c11f-4e38-8aba-1a0275304f9c"
+    }
+  ],
+  "CrowdStrike.File(val.ID === obj.ID)": [
+    {
+      "CreatedAt": "2020-05-01T17:57:42Z",
+      "DeletedAt": None,
+      "ID": 186811,
+      "Name": "\\Device\\HarddiskVolume2\\Windows\\notepad.exe",
+      "SHA256": "f1d62648ef915d85cb4fc140359e925395d315c70f3566b63bb3e21151cb2ce3",
+      "Size": 0,
+      "Stderr": None,
+      "Stdout": None,
+      "UpdatedAt": "2020-05-01T17:57:42Z"
+    }
+  ],
+  "File(val.MD5 \u0026\u0026 val.MD5 == obj.MD5 || val.SHA1 \u0026\u0026 val.SHA1 == obj.SHA1 || val.SHA256 \u0026\u0026 val.SHA256 == obj.SHA256 || val.SHA512 \u0026\u0026 val.SHA512 == obj.SHA512 || val.CRC32 \u0026\u0026 val.CRC32 == obj.CRC32 || val.CTPH \u0026\u0026 val.CTPH == obj.CTPH || val.SSDeep \u0026\u0026 val.SSDeep == obj.SSDeep)": [
+    {
+      "Name": "\\Device\\HarddiskVolume2\\Windows\\notepad.exe",
+      "SHA256": "f1d62648ef915d85cb4fc140359e925395d315c70f3566b63bb3e21151cb2ce3",
+      "Size": 0
+    }
+  ]
+}
+```
+
+##### Human Readable Output
+### CrowdStrike Falcon files
+|CreatedAt|DeletedAt|ID|Name|SHA256|Size|Stderr|Stdout|UpdatedAt|
+|---|---|---|---|---|---|---|---|---|
+| 2020-05-01T17:57:42Z |  | 186811 | \\Device\\HarddiskVolume2\\Windows\\notepad.exe | f1d62648ef915d85cb4fc140359e925395d315c70f3566b63bb3e21151cb2ce3 | 0 |  |  | 2020-05-01T17:57:42Z |
+
+
+### 22. cs-falcon-refresh-session
+***
+Refresh a session timeout on a single host.
+
+
+##### Base Command
+
+`cs-falcon-refresh-session`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_id | The ID of the host to extend the session | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.Command.HostID | string | The ID of the host for which the command was running. | 
+| CrowdStrike.Command.TaskID | string | The ID of the command request which has been accepted. | 
+| CrowdStrike.Command.SessionID | string | The ID of the session of the host. | 
+| CrowdStrike.File.ID | string | The ID of the file. | 
+| CrowdStrike.File.CreatedAt | date | The creation date of the file. | 
+| CrowdStrike.File.DeletedAt | date | The deletion date of the file. | 
+| CrowdStrike.File.UpdatedAt | date | The last updated date of the file. | 
+| CrowdStrike.File.Name | string | The full file name. | 
+| CrowdStrike.File.SHA256 | string | The SHA\-256 hash of the file. | 
+| CrowdStrike.File.Size | number | The size of the file in bytes. | 
+| File.Name | string | The full file name. | 
+| File.Size | number | The size of the file in bytes. | 
+| File.SHA256 | string | The SHA\-256 hash of the file. | 
+
+
+##### Command Example
+`!cs-falcon-refresh-session host_id=edfd6a04ad134c4344f8fb119a3ad88e`
+
+##### Context Example
+There is no context output for this command.
+
+##### Human Readable Output
+CrowdStrike Session Refreshed: fdd6408f-6688-441b-8659-41bcad25441c
+
+
