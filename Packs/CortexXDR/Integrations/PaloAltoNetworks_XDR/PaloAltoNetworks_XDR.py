@@ -699,7 +699,7 @@ class Client(BaseClient):
     def endpoint_scan(self, endpoint_id_list=None, dist_name=None, gte_first_seen=None, gte_last_seen=None,
                       lte_first_seen=None,
                       lte_last_seen=None, ip_list=None, group_name=None, platform=None, alias=None, isolate=None,
-                      hostname=None):
+                      hostname: list = None):
         request_data: Dict[str, Any] = {}
         filters = []
 
@@ -1572,7 +1572,7 @@ def endpoint_scan_command(client, args):
     platform = args.get('platform')
     alias = args.get('alias')
     isolate = args.get('isolate')
-    hostname = args.get('hostname')
+    hostname = argToList(args.get('hostname'))
 
     reply = client.endpoint_scan(
         endpoint_id_list=argToList(endpoint_id_list),
