@@ -478,6 +478,14 @@ def build_where_clause(args: dict) -> str:
         'file_sha_256': 'file_sha_256',
         'file_name': 'file_name',
     }
+    if args.get('ip') and args.get('source_ip') or args.get('ip') and args.get('dest_ip'):
+        raise DemistoException('Error: You cant enter the "ip" argument with either "source_ip" nor "dest_ip" '
+                               'arguments')
+
+    if args.get('port') and args.get('source_port') or args.get('port') and args.get('dest_port'):
+        raise DemistoException('Error: You cant enter the "port" argument with either "source_port" nor "dest_port" '
+                               'arguments')
+
     non_string_keys = {'dest_port', 'source_port'}
     if 'query' in args:
         # if query arg is supplied than we just need to parse it and only it
@@ -485,25 +493,16 @@ def build_where_clause(args: dict) -> str:
 
     where_clause = ''
     if args.get('ip'):
-        ips = {'source_ip.value': args.get('ip'), 'dest_ip.value': args.get('ip')}
-        for key, values in ips.items():
-            ips_values_list = argToList(args.get('ip'))
-            where_clause += ' OR '.join([f'({key} = "{value}")' for value in ips_values_list])
-            where_clause += ' OR '
-        where_clause = where_clause.rstrip(' OR ')
-
-    if args.get('ip') and args.get('port'):
-        del args['ip']
-        where_clause += ' AND '
+        ips = argToList(args.pop('ip'))
+        where_clause += ' OR '.join(f'(source_ip.value = "{ip}" OR dest_ip.value = "{ip}")' for ip in ips)
+        if any(args.get(key) for key in args_dict) or args.get('port'):
+            where_clause += ' AND '
 
     if args.get('port'):
-        ports = {'source_port': args.get('port'), 'dest_port': args.get('port')}
-        for key, values in ports.items():
-            ports_values_list = argToList(args.get('port'))
-            where_clause += ' OR '.join([f'({key} = {value})' for value in ports_values_list])
-            where_clause += ' OR '
-        where_clause = where_clause.rstrip(' OR ')
-        del args['port']
+        ports = argToList(args.pop('port'))
+        where_clause += ' OR '.join(f'(source_port = {port} OR dest_port = {port})' for port in ports)
+        if any(args.get(key) for key in args_dict):
+            where_clause += ' AND '
 
     # We want to add only keys that are part of the query
     string_query_fields = {key: value for key, value in args.items() if key in args_dict and key not in non_string_keys}

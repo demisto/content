@@ -952,6 +952,20 @@ script:
       name: dest_port
       required: false
       secret: false
+    - default: false
+      description: IP address. Enter an IP address or an array of IP addresses for
+        which to search, for example 1.1.1.1,2.2.2.2.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: Port utilized by the session. Enter a port or array of ports to
+        search.
+      isArray: false
+      name: port
+      required: false
+      secret: false
     deprecated: false
     description: Searches the Cortex firewall.traffic table. Traffic logs contain
       entries for the end of each network session
@@ -1771,6 +1785,20 @@ script:
       description: The number of logs to return. Default is 5.
       isArray: false
       name: limit
+      required: false
+      secret: false
+    - default: false
+      description: IP address. Enter an IP address or an array of IP addresses for
+        which to search, for example 1.1.1.1,2.2.2.2.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: Port utilized by the session. Enter a port or array of ports to
+        search.
+      isArray: false
+      name: port
       required: false
       secret: false
     deprecated: false
