@@ -7,7 +7,7 @@ fromversion: 5.0.0
 category: Case Management
 description: Use the Jira integration to manage issues and create Demisto incidents from projects.
 configuration:
-- display: ' Jira URL, for example: https://demisto.atlassian.net/ '
+- display: 'Jira URL, for example: https://demisto.atlassian.net/'
   name: url
   defaultvalue: ""
   type: 0
@@ -247,7 +247,7 @@ script:
       required: true
       description: The ID of the issue to edit.
     - name: issueJson
-      description: The issue object (in JSON format).
+      description: 'The issue object (in JSON format). e.g, {"fields":{"customfield_10037": "field_value"}}'
     - name: summary
       description: The summary of the issue.
     - name: description
