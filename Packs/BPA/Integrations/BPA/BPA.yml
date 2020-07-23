@@ -60,6 +60,14 @@ script:
       name: task_id
       required: true
       secret: false
+    - default: false
+      name: exclude_passed_checks
+      description: Whether to exclude passed checks. Can be "true" or "false". Default is "false".
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      defaultValue: "false"
     deprecated: false
     description: Returns results of BPA job.
     execution: false
@@ -92,7 +100,7 @@ script:
     - contextPath: InfoFile.Extension
       description: File extension
       type: string
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: false
   longRunning: false
