@@ -1,0 +1,131 @@
+{
+	"name": "Attack Pattern",
+	"id": "Attack Pattern",
+	"group": "indicator",
+	"description": "",
+	"indicatorsDetails": {
+		"tabs": [
+			{
+				"id": "default-main",
+				"name": "Info",
+				"sections": [
+					{
+						"description": "",
+						"displayType": "CARD",
+						"h": 2,
+						"hideName": false,
+						"i": "default-main-5ade5950-b805-11ea-8b2c-8329101299f1",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "firstseen",
+								"height": 53,
+								"id": "c631ef50-b805-11ea-8b2c-8329101299f1",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "modified",
+								"height": 53,
+								"id": "9e781ac0-b805-11ea-8b2c-8329101299f1",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "stixid",
+								"height": 22,
+								"id": "fc286f50-b8f8-11ea-a433-dd8711c30480",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Summary",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"description": "",
+						"displayType": "ROW",
+						"h": 5,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "default-main-e5a255f0-b805-11ea-8b2c-8329101299f1",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "stixdescription",
+								"height": 106,
+								"id": "fe929cf0-b805-11ea-8b2c-8329101299f1",
+								"index": 0,
+								"listId": "default-main-e5a255f0-b805-11ea-8b2c-8329101299f1",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Attack Pattern Description",
+						"static": false,
+						"w": 2,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"description": "",
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": false,
+						"i": "default-main-0d6a0d30-b806-11ea-8b2c-8329101299f1",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "stixkillchainphases",
+								"height": 53,
+								"id": "23b8a740-b806-11ea-8b2c-8329101299f1",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "stixaliases",
+								"height": 53,
+								"id": "1fb74340-b806-11ea-8b2c-8329101299f1",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Attack Pattern Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 2
+					}
+				],
+				"type": "custom"
+			}
+		]
+	},
+
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

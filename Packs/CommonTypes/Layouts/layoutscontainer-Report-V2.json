@@ -1,0 +1,120 @@
+{
+	"name": "Report",
+	"id": "Report",
+	"group": "indicator",
+	"description": "",
+	"indicatorsDetails": {
+		"tabs": [
+			{
+				"hidden": false,
+				"id": "7ccexcwsgn",
+				"name": "Info",
+				"sections": [
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideName": false,
+						"i": "7ccexcwsgn-d7e10530-b8f8-11ea-8b2c-8329101299f1",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "firstseen",
+								"height": 53,
+								"id": "0a721e80-b8f9-11ea-8b2c-8329101299f1",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "modified",
+								"height": 53,
+								"id": "0ca10c70-b8f9-11ea-8b2c-8329101299f1",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "stixid",
+								"height": 22,
+								"id": "0f93e6a0-b8f9-11ea-8b2c-8329101299f1",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Summary",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 5,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "7ccexcwsgn-d8704ce0-b8f8-11ea-8b2c-8329101299f1",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "stixdescription",
+								"height": 106,
+								"id": "10394e60-b8f9-11ea-8b2c-8329101299f1",
+								"index": 0,
+								"listId": "7ccexcwsgn-d8704ce0-b8f8-11ea-8b2c-8329101299f1",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Report Description",
+						"static": false,
+						"w": 2,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": false,
+						"i": "7ccexcwsgn-d8f0c780-b8f8-11ea-8b2c-8329101299f1",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "published",
+								"height": 22,
+								"id": "9a51c8c0-b8f9-11ea-8b2c-8329101299f1",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Report Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 2
+					}
+				],
+				"type": "custom"
+			}
+		]
+	},
+
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

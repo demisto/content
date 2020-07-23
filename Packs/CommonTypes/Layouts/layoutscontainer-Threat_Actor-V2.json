@@ -1,0 +1,184 @@
+{
+	"name": "Threat Actor",
+	"id": "Threat Actor",
+	"group": "indicator",
+	"description": "",
+	"indicatorsDetails": {
+		"tabs": [
+			{
+				"hidden": false,
+				"id": "qi9ckwogmq",
+				"name": "Info",
+				"sections": [
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideName": false,
+						"i": "qi9ckwogmq-e8d1ff40-b8fb-11ea-a433-dd8711c30480",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "firstseen",
+								"height": 53,
+								"id": "0021dcb0-b8fc-11ea-a433-dd8711c30480",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "modified",
+								"height": 53,
+								"id": "0a6bd590-b8fc-11ea-a433-dd8711c30480",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "stixid",
+								"height": 22,
+								"id": "0c262fc0-b8fc-11ea-a433-dd8711c30480",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Summary",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"description": "",
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": false,
+						"i": "qi9ckwogmq-e95e87d0-b8fb-11ea-a433-dd8711c30480",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "stixthreatactortypes",
+								"height": 53,
+								"id": "55ee9570-b8fc-11ea-a433-dd8711c30480",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "stixaliases",
+								"height": 53,
+								"id": "6aff7f60-b8fc-11ea-a433-dd8711c30480",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "stixroles",
+								"height": 53,
+								"id": "9d1993f0-b8fc-11ea-a433-dd8711c30480",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "stixgoals",
+								"height": 53,
+								"id": "b3c20dd0-b8fc-11ea-a433-dd8711c30480",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "stixsophistication",
+								"height": 53,
+								"id": "dd9e4d30-b8fc-11ea-a433-dd8711c30480",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "stixresourcelevel",
+								"height": 53,
+								"id": "09542e90-b8fd-11ea-a433-dd8711c30480",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "stixprimarymotivation",
+								"height": 53,
+								"id": "3cf0eb80-b8fd-11ea-a433-dd8711c30480",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "stixsecondarymotivations",
+								"height": 53,
+								"id": "733e7090-b8fd-11ea-a433-dd8711c30480",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Threat Actor Attributes",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"description": "",
+						"displayType": "ROW",
+						"h": 5,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "qi9ckwogmq-ea129590-b8fb-11ea-a433-dd8711c30480",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "stixdescription",
+								"height": 106,
+								"id": "f9c857e0-b8fb-11ea-a433-dd8711c30480",
+								"index": 0,
+								"listId": "qi9ckwogmq-ea129590-b8fb-11ea-a433-dd8711c30480",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Threat Actor Description",
+						"static": false,
+						"w": 2,
+						"x": 1,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			}
+		]
+	},
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

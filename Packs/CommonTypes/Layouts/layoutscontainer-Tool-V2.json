@@ -1,0 +1,146 @@
+{
+	"name": "Tool",
+	"id": "Tool",
+	"group": "indicator",
+	"description": "",
+	"indicatorsDetails": {
+		"tabs": [
+			{
+				"hidden": false,
+				"id": "thvniil7ev",
+				"name": "Info",
+				"sections": [
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideName": false,
+						"i": "thvniil7ev-d6a0ab10-b8fa-11ea-a433-dd8711c30480",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "firstseen",
+								"height": 53,
+								"id": "ff89d7e0-b8fa-11ea-a433-dd8711c30480",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "modified",
+								"height": 53,
+								"id": "02993ac0-b8fb-11ea-a433-dd8711c30480",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "stixid",
+								"height": 22,
+								"id": "04870100-b8fb-11ea-a433-dd8711c30480",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Summary",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": false,
+						"i": "thvniil7ev-d7160220-b8fa-11ea-a433-dd8711c30480",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "stixtooltypes",
+								"height": 53,
+								"id": "745b1610-b8fb-11ea-a433-dd8711c30480",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "stixaliases",
+								"height": 53,
+								"id": "aaf97a40-b8fb-11ea-a433-dd8711c30480",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "stixkillchainphases",
+								"height": 53,
+								"id": "b44b0960-b8fb-11ea-a433-dd8711c30480",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "stixtoolversion",
+								"height": 22,
+								"id": "312f0330-b8fe-11ea-9686-29f38b8002b7",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Tool Attributes",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 5,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "thvniil7ev-d7abb270-b8fa-11ea-a433-dd8711c30480",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "stixdescription",
+								"height": 106,
+								"id": "ce459470-b8fb-11ea-a433-dd8711c30480",
+								"index": 0,
+								"listId": "thvniil7ev-d7abb270-b8fa-11ea-a433-dd8711c30480",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Tool Description",
+						"static": false,
+						"w": 2,
+						"x": 1,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			}
+		]
+	},
+	"version": -1,
+	"fromVersion": "6.0.0"
+}
