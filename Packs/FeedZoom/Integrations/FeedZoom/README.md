@@ -4,10 +4,10 @@ This fact makes it very difficult for IT and Security teams to provide these ser
 
 One example of these providers is Zoom.
 
-This pack aims is to address this issue by automating the collection of endpoint data in the form of an indicator feed. This will facilitate validation of the indicators before using them in enforcement points, for example firewalls, proxies, and more.
+This pack aims to address this issue by automating the collection of endpoint data in the form of an indicator feed. This will facilitate validation of the indicators before using them in enforcement points, for example firewalls, proxies, and more.
 
 ## Zoom Network Settings
-See: https://support.zoom.us/hc/en-us/articles/201362683-Network-Firewall-or-Proxy-Server-Settings-for-Zoom
+For information about Zoom network settings, see the (Zoom documentation)[https://support.zoom.us/hc/en-us/articles/201362683-Network-Firewall-or-Proxy-Server-Settings-for-Zoom].
 
 ## Demo Video
 <iframe width="560" height="315" src="https://www.youtube.com/embed/s9lRtJltTGI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="true"></iframe>
