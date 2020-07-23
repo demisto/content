@@ -529,10 +529,10 @@
                 "type": "custom"
             }
         ],
-        "typeId": "d7707a02-b8e3-4014-8c05-cdf08219b913",
+        "typeId": "ipRep",
         "version": -1
     },
-    "typeId": "d7707a02-b8e3-4014-8c05-cdf08219b913",
+    "typeId": "ipRep",
     "version": -1,
     "fromVersion": "5.5.0",
     "toVersion": "5.9.9"

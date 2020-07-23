@@ -691,10 +691,10 @@
                 "type": "custom"
             }
         ],
-        "typeId": "d784a480-865d-4607-8bae-cec06af12752",
+        "typeId": "unifiedFileRep",
         "version": -1
     },
-    "typeId": "d784a480-865d-4607-8bae-cec06af12752",
+    "typeId": "unifiedFileRep",
     "version": -1,
     "fromVersion": "5.5.0",
     "toVersion": "5.9.9"

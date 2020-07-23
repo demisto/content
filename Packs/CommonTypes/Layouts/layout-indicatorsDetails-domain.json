@@ -698,11 +698,11 @@
                 "type": "custom"
             }
         ],
-        "typeId": "f437ab4a-d045-4c43-896b-b703c41252ca",
+        "typeId": "domainRepUnified",
         "version": -1
     },
     "toVersion": "5.9.9",
-    "typeId": "f437ab4a-d045-4c43-896b-b703c41252ca",
+    "typeId": "domainRepUnified",
     "version": -1,
     "fromVersion": "5.5.0"
 }
