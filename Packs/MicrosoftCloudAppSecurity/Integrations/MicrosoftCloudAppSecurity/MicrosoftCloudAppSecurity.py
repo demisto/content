@@ -262,7 +262,7 @@ def params_to_filter(parameters):
     return filters
 
 
-def test_module(client):
+def test_module(client, is_fetch):
     try:
         client.list_alerts(url_suffix='/alerts/', request_data={"severity": {"eq": 0}})
     except DemistoException as e:
@@ -270,6 +270,14 @@ def test_module(client):
             return 'Authorization Error: make sure API Key is correctly set'
         else:
             return str(e)
+    if is_fetch:
+        try:
+            client.list_incidents(filters={}, limit=20)
+        except DemistoException as e:
+            if 'Forbidden' in str(e):
+                return 'Authorization Error: make sure API Key is correctly set'
+            else:
+                return str(e)
     return 'ok'
 
 
