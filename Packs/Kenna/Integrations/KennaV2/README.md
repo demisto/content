@@ -17,16 +17,7 @@ Use the Kenna v2 integration to search and update vulnerabilities, schedule a ru
 ---
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-1. [Search vulnerabilities: kenna-search-vulnerabilities](#1-search-vulnerabilities)
-2. [Run a connector: kenna-run-connector](#2-search-vulnerabilities)
-3. [Search fixes: kenna-search-fixes](31-search-fixes)
-4. [Update an asset: kenna-update-asset](#4-update-an-asset)
-5. [Update a vulnerability: kenna-update-vulnerability](#5-update-a-vulnerability)
-6. [Get a list of all connectors: kenna-get-connectors](#6-get-a-list-of-all-connectors)
-7. [Search assets: kenna-search-assets](#7-search-assets)
-8. [Get an asset's vulnerability: kenna-get-asset-vulnerabilities](#8-get-an-assets-vulnerability)
-9. [Add a tag to an asset: kenna-add-tag](#9-add-a-tag-to-an-asset)
-10. [Delete a tag from an asset: kenna-delete-tag](#10-delete-a-tag-from-an-asset)
+
 ### 1. Search vulnerabilities
 ---
 Searches for vulnerabilities in Kenna.
