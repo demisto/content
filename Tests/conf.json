@@ -2861,7 +2861,7 @@
         },
         {
             "integrations": "MicrosoftCloudAppSecurity",
-            "playbookID": "MicrosoftCloudAppSecurity test"
+            "playbookID": "MicrosoftCloudAppSecurity-Test"
         }
     ],
     "skipped_tests": {
