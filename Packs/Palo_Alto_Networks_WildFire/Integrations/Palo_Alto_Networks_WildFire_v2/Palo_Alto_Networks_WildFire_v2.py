@@ -648,7 +648,6 @@ def wildfire_get_url_report(url: str):
         sys.exit(0)
 
     report = result.get('report', None)
-
     if not report:
         entry_context['Status'] = 'Pending'
         demisto.results({
@@ -665,7 +664,7 @@ def wildfire_get_url_report(url: str):
 
     j_report = json.loads(report)
     entry_context['Status'] = 'Success'
-    report.update(entry_context)
+    j_report.update(entry_context)
 
     return url, j_report
 
