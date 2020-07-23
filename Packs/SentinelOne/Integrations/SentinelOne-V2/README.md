@@ -35,7 +35,7 @@
 <li class="has-line-data" data-line-start="29" data-line-end="30"><a href="#h_0e8d08a7-25b5-469b-ba35-27160350e04f" target="_self">Get a threat summary: sentinelone-threat-summary</a></li>
 <li class="has-line-data" data-line-start="30" data-line-end="31"><a href="#h_36d71e47-7c93-47e3-857f-01521ededa58" target="_self">Mark suspicious threats: sentinelone-mark-as-threat</a></li>
 <li class="has-line-data" data-line-start="31" data-line-end="32"><a href="#h_6255110c-9ff9-478e-afca-5a982802ac17" target="_self">Mitigate threats: sentinelone-mitigate-threat</a></li>
-<li class="has-line-data" data-line-start="32" data-line-end="33"><a href="Resolve%20threats:%20sentinelone-resolve-threat" target="_self">Resolve threats: sentinelone-resolve-threat</a></li>
+<li class="has-line-data" data-line-start="32" data-line-end="33"><a href="#9_sentineloneresolvethreat_788" target="_self">Resolve threats: sentinelone-resolve-threat</a></li>
 <li class="has-line-data" data-line-start="33" data-line-end="34"><a href="#h_e4744817-ad70-417e-a772-8c2926087277" target="_self">Get agent details: sentinelone-get-agent</a></li>
 <li class="has-line-data" data-line-start="34" data-line-end="35"><a href="#h_c5e1149a-ccf8-429d-aaf8-3f55a4f190d8" target="_self">Get a list of sites: sentinelone-get-sites</a></li>
 <li class="has-line-data" data-line-start="35" data-line-end="36"><a href="#h_7a21d365-5e9f-4bfc-8244-57f65a169794" target="_self">Get a site list: sentinelone-get-site</a></li>
