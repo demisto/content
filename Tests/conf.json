@@ -2845,6 +2845,10 @@
             "timeout": 500
         },
         {
+            "integrations": "Ivanti Heat",
+            "playbookID": "Ivanti Heat - Test"
+        },
+        {
             "integrations": "Blueliv ThreatCompass",
             "playbookID": "Blueliv_ThreatCompass_test",
             "fromversion": "5.0.0"
@@ -3009,6 +3013,7 @@
         "SecBI": "Issue 22545",
         "IBM Resilient Systems": "Issue 23722",
         "VxStream": "Issue #23795",
+        "Ivanti Heat": "Issue 26259",
         "Bambenek Consulting Feed": "Issue 26184",
         "AWS - Athena - Beta": "Issue 19834",
         "Blueliv ThreatCompass": "Community contribution",
