@@ -219,6 +219,7 @@ def test_attachments_features_2():
 
 def test_whole_preprocessing(mocker):
     import cProfile
+    debug = False
     glove_path = './glove_top_20.p'
     with open(glove_path, 'rb') as file:
         glove_data = file.read()
@@ -231,9 +232,9 @@ def test_whole_preprocessing(mocker):
         incidents = pickle.load(file)
     prof = cProfile.Profile()
     data = prof.runcall(extract_data_from_incidents, incidents=incidents)
-    prof.dump_stats('profiler_output.txt')
-    prof.print_stats(sort='cumtime')
-    with open('output.txt', 'w') as file:
-        json.dump(data, fp=file, indent=4)
+    if debug:
+        prof.print_stats(sort='cumtime')
+        with open('output.txt', 'w') as file:
+            json.dump(data, fp=file, indent=4)
 
 # disable-secrets-detection-end
