@@ -1,6 +1,6 @@
 {
     "name": "Whois",
-    "description": "This pack Provides data enrichment for domains.",
+    "description": "This content pack helps you run Whois commands as playbook tasks or real-time actions within Cortex XSOAR to obtain valuable domain metadata",
     "support": "xsoar",
     "currentVersion": "1.1.2",
     "author": "Cortex XSOAR",
