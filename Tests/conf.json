@@ -14,7 +14,13 @@
         },
         {
             "integrations": "ServiceDeskPlus",
-            "playbookID": "Service Desk Plus Test"
+            "playbookID": "Service Desk Plus Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "ServiceDeskPlus",
+            "playbookID": "Service Desk Plus - Generic Polling Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Group-IB TDS Polygon",
