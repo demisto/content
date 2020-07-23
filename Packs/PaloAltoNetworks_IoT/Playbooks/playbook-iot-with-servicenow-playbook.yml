@@ -69,7 +69,7 @@ tasks:
       version: -1
       name: Get Device Details from IoT Server
       description: IoT get device command - get a single device details
-      script: Palo Alto Networks IoT|||iot-get-device
+      script: Palo Alto Networks IoT|||iot-security-get-device
       type: regular
       iscommand: true
       brand: Palo Alto Networks IoT
@@ -129,7 +129,7 @@ tasks:
       version: -1
       name: Calculate RACI
       description: IoT RACI model script
-      scriptName: iot-get-raci
+      scriptName: iot-security-get-raci
       type: regular
       iscommand: false
       brand: ""

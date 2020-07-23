@@ -40,13 +40,13 @@ https://support.zingbox.com/hc/en-us/articles/360009569073-Zingbox-API-User-Guid
 You can execute these commands from the XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### iot-get-device
+### iot-security-get-device
 ***
 Get a device in details
 
 ##### Base Command
 
-`iot-get-device`
+`iot-security-get-device`
 
 ##### Input
 
@@ -60,13 +60,13 @@ Get a device in details
 | --- | --- | --- |
 | device | unknown | device details |
 
-### iot-list-devices
+### iot-security-list-devices
 ***
 Get a list of devices
 
 ##### Base Command
 
-`iot-list-devices`
+`iot-security-list-devices`
 
 ##### Input
 
@@ -81,13 +81,13 @@ Get a list of devices
 | --- | --- | --- |
 | devices | unknown | a list of devices |
 
-### iot-list-alerts
+### iot-security-list-alerts
 ***
 Get a list of alerts
 
 ##### Base Command
 
-`iot-list-alerts`
+`iot-security-list-alerts`
 
 ##### Input
 
@@ -96,13 +96,13 @@ Get a list of alerts
 | stime | The starting time of the list of alerts, default: -1 | Optional |
 | offset | The maximum size of the alerts list, default: 1000 | Optional |
 
-### iot-list-vulns
+### iot-security-list-vulns
 ***
 Get a list of vulnerabilities
 
 ##### Base Command
 
-`iot-list-vulns`
+`iot-security-list-vulns`
 
 ##### Input
 
@@ -111,13 +111,13 @@ Get a list of vulnerabilities
 | stime | The starting time of the list of vulnerabilities, default: -1 | Optional |
 | offset | The maximum size of the vulnerabilities list, default: 1000 | Optional |
 
-### iot-resolve-alert
+### iot-security-resolve-alert
 ***
 Resolve an alert incident in IoT security portal
 
 ##### Base Command
 
-`iot-resolve-alert`
+`iot-security-resolve-alert`
 
 ##### Input
 
@@ -127,13 +127,13 @@ Resolve an alert incident in IoT security portal
 | reason | the resolution reason | Optional |
 | reason_type | the resolution reason type, either "No Action Needed" or "Issue Mitigated" | Optional |
 
-### iot-resolve-vuln
+### iot-security-resolve-vuln
 ***
 Resolve an vulnerability incident in IoT security portal
 
 ##### Base Command
 
-`iot-resolve-vuln`
+`iot-security-resolve-vuln`
 
 ##### Input
 

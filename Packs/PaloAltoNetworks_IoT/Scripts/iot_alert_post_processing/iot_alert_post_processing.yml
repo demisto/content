@@ -1,9 +1,9 @@
 comment: IoT alert post processing script to resolve the alert in IoT security portal using API
 commonfields:
-  id: iot-alert-post-processing
+  id: iot-security-alert-post-processing
   version: -1
 enabled: true
-name: iot-alert-post-processing
+name: iot-security-alert-post-processing
 script: '-'
 system: false
 tags:

@@ -40,10 +40,10 @@ tasks:
     task:
       id: 3fc69d50-5810-4f39-8479-f24f36d6456f
       version: -1
-      name: iot-check-servicenow
+      name: iot-security-check-servicenow
       description: To close the XSOAR incident if the IoT ServiceNow ticket was closed.
         This command should be run in a Job.
-      scriptName: iot-check-servicenow
+      scriptName: iot-security-check-servicenow
       type: regular
       iscommand: false
       brand: ""

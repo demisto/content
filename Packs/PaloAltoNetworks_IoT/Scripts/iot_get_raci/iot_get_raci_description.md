@@ -1,4 +1,4 @@
-## iot-get-raci Script
+## iot-security-get-raci Script
 
 This script is using the device and the incident attributes to evaluate the Responsible (R) and Informed (I) parties in the RACI model.
 

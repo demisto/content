@@ -1,9 +1,9 @@
 comment: IoT vulnerability post processing script to resolve the vulnerability incident in IoT security portal using API
 commonfields:
-  id: iot-vuln-post-processing
+  id: iot-security-vuln-post-processing
   version: -1
 enabled: true
-name: iot-vuln-post-processing
+name: iot-security-vuln-post-processing
 script: '-'
 system: false
 tags:

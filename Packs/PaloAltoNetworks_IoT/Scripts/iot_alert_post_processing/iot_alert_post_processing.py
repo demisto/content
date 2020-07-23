@@ -20,7 +20,7 @@ def iot_resolve_alert():
     args = demisto.args()
     close_reason = args.get('closeReason')
 
-    demisto.executeCommand('iot-resolve-alert', {
+    demisto.executeCommand('iot-security-resolve-alert', {
         'id': _id,
         'reason': f'resolved by XSOAR incident {incident["id"]}',
         'reason_type': 'Issue Mitigated' if close_reason == "Resolved" else 'No Action Needed'
@@ -31,7 +31,7 @@ def main():
     try:
         iot_resolve_alert()
     except Exception as ex:
-        demisto.error(f'Failed to execute iot-alert-post-processing. Error: {str(ex)}')
+        demisto.error(f'Failed to execute iot-security-alert-post-processing. Error: {str(ex)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

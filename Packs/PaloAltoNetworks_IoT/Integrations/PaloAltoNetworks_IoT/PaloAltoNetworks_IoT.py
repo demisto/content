@@ -474,22 +474,22 @@ def main():
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
-        elif demisto.command() == 'iot-get-device':
+        elif demisto.command() == 'iot-security-get-device':
             return_results(iot_get_device(client, demisto.args()))
 
-        elif demisto.command() == 'iot-list-devices':
+        elif demisto.command() == 'iot-security-list-devices':
             return_results(iot_list_devices(client, demisto.args()))
 
-        elif demisto.command() == 'iot-list-alerts':
+        elif demisto.command() == 'iot-security-list-alerts':
             return_results(iot_list_alerts(client, demisto.args()))
 
-        elif demisto.command() == 'iot-list-vulns':
+        elif demisto.command() == 'iot-security-list-vulns':
             return_results(iot_list_vulns(client, demisto.args()))
 
-        elif demisto.command() == 'iot-resolve-alert':
+        elif demisto.command() == 'iot-security-resolve-alert':
             return_results(iot_resolve_alert(client, demisto.args()))
 
-        elif demisto.command() == 'iot-resolve-vuln':
+        elif demisto.command() == 'iot-security-resolve-vuln':
             return_results(iot_resolve_vuln(client, demisto.args()))
 
     # Log exceptions

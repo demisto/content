@@ -55,7 +55,7 @@ def main():
     try:
         demisto.results(check_servicenow_and_close())
     except Exception as ex:
-        demisto.error(f'Failed to execute iot-check-servicenow. Error: {str(ex)}')
+        demisto.error(f'Failed to execute iot-security-check-servicenow. Error: {str(ex)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

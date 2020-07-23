@@ -44,10 +44,10 @@ args:
   defaultValue: IOT_CONFIG
 comment: IoT RACI model script
 commonfields:
-  id: iot-get-raci
+  id: iot-security-get-raci
   version: -1
 enabled: false
-name: iot-get-raci
+name: iot-security-get-raci
 outputs:
 - contextPath: raci
   description: The RACI model of the IoT incident

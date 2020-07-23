@@ -21,7 +21,7 @@ def iot_resolve_vuln():
     if vulnerability_name == "":
         raise Exception('vulnerability_name was not found in the incident labels')
 
-    demisto.executeCommand('iot-resolve-vuln', {
+    demisto.executeCommand('iot-security-resolve-vuln', {
         'id': zb_ticketid,
         'full_name': vulnerability_name,
         'reason': f'resolved by XSOAR incident {incident["id"]}'
@@ -32,7 +32,7 @@ def main():
     try:
         iot_resolve_vuln()
     except Exception as ex:
-        demisto.error(f'Failed to execute iot-vuln-post-processing. Error: {str(ex)}')
+        demisto.error(f'Failed to execute iot-security-vuln-post-processing. Error: {str(ex)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

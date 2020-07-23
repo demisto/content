@@ -19,7 +19,7 @@
     "default": false,
     "autorun": false,
     "preProcessingScript": "",
-    "closureScript": "iot-alert-post-processing",
+    "closureScript": "iot-security-alert-post-processing",
     "disabled": false,
     "reputationCalc": 0,
     "fromVersion": "5.5.0"

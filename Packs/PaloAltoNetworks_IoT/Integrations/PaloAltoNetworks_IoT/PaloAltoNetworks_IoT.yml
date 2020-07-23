@@ -57,7 +57,7 @@ display: Palo Alto Networks IoT
 name: Palo Alto Networks IoT
 script:
   commands:
-  - name: iot-get-device
+  - name: iot-security-get-device
     arguments:
     - default: false
       description: The device uid (mac address)
@@ -178,7 +178,7 @@ script:
     - contextPath: device.mac_address
       description: 'The device MAC address'
       type: String
-  - name: iot-list-devices
+  - name: iot-security-list-devices
     arguments:
     - default: false
       description: The offset in the pagination
@@ -195,7 +195,7 @@ script:
     deprecated: false
     description: IoT list devices command
     execution: false
-  - name: iot-list-alerts
+  - name: iot-security-list-alerts
     arguments:
     - default: false
       description: The start time in the format of ISO 8601 in UTC, -1 means from
@@ -213,7 +213,7 @@ script:
     deprecated: false
     description: IoT list alerts
     execution: false
-  - name: iot-list-vulns
+  - name: iot-security-list-vulns
     arguments:
     - default: false
       description: The start time in the format of ISO 8601 in UTC, -1 means from
@@ -231,7 +231,7 @@ script:
     deprecated: false
     description: IoT list Vulnerabilities
     execution: false
-  - name: iot-resolve-alert
+  - name: iot-security-resolve-alert
     arguments:
     - default: false
       description: The alert ID
@@ -254,7 +254,7 @@ script:
     deprecated: false
     description: Resolving an IoT alert
     execution: false
-  - name: iot-resolve-vuln
+  - name: iot-security-resolve-vuln
     arguments:
     - default: false
       description: The vulnerability ID

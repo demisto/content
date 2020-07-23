@@ -1,4 +1,4 @@
-## iot-check-servicenow Script
+## iot-security-check-servicenow Script
 
 This script is run by a playbook 'iot-check-service-playbook', that is run by a recurring XSOAR job.
 

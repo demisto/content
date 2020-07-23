@@ -96,13 +96,14 @@ def get_raci(args):
             result['r_email'] = None
             result['r_snow'] = None
 
-        if result['r_snow']:
-            fields = result['r_snow']['fields']
+        r_snow = result.get('r_snow', {})
+        if r_snow:
+            fields = r_snow.get('fields', {})
             if fields:
-                result['r_snow']['fields'] = ';'.join([ f'{k}={v}' for k, v in fields.items() ])
-            cfields = result['r_snow']['custom_fields']
+                r_snow['fields'] = ';'.join([f'{k}={v}' for k, v in fields.items()])
+            cfields = r_snow.get('custom_fields', {})
             if cfields:
-                result['r_snow']['custom_fields'] = ';'.join([ f'{k}={v}' for k, v in cfields.items() ])
+                r_snow['custom_fields'] = ';'.join([f'{k}={v}' for k, v in cfields.items()])
 
         i = []
         for inform in raci['i']:
@@ -145,7 +146,7 @@ def main():
     try:
         return_results(get_raci(demisto.args()))
     except Exception as ex:
-        return_error(f'Failed to execute iot-get-raci. Error: {str(ex)}')
+        return_error(f'Failed to execute iot-security-get-raci. Error: {str(ex)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
