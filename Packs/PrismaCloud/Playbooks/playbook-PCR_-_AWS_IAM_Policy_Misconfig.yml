@@ -220,7 +220,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "13"
     separatecontext: false
     view: |-
       {
@@ -263,7 +263,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1200
+          "y": 1350
         }
       }
     note: false
@@ -286,7 +286,7 @@ tasks:
       {
         "position": {
           "x": 690,
-          "y": 1370
+          "y": 1520
         }
       }
     note: false
@@ -356,8 +356,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1010
+          "x": 60,
+          "y": 1180
         }
       }
     note: false
@@ -444,7 +444,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "13"
     scriptarguments:
       policyId:
         complex:
@@ -484,7 +484,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "13"
     scriptarguments:
       policyId:
         complex:
@@ -504,6 +504,66 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 06bdb957-83d6-4613-8589-376daa6136c1
+    type: condition
+    task:
+      id: 06bdb957-83d6-4613-8589-376daa6136c1
+      version: -1
+      name: Is Prisma Cloud (RedLock) integration enabled?
+      description: Is Prisma Cloud (RedLock) integration enabled?
+      type: condition
+      iscommand: false
+      brand: RedLock
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "9"
+    continueonerror: true
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RedLock
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -518,7 +578,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1615,
+        "height": 1765,
         "width": 1520,
         "x": -450,
         "y": -180
