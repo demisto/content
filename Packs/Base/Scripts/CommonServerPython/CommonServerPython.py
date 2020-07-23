@@ -3682,6 +3682,10 @@ if 'requests' in sys.modules:
                 whether we should raise an exception, or return a response,
                 if status falls in ``status_forcelist`` range and retries have
                 been exhausted.
+
+            :type error_handler ``callable``
+            :param error_handler: Given an error entery, the error handler outputs the
+            new formatted error message.
             """
             try:
                 # Replace params if supplied
