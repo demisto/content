@@ -2867,7 +2867,6 @@
         "RedLockTest": "Issue 24600",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 25477",
         "SentinelOne V2 - test": "Issue 24933",
-        "SignalSciences-Test": "Issue 24934",
         "Maltiverse Test": "Issue 24335",
         "TestDedupIncidentsPlaybook": "Issue 24344",
         "CreateIndicatorFromSTIXTest": "Issue 24345",
