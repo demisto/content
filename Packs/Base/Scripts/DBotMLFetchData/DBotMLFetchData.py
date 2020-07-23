@@ -838,9 +838,9 @@ def get_headers_features(email_headers):
     else:
         return_path_adress = ''
     if last_received_value is not None:
-        received_address = re.findall(r'(?<=from )\S+', last_received_value)
-        if len(received_address) > 0:
-            received_address = received_address[0]
+        received_address_list = re.findall(r'(?<=from )\S+', last_received_value)
+        if len(received_address_list) > 0:
+            received_address = received_address_list[0]
         else:
             received_address = ''
     else:
@@ -878,7 +878,7 @@ def get_headers_features(email_headers):
         res['dkim::{}'.format(k)] = v
     res['unsubscribe_headers'] = res_unsubscribe
     for k, v in adress_res.items():
-        res[k] = v
+        res[k] = v  # type: ignore
     for k, v in received_res.items():
         res[k] = v
     res['content-type::{}'.format(content_type_value)] = 1
@@ -898,8 +898,8 @@ def get_attachments_features(email_attachments):
         all_attachments_names_lengths) > 0 else 0
     res['max_attachment_name_length'] = max(all_attachments_names_lengths) if len(
         all_attachments_names_lengths) > 0 else 0
-    res['avg_attachment_name_length'] = float(sum(all_attachments_names_lengths)) / len(
-        all_attachments_names_lengths) if len(all_attachments_names_lengths) > 0 else 0
+    res['avg_attachment_name_length'] = float(sum(all_attachments_names_lengths)) / len(  # type: ignore
+        all_attachments_names_lengths) if len(all_attachments_names_lengths) > 0 else 0  # type: ignore
     res['image_extension'] = 0
     for image_format in ['.jepg', '.gif', '.bmp', '.png']:
         res['image_extension'] += sum([name.endswith(image_format) for name in all_attachments_names])
@@ -982,7 +982,7 @@ def extract_features_from_all_incidents(incidents_df):
         'headers_features': [],
         'url_features': [],
         'attachments_features': []
-    }
+    }   # type: ignore
     exceptions_log = []
     exception_indices = set()
     timeout_indices = set()
