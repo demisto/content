@@ -17,6 +17,7 @@ tasks:
       id: 1b1b3125-d39b-4930-89fc-c9ff36ac559c
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -137,6 +138,7 @@ tasks:
       id: 74b54d79-9464-4112-824b-e836cbce4dbc
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -328,6 +330,7 @@ tasks:
       id: e51f57ef-047a-4485-894b-0d99dcfb4d6f
       version: -1
       name: Was file url submission successful?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -367,6 +370,7 @@ tasks:
       id: 82a36b69-5d34-4346-85c2-7e8545cb16c1
       version: -1
       name: Was upload finished successfully and a Report is Pending?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
