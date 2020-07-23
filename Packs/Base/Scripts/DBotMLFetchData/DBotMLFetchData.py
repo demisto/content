@@ -32,10 +32,10 @@ class TimeoutException(Exception):  # Custom exception class
     pass
 
 
-def timeout_handler(**kwargs):  # Custom signal handler
-    if kwargs:
+def timeout_handler(signum, frame):  # Custom signal handler
+    if signum or frame:
         pass
-    raise TimeoutException()
+    raise TimeoutException
 
 
 # Change the behavior of SIGALRM
