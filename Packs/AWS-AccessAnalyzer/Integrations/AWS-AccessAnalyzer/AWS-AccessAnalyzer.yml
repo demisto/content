@@ -61,6 +61,11 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Fetch Analyzer ARN
+  name: analyzerArn
+  defaultvalue: ""
+  type: 0
+  required: false
 description: Amazon Web Services IAM Access Analyzer
 display: AWS - AccessAnalyzer (beta)
 name: AWS - AccessAnalyzer

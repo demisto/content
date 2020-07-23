@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 """IMPORTS"""
 import boto3
 import json
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from botocore.config import Config
 
 
@@ -18,6 +18,7 @@ AWS_ROLE_POLICY = None
 AWS_ACCESS_KEY_ID = demisto.params().get('access_key')
 AWS_SECRET_ACCESS_KEY = demisto.params().get('secret_key')
 VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
+TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
 config = Config(
     connect_timeout=1,
@@ -202,16 +203,25 @@ def list_findings_command(args):
     if args.get('status'):
         filters['status'] = {"eq": [args.get('status')]}
 
+    if args.get('nextToken'):
+        kwargs['nextToken'] = args.get('nextToken')
+
+    kwargs['sort'] = {
+        'attributeName': 'UpdatedAt',
+        'orderBy': 'DESC'
+    }
+
     if len(filters) > 0:
         kwargs['filter'] = filters
 
     response = client.list_findings(**kwargs)
-    data = json.loads(json.dumps(response['findings'], cls=DatetimeEncoder))
+    data = json.loads(json.dumps(response, cls=DatetimeEncoder))
 
-    ec = {'AWS.AccessAnalyzer.Findings(val.id === obj.id)': data}
-    human_readable = tableToMarkdown("AWS Access Analyzer Findings", data)
-    return_outputs(human_readable, ec)
+    #ec = {'AWS.AccessAnalyzer.Findings(val.id === obj.id)': data}
+    #human_readable = tableToMarkdown("AWS Access Analyzer Findings", data)
+    #return_outputs(human_readable, ec)
 
+    return [data] if isinstance(data, dict) else data
 
 def get_analyzed_resource_command(args):
     client = aws_session(
@@ -308,25 +318,85 @@ def test_function():
     except Exception as e:
         return return_error(str(e))
 
+def fetch_incidents(last_run: dict = None):
+    dParams = demisto.params()
+    # Get the last fetch time, if exists
+    last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
+
+    # Handle first time fetch, fetch incidents retroactively
+    if last_fetch is None:
+        today = datetime.today()
+        delta = today - timedelta(days=50)
+        last_fetch = date_to_timestamp(delta)
+
+    incidents = []
+    dArgs = {}
+    dArgs['roleArn'] = dParams.get('roleArn')
+    dArgs['region'] = dParams.get('region')
+    dArgs['roleSessionName'] = dParams.get('roleSessionName')
+    dArgs['roleSessionDuration'] = dParams.get('roleSessionDuration')
+    dArgs['analyzerArn'] = dParams.get('analyzerArn')
+    dArgs['maxResults'] = 25
+
+    nextToken = None
+    incidents = []
+    tmp_last_fetch = last_fetch
+
+    while True:
+
+        if nextToken:
+            dArgs['nextToken'] = nextToken
+        raw_incidents = list_findings_command(dArgs)
+
+        for raw_incident in raw_incidents[0]['findings']:
+            incident = {
+                'name': f"AWS Access Analyzer Alert - {raw_incident['id']}",
+                'occurred': raw_incident['updatedAt'] + 'Z',
+                'rawJSON': json.dumps(raw_incident)
+            }
+
+            inc_timestamp = date_to_timestamp(raw_incident['updatedAt'])
+
+            if inc_timestamp > int(last_fetch):
+                incidents.append(incident)
+                if inc_timestamp > tmp_last_fetch:
+                    tmp_last_fetch = inc_timestamp
+            else:
+                break
+
+        if 'nextToken' in raw_incidents[0]:
+            nextToken = raw_incidents[0]['nextToken']
+        else:
+            break
+
+    demisto.setLastRun({"time": tmp_last_fetch if tmp_last_fetch else last_fetch})
+    return incidents
 
 """EXECUTION BLOCK"""
-try:
-    if demisto.command() == 'test-module':
-        result = test_function()
-    elif demisto.command() == 'aws-access-analyzer-list-analyzers':
-        list_analyzers_command(demisto.args())
-    elif demisto.command() == 'aws-access-analyzer-list-analyzed-resource':
-        list_analyzed_resource_command(demisto.args())
-    elif demisto.command() == 'aws-access-analyzer-list-findings':
-        list_findings_command(demisto.args())
-    elif demisto.command() == 'aws-access-analyzer-get-analyzed-resource':
-        get_analyzed_resource_command(demisto.args())
-    elif demisto.command() == 'aws-access-analyzer-get-finding':
-        get_finding_command(demisto.args())
-    elif demisto.command() == 'aws-access-analyzer-start-resource-scan':
-        start_resource_scan_command(demisto.args())
-    elif demisto.command() == 'aws-access-analyzer-update-findings':
-        update_findings_command(demisto.args())
+#try:
+if demisto.command() == 'test-module':
+    result = test_function()
+elif demisto.command() == 'fetch-incidents':
+    incidents = fetch_incidents(demisto.getLastRun())
+    demisto.incidents(incidents)
+elif demisto.command() == 'aws-access-analyzer-list-analyzers':
+    list_analyzers_command(demisto.args())
+elif demisto.command() == 'aws-access-analyzer-list-analyzed-resource':
+    list_analyzed_resource_command(demisto.args())
+elif demisto.command() == 'aws-access-analyzer-list-findings':
+    #list_findings_command(demisto.args())
+    data = list_findings_command(demisto.args())
+    ec = {'AWS.AccessAnalyzer.Findings(val.id === obj.id)': data}
+    human_readable = tableToMarkdown("AWS Access Analyzer Findings", data)
+    return_outputs(human_readable, ec)
+elif demisto.command() == 'aws-access-analyzer-get-analyzed-resource':
+    get_analyzed_resource_command(demisto.args())
+elif demisto.command() == 'aws-access-analyzer-get-finding':
+    get_finding_command(demisto.args())
+elif demisto.command() == 'aws-access-analyzer-start-resource-scan':
+    start_resource_scan_command(demisto.args())
+elif demisto.command() == 'aws-access-analyzer-update-findings':
+    update_findings_command(demisto.args())
 
-except Exception as e:
-    return_error(f"Error has occured in AWS Access Analyzer Integration: {str(e)}")
+#except Exception as e:
+#    return_error(f"Error has occured in AWS Access Analyzer Integration: {str(e)}")
