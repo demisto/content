@@ -2900,7 +2900,6 @@
         "Create Phishing Classifier V2 ML Test": "Issue 26341",
         "DuoAdmin API test playbook": "Issue 24937",
         "Mail Sender (New) Test": "Issue 25602",
-        "HTTPListRedirects Basic Test": "Issue 26459",
         "SMB test": "Issue 26454",
         "Infocyte-Test": "Issue 26445",
         "Account Enrichment - Generic v2 - Test": "Issue 26452",
@@ -3017,6 +3016,7 @@
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tenable.sc": "unstable instance",
+        "ThreatConnect v2": "unstable instance",
         
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Issue 25650",
@@ -3056,6 +3056,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "Cherwell": "Submits a file - tests that send files shouldn't be mocked",
         "ThreatConnect v2": "Issue 26794",
         "Infocyte": "Proxy issues",
         "SNDBOX": "Submits a file - tests that send files shouldn't be mocked",
