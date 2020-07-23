@@ -1,6 +1,5 @@
 from CommonServerPython import *
 from CommonServerUserPython import *
-import requests
 
 
 class CrowdStrikeClient(BaseClient):
@@ -26,7 +25,7 @@ class CrowdStrikeClient(BaseClient):
         :return: errors converted to single str
         """
         errors = error_entry.get("errors", [])
-        return '\n'.join(f"{error['code']}: {error['message']}" for error in errors)
+        return '\n' + '\n'.join(f"{error['code']}: {error['message']}" for error in errors)
 
     def http_request(self, method, url_suffix, full_url=None, headers=None, json_data=None, params=None, data=None,
                      files=None, timeout=10, ok_codes=None, return_empty_response=False, auth=None):
