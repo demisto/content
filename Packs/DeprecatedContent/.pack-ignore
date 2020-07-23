@@ -151,7 +151,7 @@ ignore=BA101
 [file:playbook-PhishingAutomated.yml]
 ignore=BA101
 
-[file:playbook-Access_Investigation_-_Generic_4_5_0.yml]
+[file:Access_Investigation_-_Generic_4_5_0.yml]
 ignore=BA101
 
 [file:playbook-Search_Endpoints_By_Hash_-_Carbon_Black_Response.yml]
