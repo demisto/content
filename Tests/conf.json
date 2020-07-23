@@ -14,7 +14,13 @@
         },
         {
             "integrations": "ServiceDeskPlus",
-            "playbookID": "Service Desk Plus Test"
+            "playbookID": "Service Desk Plus Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "ServiceDeskPlus",
+            "playbookID": "Service Desk Plus - Generic Polling Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Group-IB TDS Polygon",
@@ -2903,7 +2909,6 @@
         "Cortex XDR - IOC - Test": "issue #25598",
         "Create Phishing Classifier V2 ML Test": "Issue 26341",
         "DuoAdmin API test playbook": "Issue 24937",
-        "Mail Sender (New) Test": "Issue 25602",
         "SMB test": "Issue 26454",
         "Infocyte-Test": "Issue 26445",
         "Account Enrichment - Generic v2 - Test": "Issue 26452",
@@ -2917,7 +2922,6 @@
         "Tenable.io test": "Issue 26727",
         "Tenable.io Scan Test": "Issue 26727",
         "URL Enrichment - Generic v2 - Test": "Issue 26463",
-        "Fidelis-Test": "Issue 26453",
         "ThreatConnect v2 - Test": "Issue 26782",
         "Pwned v2 test": "Issue 26601",
         "Email Address Enrichment - Generic v2.1 - Test": "Issue 26785",
@@ -2925,7 +2929,7 @@
         "Google Chronicle Backstory List IOCs - Test": "Issue 26461"
     },
     "skipped_integrations": {
-        
+
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Symantec Management Center": "Issue 23960",
         "PerceptionPoint": "Issue 25795",
@@ -3018,12 +3022,12 @@
         "Bambenek Consulting Feed": "Issue 26184",
         "AWS - Athena - Beta": "Issue 19834",
         "Blueliv ThreatCompass": "Community contribution",
-        
+
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-        
+
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Issue 25650",
         "XFE_v2": "Issue 22715",
@@ -3032,14 +3036,14 @@
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "Issue 26266",
-        
+
         "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer",
         "SafeBreach v2": "it is a partner integration, no instance",
         "IllusiveNetworks": "supported by partner",
         "Humio": "supported by the partner",
         "Digital Guardian": "partner integration",
-        
+
         "_comment5": "~~~ OTHER ~~~",
         "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
         "Cisco ASA": "Issue 25741",
