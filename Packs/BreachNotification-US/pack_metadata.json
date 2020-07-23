@@ -8,9 +8,9 @@
     "email": "",
     "categories": [],
     "tags": [
-        "Breach Notification",
-        "PII",
-        "Compliance"
+        "Breach",
+        "Compliance",
+        "PII"
     ],
     "created": "2020-05-06T18:47:57Z",
     "useCases": [

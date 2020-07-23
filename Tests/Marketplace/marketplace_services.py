@@ -37,33 +37,9 @@ class GCPConfig(object):
     BASE_PACK = "Base"  # base pack name
     INDEX_NAME = "index"  # main index folder name
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
-    CORE_PACKS_LIST = [BASE_PACK,
-                       "rasterize",
-                       "DemistoRESTAPI",
-                       "DemistoLocking",
-                       "ImageOCR",
-                       "WhereIsTheEgg",
-                       "AutoFocus",
-                       "UrlScan",
-                       "Active_Directory_Query",
-                       "FeedTAXII",
-                       "VirusTotal",
-                       "Whois",
-                       "Phishing",
-                       "CommonScripts",
-                       "CommonPlaybooks",
-                       "CommonTypes",
-                       "CommonDashboards",
-                       "CommonReports",
-                       "CommonWidgets",
-                       "TIM_Processing",
-                       "TIM_SIEM",
-                       "HelloWorld",
-                       "ExportIndicators",
-                       "Malware",
-                       "DefaultPlaybook",
-                       "AccessInvestigation"
-                       ]  # cores packs list
+
+    with open(os.path.join(os.path.dirname(__file__), 'core_packs_list.json'), 'r') as core_packs_list_file:
+        CORE_PACKS_LIST = json.load(core_packs_list_file)
 
 
 class Metadata(object):

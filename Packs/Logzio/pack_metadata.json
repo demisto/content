@@ -10,11 +10,12 @@
         "Analytics & SIEM"
     ],
     "tags": [
-        "Alerts",
-        "Rules",
-        "Security"
+        "Alerts"
     ],
     "created": "2020-04-14T08:25:21Z",
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "githubUser": [
+        "yyyogev"
+    ]
 }
