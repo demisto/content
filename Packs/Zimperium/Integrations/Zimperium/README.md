@@ -8,7 +8,7 @@ This integration was integrated and tested with version 4.24 of Zimperium
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL (e.g. https://domain.zimperium.com) | True |
+| url | Server URL (e.g. `https://domain.zimperium.com`) | True |
 | api_key | API Key | True |
 | isFetch | Fetch incidents | False |
 | fetch_query | Fetch Query. e.g, severity==CRITICAL | False |
