@@ -3,7 +3,7 @@
 	"name": "Zimperium - Incoming Mapper",
 	"type": "mapping-incoming",
 	"version": -1,
-	"fromversion": "6.0.0",
+	"fromVersion": "6.0.0",
 	"description": "Maps incoming Zimperium incident fields.",
 	"defaultIncidentType": "",
 	"mapping": {

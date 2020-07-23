@@ -1,16 +1,16 @@
 {
-  "name": "Microsoft Graph Security",
-  "description": "Unified gateway to security insights - all from a unified Microsoft Graph\n  Security API.",
-  "support": "Cortex XSOAR",
-  "currentVersion": "2.0.0",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
-  "created": "2020-04-21T08:58:13Z",
-  "categories": [
-    "Analytics & SIEM"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": []
+    "name": "Microsoft Graph Security",
+    "description": "Unified gateway to security insights - all from a unified Microsoft Graph\n  Security API.",
+    "support": "xsoar",
+    "currentVersion": "2.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-21T08:58:13Z",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
 }
