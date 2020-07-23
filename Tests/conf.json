@@ -2849,6 +2849,10 @@
             "timeout": 500
         },
         {
+            "integrations": "Ivanti Heat",
+            "playbookID": "Ivanti Heat - Test"
+        },
+        {
             "integrations": "Blueliv ThreatCompass",
             "playbookID": "Blueliv_ThreatCompass_test",
             "fromversion": "5.0.0"
@@ -2912,7 +2916,6 @@
         "Google Chronicle Backstory Asset - Test": "Issue 26460",
         "Keylight v2 - Test": "Issue 26462",
         "AutoFocus V2 test": "Issue 26464",
-        "PAN-OS Create Or Edit Rule Test": "Issue 26465",
         "HybridAnalysis-Test": "Issue 26599",
         "Logzio - Test": "Issue 26729",
         "Tenable.io test": "Issue 26727",
@@ -2921,7 +2924,9 @@
         "Fidelis-Test": "Issue 26453",
         "ThreatConnect v2 - Test": "Issue 26782",
         "Pwned v2 test": "Issue 26601",
-        "Email Address Enrichment - Generic v2.1 - Test": "Issue 26785"
+        "Email Address Enrichment - Generic v2.1 - Test": "Issue 26785",
+        "Tanium v2 - Test": "Issue 26822",
+        "Google Chronicle Backstory List IOCs - Test": "Issue 26461"
     },
     "skipped_integrations": {
         
@@ -3013,6 +3018,7 @@
         "SecBI": "Issue 22545",
         "IBM Resilient Systems": "Issue 23722",
         "VxStream": "Issue #23795",
+        "Ivanti Heat": "Issue 26259",
         "Bambenek Consulting Feed": "Issue 26184",
         "AWS - Athena - Beta": "Issue 19834",
         "Blueliv ThreatCompass": "Community contribution",
