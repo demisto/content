@@ -550,7 +550,7 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     token = demisto.params().get('token')
-    base_url = f'{urljoin(demisto.params().get("url"))}api/v1'
+    base_url = f'{urljoin(demisto.params().get("url", ""))}api/v1'
     verify_certificate = not demisto.params().get('insecure', False)
     first_fetch = demisto.params().get('first_fetch')
     max_results = demisto.params().get('max_fetch')
