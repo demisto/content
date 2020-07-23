@@ -673,18 +673,18 @@ def main():
             pack.cleanup()
             continue
 
-        # task_status, integration_images = pack.upload_integration_images(storage_bucket)
-        # if not task_status:
-        #     pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
-        #     pack.cleanup()
-        #     continue
-        #
-        # task_status, author_image = pack.upload_author_image(storage_bucket)
-        # if not task_status:
-        #     pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
-        #     pack.cleanup()
-        #     continue
-        integration_images, author_image = [], ''
+        task_status, integration_images = pack.upload_integration_images(storage_bucket)
+        if not task_status:
+            pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
+            pack.cleanup()
+            continue
+
+        task_status, author_image = pack.upload_author_image(storage_bucket)
+        if not task_status:
+            pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
+            pack.cleanup()
+            continue
+
         task_status = pack.format_metadata(user_metadata=user_metadata, pack_content_items=pack_content_items,
                                            integration_images=integration_images, author_image=author_image,
                                            index_folder_path=index_folder_path,
@@ -778,8 +778,8 @@ def main():
     # finished iteration over content packs
     if is_private_build:
         delete_public_packs_from_index(index_folder_path)
-        # upload_index_to_storage(index_folder_path, extract_destination_path, private_index_blob, build_number,
-        #                         private_packs)
+        upload_index_to_storage(index_folder_path, extract_destination_path, private_index_blob, build_number,
+                                private_packs)
     else:
         upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number,
                                 private_packs)
