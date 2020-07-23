@@ -3,7 +3,7 @@ from CommonServerUserPython import *
 import requests
 
 
-class CrowdStrikeClient():
+class CrowdStrikeClient(BaseClient):
 
     def __init__(self, params):
         """
@@ -11,49 +11,25 @@ class CrowdStrikeClient():
         Args:
             params: Demisto params
         """
-        self._verify = not params.get('insecure', False)
         self._username = params.get('credentials', {}).get('identifier')
         self._password = params.get('credentials', {}).get('password')
-        self._proxy = params.get('proxy', False)
-        self._base_url = "https://api.crowdstrike.com/"
-        self._ok_codes = tuple()  # type: ignore[var-annotated]
-        self._session = requests.Session()
+        super().__init__(base_url="https://api.crowdstrike.com/", verify=not params.get('insecure', False),
+                         ok_codes=tuple(), proxy=params.get('proxy', False))  # type: ignore[misc]
         self._token = self._generate_token()
         self._headers = {'Authorization': 'bearer ' + self._token}
-        if not self._proxy:
-            self._session.trust_env = False
 
     @staticmethod
-    def _handle_errors(errors: list) -> str:
+    def _error_handler(error_entry: dict) -> str:
         """
         Converting the errors of the API to a string, in case there are no error, return an empty string
         :param errors: each error is a dict with the keys code and message
         :return: errors converted to single str
         """
+        errors = error_entry.get("errors", [])
         return '\n'.join(f"{error['code']}: {error['message']}" for error in errors)
 
-    def _is_status_code_valid(self, response, ok_codes=None):
-        """If the status code is OK, return 'True'.
-
-        :type response: ``requests.Response``
-        :param response: Response from API after the request for which to check the status.
-
-        :type ok_codes: ``tuple`` or ``list``
-        :param ok_codes:
-            The request codes to accept as OK, for example: (200, 201, 204). If you specify
-            "None", will use response.ok.
-
-        :return: Whether the status of the response is valid.
-        :rtype: ``bool``
-        """
-        # Get wanted ok codes
-        status_codes = ok_codes if ok_codes else self._ok_codes
-        if status_codes:
-            return response.status_code in status_codes
-        return response.ok
-
     def http_request(self, method, url_suffix, full_url=None, headers=None, json_data=None, params=None, data=None,
-                     files=None, timeout=10, ok_codes=None, return_empty_response=False):
+                     files=None, timeout=10, ok_codes=None, return_empty_response=False, auth=None):
         """A wrapper for requests lib to send our requests and handle requests and responses better.
 
         :type method: ``str``
@@ -100,62 +76,10 @@ class CrowdStrikeClient():
         :return: Depends on the resp_type parameter
         :rtype: ``dict`` or ``str`` or ``requests.Response``
         """
-        try:
-            # Replace params if supplied
-            address = full_url if full_url else urljoin(self._base_url, url_suffix)
-            headers = headers if headers else self._headers
-            # Execute
-            res = self._session.request(
-                method,
-                address,
-                verify=self._verify,
-                params=params,
-                data=data,
-                json=json_data,
-                files=files,
-                headers=headers,
-                timeout=timeout,
-            )
-            # Handle error responses gracefully
-            if not self._is_status_code_valid(res, ok_codes):
-                try:
-                    # Try to parse json error response
-                    error_entry = res.json()
-                    err_msg = self._handle_errors(error_entry.get("errors"))
-                    raise DemistoException(err_msg)
-                except ValueError:
-                    err_msg += '\n{}'.format(res.text)
-                    raise DemistoException(err_msg)
-
-            is_response_empty_and_successful = (res.status_code == 204)
-            if is_response_empty_and_successful and return_empty_response:
-                return res
-
-            try:
-                return res.json()
-            except ValueError as exception:
-                raise DemistoException("Failed to parse json object from response:" + str(res.content), exception)
-        except requests.exceptions.ConnectTimeout as exception:
-            err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
-                      ' is incorrect or that the Server is not accessible from your host.'
-            raise DemistoException(err_msg, exception)
-        except requests.exceptions.SSLError as exception:
-            err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox in' \
-                      ' the integration configuration.'
-            raise DemistoException(err_msg, exception)
-        except requests.exceptions.ProxyError as exception:
-            err_msg = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
-                      ' selected, try clearing the checkbox.'
-            raise DemistoException(err_msg, exception)
-        except requests.exceptions.ConnectionError as exception:
-            # Get originating Exception in Exception chain
-            error_class = str(exception.__class__)
-            err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
-            err_msg = '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
-                      'Verify that the server URL parameter' \
-                      ' is correct and that you have access to the server from your host.' \
-                .format(err_type, exception.errno, exception.strerror)
-            raise DemistoException(err_msg, exception)
+        return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
+                                     json_data=json_data, params=params, data=data, files=files, timeout=timeout,
+                                     ok_codes=ok_codes, return_empty_response=return_empty_response, auth=auth,
+                                     error_handler=self._error_handler)
 
     def _generate_token(self) -> str:
         """Generate an Access token using the user name and password
@@ -165,13 +89,7 @@ class CrowdStrikeClient():
             'client_id': self._username,
             'client_secret': self._password
         }
-
-        byte_creds = f'{self._username}:{self._password}'.encode('utf-8')
-
-        headers = {
-            'Authorization': f'Basic {base64.b64encode(byte_creds).decode()}'
-        }
-        token_res = self.http_request('POST', '/oauth2/token', data=body, headers=headers)
+        token_res = self.http_request('POST', '/oauth2/token', data=body, auth=(self._username, self._password))
         return token_res.get('access_token')
 
     def check_quota_status(self) -> dict:

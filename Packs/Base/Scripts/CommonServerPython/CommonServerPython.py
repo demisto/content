@@ -3594,7 +3594,8 @@ if 'requests' in sys.modules:
         def _http_request(self, method, url_suffix, full_url=None, headers=None, auth=None, json_data=None,
                           params=None, data=None, files=None, timeout=10, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
-                          backoff_factor=5, raise_on_redirect=False, raise_on_status=False, **kwargs):
+                          backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
+                          error_handler=None, **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
             :type method: ``str``
@@ -3709,7 +3710,10 @@ if 'requests' in sys.modules:
                     try:
                         # Try to parse json error response
                         error_entry = res.json()
-                        err_msg += '\n{}'.format(json.dumps(error_entry))
+                        if error_handler:
+                            err_msg += error_handler(error_entry)
+                        else:
+                            err_msg += '\n{}'.format(json.dumps(error_entry))
                         raise DemistoException(err_msg)
                     except ValueError:
                         err_msg += '\n{}'.format(res.text)
