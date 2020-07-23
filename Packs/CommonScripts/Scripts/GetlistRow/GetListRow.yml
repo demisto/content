@@ -1,19 +1,18 @@
 args:
 - default: false
-  description: Value to search for. If the value is specified, a specific header must
-    be supplied as well.
+  description: Value to search for. If you supply a value, you need to supply the "header" argument also.
   isArray: false
   name: value
   required: false
   secret: false
 - default: false
-  description: Header to filter lines by. If the header is specified, a requested value for that header must be specified as well.
+  description: Header to filter lines by. If you supply a header, you need to supply the "value" argument.
   isArray: false
   name: header
   required: false
   secret: false
 - default: false
-  description: The list name to search in.
+  description: The list name in which to search.
   isArray: false
   name: list_name
   required: true
@@ -21,7 +20,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'False'
-  description: Parse all the list into the context.
+  description: If "True", parses the entire list into the context. Can be "True" or "False". Default is "False".
   isArray: false
   name: parse_all
   predefined:
@@ -29,7 +28,7 @@ args:
   - 'False'
   required: false
   secret: false
-comment: Parse list by header and value.
+comment: Parses a list by header and value.
 commonfields:
   id: GetListRow
   version: -1
@@ -37,16 +36,16 @@ enabled: true
 name: GetListRow
 outputs:
 - contextPath: GetListRow.Header
-  description: Header to search in.
+  description: Header in which the search was performed.
   type: String
 - contextPath: GetListRow.Value
   description: Value to search for.
   type: String
 - contextPath: GetListRow.ListName
-  description: The name of the list to search in.
+  description: The name of the list that was searched..
   type: String
 - contextPath: GetListRow.ParseAll
-  description: Parse all the list into the context.
+  description: If "True", the entire list was parsed into the context.
   type: String
 - contextPath: GetListRow.Results
   description: All parse results of the list.
