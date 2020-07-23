@@ -3,9 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 # IMPORTS
 
-import json
 import requests
-import dateparser
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -14,12 +12,14 @@ requests.packages.urllib3.disable_warnings()
 
 APP_NAME = 'ms-azure-log-analytics'
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-
 API_VERSION = '2020-03-01-preview'
 
 AUTHORIZATION_ERROR_MSG = 'There was a problem in retrieving an updated access token.\n'\
                           'The response from the server did not contain the expected content.'
+
+SAVED_SEARCH_HEADERS = [
+    'etag', 'id', 'category', 'displayName', 'functionAlias', 'functionParameters', 'query', 'tags', 'version', 'type'
+]
 
 
 class Client:
@@ -73,6 +73,56 @@ class Client:
         return res_json
 
 
+''' INTEGRATION HELPER METHODS '''
+
+
+def format_query_table(table):
+    name = table.get('name')
+    columns = [column.get('name') for column in table.get('columns')]
+    rows = table.get('rows')
+    data = [
+        {k: v for k, v in zip(columns, row)} for row in rows
+    ]
+
+    return tableToMarkdown(name=name,
+                           t=data,
+                           headers=columns,
+                           removeNull=True)
+
+
+def query_output_to_readable(tables):
+    readable_output = '## Query Results\n'
+    readable_output += '\n'.join(tables)
+
+    return readable_output
+
+
+def flatten_saved_search_object(saved_search_obj):
+    ret = saved_search_obj.get('properties')
+    ret['id'] = saved_search_obj.get('id')
+    ret['etag'] = saved_search_obj.get('etag')
+    ret['type'] = saved_search_obj.get('type')
+
+    return ret
+
+
+def parse_tags(tags):
+    if not tags:
+        return None
+    try:
+        tags = tags.split(';')
+        tags = [tag.split('=') for tag in tags]
+        return [{
+            tag[0]: tag[1]
+        } for tag in tags]
+    except IndexError:
+        raise ValueError('The `tags` argument is malformed. '
+                         'Value should be in the following format: `name=value;name=value`')
+
+
+''' INTEGRATION COMMANDS '''
+
+
 def test_connection(client, params):
     if params.get('self_deployed', False) and not params.get('auth_code'):
         return_error('You must enter an authorization code in a self-deployed configuration.')
@@ -80,27 +130,122 @@ def test_connection(client, params):
     return_outputs('```✅ Success!```')
 
 
-def get_saved_search_by_id_command(client, args):
-    saved_search_id = args.get('saved_search_id')
-    url_suffix = f'savedSearches/{saved_search_id}'
+def execute_query_command(client, args):
+    workspace_id = args.get('workspace_id')
+    full_url = f'https://api.loganalytics.io/v1/workspaces/{workspace_id}/query'
 
-    result = client.http_request('GET', url_suffix)
-    incident = incident_data_to_demisto_format(result)
+    data = {
+        "timespan": args.get('timespan'),
+        "query": args.get('query'),
+        "workspaces": argToList(args.get('workspaces'))
+    }
 
-    outputs = {'AzureSentinel.Incident(val.ID === obj.ID)': incident}
+    remove_nulls_from_dictionary(data)
 
-    readable_output = tableToMarkdown(f'Incident {inc_id} details', incident,
-                                      headers=INCIDENT_HEADERS,
+    response = client.http_request('POST', full_url=full_url, data=data)
+
+    output = [format_query_table(table) for table in response]
+
+    return CommandResults(
+        readable_output=query_output_to_readable(output),
+        outputs_prefix='AzureLogAnalytics.Query',
+        outputs=response,
+        raw_response=response
+    )
+
+
+def list_saved_searches_command(client, args):
+    page = int(args.get('page'))
+    limit = min(50, int(args.get('limit')))
+    url_suffix = '/savedSearches'
+
+    response = client.http_request('GET', url_suffix)
+
+    from_index = min(page, len(response))
+    to_index = min(from_index + limit, len(response))
+
+    output = [
+        flatten_saved_search_object(saved_search) for saved_search in response
+    ][from_index:to_index]
+
+    readable_output = tableToMarkdown('Saved searches', output,
+                                      headers=SAVED_SEARCH_HEADERS,
                                       headerTransform=pascalToSpace,
                                       removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='HelloWorld.Domain',
-        outputs_key_field='domain',
-        outputs=domain_data_list,
-        indicators=domain_standard_list
+        outputs_prefix='AzureLogAnalytics.SavedSearch',
+        outputs_key_field='id',
+        outputs=output,
+        raw_response=response
     )
+
+
+def get_saved_search_by_id_command(client, args):
+    saved_search_id = args.get('saved_search_id')
+    url_suffix = f'/savedSearches/{saved_search_id}'
+
+    response = client.http_request('GET', url_suffix)
+    output = flatten_saved_search_object(response)
+
+    title = f'Saved search `{saved_search_id}` properties'
+    readable_output = tableToMarkdown(title, output,
+                                      headers=SAVED_SEARCH_HEADERS,
+                                      headerTransform=pascalToSpace,
+                                      removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureLogAnalytics.SavedSearch',
+        outputs_key_field='id',
+        outputs=output,
+        raw_response=response
+    )
+
+
+def create_or_update_saved_search_command(client, args):
+    saved_search_id = args.get('saved_search_id')
+    url_suffix = f'/savedSearches/{saved_search_id}'
+
+    data = {
+      'properties': {
+        'category': args.get('category'),
+        'displayName': args.get('display_name'),
+        'functionAlias': args.get('function_alias'),
+        'functionParameters': args.get('function_parameters'),
+        'query': args.get('query'),
+        'tags': parse_tags(args.get('tags'))
+      }
+    }
+
+    remove_nulls_from_dictionary(data)
+
+    response = client.http_request('PUT', url_suffix, data=data)
+    output = flatten_saved_search_object(response)
+
+    title = f'Saved search `{saved_search_id}` properties'
+    readable_output = tableToMarkdown(title, output,
+                                      headers=SAVED_SEARCH_HEADERS,
+                                      headerTransform=pascalToSpace,
+                                      removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureLogAnalytics.SavedSearch',
+        outputs_key_field='id',
+        outputs=output,
+        raw_response=response
+    )
+
+
+def delete_saved_search_command(client, args):
+    saved_search_id = args.get('saved_search_id')
+    url_suffix = f'/savedSearches/{saved_search_id}'
+
+    client.http_request('DELETE', url_suffix)
+
+    return f'Successfully deleted the saved search `{saved_search_id}`.'
 
 
 def main():
