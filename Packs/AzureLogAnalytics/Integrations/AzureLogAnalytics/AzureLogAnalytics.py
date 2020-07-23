@@ -30,7 +30,8 @@ class Client:
         refresh_token = (demisto.getIntegrationContext().get('current_refresh_token') or refresh_token)
         base_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/' \
             f'{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/{workspace_name}'
-        self.ms_client = MicrosoftClient(
+        self.ms_client = MultiResourceMicrosoftClient(
+            additional_resources=['https://management.azure.com'],
             self_deployed=self_deployed,
             auth_id=auth_and_token_url,
             refresh_token=refresh_token,

@@ -6,7 +6,7 @@ from CommonServerUserPython import *
 import requests
 import base64
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from typing import Dict, Tuple
+from typing import Dict, Tuple, List
 
 # authorization types
 OPROXY_AUTH_TYPE = 'oproxy'
@@ -46,6 +46,7 @@ class MicrosoftClient(BaseClient):
             resource: The resource of the application (only if self deployed)
             verify: Demisto insecure parameter
             self_deployed: Indicates whether the integration mode is self deployed or oproxy
+
         """
         super().__init__(verify=verify, *args, **kwargs)  # type: ignore[misc]
 
@@ -402,3 +403,18 @@ class MicrosoftClient(BaseClient):
             demisto.error('Failed getting integration info: {}'.format(str(e)))
 
         return headers
+
+
+class MultiResourceMicrosoftClient(MicrosoftClient):
+    def __init__(self, additional_resources: List[str] = None, *args, **kwargs):
+        """
+        Microsoft Client class that supports multiple resources configuration.
+        Args:
+            additional_resources: A list of resources.
+
+        """
+        self.additional_resources = additional_resources
+        super().__init__(*args, **kwargs)  # type: ignore[misc]
+
+    def get_access_token(self):
+
