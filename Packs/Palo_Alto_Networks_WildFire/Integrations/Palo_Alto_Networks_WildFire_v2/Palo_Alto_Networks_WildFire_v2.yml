@@ -204,7 +204,8 @@ script:
       secret: false
     - default: false
       description: |-
-        Retrieves results for a url using WildFire. Supported currently only in US cloud. Report format is in json.
+        Retrieves results for a URL using WildFire. Currently, this is only supported in US cloud.
+        The report format is in JSON.
       isArray: true
       name: url
       required: false
