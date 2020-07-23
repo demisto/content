@@ -1,0 +1,200 @@
+{
+    "TypeName": "accountRep",
+    "kind": "indicatorsQuickView",
+    "layout": {
+        "TypeName": "",
+        "id": "accountRep",
+        "kind": "indicatorsQuickView",
+        "modified": "2020-07-23T07:48:46.93748005Z",
+        "name": "",
+        "system": false,
+        "tabs": [
+            {
+                "id": "indicator-quick-view-info",
+                "name": "Info",
+                "sections": [
+                    {
+                        "h": 1,
+                        "hideName": true,
+                        "i": "indicator-quick-view-info-expirationStatus",
+                        "moved": false,
+                        "name": "Expiration Status",
+                        "static": false,
+                        "type": "expirationStatus",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "indicator-quick-view-info-reputationSources",
+                        "moved": false,
+                        "name": "Reputation",
+                        "static": false,
+                        "type": "reputationSources",
+                        "w": 1,
+                        "x": 0,
+                        "y": 1
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideItemTitleOnlyOne": true,
+                        "i": "indicator-quick-view-info-tags-section",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 22,
+                                "id": "indicator-quick-view-info-tags-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Tags",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "h": 2,
+                        "i": "indicator-quick-view-info-relatedIncidents",
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 1,
+                        "x": 0,
+                        "y": 7
+                    },
+                    {
+                        "h": 2,
+                        "i": "indicator-quick-view-info-comments",
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "type": "comments",
+                        "w": 1,
+                        "x": 0,
+                        "y": 9
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "indicator-quick-view-info-9bc59f10-ccb8-11ea-937a-6f8841d9fed1",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "indicatortype",
+                                "height": 22,
+                                "id": "c4eda9a0-ccb8-11ea-937a-6f8841d9fed1",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "source",
+                                "height": 22,
+                                "id": "dbd9e340-ccb8-11ea-937a-6f8841d9fed1",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "accounttype",
+                                "height": 22,
+                                "id": "b20e93d0-ccb8-11ea-937a-6f8841d9fed1",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "username",
+                                "height": 22,
+                                "id": "b9f71d10-ccb8-11ea-937a-6f8841d9fed1",
+                                "index": 3,
+                                "listId": "indicator-quick-view-info-9bc59f10-ccb8-11ea-937a-6f8841d9fed1",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "emailaddress",
+                                "height": 22,
+                                "id": "b51d8180-ccb8-11ea-937a-6f8841d9fed1",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "organizationalunitou",
+                                "height": 22,
+                                "id": "bdacd210-ccb8-11ea-937a-6f8841d9fed1",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "domainname",
+                                "height": 22,
+                                "id": "b65712f0-ccb8-11ea-937a-6f8841d9fed1",
+                                "index": 6,
+                                "listId": "indicator-quick-view-info-9bc59f10-ccb8-11ea-937a-6f8841d9fed1",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "groups",
+                                "height": 44,
+                                "id": "ebe67820-ccb8-11ea-937a-6f8841d9fed1",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "internal",
+                                "height": 22,
+                                "id": "c025e860-ccb8-11ea-937a-6f8841d9fed1",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Account details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 3
+                    }
+                ],
+                "type": "custom"
+            }
+        ],
+        "typeId": "accountRep",
+        "version": -1
+    },
+    "typeId": "accountRep",
+    "version": -1,
+    "fromVersion": "5.5.0",
+    "toVersion": "5.9.9"
+}
