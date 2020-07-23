@@ -578,7 +578,7 @@ def test_module(client: Client) -> str:
         timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
         from_epoch = date_to_timestamp(parse_date_range('1 day', utc=True)[0], date_format=timestamp_format)
         to_epoch = date_to_timestamp(datetime.now(), date_format=timestamp_format)
-        client.list_incidents_request(from_epoch, to_epoch, incident_types='opened')
+        client.list_incidents_request(from_epoch, to_epoch, incident_status='opened')
 
     return 'ok'
 
