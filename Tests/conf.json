@@ -14,7 +14,13 @@
         },
         {
             "integrations": "ServiceDeskPlus",
-            "playbookID": "Service Desk Plus Test"
+            "playbookID": "Service Desk Plus Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "ServiceDeskPlus",
+            "playbookID": "Service Desk Plus - Generic Polling Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Group-IB TDS Polygon",
@@ -586,7 +592,8 @@
             "timeout": 2400
         },
         {
-            "playbookID": "WordTokenizeTest"
+            "playbookID": "WordTokenizeTest",
+            "toversion": "4.5.9"
         },
         {
             "integrations": "QRadar",
@@ -639,7 +646,7 @@
         },
         {
             "integrations": "Generic SQL",
-            "playbookID": "generic-sql",
+            "playbookID": "generic-sql-oracle",
             "instance_names": "Oracle instance",
             "fromversion": "5.0.0"
         },
@@ -676,6 +683,11 @@
             "playbookID": "palo_alto_panorama_test_pb",
             "timeout": 1000,
             "nightly": true
+        },
+        {
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_firewall_9.0",
+            "playbookID": "PAN-OS URL Filtering enrichment - Test"
         },
         {
             "integrations": "Tenable.io",
@@ -1158,10 +1170,6 @@
             "integrations": "EWS v2",
             "playbookID": "EWS Public Folders Test",
             "instance_names": "ewv2_regular"
-        },
-        {
-            "playbookID": "TestWordFileToIOC",
-            "timeout": 300
         },
         {
             "integrations": "Symantec Endpoint Protection V2",
@@ -2843,6 +2851,10 @@
             "timeout": 500
         },
         {
+            "integrations": "Ivanti Heat",
+            "playbookID": "Ivanti Heat - Test"
+        },
+        {
             "integrations": "Blueliv ThreatCompass",
             "playbookID": "Blueliv_ThreatCompass_test",
             "fromversion": "5.0.0"
@@ -2897,8 +2909,6 @@
         "Cortex XDR - IOC - Test": "issue #25598",
         "Create Phishing Classifier V2 ML Test": "Issue 26341",
         "DuoAdmin API test playbook": "Issue 24937",
-        "Mail Sender (New) Test": "Issue 25602",
-        "HTTPListRedirects Basic Test": "Issue 26617",
         "SMB test": "Issue 26454",
         "Infocyte-Test": "Issue 26445",
         "Account Enrichment - Generic v2 - Test": "Issue 26452",
@@ -2907,10 +2917,20 @@
         "Google Chronicle Backstory Asset - Test": "Issue 26460",
         "Keylight v2 - Test": "Issue 26462",
         "AutoFocus V2 test": "Issue 26464",
-        "PAN-OS Create Or Edit Rule Test": "Issue 26465"
+        "HybridAnalysis-Test": "Issue 26599",
+        "Logzio - Test": "Issue 26729",
+        "Tenable.io test": "Issue 26727",
+        "Tenable.io Scan Test": "Issue 26727",
+        "URL Enrichment - Generic v2 - Test": "Issue 26463",
+        "Fidelis-Test": "Issue 26453",
+        "ThreatConnect v2 - Test": "Issue 26782",
+        "Pwned v2 test": "Issue 26601",
+        "Email Address Enrichment - Generic v2.1 - Test": "Issue 26785",
+        "Tanium v2 - Test": "Issue 26822",
+        "Google Chronicle Backstory List IOCs - Test": "Issue 26461"
     },
     "skipped_integrations": {
-        
+
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Symantec Management Center": "Issue 23960",
         "PerceptionPoint": "Issue 25795",
@@ -2962,7 +2982,6 @@
         "fireeye": "Issue 19839",
         "DomainTools": "Issue 8298",
         "Remedy On-Demand": "Issue 19835",
-        "DomainTools Iris": "Issue 20433",
         "Check Point": "Issue 18643",
         "Preempt": "Issue 20268",
         "iDefense": "Issue 20095",
@@ -3000,14 +3019,16 @@
         "SecBI": "Issue 22545",
         "IBM Resilient Systems": "Issue 23722",
         "VxStream": "Issue #23795",
+        "Ivanti Heat": "Issue 26259",
         "Bambenek Consulting Feed": "Issue 26184",
         "AWS - Athena - Beta": "Issue 19834",
         "Blueliv ThreatCompass": "Community contribution",
-        
+
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tenable.sc": "unstable instance",
-        
+        "ThreatConnect v2": "unstable instance",
+
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Issue 25650",
         "XFE_v2": "Issue 22715",
@@ -3016,14 +3037,14 @@
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "Issue 26266",
-        
+
         "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer",
         "SafeBreach v2": "it is a partner integration, no instance",
         "IllusiveNetworks": "supported by partner",
         "Humio": "supported by the partner",
         "Digital Guardian": "partner integration",
-        
+
         "_comment5": "~~~ OTHER ~~~",
         "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
         "Cisco ASA": "Issue 25741",
@@ -3046,6 +3067,8 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "Cherwell": "Submits a file - tests that send files shouldn't be mocked",
+        "ThreatConnect v2": "Issue 26794",
         "Infocyte": "Proxy issues",
         "SNDBOX": "Submits a file - tests that send files shouldn't be mocked",
         "Joe Security": "Submits a file - tests that send files shouldn't be mocked",
@@ -3062,7 +3085,8 @@
         "Image OCR": "Does not perform network traffic",
         "Server Message Block (SMB)": "Does not perform http communication",
         "Active Directory Query v2": "Does not perform http communication",
-        "dnstwist": "Does not peform http communication",
+        "dnstwist": "Does not perform http communication",
+        "Generic SQL": "Does not perform http communication",
         "VxStream": "Issue 15544",
         "PagerDuty v2": "Integration requires SSL",
         "TCPIPUtils": "Integration requires SSL",
