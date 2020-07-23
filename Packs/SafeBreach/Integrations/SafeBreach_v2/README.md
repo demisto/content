@@ -97,6 +97,7 @@ A special feed based triggered job is required to initiate this playbook for eve
 
 
 
+
 ## Dashboard (Premium) 
 SafeBreach Insights dashboard summarizes the current status of actionable insights and related indicators.
  ![SafeBreach Dashboard](https://github.com/demisto/content/raw/6af01e00312a5558e9e2fecdb22534e98414bc9c/Packs/SafeBreach/doc_imgs/xsoar_SafeBreach_dashboard.png)
