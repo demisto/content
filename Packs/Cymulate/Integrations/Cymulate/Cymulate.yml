@@ -107,5 +107,5 @@ script:
   type: python
 tests:
 - No tests
-defaultClassifier: Cymulate
-defaultMapperIn: Cymulate-mapper
+defaultclassifier: Cymulate
+defaultmapperin: Cymulate-mapper
