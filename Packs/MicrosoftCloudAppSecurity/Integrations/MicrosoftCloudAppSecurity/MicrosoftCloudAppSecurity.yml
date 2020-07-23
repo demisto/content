@@ -12,11 +12,11 @@ configuration:
   required: true
   type: 4
 - display: Fetch incidents
-  name: is_fetch
+  name: isFetch
   required: false
   type: 8
 - display: Incident type
-  name: incident_type
+  name: incidentType
   required: false
   type: 13
 - display: Trust any certificate (not secure)
