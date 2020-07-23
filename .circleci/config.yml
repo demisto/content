@@ -38,7 +38,7 @@ parameters:
 references:
   environment: &environment
     environment:
-      CONTENT_VERSION: "20.7.1"
+      CONTENT_VERSION: "20.7.2"
       SERVER_VERSION: "5.5.0"
       GIT_SHA1: "4ee42cb22bae137d2691868674001436e61f1b3c" # guardrails-disable-line disable-secrets-detection
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
@@ -314,6 +314,7 @@ references:
                 echo 'Copy the changes from the contributor branch $USER/$BRANCH in the pack $PACK'
                 git remote add $USER git@github.com:$USER/content.git
                 git fetch $USER $BRANCH
+                rm -rf $PACK
                 git checkout $USER/$BRANCH $PACK
                 exit 0
 
@@ -498,7 +499,7 @@ jobs:
                 when: always
             - run:
                 name: Create Instance
-                when: always
+                when: on_success
                 command: |
                   [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=180
                   if ./Tests/scripts/is_ami.sh ;
@@ -523,7 +524,7 @@ jobs:
                   fi
             - run:
                 name: Setup Instance
-                when: always
+                when: on_success
                 command: |
                   if ./Tests/scripts/is_ami.sh ;
                     then
