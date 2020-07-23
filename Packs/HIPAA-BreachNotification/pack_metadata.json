@@ -1,6 +1,6 @@
 {
     "name": "HIPAA - Breach Notification",
-    "description": "This content pack helps you streamline and automate the repetitive tasks associated with HIPAA breach notifications incidents.",
+    "description": "This Content Pack helps you streamline and automate the repetitive tasks associated with HIPAA breach notifications incidents.",
     "support": "xsoar",
     "currentVersion": "1.0.5",
     "author": "Cortex XSOAR",

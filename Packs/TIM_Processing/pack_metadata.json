@@ -1,6 +1,6 @@
 {
     "name": "TIM - Indicator Auto-Processing",
-    "description": "Too many threat feeds? This content pack automates the processing of indicators at scale, significantly reducing busywork for your analysts.",
+    "description": "Too many threat feeds? This Content Pack automates the processing of indicators at scale, significantly reducing busywork for your analysts.",
     "support": "xsoar",
     "currentVersion": "1.1.5",
     "author": "Cortex XSOAR",

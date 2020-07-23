@@ -1,6 +1,6 @@
 {
     "name": "Impossible Traveler",
-    "description": "Catch the impossible traveler. This content pack helps you quickly determine the legitimacy of remote access attempts and contain malicious activity.",
+    "description": "Catch the impossible traveler. This Content Pack helps you quickly determine the legitimacy of remote access attempts and contain malicious activity.",
     "support": "xsoar",
     "currentVersion": "1.2.1",
     "author": "Cortex XSOAR",

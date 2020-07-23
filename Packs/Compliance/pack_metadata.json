@@ -1,6 +1,6 @@
 {
     "name": "Compliance",
-    "description": "Compliance pack is the base pack for compliance-related packs, such as HIPAA, GDP and US breach notification.",
+    "description": "Compliance pack is the base pack for compliance-related packs, such as HIPAA, GDPR and US breach notification.",
     "support": "xsoar",
     "currentVersion": "1.0.5",
     "author": "Cortex XSOAR",

@@ -1,6 +1,6 @@
 {
   "name": "Port Scan",
-  "description": "Port scans are a hacker favorite. This content pack automates IP and hostname enrichment, blocks malicious domains, blocks affected ports, and more.",
+  "description": "Port scans are a hacker favorite. This Content Pack automates IP and hostname enrichment, blocks malicious domains, blocks affected ports, and more.",
   "support": "xsoar",
   "currentVersion": "1.0.3",
   "author": "Cortex XSOAR",

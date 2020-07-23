@@ -1,6 +1,6 @@
 {
     "name": "US - Breach Notification",
-    "description": "This content pack helps you understand if a breach has occurred and automates repetitive tasks associated with US Breach notification procedures.",
+    "description": "This ContentPpack helps you understand if a breach has occurred and automates repetitive tasks associated with US Breach notification procedures.",
     "support": "xsoar",
     "currentVersion": "1.0.6",
     "author": "Cortex XSOAR",

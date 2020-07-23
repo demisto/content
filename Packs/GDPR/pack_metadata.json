@@ -1,6 +1,6 @@
 {
     "name": "GDPR",
-    "description": "This content pack helps you facilitate the breach notification process according to the GDPR requirements, in response to a data breach incident.",
+    "description": "This Content Pack helps you facilitate the breach notification process according to the GDPR requirements, in response to a data breach incident.",
     "support": "xsoar",
     "currentVersion": "1.0.4",
     "author": "Cortex XSOAR",

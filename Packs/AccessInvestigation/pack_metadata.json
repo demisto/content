@@ -1,6 +1,6 @@
 {
     "name": "Access Investigation",
-    "description": "This content pack automates response to unauthorised access incidents and contains customer access incident views and layouts to aid investigation.",
+    "description": "This Content Pack automates response to unauthorised access incidents and contains customer access incident views and layouts to aid investigation.",
     "support": "xsoar",
     "currentVersion": "1.2.1",
     "author": "Cortex XSOAR",

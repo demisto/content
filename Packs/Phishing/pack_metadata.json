@@ -1,6 +1,6 @@
 {
     "name": "Phishing",
-    "description": " ",
+    "description": "Phishing emails still hooking your end users? This Content Pack can drastically reduce the time your security team spends on phishing alerts.",
     "support": "xsoar",
     "currentVersion": "1.7.1",
     "author": "Cortex XSOAR",
