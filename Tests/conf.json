@@ -2858,6 +2858,10 @@
             "integrations": "Blueliv ThreatCompass",
             "playbookID": "Blueliv_ThreatCompass_test",
             "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "IncreaseIncidentSeverity-Test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
