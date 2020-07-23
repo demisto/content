@@ -397,7 +397,7 @@ def wildfire_upload_url_command():
 
 
 @logger
-def wildfire_get_verdict(file_hash):
+def wildfire_get_verdict(file_hash: str):
     get_verdict_uri = URL + URL_DICT["verdict"]
     body = 'apikey=' + TOKEN + '&hash=' + file_hash
 
@@ -800,41 +800,39 @@ def wildfire_get_sample_command():
                 'For more info contact your WildFire representative.')
 
 
-''' EXECUTION '''
-
-
 def main():
-    LOG('command is %s' % (demisto.command(),))
+    command = demisto.command()
+    LOG(f'command is {command}')
 
     try:
         # Remove proxy if not set to true in params
         handle_proxy()
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             test_module()
 
-        elif demisto.command() == 'wildfire-upload':
+        elif command == 'wildfire-upload':
             wildfire_upload_file_command()
 
-        elif demisto.command() in ['wildfire-upload-file-remote', 'wildfire-upload-file-url']:
+        elif command in ['wildfire-upload-file-remote', 'wildfire-upload-file-url']:
             wildfire_upload_file_url_command()
 
-        elif demisto.command() == 'wildfire-upload-url':
+        elif command == 'wildfire-upload-url':
             wildfire_upload_url_command()
 
-        elif demisto.command() == 'wildfire-report':
+        elif command == 'wildfire-report':
             wildfire_get_report_command()
 
-        elif demisto.command() == 'file':
+        elif command == 'file':
             wildfire_file_command()
 
-        elif demisto.command() == 'wildfire-get-sample':
+        elif command == 'wildfire-get-sample':
             wildfire_get_sample_command()
 
-        elif demisto.command() == 'wildfire-get-verdict':
+        elif command == 'wildfire-get-verdict':
             wildfire_get_verdict_command()
 
-        elif demisto.command() == 'wildfire-get-verdicts':
+        elif command == 'wildfire-get-verdicts':
             wildfire_get_verdicts_command()
 
     except Exception as err:
