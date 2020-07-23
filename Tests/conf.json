@@ -2851,17 +2851,16 @@
             "timeout": 500
         },
         {
-<<<<<<< HEAD
             "integrations": "RSA Archer v2",
-            "playbookID": "Archer v2 - Test",
-=======
+            "playbookID": "Archer v2 - Test"
+        },
+        {
             "integrations": "Ivanti Heat",
             "playbookID": "Ivanti Heat - Test"
         },
         {
             "integrations": "Blueliv ThreatCompass",
             "playbookID": "Blueliv_ThreatCompass_test",
->>>>>>> master
             "fromversion": "5.0.0"
         }
     ],
@@ -3210,7 +3209,7 @@
         "Cortex Data Lake"
     ],
     "docker_thresholds": {
-        
+
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
