@@ -576,7 +576,7 @@ def test_module(client: Client) -> str:
     client.list_workflows_request()
     if demisto.params().get('isFetch'):
         timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
-        from_epoch = date_to_timestamp(parse_date_range('1 day', utc=True), date_format=timestamp_format)
+        from_epoch = date_to_timestamp(parse_date_range('1 day', utc=True)[0], date_format=timestamp_format)
         to_epoch = date_to_timestamp(datetime.now(), date_format=timestamp_format)
         client.list_incidents_request(from_epoch, to_epoch, incident_types='opened')
 
