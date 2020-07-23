@@ -55,7 +55,7 @@ configuration:
   - Resolved
   required: false
   type: 16
-description: This is the Hello World integration for getting started.
+description: This is the MicrosoftCloudAppSecurity integration.
 display: MicrosoftCloudAppSecurity
 name: MicrosoftCloudAppSecurity
 script:
@@ -87,7 +87,7 @@ script:
     name: microsoft-cas-alert-dismiss-bulk
     outputs:
     - contextPath: MicrosoftCloudAppSecurity.AlertDismiss.dismissed
-      description:
+      description: AlertDismiss dismissed
       type: Number
   - arguments:
     - default: false
@@ -245,7 +245,7 @@ script:
     name: microsoft-cas-alert-resolve-bulk
     outputs:
     - contextPath: MicrosoftCloudAppSecurity.AlertResolve.resolved
-      description:
+      description: AlertResolved resolved
       type: Number
   - arguments:
     - default: false
@@ -485,7 +485,6 @@ script:
     - contextPath: MicrosoftCloudAppSecurity.Activities.severity
       description: Activities severity
       type: String
-
   - arguments:
     - default: false
       defaultValue: '50'

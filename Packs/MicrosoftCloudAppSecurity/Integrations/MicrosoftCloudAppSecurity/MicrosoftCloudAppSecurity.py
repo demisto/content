@@ -15,7 +15,6 @@ requests.packages.urllib3.disable_warnings()
 
 # CONSTANTS
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-MAX_INCIDENTS_TO_FETCH = 200
 DEFAULT_INCIDENT_TO_FETCH = 50
 
 SEVERITY_OPTIONS = {
@@ -271,8 +270,6 @@ def test_module(client, max_results):
             return 'Authorization Error: make sure API Key is correctly set'
         else:
             return str(e)
-    if max_results and int(max_results) > MAX_INCIDENTS_TO_FETCH:
-        return 'Max incident to fetch is 200'
     return 'ok'
 
 
@@ -370,6 +367,21 @@ def activities_output_to_readable_output(activities):
     return human_readable
 
 
+def arrange_entity_data(activities):
+    entities_data = []
+    if activities and 'data' in activities:
+        for activity in activities['data']:
+            entity_data = activity['entityData']
+            if entity_data:
+                for key, value in entity_data.items():
+                    if value:
+                        entities_data.append(value)
+                print(entities_data)
+                activity['entityData'] = entities_data
+
+    return activities
+
+
 def list_activities_command(client, args):
     url_suffix = '/activities/'
     activity_id = args.get('activity_id')
@@ -380,6 +392,7 @@ def list_activities_command(client, args):
                               source=args.get('source'))
     request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, customer_filters, arguments, activity_id)
     activities = client.list_activities(url_suffix, request_data)
+    activities = arrange_entity_data(activities)
     human_readable = activities_output_to_readable_output(activities)
     return CommandResults(
         readable_output=human_readable,
@@ -410,7 +423,8 @@ def files_output_to_readable_output(files):
         if file.get('appName'):
             readable_output['app_name'] = file['appName']
         list_readable_output.append(readable_output)
-    headers = ['owner_name', 'file_create_date', 'file_type', 'file_name', 'file_access_level', 'file_status', 'app_name']
+    headers = ['owner_name', 'file_create_date', 'file_type', 'file_name', 'file_access_level', 'file_status',
+               'app_name']
     human_readable = tableToMarkdown('Results', list_readable_output, headers, removeNull=True)
     return human_readable
 
@@ -491,8 +505,6 @@ def calculate_fetch_start_time(last_fetch, first_fetch):
 def get_max_result_number(max_results):
     if not max_results:
         return DEFAULT_INCIDENT_TO_FETCH
-    elif max_results > MAX_INCIDENTS_TO_FETCH:
-        return MAX_INCIDENTS_TO_FETCH
     return int(max_results)
 
 
