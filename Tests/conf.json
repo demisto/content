@@ -5,7 +5,7 @@
         {
             "integrations": "Prisma Cloud IT Admin",
             "playbookID": "PrismaCloudITAdmin-Test",
-            "timeout": 500
+            "fromversion": "5.0.0"
         },
 	    {
             "integrations": "Humio",
