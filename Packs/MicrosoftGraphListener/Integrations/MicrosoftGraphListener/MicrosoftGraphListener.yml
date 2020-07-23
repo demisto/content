@@ -18,10 +18,6 @@ configuration:
   name: enc_key
   required: true
   type: 4
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
 - display: Email address from which to fetch incidents (e.g. "example@demisto.com")
   name: mailbox_to_fetch
   required: true
@@ -58,8 +54,8 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: Microsoft Graph grants Demisto authorized access to a user's Microsoft Outlook
-  mail data in a personal account or organization account.
+description: Microsoft Graph grants Demisto authorized access to a user's Microsoft
+  Outlook mail data in a personal account or organization account.
 display: Microsoft Graph Mail Single User
 name: Microsoft Graph Mail Single User
 script:
@@ -153,8 +149,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of CIDs to embed attachments within the actual
-        email.
+      description: A comma-separated list of CIDs to embed attachments within the
+        actual email.
       isArray: true
       name: attach_cids
       required: false
@@ -302,8 +298,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of names of attachments to display
-        in the email to send. Must be the same number of elements as attachIDs.
+      description: A comma-separated list of names of attachments to display in the
+        email to send. Must be the same number of elements as attachIDs.
       isArray: true
       name: attach_names
       required: false
@@ -386,15 +382,16 @@ script:
     execution: false
     name: msgraph-mail-test
   dockerimage: demisto/crypto:1.0.0.8854
+  feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 tests:
 - No test - manual test playbook-Microsoft_Graph_Mail_Sender_test is available in
   NonCircleTests folder
-defaultClassifier: Microsoft Graph Mail Single User
 defaultMapperIn: Microsoft Graph Mail Single User-mapper
+defaultClassifier: Microsoft Graph Mail Single User

@@ -21,10 +21,6 @@ configuration:
   name: enc_key
   required: true
   type: 4
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
 - display: Incident type
   name: incidentType
   required: false
@@ -1313,8 +1309,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Restrict the execution of all applications on the machine except a predefined
-      set.
+    description: Restrict the execution of all applications on the machine except
+      a predefined set.
     execution: false
     name: microsoft-atp-restrict-app-execution
     outputs:

@@ -2,20 +2,12 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-
-import requests
-from dateutil.parser import parse
-from typing import Dict, List
-
-# Disable insecure warnings
-# requests.packages.urllib3.disable_warnings()
-
 # IMPORTS
 import requests
 from typing import List, Tuple
 
 # Disable insecure warnings
-# requests.packages.urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()
 
 
 class Client(BaseClient):
@@ -27,46 +19,25 @@ class Client(BaseClient):
         proxy(str): Use system proxy.
     """
 
-    def _init__(self, client_id, client_secret, insecure, base_url):
-        self.base_url = base_url
-        self.client_id = client_id
-        self.client_secret = client_secret
+    def __init__(self, api_key, insecure, base_url):
+        super().__init__(base_url)
+        self.api_key = api_key
         self.verify = not insecure
         handle_proxy()
-        # https://api.crowdstrike.com/oauth2/token
-
-    def crowdstrike_get_token(self):
-        headers = {
-            "client_id": self.client_id,
-            "client_secret": self.client_secret,
-            'Content-Type': "application/x-www-form-urlencoded"
-        }
-
-        res = requests.post(
-            url=self.base_url,
-            verify=self.verify,
-            headers=headers
-        )
-        value = res['access_token']
-        res.raise_for_status()
-
-        return 'Authorization', value
 
     def daily_http_request(self) -> list:
         """The HTTP request for daily feeds.
         Returns:
             list. A list of indicators fetched from the feed.
         """
-
-        key, value = self.crowdstrike_get_token()
         headers = {
-            key: f'Bearer {value}',
+            "apiKey": self.api_key,
             'Content-Type': "application/json"
         }
 
         res = requests.request(
             method="GET",
-            url=self.base_url,
+            url='https://autofocus.paloaltonetworks.com/api/v1.0/output/threatFeedResult',
             verify=self.verify,
             headers=headers
         )
@@ -262,7 +233,7 @@ def main():
     # Switch case
     commands = {
         'test-module': module_test_command,
-        'Crowdstrike-Falcon-Intel-get-indicators': get_indicators_command
+        'autofocus-daily-get-indicators': get_indicators_command
     }
     try:
         if demisto.command() == 'fetch-indicators':

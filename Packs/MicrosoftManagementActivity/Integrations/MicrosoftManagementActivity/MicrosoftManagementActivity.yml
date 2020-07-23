@@ -40,7 +40,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: '10 minutes'
+- defaultvalue: 10 minutes
   display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
   name: first_fetch_delta
   required: false
@@ -54,29 +54,25 @@ configuration:
   - Audit.General
   required: false
   type: 16
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
 - display: Incident type
   name: incidentType
   required: false
   type: 13
-- display: Record types to fetch (Comma-separated list of the record types you wish to fetch. Content
-    records with a record  type that isn't specified will not be fetched. If this
-    field is left empty, all record types will be fetched.)
+- display: Record types to fetch (Comma-separated list of the record types you wish
+    to fetch. Content records with a record  type that isn't specified will not be
+    fetched. If this field is left empty, all record types will be fetched.)
   name: record_types_filter
   required: false
   type: 0
-- display: Workloads to fetch (Comma-separated list of the workloads you wish to fetch. Content
-    records with a workload that isn't specified will not be fetched. If this
+- display: Workloads to fetch (Comma-separated list of the workloads you wish to fetch.
+    Content records with a workload that isn't specified will not be fetched. If this
     field is left empty, all workloads will be fetched.)
   name: workloads_filter
   required: false
   type: 0
-- display: Operations to (Comma-separated list of the operations you wish to fetch. Content
-    records with an operation that isn't specified will not be fetched. If this
-    field is left empty, all operations will be fetched.)
+- display: Operations to (Comma-separated list of the operations you wish to fetch.
+    Content records with an operation that isn't specified will not be fetched. If
+    this field is left empty, all operations will be fetched.)
   name: operations_filter
   required: false
   type: 0
@@ -162,25 +158,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of the record types to fetch. Content
-        records with a record  type that isn't specified will not be fetched. If this
-        field is left empty, all record types will be fetched.
+      description: A comma-separated list of the record types to fetch. Content records
+        with a record  type that isn't specified will not be fetched. If this field
+        is left empty, all record types will be fetched.
       isArray: false
       name: record_types_filter
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of the workloads to fetch. Content
-        records with a workload that isn't specified will not be fetched. If this
-        field is left empty, all workloads will be fetched.
+      description: A comma-separated list of the workloads to fetch. Content records
+        with a workload that isn't specified will not be fetched. If this field is
+        left empty, all workloads will be fetched.
       isArray: false
       name: workloads_filter
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of the operations to fetch. Content
-        records with an operation that isn't specified will not be fetched. If this
-        field is left empty, all operations will be fetched.
+      description: A comma-separated list of the operations to fetch. Content records
+        with an operation that isn't specified will not be fetched. If this field
+        is left empty, all operations will be fetched.
       isArray: false
       name: operations_filter
       required: false
@@ -230,10 +226,13 @@ script:
       description: The ID of the record's user.
       type: string
   dockerimage: demisto/pyjwt3:1.0.0.8871
+  feed: false
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
-  script: ''
-  type: python
+  script: '-'
   subtype: python3
+  type: python
 tests:
-  - No test
+- No test
