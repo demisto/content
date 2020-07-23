@@ -29,8 +29,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: '75'
-  display: Application ID for fetch
+- display: Application ID for fetch
   hidden: false
   name: applicationId
   required: true

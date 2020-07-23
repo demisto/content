@@ -217,7 +217,6 @@ class Client(BaseClient):
             self.update_session()
             res = self._http_request(method, url_suffix, headers=REQUEST_HEADERS, json_data=data,
                                      resp_type='response', ok_codes=(200, 401))
-            return res.json()
 
         return res.json()
 
@@ -311,8 +310,10 @@ class Client(BaseClient):
                 field_data = level_fields.get(str(_id))  # type: ignore
                 field_type = field_data.get('Type')
 
+                # when field type is IP Address
                 if field_type == 19:
                     field_value = field.get('IpAddressBytes')
+                # when field type is Values List
                 elif field_type == 4 and field.get('Value') and field['Value'].get('ValuesListIds'):
                     list_data = self.get_field_value_list(_id)
                     list_ids = field['Value']['ValuesListIds']
@@ -464,10 +465,11 @@ def extract_from_xml(xml, path):
 
 
 def generate_field_contents(client, fields_values, level_fields):
-    try:
-        fields_values = json.loads(fields_values)
-    except Exception:
-        raise Exception('Failed to parese fields-values argument')
+    if fields_values and not isinstance(fields_values, dict):
+        try:
+            fields_values = json.loads(fields_values)
+        except Exception:
+            raise Exception('Failed to parese fields-values argument')
 
     field_content = {}
     for field_name in fields_values.keys():
@@ -559,7 +561,28 @@ def get_file(entry_id):
     return file_name, file_bytes.decode('utf-8')
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, params) -> str:
+
+    if params.get('isFetch', False):
+        first_fetch_time = '3 days'
+        last_fetch = dateparser.parse(first_fetch_time)
+
+        last_fetch = last_fetch.replace(tzinfo=None)
+        app_id = params.get('applicationId', '75')
+        date_field = params.get('applicationDateField', 'Date/Time Reported')
+        max_results = 10
+        time_offset = 0
+        fields_to_display = argToList(params.get('fields_to_fetch'))
+        fields_to_display.append(date_field)
+
+        last_fetch = last_fetch + timedelta(minutes=(time_offset * -1))
+
+        client.search_records(app_id, fields_to_display, date_field,
+                              last_fetch.strftime('%Y-%m-%dT%H:%M:%SZ'),
+                              date_operator='GreaterThan', max_results=max_results)
+
+        return 'ok'
+
     return 'ok' if client.do_request('GET', 'rsaarcher/api/core/system/application') else 'Connection failed.'
 
 
@@ -996,7 +1019,7 @@ def main():
     client = Client(base_url,
                     credentials.get('identifier'), credentials.get('password'),
                     params.get('instanceName'),
-                    params.get('domain'),
+                    params.get('userDomain'),
                     verify=not params.get('insecure', False),
                     proxy=params.get('proxy', False))
     commands = {
@@ -1018,7 +1041,7 @@ def main():
         'archer-list-users': list_users_command,
         'archer-search-records': search_records_command,
         'archer-search-records-by-report': search_records_by_report_command,
-        'archer-print-cache': print_cache_command
+        'archer-print-cache': print_cache_command,
     }
 
     command = demisto.command()
@@ -1036,7 +1059,7 @@ def main():
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         elif command == 'test-module':
-            demisto.results(test_module(client))
+            demisto.results(test_module(client, params))
         elif command in commands:
             return commands[command](client, demisto.args())
         else:
@@ -1045,5 +1068,5 @@ def main():
         return_error(f'Unexpected error: {str(e)}, traceback: {traceback.format_exc()}')
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__builtin__', 'builtins'):
     main()

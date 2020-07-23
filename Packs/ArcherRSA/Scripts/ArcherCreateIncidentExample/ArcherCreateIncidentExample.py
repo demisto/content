@@ -3,6 +3,14 @@ import json
 import demistomock as demisto
 from CommonServerPython import *
 
+"""
+Use the ArcherCreateIncidentExample script to create a incident object (applicationId = 75) in Archer.
+The script gets the arguments required to create the incident, such as category, summary, and so on.
+It creates the JSON object for the request body and call the command archer-create-record with the relevant data.
+To add additional fields to the script, execute the command !archer-get-application-fields applicationId=75 to
+see the fields for incident object and add it to the script code inside the data dict.
+"""
+
 
 def main():
     summary = demisto.args().get('summary')
