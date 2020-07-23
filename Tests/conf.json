@@ -2845,6 +2845,10 @@
             "timeout": 500
         },
         {
+            "integrations": "Ivanti Heat",
+            "playbookID": "Ivanti Heat - Test"
+        },
+        {
             "integrations": "Blueliv ThreatCompass",
             "playbookID": "Blueliv_ThreatCompass_test",
             "fromversion": "5.0.0"
@@ -2908,7 +2912,6 @@
         "Google Chronicle Backstory Asset - Test": "Issue 26460",
         "Keylight v2 - Test": "Issue 26462",
         "AutoFocus V2 test": "Issue 26464",
-        "PAN-OS Create Or Edit Rule Test": "Issue 26465",
         "HybridAnalysis-Test": "Issue 26599",
         "Logzio - Test": "Issue 26729",
         "Tenable.io test": "Issue 26727",
@@ -3009,6 +3012,7 @@
         "SecBI": "Issue 22545",
         "IBM Resilient Systems": "Issue 23722",
         "VxStream": "Issue #23795",
+        "Ivanti Heat": "Issue 26259",
         "Bambenek Consulting Feed": "Issue 26184",
         "AWS - Athena - Beta": "Issue 19834",
         "Blueliv ThreatCompass": "Community contribution",
@@ -3016,6 +3020,7 @@
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tenable.sc": "unstable instance",
+        "ThreatConnect v2": "unstable instance",
         
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Issue 25650",
