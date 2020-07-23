@@ -45,6 +45,74 @@ class Client(BaseClient):
         extract_errors(res)
         self.session_id = res.get('session-id')
 
+    def get_ip_group_entities(self, group_name, table_name):
+        raw_res = self.do_request('GET', f'conf/ipGroups/{group_name}')
+        entries = []
+        for entry in raw_res.get('entries'):
+            entries.append({'Type': entry.get('type'),
+                            'IpAddressFrom': entry.get('ipAddressFrom'),
+                            'IpAddressTo': entry.get('ipAddressTo'),
+                            'NetworkAddress': entry.get('networkAddress'),
+                            'CidrMask': entry.get('cidrMask')})
+
+        human_readable = tableToMarkdown(table_name, entries, removeNull=True,
+                                         headers=['Type', 'IpAddressFrom', 'IpAddressTo', 'NetworkAddress', 'CidrMask'])
+        entry_context = {f'{INTEGRATION_CONTEXT_NAME}.IpGroup(val.Name===obj.Name)':
+                         {'Name': group_name, 'Entries': entries}}
+
+        return_outputs(human_readable, entry_context, raw_res)
+
+    def get_custom_policy_outputs(self, policy_name, table_name):
+        raw_res = self.do_request('GET', f'conf/policies/security/webServiceCustomPolicies/{policy_name}')
+        policy = {'Name': policy_name,
+                  'Enabled': raw_res.get('enabled'),
+                  'OneAlertPerSession': raw_res.get('oneAlertPerSession'),
+                  'DisplayResponsePage': raw_res.get('displayResponsePage'),
+                  'Severity': raw_res.get('severity'),
+                  'Action': raw_res.get('action'),
+                  'FollowedAction': raw_res.get('followedAction'),
+                  'ApplyTo': raw_res.get('applyTo'),
+                  'MatchCriteria': raw_res.get('matchCriteria')}
+
+        hr_policy = policy.copy()
+        del hr_policy['MatchCriteria']
+        del hr_policy['ApplyTo']
+        human_readable = tableToMarkdown(table_name, hr_policy, removeNull=True)
+
+        if raw_res.get('applyTo'):
+            human_readable += '\n\n' + tableToMarkdown('Services to apply the policy to', raw_res.get('applyTo'),
+                                                       removeNull=True)
+
+        for match in raw_res.get('matchCriteria', []):
+            tmp_match = match.copy()
+            operation = match['operation']
+            match_type = match['type']
+
+            # generate human readable for sourceIpAddresses type
+            if match_type == 'sourceIpAddresses':
+                if tmp_match.get('userDefined'):
+                    for i, element in enumerate(tmp_match['userDefined']):
+                        tmp_match['userDefined'][i] = {'IP Address': tmp_match['userDefined'][i]}
+                    human_readable += '\n\n' + tableToMarkdown(f'Match operation: {operation}\n Source IP addresses:',
+                                                               tmp_match['userDefined'], removeNull=True)
+
+                if tmp_match.get('ipGroups'):
+                    for i, element in enumerate(tmp_match['ipGroups']):
+                        tmp_match['ipGroups'][i] = {'Group name': tmp_match['ipGroups'][i]}
+                    human_readable += '\n\n' + tableToMarkdown(f'Match operation: {operation}\n IP Groups:',
+                                                               tmp_match['ipGroups'], removeNull=True)
+
+            # generate human readable for sourceGeolocation type
+            elif match_type == 'sourceGeolocation':
+                if tmp_match.get('values'):
+                    for i, element in enumerate(tmp_match['values']):
+                        tmp_match['values'][i] = {'Country name': tmp_match['values'][i]}
+                    human_readable += '\n\n' + tableToMarkdown(f'Match operation: {operation}\n Countries to match:',
+                                                               tmp_match['values'], removeNull=True)
+
+        entry_context = {f'{INTEGRATION_CONTEXT_NAME}.CustomWebPolicy(val.Name===obj.Name)': policy}
+        return_outputs(human_readable, entry_context, raw_res)
+
 
 def extract_errors(res):
     if not isinstance(res, list) and res.get('errors'):
@@ -170,22 +238,7 @@ def ip_group_list_command(client, args):
 @logger
 def ip_group_list_entries_command(client, args):
     group_name = args.get('ip-group-name')
-    raw_res = client.do_request('GET', f'conf/ipGroups/{group_name}')
-
-    entries = []
-    for entry in raw_res.get('entries'):
-        entries.append({'Type': entry.get('type'),
-                        'IpAddressFrom': entry.get('ipAddressFrom'),
-                        'IpAddressTo': entry.get('ipAddressTo'),
-                        'NetworkAddress': entry.get('networkAddress'),
-                        'CidrMask': entry.get('cidrMask')})
-
-    human_readable = tableToMarkdown(f'IP group entries for {group_name}', entries, removeNull=True,
-                                     headers=['Type', 'IpAddressFrom', 'IpAddressTo', 'NetworkAddress', 'CidrMask'])
-    entry_context = {f'{INTEGRATION_CONTEXT_NAME}.IpGroup(val.Name===obj.Name)':
-                     {'Name': group_name, 'Entries': entries}}
-
-    return_outputs(human_readable, entry_context, raw_res)
+    client.get_ip_group_entities(group_name, f'IP group entries for {group_name}')
 
 
 @logger
@@ -256,72 +309,23 @@ def custom_policy_list_command(client, args):
 @logger
 def get_custom_policy_command(client, args):
     policy_name = args.get('policy-name')
-    raw_res = client.do_request('GET', f'conf/policies/security/webServiceCustomPolicies/{policy_name}')
-    policy = {'Name': policy_name,
-              'Enabled': raw_res.get('enabled'),
-              'OneAlertPerSession': raw_res.get('oneAlertPerSession'),
-              'DisplayResponsePage': raw_res.get('displayResponsePage'),
-              'Severity': raw_res.get('severity'),
-              'Action': raw_res.get('action'),
-              'FollowedAction': raw_res.get('followedAction'),
-              'ApplyTo': raw_res.get('applyTo'),
-              'MatchCriteria': raw_res.get('matchCriteria')}
-
-    hr_policy = policy.copy()
-    del hr_policy['MatchCriteria']
-    del hr_policy['ApplyTo']
-    human_readable = tableToMarkdown(f'Policy data for {policy_name}', hr_policy, removeNull=True)
-
-    if raw_res.get('applyTo'):
-        human_readable += '\n\n' + tableToMarkdown('Services to apply the policy to', raw_res.get('applyTo'),
-                                                   removeNull=True)
-
-    for match in raw_res.get('matchCriteria', []):
-        tmp_match = match.copy()
-        operation = match['operation']
-        match_type = match['type']
-
-        # generate human readable for sourceIpAddresses type
-        if match_type == 'sourceIpAddresses':
-            if tmp_match.get('userDefined'):
-                for i, element in enumerate(tmp_match['userDefined']):
-                    tmp_match['userDefined'][i] = {'IP Address': tmp_match['userDefined'][i]}
-                human_readable += '\n\n' + tableToMarkdown(f'Match operation: {operation}\n Source IP addresses:',
-                                                           tmp_match['userDefined'], removeNull=True)
-
-            if tmp_match.get('ipGroups'):
-                for i, element in enumerate(tmp_match['ipGroups']):
-                    tmp_match['ipGroups'][i] = {'Group name': tmp_match['ipGroups'][i]}
-                human_readable += '\n\n' + tableToMarkdown(f'Match operation: {operation}\n IP Groups:',
-                                                           tmp_match['ipGroups'], removeNull=True)
-
-        # generate human readable for sourceGeolocation type
-        elif match_type == 'sourceGeolocation':
-            if tmp_match.get('values'):
-                for i, element in enumerate(tmp_match['values']):
-                    tmp_match['values'][i] = {'Country name': tmp_match['values'][i]}
-                human_readable += '\n\n' + tableToMarkdown(f'Match operation: {operation}\n Countries to match:',
-                                                           tmp_match['values'], removeNull=True)
-
-    entry_context = {f'{INTEGRATION_CONTEXT_NAME}.CustomWebPolicy(val.Name===obj.Name)': policy}
-    return_outputs(human_readable, entry_context, raw_res)
+    client.get_custom_policy_outputs(policy_name, f'Policy data for {policy_name}')
 
 
 @logger
 def create_ip_group_command(client, args):
     group_name = args.get('group-name')
     body = generate_ip_groups_entries(args)
-    raw_res = client.do_request('POST', f'conf/ipGroups/{group_name}', json_data=body)
-    entry_context = {f'{INTEGRATION_CONTEXT_NAME}.IpGroup.Name': group_name}
-    return_outputs(f'Group {group_name} created successfully', entry_context, raw_res)
+    client.do_request('POST', f'conf/ipGroups/{group_name}', json_data=body)
+    client.get_ip_group_entities(group_name, f'Group {group_name} created successfully')
 
 
 @logger
 def update_ip_group_command(client, args):
     group_name = args.get('group-name')
     body = generate_ip_groups_entries(args)
-    raw_res = client.do_request('PUT', f'conf/ipGroups/{group_name}/data', json_data=body)
-    return_outputs(f'Group {group_name} updated successfully', {}, raw_res)
+    client.do_request('PUT', f'conf/ipGroups/{group_name}/data', json_data=body)
+    client.get_ip_group_entities(group_name, f'Group {group_name} updated successfully')
 
 
 @logger
@@ -354,10 +358,8 @@ def create_custom_policy_command(client, args):
 
     body['applyTo'] = [{'siteName': site, 'serverGroupName': server_group, 'webServiceName': web_service}]
 
-    raw_res = client.do_request('POST', f'conf/policies/security/webServiceCustomPolicies/{policy_name}',
-                                json_data=body)
-    entry_context = {f'{INTEGRATION_CONTEXT_NAME}.SecurityPolicy.Name': policy_name}
-    return_outputs(f'Policy {policy_name} created successfully', entry_context, raw_res)
+    client.do_request('POST', f'conf/policies/security/webServiceCustomPolicies/{policy_name}', json_data=body)
+    client.get_custom_policy_outputs(policy_name, f'Policy {policy_name} created successfully')
 
 
 @logger
@@ -386,9 +388,8 @@ def update_custom_policy_command(client, args):
         body['applyTo'] = [{'operation': apply_operation, 'siteName': site, 'serverGroupName': server_group,
                            'webServiceName': web_service}]
 
-    raw_res = client.do_request('PUT', f'conf/policies/security/webServiceCustomPolicies/{policy_name}',
-                                json_data=body)
-    return_outputs(f'Policy {policy_name} updated successfully', {}, raw_res)
+    client.do_request('PUT', f'conf/policies/security/webServiceCustomPolicies/{policy_name}', json_data=body)
+    client.get_custom_policy_outputs(policy_name, f'Policy {policy_name} updated successfully')
 
 
 @logger

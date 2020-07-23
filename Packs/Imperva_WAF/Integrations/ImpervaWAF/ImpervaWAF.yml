@@ -250,8 +250,20 @@ script:
     execution: false
     name: imperva-waf-ip-group-create
     outputs:
-    - contextPath: ImpervaWAF.IpGroup.Name
-      description: The name of the IP Group
+    - contextPath: ImpervaWAF.IpGroup.Entries.Type
+      description: Type of address (Single, range or network)
+      type: String
+    - contextPath: ImpervaWAF.IpGroup.Entries.CidrMask
+      description: Network significant bits
+      type: Number
+    - contextPath: ImpervaWAF.IpGroup.Entries.NetworkAddress
+      description: Network address
+      type: String
+    - contextPath: ImpervaWAF.IpGroup.Entries.IpAddressTo
+      description: End IP address
+      type: String
+    - contextPath: ImpervaWAF.IpGroup.Entries.IpAddressFrom
+      description: Start IP address
       type: String
   - arguments:
     - default: false
@@ -315,6 +327,22 @@ script:
     description: Add or remove rows in an IP Group indicated by ip Group Name.
     execution: false
     name: imperva-waf-ip-group-update-entries
+    outputs:
+    - contextPath: ImpervaWAF.IpGroup.Entries.Type
+      description: Type of address (Single, range or network)
+      type: String
+    - contextPath: ImpervaWAF.IpGroup.Entries.CidrMask
+      description: Network significant bits
+      type: Number
+    - contextPath: ImpervaWAF.IpGroup.Entries.NetworkAddress
+      description: Network address
+      type: String
+    - contextPath: ImpervaWAF.IpGroup.Entries.IpAddressTo
+      description: End IP address
+      type: String
+    - contextPath: ImpervaWAF.IpGroup.Entries.IpAddressFrom
+      description: Start IP address
+      type: String
   - arguments:
     - default: false
       description: Group name to delete
@@ -467,8 +495,51 @@ script:
     execution: false
     name: imperva-waf-web-service-custom-policy-create
     outputs:
-    - contextPath: ImpervaWAF.SecurityPolicy.Name
+    - contextPath: ImpervaWAF.CustomWebPolicy.Enabled
+      description: Whether the policy is enabled
+      type: Boolean
+    - contextPath: ImpervaWAF.CustomWebPolicy.FollowedAction
+      description: Name of the Action Set
+      type: String
+    - contextPath: ImpervaWAF.CustomWebPolicy.Name
       description: The name of the policy
+      type: String
+    - contextPath: ImpervaWAF.CustomWebPolicy.OneAlertPerSession
+      description: Indicates whether to allow only one alert to be created for every
+        web session
+      type: Boolean
+    - contextPath: ImpervaWAF.CustomWebPolicy.DisplayResponsePage
+      description: Indicates whether to show response page in alerts
+      type: Boolean
+    - contextPath: ImpervaWAF.CustomWebPolicy.Action
+      description: Policy Action
+      type: String
+    - contextPath: ImpervaWAF.CustomWebPolicy.Severity
+      description: Alert Severity
+      type: String
+    - contextPath: ImpervaWAF.CustomWebPolicy.ApplyTo.serverGroupName
+      description: Name of the server group to apply
+      type: String
+    - contextPath: ImpervaWAF.CustomWebPolicy.ApplyTo.siteName
+      description: Name of the site to apply
+      type: String
+    - contextPath: ImpervaWAF.CustomWebPolicy.ApplyTo.webServiceName
+      description: Name of the web service to apply
+      type: String
+    - contextPath: ImpervaWAF.CustomWebPolicy.MatchCriteria.operation
+      description: Match operation for values
+      type: String
+    - contextPath: ImpervaWAF.CustomWebPolicy.MatchCriteria.type
+      description: Match Criterion name
+      type: String
+    - contextPath: ImpervaWAF.CustomWebPolicy.MatchCriteria.ipGroups.Group name
+      description: Name of IP Group to search in
+      type: String
+    - contextPath: ImpervaWAF.CustomWebPolicy.MatchCriteria.userDefined.IP Address
+      description: IP address to search in
+      type: String
+    - contextPath: ImpervaWAF.CustomWebPolicy.MatchCriteria.values.country
+      description: Country name to match
       type: String
   - arguments:
     - default: false
@@ -614,6 +685,53 @@ script:
     description: Update a Web Service Custom Policy.
     execution: false
     name: imperva-waf-web-service-custom-policy-update
+    outputs:
+    - contextPath: ImpervaWAF.CustomWebPolicy.Enabled
+      description: Whether the policy is enabled
+      type: Boolean
+    - contextPath: ImpervaWAF.CustomWebPolicy.FollowedAction
+      description: Name of the Action Set
+      type: String
+    - contextPath: ImpervaWAF.CustomWebPolicy.Name
+      description: The name of the policy
+      type: String
+    - contextPath: ImpervaWAF.CustomWebPolicy.OneAlertPerSession
+      description: Indicates whether to allow only one alert to be created for every
+        web session
+      type: Boolean
+    - contextPath: ImpervaWAF.CustomWebPolicy.DisplayResponsePage
+      description: Indicates whether to show response page in alerts
+      type: Boolean
+    - contextPath: ImpervaWAF.CustomWebPolicy.Action
+      description: Policy Action
+      type: String
+    - contextPath: ImpervaWAF.CustomWebPolicy.Severity
+      description: Alert Severity
+      type: String
+    - contextPath: ImpervaWAF.CustomWebPolicy.ApplyTo.serverGroupName
+      description: Name of the server group to apply
+      type: String
+    - contextPath: ImpervaWAF.CustomWebPolicy.ApplyTo.siteName
+      description: Name of the site to apply
+      type: String
+    - contextPath: ImpervaWAF.CustomWebPolicy.ApplyTo.webServiceName
+      description: Name of the web service to apply
+      type: String
+    - contextPath: ImpervaWAF.CustomWebPolicy.MatchCriteria.operation
+      description: Match operation for values
+      type: String
+    - contextPath: ImpervaWAF.CustomWebPolicy.MatchCriteria.type
+      description: Match Criterion name
+      type: String
+    - contextPath: ImpervaWAF.CustomWebPolicy.MatchCriteria.ipGroups.Group name
+      description: Name of IP Group to search in
+      type: String
+    - contextPath: ImpervaWAF.CustomWebPolicy.MatchCriteria.userDefined.IP Address
+      description: IP address to search in
+      type: String
+    - contextPath: ImpervaWAF.CustomWebPolicy.MatchCriteria.values.country
+      description: Country name to match
+      type: String
   - arguments:
     - default: false
       description: The name of the policy to delete
@@ -634,6 +752,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.0.0
 tests:
 - Imperva WAF - Test
+fromversion: 5.0.0

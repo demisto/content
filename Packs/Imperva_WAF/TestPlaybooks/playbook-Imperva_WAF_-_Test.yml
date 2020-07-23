@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 045eead6-e0b4-43cf-8929-f20cf21a522a
+    taskid: 0c45b001-357a-466a-83d8-bbe7ca18150e
     type: start
     task:
-      id: 045eead6-e0b4-43cf-8929-f20cf21a522a
+      id: 0c45b001-357a-466a-83d8-bbe7ca18150e
       version: -1
       name: ""
       iscommand: false
@@ -32,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 80f9bd5b-b37a-45c4-8d00-78071cde96bd
+    taskid: 43cb5a3d-077b-4cf7-8ee3-cb23c52b6361
     type: regular
     task:
-      id: 80f9bd5b-b37a-45c4-8d00-78071cde96bd
+      id: 43cb5a3d-077b-4cf7-8ee3-cb23c52b6361
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -63,10 +63,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: eb195765-e389-4eb1-8b37-28cfbe0aba03
+    taskid: 3d91c631-dbd7-4209-8e38-077ba6e5a8bb
     type: regular
     task:
-      id: eb195765-e389-4eb1-8b37-28cfbe0aba03
+      id: 3d91c631-dbd7-4209-8e38-077ba6e5a8bb
       version: -1
       name: imperva-waf-ip-group-list
       script: '|||imperva-waf-ip-group-list'
@@ -91,10 +91,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 30df6c3a-c569-4522-8e51-da5eef979f9a
+    taskid: cf1c6ec6-61ba-4b20-8656-a4f08088097c
     type: condition
     task:
-      id: 30df6c3a-c569-4522-8e51-da5eef979f9a
+      id: cf1c6ec6-61ba-4b20-8656-a4f08088097c
       version: -1
       name: Verify Outputs
       type: condition
@@ -110,7 +110,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: ImpervaWaf.IpGroup.Name
+              simple: ImpervaWAF.IpGroup.Name
             iscontext: true
     view: |-
       {
@@ -126,10 +126,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 67b17797-a4ad-4143-89a6-5b3c71d5516b
+    taskid: 712da596-bcca-46aa-8120-fa7d83cacf45
     type: regular
     task:
-      id: 67b17797-a4ad-4143-89a6-5b3c71d5516b
+      id: 712da596-bcca-46aa-8120-fa7d83cacf45
       version: -1
       name: imperva-waf-ip-group-list-entries
       script: '|||imperva-waf-ip-group-list-entries'
@@ -142,7 +142,7 @@ tasks:
     scriptarguments:
       ip-group-name:
         complex:
-          root: ImpervaWaf
+          root: ImpervaWAF
           accessor: IpGroup.Name
     separatecontext: false
     view: |-
@@ -159,10 +159,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: ff303ec7-03ef-4116-872b-eaffac1c670d
+    taskid: 2a66b3e6-f922-421d-80b7-586c8a391e7e
     type: condition
     task:
-      id: ff303ec7-03ef-4116-872b-eaffac1c670d
+      id: 2a66b3e6-f922-421d-80b7-586c8a391e7e
       version: -1
       name: Verify Outputs
       type: condition
@@ -178,7 +178,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ImpervaWaf.IpGroup.Entries.Type
+              simple: ImpervaWAF.IpGroup.Entries.Type
             iscontext: true
           right:
             value:
@@ -186,7 +186,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ImpervaWaf.IpGroup.Entries.IpAddressTo
+              simple: ImpervaWAF.IpGroup.Entries.IpAddressTo
             iscontext: true
           right:
             value:
@@ -194,7 +194,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ImpervaWaf.IpGroup.Entries.IpAddressFrom
+              simple: ImpervaWAF.IpGroup.Entries.IpAddressFrom
             iscontext: true
           right:
             value:
@@ -213,10 +213,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 868a79b3-6062-4b6a-8851-cdb5a6d8ba05
+    taskid: 727bb15f-28ed-4ab8-821a-d397ee3d0aaa
     type: regular
     task:
-      id: 868a79b3-6062-4b6a-8851-cdb5a6d8ba05
+      id: 727bb15f-28ed-4ab8-821a-d397ee3d0aaa
       version: -1
       name: imperva-waf-ip-group-remove-entries
       script: '|||imperva-waf-ip-group-remove-entries'
@@ -229,7 +229,7 @@ tasks:
     scriptarguments:
       ip-group-name:
         complex:
-          root: ImpervaWaf
+          root: ImpervaWAF
           accessor: IpGroup.Name
     separatecontext: false
     view: |-
@@ -246,10 +246,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: d90eadc0-f742-4c7e-82e0-f8726072396a
+    taskid: 011e3d36-650c-4def-8921-49ae7c3e9c96
     type: regular
     task:
-      id: d90eadc0-f742-4c7e-82e0-f8726072396a
+      id: 011e3d36-650c-4def-8921-49ae7c3e9c96
       version: -1
       name: imperva-waf-sites-list
       script: '|||imperva-waf-sites-list'
@@ -274,10 +274,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 3b4587b4-8300-4d56-8b96-eac7fe49289d
+    taskid: d77fec43-291c-49a5-828e-667aa3943f83
     type: condition
     task:
-      id: 3b4587b4-8300-4d56-8b96-eac7fe49289d
+      id: d77fec43-291c-49a5-828e-667aa3943f83
       version: -1
       name: Verify Outputs
       type: condition
@@ -293,7 +293,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ImpervaWaf.Site.Name
+              simple: ImpervaWAF.Site.Name
             iscontext: true
           right:
             value:
@@ -312,10 +312,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: cd83f776-e273-4eaf-87ca-59c7710911c9
+    taskid: bd7ecb4d-062e-4570-8d59-257b1457f632
     type: regular
     task:
-      id: cd83f776-e273-4eaf-87ca-59c7710911c9
+      id: bd7ecb4d-062e-4570-8d59-257b1457f632
       version: -1
       name: imperva-waf-server-group-list
       script: '|||imperva-waf-server-group-list'
@@ -328,7 +328,7 @@ tasks:
     scriptarguments:
       site-name:
         complex:
-          root: ImpervaWaf
+          root: ImpervaWAF
           accessor: Site.Name
     separatecontext: false
     view: |-
@@ -345,10 +345,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: fec5e7e9-9c25-4c80-8c38-e2b815f8ade8
+    taskid: 73f5f550-0e90-4603-85d0-ac578966710e
     type: condition
     task:
-      id: fec5e7e9-9c25-4c80-8c38-e2b815f8ade8
+      id: 73f5f550-0e90-4603-85d0-ac578966710e
       version: -1
       name: Verify Outputs
       type: condition
@@ -364,12 +364,12 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: ImpervaWaf.ServerGroup.Name
+              simple: ImpervaWAF.ServerGroup.Name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ImpervaWaf.ServerGroup.SiteName
+              simple: ImpervaWAF.ServerGroup.SiteName
             iscontext: true
     view: |-
       {
@@ -385,10 +385,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: d08c292a-75a9-450a-852c-1e4609f3ec04
+    taskid: 70a75686-731b-4785-8c69-a30b59783b80
     type: regular
     task:
-      id: d08c292a-75a9-450a-852c-1e4609f3ec04
+      id: 70a75686-731b-4785-8c69-a30b59783b80
       version: -1
       name: imperva-waf-server-group-list-policies
       script: '|||imperva-waf-server-group-list-policies'
@@ -401,11 +401,11 @@ tasks:
     scriptarguments:
       server-group-name:
         complex:
-          root: ImpervaWaf
+          root: ImpervaWAF
           accessor: ServerGroup.Name
       site-name:
         complex:
-          root: ImpervaWaf
+          root: ImpervaWAF
           accessor: Site.Name
     separatecontext: false
     view: |-
@@ -422,10 +422,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 9aa82ba3-1134-453a-8cc4-f8f0a03ebf9e
+    taskid: 0519d8ff-3b5f-4ca7-8f07-809e055ea9d8
     type: condition
     task:
-      id: 9aa82ba3-1134-453a-8cc4-f8f0a03ebf9e
+      id: 0519d8ff-3b5f-4ca7-8f07-809e055ea9d8
       version: -1
       name: Verify Outputs
       type: condition
@@ -441,27 +441,27 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: ImpervaWaf.SecurityPolicy.PolicyName
+              simple: ImpervaWAF.SecurityPolicy.PolicyName
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ImpervaWaf.SecurityPolicy.PolicyType
+              simple: ImpervaWAF.SecurityPolicy.PolicyType
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ImpervaWaf.SecurityPolicy.ServerGroup
+              simple: ImpervaWAF.SecurityPolicy.ServerGroup
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ImpervaWaf.SecurityPolicy.SiteName
+              simple: ImpervaWAF.SecurityPolicy.SiteName
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ImpervaWaf.SecurityPolicy.System
+              simple: ImpervaWAF.SecurityPolicy.System
             iscontext: true
     view: |-
       {
@@ -477,10 +477,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: d296c4a6-2e85-42eb-8e40-691d58a135c3
+    taskid: 867c254b-2d8b-48c8-805c-cc5989981c46
     type: regular
     task:
-      id: d296c4a6-2e85-42eb-8e40-691d58a135c3
+      id: 867c254b-2d8b-48c8-805c-cc5989981c46
       version: -1
       name: imperva-waf-web-service-custom-policy-list
       script: '|||imperva-waf-web-service-custom-policy-list'
@@ -505,10 +505,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 31afadac-06d7-444b-84d0-5a5b778bef98
+    taskid: 7f8212ce-b4eb-49bd-8828-58aeccb27561
     type: condition
     task:
-      id: 31afadac-06d7-444b-84d0-5a5b778bef98
+      id: 7f8212ce-b4eb-49bd-8828-58aeccb27561
       version: -1
       name: Verify Outputs
       type: condition
@@ -524,7 +524,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: ImpervaWaf.CustomWebPolicy.Name
+              simple: ImpervaWAF.CustomWebPolicy.Name
             iscontext: true
     view: |-
       {
@@ -538,45 +538,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "15":
-    id: "15"
-    taskid: 4fea9bd9-8077-4564-8734-109f82110ac9
-    type: regular
-    task:
-      id: 4fea9bd9-8077-4564-8734-109f82110ac9
-      version: -1
-      name: imperva-waf-web-service-custom-policy-get
-      script: '|||imperva-waf-web-service-custom-policy-get'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "30"
-    scriptarguments:
-      policy-name:
-        complex:
-          root: ImpervaWaf
-          accessor: SecurityPolicy.Name
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4570
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "16":
     id: "16"
-    taskid: fa6f080f-e194-42eb-88c6-b6c2825ae661
+    taskid: 68b8b4f6-d9f1-4c80-8b6c-9049e3642035
     type: regular
     task:
-      id: fa6f080f-e194-42eb-88c6-b6c2825ae661
+      id: 68b8b4f6-d9f1-4c80-8b6c-9049e3642035
       version: -1
       name: imperva-waf-ip-group-create
       script: '|||imperva-waf-ip-group-create'
@@ -613,10 +580,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 37c5ff40-9d56-48d5-87f0-a9da9bae6765
+    taskid: 8a5b5034-9a96-44f4-86eb-8b838fce560d
     type: regular
     task:
-      id: 37c5ff40-9d56-48d5-87f0-a9da9bae6765
+      id: 8a5b5034-9a96-44f4-86eb-8b838fce560d
       version: -1
       name: add single ip entry
       script: '|||imperva-waf-ip-group-update-entries'
@@ -632,7 +599,7 @@ tasks:
         simple: single
       group-name:
         complex:
-          root: ImpervaWaf
+          root: ImpervaWAF
           accessor: IpGroup.Name
       ip-address-from:
         simple: 10.0.0.1
@@ -656,10 +623,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 4b3409cc-0029-4053-8e57-49d6d1b163b3
+    taskid: 549902f4-3ed7-4f5e-8933-6ff8788b3b9a
     type: regular
     task:
-      id: 4b3409cc-0029-4053-8e57-49d6d1b163b3
+      id: 549902f4-3ed7-4f5e-8933-6ff8788b3b9a
       version: -1
       name: imperva-waf-ip-group-delete
       script: '|||imperva-waf-ip-group-delete'
@@ -672,7 +639,7 @@ tasks:
     scriptarguments:
       group-name:
         complex:
-          root: ImpervaWaf
+          root: ImpervaWAF
           accessor: IpGroup.Name
     separatecontext: false
     view: |-
@@ -689,10 +656,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: a6036de8-3658-4ebb-86c9-7fe81f6c3419
+    taskid: 797cf2f3-3899-4307-816f-67a7ea0ed349
     type: regular
     task:
-      id: a6036de8-3658-4ebb-86c9-7fe81f6c3419
+      id: 797cf2f3-3899-4307-816f-67a7ea0ed349
       version: -1
       name: imperva-waf-web-service-custom-policy-create
       script: '|||imperva-waf-web-service-custom-policy-create'
@@ -701,7 +668,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
+      - "30"
     scriptarguments:
       action: {}
       country-names: {}
@@ -742,10 +709,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: d4cf8069-2ad2-4aa9-8100-207333e03632
+    taskid: 0944901f-7d8d-4e04-8ab6-fceb8beebf56
     type: regular
     task:
-      id: d4cf8069-2ad2-4aa9-8100-207333e03632
+      id: 0944901f-7d8d-4e04-8ab6-fceb8beebf56
       version: -1
       name: imperva-waf-web-service-custom-policy-update
       script: '|||imperva-waf-web-service-custom-policy-update'
@@ -754,7 +721,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "32"
+      - "31"
     scriptarguments:
       action: {}
       apply-operation: {}
@@ -782,7 +749,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4920
+          "y": 4745
         }
       }
     note: false
@@ -792,10 +759,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: 330920c3-202d-4d22-884d-a2fc2e24443d
+    taskid: 8d599145-79c9-421a-8cbf-ad399dd1dc90
     type: title
     task:
-      id: 330920c3-202d-4d22-884d-a2fc2e24443d
+      id: 8d599145-79c9-421a-8cbf-ad399dd1dc90
       version: -1
       name: Test Done
       type: title
@@ -806,7 +773,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5620
+          "y": 5270
         }
       }
     note: false
@@ -816,10 +783,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: db08543c-253e-49ae-8342-966c6cf8f36f
+    taskid: f9946971-f238-4690-8b7c-0797b0de0f6b
     type: regular
     task:
-      id: db08543c-253e-49ae-8342-966c6cf8f36f
+      id: f9946971-f238-4690-8b7c-0797b0de0f6b
       version: -1
       name: imperva-waf-ip-group-list-entries
       script: '|||imperva-waf-ip-group-list-entries'
@@ -832,7 +799,7 @@ tasks:
     scriptarguments:
       ip-group-name:
         complex:
-          root: ImpervaWaf
+          root: ImpervaWAF
           accessor: IpGroup.Name
     separatecontext: false
     view: |-
@@ -849,10 +816,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: c4fa0bc4-0e6c-408f-86ad-3e4c0a81a79c
+    taskid: da4be86b-9409-4f42-83bc-ced1a7dd4d6e
     type: condition
     task:
-      id: c4fa0bc4-0e6c-408f-86ad-3e4c0a81a79c
+      id: da4be86b-9409-4f42-83bc-ced1a7dd4d6e
       version: -1
       name: Verify Outputs
       type: condition
@@ -868,7 +835,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ImpervaWaf.IpGroup.Entries.Type
+              simple: ImpervaWAF.IpGroup.Entries.Type
             iscontext: true
           right:
             value:
@@ -876,7 +843,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ImpervaWaf.IpGroup.Entries.IpAddressFrom
+              simple: ImpervaWAF.IpGroup.Entries.IpAddressFrom
             iscontext: true
           right:
             value:
@@ -895,10 +862,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: d38c0a30-c550-458a-8700-ae35d3c6d341
+    taskid: c8398213-decc-4b36-86d9-44037bf37697
     type: regular
     task:
-      id: d38c0a30-c550-458a-8700-ae35d3c6d341
+      id: c8398213-decc-4b36-86d9-44037bf37697
       version: -1
       name: remove the range ip entry
       script: '|||imperva-waf-ip-group-update-entries'
@@ -914,7 +881,7 @@ tasks:
         simple: range
       group-name:
         complex:
-          root: ImpervaWaf
+          root: ImpervaWAF
           accessor: IpGroup.Name
       ip-address-from:
         simple: 127.0.0.1
@@ -939,10 +906,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 817e68bf-4488-45bb-85e0-30ac507ffe55
+    taskid: 33484b03-ac8f-42af-80f9-d4411410284a
     type: regular
     task:
-      id: 817e68bf-4488-45bb-85e0-30ac507ffe55
+      id: 33484b03-ac8f-42af-80f9-d4411410284a
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -970,10 +937,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 342f39b6-9b8b-4c3d-8b42-5c9929b2dcde
+    taskid: e2d88f0e-a8c4-4af9-8357-1ffea03c8bdd
     type: regular
     task:
-      id: 342f39b6-9b8b-4c3d-8b42-5c9929b2dcde
+      id: e2d88f0e-a8c4-4af9-8357-1ffea03c8bdd
       version: -1
       name: imperva-waf-ip-group-list-entries
       script: '|||imperva-waf-ip-group-list-entries'
@@ -1001,10 +968,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: ec687d25-80d5-4ba7-8877-0c90a774ad38
+    taskid: 590786fe-62f0-496e-83d7-3946e8eaee6a
     type: condition
     task:
-      id: ec687d25-80d5-4ba7-8877-0c90a774ad38
+      id: 590786fe-62f0-496e-83d7-3946e8eaee6a
       version: -1
       name: Verify Outputs
       type: condition
@@ -1020,7 +987,7 @@ tasks:
       - - operator: isEmpty
           left:
             value:
-              simple: ImpervaWaf.IpGroup.Entries
+              simple: ImpervaWAF.IpGroup.Entries
             iscontext: true
     view: |-
       {
@@ -1036,10 +1003,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: 48c70cd5-53fd-4294-868e-c221bf4896e8
+    taskid: 0849d68f-234f-40c3-8452-0972bc2d1e5c
     type: regular
     task:
-      id: 48c70cd5-53fd-4294-868e-c221bf4896e8
+      id: 0849d68f-234f-40c3-8452-0972bc2d1e5c
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -1067,10 +1034,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 96129bc6-4d5c-433a-84ac-8d834636393f
+    taskid: 7ece8231-947d-499f-8485-2cd58647dd62
     type: regular
     task:
-      id: 96129bc6-4d5c-433a-84ac-8d834636393f
+      id: 7ece8231-947d-499f-8485-2cd58647dd62
       version: -1
       name: imperva-waf-web-service-custom-policy-delete
       script: '|||imperva-waf-web-service-custom-policy-delete'
@@ -1083,14 +1050,14 @@ tasks:
     scriptarguments:
       policy-name:
         complex:
-          root: ImpervaWaf
-          accessor: SecurityPolicy.Name
+          root: ImpervaWAF
+          accessor: CustomWebPolicy.Name
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 5445
+          "y": 5095
         }
       }
     note: false
@@ -1100,10 +1067,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: 4204afdb-f1b6-4245-8765-042babb401bd
+    taskid: 483e8e9b-d89e-4365-8f98-cb74d368bd74
     type: condition
     task:
-      id: 4204afdb-f1b6-4245-8765-042babb401bd
+      id: 483e8e9b-d89e-4365-8f98-cb74d368bd74
       version: -1
       name: Verify Outputs
       type: condition
@@ -1120,14 +1087,14 @@ tasks:
           left:
             value:
               complex:
-                root: ImpervaWaf
+                root: ImpervaWAF
                 accessor: CustomWebPolicy.Enabled
             iscontext: true
       - - operator: isEqualString
           left:
             value:
               complex:
-                root: ImpervaWaf
+                root: ImpervaWAF
                 accessor: CustomWebPolicy.Severity
             iscontext: true
           right:
@@ -1137,7 +1104,7 @@ tasks:
           left:
             value:
               complex:
-                root: ImpervaWaf
+                root: ImpervaWAF
                 accessor: CustomWebPolicy.ApplyTo.serverGroupName
             iscontext: true
           right:
@@ -1146,7 +1113,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ImpervaWaf.CustomWebPolicy.Name
+              simple: ImpervaWAF.CustomWebPolicy.Name
             iscontext: true
           right:
             value:
@@ -1155,7 +1122,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4745
+          "y": 4570
         }
       }
     note: false
@@ -1165,10 +1132,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: f3a4a669-e416-4378-80c9-309ce65cc53e
+    taskid: 3b7326ec-1efe-4f99-88f4-6e80fb2dd2bc
     type: condition
     task:
-      id: f3a4a669-e416-4378-80c9-309ce65cc53e
+      id: 3b7326ec-1efe-4f99-88f4-6e80fb2dd2bc
       version: -1
       name: Verify Outputs
       type: condition
@@ -1185,7 +1152,7 @@ tasks:
           left:
             value:
               complex:
-                root: ImpervaWaf
+                root: ImpervaWAF
                 accessor: CustomWebPolicy.Severity
             iscontext: true
           right:
@@ -1194,7 +1161,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ImpervaWaf.CustomWebPolicy.Name
+              simple: ImpervaWAF.CustomWebPolicy.Name
             iscontext: true
           right:
             value:
@@ -1202,7 +1169,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ImpervaWaf.CustomWebPolicy.MatchCriteria.userDefined.IP Address
+              simple: ImpervaWAF.CustomWebPolicy.MatchCriteria.userDefined.IP Address
             iscontext: true
           right:
             value:
@@ -1210,7 +1177,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ImpervaWaf.CustomWebPolicy.MatchCriteria.operation
+              simple: ImpervaWAF.CustomWebPolicy.MatchCriteria.operation
             iscontext: true
           right:
             value:
@@ -1218,7 +1185,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ImpervaWaf.CustomWebPolicy.MatchCriteria.type
+              simple: ImpervaWAF.CustomWebPolicy.MatchCriteria.type
             iscontext: true
           right:
             value:
@@ -1227,40 +1194,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5270
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "32":
-    id: "32"
-    taskid: ffa34654-8fa5-4b0c-89a1-a7b2cc3ea582
-    type: regular
-    task:
-      id: ffa34654-8fa5-4b0c-89a1-a7b2cc3ea582
-      version: -1
-      name: imperva-waf-web-service-custom-policy-get
-      script: '|||imperva-waf-web-service-custom-policy-get'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "31"
-    scriptarguments:
-      policy-name:
-        complex:
-          root: ImpervaWaf
-          accessor: SecurityPolicy.Name
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 5095
+          "y": 4920
         }
       }
     note: false
@@ -1273,7 +1207,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 5635,
+        "height": 5285,
         "width": 380,
         "x": 50,
         "y": 50
