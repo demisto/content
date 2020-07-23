@@ -48,7 +48,7 @@ tasks:
     scriptarguments:
       extend-context: {}
       url:
-        simple: http://httpbin.org/redirect/3
+        simple: http://google.com
       useHead:
         simple: "true"
     separatecontext: false
@@ -84,7 +84,7 @@ tasks:
       left:
         simple: ${.=val.URL.length}
       right:
-        simple: "4"
+        simple: "2"
     results:
     - AreValuesEqual
     separatecontext: false
