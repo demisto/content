@@ -1,4 +1,4 @@
-{
+[{
 	"fromVersion": "6.0.0",
     "name": "Cortex XDR - Incoming Mapper",
     "type": "mapping-incoming",
@@ -95,6 +95,10 @@
 					"complex": null,
 					"simple": "user_count"
 				},
+				"dbotMirrorId": {
+					"complex": null,
+					"simple": "incident_id"
+				},
 				"occurred": {
 					"complex": {
 						"accessor": "",
@@ -110,8 +114,83 @@
 					"simple": ""
 				},
 				"severity": {
-					"complex": null,
-					"simple": "severity"
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "severity",
+						"transformers": [
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "1"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "low"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "2"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "medium"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "3"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "high"
+										}
+									}
+								},
+								"operator": "replace"
+							}
+						]
+					},
+					"simple": ""
 				}
 			}
 		},
@@ -176,10 +255,6 @@
 					"complex": null,
 					"simple": "resolve_comment"
 				},
-				"XDR Severity": {
-					"complex": null,
-					"simple": "severity"
-				},
 				"XDR Status": {
 					"complex": null,
 					"simple": "status"
@@ -207,8 +282,83 @@
 					"simple": ""
 				},
 				"severity": {
-					"complex": null,
-					"simple": "severity"
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "severity",
+						"transformers": [
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "1"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "low"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "2"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "medium"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "3"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "high"
+										}
+									}
+								},
+								"operator": "replace"
+							}
+						]
+					},
+					"simple": ""
 				}
 			}
 		},
@@ -223,4 +373,4 @@
 		}
 	},
 	"version": -1
-}
+}]

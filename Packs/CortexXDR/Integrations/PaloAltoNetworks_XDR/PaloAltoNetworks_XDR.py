@@ -19,13 +19,20 @@ INTEGRATION_CONTEXT_BRAND = 'PaloAltoNetworksXDR'
 XDR_INCIDENT_TYPE_NAME = 'Cortex XDR Incident'
 
 XDR_INCIDENT_FIELDS = {
-    "status": "Current status of the incident: \"new\",\"under_investigation\",\"resolved_threat_handled\","
-              "\"resolved_known_issue\",\"resolved_duplicate\",\"resolved_false_positive\",\"resolved_other\"",
-    "assigned_user_mail": "Email address of the assigned user.",
-    "assigned_user_pretty_name": "Full name of the user assigned to the incident.",
-    "resolve_comment": "Comments entered by the user when the incident was resolved.",
-    "manual_severity": "Incident severity assigned by the user. "
-                       "This does not affect the calculated severity low medium high",
+    "status": {"description": "Current status of the incident: \"new\",\"under_"
+                              "investigation\",\"resolved_threat_handled\","
+                              "\"resolved_known_issue\",\"resolved_duplicate\","
+                              "\"resolved_false_positive\",\"resolved_other\"",
+               "xsoar_field_name": 'xdrstatus'},
+    "assigned_user_mail": {"description": "Email address of the assigned user.",
+                           'xsoar_field_name': "xdrassigneduseremail"},
+    "assigned_user_pretty_name": {"description": "Full name of the user assigned to the incident.",
+                                  "xsoar_field_name": "xdrassigneduserprettyname"},
+    "resolve_comment": {"description": "Comments entered by the user when the incident was resolved.",
+                        "xsoar_field_name": "xdrresolvecomment"},
+    "manual_severity": {"description": "Incident severity assigned by the user. "
+                                       "This does not affect the calculated severity low medium high",
+                        "xsoar_field_name": "severity"},
 }
 
 
@@ -1614,7 +1621,7 @@ def endpoint_scan_command(client, args):
 def get_mapping_fields_command():
     xdr_incident_type_scheme = SchemeTypeMapping(type_name=XDR_INCIDENT_TYPE_NAME)
     for field in XDR_INCIDENT_FIELDS:
-        xdr_incident_type_scheme.add_field(name=field, description=XDR_INCIDENT_FIELDS[field])
+        xdr_incident_type_scheme.add_field(name=field, description=XDR_INCIDENT_FIELDS[field].get('description'))
 
     return GetMappingFieldsResponse(xdr_incident_type_scheme)
 
@@ -1625,9 +1632,15 @@ def get_remote_data_command(client, args):
     incident_data = get_incident_extra_data_command(client, {"incident_id": remote_args.remote_incident_id,
                                                              "alerts_limit": 1000})[2].get('incident')
     incident_data['id'] = incident_data.get('incident_id')
-    current_modified_time = int(incident_data.get('modification_time')) / 1000
+    current_modified_time = int(incident_data.get('modification_time'))
+    demisto.debug(f"XDR incident {remote_args.remote_incident_id}\n"
+                  f"modified time: {int(incident_data.get('modification_time'))}\n"
+                  f"update time:   {arg_to_timestamp(remote_args.last_update, 'last_update')}")
+
+    incident_data['severity'] = incident_data['severity']
     if arg_to_timestamp(current_modified_time, 'modification_time') > \
             arg_to_timestamp(remote_args.last_update, 'last_update'):
+        demisto.debug(f"Updating XDR incident {remote_args.remote_incident_id}")
         return GetRemoteDataResponse(
             mirrored_object=incident_data,
             entries=[]
@@ -1635,10 +1648,35 @@ def get_remote_data_command(client, args):
 
     else:
         # no new data modified so not updating the incident
-        return GetRemoteDataResponse(
-            mirrored_object={},
-            entries=[]
-        )
+        return {}
+
+
+def get_update_args(delta):
+    """Change the updated field names from XSOAR name to XDR name"""
+    update_args = {}
+    for field in XDR_INCIDENT_FIELDS:
+        xsoar_field_name = XDR_INCIDENT_FIELDS[field].get('xsoar_field_name')
+        if xsoar_field_name in delta:
+            if xsoar_field_name == 'severity':
+                severity_mapping = {
+                    1: "low",
+                    2: "medium",
+                    3: "high",
+                    4: "high"
+                }
+                update_args['manual_severity'] = severity_mapping[delta.get('severity')]
+
+            else:
+                update_args[field] = delta.get(xsoar_field_name)
+
+    if ('assigned_user_mail' in update_args and update_args.get('assigned_user_mail') in ['None', 'null', '', None]) \
+            or ('assigned_user_pretty_name' in update_args
+                and update_args.get('assigned_user_pretty_name') in ['None', 'null', '', None]):
+        update_args['unassign_user'] = 'true'
+        update_args['assigned_user_mail'] = None
+        update_args['assigned_user_pretty_name'] = None
+
+    return update_args
 
 
 def update_remote_system_command(client, args):
@@ -1646,9 +1684,7 @@ def update_remote_system_command(client, args):
     if remote_args.delta and remote_args.incident_changed:
         demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update XDR '
                       f'incident {remote_args.remote_incident_id}')
-        update_args = remote_args.delta.copy()
-        if 'assigned_user_mail' in remote_args.delta and remote_args.delta.get('assigned_user_mail') is None:
-            update_args['unassign_user'] = False
+        update_args = get_update_args(remote_args.delta)
 
         update_args['incident_id'] = remote_args.remote_incident_id
         demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}] to XDR\n')
@@ -1658,7 +1694,7 @@ def update_remote_system_command(client, args):
         demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
                       f'as it is not new nor changed')
 
-    return remote_args.incident_id
+    return remote_args.remote_incident_id
 
 
 def fetch_incidents(client, first_fetch_time, last_run: dict = None):
@@ -1687,7 +1723,6 @@ def fetch_incidents(client, first_fetch_time, last_run: dict = None):
             'xdrincidentid': incident_id,
             'xdrdetectiontime': incident_data.get('detection_time'),
             'xdrstatus': incident_data.get('status'),
-            'xdrseverity': incident_data.get('severity'),
             'xdrdescription': description,
             'xdrassigneduseremail': incident_data.get('assigned_user_mail'),
             'xdrassigneduserprettyname': incident_data.get('assigned_user_pretty_name'),
