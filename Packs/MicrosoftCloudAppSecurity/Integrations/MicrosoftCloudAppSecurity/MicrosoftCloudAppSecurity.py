@@ -555,7 +555,7 @@ def main():
     first_fetch = demisto.params().get('first_fetch')
     max_results = demisto.params().get('max_fetch')
     proxy = demisto.params().get('proxy', False)
-    is_fetch = demisto.params().get('isFetch')
+    is_fetch = demisto.params().get('isFetch', '')
     LOG(f'Command being called is {demisto.command()}')
     try:
         client = Client(
