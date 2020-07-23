@@ -11,4 +11,4 @@ if __name__ in ["builtins", "__main__"]:
     main()
 ```
 
-Then, the `CrowdStrikeClient` will be available for usage. For examples, see the `CrowdStrike Falcon Intel` integration.
+Then, the `CrowdStrikeClient` will be available for usage.

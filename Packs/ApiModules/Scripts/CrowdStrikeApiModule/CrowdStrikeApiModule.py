@@ -3,7 +3,7 @@ from CommonServerUserPython import *
 import requests
 
 
-class CrowdStrikeClient(BaseClient):
+class CrowdStrikeClient():
 
     def __init__(self, params):
         """
@@ -22,8 +22,6 @@ class CrowdStrikeClient(BaseClient):
         self._headers = {'Authorization': 'bearer ' + self._token}
         if not self._proxy:
             self._session.trust_env = False
-
-        # super().__init__(base_url=self._base_url, verify=self._verify, *args, **kwargs)  # type: ignore[misc]
 
     @staticmethod
     def _handle_errors(errors: list) -> str:
@@ -176,11 +174,9 @@ class CrowdStrikeClient(BaseClient):
         token_res = self.http_request('POST', '/oauth2/token', data=body, headers=headers)
         return token_res.get('access_token')
 
-    def check_quota_status(
-            self
-    ) -> dict:
-        """Creating the needed arguments for the http request
+    def check_quota_status(self) -> dict:
+        """Checking the status of the quota
         :return: http response
         """
         url_suffix = "/falconx/entities/submissions/v1?ids="
-        return self.http_request("Get", url_suffix)
+        return self.http_request('GET', url_suffix)

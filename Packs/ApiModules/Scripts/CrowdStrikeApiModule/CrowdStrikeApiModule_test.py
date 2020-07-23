@@ -22,9 +22,11 @@ def test_handle_errors(http_response, output, mocker):
     Given
     - raw response of the http request
     When
-    - there are or there are no errors
+    - 1. there are multiple errors in the http request
+    - 2. there are no errors in the http request
     Then
-    - show the exception content
+    - 1. show the exception content
+    - 2. show no errors
     """
     mocker.patch.object(CrowdStrikeClient, '_generate_token')
     params = {
