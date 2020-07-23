@@ -779,7 +779,188 @@ script:
     description: Creates a new live Investigation via registry information.
     execution: false
     name: trendmicro-apex-create-live-investigation-from-registry
-  - deprecated: false
+  - arguments:
+    - default: false
+      description: 'Json formatted agents to create the investigation in. The key
+        is the serverGuid, and the value is a list of agentGuid strings of the endpoints
+        managed by the target server. for example: {serverGuid : [agentGuid]}. If
+        both agent_guids and server_guids care empty, the request targets all agents.'
+      isArray: false
+      name: agent_guids
+      required: false
+      secret: false
+    - default: false
+      description: Create an investigation in all agents in the servers list. If both
+        agent_guids and server_guids are empty, the termination request targets all
+        agents.
+      isArray: false
+      name: server_guids
+      required: false
+      secret: false
+    - default: false
+      description: The name of the investigation.
+      isArray: false
+      name: investigation_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Method used for the investigation.
+      isArray: false
+      name: scan_type
+      predefined:
+      - Custom criteria
+      - Windows registry
+      - YARA rule file
+      - IOC rule file
+      - Disk IOC rule file
+      required: true
+      secret: false
+    - default: false
+      description: GUID of the scheduled investigation, if the investigation is triggered
+        by a schedule.
+      isArray: false
+      name: scan_schedule_guid
+      required: false
+      secret: false
+    - default: false
+      description: ID of the scheduled investigation, if the investigation is triggered
+        by a schedule.
+      isArray: false
+      name: scan_schedule_Id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Period to be investigated. Can be 'Any' or 'Specific'. If choosing
+        the Specific type, values for time_range_end and time_range.start arguments
+        are required.
+      isArray: false
+      name: time_range_type
+      predefined:
+      - Any
+      - Specific
+      required: true
+      secret: false
+    - default: false
+      description: The time when the investigation ends.
+      isArray: false
+      name: time_range_end
+      required: false
+      secret: false
+    - default: false
+      description: The time when the investigation starts.
+      isArray: false
+      name: time_range_start
+      required: false
+      secret: false
+    - default: false
+      description: Filter by file name - partial match
+      isArray: false
+      name: file_name_contains
+      required: true
+      secret: false
+    - default: false
+      description: Filter by file name - Exact match
+      isArray: false
+      name: file_name_is
+      required: false
+      secret: false
+    - default: false
+      description: Filter by file path - Exact match
+      isArray: false
+      name: file_path_is
+      required: false
+      secret: false
+    - default: false
+      description: Filter by account - partial match
+      isArray: false
+      name: account_contains
+      required: false
+      secret: false
+    - default: false
+      description: Filter by account - Exact match
+      isArray: false
+      name: account_is
+      required: false
+      secret: false
+    - default: false
+      description: Filter by command line - partial match
+      isArray: false
+      name: command_line_contains
+      required: false
+      secret: false
+    - default: false
+      description: Filter by command line - Exact match
+      isArray: false
+      name: command_line_is
+      required: false
+      secret: false
+    - default: false
+      description: Filter by registry key - partial match
+      isArray: false
+      name: registry_key_contains
+      required: false
+      secret: false
+    - default: false
+      description: Filter by registry key - Exact match
+      isArray: false
+      name: registry_key_is
+      required: false
+      secret: false
+    - default: false
+      description: Filter by registry name - partial match
+      isArray: false
+      name: registry_name_contains
+      required: false
+      secret: false
+    - default: false
+      description: Filter by registry name - Exact match
+      isArray: false
+      name: registry_name_is
+      required: false
+      secret: false
+    - default: false
+      description: Filter by registry data - partial match
+      isArray: false
+      name: registry_data_contains
+      required: false
+      secret: false
+    - default: false
+      description: Filter by registry data - Exact match
+      isArray: false
+      name: registry_data_is
+      required: false
+      secret: false
+    - default: false
+      description: Filter by host name - partial match
+      isArray: false
+      name: host_name_contains
+      required: false
+      secret: false
+    - default: false
+      description: Filter by host name - Exact match
+      isArray: false
+      name: host_name_is
+      required: false
+      secret: false
+    - default: false
+      description: Filter by file path - partial match
+      isArray: false
+      name: file_path_contains
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Operator used in the investigation.
+      isArray: false
+      name: operator
+      predefined:
+      - AND
+      - OR
+      required: true
+      secret: false
+    deprecated: false
     description: Creates a new custom live Investigation.
     execution: false
     name: trendmicro-apex-create-custom-live-investigation

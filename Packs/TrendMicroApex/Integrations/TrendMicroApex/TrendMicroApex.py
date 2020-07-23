@@ -481,17 +481,29 @@ class Client(BaseClient):
         response = self._http_request("POST", self.suffix, headers=headers, data=json.dumps(request_data))
         return response
 
-    def create_custom_investigation(self,
-                                      investigation_name: str, scan_type: str, time_range_type: str,
-                                      agent_guids: Dict = {}, server_guids: List = [], scan_schedule_guid: str = "",
-                                      scan_schedule_id: str = "", time_range_start: str = "", time_range_end: str = ""):
+    def create_custom_criteria(self, custom_investigation_args):
+        custom_criteria = {
+            "operator": custom_investigation_args.pop('operator')
+        }
+        filters = []
+        for key, value in custom_investigation_args.items():
+            if key.endswith('is'):
+                filters.append({
+                    "condition": "IS",
+                    "value": argToList(value)
+                })
 
-        payload = self.build_investigation_payload(investigation_name, scan_type, time_range_type, agent_guids,
-                                                   server_guids, scan_schedule_guid, scan_schedule_id, time_range_start,
-                                                   time_range_end)
+        return ''
 
-        payload["registryCriteria"] = self.create_registry_criteria(registry_key, registry_name, match_option,
-                                                                    registry_data)
+    def create_custom_investigation(self, args):
+        general_investigation_args = { key:value for key,value in args.items()
+                                      if not (key.endswith('is') or key.endswith('contains') or key == 'operator')}  # take all general investigation args
+
+        payload = self.build_investigation_payload(**general_investigation_args)
+
+        custom_investigation_args = { key:value for key,value in args.items()
+                                      if (key.endswith('is') or key.endswith('contains'))}  # take all specific command args
+        payload["retroCriteria"] = self.create_custom_criteria(custom_investigation_args)
 
         request_data = {
             "Url": "V1/Task/CreateScan",
