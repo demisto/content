@@ -644,10 +644,13 @@ def get_sensors(client, data_args):
 
 def ask_question(client, data_args):
     question_text = data_args.get('question-text')
-    parameters = data_args.get('parameters')
+    #parameters = data_args.get('parameters')
 
-    body = client.parse_question(question_text, parameters)
-    id_, res = client.create_question(body)
+    #body = client.parse_question(question_text, parameters)
+    #id_, res = client.create_question(body)
+
+    res = client.do_request('POST', 'questions', {'query_text': question_text})
+    id_ = res.get('data').get('id')
     context = {'ID': id_}
     context = createContext(context, removeNull=True)
     outputs = {'Tanium.Question(val.ID && val.ID === obj.ID)': context}
