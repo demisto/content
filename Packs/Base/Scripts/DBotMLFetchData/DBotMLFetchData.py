@@ -32,8 +32,10 @@ class TimeoutException(Exception):  # Custom exception class
     pass
 
 
-def timeout_handler(signum, frame):  # Custom signal handler
-    raise TimeoutException
+def timeout_handler(**kwargs):  # Custom signal handler
+    if kwargs:
+        pass
+    raise TimeoutException()
 
 
 # Change the behavior of SIGALRM
@@ -973,7 +975,7 @@ def extract_features_from_incident(row):
 
 
 def extract_features_from_all_incidents(incidents_df):
-    X = {
+    X = {  # type: ignore
         'vocab_features': [],
         'lexical_features': [],
         'characters_features': [],
