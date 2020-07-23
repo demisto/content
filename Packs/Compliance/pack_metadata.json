@@ -8,13 +8,9 @@
     "email": "",
     "categories": [],
     "tags": [
-        "Compliance",
         "Breach",
         "GDPR",
-        "US",
-        "Notification",
-        "Breach notification",
-        "Data breach"
+        "HIPAA"
     ],
     "created": "2020-05-10T10:50:52Z",
     "useCases": [

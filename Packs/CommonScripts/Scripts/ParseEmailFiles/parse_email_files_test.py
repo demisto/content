@@ -1,5 +1,6 @@
 from __future__ import print_function
-from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold, handle_msg, get_msg_mail_format, data_to_md
+from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold, handle_msg, get_msg_mail_format, \
+    data_to_md, create_headers_map
 from CommonServerPython import entryTypes
 import demistomock as demisto
 import pytest
@@ -757,3 +758,24 @@ def test_md_output_with_body_text():
 
     md = data_to_md(email_data)
     assert expected == md
+
+
+def test_create_headers_map_empty_headers():
+    """
+    Given:
+     - The input headers is None.
+
+    When:
+     - Running the create_headers_map command on these  headers.
+
+    Then:
+     - Validate that the function does not fail
+    """
+    msg_dict = {
+        'From': None, 'CC': None, 'BCC': None, 'To': u'test@demisto.com', 'Depth': 0, 'HeadersMap': {},
+        'Attachments': u'image002.png,image003.png,image004.png,image001.png', 'Headers': None, 'Text': u'Hi',
+        'Subject': u'test'
+    }
+    headers, headers_map = create_headers_map(msg_dict.get('Headers'))
+    assert headers == []
+    assert headers_map == {}
