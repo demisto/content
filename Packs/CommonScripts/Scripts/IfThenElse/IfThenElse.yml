@@ -1,0 +1,30 @@
+commonfields:
+  id: If-Then-Else
+  version: -1
+name: If-Then-Else
+script: ''
+type: javascript
+tags:
+- transformer
+- general
+comment: A transformer for simple if-then-else logic.  This can potentially reduce
+  the number of tasks required for a given playbook.
+enabled: true
+args:
+- name: value
+  required: true
+  description: The value to evaluate
+- name: equals
+  required: true
+  description: If value equals this
+- name: then
+  required: true
+  description: Return this value if 'equals' is true
+- name: else
+  required: true
+  description: Return this value if 'equals' is false
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole
+tests:
+- IfThenElse-Test
