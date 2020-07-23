@@ -22,6 +22,7 @@ class Client(BaseClient):
         auth=None,
         email=None,
         api_key=None,
+        email_dbot_score='SUSPICIOUS'
     ):
         super().__init__(
             base_url,
@@ -33,6 +34,7 @@ class Client(BaseClient):
         )
         self.email = email
         self.api_key = api_key
+        self.email_dbot_score = email_dbot_score
 
     def dehashed_search(self, asset_type: Optional[str], value: List[str], operation: Optional[str],
                         results_page_number: Optional[int] = None) -> dict:
@@ -163,6 +165,15 @@ def arg_to_int(arg_val: Optional[str], arg_name: Optional[str]) -> Optional[int]
         )
 
 
+def create_dbot_score_dictionary(indicator_value, indicator_type, dbot_score):
+    return {
+        'Indicator': indicator_value,
+        'Type': indicator_type,
+        'Vendor': INTEGRATION_CONTEXT_BRAND,
+        'Score': dbot_score
+    }
+
+
 def dehashed_search_command(client: Client, args: Dict[str, str]) -> tuple:
     """
     this command returns data regarding a compromised assets given as arguments
@@ -225,6 +236,47 @@ def dehashed_search_command(client: Client, args: Dict[str, str]) -> tuple:
         )
 
 
+def email_command(client: Client, args: Dict[str, str]) -> tuple:
+    """
+    This command returns data regarding a compromised email address
+    :param client: Demisto client
+    :param args:
+    - email: the email address that should be checked
+    :return: Demisto outputs
+    """
+    email_address = argToList(args.get('email'))
+    result = client.dehashed_search('email', email_address, 'contains')
+    if not isinstance(result, dict):
+        raise DemistoException(f"Got unexpected output from api: {result}")
+
+    query_data = result.get("entries")
+    if not query_data:
+        context = {
+            'DBotScore':
+                {
+                    'Indicator': email_address[0],
+                    'Type': 'email',
+                    'Vendor': INTEGRATION_CONTEXT_BRAND,
+                    'Score': 0
+                }
+        }
+        return "No matching results found", context, None
+    else:
+        default_dbot_score_email = 2 if client.email_dbot_score == 'SUSPICIOUS' else 3
+        query_entries = createContext(query_data, keyTransform=underscoreToCamelCase)
+        sources = [entry.get('obtained_from') for entry in query_data if entry.get('obtained_from')]
+        headers = [key.replace("_", " ") for key in [*query_data[0].keys()]]
+
+        hr = tableToMarkdown(f'DeHashed Search - got total results: {result.get("total")}', query_data, headers=headers,
+                             headerTransform=pascalToSpace)
+        dbot_score = default_dbot_score_email if len(sources) > 0 else 0
+        context = {
+            f'{INTEGRATION_CONTEXT_BRAND}.Search(val.Id==obj.Id)': query_entries,
+            'DBotScore': create_dbot_score_dictionary(email_address[0], 'email', dbot_score)
+        }
+        return hr, context, query_data
+
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -234,6 +286,7 @@ def main():
     base_url = BASE_URL
     verify_certificate = not demisto.params().get("insecure", False)
     proxy = demisto.params().get("proxy", False)
+    email_dbot_score = demisto.params().get('email_dbot_score', 'SUSPICIOUS')
 
     LOG(f"Command being called is {demisto.command()}")
     try:
@@ -244,6 +297,7 @@ def main():
             api_key=api_key,
             proxy=proxy,
             headers={"accept": "application/json"},
+            email_dbot_score=email_dbot_score
         )
 
         if demisto.command() == "test-module":
@@ -253,7 +307,10 @@ def main():
 
         elif demisto.command() == "dehashed-search":
             return_outputs(*dehashed_search_command(client, demisto.args()))
-
+        elif demisto.command() == "email":
+            return_outputs(*email_command(client, demisto.args()))
+        else:
+            return_error('Command not found.')
     # Log exceptions
     except Exception as e:
         return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")
