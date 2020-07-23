@@ -1,0 +1,50 @@
+args:
+- default: true
+  description: List to apply the transformer on
+  isArray: false
+  name: value
+  required: true
+  secret: false
+- default: false
+  description: Attribute in the collection's items check equality against 'equalTo'
+  isArray: false
+  name: field
+  required: true
+  secret: false
+- default: false
+  description: Value to filter all items in the collection
+  isArray: false
+  name: equalTo
+  required: true
+  secret: false
+- default: false
+  description: Optional - field to extract from each item
+  isArray: false
+  name: getField
+  predefined:
+  - ''
+  required: false
+  secret: false
+comment: "Return all items from the list where their given 'field' attribute is equal\
+  \ to 'equalTo' argument\n\nE.g. !WhereFieldEquals with the following arguments:\n\
+  \ - value=[{ \"name\": \"192.1,0.82\", \"type\": \"IP\" }, { \"name\": \"myFile.txt\"\
+  , \"type\": \"File\" }, { \"name\": \"172.0.0.2\", \"type\": \"IP\" }]\n - field='type'\n\
+  \ - equalTo='IP'\n - getField='name' \n\nWill return all items names where field\
+  \ 'type' equals 'IP' - ['192.1,0.82', '172.0.0.2']"
+commonfields:
+  id: WhereFieldEquals
+  version: -1
+enabled: true
+name: WhereFieldEquals
+fromversion: 5.5.0
+script: '-'
+subtype: python3
+system: false
+tags:
+- transformer
+- general
+- entirelist
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.8.3.9324
+runonce: false

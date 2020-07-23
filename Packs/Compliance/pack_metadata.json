@@ -2,19 +2,15 @@
     "name": "Compliance",
     "description": " ",
     "support": "xsoar",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [],
     "tags": [
-        "Compliance",
         "Breach",
         "GDPR",
-        "US",
-        "Notification",
-        "Breach notification",
-        "Data breach"
+        "HIPAA"
     ],
     "created": "2020-05-10T10:50:52Z",
     "useCases": [
