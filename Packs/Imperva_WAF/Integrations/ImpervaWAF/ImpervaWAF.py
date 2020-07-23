@@ -11,7 +11,7 @@ import traceback
 requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-INTEGRATION_CONTEXT_NAME = 'ImpervaWaf'
+INTEGRATION_CONTEXT_NAME = 'ImpervaWAF'
 
 
 class Client(BaseClient):
@@ -62,11 +62,11 @@ def generate_policy_data_body(args):
     body = {}
 
     if args.get('enabled'):
-        body['enabled'] = True if args['enabled'] == 'True' else False
+        body['enabled'] = args['enabled'] == 'True'
     if args.get('one-alert-per-session'):
-        body['oneAlertPerSession'] = True if args['one-alert-per-session'] == 'True' else False
+        body['oneAlertPerSession'] = args['one-alert-per-session'] == 'True'
     if args.get('display-response-page'):
-        body['displayResponsePage'] = True if args['display-response-page'] == 'True' else False
+        body['displayResponsePage'] = args['display-response-page'] == 'True'
 
     if severity:
         body['severity'] = severity
@@ -198,11 +198,7 @@ def ip_group_remove_entries_command(client, args):
 @logger
 def sites_list_command(client, args):
     raw_res = client.do_request('GET', 'conf/sites')
-    sites = []
-    if raw_res.get('sites'):
-        sites = raw_res['sites']
-        for i, element in enumerate(sites):
-            sites[i] = {'Name': sites[i]}
+    sites = [{'Name': site} for site in raw_res.get('sites', [])]
 
     human_readable = tableToMarkdown('All sites in the system', sites, removeNull=True)
     entry_context = {f'{INTEGRATION_CONTEXT_NAME}.Site(val.Name===obj.Name)': sites}
@@ -345,7 +341,7 @@ def create_custom_policy_command(client, args):
 
     body = generate_policy_data_body(args)
 
-    if match_criteria_json:
+    if match_criteria_json and not isinstance(match_criteria_json, dict):
         try:
             match_criteria_json = json.loads(match_criteria_json)
         except Exception:
@@ -375,12 +371,12 @@ def update_custom_policy_command(client, args):
 
     body = generate_policy_data_body(args)
 
-    if match_criteria_json:
+    if match_criteria_json and not isinstance(match_criteria_json, dict):
         try:
             match_criteria_json = json.loads(match_criteria_json)
         except Exception:
-            raise Exception(f'Failed to parse match-criteria-json as JSON data,'
-                            f' received object:\n{match_criteria_json}')
+            raise DemistoException(f'Failed to parse match-criteria-json as JSON data,'
+                                   f' received object:\n{match_criteria_json}')
 
         body['matchCriteria'] = match_criteria_json
     else:
@@ -403,15 +399,15 @@ def delete_custom_policy_command(client, args):
 
 
 def main():
-
+    params = demisto.params()
     # get the service API url
-    base_url = demisto.params().get('url')
+    base_url = params.get('url')
 
-    verify_certificate = not demisto.params().get('insecure', False)
+    verify_certificate = not params.get('insecure', False)
 
-    proxy = demisto.params().get('proxy', False)
+    proxy = params.get('proxy', False)
 
-    credentials = demisto.params().get('credentials')
+    credentials = params.get('credentials')
     username = credentials['identifier'] if credentials else ''
     password = credentials['password'] if credentials else ''
 
@@ -438,18 +434,16 @@ def main():
                     'imperva-waf-ip-group-delete': delete_ip_group_command,
                     'imperva-waf-web-service-custom-policy-create': create_custom_policy_command,
                     'imperva-waf-web-service-custom-policy-update': update_custom_policy_command,
-                    'imperva-waf-web-service-custom-policy-delete': delete_custom_policy_command
+                    'imperva-waf-web-service-custom-policy-delete': delete_custom_policy_command,
                     }
 
         if command in commands:
-            return commands[command](client, args)
+            commands[command](client, args)
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 
     # Log exceptions
     except Exception as e:
-        LOG(e)
-        LOG.print_log()
         return_error(f'Unexpected error: {str(e)}', error=traceback.format_exc())
 
 
