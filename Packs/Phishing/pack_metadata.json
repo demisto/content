@@ -11,10 +11,9 @@
         "Messaging"
     ],
     "tags": [
-        "Phishing",
         "Scam",
-        "Email",
-        "Spam"
+        "Spam",
+        "Email"
     ],
     "useCases": [
         "Phishing"

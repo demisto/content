@@ -1,19 +1,16 @@
 {
-  "name": "GetServerURL",
-  "description": "Get the URL of the Cortex XSOAR server.",
-  "support": "xsoar",
-  "currentVersion": "1.0.0",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
-  "created": "2020-03-25T09:19:55Z",
-  "categories": [
-    "Utilities"
-  ],
-  "tags": [
-    "Server",
-    "URL"
-  ],
-  "useCases": [],
-  "keywords": []
+    "name": "GetServerURL",
+    "description": "Get the URL of the Cortex XSOAR server.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-03-25T09:19:55Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
 }
