@@ -789,6 +789,8 @@ class Pack(object):
         not_updated_build = False
 
         try:
+            print_error(
+                f"path for release notes is: {os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)}")
             if os.path.exists(os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)):
                 print_color(f"Found Changelog for: {self._pack_name}", LOG_COLORS.NATIVE)
                 # load changelog from downloaded index

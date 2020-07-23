@@ -57,6 +57,24 @@ def get_modified_packs(target_packs):
         sys.exit(1)
 
 
+def is_pack_paid_or_premium(path_to_pack_metadata_in_index):
+    with open(path_to_pack_metadata_in_index, 'r') as pack_metadata_file:
+        pack_metadata = json.load(pack_metadata_file)
+
+    is_pack_paid = 'price' in pack_metadata and pack_metadata['price'] > 0
+    is_pack_premium = 'premium' in pack_metadata and pack_metadata['premium']
+    return is_pack_paid or is_pack_premium
+
+
+def delete_public_packs_from_index(index_folder_path):
+    packs_in_index = [pack_dir.name for pack_dir in os.scandir(index_folder_path) if pack_dir.is_dir()]
+    for pack_name in packs_in_index:
+        path_to_pack = os.path.join(index_folder_path, pack_name)
+        path_to_pack_metadata = os.path.join(path_to_pack, 'metadata.json')
+        if not is_pack_paid_or_premium(path_to_pack_metadata):
+            shutil.rmtree(path_to_pack, ignore_errors=True)
+
+
 def extract_packs_artifacts(packs_artifacts_path, extract_destination_path):
     """Extracts all packs from content pack artifact zip.
 
@@ -416,7 +434,7 @@ def update_index_with_priced_packs(private_storage_bucket, extract_destination_p
         print_error(f'Could not add private packs to the index: {str(e)}')
     finally:
         # if private_index_path:
-        #    shutil.rmtree(os.path.dirname(private_index_path), ignore_errors=True)
+        shutil.rmtree(os.path.dirname(private_index_path), ignore_errors=True)
         return private_packs, private_index_path, private_index_blob
 
 
@@ -656,18 +674,18 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, integration_images = pack.upload_integration_images(storage_bucket)
-        if not task_status:
-            pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
-            pack.cleanup()
-            continue
-
-        task_status, author_image = pack.upload_author_image(storage_bucket)
-        if not task_status:
-            pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
-            pack.cleanup()
-            continue
-
+        # task_status, integration_images = pack.upload_integration_images(storage_bucket)
+        # if not task_status:
+        #     pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
+        #     pack.cleanup()
+        #     continue
+        #
+        # task_status, author_image = pack.upload_author_image(storage_bucket)
+        # if not task_status:
+        #     pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
+        #     pack.cleanup()
+        #     continue
+        integration_images, author_image = [], ''
         task_status = pack.format_metadata(user_metadata=user_metadata, pack_content_items=pack_content_items,
                                            integration_images=integration_images, author_image=author_image,
                                            index_folder_path=index_folder_path,
@@ -720,6 +738,8 @@ def main():
                 pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
                 pack.cleanup()
                 continue
+        else:
+            pack_was_modified = False
 
         print_error(f'BEFORE STORAGE - packs_list length: {len(packs_list)}')
         task_status, skipped_pack_uploading = pack.upload_to_storage(zip_pack_path, pack.latest_version,
@@ -758,9 +778,9 @@ def main():
     print_error(f'packs_list length: {len(packs_list)}')
     # finished iteration over content packs
     if is_private_build:
-        update_private_index(private_index_path, index_folder_path)
-        upload_index_to_storage(private_index_path, extract_destination_path, private_index_blob, build_number,
-                                private_packs)
+        delete_public_packs_from_index(index_folder_path)
+        # upload_index_to_storage(index_folder_path, extract_destination_path, private_index_blob, build_number,
+        #                         private_packs)
     else:
         upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number,
                                 private_packs)
