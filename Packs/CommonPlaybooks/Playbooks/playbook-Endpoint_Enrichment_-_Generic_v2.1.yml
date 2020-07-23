@@ -1,6 +1,5 @@
 id: Endpoint Enrichment - Generic v2.1
 version: -1
-fromversion: 4.1.0
 name: Endpoint Enrichment - Generic v2.1
 description: |-
   Enrich an endpoint by hostname using one or more integrations.
@@ -21,9 +20,9 @@ tasks:
       id: 29bcd70f-1953-4061-84ce-4cde781ad9f7
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -38,6 +37,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
     taskid: 54895e0d-9904-4e62-8f45-ebd0d17ad5c9
@@ -46,10 +47,10 @@ tasks:
       id: 54895e0d-9904-4e62-8f45-ebd0d17ad5c9
       version: -1
       name: Endpoint Products
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -68,6 +69,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
     taskid: c9799048-288a-40cc-8d2f-c561d0ea2f6b
@@ -120,6 +123,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
     taskid: efeca58b-3c8f-40aa-8c2e-f9e84257b1bb
@@ -160,6 +165,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
     taskid: ea90c16b-6985-4f28-816f-78608df3fe51
@@ -168,10 +175,10 @@ tasks:
       id: ea90c16b-6985-4f28-816f-78608df3fe51
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -183,6 +190,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
     taskid: 44a06d71-1772-47af-8d41-8c6dbdd149e7
@@ -218,6 +227,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
     taskid: 9fa921fa-d196-40ba-8419-ed0c4f838ab8
@@ -270,6 +281,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
     taskid: 79f17c3a-2456-47d9-8e68-cc3d84ef01bd
@@ -308,6 +321,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
     taskid: 216aed2b-2f34-4c5e-8c54-60b978218896
@@ -360,6 +375,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
     taskid: d9d617d9-2efd-466e-8ce7-190f8db83b95
@@ -368,10 +385,10 @@ tasks:
       id: d9d617d9-2efd-466e-8ce7-190f8db83b95
       version: -1
       name: McAfee ePolicy Orchestrator
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -386,6 +403,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "18":
     id: "18"
     taskid: 6cf08862-644d-479e-89ce-f9e173a8c562
@@ -394,10 +413,10 @@ tasks:
       id: 6cf08862-644d-479e-89ce-f9e173a8c562
       version: -1
       name: Carbon Black Enterprise Response
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -412,6 +431,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "19":
     id: "19"
     taskid: 471d3862-a05c-42b1-871d-c1faa2fbb7a9
@@ -420,10 +441,10 @@ tasks:
       id: 471d3862-a05c-42b1-871d-c1faa2fbb7a9
       version: -1
       name: Cylance Protect v2
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "26"
@@ -438,6 +459,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "20":
     id: "20"
     taskid: 5d371f29-3a4c-43c5-8f71-b383db2e5320
@@ -446,10 +469,10 @@ tasks:
       id: 5d371f29-3a4c-43c5-8f71-b383db2e5320
       version: -1
       name: CrowdStrike Falcon Host
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -464,6 +487,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "22":
     id: "22"
     taskid: f7f190b9-5a39-4d8a-83a5-77d5a023f0d4
@@ -519,6 +544,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "23":
     id: "23"
     taskid: 23c75906-3b4e-42e8-8e32-c883d5f06fb3
@@ -559,6 +586,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "24":
     id: "24"
     taskid: 9706cc39-d338-44cd-8ee1-efc5ea95b04d
@@ -567,10 +596,10 @@ tasks:
       id: 9706cc39-d338-44cd-8ee1-efc5ea95b04d
       version: -1
       name: Active Directory
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "22"
@@ -585,12 +614,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "26":
     id: "26"
-    taskid: c3597e3d-8bd1-460c-862f-f40421717b16
+    taskid: d973a016-35b6-4e7c-88a5-9f4c60190224
     type: playbook
     task:
-      id: c3597e3d-8bd1-460c-862f-f40421717b16
+      id: d973a016-35b6-4e7c-88a5-9f4c60190224
       version: -1
       name: Endpoint Enrichment - Cylance Protect v2
       description: Enriches endpoints using the Cylance Protect v2 integration.
@@ -612,6 +643,7 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -622,6 +654,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "27":
     id: "27"
     taskid: f74a190a-1427-4557-8cf1-ff7865da3042
@@ -668,6 +702,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "28":
     id: "28"
     taskid: 9c60a60d-b2f3-4707-8b0f-690891e080d0
@@ -706,6 +742,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "29":
     id: "29"
     taskid: 9681a79e-1d5e-462c-8e65-ec0bfe1bb7d8
@@ -740,6 +778,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "30":
     id: "30"
     taskid: ec344482-77f7-42b5-8ee4-34317afd1179
@@ -748,10 +788,10 @@ tasks:
       id: ec344482-77f7-42b5-8ee4-34317afd1179
       version: -1
       name: ExtraHop Reveal(x)
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "31"
@@ -766,6 +806,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "31":
     id: "31"
     taskid: 58c8b4be-657c-45f6-8eca-5a01da85f1f3
@@ -818,6 +860,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "32":
     id: "32"
     taskid: 344e1330-e5f8-4292-83df-7a4fba147ebf
@@ -863,6 +907,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -901,6 +947,7 @@ inputs:
       - operator: uniq
   required: false
   description: The hostname of the endpoint to enrich.
+  playbookInputQuery:
 outputs:
 - contextPath: Endpoint
   description: The endpoint object of the endpoint that was enriched.
@@ -1002,5 +1049,6 @@ outputs:
 - contextPath: ExtraHop.Device.Url
   description: Link to the device details page in ExtraHop.
   type: string
+fromversion: 4.1.0
 tests:
 - Endpoint Enrichment - Generic v2.1 - Test
