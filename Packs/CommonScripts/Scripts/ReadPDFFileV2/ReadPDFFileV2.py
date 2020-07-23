@@ -64,9 +64,10 @@ def run_shell_command(command, *args):
     completed_process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if completed_process.returncode != 0:
         raise ShellException(f'Failed with the following error code: {completed_process.returncode}.'
-                             f' Error: {completed_process.stderr}')
+                             f' Error: {completed_process.stderr.decode("utf8")}')
     elif completed_process.stderr:
-        demisto.debug(f'ReadPDFFilev2: exec of [{cmd}] completed with warnings: {completed_process.stderr}')
+        demisto.debug(f'ReadPDFFilev2: exec of [{cmd}] completed with warnings: '
+                      f'{completed_process.stderr.decode("utf8")}')
     return completed_process.stdout
 
 
