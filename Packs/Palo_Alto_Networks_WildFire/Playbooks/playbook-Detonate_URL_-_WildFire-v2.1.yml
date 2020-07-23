@@ -11,13 +11,12 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ed450ae1-31c5-4fb7-85fb-4c0a4ebda5f0
+    taskid: 1b1b3125-d39b-4930-89fc-c9ff36ac559c
     type: start
     task:
-      id: ed450ae1-31c5-4fb7-85fb-4c0a4ebda5f0
+      id: 1b1b3125-d39b-4930-89fc-c9ff36ac559c
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -27,7 +26,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 152.5,
           "y": 50
         }
       }
@@ -38,17 +37,17 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 98375c12-21d9-4878-8f08-fe923af00cbe
+    taskid: cc1e5c47-51c1-4cdb-8fb6-275c1f1fd8e7
     type: regular
     task:
-      id: 98375c12-21d9-4878-8f08-fe923af00cbe
+      id: cc1e5c47-51c1-4cdb-8fb6-275c1f1fd8e7
       version: -1
       name: WildFire Upload File URL
-      description: Uploads the URL to WildFire for analysis.
-      script: WildFire-v2|||wildfire-upload-url
+      description: Uploads the URL of a remote file to WildFire for analysis.
+      script: '|||wildfire-upload-file-url'
       type: regular
       iscommand: true
-      brand: WildFire-v2
+      brand: ""
     nexttasks:
       '#none#':
       - "11"
@@ -61,7 +60,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 612.5,
+          "x": 377.5,
           "y": 545
         }
       }
@@ -72,10 +71,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: e52ca0cf-61fc-4de8-8110-c5f511bf01a0
+    taskid: 2ba5921c-3f35-4bef-8a5d-4965d1a211eb
     type: playbook
     task:
-      id: e52ca0cf-61fc-4de8-8110-c5f511bf01a0
+      id: 2ba5921c-3f35-4bef-8a5d-4965d1a211eb
       version: -1
       name: GenericPolling
       description: |-
@@ -112,7 +111,7 @@ tasks:
           root: inputs.Timeout
       dt:
         simple: WildFire.Report(val.Status != 'Success').URL
-    separatecontext: false
+    separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
@@ -121,8 +120,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 1245
+          "x": 275,
+          "y": 1420
         }
       }
     note: false
@@ -132,13 +131,12 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 3844dbd8-2537-4eed-8bce-9888ddf13680
+    taskid: 74b54d79-9464-4112-824b-e836cbce4dbc
     type: title
     task:
-      id: 3844dbd8-2537-4eed-8bce-9888ddf13680
+      id: 74b54d79-9464-4112-824b-e836cbce4dbc
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -146,8 +144,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 1595
+          "x": 50,
+          "y": 1770
         }
       }
     note: false
@@ -157,10 +155,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: e722c7cd-dd01-4b28-89f3-03390b4b76ef
+    taskid: d4449595-5c9b-4dfd-8960-35f1d1dc309b
     type: condition
     task:
-      id: e722c7cd-dd01-4b28-89f3-03390b4b76ef
+      id: d4449595-5c9b-4dfd-8960-35f1d1dc309b
       version: -1
       name: Is there a URL to detonate?
       description: Look for file URLs to detonate
@@ -184,7 +182,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 370
         }
       }
@@ -195,10 +193,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 96621185-2ca6-4eb4-8e5a-2b7d0fc37c43
+    taskid: 8089eb7a-a9e8-4efd-8c2e-74a4583af22e
     type: condition
     task:
-      id: 96621185-2ca6-4eb4-8e5a-2b7d0fc37c43
+      id: 8089eb7a-a9e8-4efd-8c2e-74a4583af22e
       version: -1
       name: Is WildFire-v2 enabled?
       description: Check if integration instance is enabled
@@ -241,7 +239,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 152.5,
           "y": 195
         }
       }
@@ -252,17 +250,17 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 0127711b-2c15-474b-8709-dadb1d0a1c13
+    taskid: f63dac30-fcb3-4c84-830c-be62978b3d13
     type: regular
     task:
-      id: 0127711b-2c15-474b-8709-dadb1d0a1c13
+      id: f63dac30-fcb3-4c84-830c-be62978b3d13
       version: -1
       name: WildFire Get Report
       description: Retrieves results for a file hash using WildFire.
-      script: WildFire-v2|||wildfire-report
+      script: '|||wildfire-report'
       type: regular
       iscommand: true
-      brand: WildFire-v2
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
@@ -280,8 +278,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 612.5,
-          "y": 1420
+          "x": 275,
+          "y": 1595
         }
       }
     note: false
@@ -291,20 +289,20 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: ca41fd6c-7784-4531-8e70-98c7655f46aa
+    taskid: 623da620-8307-4f87-8d97-2e1becafdaaa
     type: regular
     task:
-      id: ca41fd6c-7784-4531-8e70-98c7655f46aa
+      id: 623da620-8307-4f87-8d97-2e1becafdaaa
       version: -1
       name: WildFire Upload URL
       description: Uploads a URL of a webpage to WildFire for analysis.
-      script: WildFire-v2|||wildfire-upload-url
+      script: '|||wildfire-upload-url'
       type: regular
       iscommand: true
-      brand: WildFire-v2
+      brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "15"
     scriptarguments:
       upload:
         complex:
@@ -313,7 +311,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 725,
+          "x": 162.5,
           "y": 895
         }
       }
@@ -324,13 +322,12 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 411411b1-690c-45cb-8243-fd223288a13b
+    taskid: e51f57ef-047a-4485-894b-0d99dcfb4d6f
     type: condition
     task:
-      id: 411411b1-690c-45cb-8243-fd223288a13b
+      id: e51f57ef-047a-4485-894b-0d99dcfb4d6f
       version: -1
       name: Was file url submission successful?
-      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -338,7 +335,7 @@ tasks:
       '#default#':
       - "9"
       "yes":
-      - "2"
+      - "13"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -353,7 +350,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 612.5,
+          "x": 377.5,
           "y": 720
         }
       }
@@ -364,19 +361,18 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 034d46c4-00aa-489e-8cdc-4a91d78bcd07
+    taskid: 82a36b69-5d34-4346-85c2-7e8545cb16c1
     type: condition
     task:
-      id: 034d46c4-00aa-489e-8cdc-4a91d78bcd07
+      id: 82a36b69-5d34-4346-85c2-7e8545cb16c1
       version: -1
-      name: Was upload finished successfully?
-      description: ""
+      name: Was upload finished successfully and a Report is Pending?
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+      - "5"
       "yes":
       - "2"
     separatecontext: false
@@ -402,7 +398,145 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 725,
+          "x": 162.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: d9cae0c9-b27b-4545-8656-bf13d1052685
+    type: playbook
+    task:
+      id: d9cae0c9-b27b-4545-8656-bf13d1052685
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: WildFire
+          accessor: Report.SHA256
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: sha256
+      PollingCommandName:
+        simple: wildfire-report
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: WildFire.Report(val.Status != 'Success').SHA256
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 935adff5-2b03-486c-8ca1-28a295c83eb3
+    type: regular
+    task:
+      id: 935adff5-2b03-486c-8ca1-28a295c83eb3
+      version: -1
+      name: WildFire Get Report
+      description: Retrieves results for a file hash using WildFire.
+      script: '|||wildfire-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      format: {}
+      hash: {}
+      md5: {}
+      sha256: {}
+      url:
+        complex:
+          root: WildFire
+          accessor: Report.URL
+      verbose: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 11c1bedb-67b4-4714-85b0-cbe931920d44
+    type: regular
+    task:
+      id: 11c1bedb-67b4-4714-85b0-cbe931920d44
+      version: -1
+      name: WildFire Get Report - Check If a Report already exist
+      description: Retrieves results for a file hash using WildFire.
+      script: '|||wildfire-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      format: {}
+      hash: {}
+      md5: {}
+      sha256: {}
+      url:
+        complex:
+          root: WildFire
+          accessor: Report.URL
+      verbose: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
           "y": 1070
         }
       }
@@ -413,11 +547,13 @@ tasks:
     quietmode: 0
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "7_5_#default#": 0.7
+    },
     "paper": {
       "dimensions": {
-        "height": 1610,
-        "width": 1055,
+        "height": 1785,
+        "width": 1035,
         "x": 50,
         "y": 50
       }
@@ -542,5 +678,8 @@ outputs:
 - contextPath: WildFire.Report.Size
   description: The size of the submission
   type: number
+- contextPath: WildFire.Report.URL
+  description: URL of the submission.
+  type: string
 tests:
 - Detonate URL - WildFire v2.1 - Test

@@ -647,7 +647,7 @@ def wildfire_get_url_report(url: str):
         })
         sys.exit(0)
 
-    report = json.loads(result.get('report', None))
+    report = result.get('report', None)
 
     if not report:
         entry_context['Status'] = 'Pending'
@@ -663,9 +663,11 @@ def wildfire_get_url_report(url: str):
         })
         sys.exit(0)
 
+    j_report = json.loads(report)
     entry_context['Status'] = 'Success'
-    report.add(entry_context)
-    return url, report
+    report.update(entry_context)
+
+    return url, j_report
 
 
 @logger
