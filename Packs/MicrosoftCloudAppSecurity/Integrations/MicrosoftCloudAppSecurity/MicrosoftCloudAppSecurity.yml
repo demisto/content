@@ -161,61 +161,61 @@ script:
     execution: false
     name: microsoft-cas-alerts-list
     outputs:
-    - contextPath: MicrosoftCloudAppSecurity.Alert.data._id
+    - contextPath: MicrosoftCloudAppSecurity.Alert._id
       description: Alert id
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.Alert.data.timestamp
+    - contextPath: MicrosoftCloudAppSecurity.Alert.timestamp
       description: Alert date
       type: Date
-    - contextPath: MicrosoftCloudAppSecurity.Alert.data.entities.id
+    - contextPath: MicrosoftCloudAppSecurity.Alert.entities.id
       description: Alert entities id
       type: Number
-    - contextPath: MicrosoftCloudAppSecurity.Alert.data.entities.label
+    - contextPath: MicrosoftCloudAppSecurity.Alert.entities.label
       description: Alert entities label
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.Alert.data.entities.type
+    - contextPath: MicrosoftCloudAppSecurity.Alert.entities.type
       description: Alert entities type
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.Alert.data.entities.inst
+    - contextPath: MicrosoftCloudAppSecurity.Alert.entities.inst
       description: Alert entities instance
       type: Number
-    - contextPath: MicrosoftCloudAppSecurity.Alert.data.entities.saas
+    - contextPath: MicrosoftCloudAppSecurity.Alert.entities.saas
       description: Alert entities saas
       type: Number
-    - contextPath: MicrosoftCloudAppSecurity.Alert.data.title
+    - contextPath: MicrosoftCloudAppSecurity.Alert.title
       description: Alert title
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.Alert.data.description
+    - contextPath: MicrosoftCloudAppSecurity.Alert.description
       description: Alert description
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.Alert.data.policy.id
+    - contextPath: MicrosoftCloudAppSecurity.Alert.policy.id
       description: Alert policy id
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.Alert.data.policy.label
+    - contextPath: MicrosoftCloudAppSecurity.Alert.policy.label
       description: Alert policy label
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.Alert.data.policy.policyType
+    - contextPath: MicrosoftCloudAppSecurity.Alert.policy.policyType
       description: Alert policy policyType
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.Alert.data.threatScore
+    - contextPath: MicrosoftCloudAppSecurity.Alert.threatScore
       description: Alert threatScore
       type: Number
-    - contextPath: MicrosoftCloudAppSecurity.Alert.data.isSystemAlert
+    - contextPath: MicrosoftCloudAppSecurity.Alert.isSystemAlert
       description: Alert isSystemAlert
       type: Number
-    - contextPath: MicrosoftCloudAppSecurity.Alert.data.statusValue
+    - contextPath: MicrosoftCloudAppSecurity.Alert.statusValue
       description: Alert statusValue
       type: Number
-    - contextPath: MicrosoftCloudAppSecurity.Alert.data.severityValue
+    - contextPath: MicrosoftCloudAppSecurity.Alert.severityValue
       description: Alert severityValue
       type: Number
-    - contextPath: MicrosoftCloudAppSecurity.Alert.data.handledByUser
+    - contextPath: MicrosoftCloudAppSecurity.Alert.handledByUser
       description: Alert handledByUser
       type: Unknown
-    - contextPath: MicrosoftCloudAppSecurity.Alert.data.comment
+    - contextPath: MicrosoftCloudAppSecurity.Alert.comment
       description: Alert comment
       type: Unknown
-    - contextPath: MicrosoftCloudAppSecurity.Alert.data.resolveTime
+    - contextPath: MicrosoftCloudAppSecurity.Alert.resolveTime
       description: Alert resolveTime
       type: Date
   - arguments:
@@ -751,91 +751,91 @@ script:
     execution: false
     name: microsoft-cas-users-accounts-list
     outputs:
-    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.displayName
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.displayName
       description: UsersAccounts displayName
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.id
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.id
       description: UsersAccounts cloud service id
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data._id
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts._id
       description: UsersAccounts cas ID
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.isAdmin
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.isAdmin
       description: UsersAccounts isAdmin
       type: Number
-    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.isExternal
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.isExternal
       description: UsersAccounts isExternal
       type: Number
-    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.email
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.email
       description: UsersAccounts email
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.role
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.role
       description: UsersAccounts role
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.organization
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.organization
       description: UsersAccounts organization
       type: Unknown
-    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.lastSeen
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.lastSeen
       description: UsersAccounts lastSeen
       type: Unknown
-    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.domain
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.domain
       description: UsersAccounts domain
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.threatScore
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.threatScore
       description: UsersAccounts threatScore
       type: Unknown
-    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.idType
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.idType
       description: UsersAccounts idType
       type: Number
-    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.isFake
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.isFake
       description: UsersAccounts isFake
       type: Number
-    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.username
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.username
       description: UsersAccounts username
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.actions.task_name
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.actions.task_name
       description: UsersAccounts actions task_name
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.actions.type
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.actions.type
       description: UsersAccounts actions type
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts._id
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.accounts._id
       description: UsersAccounts accounts _id
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.inst
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.accounts.inst
       description: UsersAccounts accounts inst
       type: Number
-    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.saas
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.accounts.saas
       description: UsersAccounts accounts saas
       type: Number
-    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.dn
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.accounts.dn
       description: UsersAccounts accounts dn
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.aliases
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.accounts.aliases
       description: UsersAccounts accounts aliases
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.isFake
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.accounts.isFake
       description: UsersAccounts accounts isFake
       type: Number
-    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.em
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.accounts.em
       description: UsersAccounts accounts email
       type: Unknown
-    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.actions.task_name
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.accounts.actions.task_name
       description: UsersAccounts accounts actions task_name
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.accounts.actions.type
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.accounts.actions.type
       description: UsersAccounts accounts actions type
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.userGroups._id
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.userGroups._id
       description: UsersAccounts userGroups _id
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.userGroups.id
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.userGroups.id
       description: UsersAccounts userGroups id
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.userGroups.name
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.userGroups.name
       description: UsersAccounts userGroups name
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.data.userGroups.usersCount
+    - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.userGroups.usersCount
       description: UsersAccounts userGroups usersCount
       type: Number
   dockerimage: demisto/python3:3.8.3.9324
