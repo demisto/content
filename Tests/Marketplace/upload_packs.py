@@ -646,7 +646,6 @@ def main():
     print_error(f"ls: {subprocess.check_output('ls')}")
     print_error(f"pwd: {subprocess.check_output('pwd')}")
     if private_bucket_name:  # Add private packs to the index
-        # TODO : maybe remove this line - private_storage_bucket = storage_client.bucket(private_bucket_name)
         private_packs, private_index_path, private_index_blob = update_index_with_priced_packs(private_storage_bucket,
                                                                                                extract_destination_path,
                                                                                                index_folder_path)
