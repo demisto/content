@@ -3685,7 +3685,7 @@ if 'requests' in sys.modules:
 
             :type error_handler ``callable``
             :param error_handler: Given an error entery, the error handler outputs the
-            new formatted error message.
+                new formatted error message.
             """
             try:
                 # Replace params if supplied
