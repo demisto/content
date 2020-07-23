@@ -14,6 +14,9 @@ def iot_resolve_alert():
             _id = label['value']
             break
 
+    if _id == "":
+        raise Exception('id was not found in the incident labels')
+
     args = demisto.args()
     close_reason = args.get('closeReason')
 

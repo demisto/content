@@ -18,8 +18,8 @@ def get_iot_config(iot_config_list_name="IOT_CONFIG"):
 
 
 def get_raci(args):
-    alert_name = args.get('alertName')
-    alert_type = args.get('rawType')
+    alert_name = args.get('alert_name', '')
+    alert_type = args.get('raw_type')
 
     category = args.get('category', '')
     profile = args.get('profile', '')
@@ -27,11 +27,10 @@ def get_raci(args):
     model = args.get('model', '')
     device_id = f'{category}|{profile}|{vendor}|{model}'
 
-    iot_config_list_name = args.get('iotConfigListName', 'IOT_CONFIG')
+    iot_config_list_name = args.get('iot_config_list_name', 'IOT_CONFIG')
     config = get_iot_config(iot_config_list_name)
     if config is None:
         return CommandResults(
-            readable_output="None",
             outputs_prefix='raci',
             outputs_key_field="",
             outputs=None
@@ -41,14 +40,14 @@ def get_raci(args):
 
     # determine owner
     owner = None
-    for d in config.get('devices', None):
+    for d in config.get('devices', []):
         if 'device_id' in d and 'owner' in d and re.match(d['device_id'], device_id):
             owner = d['owner']
     result['owner'] = owner
 
     # determine raci
     raci = None
-    for a in config.get('alerts', None):
+    for a in config.get('alerts', []):
         if 'iot_raw_type' in a and 'raci' in a and alert_type == a['iot_raw_type']:
             match_name = 'name_regex' not in a
             if not match_name:
@@ -63,20 +62,47 @@ def get_raci(args):
         r = raci['r']
         if r == "IOT_OWNER":
             result['r'] = owner
-            result['r_email'] = config.get('groups', {}).get(owner, {}).get('email', None)
-            result['r_snow'] = config.get('groups', {}).get(owner, {}).get('snow', None)
-        else:
-            result['r'] = r
-            result['r_email'] = config.get('groups', {}).get(r, {}).get('email', None)
-            result['r_snow'] = config.get('groups', {}).get(r, {}).get('snow', None)
 
-        if result['r_snow'] and isinstance(result['r_snow'], dict):
+            if owner is None:
+                result['r_email'] = None
+                result['r_snow'] = None
+            else:
+                e = config.get('groups', {}).get(owner, {}).get('email', None)
+                if e is None:
+                    default_email = config.get('groups', {}).get('DEFAULT', {}).get('email', None)
+                    if default_email is not None:
+                        result['r_email'] = default_email
+                    else:
+                        result['r_email'] = None
+                else:
+                    result['r_email'] = e
+
+            result['r_snow'] = config.get('groups', {}).get(owner, {}).get('snow', None)
+        elif r is not None:
+            result['r'] = r
+
+            e = config.get('groups', {}).get(r, {}).get('email', None)
+            if e is None:
+                default_email = config.get('groups', {}).get('DEFAULT', {}).get('email', None)
+                if default_email is not None:
+                    result['r_email'] = default_email
+                else:
+                    result['r_email'] = None
+            else:
+                result['r_email'] = e
+
+            result['r_snow'] = config.get('groups', {}).get(r, {}).get('snow', None)
+        else:
+            result['r_email'] = None
+            result['r_snow'] = None
+
+        if result['r_snow']:
             fields = result['r_snow']['fields']
             if fields:
-                result['r_snow']['fields'] = ';'.join([f'{k}={v}' for k, v in fields.items()])
+                result['r_snow']['fields'] = ';'.join([ f'{k}={v}' for k, v in fields.items() ])
             cfields = result['r_snow']['custom_fields']
             if cfields:
-                result['r_snow']['custom_fields'] = ';'.join([f'{k}={v}' for k, v in cfields.items()])
+                result['r_snow']['custom_fields'] = ';'.join([ f'{k}={v}' for k, v in cfields.items() ])
 
         i = []
         for inform in raci['i']:
@@ -86,7 +112,21 @@ def get_raci(args):
             else:
                 i.append(inform)
         result['i'] = ', '.join(i) if i else None
-        result['i_email'] = ', '.join([config.get('groups', {}).get(entry, {}).get('email', None) for entry in i]) if i else None
+
+        if i:
+            i_email = []
+            for entry in i:
+                e = config.get('groups', {}).get(entry, {}).get('email', None)
+                if e is None:
+                    default_email = config.get('groups', {}).get('DEFAULT', {}).get('email', None)
+                    if default_email is not None:
+                        i_email.append(default_email)
+                else:
+                    i_email.append(e)
+            if len(i_email) > 0:
+                result['i_email'] = ', '.join(i_email)
+            else:
+                result['i_email'] = None
     else:
         result['r'] = None
         result['r_email'] = None
@@ -95,7 +135,6 @@ def get_raci(args):
         result['i_email'] = None
 
     return CommandResults(
-        readable_output=f'{json.dumps(result)}',
         outputs_prefix='raci',
         outputs_key_field="",
         outputs=result

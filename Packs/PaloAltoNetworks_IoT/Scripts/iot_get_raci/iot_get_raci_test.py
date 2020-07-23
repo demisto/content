@@ -88,13 +88,55 @@ _CONFIG = {
     }
 }
 
+_CONFIG_WITHOUT_DEFAULT = {
+    "devices": [
+        {
+            "device_id": "Audio Streaming|Profusion Media Player.*",
+            "owner": "IT_AUDIO_VIDEO"
+        }
+    ],
+    "alerts": [
+        {
+            "iot_raw_type": "IoT Vulnerability",
+            "raci": {
+                "r": "IOT_OWNER",
+                "i": ["INFOSEC", "SOC"]
+            }
+        }
+    ],
+    "groups": {}
+}
+
+_CONFIG_WITH_DEFAULT = {
+    "devices": [
+        {
+            "device_id": "Audio Streaming|Profusion Media Player.*",
+            "owner": "IT_AUDIO_VIDEO"
+        }
+    ],
+    "alerts": [
+        {
+            "iot_raw_type": "IoT Vulnerability",
+            "raci": {
+                "r": "IOT_OWNER",
+                "i": ["INFOSEC", "SOC"]
+            }
+        }
+    ],
+    "groups": {
+        "DEFAULT": {
+            "email": "default@example.com"
+        }
+    }
+}
+
 
 def test_iot_get_raci_normal(monkeypatch):
     monkeypatch.setattr(iot_get_raci, 'get_iot_config', lambda x: _CONFIG)
 
     outputs = get_raci({
-        'alertName': 'DOUBLEPULSAR Backdoor traffic',
-        'rawType': 'IoT Alert',
+        'alert_name': 'DOUBLEPULSAR Backdoor traffic',
+        'raw_type': 'IoT Alert',
         'category': 'Audio Streaming',
         'profile': 'Profusion Media Player'
     }).outputs
@@ -108,12 +150,50 @@ def test_iot_get_raci_normal(monkeypatch):
     }
 
 
+def test_iot_get_raci_no_default_email(monkeypatch):
+    monkeypatch.setattr(iot_get_raci, 'get_iot_config', lambda x: _CONFIG_WITHOUT_DEFAULT)
+
+    outputs = get_raci({
+        'alert_name': '',
+        'raw_type': 'IoT Vulnerability',
+        'category': 'Audio Streaming',
+        'profile': 'Profusion Media Player'
+    }).outputs
+    assert outputs == {
+        'owner': 'IT_AUDIO_VIDEO',
+        'r': 'IT_AUDIO_VIDEO',
+        'r_email': None,
+        'r_snow': None,
+        'i': 'INFOSEC, SOC',
+        'i_email': None
+    }
+
+
+def test_iot_get_raci_default_email(monkeypatch):
+    monkeypatch.setattr(iot_get_raci, 'get_iot_config', lambda x: _CONFIG_WITH_DEFAULT)
+
+    outputs = get_raci({
+        'alert_name': '',
+        'raw_type': 'IoT Vulnerability',
+        'category': 'Audio Streaming',
+        'profile': 'Profusion Media Player'
+    }).outputs
+    assert outputs == {
+        'owner': 'IT_AUDIO_VIDEO',
+        'r': 'IT_AUDIO_VIDEO',
+        'r_email': 'default@example.com',
+        'r_snow': None,
+        'i': 'INFOSEC, SOC',
+        'i_email': 'default@example.com, default@example.com'
+    }
+
+
 def test_iot_get_raci_no_name_regex(monkeypatch):
     monkeypatch.setattr(iot_get_raci, 'get_iot_config', lambda x: _CONFIG)
 
     outputs = get_raci({
-        'alertName': 'FooBar',
-        'rawType': 'IoT Vulnerability',
+        'alert_name': 'FooBar',
+        'raw_type': 'IoT Vulnerability',
         'category': 'Foo'
     }).outputs
     assert outputs == {
@@ -126,8 +206,8 @@ def test_iot_get_raci_no_name_regex(monkeypatch):
     }
 
     outputs = get_raci({
-        'alertName': 'FooBar',
-        'rawType': 'IoT Vulnerability',
+        'alert_name': 'FooBar',
+        'raw_type': 'IoT Vulnerability',
         'category': 'Camera',
         'profile': 'Avigilon Camera'
     }).outputs
@@ -144,8 +224,8 @@ def test_iot_get_raci_no_name_regex(monkeypatch):
 def test_iot_snow(monkeypatch):
     monkeypatch.setattr(iot_get_raci, 'get_iot_config', lambda x: _CONFIG)
     outputs = get_raci({
-        'alertName': 'FooBar',
-        'rawType': 'IoT Vulnerability',
+        'alert_name': 'FooBar',
+        'raw_type': 'IoT Vulnerability',
         'category': 'Audio Streaming',
         'profile': 'Profusion Media Player'
     }).outputs
@@ -166,8 +246,8 @@ def test_iot_snow(monkeypatch):
 def test_iot_get_raci_no_raci(monkeypatch):
     monkeypatch.setattr(iot_get_raci, 'get_iot_config', lambda x: _CONFIG)
     outputs = get_raci({
-        'alertName': 'FooBar',
-        'rawType': 'IoT Alert',
+        'alert_name': 'FooBar',
+        'raw_type': 'IoT Alert',
         'category': 'Camera',
         'profile': 'Avigilon Camera'
     }).outputs

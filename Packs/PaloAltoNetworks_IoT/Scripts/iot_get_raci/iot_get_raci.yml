@@ -2,13 +2,13 @@ args:
 - default: false
   description: The name of the IoT alert
   isArray: false
-  name: alertName
-  required: true
+  name: alert_name
+  required: false
   secret: false
 - default: false
   description: The raw type of the incident
   isArray: false
-  name: rawType
+  name: raw_type
   required: true
   secret: false
 - default: true
@@ -38,7 +38,7 @@ args:
 - default: true
   description: The variable name for IOT_CONFIG
   isArray: false
-  name: iotConfigListName
+  name: iot_config_list_name
   required: false
   secret: false
   defaultValue: IOT_CONFIG

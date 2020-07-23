@@ -1,4 +1,4 @@
-comment: IoT alert post processing script
+comment: IoT alert post processing script to resolve the alert in IoT security portal using API
 commonfields:
   id: iot-alert-post-processing
   version: -1

@@ -10,15 +10,15 @@ configuration:
   type: 0
 - defaultvalue: paloaltonetworks
   display: Tenant ID
-  name: tenantID
+  name: tenant_id
   required: true
   type: 0
 - display: Access Key ID
-  name: accessKeyID
+  name: access_key_id
   required: true
   type: 0
 - display: Secret Access Key
-  name: secretAccessKey
+  name: secret_access_key
   required: true
   type: 4
 - display: Trust any certificate (not secure)
@@ -30,17 +30,17 @@ configuration:
   required: false
   type: 8
 - display: Fetch IoT Alerts
-  name: fetchAlerts
+  name: fetch_alerts
   defaultvalue: "true"
   type: 8
   required: false
 - display: Fetch IoT Vulnerabilities
-  name: fetchVulns
+  name: fetch_vulns
   defaultvalue: "true"
   type: 8
   required: false
 - display: The timeout for querying APIs
-  name: apiTimeout
+  name: api_timeout
   defaultvalue: "60"
   type: 0
   required: false

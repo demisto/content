@@ -175,7 +175,6 @@ def iot_get_device(client, args):
     result = client.get_device(device_id)
 
     return CommandResults(
-        readable_output=f'{json.dumps(result)}',
         outputs_prefix='device',
         outputs_key_field='deviceid',
         outputs=result
@@ -204,7 +203,6 @@ def iot_list_devices(client, args):
     }
 
     return CommandResults(
-        readable_output=f'{json.dumps(outputs)}',
         outputs_prefix="",
         outputs_key_field="",
         outputs=outputs
@@ -233,7 +231,6 @@ def iot_list_alerts(client, args):
     }
 
     return CommandResults(
-        readable_output=f'{json.dumps(outputs)}',
         outputs_prefix="",
         outputs_key_field="",
         outputs=outputs
@@ -262,7 +259,6 @@ def iot_list_vulns(client, args):
     }
 
     return CommandResults(
-        readable_output=f'{json.dumps(outputs)}',
         outputs_prefix="",
         outputs_key_field="",
         outputs=outputs
@@ -287,7 +283,6 @@ def iot_resolve_alert(client, args):
     result = client.resolve_alert(alert_id, reason, reason_type)
 
     return CommandResults(
-        readable_output=f'{json.dumps(result)}',
         outputs_prefix="",
         outputs_key_field="",
         outputs=result
@@ -312,7 +307,6 @@ def iot_resolve_vuln(client, args):
     result = client.resolve_vuln(vuln_id, full_name, reason)
 
     return CommandResults(
-        readable_output=f'{json.dumps(result)}',
         outputs_prefix="",
         outputs_key_field="",
         outputs=result
@@ -337,7 +331,7 @@ def fetch_incidents(client, last_run):
 
     incidents = []
 
-    if demisto.params().get('fetchAlerts', True):
+    if demisto.params().get('fetch_alerts', True):
         stime = '-1'
         if last_alerts_fetch is not None:
             # need to add 1ms for the stime
@@ -383,7 +377,7 @@ def fetch_incidents(client, last_run):
             if last_alerts_fetch is None or alert_date_epoch > last_alerts_fetch:
                 last_alerts_fetch = alert_date_epoch
 
-    if demisto.params().get('fetchVulns', True):
+    if demisto.params().get('fetch_vulns', True):
         stime = '-1'
         if last_vulns_fetch is not None:
             # need to add 1ms for the stime
@@ -440,10 +434,10 @@ def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    tenant_id = demisto.params()['tenantID']
-    access_key_id = demisto.params()['accessKeyID']
-    secret_access_key = demisto.params()['secretAccessKey']
-    api_timeout = int(demisto.params().get('apiTimeout', '60'))
+    tenant_id = demisto.params()['tenant_id']
+    access_key_id = demisto.params()['access_key_id']
+    secret_access_key = demisto.params()['secret_access_key']
+    api_timeout = int(demisto.params().get('api_timeout', '60'))
 
     # get the service API url
     base_url = urljoin(demisto.params()['url'], '/pub/v4.0')

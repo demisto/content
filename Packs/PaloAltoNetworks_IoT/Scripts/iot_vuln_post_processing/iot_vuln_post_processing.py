@@ -16,6 +16,11 @@ def iot_resolve_vuln():
         if label['type'] == 'vulnerability_name':
             vulnerability_name = label['value']
 
+    if zb_ticketid == "":
+        raise Exception('zb_ticketid was not found in the incident labels')
+    if vulnerability_name == "":
+        raise Exception('vulnerability_name was not found in the incident labels')
+
     demisto.executeCommand('iot-resolve-vuln', {
         'id': zb_ticketid,
         'full_name': vulnerability_name,

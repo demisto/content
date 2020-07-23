@@ -69,10 +69,10 @@ tasks:
       version: -1
       name: Get Device Details from IoT Server
       description: IoT get device command - get a single device details
-      script: PaloAltoNetworks_IoT|||iot-get-device
+      script: Palo Alto Networks IoT|||iot-get-device
       type: regular
       iscommand: true
-      brand: PaloAltoNetworks_IoT
+      brand: Palo Alto Networks IoT
     nexttasks:
       '#none#':
       - "3"
@@ -137,7 +137,7 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      alertName:
+      alert_name:
         simple: ${incident.name}
       category:
         simple: ${device.category}
@@ -145,7 +145,7 @@ tasks:
         simple: ${device.model}
       profile:
         simple: ${device.profile}
-      rawType:
+      raw_type:
         simple: ${incident.rawType}
       vendor:
         simple: ${device.vendor}
