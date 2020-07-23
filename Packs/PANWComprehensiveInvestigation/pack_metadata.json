@@ -1,6 +1,6 @@
 {
     "name": "PANW Comprehensive Investigation",
-    "description": "A pack for performing a comprehensive investigation using Palo Alto Networks products.",
+    "description": "Are you a Palo Alto Networks customer? We have just the content pack to help you orchestrate incident response across Palo Alto Networks products.",
     "support": "xsoar",
     "currentVersion": "1.2.2",
     "author": "Cortex XSOAR",
