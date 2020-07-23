@@ -266,18 +266,12 @@ def test_module(client, is_fetch):
     try:
         client.list_alerts(url_suffix='/alerts/', request_data={"severity": {"eq": 0}})
     except DemistoException as e:
-        if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
-        else:
-            return str(e)
+        return str(e)
     if is_fetch:
         try:
             client.list_incidents(filters={}, limit=20)
         except DemistoException as e:
-            if 'Forbidden' in str(e):
-                return 'Authorization Error: make sure API Key is correctly set'
-            else:
-                return str(e)
+            return str(e)
     return 'ok'
 
 
@@ -555,7 +549,7 @@ def main():
     first_fetch = demisto.params().get('first_fetch')
     max_results = demisto.params().get('max_fetch')
     proxy = demisto.params().get('proxy', False)
-    is_fetch = demisto.params().get('isFetch', '')
+    is_fetch = demisto.params().get('isFetch')
     LOG(f'Command being called is {demisto.command()}')
     try:
         client = Client(
