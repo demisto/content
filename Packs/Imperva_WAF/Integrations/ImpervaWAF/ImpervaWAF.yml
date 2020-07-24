@@ -60,6 +60,9 @@ script:
     - contextPath: ImpervaWAF.IpGroup.Entries.IpAddressFrom
       description: Start IP address
       type: String
+    - contextPath: ImpervaWAF.IpGroup.Name
+      description: The name of the IP Group
+      type: String
   - arguments:
     - default: false
       description: The name of the IP Group
@@ -265,6 +268,9 @@ script:
     - contextPath: ImpervaWAF.IpGroup.Entries.IpAddressFrom
       description: Start IP address
       type: String
+    - contextPath: ImpervaWAF.IpGroup.Name
+      description: The name of the IP Group
+      type: String
   - arguments:
     - default: false
       description: Group name to update
@@ -342,6 +348,9 @@ script:
       type: String
     - contextPath: ImpervaWAF.IpGroup.Entries.IpAddressFrom
       description: Start IP address
+      type: String
+    - contextPath: ImpervaWAF.IpGroup.Name
+      description: The name of the IP Group
       type: String
   - arguments:
     - default: false

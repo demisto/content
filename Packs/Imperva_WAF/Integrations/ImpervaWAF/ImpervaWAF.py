@@ -60,7 +60,7 @@ class Client(BaseClient):
         entry_context = {f'{INTEGRATION_CONTEXT_NAME}.IpGroup(val.Name===obj.Name)':
                          {'Name': group_name, 'Entries': entries}}
 
-        return_outputs(human_readable, entry_context, raw_res)
+        return human_readable, entry_context, raw_res
 
     def get_custom_policy_outputs(self, policy_name, table_name):
         raw_res = self.do_request('GET', f'conf/policies/security/webServiceCustomPolicies/{policy_name}')
@@ -111,7 +111,7 @@ class Client(BaseClient):
                                                                tmp_match['values'], removeNull=True)
 
         entry_context = {f'{INTEGRATION_CONTEXT_NAME}.CustomWebPolicy(val.Name===obj.Name)': policy}
-        return_outputs(human_readable, entry_context, raw_res)
+        return human_readable, entry_context, raw_res
 
 
 def extract_errors(res):
@@ -238,7 +238,9 @@ def ip_group_list_command(client, args):
 @logger
 def ip_group_list_entries_command(client, args):
     group_name = args.get('ip-group-name')
-    client.get_ip_group_entities(group_name, f'IP group entries for {group_name}')
+    human_readable, entry_context, raw_res = \
+        client.get_ip_group_entities(group_name, f'IP group entries for {group_name}')
+    return_outputs(human_readable, entry_context, raw_res)
 
 
 @logger
@@ -309,7 +311,9 @@ def custom_policy_list_command(client, args):
 @logger
 def get_custom_policy_command(client, args):
     policy_name = args.get('policy-name')
-    client.get_custom_policy_outputs(policy_name, f'Policy data for {policy_name}')
+    human_readable, entry_context, raw_res = \
+        client.get_custom_policy_outputs(policy_name, f'Policy data for {policy_name}')
+    return_outputs(human_readable, entry_context, raw_res)
 
 
 @logger
@@ -317,7 +321,9 @@ def create_ip_group_command(client, args):
     group_name = args.get('group-name')
     body = generate_ip_groups_entries(args)
     client.do_request('POST', f'conf/ipGroups/{group_name}', json_data=body)
-    client.get_ip_group_entities(group_name, f'Group {group_name} created successfully')
+    human_readable, entry_context, raw_res = \
+        client.get_ip_group_entities(group_name, f'Group {group_name} created successfully')
+    return_outputs(human_readable, entry_context, raw_res)
 
 
 @logger
@@ -325,7 +331,9 @@ def update_ip_group_command(client, args):
     group_name = args.get('group-name')
     body = generate_ip_groups_entries(args)
     client.do_request('PUT', f'conf/ipGroups/{group_name}/data', json_data=body)
-    client.get_ip_group_entities(group_name, f'Group {group_name} updated successfully')
+    human_readable, entry_context, raw_res = \
+        client.get_ip_group_entities(group_name, f'Group {group_name} updated successfully')
+    return_outputs(human_readable, entry_context, raw_res)
 
 
 @logger
@@ -359,7 +367,9 @@ def create_custom_policy_command(client, args):
     body['applyTo'] = [{'siteName': site, 'serverGroupName': server_group, 'webServiceName': web_service}]
 
     client.do_request('POST', f'conf/policies/security/webServiceCustomPolicies/{policy_name}', json_data=body)
-    client.get_custom_policy_outputs(policy_name, f'Policy {policy_name} created successfully')
+    human_readable, entry_context, raw_res = \
+        client.get_custom_policy_outputs(policy_name, f'Policy {policy_name} created successfully')
+    return_outputs(human_readable, entry_context, raw_res)
 
 
 @logger
@@ -389,7 +399,9 @@ def update_custom_policy_command(client, args):
                            'webServiceName': web_service}]
 
     client.do_request('PUT', f'conf/policies/security/webServiceCustomPolicies/{policy_name}', json_data=body)
-    client.get_custom_policy_outputs(policy_name, f'Policy {policy_name} updated successfully')
+    human_readable, entry_context, raw_res = \
+        client.get_custom_policy_outputs(policy_name, f'Policy {policy_name} updated successfully')
+    return_outputs(human_readable, entry_context, raw_res)
 
 
 @logger
