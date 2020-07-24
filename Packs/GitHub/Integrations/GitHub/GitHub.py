@@ -1217,7 +1217,7 @@ def get_github_actions_usage():
     ec = {
         'GitHub.ActionsUsage': usage_result
     }
-    human_readable = tableToMarkdown(f'Github Actions Usage', usage_result,
+    human_readable = tableToMarkdown('Github Actions Usage', usage_result,
                                      headerTransform=lambda h: h.replace('_', ' ').title())
 
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=usage_result)
