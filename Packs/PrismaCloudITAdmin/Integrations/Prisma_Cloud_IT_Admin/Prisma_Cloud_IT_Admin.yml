@@ -223,6 +223,7 @@ script:
       name: scim
       required: true
     description: Disable a user
+    execution: true
     name: disable-user
     outputs:
     - contextPath: DisableUser
