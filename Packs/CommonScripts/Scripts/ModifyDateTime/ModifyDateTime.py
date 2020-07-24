@@ -5,7 +5,7 @@ import dateparser
 
 
 def apply_variation(original_datetime: datetime = None, variation: str = None) -> datetime:
-    new_time = None
+    new_time = dateparser.parse("2020-01-01")
     try:
         new_time = dateparser.parse(variation, settings={'RELATIVE_BASE': original_datetime})
     except Exception as err:
