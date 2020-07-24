@@ -118,6 +118,7 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
 
     index_blob.reload()
     index_generation = index_blob.generation
+
     index_blob.download_to_filename(download_index_path, if_generation_match=index_generation)
 
     if os.path.exists(download_index_path):
@@ -257,7 +258,7 @@ def clean_non_existing_packs(index_folder_path, private_packs, storage_bucket):
 
 
 def upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs,
-                            current_commit_hash, index_generation):
+                            current_commit_hash, index_generation, is_private=False):
     """Upload updated index zip to cloud storage.
 
     Args:
@@ -287,7 +288,10 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
         index_blob.reload()
         current_index_generation = index_blob.generation
         index_blob.cache_control = "no-cache,max-age=0"  # disabling caching for index blob
-        index_blob.upload_from_filename(index_zip_path, if_generation_match=index_generation)
+        if is_private:
+            index_blob.upload_from_filename(index_zip_path)
+        else:
+            index_blob.upload_from_filename(index_zip_path, if_generation_match=index_generation)
         print_color(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.", LOG_COLORS.GREEN)
     except Exception as e:
         print_error(f"Failed in uploading {GCPConfig.INDEX_NAME}. "
@@ -679,11 +683,12 @@ def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, inde
                                        remote_previous_commit_hash=''):
     build_number = upload_config.ci_build_number
     remove_test_playbooks = upload_config.remove_test_playbooks
-    signature_key = upload_config.signature_key
-    extract_destination_path = upload_config.extract_destination_path
-    should_encrypt_pack = upload_config.should_encrypt_pack
+    signature_key = upload_config.key_string
+    extract_destination_path = upload_config.extract_path
+    should_encrypt_pack = upload_config.encrypt_pack
     override_all_packs = upload_config.override_all_packs
-    enc_key = upload_config.enc_key
+    enc_key = upload_config.encryption_key
+    is_private_build = upload_config.is_private
 
     task_status, user_metadata = pack.load_user_metadata()
     if not task_status:
@@ -750,7 +755,7 @@ def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, inde
         pack.cleanup()
         return
 
-    if not private_storage_bucket:
+    if not is_private_build:
         task_status, pack_was_modified = pack.detect_modified(content_repo, index_folder_path, current_commit_hash,
                                                               remote_previous_commit_hash)
         if not task_status:
@@ -865,8 +870,8 @@ def main():
     # finished iteration over content packs
     if is_private_build:
         delete_public_packs_from_index(index_folder_path)
-        upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs,
-                                current_commit_hash, index_generation)
+        # upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs,
+        #                         current_commit_hash, index_generation, is_private)
 
     else:
         upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs,
