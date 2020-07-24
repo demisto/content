@@ -1572,6 +1572,11 @@
 <td style="width: 519px;">Time limit (in seconds) for the search to run.</td>
 <td style="width: 71px;">Optional</td>
 </tr>
+<tr>
+<td style="width: 150px;">disable-nested-search</td>
+<td style="width: 519px;">Disable recursive retrieval of a user's group memberships.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
 </tbody>
 </table>
 </div>
