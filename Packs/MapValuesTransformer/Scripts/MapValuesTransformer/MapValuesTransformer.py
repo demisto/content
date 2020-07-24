@@ -53,5 +53,6 @@ def main():
     value = mapValues(value, input_values, mapped_values)
     demisto.results(value)
 
+
 if __name__ in ('__main__', 'builtin', 'builtins'):
     main()
