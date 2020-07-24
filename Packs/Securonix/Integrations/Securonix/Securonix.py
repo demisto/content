@@ -195,12 +195,6 @@ class Client(BaseClient):
         token = self.http_request('GET', '/token/generate', headers=headers, response_type='text')
         return token
 
-    def test_module_request(self):
-        """
-        Testing the instance configuration by sending a GET request
-        """
-        self.list_workflows_request()
-
     def list_workflows_request(self) -> Dict:
         """List workflows.
 
@@ -575,13 +569,18 @@ class Client(BaseClient):
         return watchlist
 
 
-def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
+def test_module(client: Client) -> str:
     """
     Performs basic get request to get incident samples
     """
-    client.test_module_request()
-    demisto.results('ok')
-    return '', {}, {}
+    client.list_workflows_request()
+    if demisto.params().get('isFetch'):
+        timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
+        from_epoch = date_to_timestamp(parse_date_range('1 day', utc=True)[0], date_format=timestamp_format)
+        to_epoch = date_to_timestamp(datetime.now(), date_format=timestamp_format)
+        client.list_incidents_request(from_epoch, to_epoch, incident_status='opened')
+
+    return 'ok'
 
 
 def list_workflows(client: Client, *_) -> Tuple[str, Dict, Dict]:
@@ -1226,7 +1225,6 @@ def main():
         client = Client(tenant=tenant, server_url=server_url, username=username, password=password,
                         verify=verify, proxy=proxy)
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
-            'test-module': test_module,
             'securonix-list-workflows': list_workflows,
             'securonix-get-default-assignee-for-workflow': get_default_assignee_for_workflow,
             'securonix-list-possible-threat-actions': list_possible_threat_actions,
@@ -1257,6 +1255,8 @@ def main():
             last_run = json.loads(demisto.getLastRun().get('value', '{}'))
             incidents = fetch_incidents(client, fetch_time, incident_status, max_fetch, last_run=last_run)
             demisto.incidents(incidents)
+        elif command == 'test-module':
+            demisto.results(test_module(client))
         elif command in commands:
             return_outputs(*commands[command](client, demisto.args()))
         else:
