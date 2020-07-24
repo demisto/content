@@ -1,3 +1,7 @@
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
+
 args = demisto.args()
 value = args.get('value')
 input_values = args.get('input_values', []).split(",")
