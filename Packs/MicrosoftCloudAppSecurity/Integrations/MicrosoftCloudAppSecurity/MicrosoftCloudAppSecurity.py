@@ -265,6 +265,8 @@ def params_to_filter(parameters):
 def test_module(client):
     try:
         client.list_alerts(url_suffix='/alerts/', request_data={"severity": {"eq": 0}})
+        if demisto.params().get('isFetch'):
+            client.list_incidents(filters={"severity": {"eq": 0}}, limit=1)
     except DemistoException as e:
         return str(e)
     return 'ok'
