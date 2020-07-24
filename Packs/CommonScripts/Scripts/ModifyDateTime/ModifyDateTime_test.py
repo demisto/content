@@ -1,8 +1,9 @@
+import dateparser
 from ModifyDateTime import apply_variation
 
 def test_apply_variation():
     args = {
-        'value': '2020/01/01',
+        'value': dateparser.parse('2020/01/01'),
         'variation': 'in 1 day'
     }
     results = apply_variation(args.get('value'), args.get('variation'))
