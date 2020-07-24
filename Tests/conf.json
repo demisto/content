@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Prisma Cloud IT Admin",
+            "playbookID": "PrismaCloudITAdmin-Test",
+            "fromversion": "5.0.0"
+        },
+	      {
             "integrations": "Humio",
             "playbookID": "Humio-Test",
             "fromversion": "5.0.0"
