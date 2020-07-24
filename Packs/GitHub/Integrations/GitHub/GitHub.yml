@@ -2603,7 +2603,7 @@ script:
     - contextPath: GitHub.ActionsUsage
       description: Github Actions usage.
       type: Unknown
-  dockerimage: demisto/pyjwt3:1.0.0.4946
+  dockerimage: demisto/pyjwt3:1.0.0.8871
   feed: false
   isfetch: true
   longRunning: false
