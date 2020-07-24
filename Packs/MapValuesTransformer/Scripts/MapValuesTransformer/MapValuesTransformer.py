@@ -15,8 +15,8 @@ except Exception:
 
 # Convert all to string
 value = str(value) if type(value) not in [dict, list] else value
-input_values [:] = [str(x) for x in input_values]
-mapped_values [:] = [str(x) for x in mapped_values]
+input_values[:] = [str(x) for x in input_values]
+mapped_values[:] = [str(x) for x in mapped_values]
 
 # If the provided input_value and mapper_values are not equal in length
 # then return an error
