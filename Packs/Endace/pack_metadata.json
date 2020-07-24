@@ -1,16 +1,19 @@
 {
-  "name": "Endace",
-  "description": "Endace",
-  "support": "partner",
-  "currentVersion": "1.0.0",
-  "author": "Endace",
-  "url": "https://www.endace.com/",
-  "email": "soumen.chakraborty@endace.com",
-  "created": "2020-04-02T18:41:49Z",
-  "categories": [
-    "Network Security"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": []
+    "name": "Endace",
+    "description": "Endace",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Endace",
+    "url": "https://www.endace.com/",
+    "email": "soumen.chakraborty@endace.com",
+    "created": "2020-04-02T18:41:49Z",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "soumenchakraborty-endace"
+    ]
 }
