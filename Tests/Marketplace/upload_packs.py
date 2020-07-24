@@ -673,6 +673,130 @@ def option_handler():
     return parser.parse_args()
 
 
+def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, index_folder_path,
+                                       packs_dependencies_mapping,
+                                       private_storage_bucket=None, content_repo=None, current_commit_hash='',
+                                       remote_previous_commit_hash=''):
+    build_number = upload_config.ci_build_number
+    remove_test_playbooks = upload_config.remove_test_playbooks
+    signature_key = upload_config.signature_key
+    extract_destination_path = upload_config.extract_destination_path
+    should_encrypt_pack = upload_config.should_encrypt_pack
+    override_all_packs = upload_config.override_all_packs
+    enc_key = upload_config.enc_key
+
+    task_status, user_metadata = pack.load_user_metadata()
+    if not task_status:
+        pack.status = PackStatus.FAILED_LOADING_USER_METADATA.name
+        pack.cleanup()
+        return
+
+    task_status, pack_content_items = pack.collect_content_items()
+    if not task_status:
+        pack.status = PackStatus.FAILED_COLLECT_ITEMS.name
+        pack.cleanup()
+        return
+
+    task_status, integration_images = pack.upload_integration_images(storage_bucket)
+    if not task_status:
+        pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
+        pack.cleanup()
+        return
+
+    task_status, author_image = pack.upload_author_image(storage_bucket)
+    if not task_status:
+        pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
+        pack.cleanup()
+        return
+
+    task_status = pack.format_metadata(user_metadata=user_metadata, pack_content_items=pack_content_items,
+                                       integration_images=integration_images, author_image=author_image,
+                                       index_folder_path=index_folder_path,
+                                       packs_dependencies_mapping=packs_dependencies_mapping,
+                                       build_number=build_number, commit_hash=current_commit_hash)
+    if not task_status:
+        pack.status = PackStatus.FAILED_METADATA_PARSING.name
+        pack.cleanup()
+        return
+
+    task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number)
+    if not task_status:
+        pack.status = PackStatus.FAILED_RELEASE_NOTES.name
+        pack.cleanup()
+        return
+
+    if not_updated_build:
+        pack.status = PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name
+        pack.cleanup()
+        return
+
+    task_status = pack.remove_unwanted_files(remove_test_playbooks)
+    if not task_status:
+        pack.status = PackStatus.FAILED_REMOVING_PACK_SKIPPED_FOLDERS
+        pack.cleanup()
+        return
+
+    task_status = pack.sign_pack(signature_key)
+    if not task_status:
+        pack.status = PackStatus.FAILED_SIGNING_PACKS.name
+        pack.cleanup()
+        return
+
+    task_status, zip_pack_path = pack.zip_pack(extract_destination_path, pack._pack_name, should_encrypt_pack,
+                                               enc_key)
+
+    if not task_status:
+        pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
+        pack.cleanup()
+        return
+
+    if not private_storage_bucket:
+        task_status, pack_was_modified = pack.detect_modified(content_repo, index_folder_path, current_commit_hash,
+                                                              remote_previous_commit_hash)
+        if not task_status:
+            pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
+            pack.cleanup()
+            return
+    else:
+        pack_was_modified = False
+
+    bucket_for_uploading = private_storage_bucket if private_storage_bucket else storage_bucket
+    task_status, skipped_pack_uploading = pack.upload_to_storage(zip_pack_path, pack.latest_version,
+                                                                 bucket_for_uploading,
+                                                                 override_all_packs or pack_was_modified)
+    if not task_status:
+        pack.status = PackStatus.FAILED_UPLOADING_PACK.name
+        pack.cleanup()
+        return
+
+    task_status, exists_in_index = pack.check_if_exists_in_index(index_folder_path)
+    if not task_status:
+        pack.status = PackStatus.FAILED_SEARCHING_PACK_IN_INDEX.name
+        pack.cleanup()
+        return
+
+    # in case that pack already exist at cloud storage path and in index, skipped further steps
+    if skipped_pack_uploading and exists_in_index:
+        pack.status = PackStatus.PACK_ALREADY_EXISTS.name
+        pack.cleanup()
+        return
+
+    task_status = pack.prepare_for_index_upload()
+    if not task_status:
+        pack.status = PackStatus.FAILED_PREPARING_INDEX_FOLDER.name
+        pack.cleanup()
+        return
+
+    task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path,
+                                      pack_version=pack.latest_version, hidden_pack=pack.hidden)
+    if not task_status:
+        pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name
+        pack.cleanup()
+        return
+
+    pack.status = PackStatus.SUCCESS.name
+
+
 def main():
     upload_config = option_handler()
     packs_artifacts_path = upload_config.artifacts_path
@@ -682,15 +806,11 @@ def main():
     service_account = upload_config.service_account
     target_packs = upload_config.pack_names
     build_number = upload_config.ci_build_number
-    override_all_packs = upload_config.override_all_packs
-    signature_key = upload_config.key_string
     id_set_path = upload_config.id_set_path
-    should_encrypt_pack = upload_config.encrypt_pack
-    enc_key = upload_config.encryption_key
     packs_dependencies_mapping = load_json(upload_config.pack_dependencies) if upload_config.pack_dependencies else {}
     storage_base_path = upload_config.storage_base_path
-    remove_test_playbooks = upload_config.remove_test_playbooks
     is_private_build = upload_config.is_private
+
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
@@ -703,6 +823,7 @@ def main():
         current_commit_hash, remote_previous_commit_hash = get_recent_commits_data(content_repo)
     else:
         current_commit_hash, remote_previous_commit_hash = "", ""
+        content_repo = None
 
     if storage_base_path:
         GCPConfig.STORAGE_BASE_PATH = storage_base_path
@@ -716,9 +837,9 @@ def main():
     # download and extract index from public bucket
     index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
                                                                                  extract_destination_path)
-
-    check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, remote_previous_commit_hash,
-                              storage_bucket)
+    if not is_private_build:
+        check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, remote_previous_commit_hash,
+                                  storage_bucket)
 
     if private_bucket_name:  # Add private packs to the index
         private_packs, private_index_path, private_index_blob = update_index_with_priced_packs(private_storage_bucket,
@@ -732,115 +853,11 @@ def main():
     clean_non_existing_packs(index_folder_path, private_packs, default_storage_bucket)
     # starting iteration over packs
     for pack in packs_list:
-        task_status, user_metadata = pack.load_user_metadata()
-        if not task_status:
-            pack.status = PackStatus.FAILED_LOADING_USER_METADATA.name
-            pack.cleanup()
-            continue
-
-        task_status, pack_content_items = pack.collect_content_items()
-        if not task_status:
-            pack.status = PackStatus.FAILED_COLLECT_ITEMS.name
-            pack.cleanup()
-            continue
-
-        task_status, integration_images = pack.upload_integration_images(storage_bucket)
-        if not task_status:
-            pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
-            pack.cleanup()
-            continue
-
-        task_status, author_image = pack.upload_author_image(storage_bucket)
-        if not task_status:
-            pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
-            pack.cleanup()
-            continue
-
-        task_status = pack.format_metadata(user_metadata=user_metadata, pack_content_items=pack_content_items,
-                                           integration_images=integration_images, author_image=author_image,
-                                           index_folder_path=index_folder_path,
-                                           packs_dependencies_mapping=packs_dependencies_mapping,
-                                           build_number=build_number, commit_hash=current_commit_hash)
-        if not task_status:
-            pack.status = PackStatus.FAILED_METADATA_PARSING.name
-            pack.cleanup()
-            continue
-
-        task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number)
-        if not task_status:
-            pack.status = PackStatus.FAILED_RELEASE_NOTES.name
-            pack.cleanup()
-            continue
-
-        if not_updated_build:
-            pack.status = PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name
-            pack.cleanup()
-            continue
-
-        task_status = pack.remove_unwanted_files(remove_test_playbooks)
-        if not task_status:
-            pack.status = PackStatus.FAILED_REMOVING_PACK_SKIPPED_FOLDERS
-            pack.cleanup()
-            continue
-
-        task_status = pack.sign_pack(signature_key)
-        if not task_status:
-            pack.status = PackStatus.FAILED_SIGNING_PACKS.name
-            pack.cleanup()
-            continue
-
-        task_status, zip_pack_path = pack.zip_pack(extract_destination_path, pack._pack_name, should_encrypt_pack,
-                                                   enc_key)
-
-        if not task_status:
-            pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
-            pack.cleanup()
-            continue
-
-        if not is_private_build:
-            task_status, pack_was_modified = pack.detect_modified(content_repo, index_folder_path, current_commit_hash,
-                                                                  remote_previous_commit_hash)
-            if not task_status:
-                pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
-                pack.cleanup()
-                continue
-        else:
-            pack_was_modified = False
-
-        task_status, skipped_pack_uploading = pack.upload_to_storage(zip_pack_path, pack.latest_version,
-                                                                     default_storage_bucket,
-                                                                     override_all_packs or pack_was_modified)
-        if not task_status:
-            pack.status = PackStatus.FAILED_UPLOADING_PACK.name
-            pack.cleanup()
-            continue
-
-        task_status, exists_in_index = pack.check_if_exists_in_index(index_folder_path)
-        if not task_status:
-            pack.status = PackStatus.FAILED_SEARCHING_PACK_IN_INDEX.name
-            pack.cleanup()
-            continue
-
-        # in case that pack already exist at cloud storage path and in index, skipped further steps
-        if skipped_pack_uploading and exists_in_index:
-            pack.status = PackStatus.PACK_ALREADY_EXISTS.name
-            pack.cleanup()
-            continue
-
-        task_status = pack.prepare_for_index_upload()
-        if not task_status:
-            pack.status = PackStatus.FAILED_PREPARING_INDEX_FOLDER.name
-            pack.cleanup()
-            continue
-
-        task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path,
-                                          pack_version=pack.latest_version, hidden_pack=pack.hidden)
-        if not task_status:
-            pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name
-            pack.cleanup()
-            continue
-
-        pack.status = PackStatus.SUCCESS.name
+        create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, index_folder_path,
+                                           packs_dependencies_mapping,
+                                           private_storage_bucket=private_storage_bucket, content_repo=content_repo,
+                                           current_commit_hash=current_commit_hash,
+                                           remote_previous_commit_hash=remote_previous_commit_hash)
     # upload core packs json to bucket
 
     if should_upload_core_packs(storage_bucket_name):
