@@ -2867,11 +2867,11 @@
         "RedLockTest": "Issue 24600",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 25477",
         "SentinelOne V2 - test": "Issue 24933",
-        "SignalSciences-Test": "Issue 24934",
         "Maltiverse Test": "Issue 24335",
         "TestDedupIncidentsPlaybook": "Issue 24344",
         "CreateIndicatorFromSTIXTest": "Issue 24345",
         "SNDBOX_Test": "Issue 24349",
+        "Endpoint data collection test": "Uses a deprecated playbook called Endpoint data collection",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get Prisma Access instance",
         "Prisma_Access-Test": "unskip after we will get Prisma Access instance",
         "Test-Shodan_v2": "Issue 23370",
@@ -2922,15 +2922,16 @@
         "Tenable.io test": "Issue 26727",
         "Tenable.io Scan Test": "Issue 26727",
         "URL Enrichment - Generic v2 - Test": "Issue 26463",
-        "Fidelis-Test": "Issue 26453",
         "ThreatConnect v2 - Test": "Issue 26782",
         "Pwned v2 test": "Issue 26601",
         "Email Address Enrichment - Generic v2.1 - Test": "Issue 26785",
         "Tanium v2 - Test": "Issue 26822",
-        "Google Chronicle Backstory List IOCs - Test": "Issue 26461"
+        "Google Chronicle Backstory List IOCs - Test": "Issue 26461",
+        "EvaluateMLModllAtProduction-Test": "Issue 26849",
+        "hashIncidentFields-test": "Issue 26850"
     },
     "skipped_integrations": {
-
+        
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Symantec Management Center": "Issue 23960",
         "PerceptionPoint": "Issue 25795",
@@ -3023,12 +3024,12 @@
         "Bambenek Consulting Feed": "Issue 26184",
         "AWS - Athena - Beta": "Issue 19834",
         "Blueliv ThreatCompass": "Community contribution",
-
+        
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-
+        
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Issue 25650",
         "XFE_v2": "Issue 22715",
@@ -3037,14 +3038,14 @@
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "Issue 26266",
-
+        
         "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer",
         "SafeBreach v2": "it is a partner integration, no instance",
         "IllusiveNetworks": "supported by partner",
         "Humio": "supported by the partner",
         "Digital Guardian": "partner integration",
-
+        
         "_comment5": "~~~ OTHER ~~~",
         "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
         "Cisco ASA": "Issue 25741",
@@ -3058,7 +3059,8 @@
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Cymulate": "Partner didn't provided test playbook",
-        "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR"
+        "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
+        "Palo Alto Minemeld": "Issue #26878"
     },
     "nightly_integrations": [
         "Lastline v2",
