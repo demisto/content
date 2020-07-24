@@ -72,7 +72,7 @@ For more details about the authentication used in this integration, see <a href=
 </tr>
 <tr>
 <td style="width: 151px;">next_link</td>
-<td style="width: 492px;">The link for the next page of results, if it exists. Follow this <a href="docs.microsoft.com/en-us/graph/api/event-list?view=graph-rest-1.0%20" target="_self">link</a> for more details.</td>
+<td style="width: 492px;">The link for the next page of results, if it exists. Follow this <a href="https://docs.microsoft.com/en-us/graph/api/resources/calendar?view=graph-rest-1.0" target="_self">link</a> for more details.</td>
 <td style="width: 73px;">Optional</td>
 </tr>
 <tr>
@@ -326,7 +326,7 @@ For more details about the authentication used in this integration, see <a href=
 </tr>
 <tr>
 <td style="width: 157px;">next_link</td>
-<td style="width: 486px;">Link for the next page of results, if it exists. Follow this <a href="docs.microsoft.com/en-us/graph/api/event-list?view=graph-rest-1.0" target="_self">link</a> for more details.</td>
+<td style="width: 486px;">Link for the next page of results, if it exists. Follow this <a href="https://docs.microsoft.com/en-us/graph/api/resources/calendar?view=graph-rest-1.0" target="_self">link</a> for more details.</td>
 <td style="width: 73px;">Optional</td>
 </tr>
 <tr>
