@@ -55,7 +55,7 @@ def http_request(method, url_suffix, params_dict=None, headers=DEFAULT_HEADERS, 
         except ValueError:
             # in case the response doesn't have JSON
             return "Request completed"
-    except Exception, e:
+    except Exception as e:
         LOG(e)
         raise(e)
 
@@ -558,7 +558,7 @@ try:
         demisto.results(list_sessions_command())
     elif demisto.command() == 'fetch-incidents':
         demisto.results(fetch_incidents())
-except Exception, e:
+except Exception as e:
     LOG(e.message)
     LOG.print_log()
     raise
