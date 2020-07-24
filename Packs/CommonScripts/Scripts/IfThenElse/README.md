@@ -6,7 +6,7 @@ A transformer for simple if-then-else logic. This can potentially reduce the num
 | --- | --- |
 | Script Type | javascript |
 | Tags | transformer, general |
-| Demisto Version | 0.0.0 |
+| Demisto Version | 5.0.0 |
 
 ## Inputs
 ---
