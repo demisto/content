@@ -125,8 +125,8 @@ Get a user detail
             "state": null,
             "tzid": null,
             "uid": null,
-            "updated_by": null,
-            "updated_on": "2020-07-13T12:29:57+00:00",
+            "updated_by": "API",
+            "updated_on": "2020-07-20T19:53:10+00:00",
             "verified_at": null,
             "zip": null
         },
@@ -146,7 +146,7 @@ Get a user detail
 >### Get EXCEED LMS User:
 >|brand|instanceName|success|active|id|username|email|details|
 >|---|---|---|---|---|---|---|---|
->| Exceed LMS IT Admin | ExceedLMSITAdmin | true | false | 4917005 | testxoar7july@paloaltonetworks.com | testdemistouser99@paloaltonetworks.com | account_id: 1193<br/>address_one: null<br/>address_two: null<br/>authority: student<br/>city: null<br/>code: i-4917005<br/>country: null<br/>created_on: 2020-07-07T11:24:43+00:00<br/>custom_a: null<br/>custom_b: null<br/>custom_c: null<br/>custom_d: null<br/>custom_e: null<br/>custom_f: null<br/>custom_g: null<br/>custom_h: null<br/>custom_i: null<br/>custom_j: null<br/>custom_k: null<br/>custom_l: null<br/>custom_m: null<br/>custom_n: null<br/>custom_o: null<br/>custom_p: null<br/>custom_q: null<br/>custom_r: null<br/>custom_s: null<br/>custom_t: null<br/>custom_u: null<br/>email: testdemistouser99@paloaltonetworks.com<br/>external_avatar_url: null<br/>facebook_id: null<br/>first_name: demistouser<br/>full_name: demistouser test<br/>google_auth: null<br/>hide_welcome_page: false<br/>hired_on: null<br/>rehired_on: null<br/>id: 4917005<br/>integration_id: null<br/>is_account_owner: false<br/>is_active: false<br/>is_pass_reset_required: false<br/>last_login_at: null<br/>last_name: test<br/>locale: en<br/>login: testxoar7july@paloaltonetworks.com<br/>manager_id: null<br/>organization_id: 2702<br/>phone_fax: null<br/>phone_home: null<br/>phone_mobile: null<br/>phone_work: null<br/>picture_id: null<br/>position_id: null<br/>position_name: null<br/>provider: null<br/>registration_code: null<br/>registration_id: null<br/>state: null<br/>tzid: null<br/>uid: null<br/>updated_by: null<br/>updated_on: 2020-07-13T12:29:57+00:00<br/>zip: null<br/>registered_at: null<br/>verified_at: null<br/>facebook_as_id: null |
+>| Exceed LMS IT Admin | ExceedLMSITAdmin | true | false | 4917005 | testxoar7july@paloaltonetworks.com | testdemistouser99@paloaltonetworks.com | account_id: 1193<br/>address_one: null<br/>address_two: null<br/>authority: student<br/>city: null<br/>code: i-4917005<br/>country: null<br/>created_on: 2020-07-07T11:24:43+00:00<br/>custom_a: null<br/>custom_b: null<br/>custom_c: null<br/>custom_d: null<br/>custom_e: null<br/>custom_f: null<br/>custom_g: null<br/>custom_h: null<br/>custom_i: null<br/>custom_j: null<br/>custom_k: null<br/>custom_l: null<br/>custom_m: null<br/>custom_n: null<br/>custom_o: null<br/>custom_p: null<br/>custom_q: null<br/>custom_r: null<br/>custom_s: null<br/>custom_t: null<br/>custom_u: null<br/>email: testdemistouser99@paloaltonetworks.com<br/>external_avatar_url: null<br/>facebook_id: null<br/>first_name: demistouser<br/>full_name: demistouser test<br/>google_auth: null<br/>hide_welcome_page: false<br/>hired_on: null<br/>rehired_on: null<br/>id: 4917005<br/>integration_id: null<br/>is_account_owner: false<br/>is_active: false<br/>is_pass_reset_required: false<br/>last_login_at: null<br/>last_name: test<br/>locale: en<br/>login: testxoar7july@paloaltonetworks.com<br/>manager_id: null<br/>organization_id: 2702<br/>phone_fax: null<br/>phone_home: null<br/>phone_mobile: null<br/>phone_work: null<br/>picture_id: null<br/>position_id: null<br/>position_name: null<br/>provider: null<br/>registration_code: null<br/>registration_id: null<br/>state: null<br/>tzid: null<br/>uid: null<br/>updated_by: API<br/>updated_on: 2020-07-20T19:53:10+00:00<br/>zip: null<br/>registered_at: null<br/>verified_at: null<br/>facebook_as_id: null |
 
 
 ### create-user
@@ -183,7 +183,7 @@ Creates a user
 
 
 #### Command Example
-```!create-user scim={"name":{"familyName":"test1","givenName":"demisto1"},"emails":[{"type":"work","primary":true,"value":"testdemistouser20July@paloaltonetworks.com"}],"userName":"testXoar20July@paloaltonetworks.com","urn:scim:schemas:extension:custom:1.0:user":{"firstname":"testMydesmisto20"}} using=ExceedLMSITAdmin```
+```!create-user scim={"name":{"familyName":"test2","givenName":"demisto2"},"emails":[{"type":"work","primary":true,"value":"testdemistouser24July@paloaltonetworks.com"}],"userName":"testXoar24July@paloaltonetworks.com","urn:scim:schemas:extension:custom:1.0:user":{"firstname":"testMydesmisto24"}} using=ExceedLMSITAdmin```
 
 #### Context Example
 ```
@@ -199,10 +199,10 @@ Creates a user
             "address_two": null,
             "authority": "student",
             "city": null,
-            "code": "i-4931489",
+            "code": "i-4933374",
             "company_name": null,
             "country": null,
-            "created_on": "2020-07-20T19:53:00+00:00",
+            "created_on": "2020-07-24T17:27:39+00:00",
             "custom_a": null,
             "custom_b": null,
             "custom_c": null,
@@ -227,17 +227,17 @@ Creates a user
             "deletion_requested_at": null,
             "description": null,
             "dismissed_in_app_callouts": [],
-            "email": "testdemistouser20july@paloaltonetworks.com",
+            "email": "testdemistouser24july@paloaltonetworks.com",
             "external_avatar_url": null,
             "facebook_as_id": null,
             "facebook_id": null,
-            "first_name": "testMydesmisto20",
-            "full_name": "testmydesmisto20 test1",
+            "first_name": "testMydesmisto24",
+            "full_name": "testmydesmisto24 test2",
             "google_auth": null,
             "hero_picture_id": null,
             "hide_welcome_page": false,
             "hired_on": null,
-            "id": 4931489,
+            "id": 4933374,
             "integration_id": null,
             "is_account_owner": false,
             "is_active": true,
@@ -246,11 +246,11 @@ Creates a user
             "is_topic_onboarded": null,
             "job_title": null,
             "last_login_at": null,
-            "last_name": "test1",
+            "last_name": "test2",
             "latitude": null,
             "linkedin_url": null,
             "locale": "en",
-            "login": "testxoar20july@paloaltonetworks.com",
+            "login": "testxoar24july@paloaltonetworks.com",
             "login_disabled_at": null,
             "longitude": null,
             "manager_id": null,
@@ -264,7 +264,7 @@ Creates a user
             "phone_work": null,
             "picture_id": null,
             "position_id": null,
-            "profile_url": "testmydesmisto20test135543961",
+            "profile_url": "testmydesmisto24test24b9c1f8d",
             "provider": null,
             "public_profile": false,
             "recovery_email": null,
@@ -273,7 +273,7 @@ Creates a user
             "registration_code": null,
             "registration_id": null,
             "rehired_on": null,
-            "remember_me_token": "pinNwrDNYgZsMthFKVt2FiNY",
+            "remember_me_token": "JvD1hJkJwv4LtzjpLbjT6ki3",
             "state": null,
             "twitter_handle": null,
             "tzid": null,
@@ -282,18 +282,18 @@ Creates a user
             "unsubscribe_mentor_digest_email": null,
             "unsubscribed_from_letters": null,
             "updated_by": "API",
-            "updated_on": "2020-07-20T19:53:00+00:00",
+            "updated_on": "2020-07-24T17:27:39+00:00",
             "verified_at": null,
             "website_url": null,
             "zip": null
         },
-        "email": "testdemistouser20july@paloaltonetworks.com",
+        "email": "testdemistouser24july@paloaltonetworks.com",
         "errorCode": null,
         "errorMessage": null,
-        "id": 4931489,
+        "id": 4933374,
         "instanceName": "ExceedLMSITAdmin",
         "success": true,
-        "username": "testXoar20July@paloaltonetworks.com"
+        "username": "testXoar24July@paloaltonetworks.com"
     }
 }
 ```
@@ -303,7 +303,7 @@ Creates a user
 >### Create Exceed LMS User:
 >|brand|instanceName|success|active|id|username|email|details|
 >|---|---|---|---|---|---|---|---|
->| Exceed LMS IT Admin | ExceedLMSITAdmin | true | true | 4931489 | testXoar20July@paloaltonetworks.com | testdemistouser20july@paloaltonetworks.com | id: 4931489<br/>account_id: 1193<br/>position_id: null<br/>picture_id: null<br/>is_active: true<br/>authority: student<br/>full_name: testmydesmisto20 test1<br/>first_name: testMydesmisto20<br/>last_name: test1<br/>login: testxoar20july@paloaltonetworks.com<br/>code: i-4931489<br/>tzid: null<br/>hired_on: null<br/>manager_id: null<br/>custom_a: null<br/>custom_b: null<br/>custom_c: null<br/>custom_d: null<br/>custom_e: null<br/>custom_f: null<br/>custom_g: null<br/>custom_h: null<br/>custom_i: null<br/>custom_j: null<br/>email: testdemistouser20july@paloaltonetworks.com<br/>phone_work: null<br/>phone_mobile: null<br/>phone_fax: null<br/>phone_home: null<br/>address_one: null<br/>address_two: null<br/>city: null<br/>state: null<br/>zip: null<br/>updated_by: API<br/>updated_on: 2020-07-20T19:53:00+00:00<br/>is_pass_reset_required: false<br/>registration_id: null<br/>hide_welcome_page: false<br/>country: null<br/>is_account_owner: false<br/>integration_id: null<br/>last_login_at: null<br/>locale: en<br/>remember_me_token: pinNwrDNYgZsMthFKVt2FiNY<br/>registration_code: null<br/>password_hash: null<br/>password_salt: null<br/>organization_id: 2702<br/>google_auth: null<br/>created_on: 2020-07-20T19:53:00+00:00<br/>custom_k: null<br/>custom_l: null<br/>custom_m: null<br/>custom_n: null<br/>custom_o: null<br/>custom_p: null<br/>custom_q: null<br/>custom_r: null<br/>custom_s: null<br/>custom_t: null<br/>custom_u: null<br/>facebook_id: null<br/>provider: null<br/>uid: null<br/>external_avatar_url: null<br/>unread_notifications_count: 0<br/>recovery_email: null<br/>recovery_token: null<br/>is_onboarded: false<br/>hero_picture_id: null<br/>latitude: null<br/>longitude: null<br/>registered_at: null<br/>public_profile: false<br/>company_name: null<br/>description: null<br/>profile_url: testmydesmisto20test135543961<br/>deletion_requested_at: null<br/>accepted_catcat_terms_of_service: null<br/>is_topic_onboarded: null<br/>onet_occupation_id: null<br/>unsubscribed_from_letters: null<br/>rehired_on: null<br/>unsubscribe_mentor_digest_email: null<br/>login_disabled_at: null<br/>twitter_handle: null<br/>website_url: null<br/>linkedin_url: null<br/>verified_at: null<br/>facebook_as_id: null<br/>dismissed_in_app_callouts: <br/>address_three: null<br/>job_title: null |
+>| Exceed LMS IT Admin | ExceedLMSITAdmin | true | true | 4933374 | testXoar24July@paloaltonetworks.com | testdemistouser24july@paloaltonetworks.com | id: 4933374<br/>account_id: 1193<br/>position_id: null<br/>picture_id: null<br/>is_active: true<br/>authority: student<br/>full_name: testmydesmisto24 test2<br/>first_name: testMydesmisto24<br/>last_name: test2<br/>login: testxoar24july@paloaltonetworks.com<br/>code: i-4933374<br/>tzid: null<br/>hired_on: null<br/>manager_id: null<br/>custom_a: null<br/>custom_b: null<br/>custom_c: null<br/>custom_d: null<br/>custom_e: null<br/>custom_f: null<br/>custom_g: null<br/>custom_h: null<br/>custom_i: null<br/>custom_j: null<br/>email: testdemistouser24july@paloaltonetworks.com<br/>phone_work: null<br/>phone_mobile: null<br/>phone_fax: null<br/>phone_home: null<br/>address_one: null<br/>address_two: null<br/>city: null<br/>state: null<br/>zip: null<br/>updated_by: API<br/>updated_on: 2020-07-24T17:27:39+00:00<br/>is_pass_reset_required: false<br/>registration_id: null<br/>hide_welcome_page: false<br/>country: null<br/>is_account_owner: false<br/>integration_id: null<br/>last_login_at: null<br/>locale: en<br/>remember_me_token: JvD1hJkJwv4LtzjpLbjT6ki3<br/>registration_code: null<br/>password_hash: null<br/>password_salt: null<br/>organization_id: 2702<br/>google_auth: null<br/>created_on: 2020-07-24T17:27:39+00:00<br/>custom_k: null<br/>custom_l: null<br/>custom_m: null<br/>custom_n: null<br/>custom_o: null<br/>custom_p: null<br/>custom_q: null<br/>custom_r: null<br/>custom_s: null<br/>custom_t: null<br/>custom_u: null<br/>facebook_id: null<br/>provider: null<br/>uid: null<br/>external_avatar_url: null<br/>unread_notifications_count: 0<br/>recovery_email: null<br/>recovery_token: null<br/>is_onboarded: false<br/>hero_picture_id: null<br/>latitude: null<br/>longitude: null<br/>registered_at: null<br/>public_profile: false<br/>company_name: null<br/>description: null<br/>profile_url: testmydesmisto24test24b9c1f8d<br/>deletion_requested_at: null<br/>accepted_catcat_terms_of_service: null<br/>is_topic_onboarded: null<br/>onet_occupation_id: null<br/>unsubscribed_from_letters: null<br/>rehired_on: null<br/>unsubscribe_mentor_digest_email: null<br/>login_disabled_at: null<br/>twitter_handle: null<br/>website_url: null<br/>linkedin_url: null<br/>verified_at: null<br/>facebook_as_id: null<br/>dismissed_in_app_callouts: <br/>address_three: null<br/>job_title: null |
 
 
 ### update-user
