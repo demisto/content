@@ -262,16 +262,11 @@ def params_to_filter(parameters):
     return filters
 
 
-def test_module(client, is_fetch):
+def test_module(client):
     try:
         client.list_alerts(url_suffix='/alerts/', request_data={"severity": {"eq": 0}})
     except DemistoException as e:
         return str(e)
-    if is_fetch:
-        try:
-            client.list_incidents(filters={}, limit=20)
-        except DemistoException as e:
-            return str(e)
     return 'ok'
 
 
@@ -559,7 +554,7 @@ def main():
             proxy=proxy)
 
         if demisto.command() == 'test-module':
-            result = test_module(client, is_fetch)
+            result = test_module(client)
             demisto.results(result)
 
         elif demisto.command() == 'fetch-incidents':
