@@ -814,7 +814,7 @@ def main():
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
-    private_storage_bucket = storage_client.bucket(private_bucket_name)  # TODO : when is private_bucket_name None?
+    private_storage_bucket = storage_client.bucket(private_bucket_name)
     default_storage_bucket = private_storage_bucket if is_private_build else storage_bucket
 
     # content repo client initialized
