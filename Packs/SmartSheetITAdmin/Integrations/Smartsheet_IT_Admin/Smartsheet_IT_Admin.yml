@@ -161,6 +161,7 @@ script:
         transferSheets and transferTo.'
       name: customMapping
     description: This command removes the user.
+    execution: true
     name: disable-user
     outputs:
     - contextPath: DisableUser
