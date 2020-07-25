@@ -556,7 +556,7 @@ def main():
 
         if demisto.command() == 'test-module':
             result = test_module(client)
-            demisto.results(result)
+            return_results(result)
 
         elif demisto.command() == 'fetch-incidents':
             params = demisto.params()
