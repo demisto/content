@@ -72,7 +72,7 @@ description: Defines key assets relevant to your brand, industry, and geolocatio
 display: Sixgill Deep Insights
 name: Sixgill
 script:
-  dockerimage: demisto/sixgill:1.0.0.8958
+  dockerimage: demisto/sixgill:1.0.0.7092
   feed: false
   isfetch: true
   longRunning: false
