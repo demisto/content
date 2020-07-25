@@ -161,61 +161,61 @@ script:
     execution: false
     name: microsoft-cas-alerts-list
     outputs:
-    - contextPath: MicrosoftCloudAppSecurity.Alert._id
+    - contextPath: MicrosoftCloudAppSecurity.Alerts._id
       description: Alert id
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.Alert.timestamp
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.timestamp
       description: Alert date
       type: Date
-    - contextPath: MicrosoftCloudAppSecurity.Alert.entities.id
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.entities.id
       description: Alert entities id
       type: Number
-    - contextPath: MicrosoftCloudAppSecurity.Alert.entities.label
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.entities.label
       description: Alert entities label
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.Alert.entities.type
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.entities.type
       description: Alert entities type
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.Alert.entities.inst
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.entities.inst
       description: Alert entities instance
       type: Number
-    - contextPath: MicrosoftCloudAppSecurity.Alert.entities.saas
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.entities.saas
       description: Alert entities saas
       type: Number
-    - contextPath: MicrosoftCloudAppSecurity.Alert.title
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.title
       description: Alert title
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.Alert.description
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.description
       description: Alert description
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.Alert.policy.id
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.policy.id
       description: Alert policy id
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.Alert.policy.label
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.policy.label
       description: Alert policy label
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.Alert.policy.policyType
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.policy.policyType
       description: Alert policy policyType
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.Alert.threatScore
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.threatScore
       description: Alert threatScore
       type: Number
-    - contextPath: MicrosoftCloudAppSecurity.Alert.isSystemAlert
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.isSystemAlert
       description: Alert isSystemAlert
       type: Number
-    - contextPath: MicrosoftCloudAppSecurity.Alert.statusValue
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.statusValue
       description: Alert statusValue
       type: Number
-    - contextPath: MicrosoftCloudAppSecurity.Alert.severityValue
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.severityValue
       description: Alert severityValue
       type: Number
-    - contextPath: MicrosoftCloudAppSecurity.Alert.handledByUser
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.handledByUser
       description: Alert handledByUser
       type: Unknown
-    - contextPath: MicrosoftCloudAppSecurity.Alert.comment
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.comment
       description: Alert comment
       type: Unknown
-    - contextPath: MicrosoftCloudAppSecurity.Alert.resolveTime
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.resolveTime
       description: Alert resolveTime
       type: Date
   - arguments:
