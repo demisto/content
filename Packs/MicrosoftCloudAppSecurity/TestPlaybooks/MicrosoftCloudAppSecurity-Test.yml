@@ -1,0 +1,964 @@
+id: MicrosoftCloudAppSecurity-Test
+name: MicrosoftCloudAppSecurity-Test
+version: -1
+fromversion: 4.5.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '0'
+    type: start
+    task:
+      id: '0'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: '1'
+    type: regular
+    task:
+      id: '1'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '2'
+    type: regular
+    task:
+      id: '2'
+      version: -1
+      name: microsoft-cas-alert-dismiss-bulk
+      description: ''
+      script: '|||microsoft-cas-alert-dismiss-bulk'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: '3'
+    type: condition
+    task:
+      id: '3'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.AlertDismiss.dismissed
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: '4'
+    type: regular
+    task:
+      id: '4'
+      version: -1
+      name: microsoft-cas-alerts-list
+      description: ''
+      script: '|||microsoft-cas-alerts-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: '5'
+    type: condition
+    task:
+      id: '5'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Alert._id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Alert.timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Alert.entities.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Alert.entities.label
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Alert.entities.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Alert.entities.inst
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Alert.entities.saas
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Alert.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Alert.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Alert.policy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Alert.policy.label
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Alert.policy.policyType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Alert.threatScore
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Alert.isSystemAlert
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Alert.statusValue
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Alert.severityValue
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Alert.handledByUser
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Alert.comment
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Alert.resolveTime
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: '6'
+    type: regular
+    task:
+      id: '6'
+      version: -1
+      name: microsoft-cas-alert-resolve-bulk
+      description: ''
+      script: '|||microsoft-cas-alert-resolve-bulk'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: '7'
+    taskid: '7'
+    type: condition
+    task:
+      id: '7'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.AlertResolve.resolved
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: '8'
+    type: regular
+    task:
+      id: '8'
+      version: -1
+      name: microsoft-cas-activities-list
+      description: ''
+      script: '|||microsoft-cas-activities-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: '9'
+    taskid: '9'
+    type: condition
+    task:
+      id: '9'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities._id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.saasId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.instantiation
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.eventTypeValue
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.device.clientIP
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.device.userAgent
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.device.countryCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.location.countryCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.location.city
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.location.region
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.location.longitude
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.location.latitude
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.location.categoryValue
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.user.userName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.userAgent.family
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.userAgent.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.userAgent.operatingSystem.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.userAgent.operatingSystem.family
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.userAgent.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.userAgent.typeName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.userAgent.version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.userAgent.deviceType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.userAgent.nativeBrowser
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.userAgent.os
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.userAgent.browser
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.mainInfo.eventObjects.instanceId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.mainInfo.eventObjects.saasId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.mainInfo.eventObjects.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.mainInfo.activityResult.isSuccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.mainInfo.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.confidenceLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.resolvedActor.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.resolvedActor.saasId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.resolvedActor.instanceId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.resolvedActor.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.eventTypeName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.classifications
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.entityData.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.entityData.id.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.entityData.resolved
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.genericEventType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Activities.severity
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: 10
+    taskid: '10'
+    type: regular
+    task:
+      id: '10'
+      version: -1
+      name: microsoft-cas-files-list
+      description: ''
+      script: '|||microsoft-cas-files-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: '11'
+    taskid: '11'
+    type: condition
+    task:
+      id: '11'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Files._id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Files.saasId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Files.instId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Files.fileSize
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Files.createdDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Files.modifiedDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Files.parentId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Files.ownerName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Files.isFolder
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Files.fileType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Files.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Files.isForeign
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Files.noGovernance
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Files.fileAccessLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Files.ownerAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Files.externalShares
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Files.domains
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Files.mimeType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Files.ownerExternal
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Files.fileExtension
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Files.groupIds
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Files.groups
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Files.collaborators
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Files.fileStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Files.appName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Files.actions.task_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.Files.actions.type
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: 12
+    taskid: '12'
+    type: regular
+    task:
+      id: '12'
+      version: -1
+      name: microsoft-cas-users-accounts-list
+      description: ''
+      script: '|||microsoft-cas-users-accounts-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: '13'
+    taskid: '13'
+    type: condition
+    task:
+      id: '13'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '14'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.UsersAccounts.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.UsersAccounts.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.UsersAccounts._id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.UsersAccounts.isAdmin
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.UsersAccounts.isExternal
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.UsersAccounts.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.UsersAccounts.role
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.UsersAccounts.organization
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.UsersAccounts.lastSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.UsersAccounts.domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.UsersAccounts.threatScore
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.UsersAccounts.idType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.UsersAccounts.isFake
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.UsersAccounts.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.UsersAccounts.actions.task_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.UsersAccounts.actions.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.UsersAccounts.accounts._id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.UsersAccounts.accounts.inst
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.UsersAccounts.accounts.saas
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.UsersAccounts.accounts.dn
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.UsersAccounts.accounts.aliases
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.UsersAccounts.accounts.isFake
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.UsersAccounts.accounts.em
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.UsersAccounts.accounts.actions.task_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.UsersAccounts.accounts.actions.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.UsersAccounts.userGroups._id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.UsersAccounts.userGroups.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.UsersAccounts.userGroups.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftCloudAppSecurity.UsersAccounts.userGroups.usersCount
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '14':
+    id: '14'
+    taskid: '14'
+    type: title
+    task:
+      id: '14'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
+  380, "x": 50, "y": 50}}}'
+inputs: []
+outputs: []
