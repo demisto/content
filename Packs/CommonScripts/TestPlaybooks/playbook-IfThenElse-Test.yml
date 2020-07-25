@@ -234,10 +234,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: eb3af598-6284-4a20-8e52-9bc3f5683cc5
+    taskid: a709a128-e029-4b58-89f1-4848992ce632
     type: regular
     task:
-      id: eb3af598-6284-4a20-8e52-9bc3f5683cc5
+      id: a709a128-e029-4b58-89f1-4848992ce632
       version: -1
       name: Set outputA using transformer
       description: Sets a value into the context with the given context key
@@ -258,7 +258,7 @@ tasks:
         complex:
           root: inputA
           transformers:
-          - operator: 522005d9-fcd8-4703-8760-97d8d8dd4537
+          - operator: If-Then-Else
             args:
               else:
                 value:
@@ -405,10 +405,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: c0e2c561-a2f7-4796-8ded-535910c8a047
+    taskid: f911d8ad-79cf-4465-8362-3456a5481d4e
     type: regular
     task:
-      id: c0e2c561-a2f7-4796-8ded-535910c8a047
+      id: f911d8ad-79cf-4465-8362-3456a5481d4e
       version: -1
       name: Set outputB using transformer
       description: Sets a value into the context with the given context key
@@ -429,7 +429,7 @@ tasks:
         complex:
           root: inputB
           transformers:
-          - operator: 522005d9-fcd8-4703-8760-97d8d8dd4537
+          - operator: If-Then-Else
             args:
               else:
                 value:
