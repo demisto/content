@@ -267,7 +267,7 @@ def test_module(client):
         client.list_alerts(url_suffix='/alerts/', request_data={"severity": {"eq": 0}})
     except DemistoException as e:
         if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set.'
+            return 'Authorization Error: make sure API Key is correctly set'
         else:
             return str(e)
     return 'ok'
