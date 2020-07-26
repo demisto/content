@@ -373,6 +373,7 @@ jobs:
             - *add_ssh_keys
             - *prepare_environment
             - *secrets
+            - *create_id_set
             - *validate_files_and_yaml
             - run:
                 name: Content Docs Site
