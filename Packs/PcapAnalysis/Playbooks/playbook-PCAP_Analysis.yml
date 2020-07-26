@@ -1,7 +1,7 @@
 id: PCAP Analysis
 version: -1
 name: PCAP Analysis
-description: 'This playbook leverages all of the PCAP miner  and PCAP file extractor
+description: 'This playbook leverages all of the PCAP miner and PCAP file extractor related
   sub playbooks capabilities including: * Search for specific values in a PCAP file
   * Parse and enrich detected indicators found by the search such as IP addresses,
   URLs, email addresses and domains. * Carve (extract) files found in the http, smb
