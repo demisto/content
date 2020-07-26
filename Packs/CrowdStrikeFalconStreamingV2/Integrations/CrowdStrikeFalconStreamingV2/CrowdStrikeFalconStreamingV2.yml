@@ -90,5 +90,5 @@ script:
 fromversion: 5.0.0
 tests:
   - No test
-defaultClassifier: crowdstrike-streaming-api
-defaultMapperIn: crowdstrike-streaming-api-mapper
+defaultclassifier: crowdstrike-streaming-api
+defaultmapperin: crowdstrike-streaming-api-mapper
