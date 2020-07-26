@@ -573,24 +573,23 @@ INCIDENTS = [
               ' "createTime": 1594568804000, "lastUpdateTime": 1594568804000, "audits":'
               ' [{"id": "5f0b3064e4b0ba4baf5c1111", "type": "VAULT_LOGON", "sensorType": "VAULT",'
               ' "action": "Logon", "createTime": 1594568804000, "vaultUser": "Administrator",'
-              ' "source": {"mOriginalAddress": "46.116.46.136", "mResolvedAddress":'
-              ' {"mOriginalAddress": "46.116.46.136", "mAddress": "46.116.46.136", "mHostName": "46-116-46-136",'
-              ' "mFqdn": "46-116-46-136.bb.netvision.net.il"}}, "cloudData": {}}], "additionalData":'
-              ' {"station": "46.116.46.136", "reason": "ip", "vault_user": "administrator"}, "mStatus": "OPEN"}'},
+              ' "source": {"mOriginalAddress": "17.111.13.67", "mResolvedAddress":'
+              ' {"mOriginalAddress": "17.111.13.67", "mAddress": "17.111.13.67", "mHostName": "17.111.13.67",'
+              ' "mFqdn": "17.111.13.67.bb.netvision.net.il"}}, "cloudData": {}}], "additionalData":'
+              ' {"station": "17.111.13.67", "reason": "ip", "vault_user": "administrator"}, "mStatus": "OPEN"}'},
   {'name': 'CyberArk PAS Incident: 5f0b4320e4b0ba4baf5c2b05.', 'occurred': '2020-07-12T17:06:40.000Z', 'severity': 1,
    'rawJSON': '{"id": "5f0b4320e4b0ba4baf5c2b05", "type": "VaultViaIrregularIp", "score": 29.414062500000004,'
               ' "createTime": 1594573600000, "lastUpdateTime": 1594573600000, "audits":'
               ' [{"id": "5f0b4320e4b0ba4baf5c2b03", "type": "VAULT_LOGON", "sensorType": "VAULT", "action": "Logon",'
               ' "createTime": 1594573600000, "vaultUser": "Administrator", "source": {"mOriginalAddress":'
-              ' "46.116.46.136", "mResolvedAddress": {"mOriginalAddress": "46.116.46.136", "mAddress": "46.116.46.136",'
-              ' "mHostName": "46-116-46-136", "mFqdn": "46-116-46-136.bb.netvision.net.il"}}, "cloudData": {}}],'
-              ' "additionalData": {"station": "46.116.46.136", "reason": "ip", "vault_user": "administrator"},'
+              ' "17.111.13.67", "mResolvedAddress": {"mOriginalAddress": "17.111.13.67", "mAddress": "17.111.13.67",'
+              ' "mHostName": "17.111.13.67", "mFqdn": "17.111.13.67.bb.netvision.net.il"}}, "cloudData": {}}],'
+              ' "additionalData": {"station": "17.111.13.67", "reason": "ip", "vault_user": "administrator"},'
               ' "mStatus": "OPEN"}'}]
 
-INCIDENTS2 = [{'name': 'CyberArk PAS Incident: 5f0b4e53e4b0ba4baf5c43ed.', 'occurred': '2020-07-12T17:54:27.000Z', 'severity': 1, 'rawJSON': '{"id": "5f0b4e53e4b0ba4baf5c43ed", "type": "VaultViaIrregularIp", "score": 29.414062500000004, "createTime": 1594576467000, "lastUpdateTime": 1594576467000, "audits": [{"id": "5f0b4e53e4b0ba4baf5c43eb", "type": "VAULT_LOGON", "sensorType": "VAULT", "action": "Logon", "createTime": 1594576467000, "vaultUser": "Administrator", "source": {"mOriginalAddress": "46.116.46.136", "mResolvedAddress": {"mOriginalAddress": "46.116.46.136", "mAddress": "46.116.46.136", "mHostName": "46-116-46-136", "mFqdn": "46-116-46-136.bb.netvision.net.il"}}, "cloudData": {}}], "additionalData": {"station": "46.116.46.136", "reason": "ip", "vault_user": "administrator"}, "mStatus": "OPEN"}'}]
+INCIDENTS2 = [{'name': 'CyberArk PAS Incident: 5f0b4e53e4b0ba4baf5c43ed.', 'occurred': '2020-07-12T17:54:27.000Z', 'severity': 1, 'rawJSON': '{"id": "5f0b4e53e4b0ba4baf5c43ed", "type": "VaultViaIrregularIp", "score": 29.414062500000004, "createTime": 1594576467000, "lastUpdateTime": 1594576467000, "audits": [{"id": "5f0b4e53e4b0ba4baf5c43eb", "type": "VAULT_LOGON", "sensorType": "VAULT", "action": "Logon", "createTime": 1594576467000, "vaultUser": "Administrator", "source": {"mOriginalAddress": "17.111.13.67", "mResolvedAddress": {"mOriginalAddress": "17.111.13.67", "mAddress": "17.111.13.67", "mHostName": "17.111.13.67", "mFqdn": "17.111.13.67.bb.netvision.net.il"}}, "cloudData": {}}], "additionalData": {"station": "17.111.13.67", "reason": "ip", "vault_user": "administrator"}, "mStatus": "OPEN"}'}]
 
-INCIDENTS3 = [
-  {'name': 'CyberArk PAS Incident: 5f13f770e4b0ba4baf5ee890.',
+INCIDENTS3 =[{'name': 'CyberArk PAS Incident: 5f13f770e4b0ba4baf5ee890.',
   'occurred': '2020-07-19T07:34:08.000Z',
   'rawJSON': '{"id": "5f13f770e4b0ba4baf5ee890", "type": '
              '"VaultViaIrregularIp", "score": 27.656250000000004, '
@@ -598,21 +597,21 @@ INCIDENTS3 = [
              '"audits": [{"id": "5f13f770e4b0ba4baf5ee88e", "type": '
              '"VAULT_LOGON", "sensorType": "VAULT", "action": "Logon", '
              '"createTime": 1595144048000, "vaultUser": "Administrator", '
-             '"source": {"mOriginalAddress": "82.166.99.178"}, "cloudData": '
-             '{}}], "additionalData": {"station": "82.166.99.178", "reason": '
+             '"source": {"mOriginalAddress": "17.111.13.67"}, "cloudData": '
+             '{}}], "additionalData": {"station": "17.111.13.67", "reason": '
              '"ip", "vault_user": "administrator"}, "mStatus": "OPEN"}',
   'severity': 1},
  {'name': 'CyberArk PAS Incident: 5f13f7ade4b0ba4baf5ee9b0.',
   'occurred': '2020-07-19T07:35:09.000Z',
   'rawJSON': '{"id": "5f13f7ade4b0ba4baf5ee9b0", "type": '
-             '"VaultViaIrregularIp", "score": 98.65625, '
-             '"createTime": 1595144109000, "lastUpdateTime": 1595144109000, '
-             '"audits": [{"id": "5f13f7ade4b0ba4baf5ee9ad", "type": '
-             '"VAULT_LOGON", "sensorType": "VAULT", "action": "Logon", '
-             '"createTime": 1595144109000, "vaultUser": "Administrator", '
-             '"source": {"mOriginalAddress": "82.166.99.178"}, "cloudData": '
-             '{}}], "additionalData": {"station": "82.166.99.178", "reason": '
-             '"ip", "vault_user": "administrator"}, "mStatus": "OPEN"}',
+             '"VaultViaIrregularIp", "score": 98.65625, "createTime": '
+             '1595144109000, "lastUpdateTime": 1595144109000, "audits": '
+             '[{"id": "5f13f7ade4b0ba4baf5ee9ad", "type": "VAULT_LOGON", '
+             '"sensorType": "VAULT", "action": "Logon", "createTime": '
+             '1595144109000, "vaultUser": "Administrator", "source": '
+             '{"mOriginalAddress": "17.111.13.67"}, "cloudData": {}}], '
+             '"additionalData": {"station": "17.111.13.67", "reason": "ip", '
+             '"vault_user": "administrator"}, "mStatus": "OPEN"}',
   'severity': 3},
  {'name': 'CyberArk PAS Incident: 5f13f7e8e4b0ba4baf5eead5.',
   'occurred': '2020-07-19T07:36:08.000Z',
@@ -622,8 +621,8 @@ INCIDENTS3 = [
              '"audits": [{"id": "5f13f7e8e4b0ba4baf5eead3", "type": '
              '"VAULT_LOGON", "sensorType": "VAULT", "action": "Logon", '
              '"createTime": 1595144168000, "vaultUser": "Administrator", '
-             '"source": {"mOriginalAddress": "82.166.99.178"}, "cloudData": '
-             '{}}], "additionalData": {"station": "82.166.99.178", "reason": '
+             '"source": {"mOriginalAddress": "17.111.13.67"}, "cloudData": '
+             '{}}], "additionalData": {"station": "17.111.13.67", "reason": '
              '"ip", "vault_user": "administrator"}, "mStatus": "OPEN"}',
   'severity': 1},
  {'name': 'CyberArk PAS Incident: 5f13f824e4b0ba4baf5eebf8.',
@@ -634,8 +633,8 @@ INCIDENTS3 = [
              '"audits": [{"id": "5f13f824e4b0ba4baf5eebf6", "type": '
              '"VAULT_LOGON", "sensorType": "VAULT", "action": "Logon", '
              '"createTime": 1595144228000, "vaultUser": "Administrator", '
-             '"source": {"mOriginalAddress": "82.166.99.178"}, "cloudData": '
-             '{}}], "additionalData": {"station": "82.166.99.178", "reason": '
+             '"source": {"mOriginalAddress": "17.111.13.67"}, "cloudData": '
+             '{}}], "additionalData": {"station": "17.111.13.67", "reason": '
              '"ip", "vault_user": "administrator"}, "mStatus": "OPEN"}',
   'severity': 1},
  {'name': 'CyberArk PAS Incident: 5f13f861e4b0ba4baf5eed1c.',
@@ -646,11 +645,10 @@ INCIDENTS3 = [
              '"audits": [{"id": "5f13f861e4b0ba4baf5eed1a", "type": '
              '"VAULT_LOGON", "sensorType": "VAULT", "action": "Logon", '
              '"createTime": 1595144289000, "vaultUser": "Administrator", '
-             '"source": {"mOriginalAddress": "82.166.99.178"}, "cloudData": '
-             '{}}], "additionalData": {"station": "82.166.99.178", "reason": '
+             '"source": {"mOriginalAddress": "17.111.13.67"}, "cloudData": '
+             '{}}], "additionalData": {"station": "17.111.13.67", "reason": '
              '"ip", "vault_user": "administrator"}, "mStatus": "OPEN"}',
-  'severity': 1}
-]
+  'severity': 1}]
 
 INCIDENTS4 = [{'name': 'CyberArk PAS Incident: 5f13f7ade4b0ba4baf5ee9b0.',
   'occurred': '2020-07-19T07:35:09.000Z',
@@ -660,8 +658,8 @@ INCIDENTS4 = [{'name': 'CyberArk PAS Incident: 5f13f7ade4b0ba4baf5ee9b0.',
              '[{"id": "5f13f7ade4b0ba4baf5ee9ad", "type": "VAULT_LOGON", '
              '"sensorType": "VAULT", "action": "Logon", "createTime": '
              '1595144109000, "vaultUser": "Administrator", "source": '
-             '{"mOriginalAddress": "82.166.99.178"}, "cloudData": {}}], '
-             '"additionalData": {"station": "82.166.99.178", "reason": "ip", '
+             '{"mOriginalAddress": "17.111.13.67"}, "cloudData": {}}], '
+             '"additionalData": {"station": "17.111.13.67", "reason": "ip", '
              '"vault_user": "administrator"}, "mStatus": "OPEN"}',
   'severity': 3},
  {'name': 'CyberArk PAS Incident: 5f13f89fe4b0ba4baf5eee4b.',
@@ -672,8 +670,8 @@ INCIDENTS4 = [{'name': 'CyberArk PAS Incident: 5f13f7ade4b0ba4baf5ee9b0.',
              '[{"id": "5f13f89fe4b0ba4baf5eee49", "type": "VAULT_LOGON", '
              '"sensorType": "VAULT", "action": "Logon", "createTime": '
              '1595144351000, "vaultUser": "Administrator", "source": '
-             '{"mOriginalAddress": "82.166.99.178"}, "cloudData": {}}], '
-             '"additionalData": {"station": "82.166.99.178", "reason": "ip", '
+             '{"mOriginalAddress": "17.111.13.67"}, "cloudData": {}}], '
+             '"additionalData": {"station": "17.111.13.67", "reason": "ip", '
              '"vault_user": "administrator"}, "mStatus": "OPEN"}',
   'severity': 2},
  {'name': 'CyberArk PAS Incident: 5ebd5480e4b07501bd67d51c.',

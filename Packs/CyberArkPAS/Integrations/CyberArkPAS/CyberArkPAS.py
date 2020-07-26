@@ -48,7 +48,7 @@ def parse_date_range_expire_date(date_range):
     elif 'year' in unit:
         end_time = start_time + timedelta(days=number * 365)
 
-    return str(time.mktime(end_time.timetuple()) * 1000)
+    return str(int(time.mktime(end_time.timetuple()) * 1000))
 
 
 def incident_priority_to_dbot_score(score: float) -> int:
@@ -558,8 +558,6 @@ def test_module(
     :param client: the client object with an access token
     :return: ok if got a valid accesses token
     """
-    client._logout()
-
     start, _ = parse_date_range("7 days")
     start_time_timestamp = str(date_to_timestamp(start))
     security_events = client.get_security_events(start_time_timestamp)
@@ -621,7 +619,6 @@ def add_user_command(
         expiry_date_epoch = parse_date_range_expire_date(expiry_date)
     else:
         expiry_date_epoch = ""
-
     response = client.add_user(username, user_type, non_authorized_interfaces_list, expiry_date_epoch, password,
                                change_password_on_the_next_logon, password_never_expires, vault_authorization_list,
                                description, email, first_name, last_name, enable_user, profession, distinguished_name,
