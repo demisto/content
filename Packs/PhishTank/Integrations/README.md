@@ -1,5 +1,5 @@
 PhishTank is a free community site where anyone can submit, verify, track and share phishing data
-This integration was integrated and tested with version xx of PhishTank
+
 ## Configure PhishTank on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -14,7 +14,7 @@ This integration was integrated and tested with version xx of PhishTank
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### url
 ***
@@ -35,13 +35,13 @@ Check URL Reputation
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| URL.Data | unknown | Bad URLs found | 
-| URL.Malicious.Vendor | unknown | For malicious URLs, the vendor that made the decision | 
-| URL.Malicious.Description | unknown | For malicious URLs, the reason for the vendor to make the decision | 
-| DBotScore.Indicator | unknown | The indicator we tested | 
-| DBotScore.Type | unknown | The type of the indicator | 
-| DBotScore.Vendor | unknown | Vendor used to calculate the score | 
-| DBotScore.Score | unknown | The actual score | 
+| URL.Data | String | Bad URLs found | 
+| URL.Malicious.Vendor | String | For malicious URLs, the vendor that made the decision | 
+| URL.Malicious.Description | String | For malicious URLs, the reason for the vendor to make the decision | 
+| DBotScore.Indicator | String | The indicator we tested | 
+| DBotScore.Type | String | The type of the indicator | 
+| DBotScore.Vendor | String | Vendor used to calculate the score | 
+| DBotScore.Score | Number | The actual score | 
 
 
 #### Command Example
@@ -62,8 +62,7 @@ Reload PhishTank database
 `phishtank-reload`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+This command does not require inputs.
 
 
 #### Context Output
@@ -88,8 +87,7 @@ Show PhishTank database status
 `phishtank-status`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+This command does not require inputs.
 
 
 #### Context Output
