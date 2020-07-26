@@ -14,7 +14,13 @@
         },
         {
             "integrations": "ServiceDeskPlus",
-            "playbookID": "Service Desk Plus Test"
+            "playbookID": "Service Desk Plus Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "ServiceDeskPlus",
+            "playbookID": "Service Desk Plus - Generic Polling Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Group-IB TDS Polygon",
@@ -2845,9 +2851,16 @@
             "timeout": 500
         },
         {
+            "integrations": "Ivanti Heat",
+            "playbookID": "Ivanti Heat - Test"
+        },
+        {
             "integrations": "Blueliv ThreatCompass",
             "playbookID": "Blueliv_ThreatCompass_test",
             "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "IfThenElse-Test"
         }
     ],
     "skipped_tests": {
@@ -2857,11 +2870,11 @@
         "RedLockTest": "Issue 24600",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 25477",
         "SentinelOne V2 - test": "Issue 24933",
-        "SignalSciences-Test": "Issue 24934",
         "Maltiverse Test": "Issue 24335",
         "TestDedupIncidentsPlaybook": "Issue 24344",
         "CreateIndicatorFromSTIXTest": "Issue 24345",
         "SNDBOX_Test": "Issue 24349",
+        "Endpoint data collection test": "Uses a deprecated playbook called Endpoint data collection",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get Prisma Access instance",
         "Prisma_Access-Test": "unskip after we will get Prisma Access instance",
         "Test-Shodan_v2": "Issue 23370",
@@ -2899,8 +2912,6 @@
         "Cortex XDR - IOC - Test": "issue #25598",
         "Create Phishing Classifier V2 ML Test": "Issue 26341",
         "DuoAdmin API test playbook": "Issue 24937",
-        "Mail Sender (New) Test": "Issue 25602",
-        "HTTPListRedirects Basic Test": "Issue 26459",
         "SMB test": "Issue 26454",
         "Infocyte-Test": "Issue 26445",
         "Account Enrichment - Generic v2 - Test": "Issue 26452",
@@ -2909,13 +2920,18 @@
         "Google Chronicle Backstory Asset - Test": "Issue 26460",
         "Keylight v2 - Test": "Issue 26462",
         "AutoFocus V2 test": "Issue 26464",
-        "PAN-OS Create Or Edit Rule Test": "Issue 26465",
         "HybridAnalysis-Test": "Issue 26599",
         "Logzio - Test": "Issue 26729",
         "Tenable.io test": "Issue 26727",
         "Tenable.io Scan Test": "Issue 26727",
         "URL Enrichment - Generic v2 - Test": "Issue 26463",
-        "Fidelis-Test": "Issue 26453"
+        "ThreatConnect v2 - Test": "Issue 26782",
+        "Pwned v2 test": "Issue 26601",
+        "Email Address Enrichment - Generic v2.1 - Test": "Issue 26785",
+        "Tanium v2 - Test": "Issue 26822",
+        "Google Chronicle Backstory List IOCs - Test": "Issue 26461",
+        "EvaluateMLModllAtProduction-Test": "Issue 26849",
+        "hashIncidentFields-test": "Issue 26850"
     },
     "skipped_integrations": {
         
@@ -3007,6 +3023,7 @@
         "SecBI": "Issue 22545",
         "IBM Resilient Systems": "Issue 23722",
         "VxStream": "Issue #23795",
+        "Ivanti Heat": "Issue 26259",
         "Bambenek Consulting Feed": "Issue 26184",
         "AWS - Athena - Beta": "Issue 19834",
         "Blueliv ThreatCompass": "Community contribution",
@@ -3014,6 +3031,7 @@
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tenable.sc": "unstable instance",
+        "ThreatConnect v2": "unstable instance",
         
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Issue 25650",
@@ -3044,7 +3062,8 @@
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Cymulate": "Partner didn't provided test playbook",
-        "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR"
+        "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
+        "Palo Alto Minemeld": "Issue #26878"
     },
     "nightly_integrations": [
         "Lastline v2",
@@ -3053,6 +3072,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "Cherwell": "Submits a file - tests that send files shouldn't be mocked",
         "ThreatConnect v2": "Issue 26794",
         "Infocyte": "Proxy issues",
         "SNDBOX": "Submits a file - tests that send files shouldn't be mocked",
