@@ -10,13 +10,7 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [
-        "Tufin",
-        "TOS",
-        "SecureTrack",
-        "SecureChange",
-        "SecureTrack"
-    ],
+    "tags": [],
     "useCases": [],
     "keywords": [
         "Tufin",
@@ -28,5 +22,8 @@
         "Network Automation",
         "Network Orchestration",
         "Security Policy"
+    ],
+    "githubUser": [
+        "jtmoran"
     ]
 }
