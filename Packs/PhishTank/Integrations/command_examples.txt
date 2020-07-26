@@ -1,0 +1,3 @@
+!phishtank-reload
+!phishtank-status
+!url url=https://www.demisto.com
