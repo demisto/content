@@ -1,4 +1,4 @@
-from typing import Dict, Tuple, List, Any
+from typing import Tuple
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -6,7 +6,6 @@ from CommonServerUserPython import *
 
 import urllib3
 import traceback
-from dateparser import parse
 
 # Disable insecure warnings
 
@@ -70,15 +69,15 @@ def incident_priority_to_dbot_score(score: float) -> int:
     return 0
 
 
-def filter_by_query(events_data: list, query: int):
-    if query == 0:
+def filter_by_score(events_data: list, score: int):
+    if score == 0:
         return events_data
 
-    filtered_event_query = []
+    filtered_event_score = []
     for event in events_data:
-        if event.get("score") >= query:
-            filtered_event_query.append(event)
-    return filtered_event_query
+        if event.get("score") >= score:
+            filtered_event_score.append(event)
+    return filtered_event_score
 
 
 class Client(BaseClient):
@@ -138,7 +137,7 @@ class Client(BaseClient):
             "authenticationMethod": ["AuthTypePass"],
             "location": location,
             "unAuthorizedInterfaces": non_authorized_interfaces,
-            "expiryDate": expiry_date,  # 1577836800
+            "expiryDate": expiry_date,
             "vaultAuthorization": vault_authorization,
             "enableUser": enable_user == "true",
             "changePassOnNextLogon": change_password_on_the_next_logon == "true",
@@ -229,6 +228,9 @@ class Client(BaseClient):
     def activate_user(self,
                       user_id: str
                       ):
+        """
+        This function uses the V1 CyberArk PAS api, currently there is no matching function in V2
+        """
         url_suffix = f"/PasswordVault/WebServices/PIMServices.svc/Users/{user_id}"
 
         self._http_request("PUT", url_suffix, resp_type='text')
@@ -312,6 +314,9 @@ class Client(BaseClient):
                         permissions: list,
                         search_in: str,
                         ):
+        """
+        This function uses the V1 CyberArk PAS api, currently there is no matching function in V2
+        """
         url_suffix = f"/PasswordVault/WebServices/PIMServices.svc/Safes/{safe_name}/Members"
 
         body = {
@@ -344,7 +349,6 @@ class Client(BaseClient):
                         {"Key": "DeleteFolders", "Value": "DeleteFolders" in permissions},
                         {"Key": "MoveAccountsAndFolders", "Value": "MoveAccountsAndFolders" in permissions},
                     ]
-
             }
         }
         return self._http_request("POST", url_suffix, json_data=body)
@@ -392,6 +396,9 @@ class Client(BaseClient):
                            membership_expiration_date: str,
                            permissions: list,
                            ):
+        """
+        This function uses the V1 CyberArk PAS api, currently there is no matching function in V2
+        """
         url_suffix = f"/PasswordVault/WebServices/PIMServices.svc/Safes/{safe_name}/Members/{member_name}"
 
         body = {
@@ -430,6 +437,9 @@ class Client(BaseClient):
                            safe_name: str,
                            member_name: str,
                            ):
+        """
+        This function uses the V1 CyberArk PAS api, currently there is no matching function in V2
+        """
         url_suffix = f"/PasswordVault/WebServices/PIMServices.svc/Safes/{safe_name}/Members/{member_name}"
 
         self._http_request("DELETE", url_suffix, resp_type='text')
@@ -490,6 +500,9 @@ class Client(BaseClient):
     def verify_credentials(self,
                            account_id: str,
                            ):
+        """
+        This function uses the V1 CyberArk PAS api, currently there is no matching function in V2
+        """
         url_suffix = f"/PasswordVault/WebServices/PIMServices.svc/Accounts/{account_id}/VerifyCredentials"
 
         self._http_request("POST", url_suffix, resp_type='text')
@@ -540,11 +553,24 @@ def test_module(
 ) -> str:
     """
     If a client was made then an accesses token was successfully reached,
-    therefor the username and password are valid and a connection was made
+    therefor, the username and password are valid and a connection was made
+    checks that the fetch command works as well, using the client function -
     :param client: the client object with an access token
     :return: ok if got a valid accesses token
     """
     client._logout()
+
+    start, _ = parse_date_range("7 days")
+    start_time_timestamp = str(date_to_timestamp(start))
+    security_events = client.get_security_events(start_time_timestamp)
+    # if there were security events in the last week
+    if security_events:
+        event = security_events[0]
+        if event.get("id") and event.get("type") and event.get("score"):
+            return "ok"
+        else:
+            raise Exception("Security events are not in the right format")
+    # if there were no security events in the last week but the http request seceded
     return "ok"
 
 
@@ -1203,10 +1229,11 @@ def get_security_events_command(
     return results
 
 
-def fetch_incidents(client: Client, last_run: dict,  first_fetch_time: str, query: str,  max_fetch: str = '50')\
+def fetch_incidents(client: Client, last_run: dict,  first_fetch_time: str, score: str,  max_fetch: str = '50')\
         -> Tuple[dict, list]:
 
-    if not last_run:  # if first time fetching
+    # if first time fetching
+    if not last_run:
         start_time, _ = parse_date_range(first_fetch_time)
         start_time_timestamp = str(date_to_timestamp(start_time))
         next_run = {
@@ -1221,7 +1248,7 @@ def fetch_incidents(client: Client, last_run: dict,  first_fetch_time: str, quer
     if not events_data:
         return next_run, []
 
-    filtered_events_data = filter_by_query(events_data, int(query))
+    filtered_events_data = filter_by_score(events_data, int(score))
 
     # the events are sorted from the newest to the oldest so first we reverse the list
     reverse_events_data = filtered_events_data[::-1]
@@ -1274,7 +1301,7 @@ def main():
 
     max_fetch = min('50', params.get('max_fetch', '50'))
     first_fetch_time = params.get('fetch_time', '3 days').strip()
-    query = params.get('query', "0")
+    score = params.get('score', "0")
 
     command = demisto.command()
     LOG(f'Command being called in CyberArkPAS is: {command}')
@@ -1324,7 +1351,7 @@ def main():
                 client=client,
                 last_run=demisto.getLastRun(),
                 first_fetch_time=first_fetch_time,
-                query=query,
+                score=score,
                 max_fetch=max_fetch
             )
             demisto.setLastRun(next_run)

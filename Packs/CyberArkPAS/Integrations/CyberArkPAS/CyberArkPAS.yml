@@ -28,7 +28,7 @@ configuration:
   type: 0
 - defaultvalue: '0'
   display: CyberArk PAS score (0.0-100.0)
-  name: query
+  name: score
   required: false
   type: 0
 - display: Incident type
@@ -43,7 +43,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: The CyberArk's Privileged Access Security (PAS) solution.
+description: The Privileged Access Security solution provides a ‘Safe Haven’ within your enterprise where all your
+  administrative passwords can be securely archived, transferred and shared by authorized users.
 display: CyberArk PAS
 name: CyberArkPAS
 script:
@@ -389,7 +390,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Whether or not to enable Object Level Access Control for the new safe.
+      description: Whether or not to enable Object Level Access Control for the new
+        safe.
       isArray: false
       name: OLAC_enabled
       required: false
@@ -408,7 +410,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The number of days for which password versions are saved in the safe.
+      description: The number of days for which password versions are saved in the
+        safe.
       isArray: false
       name: number_of_days_retention
       required: false
@@ -781,7 +784,8 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: Offset of the first account that is returned in the collection of results.
+      description: Offset of the first account that is returned in the collection
+        of results.
       isArray: false
       name: offset
       required: false

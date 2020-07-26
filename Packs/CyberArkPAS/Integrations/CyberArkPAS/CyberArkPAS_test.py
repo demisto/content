@@ -8,13 +8,15 @@ from Packs.CyberArkPAS.Integrations.CyberArkPAS.CyberArkPAS import Client, add_u
 from Packs.CyberArkPAS.Integrations.CyberArkPAS.test_data.context import ADD_USER_CONTEXT, GET_USERS_CONTEXT, \
     UPDATE_USER_CONTEXT, UPDATE_SAFE_CONTEXT, GET_LIST_SAFES_CONTEXT, GET_SAFE_BY_NAME_CONTEXT, ADD_SAFE_CONTEXT, \
     ADD_SAFE_MEMBER_CONTEXT, UPDATE_SAFE_MEMBER_CONTEXT, LIST_SAFE_MEMBER_CONTEXT, ADD_ACCOUNT_CONTEXT, \
-    UPDATE_ACCOUNT_CONTEXT, GET_LIST_ACCOUNT_CONTEXT, GET_LIST_ACCOUNT_ACTIVITIES_CONTEXT, INCIDENTS, INCIDENTS2
+    UPDATE_ACCOUNT_CONTEXT, GET_LIST_ACCOUNT_CONTEXT, GET_LIST_ACCOUNT_ACTIVITIES_CONTEXT, INCIDENTS, INCIDENTS2, \
+    INCIDENTS3, INCIDENTS4
 from Packs.CyberArkPAS.Integrations.CyberArkPAS.test_data.http_resonses import ADD_USER_RAW_RESPONSE, \
     UPDATE_USER_RAW_RESPONSE, GET_USERS_RAW_RESPONSE, ADD_SAFE_RAW_RESPONSE, UPDATE_SAFE_RAW_RESPONSE, \
     GET_LIST_SAFES_RAW_RESPONSE, GET_SAFE_BY_NAME_RAW_RESPONSE, ADD_SAFE_MEMBER_RAW_RESPONSE, \
     UPDATE_SAFE_MEMBER_RAW_RESPONSE, LIST_SAFE_MEMBER_RAW_RESPONSE, ADD_ACCOUNT_RAW_RESPONSE, \
     UPDATE_ACCOUNT_RAW_RESPONSE, GET_LIST_ACCOUNT_RAW_RESPONSE, GET_LIST_ACCOUNT_ACTIVITIES_RAW_RESPONSE, \
-    GET_SECURITY_EVENTS_RAW_RESPONSE
+    GET_SECURITY_EVENTS_RAW_RESPONSE, GET_SECURITY_EVENTS_WITH_UNNECESSARY_INCIDENT_RAW_RESPONSE, \
+    GET_SECURITY_EVENTS_WITH_15_INCIDENT_RAW_RESPONSE
 
 ADD_USER_ARGS = {
   "change_password_on_the_next_logon": "true",
@@ -185,9 +187,52 @@ def test_fetch_incidents_with_an_incident_that_was_shown_before(mocker):
     client = Client(server_url="https://api.cyberark.com/", username="user1", password="12345", use_ssl=False,
                     proxy=False, max_fetch=50)
 
-    mocker.patch.object(Client, '_http_request', return_value=GET_SECURITY_EVENTS_RAW_RESPONSE)
+    mocker.patch.object(Client, '_http_request', return_value=GET_SECURITY_EVENTS_WITH_UNNECESSARY_INCIDENT_RAW_RESPONSE)
     # the last run dict is the same we would have got if we run the prev test before
     last_run = {'time': 1594573600000, 'last_event_ids': '["5f0b3064e4b0ba4baf5c1113", "5f0b4320e4b0ba4baf5c2b05"]'}
     _, incidents = fetch_incidents(client, last_run, "3 days", "0", "1")
     assert incidents == INCIDENTS2
+
+
+def test_fetch_incidents_with_more_incidents_than_max_size(mocker):
+    """Unit test
+        Given
+        - demisto params
+        - raw response of the http request
+        When
+        - mock the http request result while the result is 15 incidents and we only wish to see 5
+        Then
+        - validate the incidents values, make sure make sure that there are only 5 incidents and that there
+         are the oldest
+        """
+    mocker.patch.object(Client, '_generate_token')
+    client = Client(server_url="https://api.cyberark.com/", username="user1", password="12345", use_ssl=False,
+                    proxy=False, max_fetch=5)
+
+    mocker.patch.object(Client, '_http_request', return_value=GET_SECURITY_EVENTS_WITH_15_INCIDENT_RAW_RESPONSE)
+    _, incidents = fetch_incidents(client, {}, "3 days", "0", max_fetch="5")
+    assert len(incidents) == 5
+    assert incidents == INCIDENTS3
+
+
+def test_fetch_incidents_with_specific_score(mocker):
+    """Unit test
+        Given
+        - demisto params
+        - raw response of the http request
+        When
+        - mock the http request result while the result is 15 incidents and we only wish to see 5
+        Then
+        - validate the incidents values, make sure make sure that there are only 5 incidents and that there
+         are the oldest
+        """
+    mocker.patch.object(Client, '_generate_token')
+    client = Client(server_url="https://api.cyberark.com/", username="user1", password="12345", use_ssl=False,
+                    proxy=False, max_fetch=10)
+
+    mocker.patch.object(Client, '_http_request', return_value=GET_SECURITY_EVENTS_WITH_15_INCIDENT_RAW_RESPONSE)
+    _, incidents = fetch_incidents(client, {}, "3 days", score="50", max_fetch="10")
+    assert len(incidents) == 3
+    assert incidents == INCIDENTS4
+
 
