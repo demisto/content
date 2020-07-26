@@ -141,7 +141,6 @@ class MsGraphClient:
             method='GET',
             url_suffix=f'users/{user}/manager')
         manager_data.pop('@odata.context', None)
-        manager_data.pop('@odata.type', None)
         return manager_data
 
     #  If successful, this method returns 204 No Content response code.
@@ -290,7 +289,7 @@ def get_manager_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     manager_data = client.get_manager(user)
     manager_readable, manager_outputs = parse_outputs(manager_data)
-    human_readable = tableToMarkdown(name=f"{user} data", t=manager_readable, removeNull=True)
+    human_readable = tableToMarkdown(name=f"{user} - manager", t=manager_readable, removeNull=True)
     outputs = {'MSGraphUserManager(val.User == obj.User)': {
         'User': user,
         'Manager': manager_outputs
@@ -303,7 +302,7 @@ def assign_manager_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     manager = args.get('manager')
     client.assign_manager(user, manager)
-    human_readable = f'"{user}" manager assigned. It might take several minutes for the changes to take affect across all ' \
+    human_readable = f'A manager was assigned to user "{user}. It might take several minutes for the changes to take affect across all ' \
                      f'applications. '
     return human_readable, None, None
 

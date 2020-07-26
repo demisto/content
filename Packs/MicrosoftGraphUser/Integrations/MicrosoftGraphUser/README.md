@@ -50,6 +50,9 @@ For more details about the authentication used in this integration, see <a href=
 <li><a href="#get-new-updated-or-deleted-user-information" target="_self">Get new, updated, or deleted user information: msgraph-user-get-delta</a></li>
 <li><a href="#get-user-object-information" target="_self">Get user object information: msgraph-user-get</a></li>
 <li><a href="#get-a-list-of-user-objects" target="_self">Get a list of user objects: msgraph-user-list</a></li>
+<li><a href="#get-direct-reports" target="_self">Get the direct reports of a user: msgraph-direct-reports</a></li>
+<li><a href="#user-get-manager" target="_self">Get the manager of a user: msgraph-user-get-manager</a></li>
+<li><a href="#user-assign-manager" target="_self">Assign a manager to a user: msgraph-user-assign-manager</a></li>
 </ol>
 </div>
 <div class="cl-preview-section">
@@ -1118,8 +1121,426 @@ For more details about the authentication used in this integration, see <a href=
 </div>
 </div>
 <p> </p>
-
-
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/37335599/56651529-e92f6800-6691-11e9-8bd1-8779a59cf51d.png" alt="Screen Shot 2019-04-24 at 12 13 05"></p>
+<h3 id="get-direct-reports">9. Get the direct reports of a user.</h3>
+</div>
+<div class="cl-preview-section"><hr></div>
+<div class="cl-preview-section">
+<p>Retrieves the direct reports for a user. Direct reports are the people who have that user configured as their manager.</p>
+</div>
+<div class="cl-preview-section">
+<h5 id="base-command-8">Base Command</h5>
+</div>
+<div class="cl-preview-section">
+<p><code>msgraph-direct-reports</code></p>
+</div>
+<div class="cl-preview-section">
+<h5 id="input-8">Input</h5>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 748px;">
+<thead>
+<tr>
+<th style="width: 139px;"><strong>Argument Name</strong></th>
+<th style="width: 530px;"><strong>Description</strong></th>
+<th style="width: 71px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 139px;">user</td>
+<td style="width: 530px;">The User ID or userPrincipalName of the user for which to retrieve direct reports.</td>
+<td style="width: 71px;">Required</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h5 id="context-output-8">Context Output</h5>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 323px;"><strong>Path</strong></th>
+<th style="width: 95px;"><strong>Type</strong></th>
+<th style="width: 322px;"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 323px;">MSGraphUserDirectReports.Manager</td>
+<td style="width: 323px;">String</td>
+<td style="width: 323px;">The manager&#39;s user principal name (UPN).</td>
+</tr>
+<tr>
+<td style="width: 323px;">MSGraphUserDirectReports.Reports.@Odata.Type</td>
+<td style="width: 323px;">String</td>
+<td style="width: 323px;">A string value that can be used to classify user types in your directory, such as &quot;Member&quot; and &quot;Guest&quot;.</td>
+</tr>
+<tr>
+<td style="width: 323px;">MSGraphUserDirectReports.Reports.DisplayName</td>
+<td style="width: 323px;">String</td>
+<td style="width: 323px;">The name displayed in the address book for the user. This is usually the combination of the user&#39;s first name, middle initial and last name.</td>
+</tr>
+<tr>
+<td style="width: 323px;">MSGraphUserDirectReports.Reports.GivenName</td>
+<td style="width: 323px;">String</td>
+<td style="width: 323px;">The given name (first name) of the user.</td>
+</tr>
+<tr>
+<td style="width: 323px;">MSGraphUserDirectReports.Reports.ID</td>
+<td style="width: 323px;">String</td>
+<td style="width: 323px;">The user ID in Microsoft Graph User.</td>
+</tr>
+<tr>
+<td style="width: 323px;">MSGraphUserDirectReports.Reports.JobTitle</td>
+<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">The user&#39;s job title.</td>
+</tr>
+<tr>
+<td style="width: 323px;">MSGraphUserDirectReports.Reports.Mail</td>
+<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">The email address of the user.</td>
+</tr>
+<tr>
+<td style="width: 323px;">MSGraphUserDirectReports.Reports.MobilePhone</td>
+<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">The primary cellular telephone number for the user.</td>
+</tr>
+<tr>
+<td style="width: 323px;">MSGraphUserDirectReports.Reports.OfficeLocation</td>
+<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">The office location in the user&#39;s place of business.</td>
+</tr>
+<tr>
+<td style="width: 323px;">MSGraphUserDirectReports.Reports.PreferredLanguage</td>
+<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">The preferred language for the user. Should follow ISO 639-1 Code; for example: en-US.</td>
+</tr>
+<tr>
+<td style="width: 323px;">MSGraphUserDirectReports.Reports.Surname</td>
+<td style="width: 323px;">String</td>
+<td style="width: 323px;">The user&#39;s surname (family name or last name).</td>
+</tr>
+<tr>
+<td style="width: 323px;">MSGraphUserDirectReports.Reports.UserPrincipalName</td>
+<td style="width: 323px;">String</td>
+<td style="width: 323px;">The user principal name (UPN) of the user. The UPN is an Internet-style login name for the user based on the Internet standard RFC 822. By convention, this should map to the user&#39;s email name. The general format is alias@domain, where domain must be present in the tenant’s collection of verified domains. This property is required when a user is created. The verified domains for the tenant can be accessed from the verifiedDomains property of organization.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h5 id="command-example-8">Command Example</h5>
+</div>
+<div class="cl-preview-section">
+<pre>msgraph-direct-reports user="graph@demistodev.onmicrosoft.com"</pre>
+</div>
+<div class="cl-preview-section">
+<h5 id="context-example-5">Context Example</h5>
+</div>
+<div class="cl-preview-section">
+<pre>{
+    "MSGraphUserDirectReports": {
+        "Manager": "graph@demistodev.onmicrosoft.com",
+        "Reports": [
+            {
+                "@Odata.Type": "#microsoft.graph.user",
+                "BusinessPhones": [],
+                "DisplayName": "oren",
+                "GivenName": null,
+                "ID": "8c7327ec-0c8e-4ac0-900b-7791199e7bc3",
+                "JobTitle": null,
+                "Mail": "oren@demistodev.onmicrosoft.com",
+                "MobilePhone": null,
+                "OfficeLocation": null,
+                "PreferredLanguage": null,
+                "Surname": null,
+                "UserPrincipalName": "oren@demistodev.onmicrosoft.com"
+            }
+        ]
+    }
+}
+</pre>
+</div>
+<div class="cl-preview-section">
+<h5 id="human-readable-output-8">Human Readable Output</h5>
+</div>
+<div class="cl-preview-section">
+<h3 id="direct-reports-1">graph@demistodev.onmicrosoft.com - direct reports</h3>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 627px;" border="2">
+<thead>
+<tr>
+<th>@Odata.Type</th>
+<th>Display Name</th>
+<th>ID</th>
+<th>Mail</th>
+<th>User Principal Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 347px;">#microsoft.graph.user</td>
+<td style="width: 347px;">oren</td>
+<td style="width: 347px;">8c7327ec-0c8e-4ac0 -900b-7791199e7bc3</td>
+<td style="width: 347px;">oren@demistodev. onmicrosoft.com</td>
+<td style="width: 347px;">oren@demistodev. onmicrosoft.com</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h3 id="user-get-manager">10. Get the manager of a user.</h3>
+</div>
+<div class="cl-preview-section"><hr></div>
+<div class="cl-preview-section">
+<p>Retrieves the properties from the manager of a user.</p>
+</div>
+<div class="cl-preview-section">
+<h5 id="base-command-9">Base Command</h5>
+</div>
+<div class="cl-preview-section">
+<p><code>msgraph-user-get-manager</code></p>
+</div>
+<div class="cl-preview-section">
+<h5 id="input-9">Input</h5>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 748px;">
+<thead>
+<tr>
+<th style="width: 139px;"><strong>Argument Name</strong></th>
+<th style="width: 530px;"><strong>Description</strong></th>
+<th style="width: 71px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 139px;">user</td>
+<td style="width: 530px;">The User ID or userPrincipalName of the user for which to the manager.</td>
+<td style="width: 71px;">Required</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h5 id="context-output-9">Context Output</h5>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 323px;"><strong>Path</strong></th>
+<th style="width: 95px;"><strong>Type</strong></th>
+<th style="width: 322px;"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 323px;">MSGraphUserManager.ID</td>
+<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">User&#39;s ID.</td>
+</tr>
+<tr>
+<td style="width: 323px;">MSGraphUserManager.Manager.ID</td>
+<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">Managers user&#39;s ID.</td>
+</tr>
+<tr>
+<td style="width: 323px;">MSGraphUserManager.Manager.DisplayName</td>
+<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">User&#39;s display name.</td>
+</tr>
+<tr>
+<td style="width: 323px;">MSGraphUserManager.Manager.GivenName</td>
+<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">User&#39;s given name.</td>
+</tr>
+<tr>
+<td style="width: 323px;">MSGraphUserManager.Manager.BusinessPhones</td>
+<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">User&#39;s business phone numbers.</td>
+</tr>
+<tr>
+<td style="width: 323px;">MSGraphUserManager.Manager.JobTitle</td>
+<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">User&#39;s job title.</td>
+</tr>
+<tr>
+<td style="width: 323px;">MSGraphUserManager.Manager.Mail</td>
+<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">User&#39;s mail address.</td>
+</tr>
+<tr>
+<td style="width: 323px;">MSGraphUserManager.Manager.MobilePhone</td>
+<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">User&#39;s mobile phone number.</td>
+</tr>
+<tr>
+<td style="width: 323px;">MSGraphUserManager.Manager.OfficeLocation</td>
+<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">User&#39;s office location.</td>
+</tr>
+<tr>
+<td style="width: 323px;">MSGraphUserManager.Manager.PreferredLanguage</td>
+<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">User&#39;s preferred language.</td>
+</tr>
+<tr>
+<td style="width: 323px;">MSGraphUserManager.Manager.Surname</td>
+<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">User&#39;s surname.</td>
+</tr>
+<tr>
+<td style="width: 323px;">MSGraphUserManager.Manager.UserPrincipalName</td>
+<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">User&#39;s principal name.</td>
+</tr>
+<tr>
+<td style="width: 323px;">MSGraphUserManager.Manager.@Odata.Type</td>
+<td style="width: 323px;">unknown</td>
+<td style="width: 323px;">A string value that can be used to classify user types in your directory, such as &quot;Member&quot; and &quot;Guest&quot;.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h5 id="command-example-9">Command Example</h5>
+</div>
+<div class="cl-preview-section">
+<pre>msgraph-user-get-manager user="oren@demistodev.onmicrosoft.com"</pre>
+</div>
+<div class="cl-preview-section">
+<h5 id="context-example-6">Context Example</h5>
+</div>
+<div class="cl-preview-section">
+<pre>{
+    "MSGraphUserManager": {
+        "Manager": {
+            "@Odata.Type": "#microsoft.graph.user",
+            "BusinessPhones": [],
+            "DisplayName": "Graph Test - DELETE",
+            "GivenName": null,
+            "ID": "8c7327ec-0c8e-4ac0-900b-7791199e7bc3",
+            "JobTitle": null,
+            "Mail": "graph@demistodev.onmicrosoft.com",
+            "MobilePhone": null,
+            "OfficeLocation": null,
+            "PreferredLanguage": null,
+            "Surname": null,
+            "UserPrincipalName": "graph@demistodev.onmicrosoft.com"
+        },
+        "User": "oren@demistodev.onmicrosoft.com"
+    }
+}
+</pre>
+</div>
+<div class="cl-preview-section">
+<h5 id="human-readable-output-9">Human Readable Output</h5>
+</div>
+<div class="cl-preview-section">
+<h3 id="user-manager-1">oren@demistodev.onmicrosoft.com - manager</h3>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 627px;" border="2">
+<thead>
+<tr>
+<th>@Odata.Type</th>
+<th>Display Name</th>
+<th>ID</th>
+<th>Mail</th>
+<th>User Principal Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 347px;">#microsoft.graph.user</td>
+<td style="width: 347px;">Graph Test - DELETE</td>
+<td style="width: 347px;">8c7327ec-0c8e-4ac0-900b- 7791199e7bc3</td>
+<td style="width: 347px;">graph@demistodev. onmicrosoft.com</td>
+<td style="width: 347px;">graph@demistodev. onmicrosoft.com</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h3 id="user-assign-manager">11. Assign a manager to a user.</h3>
+</div>
+<div class="cl-preview-section"><hr></div>
+<div class="cl-preview-section">
+<p>Assigns a manager to the user.</p>
+</div>
+<div class="cl-preview-section">
+<h5 id="base-command-10">Base Command</h5>
+</div>
+<div class="cl-preview-section">
+<p><code>msgraph-user-assign-manager</code></p>
+</div>
+<div class="cl-preview-section">
+<h5 id="input-10">Input</h5>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 748px;">
+<thead>
+<tr>
+<th style="width: 139px;"><strong>Argument Name</strong></th>
+<th style="width: 530px;"><strong>Description</strong></th>
+<th style="width: 71px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 139px;">user</td>
+<td style="width: 530px;">User ID or userPrincipalName of the user to assign a manager for.</td>
+<td style="width: 71px;">Required</td>
+</tr>
+<tr>
+<td style="width: 139px;">manager</td>
+<td style="width: 530px;">User ID or userPrincipalName of the manager.</td>
+<td style="width: 71px;">Required</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h5 id="context-output-10">Context Output</h5>
+</div>
+<div class="cl-preview-section">
+<p>There is no context output for this command.</p>
+</div>
+<div class="cl-preview-section">
+<h5 id="command-example">Command Example</h5>
+</div>
+<div class="cl-preview-section">
+<pre>msgraph-user-assign-manager user="oren@demistodev.onmicrosoft.com" manager="graph@demistodev.onmicrosoft.com"</pre>
+</div>
+<div class="cl-preview-section">
+<h5 id="human-readable-output">Human Readable Output</h5>
+</div>
+<div class="cl-preview-section">
+<p>A manager was assigned to user "oren@demistodev.onmicrosoft.com". It might take several minutes for the changes to take affect across all applications.</p>
 </div>
