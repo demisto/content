@@ -101,7 +101,7 @@ script:
   - name: pihole-status
     arguments: []
     outputs:
-    - contextPath: Pihole.Status
+    - contextPath: PiHole.Status
       description: Status
       type: Unknown
     description: Show status of pihole action (enabled - disabled)
@@ -127,14 +127,14 @@ script:
   - name: pihole-get-versions
     arguments: []
     outputs:
-    - contextPath: Pihole.Versions
+    - contextPath: PiHole.Versions
       description: Version info
       type: Unknown
     description: Show versions of all components
   - name: pihole-get-topclientsblocked
     arguments: []
     outputs:
-    - contextPath: Pihole.TopClientsBlocked
+    - contextPath: PiHole.TopClientsBlocked
       description: Top blocked clients
       type: Unknown
     description: Shows the top clients being blocked
@@ -148,14 +148,14 @@ script:
   - name: pihole-get-recent-blocked
     arguments: []
     outputs:
-    - contextPath: Pihole.RecentBlocked
+    - contextPath: PiHole.RecentBlocked
       description: Recently blocked
       type: Unknown
     description: Show most recent blocked domain
   - name: pihole-get-overTimeDataQueryTypes
     arguments: []
     outputs:
-    - contextPath: Pihole.overTimeDataQueryTypes
+    - contextPath: PiHole.overTimeDataQueryTypes
       description: Over time query types
       type: Unknown
     description: Get data over time per query types
@@ -169,7 +169,7 @@ script:
   - name: pihole-get-over-time-data-clients
     arguments: []
     outputs:
-    - contextPath: Pihole.OverTimeDataClients
+    - contextPath: PiHole.OverTimeDataClients
       description: Over time client data
       type: Unknown
     description: Get over time data clients
@@ -192,7 +192,7 @@ script:
       - regex_white
       description: which list to interact with
     outputs:
-    - contextPath: Pihole.List
+    - contextPath: PiHole.List
       description: Lists
       type: Unknown
     description: Manage lists. Add or remove items from lists
@@ -208,10 +208,10 @@ script:
       - regex_black
       description: which list to get
     outputs:
-    - contextPath: Pihole.Lists
+    - contextPath: PiHole.Lists
       description: get a list data
       type: Unknown
-    description: Get all available lists from Pihole
+    description: Get all available lists from PiHole
   dockerimage: demisto/python3:3.8.3.9324
   runonce: false
   subtype: python3

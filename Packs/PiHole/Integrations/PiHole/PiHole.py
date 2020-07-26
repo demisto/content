@@ -135,7 +135,7 @@ def main():
                 get_data(client, '?disable=' + str(seconds), 'DisabledFor' + str(seconds))
         elif demisto.command() == 'pihole-get-list':
             list = demisto.args().get('list')
-            get_data(client, '?list=' + str(list), 'GetList')
+            get_data(client, '?list=' + str(list), 'Lists')
         elif demisto.command() == 'pihole-list-management':
             domain = demisto.args().get('domain')
             action = demisto.args().get('action')
