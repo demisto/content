@@ -1118,6 +1118,8 @@ For more details about the authentication used in this integration, see <a href=
 </div>
 </div>
 <p> </p>
+
+
 <div class="cl-preview-section">
 <p><img src="https://user-images.githubusercontent.com/37335599/56651529-e92f6800-6691-11e9-8bd1-8779a59cf51d.png" alt="Screen Shot 2019-04-24 at 12 13 05"></p>
 </div>

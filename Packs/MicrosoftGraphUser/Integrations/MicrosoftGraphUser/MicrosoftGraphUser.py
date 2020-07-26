@@ -55,6 +55,7 @@ class MsGraphClient:
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed):
         self.ms_client = MicrosoftClient(tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
                                          base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed)
+        self.base_url = base_url
 
     #  If successful, this method returns 204 No Content response code.
     #  Using resp_type=text to avoid parsing error.
@@ -134,6 +135,27 @@ class MsGraphClient:
 
         res.pop('@odata.context', None)
         return res.get('value', [])
+
+    def get_manager(self, user):
+        manager_data = self.ms_client.http_request(
+            method='GET',
+            url_suffix=f'users/{user}/manager')
+        manager_data.pop('@odata.context', None)
+        manager_data.pop('@odata.type', None)
+        return manager_data
+
+    #  If successful, this method returns 204 No Content response code.
+    #  Using resp_type=text to avoid parsing error.
+    def assign_manager(self, user, manager):
+        url = self.base_url
+        manager_ref="{}users/{}".format(url,manager)
+        body = {"@odata.id":manager_ref}
+        self.ms_client.http_request(
+            method='PUT',
+            url_suffix=f'users/{user}/manager/$ref',
+            json_data=body,
+            resp_type="text"
+        )
 
 
 def test_function(client, _):
@@ -264,6 +286,28 @@ def get_direct_reports_command(client: MsGraphClient, args: Dict):
     return human_readable, outputs, raw_reports
 
 
+def get_manager_command(client: MsGraphClient, args: Dict):
+    user = args.get('user')
+    manager_data = client.get_manager(user)
+    manager_readable, manager_outputs = parse_outputs(manager_data)
+    human_readable = tableToMarkdown(name=f"{user} data", t=manager_readable, removeNull=True)
+    outputs = {'MSGraphUserManager(val.User == obj.User)': {
+        'User': user,
+        'Manager': manager_outputs
+        }
+    }
+    return human_readable, outputs, manager_data
+
+
+def assign_manager_command(client: MsGraphClient, args: Dict):
+    user = args.get('user')
+    manager = args.get('manager')
+    client.assign_manager(user, manager)
+    human_readable = f'"{user}" manager assigned. It might take several minutes for the changes to take affect across all ' \
+                     f'applications. '
+    return human_readable, None, None
+
+
 def main():
     params: dict = demisto.params()
     url = params.get('host', '').rstrip('/') + '/v1.0/'
@@ -284,7 +328,9 @@ def main():
         'msgraph-user-get-delta': get_delta_command,
         'msgraph-user-get': get_user_command,
         'msgraph-user-list': list_users_command,
-        'msgraph-direct-reports': get_direct_reports_command
+        'msgraph-direct-reports': get_direct_reports_command,
+        'msgraph-user-get-manager': get_manager_command,
+        'msgraph-user-assign-manager': assign_manager_command
     }
     command = demisto.command()
     LOG(f'Command being called is {command}')
