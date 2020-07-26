@@ -1,5 +1,5 @@
 id: SafeBreach - Create Incidents per Insight and Associate Indicators
-version: 5
+version: -1
 name: SafeBreach - Create Incidents per Insight and Associate Indicators
 description: This is a sub-playbook that creates incidents per SafeBreach insight,
   enriched with all the related indicators and additional SafeBreach insight contextual
@@ -17,6 +17,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "24"
@@ -44,6 +45,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -883,7 +885,7 @@ inputs:
   playbookInputQuery:
     query: safebreachisbehavioral:T
     queryEntity: indicators
-    results: null
+    results:
     daterange:
       fromdate: 0001-01-01T00:00:00Z
       todate: 0001-01-01T00:00:00Z
@@ -891,8 +893,8 @@ inputs:
         by: ""
         byto: ""
         byfrom: ""
-        tovalue: null
-        fromvalue: null
+        tovalue:
+        fromvalue:
         field: ""
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: true
@@ -900,14 +902,17 @@ inputs:
   value: {}
   required: true
   description: List of Insight ids to create incidents for.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: indicators
   value: {}
   required: true
   description: List of indicators that to be assigned to created incidents
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: incident
   description: Incidents created from SafeBreach Insights
   type: Array
 quiet: true
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
