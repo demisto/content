@@ -5,11 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 13c20a25-5761-4ac4-802a-36b7eea981fe
+    taskid: 6b8a8037-becc-4509-840d-bb2a40d1b2be
     type: start
     task:
-      elasticcommonfields: {}
-      id: 13c20a25-5761-4ac4-802a-36b7eea981fe
+      id: 6b8a8037-becc-4509-840d-bb2a40d1b2be
       version: -1
       name: ""
       iscommand: false
@@ -32,11 +31,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: b0345c06-91de-403d-803f-94b52d58e87b
+    taskid: 7be5210d-e345-464c-8f18-8f5e89ad6a4a
     type: regular
     task:
-      elasticcommonfields: {}
-      id: b0345c06-91de-403d-803f-94b52d58e87b
+      id: 7be5210d-e345-464c-8f18-8f5e89ad6a4a
       version: -1
       name: Create test user
       description: Creates a new user.
@@ -57,9 +55,9 @@ tasks:
       other_properties:
         simple: jobTitle=Test,city=Tel Aviv
       password:
-        simple: Aa123456
+        simple: Aa-123456789Bc!
       user_principal_name:
-        simple: ${GeneratedUUID}@demistodev.onmicrosoft.com
+        simple: ${GeneratedUUID}@${inputs.baseurl}
     continueonerror: true
     separatecontext: false
     view: |-
@@ -76,11 +74,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 706e3ab4-c436-4af1-8a2f-fe9acc947133
+    taskid: b86a5821-8d91-490a-82f2-2ce288167ef4
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 706e3ab4-c436-4af1-8a2f-fe9acc947133
+      id: b86a5821-8d91-490a-82f2-2ce288167ef4
       version: -1
       name: Get User
       description: Retrieve the properties and relationships of user object. [link](https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0)
@@ -110,11 +107,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: e9aafe90-f409-4ba6-8bad-03f03c163d83
+    taskid: 91a9f7a3-c503-4c2a-8604-eb7f2adf62ad
     type: regular
     task:
-      elasticcommonfields: {}
-      id: e9aafe90-f409-4ba6-8bad-03f03c163d83
+      id: 91a9f7a3-c503-4c2a-8604-eb7f2adf62ad
       version: -1
       name: Update user phone number
       description: Update the properties of a user object.
@@ -145,11 +141,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: cedd7aa3-8bed-4425-837c-ebd16032258f
+    taskid: 83eed85c-0d05-4ab5-89ba-317b8f2ed6b7
     type: regular
     task:
-      elasticcommonfields: {}
-      id: cedd7aa3-8bed-4425-837c-ebd16032258f
+      id: 83eed85c-0d05-4ab5-89ba-317b8f2ed6b7
       version: -1
       name: Get Delta (mobilePhone)
       description: Get newly created, updated, or deleted users without having to
@@ -162,6 +157,8 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
+      execution-timeout:
+        simple: "30"
       properties:
         simple: mobilePhone
     separatecontext: false
@@ -179,11 +176,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 78d50c5f-34b2-4ea0-8180-04dac1eb8a46
+    taskid: cf983217-06c2-4138-8b6e-6f5bcb540f1d
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 78d50c5f-34b2-4ea0-8180-04dac1eb8a46
+      id: cf983217-06c2-4138-8b6e-6f5bcb540f1d
       version: -1
       name: Block user
       description: Terminate users session from all Office 365 and prevents it from
@@ -197,7 +193,7 @@ tasks:
       - "6"
     scriptarguments:
       user:
-        simple: oren@demistodev.onmicrosoft.com
+        simple: oren@${inputs.baseurl}
     separatecontext: false
     view: |-
       {
@@ -213,11 +209,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: b8ac87b0-c8da-4edd-832d-ce390ee50ac7
+    taskid: 234b6a98-bca4-4f4e-8b91-af0ae1e1ff40
     type: regular
     task:
-      elasticcommonfields: {}
-      id: b8ac87b0-c8da-4edd-832d-ce390ee50ac7
+      id: 234b6a98-bca4-4f4e-8b91-af0ae1e1ff40
       version: -1
       name: Sleep for 30 seconds
       description: Sleep for X seconds
@@ -246,11 +241,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: d59f153a-b4ae-4c17-8829-3662bf0d9405
+    taskid: 94601336-35c2-4a56-8ab2-7de5b3f9c131
     type: regular
     task:
-      elasticcommonfields: {}
-      id: d59f153a-b4ae-4c17-8829-3662bf0d9405
+      id: 94601336-35c2-4a56-8ab2-7de5b3f9c131
       version: -1
       name: Unblock User
       description: Unblock a user.
@@ -263,7 +257,7 @@ tasks:
       - "15"
     scriptarguments:
       user:
-        simple: oren@demistodev.onmicrosoft.com
+        simple: oren@${inputs.baseurl}
     separatecontext: false
     view: |-
       {
@@ -279,11 +273,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 7c03661c-4905-45d9-8553-1b82ca8767c2
+    taskid: a9ba033d-e0b0-46a1-8316-9ca622dd4f08
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 7c03661c-4905-45d9-8553-1b82ca8767c2
+      id: a9ba033d-e0b0-46a1-8316-9ca622dd4f08
       version: -1
       name: Delete user
       description: Deletes an exsiting user.
@@ -296,7 +289,7 @@ tasks:
       - "4"
     scriptarguments:
       user:
-        simple: ${GeneratedUUID}@demistodev.onmicrosoft.com
+        simple: ${GeneratedUUID}@${inputs.baseurl}
     separatecontext: false
     view: |-
       {
@@ -312,11 +305,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 5e97172f-3717-4fe5-8f4f-8beb05667f94
+    taskid: d667ff5c-cb1f-4364-8912-4dc908c4f373
     type: title
     task:
-      elasticcommonfields: {}
-      id: 5e97172f-3717-4fe5-8f4f-8beb05667f94
+      id: d667ff5c-cb1f-4364-8912-4dc908c4f373
       version: -1
       name: Done!
       type: title
@@ -327,7 +319,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 3695
         }
       }
     note: false
@@ -337,11 +329,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: f9498ca5-cb17-4a98-8c7c-d661e090d435
+    taskid: 600f4428-f55f-49d6-820b-139786c41b6b
     type: regular
     task:
-      elasticcommonfields: {}
-      id: f9498ca5-cb17-4a98-8c7c-d661e090d435
+      id: 600f4428-f55f-49d6-820b-139786c41b6b
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -374,11 +365,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 3874956d-dede-4ae1-852b-b9f33122b31f
+    taskid: 2e4cbf35-4238-4f66-8d68-ba362e5feb7b
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 3874956d-dede-4ae1-852b-b9f33122b31f
+      id: 2e4cbf35-4238-4f66-8d68-ba362e5feb7b
       version: -1
       name: List Users
       description: Retrieve a list of user objects.
@@ -390,6 +380,7 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
+      next_page: {}
       properties:
         simple: id,userPrincipalName
     separatecontext: false
@@ -397,7 +388,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 3520
         }
       }
     note: false
@@ -407,11 +398,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 50b9bbb2-6d75-475d-8758-43546b8fe682
+    taskid: fa41f4bd-aed2-45a1-8cdf-6d9dd5a8af9c
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 50b9bbb2-6d75-475d-8758-43546b8fe682
+      id: fa41f4bd-aed2-45a1-8cdf-6d9dd5a8af9c
       version: -1
       name: Create test user with no "Other_properties"
       description: Creates a new user.
@@ -433,7 +423,7 @@ tasks:
       password:
         simple: password123123!
       user_principal_name:
-        simple: ${GeneratedUUID}test@demistodev.onmicrosoft.com
+        simple: ${GeneratedUUID}test@${inputs.baseurl}
     separatecontext: false
     view: |-
       {
@@ -449,11 +439,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 7a06aa7a-3a05-4f6f-825d-d77a9bd20b1d
+    taskid: d1caf36f-6883-44a4-8d1e-4d9213f15a8e
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 7a06aa7a-3a05-4f6f-825d-d77a9bd20b1d
+      id: d1caf36f-6883-44a4-8d1e-4d9213f15a8e
       version: -1
       name: Get User
       description: 'Retrieves the properties and relationships of user object. for
@@ -464,11 +453,11 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "17"
+      - "19"
     scriptarguments:
       properties: {}
       user:
-        simple: ${GeneratedUUID}test@demistodev.onmicrosoft.com
+        simple: ${GeneratedUUID}test@${inputs.baseurl}
     separatecontext: false
     view: |-
       {
@@ -484,11 +473,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 5cc40dac-a4ef-4d9d-8bdb-9e7c3f735325
+    taskid: 0081e283-2784-4414-8f44-0acb50f1af91
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 5cc40dac-a4ef-4d9d-8bdb-9e7c3f735325
+      id: 0081e283-2784-4414-8f44-0acb50f1af91
       version: -1
       name: Delete User
       description: Deletes an exsiting user.
@@ -498,16 +486,16 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "24"
     scriptarguments:
       user:
-        simple: ${GeneratedUUID}test@demistodev.onmicrosoft.com
+        simple: ${GeneratedUUID}test@${inputs.baseurl}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 3170
         }
       }
     note: false
@@ -517,11 +505,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: a7ecbfaf-160b-41ea-88e2-10ae7bc547bc
+    taskid: cf9d136a-d604-4cc0-881b-01e7708656ec
     type: regular
     task:
-      elasticcommonfields: {}
-      id: a7ecbfaf-160b-41ea-88e2-10ae7bc547bc
+      id: cf9d136a-d604-4cc0-881b-01e7708656ec
       version: -1
       name: Generate UUID for user principal name
       description: Generates random UUID
@@ -545,17 +532,231 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "19":
+    id: "19"
+    taskid: 1e8e2b67-94df-405a-810b-cae3f80f4bda
+    type: regular
+    task:
+      id: 1e8e2b67-94df-405a-810b-cae3f80f4bda
+      version: -1
+      name: Create test user (manager)
+      description: Creates a new user.
+      script: '|||msgraph-user-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      account_enabled: {}
+      display_name:
+        simple: Graph Test - DELETE
+      mail_nickname:
+        simple: graph
+      on_premises_immutable_id: {}
+      other_properties:
+        simple: jobTitle=Test,city=Tel Aviv
+      password:
+        simple: Aa-123456789Bc!
+      user_principal_name:
+        simple: ${GeneratedUUID}manager@${inputs.baseurl}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: cb1d8651-6efc-4e92-84af-4bc2fc8893f2
+    type: regular
+    task:
+      id: cb1d8651-6efc-4e92-84af-4bc2fc8893f2
+      version: -1
+      name: Get User (manager)
+      description: Retrieve the properties and relationships of user object. [link](https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0)
+      script: '|||msgraph-user-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      properties: {}
+      user:
+        simple: ${GeneratedUUID}manager@${inputs.baseurl}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: a359e85c-2745-49ac-8478-6bf56dfc4a53
+    type: regular
+    task:
+      id: a359e85c-2745-49ac-8478-6bf56dfc4a53
+      version: -1
+      name: Assign test user manager
+      description: 'Assigns a manager to the user. Permissions: - User.ReadWrite.All
+        (Delegated & Application)'
+      script: '|||msgraph-user-assign-manager'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      manager:
+        simple: ${GeneratedUUID}manager@${inputs.baseurl}
+      user:
+        simple: ${GeneratedUUID}test@${inputs.baseurl}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 92429cd6-14f4-426d-89da-144566618b92
+    type: regular
+    task:
+      id: 92429cd6-14f4-426d-89da-144566618b92
+      version: -1
+      name: Get test user manager
+      description: Retrieves the properties from the manager of a user
+      script: '|||msgraph-user-get-manager'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      user:
+        simple: ${GeneratedUUID}test@${inputs.baseurl}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: abd7a7af-c90a-4cdd-8609-242d23eb28d9
+    type: regular
+    task:
+      id: abd7a7af-c90a-4cdd-8609-242d23eb28d9
+      version: -1
+      name: Get manager direct reports
+      description: Retrieves the direct reports for a user. Direct reports are the
+        people who have that user configured as their manager.
+      script: '|||msgraph-direct-reports'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      user:
+        simple: ${GeneratedUUID}manager@${inputs.baseurl}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 0a9fdf6a-40f3-4873-8d60-4bbcdbc302bb
+    type: regular
+    task:
+      id: 0a9fdf6a-40f3-4873-8d60-4bbcdbc302bb
+      version: -1
+      name: Delete User (manager)
+      description: Deletes an exsiting user.
+      script: '|||msgraph-user-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      user:
+        simple: ${GeneratedUUID}manager@${inputs.baseurl}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2660,
+        "height": 3710,
         "width": 380,
         "x": 50,
         "y": 50
       }
     }
   }
-inputs: []
+inputs:
+- key: baseurl
+  value:
+    simple: demistodev.onmicrosoft.com
+  required: true
+  description: ""
+  playbookInputQuery: null
 outputs: []
