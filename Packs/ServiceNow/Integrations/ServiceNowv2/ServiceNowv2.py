@@ -843,7 +843,7 @@ def update_ticket_command(client: Client, args: dict) -> Tuple[Any, Dict, Dict, 
     additional_fields_keys = list(additional_fields.keys())
     fields = get_ticket_fields(args, ticket_type=ticket_type)
     fields.update(additional_fields)
-    input_display_value = argToBoolean(args.get('fields', 'input_display_value'))
+    input_display_value = argToBoolean(args.get('input_display_value', 'false'))
 
     result = client.update(ticket_type, ticket_id, fields, custom_fields, input_display_value)
     if not result or 'result' not in result:
@@ -1253,7 +1253,7 @@ def update_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
     record_id = str(args.get('id', ''))
     fields_str = str(args.get('fields', ''))
     custom_fields_str = str(args.get('custom_fields', ''))
-    input_display_value = argToBoolean(args.get('fields', 'input_display_value'))
+    input_display_value = argToBoolean(args.get('input_display_value', 'false'))
 
     fields = {}
     if fields_str:
