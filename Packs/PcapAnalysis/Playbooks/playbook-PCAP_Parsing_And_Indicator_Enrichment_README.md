@@ -11,7 +11,7 @@ This playbook does not use any integrations.
 
 ### Scripts
 * SetGridField
-* IsInternalHostName
+* IsUrlPartOfDomain
 * PcapMinerV2
 * SetAndHandleEmpty
 * IsEmailAddressInternal
