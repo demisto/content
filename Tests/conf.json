@@ -2860,13 +2860,7 @@
             "fromversion": "5.0.0"
         },
         {
-<<<<<<< HEAD
-            "integrations": "Imperva WAF",
-            "playbookID": "Imperva WAF - Test",
-            "fromversion": "5.5.0"
-=======
             "playbookID": "IfThenElse-Test"
->>>>>>> master
         }
     ],
     "skipped_tests": {
