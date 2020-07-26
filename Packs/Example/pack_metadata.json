@@ -1,0 +1,14 @@
+{
+    "name": "Example",
+    "description": "description of the thing",
+    "support": "none",
+    "currentVersion": "1.0.0",
+    "author": "Admin Dude",
+    "url": "",
+    "email": "admintest@demisto.com",
+    "created": "2020-07-26T18:15:45Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
