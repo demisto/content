@@ -10,7 +10,7 @@ This script will parse a CSV file and place the unique IPs, Domains and Hashes i
 
 ## Used In
 ---
-This script is used in the following playbooks and scripts.
+This script is used in the following playbooks and scripts:
 * Block IOCs from CSV - External Dynamic List
 
 ## Inputs
