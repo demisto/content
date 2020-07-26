@@ -6,7 +6,7 @@ For example, `!WhereFieldEquals` with the following arguments:
  - equalTo='IP'
  - getField='name' 
 
-This will eturn all item names where field `type` equals `IP` - ['192.1,0.82', '172.0.0.2'].
+This will return all item names where field `type` equals `IP` - ['192.1,0.82', '172.0.0.2'].
 
 ## Script Data
 ---
@@ -26,7 +26,3 @@ This will eturn all item names where field `type` equals `IP` - ['192.1,0.82', '
 | field | The attribute in the collection items to check equality against `equalTo`. |
 | equalTo | The value to filter all items by in the collection. |
 | getField | The field to extract from each item (Optional). |
-
-## Outputs
----
-There are no outputs for this script.

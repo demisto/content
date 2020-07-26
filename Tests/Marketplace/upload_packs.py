@@ -251,13 +251,21 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
     index_zip_name = os.path.basename(index_folder_path)
     index_zip_path = shutil.make_archive(base_name=index_folder_path, format="zip",
                                          root_dir=extract_destination_path, base_dir=index_zip_name)
-
-    index_blob.reload()
-    index_blob.cache_control = "no-cache,max-age=0"  # disabling caching for index blob
-    index_blob.upload_from_filename(index_zip_path, if_generation_match=index_generation)
-
-    shutil.rmtree(index_folder_path)
-    print_color(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.", LOG_COLORS.GREEN)
+    current_index_generation = None
+    try:
+        index_blob.reload()
+        current_index_generation = index_blob.generation
+        index_blob.cache_control = "no-cache,max-age=0"  # disabling caching for index blob
+        index_blob.upload_from_filename(index_zip_path, if_generation_match=index_generation)
+        print_color(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.", LOG_COLORS.GREEN)
+    except Exception as e:
+        print_error(f"Failed in uploading {GCPConfig.INDEX_NAME}. "
+                    f"Mismatch in index file generation, additional info: {e}\n")
+        print_error(f"Downloaded index generation: {index_generation}")
+        print_error(f"Current index generation: {current_index_generation}")
+        sys.exit(1)
+    finally:
+        shutil.rmtree(index_folder_path)
 
 
 def upload_core_packs_config(storage_bucket, build_number, index_folder_path):

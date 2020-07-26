@@ -396,5 +396,5 @@ script:
 tests:
 - No test - manual test playbook-Microsoft_Graph_Mail_Sender_test is available in
   NonCircleTests folder
-defaultClassifier: Microsoft Graph Mail Single User
-defaultMapperIn: Microsoft Graph Mail Single User-mapper
+defaultclassifier: Microsoft Graph Mail Single User
+defaultmapperin: Microsoft Graph Mail Single User-mapper
