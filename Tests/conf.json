@@ -742,7 +742,6 @@
         },
         {
             "playbookID": "Palo Alto Networks - Malware Remediation Test",
-            "integrations": "Palo Alto Minemeld",
             "fromversion": "4.5.0"
         },
         {
