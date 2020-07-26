@@ -1,5 +1,5 @@
 id: SafeBreach - Create Incidents per Insight and Associate Indicators
-version: -1
+version: 5
 name: SafeBreach - Create Incidents per Insight and Associate Indicators
 description: This is a sub-playbook that creates incidents per SafeBreach insight,
   enriched with all the related indicators and additional SafeBreach insight contextual
@@ -17,7 +17,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "24"
@@ -45,7 +44,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -61,10 +59,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 7b456a66-2288-4687-86e6-610ccff88c35
+    taskid: ae6fc506-2860-4842-81fb-2d66ba22100e
     type: regular
     task:
-      id: 7b456a66-2288-4687-86e6-610ccff88c35
+      id: ae6fc506-2860-4842-81fb-2d66ba22100e
       version: -1
       name: Create SafeBreach Insight incidents
       description: Create a new incident of type SafeBreach Insight for each insight
@@ -75,7 +73,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "18"
+      - "25"
     scriptarguments:
       accountgroups: {}
       accountid: {}
@@ -434,7 +432,10 @@ tasks:
       safebreachattackcount: {}
       safebreachattackids: {}
       safebreachattacks: {}
-      safebreachinsightcategory: {}
+      safebreachinsightcategory:
+        complex:
+          root: SafeBreach
+          accessor: Insight.Category
       safebreachinsightid:
         complex:
           root: JoinedIndicators
@@ -445,7 +446,8 @@ tasks:
       safebreachremediationaction: {}
       safebreachremediationdata: {}
       safebreachremediationdatacount: {}
-      safebreachremediationstatus: {}
+      safebreachremediationstatus:
+        simple: New
       safebreachresultslink: {}
       safebreachseverity: {}
       safebreachseverityscore: {}
@@ -457,7 +459,10 @@ tasks:
       scansourcetype: {}
       score: {}
       sectorofaffectedparty: {}
-      severity: {}
+      severity:
+        complex:
+          root: SafeBreach
+          accessor: Insight.Severity
       signature: {}
       signindatetime: {}
       sixgillalertid: {}
@@ -573,7 +578,7 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": 150
+          "y": 130
         }
       }
     note: false
@@ -631,7 +636,7 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": 370
+          "y": 460
         }
       }
     note: false
@@ -825,6 +830,39 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "25":
+    id: "25"
+    taskid: 3b5adb4d-02b9-4813-884c-e08bcdfad3ca
+    type: regular
+    task:
+      id: 3b5adb4d-02b9-4813-884c-e08bcdfad3ca
+      version: -1
+      name: Wait until the incidents are created
+      description: Sleep for 5 seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -845,7 +883,7 @@ inputs:
   playbookInputQuery:
     query: safebreachisbehavioral:T
     queryEntity: indicators
-    results:
+    results: null
     daterange:
       fromdate: 0001-01-01T00:00:00Z
       todate: 0001-01-01T00:00:00Z
@@ -853,8 +891,8 @@ inputs:
         by: ""
         byto: ""
         byfrom: ""
-        tovalue:
-        fromvalue:
+        tovalue: null
+        fromvalue: null
         field: ""
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: true
@@ -862,17 +900,14 @@ inputs:
   value: {}
   required: true
   description: List of Insight ids to create incidents for.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: indicators
   value: {}
   required: true
   description: List of indicators that to be assigned to created incidents
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs:
 - contextPath: incident
   description: Incidents created from SafeBreach Insights
   type: Array
 quiet: true
-fromversion: 5.0.0
-tests:
-- No tests (auto formatted)

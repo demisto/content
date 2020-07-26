@@ -352,7 +352,7 @@ def get_indicators_command(client: Client, insight_category: list, insight_data_
             if isinstance(item['type'], int):
                 demisto.info('Data type is int', item['type'], insight['ruleId'])
 
-            is_behaveioral = item['type'] in ['Port', 'Protocol', 'Command', 'Registry', 'Process']
+            is_behaveioral = item['type'] not in ['Domain', 'FQDN/IP', 'SHA256', 'URI', 'Hash']
             score_behavioral_reputation = DEMISTO_INDICATOR_REPUTATION.get(demisto.params().get('behavioralReputation'))
             score_non_behavioral_reputation = DEMISTO_INDICATOR_REPUTATION.get(
                 demisto.params().get('nonBehavioralReputation'))
@@ -427,10 +427,10 @@ def get_remediation_data_command(client: Client, args: dict, no_output_mode: boo
     # Demisto Context:
     dbot_score_list = []
     standard_context_dict = {}
-
+    standard_context_list: Any = []
     secondary_standard_context_dict: Any = {}
     secondary_standard_context_list = []
-    secondary_path = ''
+    secondary_path: str = None
 
     # SafeBreach Context:
     safebreach_context_list = []
@@ -445,7 +445,6 @@ def get_remediation_data_command(client: Client, args: dict, no_output_mode: boo
         if item.get('type', '').startswith('Attack') or len(processed_data) == 0:
             continue
 
-        standard_context_list: Any = []
         demisto_standard_path = get_demisto_context_path(item['type'])  # e.g URL(val.Data == obj.Data)
         demisto_data_type = SAFEBREACH_TO_DEMISTO_MAPPER.get(item['type'])  # SHA256,Port,Protocol,Data,Command,URI
 
@@ -453,7 +452,7 @@ def get_remediation_data_command(client: Client, args: dict, no_output_mode: boo
             item["value"] = item["value"].encode('utf-8').decode('unicode_escape').encode('latin1').decode('utf-8')
 
         if demisto_data_type:
-            is_behaveioral = item['type'] in ['Port', 'Protocol', 'Command', 'Registry', 'Process']
+            is_behaveioral = item['type'] not in ['Domain', 'FQDN/IP', 'SHA256', 'URI', 'Hash']
             score_behavioral_reputation = DEMISTO_INDICATOR_REPUTATION.get(demisto.params().get('behavioralReputation'))
             score_non_behavioral_reputation = DEMISTO_INDICATOR_REPUTATION.get(
                 demisto.params().get('nonBehavioralReputation'))
