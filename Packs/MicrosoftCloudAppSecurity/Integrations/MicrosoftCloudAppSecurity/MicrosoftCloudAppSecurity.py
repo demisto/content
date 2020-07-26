@@ -169,8 +169,9 @@ def generate_specific_key_by_command_name(url_suffix):
     return service_key, instance_key, username_key
 
 
-def args_to_filter(arguments, url_suffix):
-    service_key, instance_key, username_key = generate_specific_key_by_command_name(url_suffix)
+def args_or_params_to_filter(arguments, url_suffix='', args_or_params='args'):
+    if args_or_params == 'args':
+        service_key, instance_key, username_key = generate_specific_key_by_command_name(url_suffix)
     request_data: Dict[str, Any] = {}
     filters: Dict[str, Any] = {}
     for key, value in arguments.items():
@@ -217,18 +218,18 @@ def args_to_filter(arguments, url_suffix):
     return request_data
 
 
-def build_filter_and_url_to_search_with(url_suffix, customer_filters, arguments, command_id=''):
+def build_filter_and_url_to_search_with(url_suffix, customer_filters, arguments, specific_id_to_search=''):
     request_data = {}
-    if command_id:
-        url_suffix += command_id
+    if specific_id_to_search:
+        url_suffix += specific_id_to_search
     elif customer_filters:
         request_data = json.loads(customer_filters)
     else:
-        request_data = args_to_filter(arguments, url_suffix)
+        request_data = args_or_params_to_filter(arguments, url_suffix)
     return request_data, url_suffix
 
 
-def args_to_filter_dismiss_alerts_and_resolve_alerts(alert_id, customer_filters, comments):
+def args_to_filter_for_dismiss_and_resolve_alerts(alert_id, customer_filters, comments):
     request_data = {}
     filters = {}
     if alert_id:
@@ -241,25 +242,26 @@ def args_to_filter_dismiss_alerts_and_resolve_alerts(alert_id, customer_filters,
         request_data = json.loads(customer_filters)
     return request_data
 
-
-def params_to_filter(parameters):
-    """
-    Turns the parameters to filters.
-    Args:
-        parameters: The parameters that should to be filter.
-    Returns:
-        The filter we built using the parameters.
-    """
-    filters = {}
-    if 'severity' in parameters.keys():
-        filters['severity'] = {'eq': SEVERITY_OPTIONS[parameters['severity']]}
-    if 'resolution_status' in parameters.keys():
-        filters['resolutionStatus'] = {'eq': RESOLUTION_STATUS_OPTIONS[parameters['resolution_status']]}
-    if 'service' in parameters.keys():
-        filters['entity.service'] = {'eq': (int(parameters['service']))}
-    if 'instance' in parameters.keys():
-        filters['entity.instance'] = {'eq': (int(parameters['instance']))}
-    return filters
+#
+# def params_to_filter(parameters):
+#     """
+#     Turns the parameters to filters.
+#     Args:
+#         parameters: The parameters that should to be filter.
+#     Returns:
+#         The filter we built using the parameters.
+#     """
+#     filters = {}
+#     if 'severity' in parameters.keys():
+#         filters['severity'] = {'eq': SEVERITY_OPTIONS[parameters['severity']]}
+#     if 'resolution_status' in parameters.keys():
+#         filters['resolutionStatus'] = {'eq': RESOLUTION_STATUS_OPTIONS[parameters['resolution_status']]}
+#     if 'service' in parameters.keys():
+#         filters['entity.service'] = {'eq': (int(parameters['service']))}
+#     if 'instance' in parameters.keys():
+#         filters['entity.instance'] = {'eq': (int(parameters['instance']))}
+#     return filters
+#
 
 
 def test_module(client):
@@ -272,29 +274,21 @@ def test_module(client):
     return 'ok'
 
 
-def alerts_output_to_readable_output(alerts):
+def alerts_to_human_readable(alerts):
     if 'data' not in alerts:
         alerts = {'data': [alerts]}
-    list_readable_output = []
+    alerts_readable_outputs = []
     for alert in alerts['data']:
-        readable_output = {}
-        if alert.get('_id'):
-            readable_output['alert_id'] = alert['_id']
-        if alert.get('timestamp'):
-            readable_output['alert_date'] = datetime.fromtimestamp(alert['timestamp'] / 1000.0).isoformat()
-        if alert.get('title'):
-            readable_output['title'] = alert['title']
-        if alert.get('description'):
-            readable_output['description'] = alert['description']
-        if alert.get('statusValue'):
-            readable_output['status_value'] = [key for key, value in STATUS_OPTIONS.items()
-                                               if alert['statusValue'] == value]
-        if alert.get('severityValue'):
-            readable_output['severity_value'] = [key for key, value in SEVERITY_OPTIONS.items()
-                                                 if alert['severityValue'] == value]
-        list_readable_output.append(readable_output)
+        readable_output = assign_params(alert_id=alert.get('_id'), title=alert.get('title'),
+                                        description=alert.get('description'),
+                                        status_value=[key for key, value in STATUS_OPTIONS.items()
+                                                      if alert.get('statusValue') == value],
+                                        severity_value=[key for key, value in SEVERITY_OPTIONS.items()
+                                                        if alert.get('severityValue') == value],
+                                        alert_date=datetime.fromtimestamp(alert.get('timestamp') / 1000.0).isoformat())
+        alerts_readable_outputs.append(readable_output)
     headers = ['alert_id', 'alert_date', 'title', 'description', 'status_value', 'severity_value']
-    human_readable = tableToMarkdown('Results', list_readable_output, headers, removeNull=True)
+    human_readable = tableToMarkdown('Results', alerts_readable_outputs, headers, removeNull=True)
     return human_readable
 
 
@@ -307,7 +301,7 @@ def list_alerts_command(client, args):
                               resolution_status=args.get('resolution_status'), username=args.get('username'))
     request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, customer_filters, arguments, alert_id)
     alerts = client.list_alerts(url_suffix, request_data)
-    human_readable = alerts_output_to_readable_output(alerts)
+    human_readable = alerts_to_human_readable(alerts)
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='MicrosoftCloudAppSecurity.Alert',
@@ -320,7 +314,7 @@ def bulk_dismiss_alert_command(client, args):
     alert_id = args.get('alert_id')
     customer_filters = args.get('customer_filters')
     comment = args.get('comment')
-    request_data = args_to_filter_dismiss_alerts_and_resolve_alerts(alert_id, customer_filters, comment)
+    request_data = args_to_filter_for_dismiss_and_resolve_alerts(alert_id, customer_filters, comment)
     try:
         dismiss_alerts = client.dismiss_bulk_alerts(request_data)
     except DemistoException as e:
@@ -337,7 +331,7 @@ def bulk_resolve_alert_command(client, args):
     alert_id = args.get('alert_id')
     customer_filters = args.get('customer_filters')
     comment = args.get('comment')
-    request_data = args_to_filter_dismiss_alerts_and_resolve_alerts(alert_id, customer_filters, comment)
+    request_data = args_to_filter_for_dismiss_and_resolve_alerts(alert_id, customer_filters, comment)
     try:
         resolve_alerts = client.resolve_bulk_alerts(request_data)
     except DemistoException as e:
@@ -350,25 +344,18 @@ def bulk_resolve_alert_command(client, args):
     )
 
 
-def activities_output_to_readable_output(activities):
+def activities_to_human_readable(activities):
     if 'data' not in activities:
         activities = {'data': [activities]}
-    list_readable_output = []
+    activities_readable_outputs = []
     for activity in activities['data']:
-        readable_output = {}
-        if activity.get('_id'):
-            readable_output['activity_id'] = activity['_id']
-        if activity.get('timestamp'):
-            readable_output['activity_date'] = datetime.fromtimestamp(activity['timestamp'] / 1000.0).isoformat()
-        if activity.get('appName'):
-            readable_output['app_name'] = activity['appName']
-        if activity.get('description'):
-            readable_output['description'] = activity['description']
-        if activity.get('severity'):
-            readable_output['severity'] = activity['severity']
-        list_readable_output.append(readable_output)
+        readable_output = assign_params(activity_id=activity.get('_id'), severity=activity.get('severity'),
+                                        activity_date=datetime.fromtimestamp(activity.get('timestamp') / 1000.0)
+                                        .isoformat(),
+                                        app_name=activity.get('appName'), description=activity.get('description'))
+        activities_readable_outputs.append(readable_output)
     headers = ['activity_id', 'activity_date', 'app_name', 'description', 'severity']
-    human_readable = tableToMarkdown('Results', list_readable_output, headers, removeNull=True)
+    human_readable = tableToMarkdown('Results', activities_readable_outputs, headers, removeNull=True)
     return human_readable
 
 
@@ -381,9 +368,7 @@ def arrange_entity_data(activities):
                 for key, value in entity_data.items():
                     if value:
                         entities_data.append(value)
-                print(entities_data)
                 activity['entityData'] = entities_data
-
     return activities
 
 
@@ -398,7 +383,7 @@ def list_activities_command(client, args):
     request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, customer_filters, arguments, activity_id)
     activities = client.list_activities(url_suffix, request_data)
     activities = arrange_entity_data(activities)
-    human_readable = activities_output_to_readable_output(activities)
+    human_readable = activities_to_human_readable(activities)
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='MicrosoftCloudAppSecurity.Activities',
@@ -407,30 +392,19 @@ def list_activities_command(client, args):
     )
 
 
-def files_output_to_readable_output(files):
+def files_to_human_readable(files):
     if 'data' not in files:
         files = {'data': [files]}
-    list_readable_output = []
+    files_readable_outputs = []
     for file in files['data']:
-        readable_output = {}
-        if file.get('ownerName'):
-            readable_output['owner_name'] = file['ownerName']
-        if file.get('createdDate'):
-            readable_output['file_create_date'] = datetime.fromtimestamp(file['createdDate'] / 1000.0).isoformat()
-        if file.get('fileType'):
-            readable_output['file_type'] = file['fileType'][1]
-        if file.get('name'):
-            readable_output['file_name'] = file['name']
-        if file.get('fileAccessLevel'):
-            readable_output['file_access_level'] = file['fileAccessLevel'][1]
-        if file.get('fileStatus'):
-            readable_output['file_status'] = file['fileStatus'][1]
-        if file.get('appName'):
-            readable_output['app_name'] = file['appName']
-        list_readable_output.append(readable_output)
+        readable_output = assign_params(owner_name=file.get('ownerName'), file_create_date=file.get('createdDate'),
+                                        file_type=file.get('fileType'), file_name=file.get('name'),
+                                        file_access_level=file.get('fileAccessLevel'), app_name=file.get('appName'),
+                                        file_status=file.get('fileStatus'))
+        files_readable_outputs.append(readable_output)
     headers = ['owner_name', 'file_create_date', 'file_type', 'file_name', 'file_access_level', 'file_status',
                'app_name']
-    human_readable = tableToMarkdown('Results', list_readable_output, headers, removeNull=True)
+    human_readable = tableToMarkdown('Results', files_readable_outputs, headers, removeNull=True)
     return human_readable
 
 
@@ -444,7 +418,7 @@ def list_files_command(client, args):
                               extension=args.get('extension'), quarantined=args.get('quarantined'))
     request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, customer_filters, arguments, file_id)
     files = client.list_files(url_suffix, request_data)
-    human_readable = files_output_to_readable_output(files)
+    human_readable = files_to_human_readable(files)
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='MicrosoftCloudAppSecurity.Files',
@@ -453,27 +427,17 @@ def list_files_command(client, args):
     )
 
 
-def users_accounts_output_to_readable_output(users_accounts):
+def users_accounts_to_human_readable(users_accounts):
     if 'data' not in users_accounts:
         users_accounts = {'data': [users_accounts]}
-    list_readable_output = []
+    users_accounts_readable_outputs = []
     for entity in users_accounts['data']:
-        readable_output = {}
-        if entity.get('displayName'):
-            readable_output['display_name'] = entity['displayName']
-        if entity.get('lastSeen'):
-            readable_output['last_seen'] = entity['lastSeen']
-        if entity.get('isAdmin'):
-            readable_output['is_admin'] = entity['isAdmin']
-        if entity.get('isExternal'):
-            readable_output['is_external'] = entity['isExternal']
-        if entity.get('email'):
-            readable_output['email'] = entity['email']
-        if entity.get('username'):
-            readable_output['username'] = entity['username']
-        list_readable_output.append(readable_output)
+        readable_output = assign_params(display_name=entity.get('displayName'), last_seen=entity.get('lastSeen'),
+                                        is_admin=entity.get('isAdmin'), is_external=entity.get('isExternal'),
+                                        email=entity.get('email'), username=entity.get('username'))
+        users_accounts_readable_outputs.append(readable_output)
     headers = ['display_name', 'last_seen', 'is_admin', 'is_external', 'email', 'username']
-    human_readable = tableToMarkdown('Results', list_readable_output, headers, removeNull=True)
+    human_readable = tableToMarkdown('Results', users_accounts_readable_outputs, headers, removeNull=True)
     return human_readable
 
 
@@ -486,7 +450,7 @@ def list_users_accounts_command(client, args):
                               is_external=args.get('is_external'))
     request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, customer_filters, arguments)
     users_accounts = client.list_users_accounts(url_suffix, request_data)
-    human_readable = users_accounts_output_to_readable_output(users_accounts)
+    human_readable = users_accounts_to_human_readable(users_accounts)
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='MicrosoftCloudAppSecurity.UsersAccounts',
@@ -569,8 +533,7 @@ def main():
             parameters = assign_params(severity=params.get('severity'), instance=params.get('instance'),
                                        resolution_status=params.get('resolutionStatus'),
                                        service=params.get('service'))
-            filters = params_to_filter(parameters)
-
+            filters = args_or_params_to_filter(parameters, url_suffix="", args_or_params="params")
             next_run, incidents = fetch_incidents(
                 client=client,
                 max_results=max_results,
