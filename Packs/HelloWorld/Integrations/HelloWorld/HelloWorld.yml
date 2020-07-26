@@ -587,5 +587,5 @@ script:
   script: '-'
   subtype: python3
   type: python
-defaultClassifier: HelloWorld
-defaultMapperIn: HelloWorld-mapper
+defaultclassifier: HelloWorld
+defaultmapperin: HelloWorld-mapper
