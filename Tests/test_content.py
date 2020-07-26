@@ -127,7 +127,7 @@ class ParallelPrintsManager:
     def add_print_job(self, message_to_print, print_function_to_execute, thread_index, message_color=None,
                       include_timestamp=False):
         if include_timestamp:
-            message_to_print = f'[{datetime.datetime.now()}] {message_to_print}'
+            message_to_print = f'[{datetime.datetime.now(datetime.timezone.utc)}] {message_to_print}'
 
         print_job = PrintJob(message_to_print, print_function_to_execute, message_color=message_color)
         self.threads_print_jobs[thread_index].append(print_job)
