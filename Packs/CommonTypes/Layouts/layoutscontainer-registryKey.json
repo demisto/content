@@ -7,7 +7,7 @@
     "fromVersion": "6.0.0",
     "indicatorsDetails": {
         "tabs": [
-		    {
+			{
 				"id": "main",
 				"name": "Summary",
 				"sections": [
@@ -496,7 +496,7 @@
 				],
 				"type": "custom"
 			},
-		    {
+			{
 				"hidden": false,
 				"id": "kopixekjqw",
 				"name": "Additional Details",
@@ -537,10 +537,10 @@
 				"type": "custom"
 			}
 		]
-    },
+	},
     "indicatorsQuickView": {
 		"tabs": [
-            {
+			{
 				"id": "indicator-quick-view-info",
 				"name": "Info",
 				"sections": [
