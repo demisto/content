@@ -1330,7 +1330,7 @@ For more details about the authentication used in this integration, see <a href=
 <tbody>
 <tr>
 <td style="width: 139px;">user</td>
-<td style="width: 530px;">The User ID or userPrincipalName of the user for which to the manager.</td>
+<td style="width: 530px;">The User ID or userPrincipalName of the user for which to get the manager.</td>
 <td style="width: 71px;">Required</td>
 </tr>
 </tbody>
