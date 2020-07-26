@@ -8,7 +8,7 @@ This integration was integrated and tested with version xx of Blueliv ThreatCont
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL \(e.g. https://demisto.blueliv.com/api/v2\) | False |
+| url | Server URL (e.g. `https://demisto.blueliv.com/api/v2` ) | False |
 | credentials | Username | False |
 | unsecure | Trust any certificate \(not secure\) | False |
 
