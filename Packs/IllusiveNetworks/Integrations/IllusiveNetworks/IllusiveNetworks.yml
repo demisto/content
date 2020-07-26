@@ -516,7 +516,7 @@ script:
     - contextPath: Illusive.Event.status
       description: The status command ( Done, InProgress)
       type: String
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: true
   longRunning: false
@@ -527,5 +527,5 @@ script:
   type: python
 tests:
 - No tests
-defaultClassifier: Illusive Networks
-defaultMapperIn: Illusive Networks-mapper
+defaultclassifier: Illusive Networks
+defaultmapperin: Illusive Networks-mapper
