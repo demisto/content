@@ -30,11 +30,12 @@ def main():
             print(exc.output)
 
         try:
+            server_ip = env["InstanceDNS"].split('.')[0]
             subprocess.check_output(
                 scp_string.format(
                     env["SSHuser"],
                     env["InstanceDNS"],
-                    "{}/server_{}.log".format(circle_aritfact, env["Role"].replace(' ', ''))),
+                    "{}/server_{}_{}.log".format(circle_aritfact, env["Role"].replace(' ', ''), server_ip)),
                 shell=True)
 
         except subprocess.CalledProcessError as exc:
