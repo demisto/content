@@ -59,9 +59,9 @@ request_data_entities = {"service": "111", "instance": "111", "type": "user", "s
         (request_data_entities, '/entities/', expected_entities)
     ]
 )
-def test_args_to_filter(request_data_entities, url_suffix, expected):
-    from MicrosoftCloudAppSecurity import args_to_filter
-    res = args_to_filter(request_data_entities, url_suffix)
+def test_args_or_params_to_filter(request_data_entities, url_suffix, expected):
+    from MicrosoftCloudAppSecurity import args_or_params_to_filter
+    res = args_or_params_to_filter(request_data_entities, url_suffix)
     assert res == expected
 
 
@@ -73,26 +73,9 @@ def test_args_to_filter(request_data_entities, url_suffix, expected):
         ("", '{"filters": {"id": {"eq": ["5f06d71dba4"]}}}', "", {'filters': {'id': {'eq': ['5f06d71dba4']}}})
     ]
 )
-def test_args_to_filter_dismiss_alerts_and_resolve_alerts(alert_ids, customer_filters, comment, expected):
-    from MicrosoftCloudAppSecurity import args_to_filter_dismiss_alerts_and_resolve_alerts
-    res = args_to_filter_dismiss_alerts_and_resolve_alerts(alert_ids, customer_filters, comment)
-    assert res == expected
-
-
-expected = {'entity.service': {'eq': 111}, 'entity.instance': {'eq': 111}, 'severity': {'eq': 0},
-            'resolutionStatus': {'eq': 0}}
-request_data = {"service": "111", "instance": "111", "severity": "Low", "resolution_status": "Open"}
-
-
-@pytest.mark.parametrize(
-    "all_params, expected",
-    [
-        (request_data, expected)
-    ]
-)
-def test_params_to_filter(all_params, expected):
-    from MicrosoftCloudAppSecurity import params_to_filter
-    res = params_to_filter(all_params)
+def test_args_to_filter_for_dismiss_and_resolve_alerts(alert_ids, customer_filters, comment, expected):
+    from MicrosoftCloudAppSecurity import args_to_filter_for_dismiss_and_resolve_alerts
+    res = args_to_filter_for_dismiss_and_resolve_alerts(alert_ids, customer_filters, comment)
     assert res == expected
 
 

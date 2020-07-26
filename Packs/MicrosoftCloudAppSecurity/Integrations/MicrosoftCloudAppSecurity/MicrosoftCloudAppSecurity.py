@@ -213,7 +213,8 @@ def args_or_params_to_filter(arguments, url_suffix='', args_or_params='args'):
             filters['isExternal'] = {'eq': IS_EXTERNAL_OPTIONS[value]}
         if key == 'status':
             filters[key] = {'eq': STATUS_OPTIONS[value]}
-
+        if args_or_params == 'params':
+            return filters
         request_data['filters'] = filters
     return request_data
 
