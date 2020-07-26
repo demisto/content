@@ -478,13 +478,11 @@ def build_where_clause(args: dict) -> str:
         'file_sha_256': 'file_sha_256',
         'file_name': 'file_name',
     }
-    if args.get('ip') and args.get('source_ip') or args.get('ip') and args.get('dest_ip'):
-        raise DemistoException('Error: You cant enter the "ip" argument with either "source_ip" nor "dest_ip" '
-                               'arguments')
+    if args.get('ip') and (args.get('source_ip') or args.get('dest_ip')):
+        raise DemistoException('Error: "ip" argument cannot appear with either "source_ip" nor "dest_ip"')
 
     if args.get('port') and args.get('source_port') or args.get('port') and args.get('dest_port'):
-        raise DemistoException('Error: You cant enter the "port" argument with either "source_port" nor "dest_port" '
-                               'arguments')
+        raise DemistoException('Error: "port" argument cannot appear with either "source_port" nor "dest_port"')
 
     non_string_keys = {'dest_port', 'source_port'}
     if 'query' in args:
@@ -494,12 +492,14 @@ def build_where_clause(args: dict) -> str:
     where_clause = ''
     if args.get('ip'):
         ips = argToList(args.pop('ip'))
+        # Creating a query for ip argument using source ip and dest ip
         where_clause += '(' + ' OR '.join(f'source_ip.value = "{ip}" OR dest_ip.value = "{ip}"' for ip in ips) + ')'
         if any(args.get(key) for key in args_dict) or args.get('port'):
             where_clause += ' AND '
 
     if args.get('port'):
         ports = argToList(args.pop('port'))
+        # Creating a query for port argument using source port and dest port
         where_clause += '(' + ' OR '.join(f'source_port = {port} OR dest_port = {port}' for port in ports) + ')'
         if any(args.get(key) for key in args_dict):
             where_clause += ' AND '
