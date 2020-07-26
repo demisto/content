@@ -742,7 +742,6 @@
         },
         {
             "playbookID": "Palo Alto Networks - Malware Remediation Test",
-            "integrations": "Palo Alto Minemeld",
             "fromversion": "4.5.0"
         },
         {
@@ -1351,7 +1350,8 @@
         {
             "integrations": "carbonblackliveresponse",
             "playbookID": "Carbon Black Live Response Test",
-            "nightly": true
+            "nightly": true,
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "urlscan.io",
@@ -2862,6 +2862,10 @@
             "integrations": "Blueliv ThreatCompass",
             "playbookID": "Blueliv_ThreatCompass_test",
             "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "IfThenElse-Test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
@@ -2932,10 +2936,13 @@
         "Tanium v2 - Test": "Issue 26822",
         "Google Chronicle Backstory List IOCs - Test": "Issue 26461",
         "EvaluateMLModllAtProduction-Test": "Issue 26849",
-        "hashIncidentFields-test": "Issue 26850"
+        "hashIncidentFields-test": "Issue 26850",
+        "MISP V2 Test": "Issue 26905",
+        "Mimecast test": "Issue 26906",
+        "Mail Sender (New) Test": "Issue 25602"
     },
     "skipped_integrations": {
-        
+
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Symantec Management Center": "Issue 23960",
         "PerceptionPoint": "Issue 25795",
@@ -3028,12 +3035,12 @@
         "Bambenek Consulting Feed": "Issue 26184",
         "AWS - Athena - Beta": "Issue 19834",
         "Blueliv ThreatCompass": "Community contribution",
-        
+
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-        
+
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Issue 25650",
         "XFE_v2": "Issue 22715",
@@ -3042,14 +3049,14 @@
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "Issue 26266",
-        
+
         "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer",
         "SafeBreach v2": "it is a partner integration, no instance",
         "IllusiveNetworks": "supported by partner",
         "Humio": "supported by the partner",
         "Digital Guardian": "partner integration",
-        
+
         "_comment5": "~~~ OTHER ~~~",
         "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
         "Cisco ASA": "Issue 25741",
@@ -3109,7 +3116,6 @@
         "Intezer": "Nightly - Checking",
         "ProtectWise": "Nightly - Checking",
         "google-vault": "Nightly - Checking",
-        "RSA Archer": "Nightly - Checking",
         "McAfee NSM": "Nightly - Checking",
         "Forcepoint": "Nightly - Checking",
         "palo_alto_firewall": "Need to check test module",
@@ -3211,7 +3217,7 @@
         "Cortex Data Lake"
     ],
     "docker_thresholds": {
-        
+
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
