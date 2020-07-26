@@ -1,6 +1,7 @@
 id: IfThenElse-Test
 version: -1
 name: IfThenElse-Test
+fromversion: "5.0.0"
 starttaskid: "0"
 tasks:
   "0":
