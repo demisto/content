@@ -23,16 +23,14 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: MineMeld streamlines the aggregation, enforcement and sharing of threat
-  intelligence.
+description: MineMeld streamlines the aggregation, enforcement and sharing of threat intelligence.
 display: Palo Alto Networks MineMeld
 name: Palo Alto Minemeld
 script:
   commands:
   - arguments:
     - default: false
-      description: Miner name - you can get it under Nodes page on MineMeld UI (nodes
-        of type "miner").
+      description: Miner name - you can get it under Nodes page on MineMeld UI (nodes of type "miner").
       isArray: false
       name: miner
       required: true
@@ -61,8 +59,7 @@ script:
     name: minemeld-add-to-miner
   - arguments:
     - default: false
-      description: Miner name - you can get it under Nodes page on MineMeld UI (nodes
-        of type "miner").
+      description: Miner name - you can get it under Nodes page on MineMeld UI (nodes of type "miner").
       isArray: false
       name: miner
       required: true
@@ -465,8 +462,7 @@ script:
       description: Miner name.
       type: string
   - deprecated: false
-    description: Returns all miner names (with supported classes of custom indicators
-      lists).
+    description: Returns all miner names (with supported classes of custom indicators lists).
     execution: false
     name: minemeld-get-all-miners-names
     outputs:
@@ -488,4 +484,5 @@ script:
   type: python
   subtype: python2
 tests:
-- No tests
+- No test
+toversion: 4.1.9

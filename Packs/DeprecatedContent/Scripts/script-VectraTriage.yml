@@ -2,9 +2,10 @@ commonfields:
   id: VectraTriage
   version: -1
 name: VectraTriage
-script: |2
+script: >2
 
   resp = demisto.executeCommand("vec-triage", demisto.args())
+
 
   if isError(resp[0]):
       demisto.results(resp)
@@ -29,3 +30,6 @@ deprecated: true
 dependson:
   must:
   - vec-triage
+toversion: 4.1.9
+tests:
+- No test

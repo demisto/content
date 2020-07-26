@@ -34,8 +34,9 @@ configuration:
   type: 0
   required: true
 script:
-  script: |
+  script: >
     import psycopg2
+
 
     def closeConnection(conn, cur = None):
         if cur is not None:
@@ -140,4 +141,5 @@ script:
   dockerimage: demisto/psycopg2
 hidden: false
 tests:
-- No tests - test was moved to NonCircleTests
+- No test
+toversion: 4.1.9

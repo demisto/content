@@ -2,7 +2,8 @@ commonfields:
   id: InviteUser
   version: -1
 name: InviteUser
-script: return executeCommand('@', args);
+script: >-
+  return executeCommand('@', args);
 type: javascript
 tags:
 - server
@@ -19,4 +20,5 @@ dependson: {}
 timeout: 0s
 deprecated: true
 tests:
-  - No tests
+- No test
+toversion: 4.1.9

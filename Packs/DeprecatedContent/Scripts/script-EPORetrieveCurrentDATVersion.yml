@@ -2,9 +2,11 @@ commonfields:
   id: EPORetrieveCurrentDATVersion
   version: -1
 name: EPORetrieveCurrentDATVersion
-script: |
+script: >
   res = []
+
   repos = demisto.get(demisto.args(), 'repos')
+
   if not repos:
       res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Received empty repository list!"})
   else:
@@ -50,3 +52,6 @@ dependson:
   must:
   - epo-command
 timeout: 0s
+toversion: 4.1.9
+tests:
+- No test

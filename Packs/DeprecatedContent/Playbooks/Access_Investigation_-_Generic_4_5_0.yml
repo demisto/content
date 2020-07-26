@@ -2,7 +2,7 @@ id: access_investigation_-_generic
 version: -1
 name: Access Investigation - Generic
 fromversion: 3.6.0
-toversion: 4.4.9
+toversion: 4.1.9
 description: |-
   This playbook investigates an access incident by gathering user and IP information.
 
@@ -267,8 +267,7 @@ tasks:
       id: 0e9d5518-3755-4d4b-8254-631b021ad18a
       version: -1
       name: Request user to confirm account activity
-      description: Send an email to the source user email address to confirm whether
-        they recognize the suspicious activity.
+      description: Send an email to the source user email address to confirm whether they recognize the suspicious activity.
       scriptName: EmailAskUser
       type: regular
       iscommand: false
@@ -302,11 +301,7 @@ tasks:
           transformers:
           - operator: general.uniq
       message:
-        simple: "Hi ${incident.srcuser},\n\nWe identified unexpected activity on your
-          account. \n\nStarting on ${incident.occurred}, there were suspicious log-in
-          attempts from the ${incident.src} IP address.\n\nPlease confirm whether
-          or not you recognize this activity.\nReply \"Yes\" to confirm this activity.
-          \nReply \"No\" otherwise.\n\nRegards,\nYour friendly security team."
+        simple: "Hi ${incident.srcuser},\n\nWe identified unexpected activity on your account. \n\nStarting on ${incident.occurred}, there were suspicious log-in attempts from the ${incident.src} IP address.\n\nPlease confirm whether or not you recognize this activity.\nReply \"Yes\" to confirm this activity. \nReply \"No\" otherwise.\n\nRegards,\nYour friendly security team."
       option1:
         simple: "yes"
       option2:
@@ -365,8 +360,7 @@ tasks:
       id: 10c28bdf-caae-47d7-8c1b-c5a7198b2349
       version: -1
       name: Was the manager's ID returned?
-      description: Verify that the manager ID (DN) of the source user account was
-        returned in context.
+      description: Verify that the manager ID (DN) of the source user account was returned in context.
       type: condition
       iscommand: false
       brand: ""
@@ -402,8 +396,7 @@ tasks:
       id: 6ba49d12-a2e7-40bb-85d2-2a7849adc774
       version: -1
       name: Get manager's info
-      description: Retrieve the AD account information for the manager of the source
-        user account.
+      description: Retrieve the AD account information for the manager of the source user account.
       scriptName: ADGetUser
       type: regular
       iscommand: false
@@ -863,11 +856,7 @@ tasks:
       id: 8ae1ca42-1f1d-4ae7-883e-814705b8aae2
       version: -1
       name: Manually remediate  the incident
-      description: "Review the incident to determine if the account activity is malicious.\n\nIf
-        malicious, consider the following:\n* Quarantine the account/ endpoint \n*
-        Revoke the account password\n* Query the account/ IPs logs in the SIEM\n*
-        Block the external IPs in the firewall/ proxy\n* Check the account's privileges
-        and change if needed"
+      description: "Review the incident to determine if the account activity is malicious.\n\nIf malicious, consider the following:\n* Quarantine the account/ endpoint \n* Revoke the account password\n* Query the account/ IPs logs in the SIEM\n* Block the external IPs in the firewall/ proxy\n* Check the account's privileges and change if needed"
       type: regular
       iscommand: false
       brand: ""
@@ -988,4 +977,4 @@ outputs:
   description: Endpoint domain name
   type: string
 tests:
-  - No test
+- No test

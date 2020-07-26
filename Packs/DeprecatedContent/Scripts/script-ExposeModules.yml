@@ -2,9 +2,11 @@ commonfields:
   id: ExposeModules
   version: -1
 name: ExposeModules
-script: |
+script: >
   var all = getModules();
+
   var allArr = Object.keys(all).map(function(m) {return {instance: m, brand: all[m].brand, category: all[m].category, state: all[m].state};});
+
   return {Type: entryTypes.note, Contents: allArr, ContentsFormat: formats.json, HumanReadable: tableToMarkdown('Modules', allArr, ['brand', 'instance', 'category', 'state']), EntryContext: {ConfiguredModules: allArr}};
 type: javascript
 comment: Returns all Demisto modules (integrations instances)
@@ -25,3 +27,6 @@ outputs:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+toversion: 4.1.9
+tests:
+- No test

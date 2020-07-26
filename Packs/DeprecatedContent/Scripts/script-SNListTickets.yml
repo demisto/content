@@ -2,10 +2,13 @@ commonfields:
   id: SNListTickets
   version: -1
 name: SNListTickets
-script: |-
+script: >-
   res = []
+
   dArgs = demisto.args()
+
   resCmd = demisto.executeCommand("servicenow-incidents-query", dArgs)
+
   try:
       for entry in resCmd:
           if isError(entry):
@@ -41,3 +44,6 @@ dependson:
   must:
   - servicenow-incidents-query
 timeout: 0s
+toversion: 4.1.9
+tests:
+- No test

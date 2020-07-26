@@ -231,4 +231,5 @@ inputs:
   description: The Name of the miner
 outputs: []
 tests:
-  - No test - Deprecated playbook
+- No test
+toversion: 4.1.9

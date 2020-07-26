@@ -425,4 +425,5 @@ outputs:
 - contextPath: File.VirusTotal.Scans.Result
   description: Scan result for this hash - signature, etc.
 tests:
-  - no test (new v2 playbook has an updated test)
+- No test
+toversion: 4.1.9

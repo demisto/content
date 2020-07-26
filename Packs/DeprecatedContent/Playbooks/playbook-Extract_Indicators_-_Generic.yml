@@ -235,4 +235,5 @@ outputs:
   description: Extracted emails
   type: string
 tests:
-    - No tests - Deprecated
+- No test
+toversion: 4.1.9

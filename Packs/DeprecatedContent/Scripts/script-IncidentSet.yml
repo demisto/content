@@ -3,10 +3,13 @@ commonfields:
   version: -1
 name: IncidentSet
 fromversion: 3.5.1
-script: |-
+script: >-
   res = []
+
   dArgs = {}
+
   inArgs= demisto.args()
+
   if demisto.get(inArgs, 'owner'):
       res += demisto.executeCommand("setOwner", {'owner': inArgs['owner']})
   if demisto.get(inArgs, 'stage'):
@@ -64,14 +67,11 @@ args:
   default: true
   description: Incident name
 - name: updatePlaybookForType
-  description: Should we also update the playbook according to the new given type.
-    Can be yes or no. Default is yes.
+  description: Should we also update the playbook according to the new given type. Can be yes or no. Default is yes.
 - name: labels
-  description: 'Set and override the labels for the incident. Labels expected format
-    is [{"labelName": "labelValue"}, {"labelName1": "labelValue1"}] (JSON).'
+  description: 'Set and override the labels for the incident. Labels expected format is [{"labelName": "labelValue"}, {"labelName1": "labelValue1"}] (JSON).'
 - name: addLabels
-  description: 'Add to the list of labels for the incident. Labels expected format
-    is [{"labelName": "labelValue"}, {"labelName1": "labelValue1"}] (JSON).'
+  description: 'Add to the list of labels for the incident. Labels expected format is [{"labelName": "labelValue"}, {"labelName1": "labelValue1"}] (JSON).'
 - name: customFieldName
   description: Name for a custom field you want to change
 - name: customFieldValue
@@ -80,3 +80,6 @@ scripttarget: 0
 dependson: {}
 timeout: 0s
 deprecated: true
+toversion: 4.1.9
+tests:
+- No test

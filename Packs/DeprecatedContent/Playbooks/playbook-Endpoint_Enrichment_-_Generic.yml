@@ -836,4 +836,5 @@ outputs:
   description: Endpoint domain name
   type: string
 tests:
-  - no test
+- No test
+toversion: 4.1.9

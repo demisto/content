@@ -2,9 +2,11 @@ commonfields:
   id: SendEmail
   version: -1
 name: SendEmail
-script: |-
+script: >-
   from string import Template
+
   dArgs = demisto.args()
+
   if 'htmlBody' in dArgs:
       dArgs['htmlBody'] = Template(dArgs['htmlBody'].replace('\\n', '\n')).safe_substitute(recipient=dArgs['to'])
   elif 'body' in dArgs:
@@ -52,11 +54,9 @@ args:
 - name: body
   description: The contents (body) of the email to be sent
 - name: attachIDs
-  description: 'A comma-separated list of IDs of war room entries that contain files.
-    Used to attach files to the outgoing email. Example: attachIDs=15@8,19@8'
+  description: 'A comma-separated list of IDs of war room entries that contain files. Used to attach files to the outgoing email. Example: attachIDs=15@8,19@8'
 - name: htmlBody
-  description: Send an html formatted email - overrides "body" argument, cannot use
-    both.
+  description: Send an html formatted email - overrides "body" argument, cannot use both.
 - name: noteEntryID
   description: Send the textual contents of an entry
 - name: replyTo
@@ -68,4 +68,5 @@ dependson:
 timeout: 0s
 deprecated: true
 tests:
-  - No test
+- No test
+toversion: 4.1.9

@@ -30,16 +30,21 @@ configuration:
   type: 4
   required: true
 script:
-  script: |-
+  script: >-
     var insecure = params.insecure;
+
 
     var accessKey = params.accessKeyID;
 
+
     var secret = params.secretAccessKey;
+
 
     var awsUrl = params.url;
 
+
     var apiVersion = '2016-09-15';
+
 
     var sendRequest = function(method, url) {
         var res = http(
@@ -55,6 +60,7 @@ script:
         }
         return JSON.parse(x2j(res.Body));
     };
+
 
     var buildMdAndContext = function (data, actionName, contextMapper) {
         var mdContext = {md: [], context: {VM : []}};
@@ -76,6 +82,7 @@ script:
         return mdContext;
     };
 
+
     var postAwsWithParams = function (urlArgs, contextMapper) {
         try {
             var responseObj = sendRequest('POST', awsUrl + encodeToURLQuery(urlArgs));
@@ -86,6 +93,7 @@ script:
             return err;
         }
     }
+
 
     var createInstance = function(imageId, instanceType, keyName, subnetId, privateIpAddress, availabilityZone, securityGroup) {
         var urlArgs = {};
@@ -131,6 +139,7 @@ script:
         return postAwsWithParams(urlArgs, contextMapper);
     };
 
+
     var stopInstance = function(instanceId, force) {
         var urlArgs = {};
         urlArgs.Action = 'StopInstances';
@@ -146,6 +155,7 @@ script:
         return postAwsWithParams(urlArgs, contextMapper);
     };
 
+
     var startInstance = function(instanceId) {
         var urlArgs = {};
         urlArgs.Action = 'StartInstances';
@@ -157,6 +167,7 @@ script:
         };
         return postAwsWithParams(urlArgs, contextMapper);
     };
+
 
     var createImage = function(instanceId,name,noReboot,description) {
         var urlArgs = {};
@@ -174,6 +185,7 @@ script:
         return postAwsWithParams(urlArgs);
     };
 
+
     var createVolSnapshot = function(volId,description) {
         var urlArgs = {};
         urlArgs.Action = 'CreateSnapshot';
@@ -185,6 +197,7 @@ script:
         }
         return postAwsWithParams(urlArgs);
     };
+
 
     var getInstanceInfo = function(instanceId,ip,keyName,customFilters) {
         var urlArgs = {};
@@ -240,6 +253,7 @@ script:
         return postAwsWithParams(urlArgs, contentMapper);
     };
 
+
     var getSecurityGroupInfo = function(sgId,sgName) {
         var urlArgs = {};
         urlArgs.Action = 'DescribeSecurityGroups';
@@ -263,6 +277,7 @@ script:
         return postAwsWithParams(urlArgs);
     };
 
+
     var getEbsVolumeInfo = function(volumeId) {
         var urlArgs = {};
         urlArgs.Action = 'DescribeVolumes';
@@ -279,6 +294,7 @@ script:
         }
         return postAwsWithParams(urlArgs);
     };
+
 
     switch (command) {
         case 'test-module':
@@ -314,23 +330,17 @@ script:
       default: true
       description: The ID of the AMI
     - name: instanceType
-      description: 'The instance type. For more information, see Instance Types in
-        the Amazon Elastic Compute Cloud User Guide.  Default: m1.small'
+      description: 'The instance type. For more information, see Instance Types in the Amazon Elastic Compute Cloud User Guide.  Default: m1.small'
     - name: keyName
-      description: The name of the key pair. You can create a key pair using CreateKeyPair
-        or ImportKeyPair.
+      description: The name of the key pair. You can create a key pair using CreateKeyPair or ImportKeyPair.
     - name: subnetId
       description: '[EC2-VPC] The ID of the subnet to launch the instance into.'
     - name: privateIpAddress
-      description: '[EC2-VPC] The primary IP address. You must specify a value from
-        the IP address range of the subnet.  Only one private IP address can be designated
-        as primary. Therefore, you can''t specify this parameter if PrivateIpAddresses.n.Primary
-        is set to true and PrivateIpAddresses.n.PrivateIpAddress is set to an IP address.'
+      description: '[EC2-VPC] The primary IP address. You must specify a value from the IP address range of the subnet.  Only one private IP address can be designated as primary. Therefore, you can''t specify this parameter if PrivateIpAddresses.n.Primary is set to true and PrivateIpAddresses.n.PrivateIpAddress is set to an IP address.'
     - name: availabilityZone
       description: The Availability Zone of the instance.
     - name: securityGroup
-      description: 'Security group name, Default: Amazon EC2 uses the default security
-        group.'
+      description: 'Security group name, Default: Amazon EC2 uses the default security group.'
     - name: headers
       description: Headers to display in Human readable format
     description: create ec2 aws instances from image
@@ -342,10 +352,7 @@ script:
       default: true
       description: instance ID
     - name: force
-      description: ' Forces the instances to stop (Default: false). The instances
-        do not have an opportunity to flush file system caches or file system metadata.
-        If you use this option, you must perform file system check and repair procedures.
-        This option is not recommended for Windows instances.'
+      description: ' Forces the instances to stop (Default: false). The instances do not have an opportunity to flush file system caches or file system metadata. If you use this option, you must perform file system check and repair procedures. This option is not recommended for Windows instances.'
     - name: headers
       description: Headers to display in Human readable format
     description: stop ec2 aws instances
@@ -358,21 +365,14 @@ script:
       description: The ID of the instance
     - name: name
       required: true
-      description: 'A name for the new image - Constraints: 3-128 alphanumeric characters,
-        parentheses (()), square brackets ([]), spaces ( ), periods (.), slashes (/),
-        dashes (-), single quotes (''), at-signs (@), or underscores(_)'
+      description: 'A name for the new image - Constraints: 3-128 alphanumeric characters, parentheses (()), square brackets ([]), spaces ( ), periods (.), slashes (/), dashes (-), single quotes (''), at-signs (@), or underscores(_)'
     - name: noReboot
-      description: By default, Amazon EC2 attempts to shut down and reboot the instance
-        before creating the image. If the 'No Reboot' option is set(give value 'true'
-        for that) Amazon EC2 doesn't shut down the instance before creating the image.
-        When this option is used, file system integrity on the created image can't
-        be guaranteed.
+      description: By default, Amazon EC2 attempts to shut down and reboot the instance before creating the image. If the 'No Reboot' option is set(give value 'true' for that) Amazon EC2 doesn't shut down the instance before creating the image. When this option is used, file system integrity on the created image can't be guaranteed.
     - name: description
       description: A description for the new image
     - name: headers
       description: Headers to display in Human readable format
-    description: Creates an Amazon EBS-backed AMI from an Amazon EBS-backed instance
-      that is either running or stopped.
+    description: Creates an Amazon EBS-backed AMI from an Amazon EBS-backed instance that is either running or stopped.
   - name: aws-start-instance
     deprecated: true
     arguments:
@@ -394,9 +394,7 @@ script:
       description: A description for the snapshot
     - name: headers
       description: Headers to display in Human readable format
-    description: Creates a snapshot of an EBS volume and stores it in Amazon S3. You
-      can use snapshots for backups, to make copies of EBS volumes, and to save data
-      before shutting down an instance.
+    description: Creates a snapshot of an EBS volume and stores it in Amazon S3. You can use snapshots for backups, to make copies of EBS volumes, and to save data before shutting down an instance.
   - name: aws-get-instance-info
     deprecated: true
     arguments:
@@ -435,4 +433,5 @@ script:
     description: Get EC2 EBS Volume Information
 hidden: false
 tests:
-  - No test
+- No test
+toversion: 4.1.9
