@@ -83,4 +83,4 @@ ip,url,email
 
 ## Playbook Image
 ---
-![PCAP Parsing And Indicator Enrichment](Insert the link to your image here)
+![PCAP Parsing And Indicator Enrichment](https://raw.githubusercontent.com/demisto/content/54896aca3196d6e5639b461308e3f138e7fc56f9/Packs/PcapAnalysis/doc_files/PCAP_Parsing_And_Indicator_Enrichment.png)
