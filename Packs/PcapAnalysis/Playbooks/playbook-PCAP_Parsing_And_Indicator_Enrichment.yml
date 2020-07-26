@@ -1018,7 +1018,7 @@ tasks:
     task:
       id: a637ac4b-4ea6-4129-89e4-d133f4d175d2
       version: -1
-      name: Enrich Domains
+      name: Enrich Emails
       description: Checks the reputation of an email address.
       script: '|||email'
       type: regular
@@ -1522,7 +1522,7 @@ tasks:
     task:
       id: 332ef2c6-3f69-4162-84a8-dd9352382e6c
       version: -1
-      name: Set detected domains as external
+      name: Set detected URLs as external
       description: Checks if the specified value exists in context. If the value exists,
         it will be set in context.
       scriptName: SetAndHandleEmpty

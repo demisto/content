@@ -33,7 +33,7 @@ tasks:
       {
         "position": {
           "x": 1320,
-          "y": -300
+          "y": -220
         }
       }
     note: false
@@ -71,7 +71,7 @@ tasks:
       {
         "position": {
           "x": 1320,
-          "y": -150
+          "y": -70
         }
       }
     note: false
@@ -96,7 +96,7 @@ tasks:
       {
         "position": {
           "x": 1320,
-          "y": 1320
+          "y": 1480
         }
       }
     note: false
@@ -146,7 +146,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 190
+          "y": 270
         }
       }
     note: false
@@ -184,7 +184,7 @@ tasks:
       {
         "position": {
           "x": 750,
-          "y": 20
+          "y": 100
         }
       }
     note: false
@@ -230,7 +230,7 @@ tasks:
       {
         "position": {
           "x": 990,
-          "y": 190
+          "y": 270
         }
       }
     note: false
@@ -287,7 +287,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 390
+          "y": 470
         }
       }
     note: false
@@ -359,7 +359,7 @@ tasks:
       {
         "position": {
           "x": 830,
-          "y": 1140
+          "y": 1310
         }
       }
     note: false
@@ -400,7 +400,7 @@ tasks:
       {
         "position": {
           "x": 990,
-          "y": 740
+          "y": 980
         }
       }
     note: false
@@ -423,7 +423,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "105"
+      - "108"
     scriptarguments:
       file:
         complex:
@@ -440,7 +440,7 @@ tasks:
       {
         "position": {
           "x": 990,
-          "y": 570
+          "y": 650
         }
       }
     note: false
@@ -507,7 +507,7 @@ tasks:
       {
         "position": {
           "x": 830,
-          "y": 920
+          "y": 1170
         }
       }
     note: false
@@ -515,15 +515,57 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "108":
+    id: "108"
+    taskid: 71e12c67-92b4-444c-83a1-1648bb1eac34
+    type: condition
+    task:
+      id: 71e12c67-92b4-444c-83a1-1648bb1eac34
+      version: -1
+      name: Auto detonate files?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "105"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AutoDetonateFiles
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1685,
+        "height": 1765,
         "width": 1260,
         "x": 440,
-        "y": -300
+        "y": -220
       }
     }
   }
@@ -639,7 +681,14 @@ inputs:
   description: |-
     This input is combined with the FileExtensionFilter input or the FileTypeFilter input. It specifies if the type/extensions list is inclusive or exclusive. Can be "inclusive" or "exclusive". Default is "inclusive".
     Default value is 'inclusive'
-  playbookInputQuery:
+  playbookInputQuery: null
+- key: AutoDetonateFiles
+  value:
+    simple: "True"
+  required: false
+  description: This input specifies whether to detonate files extracted from the PCAP.
+    The default value is True, any other value will be considered as false.
+  playbookInputQuery: null
 outputs:
 - contextPath: DBotScore
   description: The DBotScore object.
