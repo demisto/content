@@ -2143,7 +2143,7 @@ inputs:
   value: {}
   required: false
   description: "This input checks which indicator types that will be extracted from\
-    \ the PCAP will be enriched. Values can be\nip\nemail\nurl\ndomain\nTo provide\
+    \ the PCAP will be enriched. Values can be\nip\nemail\nurl\nTo provide\
     \ more than one indicator type use comma separation such as \nip,url,email\n\
     \n"
   playbookInputQuery:
