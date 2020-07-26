@@ -66,7 +66,7 @@ script:
         Multiple alerts matching the specified filters.
         Alert_id should be like this template - "55af7415f8a0a7a29eef2e1f".
       isArray: false
-      name: alert_ids
+      name: alert_id
       required: false
       secret: false
     - default: false
@@ -224,7 +224,7 @@ script:
         Multiple alerts matching the specified filters.
         Alert_id should be like this template - "55af7415f8a0a7a29eef2e1f".
       isArray: false
-      name: alert_ids
+      name: alert_id
       required: false
       secret: false
     - default: false

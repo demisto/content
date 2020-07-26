@@ -228,11 +228,11 @@ def build_filter_and_url_to_search_with(url_suffix, customer_filters, arguments,
     return request_data, url_suffix
 
 
-def args_to_filter_dismiss_alerts_and_resolve_alerts(alert_ids, customer_filters, comments):
+def args_to_filter_dismiss_alerts_and_resolve_alerts(alert_id, customer_filters, comments):
     request_data = {}
     filters = {}
-    if alert_ids:
-        ids = {'eq': alert_ids.split(',')}
+    if alert_id:
+        ids = {'eq': alert_id.split(',')}
         filters['id'] = ids
         if comments:
             request_data['comment'] = comments
@@ -317,29 +317,35 @@ def list_alerts_command(client, args):
 
 
 def bulk_dismiss_alert_command(client, args):
-    alert_ids = args.get('alert_ids')
+    alert_id = args.get('alert_id')
     customer_filters = args.get('customer_filters')
     comment = args.get('comment')
-    request_data = args_to_filter_dismiss_alerts_and_resolve_alerts(alert_ids, customer_filters, comment)
-    dismiss_alerts = client.dismiss_bulk_alerts(request_data)
+    request_data = args_to_filter_dismiss_alerts_and_resolve_alerts(alert_id, customer_filters, comment)
+    try:
+        dismiss_alerts = client.dismiss_bulk_alerts(request_data)
+    except DemistoException as e:
+        return str(e)
     return CommandResults(
         readable_output=dismiss_alerts,
         outputs_prefix='MicrosoftCloudAppSecurity.AlertDismiss',
-        outputs_key_field='alert_ids',
+        outputs_key_field='alert_id',
         outputs=dismiss_alerts
     )
 
 
 def bulk_resolve_alert_command(client, args):
-    alert_ids = args.get('alert_ids')
+    alert_id = args.get('alert_id')
     customer_filters = args.get('customer_filters')
     comment = args.get('comment')
-    request_data = args_to_filter_dismiss_alerts_and_resolve_alerts(alert_ids, customer_filters, comment)
-    resolve_alerts = client.resolve_bulk_alerts(request_data)
+    request_data = args_to_filter_dismiss_alerts_and_resolve_alerts(alert_id, customer_filters, comment)
+    try:
+        resolve_alerts = client.resolve_bulk_alerts(request_data)
+    except DemistoException as e:
+        return str(e)
     return CommandResults(
         readable_output=resolve_alerts,
         outputs_prefix='MicrosoftCloudAppSecurity.AlertResolve',
-        outputs_key_field='alert_ids',
+        outputs_key_field='alert_id',
         outputs=resolve_alerts
     )
 
