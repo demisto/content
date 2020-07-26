@@ -45,11 +45,20 @@ Check URL Reputation
 
 
 #### Command Example
-```!url url=https://www.demisto.com```
+```!url url=http://komonghjpl[.]000webhostapp.com```
 
 #### Human Readable Output
-<br>PhishTank Database - URL Query </br>
-<br> No matches for URL https://www.demisto.com </br>
+### PhishTank Database - URL Query
+#### Found matches for URL http://komonghjpl[.]000webhostapp.com
+|Key|Value|
+|---|---|
+online|yes|
+phish_id|6698036|
+submission_time|2020-07-26T18:14:46+00:00|
+target|Facebook|
+verification_time|2020-07-26T18:43:06+00:00|
+verified|yes|
+Additional details at [http://www.phishtank.com/phish_detail.php?phish_id=6698036](http://www.phishtank.com/phish_detail.php?phish_id=6698036)
 
 
 ### phishtank-reload
