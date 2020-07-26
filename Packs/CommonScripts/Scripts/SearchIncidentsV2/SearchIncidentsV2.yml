@@ -53,8 +53,7 @@ args:
   description: Filter by incident type
   isArray: true
 - name: query
-  description: Use free form query (use Lucene syntax) as filter. All other filters
-    will be ignored when this filter is used.
+  description: Use free form query (use Lucene syntax) as filter. All other filters will be ignored when this filter is used.
   isArray: true
 - name: page
   description: Filter by the page number
@@ -85,3 +84,6 @@ outputs:
   description: A list of incident due dates returned from the query.
 - contextPath: foundIncidents.phase
   description: A list of incident phases returned from the query.
+toversion: 4.1.9
+tests:
+- No test

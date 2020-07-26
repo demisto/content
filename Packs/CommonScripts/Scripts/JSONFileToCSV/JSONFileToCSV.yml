@@ -51,4 +51,5 @@ subtype: python2
 runonce: false
 tags: []
 tests:
-- JSONtoCSV-Test
+- No test
+toversion: 4.1.9

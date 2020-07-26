@@ -3,18 +3,23 @@ commonfields:
   version: -1
 name: RunPollingCommand
 fromversion: 4.0.0
-script: |-
+script: >-
   ids = demisto.getArg('ids')
+
   if not isinstance(ids, list):
       ids = [ids]
   for i, val in enumerate(ids):
       ids[i] = str(ids[i])
 
   args_names = map(unicode.strip, demisto.getArg('additionalPollingCommandArgNames').split(','))
+
   args_values = map(unicode.strip, demisto.getArg('additionalPollingCommandArgValues').split(','))
 
+
   args = dict(zip(args_names, args_values))
+
   args[demisto.getArg('pollingCommandArgName')] = ','.join(argToList(ids))
+
   demisto.results(demisto.executeCommand(demisto.getArg('pollingCommand'), args))
 
 type: python
@@ -41,3 +46,4 @@ scripttarget: 0
 runonce: false
 tests:
 - No test
+toversion: 4.1.9

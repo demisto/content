@@ -28,4 +28,5 @@ runas: DBotWeakRole
 runonce: false
 subtype: python3
 tests:
-- Test_HTMLtoMD
+- No test
+toversion: 4.1.9

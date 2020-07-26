@@ -18,5 +18,5 @@ dockerimage: demisto/tld
 runas: DBotWeakRole
 subtype: python3
 tests:
-- ExtractDomainFromEmailTest
-- ExtractDomainFromUrlAndEmail-Test
+- No test
+toversion: 4.1.9

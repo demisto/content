@@ -2,15 +2,19 @@ commonfields:
   id: TimeStampToDate
   version: -1
 name: TimeStampToDate
-script: |-
+script: >-
   var value = parseInt(args.value)
 
+
   // Add miliseconds if needed
+
   if (value < 10000000000) {
       value *= 1000
   }
 
+
   var date =  new Date(value);
+
   return date.toISOString();
 type: javascript
 tags:
@@ -28,3 +32,6 @@ args:
   description: Time stamp to convert
 scripttarget: 0
 runonce: false
+toversion: 4.1.9
+tests:
+- No test

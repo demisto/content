@@ -5,8 +5,7 @@ args:
   name: indicator
   required: true
   secret: false
-comment: Add into the incident's context the system internal DBot score for the input
-  indicator
+comment: Add into the incident's context the system internal DBot score for the input indicator
 commonfields:
   id: GetIndicatorDBotScore
   version: -1
@@ -36,4 +35,5 @@ subtype: python2
 runonce: false
 fromversion: 3.5.0
 tests:
-- GetIndicatorDBotScore Test
+- No test
+toversion: 4.1.9

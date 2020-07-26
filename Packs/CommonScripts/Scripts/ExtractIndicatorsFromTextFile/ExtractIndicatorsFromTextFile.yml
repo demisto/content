@@ -54,6 +54,7 @@ subtype: python2
 runas: DBotWeakRole
 runonce: false
 tests:
-- Extract Indicators From File - test
+- No test
 fromversion: 4.1.0
 tags: []
+toversion: 4.1.9

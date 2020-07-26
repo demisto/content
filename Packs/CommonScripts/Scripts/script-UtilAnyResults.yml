@@ -2,8 +2,9 @@ commonfields:
   id: UtilAnyResults
   version: -1
 name: UtilAnyResults
-script: |
+script: >
   res = []
+
   try:
       data = demisto.get(demisto.args(), 'data')
       if (isinstance(data, list) and data):
@@ -36,3 +37,6 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+toversion: 4.1.9
+tests:
+- No test

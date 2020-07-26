@@ -26,3 +26,6 @@ type: python
 subtype: python2
 runas: DBotWeakRole
 runonce: false
+toversion: 4.1.9
+tests:
+- No test

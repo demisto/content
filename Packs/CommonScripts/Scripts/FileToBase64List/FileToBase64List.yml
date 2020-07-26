@@ -40,5 +40,6 @@ subtype: python2
 runas: DBotWeakRole
 runonce: true
 tests:
-- No Test
+- No test
 fromversion: 4.1.0
+toversion: 4.1.9
