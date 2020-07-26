@@ -102,10 +102,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: c145a44a-51b0-499c-8648-6c56bf96d1b6
+    taskid: f2117f0b-1820-4b40-8b38-12ee9f69bcc4
     type: regular
     task:
-      id: c145a44a-51b0-499c-8648-6c56bf96d1b6
+      id: f2117f0b-1820-4b40-8b38-12ee9f69bcc4
       version: -1
       name: archer-get-record
       description: Gets information about a content record in the given application.
@@ -118,9 +118,14 @@ tasks:
       - "11"
     scriptarguments:
       applicationId:
-        simple: ${Archer.Applications.Id}
+        complex:
+          root: Archer
+          accessor: Applications.Id
+          transformers:
+          - operator: FirstArrayElement
       contentId:
         simple: ${Archer.Record.Id}
+      incidentId: {}
     separatecontext: false
     view: |-
       {
@@ -168,10 +173,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: d7affbac-fe14-4d11-8200-38d517e3f360
+    taskid: 5d5a7af9-58b0-488f-8c2c-557fda9dd6a9
     type: regular
     task:
-      id: d7affbac-fe14-4d11-8200-38d517e3f360
+      id: 5d5a7af9-58b0-488f-8c2c-557fda9dd6a9
       version: -1
       name: archer-update-record
       description: Updates existing content record in the given application.
@@ -184,11 +189,16 @@ tasks:
       - "6"
     scriptarguments:
       applicationId:
-        simple: ${Archer.Applications.Id}
+        complex:
+          root: Archer
+          accessor: Applications.Id
+          transformers:
+          - operator: FirstArrayElement
       contentId:
         simple: ${Archer.Record.Id}
       fieldsToValues:
         simple: '{"Title":"Update!!!"}'
+      incidentId: {}
     separatecontext: false
     view: |-
       {
@@ -204,10 +214,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 51693ae3-b946-41d7-8a36-03222ab884f4
+    taskid: 4a5995a3-5d6e-4f90-8f5e-84a22aaee77b
     type: regular
     task:
-      id: 51693ae3-b946-41d7-8a36-03222ab884f4
+      id: 4a5995a3-5d6e-4f90-8f5e-84a22aaee77b
       version: -1
       name: archer-search-records
       description: Search for records inside the given application
@@ -220,12 +230,19 @@ tasks:
       - "10"
     scriptarguments:
       applicationId:
-        simple: ${Archer.Applications.Id}
+        complex:
+          root: Archer
+          accessor: Applications.Id
+          transformers:
+          - operator: FirstArrayElement
       dateOperator: {}
       fieldToSearchOn:
         simple: Incident ID (KPI)
       fieldsToDisplay:
         simple: Incident ID,Title,Date Created
+      fullData: {}
+      getInnerRecords: {}
+      isDescending: {}
       maxResults:
         simple: "1"
       numericOperator: {}
@@ -279,10 +296,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: b5d0bb5d-df32-49b0-813f-09727cce7b9c
+    taskid: 1e5f91f6-c0c6-4c37-8bfe-cd9217c27ce8
     type: regular
     task:
-      id: b5d0bb5d-df32-49b0-813f-09727cce7b9c
+      id: 1e5f91f6-c0c6-4c37-8bfe-cd9217c27ce8
       version: -1
       name: archer-delete-record
       description: Delete existing content record in the given application.
@@ -295,9 +312,14 @@ tasks:
       - "9"
     scriptarguments:
       applicationId:
-        simple: ${Archer.Applications.Id}
+        complex:
+          root: Archer
+          accessor: Applications.Id
+          transformers:
+          - operator: FirstArrayElement
       contentId:
         simple: ${Archer.Record.Id}
+      incidentId: {}
     separatecontext: false
     view: |-
       {
@@ -313,10 +335,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: e578b8d8-6f9e-4d6d-8a7e-11478ee909ce
+    taskid: 315598e9-3577-4d2c-8744-13b3ff02d6c5
     type: regular
     task:
-      id: e578b8d8-6f9e-4d6d-8a7e-11478ee909ce
+      id: 315598e9-3577-4d2c-8744-13b3ff02d6c5
       version: -1
       name: archer-search-records
       description: Search for records inside the given application
@@ -326,12 +348,19 @@ tasks:
       brand: RSA Archer
     scriptarguments:
       applicationId:
-        simple: ${Archer.Applications.Id}
+        complex:
+          root: Archer
+          accessor: Applications.Id
+          transformers:
+          - operator: FirstArrayElement
       dateOperator: {}
       fieldToSearchOn:
         simple: Incident ID (KPI)
       fieldsToDisplay:
         simple: Incident ID,Title,Date Created
+      fullData: {}
+      getInnerRecords: {}
+      isDescending: {}
       maxResults:
         simple: "1"
       numericOperator: {}
