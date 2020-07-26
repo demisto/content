@@ -367,7 +367,7 @@ class Client(BaseClient):
                     remote_machines: str,
                     access_restricted_to_temote_machines: str
                     ):
-        url_suffix = f"/PasswordVault/api/Accounts"
+        url_suffix = "/PasswordVault/api/Accounts"
 
         body = {
             "name": account_name,
@@ -482,7 +482,7 @@ class Client(BaseClient):
                                             ):
         url_suffix = f"/passwordvault/api/Accounts/{account_id}/SetNextPassword"
         body = {
-            "ChangeImmediately": "true" == "true",
+            "ChangeImmediately": True,
             "NewCredentials": new_credentials,
         }
         self._http_request("POST", url_suffix, json_data=body, resp_type='text')
@@ -770,7 +770,7 @@ def get_list_safes_command(
     results = CommandResults(
         raw_response=response,
         readable_output=tableToMarkdown(headline, safes),
-        outputs_prefix=f'CyberArkPAS.Safes',
+        outputs_prefix='CyberArkPAS.Safes',
         outputs_key_field='SafeName',
         outputs=safes
     )
@@ -1100,7 +1100,7 @@ def get_list_accounts_command(
     results = CommandResults(
         raw_response=response,
         readable_output=tableToMarkdown(headline, accounts),
-        outputs_prefix=f'CyberArkPAS.Accounts',
+        outputs_prefix='CyberArkPAS.Accounts',
         outputs_key_field='id',
         outputs=accounts
     )
@@ -1223,14 +1223,19 @@ def get_security_events_command(
     results = CommandResults(
         outputs=events_data,
         raw_response=events_data,
-        outputs_prefix=f'CyberArkPAS.Accounts',
+        outputs_prefix='CyberArkPAS.Accounts',
         outputs_key_field='id',
     )
     return results
 
 
-def fetch_incidents(client: Client, last_run: dict,  first_fetch_time: str, score: str,  max_fetch: str = '50')\
-        -> Tuple[dict, list]:
+def fetch_incidents(
+        client: Client,
+        last_run: dict,
+        first_fetch_time: str,
+        score: str,
+        max_fetch: str = '50'
+) -> Tuple[dict, list]:
 
     # if first time fetching
     if not last_run:
@@ -1243,7 +1248,7 @@ def fetch_incidents(client: Client, last_run: dict,  first_fetch_time: str, scor
     else:
         next_run = last_run
 
-    events_data = client.get_security_events(next_run.get("time"))
+    events_data = client.get_security_events(str(next_run.get("time")))
 
     if not events_data:
         return next_run, []

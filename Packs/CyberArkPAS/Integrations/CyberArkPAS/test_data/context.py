@@ -605,7 +605,7 @@ INCIDENTS3 = [
  {'name': 'CyberArk PAS Incident: 5f13f7ade4b0ba4baf5ee9b0.',
   'occurred': '2020-07-19T07:35:09.000Z',
   'rawJSON': '{"id": "5f13f7ade4b0ba4baf5ee9b0", "type": '
-             '"VaultViaIrregularIp", "score": 27.656250000000004, '
+             '"VaultViaIrregularIp", "score": 98.65625, '
              '"createTime": 1595144109000, "lastUpdateTime": 1595144109000, '
              '"audits": [{"id": "5f13f7ade4b0ba4baf5ee9ad", "type": '
              '"VAULT_LOGON", "sensorType": "VAULT", "action": "Logon", '
@@ -613,7 +613,7 @@ INCIDENTS3 = [
              '"source": {"mOriginalAddress": "82.166.99.178"}, "cloudData": '
              '{}}], "additionalData": {"station": "82.166.99.178", "reason": '
              '"ip", "vault_user": "administrator"}, "mStatus": "OPEN"}',
-  'severity': 1},
+  'severity': 3},
  {'name': 'CyberArk PAS Incident: 5f13f7e8e4b0ba4baf5eead5.',
   'occurred': '2020-07-19T07:36:08.000Z',
   'rawJSON': '{"id": "5f13f7e8e4b0ba4baf5eead5", "type": '
