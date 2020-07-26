@@ -2930,7 +2930,12 @@
         "Pwned v2 test": "Issue 26601",
         "Email Address Enrichment - Generic v2.1 - Test": "Issue 26785",
         "Tanium v2 - Test": "Issue 26822",
-        "Google Chronicle Backstory List IOCs - Test": "Issue 26461"
+        "Google Chronicle Backstory List IOCs - Test": "Issue 26461",
+        "EvaluateMLModllAtProduction-Test": "Issue 26849",
+        "hashIncidentFields-test": "Issue 26850",
+        "MISP V2 Test": "Issue 26905",
+        "Mimecast test": "Issue 26906",
+        "Mail Sender (New) Test": "Issue 25602"
     },
     "skipped_integrations": {
 
