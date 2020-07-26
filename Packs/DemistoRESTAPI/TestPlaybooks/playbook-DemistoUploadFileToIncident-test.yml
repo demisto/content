@@ -47,7 +47,7 @@ tasks:
     scriptarguments:
       body: {}
       filename:
-        simple: MicrosoftCloudAppSecurity_image.png
+        simple: image.png
       headers: {}
       insecure: {}
       method:

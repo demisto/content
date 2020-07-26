@@ -108,24 +108,6 @@ def test_list_alerts_command(requests_mock):
     assert context.get('MicrosoftCloudAppSecurity.Alert(val.alert_id == obj.alert_id)') == ALERT_BY_ID_DATA
 
 
-def test_bulk_dismiss_alert_command(requests_mock):
-    from MicrosoftCloudAppSecurity import bulk_dismiss_alert_command
-    requests_mock.post('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/dismiss_bulk/',
-                       json=DISMISSED_BY_ID_DATA)
-    res = bulk_dismiss_alert_command(client_mocker, {'alert_ids': '5f06d71dba4289d0602ba5ac'})
-    context = res.to_context().get('EntryContext')
-    assert context.get('MicrosoftCloudAppSecurity.AlertDismiss(val.alert_ids == obj.alert_ids)') == DISMISSED_BY_ID_DATA
-
-
-def test_bulk_resolve_alert_command(requests_mock):
-    from MicrosoftCloudAppSecurity import bulk_resolve_alert_command
-    requests_mock.post('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/resolve/',
-                       json=RESOLVED_BY_ID_DATA)
-    res = bulk_resolve_alert_command(client_mocker, {'alert_ids': '5f06d71dba4289d0602ba5ac'})
-    context = res.to_context().get('EntryContext')
-    assert context.get('MicrosoftCloudAppSecurity.AlertResolve(val.alert_ids == obj.alert_ids)') == RESOLVED_BY_ID_DATA
-
-
 def test_list_activities_command(requests_mock):
     from MicrosoftCloudAppSecurity import list_activities_command
     requests_mock.get('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/activities/'
