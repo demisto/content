@@ -36,4 +36,4 @@ This script is used in the following playbooks and scripts.
 | File.MD5 | MD5 found in parsed file | Unknown |
 | File.SHA1 | SHA1 found in parsed file | Unknown |
 | File.SHA256 | SHA256 found in parsed file | Unknown |
-| ParseCSV.ParsedCSV | Parsed csv in form of JSON array | Unknown |
+| ParseCSV.ParsedCSV | Parsed CSV in form of a JSON array | Unknown |
