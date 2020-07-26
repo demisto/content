@@ -3435,7 +3435,8 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
             file_data = file_data.decode("utf-8-sig").encode("utf-8")
 
         parser = HeaderParser()
-        headers = parser.parsestr(file_data)
+        # print(file_data.decode("utf-8"))
+        headers = parser.parsestr(file_data.decode("utf-8"))
 
         header_list = []
         headers_map = {}  # type: dict
@@ -3462,7 +3463,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
             else:
                 headers_map[item[0]] = value
 
-        eml = message_from_string(file_data)
+        eml = message_from_string(file_data.decode("utf-8"))
         if not eml:
             raise Exception("Could not parse eml file!")
 
@@ -3483,8 +3484,8 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                 parts += part.get_payload()
 
             elif part.get_filename() or "attachment" in part.get("Content-Disposition", ""):
-
                 attachment_file_name = convert_to_unicode(part.get_filename())
+                # print("Name is"+attachment_file_name)
                 if attachment_file_name is None and part.get('filename'):
                     attachment_file_name = os.path.normpath(part.get('filename'))
                     if os.path.isabs(attachment_file_name):
@@ -3546,10 +3547,11 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                     # .msg and other files (png, jpeg)
                     if part.is_multipart() and max_depth - 1 > 0:
                         # email is DSN
-                        msg = part.get_payload(0).get_payload()  # human-readable section
+                        msg = part.get_payload(1).get_payload()  # human-readable section
                         msg_info = base64.b64decode(msg).decode('utf-8')
 
                         attached_emails.append(msg_info)
+                        attachment_file_name = "Filename not found"
                         demisto.results(fileResult(attachment_file_name, msg_info))
                     else:
                         file_content = part.get_payload(decode=True)
@@ -3571,7 +3573,6 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                                     outputs=None)
                             finally:
                                 os.remove(f.name)
-
                 attachment_names.append(attachment_file_name)
                 demisto.setContext('AttachmentName', attachment_file_name)
 
