@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 4bd08b41-759f-496e-84a1-78e26434af1b
+    taskid: 09dd8f7c-198b-4c3b-8cf1-19b21b4063e0
     type: start
     task:
-      id: 4bd08b41-759f-496e-84a1-78e26434af1b
+      id: 09dd8f7c-198b-4c3b-8cf1-19b21b4063e0
       version: -1
       name: ""
       iscommand: false
@@ -32,16 +32,19 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 5c576091-a28c-4ca2-83ca-5a302ae25f0c
+    taskid: d2529e8f-e596-4d9f-8130-44b9c32442d8
     type: regular
     task:
-      id: 5c576091-a28c-4ca2-83ca-5a302ae25f0c
+      id: d2529e8f-e596-4d9f-8130-44b9c32442d8
       version: -1
       name: email-take-action
-      script: TrendMicroCAS|||trendmicro-cas-email-take-action
+      description: |-
+        Takes actions on a batch of specified email messages.
+        supports only  in office365 - exchange
+      script: TrendMicro Cloud App Security|||trendmicro-cas-email-take-action
       type: regular
       iscommand: true
-      brand: TrendMicroCAS
+      brand: TrendMicro Cloud App Security
     nexttasks:
       '#none#':
       - "2"
@@ -50,7 +53,7 @@ tasks:
         simple: ${inputs.action_type}
       mail_message_delivery_time:
         simple: ${inputs.mail_message_delivery_time}
-      mail_messge_id:
+      mail_message_id:
         simple: ${inputs.mail_messge_id}
       mail_unique_id:
         simple: ${inputs.mail_unique_id}
@@ -71,10 +74,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 4db7670a-8f95-455e-8ade-d1bfd7bdede0
+    taskid: 1066de77-9fe8-4cb4-861a-988732927838
     type: playbook
     task:
-      id: 4db7670a-8f95-455e-8ade-d1bfd7bdede0
+      id: 1066de77-9fe8-4cb4-861a-988732927838
       version: -1
       name: GenericPolling
       description: |-
@@ -131,17 +134,17 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: b1daf5ff-329b-4671-8827-06d27f77cdcd
+    taskid: 355dc240-2715-4504-8041-ae337199e37b
     type: regular
     task:
-      id: b1daf5ff-329b-4671-8827-06d27f77cdcd
+      id: 355dc240-2715-4504-8041-ae337199e37b
       version: -1
       name: trendmicro-cas-email-action-result-query
       description: Queries the results of actions on email messages
-      script: TrendMicroCAS|||trendmicro-cas-email-action-result-query
+      script: '|||trendmicro-cas-email-action-result-query'
       type: regular
       iscommand: true
-      brand: TrendMicroCAS
+      brand: ""
     scriptarguments:
       batch_id:
         complex:

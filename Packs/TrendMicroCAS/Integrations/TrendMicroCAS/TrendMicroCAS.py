@@ -20,8 +20,23 @@ MAX_INCIDENTS_TO_FETCH = 500
 
 
 class Client(BaseClient):
+    """
+    Client to use in the integration. Overrides BaseClient
+    makes the connection to the trendMicro server
+    """
+    def security_events_list(self, service: str, event_type: str, start=None, end=None, limit=None) -> dict:
+        """
+        Handle security events request.
+        Args:
+            service(str): Name of the protected service whose logs you want to retrieve.
+            event_type(str): Type of the security event whose logs you want to retrieve.
+            start(str): Start time during which logs are to retrieve.
+            end(str): End time during which logs are to retrieve.
+            limit(str): Number of log items to display at a time.
 
-    def security_events_list(self, service, event_type, start=None, end=None, limit=None) -> dict:
+        Returns:
+            The security events response.
+        """
         params = assign_params(service=service, event=event_type, start=start, end=end, limit=limit)
         result = self._http_request(
             method='GET',
@@ -33,6 +48,28 @@ class Client(BaseClient):
     def email_sweep(self, mailbox=None, lastndays=None, start=None, end=None, subject=None, file_sha1=None,
                     file_name=None, file_extension=None, url=None, sender=None, recipient=None, message_id=None,
                     source_ip=None, source_domain=None, limit=None) -> dict:
+        """
+        Handle email sweep request.
+        Args:
+            mailbox(str): Email address of the mailbox to search in.
+            lastndays(str): Number of days (n × 24 hours) before the point of time when the request is sent.
+            start(str): Start time which email message are to search.
+            end(str): End time which email message are to search.
+            limit(str): Number of email messages whose meta information is to display at a time.
+            subject(str): Subject of email messages to search for To search for.
+            file_sha1(str): SHA-1 hash value of the attachment file to search for.
+            file_name(str): Name of the attachment file to search for.
+            file_extension(str): Filename extension of attachment files to search for.
+            url(str): URL in email body or attachments to search for.
+            sender(str): Sender email address of email messages to search for.
+            recipient(str): Recipient email address of email messages to search for.
+            message_id(str): Internet message ID of the email message to search for.
+            source_ip(str): Source IP address of email messages to search for.
+            source_domain(str): Source domain of email messages to search for.
+
+        Returns:
+            The email sweep response.
+        """
         params = assign_params(mailbox=mailbox, lastndays=lastndays, start=start, end=end, subject=subject,
                                file_sha1=file_sha1, file_name=file_name, file_extension=file_extension, url=url,
                                sender=sender, recipient=recipient, message_id=message_id, source_ip=source_ip,
@@ -44,8 +81,16 @@ class Client(BaseClient):
         )
         return result
 
-    def user_take_action(self, action_type: str, account_user_email: str) -> dict:
-        account_list = argToList(account_user_email)
+    def user_take_action(self, action_type: str, account_list: list) -> dict:
+        """
+        Handle user take action request.
+        Args:
+            action_type(str): Type of the action to take.
+            account_list(list): List Email addresses to take action on.
+
+        Returns:
+            The user take action response.
+        """
         data = []
         for account in account_list:
             data.append({
@@ -64,6 +109,18 @@ class Client(BaseClient):
 
     def email_take_action(self, action_type: str, mailbox: str, mail_message_id: str, mail_unique_id: str,
                           mail_message_delivery_time: str) -> dict:
+        """
+        Handle email_take_action request.
+        Args:
+            action_type(str): Action to take on an email message.
+            mailbox(str): Email address of an email message to take action on.
+            mail_message_id(str): Internet message ID of an email message to take action on.
+            mail_unique_id(str): Unique ID of an email message to take action on.
+            mail_message_delivery_time(str): Date and time when an email message to take action on.
+
+        Returns:
+            The email_take_action response.
+        """
         data = [{
             "action_type": action_type,
             "service": "exchange",
@@ -81,26 +138,33 @@ class Client(BaseClient):
         )
         return result
 
-    def user_action_result_query(self, batch_id: str, start: str, end: str, limit: str) -> dict:
+    def action_result_query(self, batch_id: str, start: str, end: str, limit: str, action_type: str) -> dict:
+        """
+        Handle action_result_query request.
+        Args:
+            batch_id(str): The id to check the status for.
+            action_type(str): Type searching his status.
+            start(str): Start time during which action results are to retrieve.
+            end(str): End time during which action results are to retrieve.
+            limit(str): Number of action results to display at a time.
+
+        Returns:
+            The action_result_query response.
+        """
         params = assign_params(batch_id=batch_id, start=start, end=end, limit=limit)
         data = self._http_request(
             method='GET',
-            url_suffix='mitigation/accounts',
+            url_suffix=f'mitigation/{action_type}',
             params=params
-        )
-        return data
-
-    def email_action_result_query(self, batch_id: str, start: str, end: str, limit: str) -> dict:
-        params = assign_params(batch_id=batch_id, start=start, end=end, limit=limit)
-        data = self._http_request(
-            method='GET',
-            url_suffix='mitigation/mails',
-            params=params
-
         )
         return data
 
     def blocked_lists_get(self):
+        """
+        Handle get blocked lists request.
+        Returns:
+            The get blocked lists response.
+        """
         result = self._http_request(
             method='GET',
             url_suffix='remediation/mails'
@@ -109,6 +173,17 @@ class Client(BaseClient):
 
     def blocked_lists_update(self, action_type: str, senders_list: List[str], urls_list: List[str],
                              filehashes_list: List[str]) -> dict:
+        """
+        Handle update blocked lists request.
+        Args:
+            action_type(str): action to take.
+            senders_list(list): mail address that an email message is sent from..
+            urls_list(list): URL that is included in an email message..
+            filehashes_list(list): SHA-1 hash value of an email attachment..
+
+        Returns:
+            The update blocked lists response.
+        """
         rules = assign_params(senders=senders_list, urls=urls_list, filehashes=filehashes_list)
         data = {
             "action_type": action_type,
@@ -122,6 +197,14 @@ class Client(BaseClient):
         return result
 
     def next_link(self, link: str) -> dict:
+        """
+        Handle next link request.
+        Args:
+            link(str): Link from previous request.
+
+        Returns:
+            The next link response.
+        """
         data = self._http_request(
             method='GET',
             full_url=link,
@@ -148,36 +231,49 @@ def parse_date_to_isoformat(arg: str, arg_name: str):
     if arg is None:
         return None
 
-    # we use dateparser to handle strings either in ISO8601 format, or
-    # For example: format 2019-10-23T00:00:00 or "3 days", etc
+    # we use dateparser to handle strings either in ISO8601 format, or [number] [time unit].
+    # For example: 2019-10-23T00:00:00 or "3 days", etc
 
     date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
     if not date:
-        return_error(f'Error in the date - {arg_name}')
+        return_error(f'invalid date value for: {arg_name}\n{arg} should be in the format of:'
+                     f' "2016-07-22T01:51:31.001Z." or "10 minutes"')
 
     date = f'{date.isoformat()}Z'
     return date
 
 
+def creates_empty_dictionary_of_last_run(list_services: list, list_event_type: list):
+    last_run = {}
+    for service in list_services:
+        last_run[service] = {}
+        for event_type in list_event_type:
+            last_run[service][event_type] = {}
+    return last_run
+
+
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
-    try:
-        client.security_events_list(service='exchange', event_type='securityrisk')
-    except DemistoException as e:
-        if 'uthentication token not found' in str(e):
-            return 'Authorization Error: make sure Token Key or URL are correctly set'
-        else:
-            raise e
-    return 'ok'
+def test_module(client: Client, params) -> str:
+    if params.get('isFetch'):
+        return fetch_incidents_command(client, params, is_test_module=True)
+    else:
+        try:
+            client.security_events_list(service='exchange', event_type='securityrisk')
+        except DemistoException as e:
+            if 'authentication token not found' in str(e):
+                return 'Authorization Error: make sure Token Key or Service URL are correctly set'
+            else:
+                raise e
+        return 'ok'
 
 
-def fetch_incidents(client: Client, max_results: int, last_run, list_services: List[str], first_fetch: str,
-                    list_event_type: List[str]) -> Tuple[Dict[str, dict], List[dict]]:
+def fetch_incidents(client: Client, max_results: int, last_run, list_services: List[str], first_fetch_time: str,
+                    list_event_type: List[str]) -> Tuple[Dict[str, dict], List[dict], bool]:
     """This function retrieves new alerts every interval (default is 1 minute).
     This function has to implement the logic of making sure that incidents are
-    fetched only onces and no incidents are missed. By default it's invoked by
+    fetched only once and no incidents are missed. By default it's invoked by
     XSOAR every minute. It will use last_run to save the timestamp and ids of the last
     incident it processed.
 
@@ -186,7 +282,7 @@ def fetch_incidents(client: Client, max_results: int, last_run, list_services: L
         max_results (int): Maximum numbers of incidents per fetch
         last_run (Optional[Dict[str, int]]): A dict with a key containing the latest incident created time we got
             from last fetch
-        first_fetch (str): If last_run is None (first time we are fetching), it contains
+        first_fetch_time (str): If last_run is None (first time we are fetching), it contains
             the date in iso format on when to start fetching incidents
         ist_services (str): list services of the alerts to search for. Options are: 'exchange,sharepoint,onedrive,dropbox,box,googledrive,gmail,teams'
         list_event_type (str): list types of events to search for. Options are: securityrisk, virtualanalyze, ransomware, dlp
@@ -201,21 +297,35 @@ def fetch_incidents(client: Client, max_results: int, last_run, list_services: L
     next_run = {}
     incidents: List[Dict[str, Any]] = []
     end = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    quota = False
     for service in list_services:
         next_run[service] = {}
         for event_type in list_event_type:
-            last_fetch_time = last_run.get(service, {}).get(event_type, {}).get('last_fetch_time', first_fetch)
+            last_fetch_time = last_run.get(service, {}).get(event_type, {}).get('last_fetch_time', first_fetch_time)
             last_fetch_ids = last_run.get(service, {}).get(event_type, {}).get('last_fetch_ids', [])
-            result = client.security_events_list(
-                service=service,
-                event_type=event_type,
-                start=last_fetch_time,
-                end=end,
-                limit=(max_results + len(last_fetch_ids)) - len(incidents)
-            )
-            new_latest_ids = []
+            if max_results <= len(incidents) or quota:
+                next_run[service][event_type] = {'last_fetch_time': last_fetch_time, 'last_fetch_ids': last_fetch_ids}
+                continue
+            result = {}
+            try:
+                result = client.security_events_list(
+                    service=service,
+                    event_type=event_type,
+                    start=last_fetch_time,
+                    end=end,
+                    limit=str((max_results + len(last_fetch_ids)) - len(incidents))
+                )
+            except Exception as e:
+                if 'Maximum allowed requests exceeded' in str(e):
+                    quota = True
+                    next_run[service][event_type] = {'last_fetch_time': last_fetch_time,
+                                                     'last_fetch_ids': last_fetch_ids}
+                    # demisto.log('quota_erorr - Maximum allowed requests exceeded')
+                    continue
+            new_latest_ids = list[str]
             security_events = result.get('security_events')
             if not security_events:
+                next_run[service][event_type] = {'last_fetch_time': last_fetch_time, 'last_fetch_ids': last_fetch_ids + new_latest_ids}
                 continue
             for event in security_events:
                 if event.get('log_item_id') not in last_fetch_ids:
@@ -233,10 +343,8 @@ def fetch_incidents(client: Client, max_results: int, last_run, list_services: L
                 next_run[service][event_type] = {'last_fetch_time': latest_created_time, 'last_fetch_ids': new_latest_ids}
             else:
                 next_run[service][event_type] = {'last_fetch_time': last_fetch_time, 'last_fetch_ids': last_fetch_ids + new_latest_ids}
-        if max_results <= len(incidents):
-            break
 
-    return next_run, incidents
+    return next_run, incidents, quota
 
 
 def security_events_list_command(client, args):
@@ -247,11 +355,11 @@ def security_events_list_command(client, args):
     limit = args.get('limit')
     next_link = args.get('next_link')
 
-    if start and not end:
-        end = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
     if next_link:
         result = client.next_link(next_link)
     else:
+        if start and not end:
+            end = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
         result = client.security_events_list(service, event_type, start, end, limit)
 
     security_events = result.get('security_events')
@@ -265,14 +373,38 @@ def security_events_list_command(client, args):
             message_list.append(message)
         headers = ['log_item_id', 'detection_time', 'security_risk_name', 'affected_user', 'action', 'action_result']
         readable_output = tableToMarkdown(f'{event_type} events in {service}', message_list, headers=headers)
-
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix='TrendMicroCAS.Events',
-            outputs_key_field='traceId',
-            outputs=result,
-            raw_response=result
-        )
+        if result.get('next_link'):
+            meta_data = {
+                'next_link': result.get('next_link'),
+                'traceId': result.get('traceId')
+            }
+            meta_data_readable_output = tableToMarkdown('Events MetaData.', meta_data)
+            return [
+                CommandResults(
+                    readable_output=readable_output,
+                    outputs_prefix='TrendMicroCAS.Events',
+                    outputs_key_field='log_item_id',
+                    outputs=security_events,
+                    raw_response=result
+                ),
+                CommandResults(
+                    readable_output=meta_data_readable_output,
+                    outputs_prefix='TrendMicroCAS.EventsMetaData',
+                    outputs_key_field='traceId',
+                    outputs=meta_data,
+                    raw_response=result
+                ),
+            ]
+        else:
+            return [
+                CommandResults(
+                    readable_output=readable_output,
+                    outputs_prefix='TrendMicroCAS.Events',
+                    outputs_key_field='log_item_id',
+                    outputs=security_events,
+                    raw_response=result
+                )
+            ]
 
 
 def email_sweep_command(client, args):
@@ -301,12 +433,12 @@ def email_sweep_command(client, args):
 
     value = result.get('value')
     if not value:
-        return "not find emails"
+        return "Emails were not found for the given filters"
     else:
 
         headers = ["mail_message_delivery_time", "mail_message_id", "mail_message_sender", "mail_message_subject",
                    "mail_unique_id", "mailbox"]
-        readable_output = tableToMarkdown('search results', value, headers=headers)
+        readable_output = tableToMarkdown('Search Results', value, headers=headers)
 
         return CommandResults(
             readable_output=readable_output,
@@ -319,15 +451,15 @@ def email_sweep_command(client, args):
 
 def user_take_action_command(client, args):
     action_type = args.get('action_type')
-    account_user_email = args.get('account_user_email')
-    result = client.user_take_action(action_type, account_user_email)
+    account_list = argToList(args.get('account_user_email'))
+    result = client.user_take_action(action_type, account_list)
     output = {
         'action_type': action_type,
-        'account_user_email': argToList(account_user_email),
+        'account_user_email': account_list,
         'batch_id': result.get('batch_id'),
         'traceId': result.get('traceId')
     }
-    readable_output = tableToMarkdown(f'{action_type} started', output)
+    readable_output = tableToMarkdown(f'Action: {action_type} on users: {account_list} was initiated', output)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='TrendMicroCAS.UserTakeAction',
@@ -351,7 +483,7 @@ def email_take_action_command(client, args):
         'batch_id': result.get('batch_id'),
         'traceId': result.get('traceId')
     }
-    readable_output = tableToMarkdown(f'{action_type} started', output)
+    readable_output = tableToMarkdown(f'Action: {action_type} on mailbox: {mailbox} was initiated', output)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='TrendMicroCAS.EmailTakeAction',
@@ -366,11 +498,11 @@ def user_action_result_command(client, args):
     start = parse_date_to_isoformat(args.get('start'), 'start')
     end = parse_date_to_isoformat(args.get('end'), 'end')
     limit = args.get('limit')
-    result = client.user_action_result_query(batch_id, start, end, limit)
+    result = client.action_result_query(batch_id, start, end, limit, 'accounts')
 
     actions = result.get('actions')
     headers = ["action_id", "status", "action_type", "account_user_email", "action_executed_at", "error_message"]
-    readable_output = tableToMarkdown('action result', actions, headers=headers)
+    readable_output = tableToMarkdown('Action Result', actions, headers=headers)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='TrendMicroCAS.UserActionResult',
@@ -385,11 +517,11 @@ def email_action_result_command(client, args):
     start = parse_date_to_isoformat(args.get('start'), 'start')
     end = parse_date_to_isoformat(args.get('end'), 'end')
     limit = args.get('limit')
-    result = client.email_action_result_query(batch_id, start, end, limit)
+    result = client.action_result_query(batch_id, start, end, limit, 'mails')
 
     actions = result.get('actions')
     headers = ["action_id", "status", "action_type", "account_user_email", "action_executed_at", "error_message"]
-    readable_output = tableToMarkdown('action result', actions, headers=headers)
+    readable_output = tableToMarkdown('Action Result', actions, headers=headers)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='TrendMicroCAS.EmailActionResult',
@@ -435,6 +567,37 @@ def blocked_lists_update_command(client, args):
     )
 
 
+def fetch_incidents_command(client, params, is_test_module=False):
+    list_services = params.get('service')
+    list_event_type = params.get('event_type')
+    first_fetch_time = parse_date_to_isoformat(params.get('first_fetch', '3 days'), 'first_fetch_time')
+    max_results = int(params.get('max_fetch', 50))
+    if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
+        max_results = MAX_INCIDENTS_TO_FETCH
+
+    last_run = demisto.getLastRun()  # getLastRun() gets the last run dict
+    if not last_run:
+        last_run = creates_empty_dictionary_of_last_run(list_services, list_event_type)
+
+    next_run, incidents, quota = fetch_incidents(
+        client=client,
+        max_results=max_results,
+        last_run=last_run,  # getLastRun() gets the last run dict
+        list_services=list_services,
+        list_event_type=list_event_type,
+        first_fetch_time=first_fetch_time
+    )
+    if is_test_module:
+        if not quota:
+            return 'ok'
+        else:
+            return_error('The integration was successfully defined. but too many services and event_types Were'
+                         ' selected, which creates an "quota error" on fetch_incidents')
+
+    demisto.setLastRun(next_run)
+    demisto.incidents(incidents)
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -442,19 +605,20 @@ def main() -> None:
     """main function, parses params and runs command functions
     """
     URLS = {
-        'U.S.A': 'api.tmcas.trendmicro.com',
-        'EU': 'api-eu.tmcas.trendmicro.com',
-        'Japan': 'api.tmcas.trendmicro.co.jp',
-        'Australia and New Zealand': 'api-au.tmcas.trendmicro.com',
-        'UK': 'api.tmcas.trendmicro.co.uk',
-        'Canada': 'api-ca.tmcas.trendmicro.com'
+        'U.S.A': 'https://api.tmcas.trendmicro.com/v1/',
+        'EU': 'https://api-eu.tmcas.trendmicro.com/v1/',
+        'Japan': 'https://api.tmcas.trendmicro.co.jp/v1/',
+        'Australia and New Zealand': 'https://api-au.tmcas.trendmicro.com/v1/',
+        'UK': 'https://api.tmcas.trendmicro.co.uk/v1/',
+        'Canada': 'https://api-ca.tmcas.trendmicro.com/v1/'
     }
-
-    token = demisto.params().get('token')
+    params = demisto.params()
+    token = params.get('token')
     # get the service API url
-    base_url = f'https://{URLS[demisto.params().get("serviceURL")]}/v1/'
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
+    base_url = URLS.get(params.get("serviceURL"))
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
+    is_fetch = params.get('isFetch')
 
     demisto.debug(f'Command being called is {demisto.command()}')
 
@@ -466,40 +630,16 @@ def main() -> None:
             proxy=proxy)
 
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
+            result = test_module(client, params)
             return_results(result)
-
         elif demisto.command() == 'fetch-incidents':
-            list_services = demisto.params().get('service')
-            list_event_type = demisto.params().get('event_type')
-            first_fetch = parse_date_to_isoformat(demisto.params().get('first_fetch', '3 days'), 'first_fetch')
-            max_results = int(demisto.params().get('max_fetch', 50))
-            if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
-                max_results = MAX_INCIDENTS_TO_FETCH
-
-            last_run = demisto.getLastRun()  # getLastRun() gets the last run dict
-            if not last_run:
-                last_run = {}
-                for service in list_services:
-                    last_run[service] = {}
-                    for event_type in list_event_type:
-                        last_run[service][event_type] = {}
-            next_run, incidents = fetch_incidents(
-                client=client,
-                max_results=max_results,
-                last_run=last_run,  # getLastRun() gets the last run dict
-                list_services=list_services,
-                list_event_type=list_event_type,
-                first_fetch=first_fetch
-            )
-            demisto.setLastRun(next_run)
-            demisto.incidents(incidents)
-
+            fetch_incidents_command(client, params)
         elif demisto.command() == 'trendmicro-cas-email-sweep':
             return_results(email_sweep_command(client, demisto.args()))
         elif demisto.command() == 'trendmicro-cas-security-events-list':
-            return_results(security_events_list_command(client, demisto.args()))
+            results = security_events_list_command(client, demisto.args())
+            for result in results:
+                return_results(result)
         elif demisto.command() == 'trendmicro-cas-user-take-action':
             return_results(user_take_action_command(client, demisto.args()))
         elif demisto.command() == 'trendmicro-cas-email-take-action':

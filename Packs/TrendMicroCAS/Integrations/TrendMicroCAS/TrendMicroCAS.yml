@@ -1,4 +1,4 @@
-category: Authentication
+category: CASB
 commonfields:
   id: TrendMicro Cloud App Security
   version: -1
@@ -119,10 +119,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: "End time during which logs are to retrieve.\nThe request retrieves\
-        \ logs within a maximum of 72 hours before \nIf only end is specified, the\
-        \ request retrieves logs within five minutes before the point of the configured\
-        \ end time."
+      description: End time during which logs are to retrieve. The request retrieves logs within a maximum of 72 hours before
+        If only end is specified, the request retrieves logs within five minutes before the point of the configured end time.
       isArray: false
       name: end
       required: false
@@ -461,7 +459,7 @@ script:
       secret: false
     - default: false
       description: Email addresses, support comma separated string
-      isArray: false
+      isArray: true
       name: account_user_email
       required: true
       secret: false
@@ -728,7 +726,6 @@ script:
     - auto: PREDEFINED
       default: false
       description: |-
-        Add one or multiple email senders, URLs, and SHA-1 hash values to or remove them from the blocked lists. Options include:
         create: add to the blocked lists
         delete: remove from the blocked lists
       isArray: false
@@ -742,7 +739,7 @@ script:
       description: |-
         mail address that an email message is sent from.
         support comma separated string.
-      isArray: false
+      isArray: true
       name: senders
       required: false
       secret: false
@@ -750,7 +747,7 @@ script:
       description: |-
         URL that is included in an email message.
         support comma separated string.
-      isArray: false
+      isArray: true
       name: urls
       required: false
       secret: false
@@ -758,7 +755,7 @@ script:
       description: |-
         SHA-1 hash value of an email attachment.
         support comma separated string.
-      isArray: false
+      isArray: true
       name: filehashes
       required: false
       secret: false
