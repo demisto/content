@@ -2864,6 +2864,7 @@
         }
     ],
     "skipped_tests": {
+        "Mimecast test": "Issue 26906",
         "PAN-OS DAG Configuration Test": "Issue 60693",
         "Phishing Classifier V2 ML Test": "Issue 26066",
         "CuckooTest": "Issue 25601",
