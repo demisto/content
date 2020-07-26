@@ -430,7 +430,7 @@ def get_remediation_data_command(client: Client, args: dict, no_output_mode: boo
     standard_context_list: Any = []
     secondary_standard_context_dict: Any = {}
     secondary_standard_context_list = []
-    secondary_path: str = None
+    secondary_path: Any = None
 
     # SafeBreach Context:
     safebreach_context_list = []
