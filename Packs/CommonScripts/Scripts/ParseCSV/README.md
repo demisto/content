@@ -31,9 +31,9 @@ This script is used in the following playbooks and scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| IP.Address | IP address found in parsed file | Unknown |
-| Domain.Name | Domain found in parsed file | Unknown |
-| File.MD5 | MD5 found in parsed file | Unknown |
-| File.SHA1 | SHA1 found in parsed file | Unknown |
-| File.SHA256 | SHA256 found in parsed file | Unknown |
+| IP.Address | IP address found in the parsed file | Unknown |
+| Domain.Name | Domain found in the parsed file | Unknown |
+| File.MD5 | MD5 found in the parsed file | Unknown |
+| File.SHA1 | SHA1 found in the parsed file | Unknown |
+| File.SHA256 | SHA256 found in the parsed file | Unknown |
 | ParseCSV.ParsedCSV | Parsed CSV in form of a JSON array | Unknown |
