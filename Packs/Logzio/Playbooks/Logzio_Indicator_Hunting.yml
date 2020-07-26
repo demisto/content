@@ -1,5 +1,5 @@
 id: Logz.io Indicator Hunting
-version: 114
+version: -1
 name: Logz.io Indicator Hunting
 description: |-
   This playbook queries Logz.io in order to hunt indicators such as
@@ -19,6 +19,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "54"
@@ -44,6 +45,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -69,6 +71,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -94,6 +97,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -420,6 +424,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "22"
@@ -445,6 +450,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "29"
@@ -547,6 +553,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "39"
@@ -649,6 +656,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "107"
@@ -1111,6 +1119,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "158"
@@ -1136,6 +1145,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -1161,6 +1171,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "155"
@@ -1186,6 +1197,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "112"
@@ -1211,6 +1223,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "152"
@@ -1236,6 +1249,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "113"
@@ -1261,6 +1275,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "146"
@@ -1286,6 +1301,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "114"
@@ -1311,6 +1327,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "115"
@@ -1336,6 +1353,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "149"
@@ -1717,6 +1735,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "117"
@@ -1909,6 +1928,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "127"
@@ -1972,6 +1992,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "135"
@@ -2107,6 +2128,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -2315,6 +2337,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "126"
@@ -2340,6 +2363,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "125"
@@ -2365,6 +2389,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "124"
@@ -2390,6 +2415,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "139"
@@ -2488,6 +2514,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "127"
@@ -3384,8 +3411,8 @@ inputs:
 - key: LogzioMD5Field
   value: {}
   required: false
-  description: "The name of the fields in Logz.io for which you would like to search
-    the MD5 values\nMultiple fields is available by using comma-separated "
+  description: "The name of the fields in Logz.io for which you would like to search\
+    \ the MD5 values\nMultiple fields is available by using comma-separated "
 - key: SHA1
   value: {}
   required: false
@@ -3393,8 +3420,8 @@ inputs:
 - key: LogzioSHA1Field
   value: {}
   required: false
-  description: "The name of the fields in Logz.io for which you would like to search
-    the SHA1 values\nMultiple fields is available by using comma-separated "
+  description: "The name of the fields in Logz.io for which you would like to search\
+    \ the SHA1 values\nMultiple fields is available by using comma-separated "
 - key: SHA256
   value: {}
   required: false
@@ -3402,8 +3429,8 @@ inputs:
 - key: LogzioSHA256Field
   value: {}
   required: false
-  description: "The name of the fields in Logz.io for which you would like to search
-    the SHA256 values\nMultiple fields is available by using comma-separated "
+  description: "The name of the fields in Logz.io for which you would like to search\
+    \ the SHA256 values\nMultiple fields is available by using comma-separated "
 - key: IPAddress
   value: {}
   required: false
@@ -3412,8 +3439,8 @@ inputs:
 - key: LogzioIPField
   value: {}
   required: false
-  description: "The name of the fields in Logz.io for which you would like to search
-    the IP Address's values\nMultiple fields is available by using comma-separated "
+  description: "The name of the fields in Logz.io for which you would like to search\
+    \ the IP Address's values\nMultiple fields is available by using comma-separated "
 - key: URLDomain
   value: {}
   required: false
@@ -3422,8 +3449,8 @@ inputs:
 - key: LogzioURLDomainField
   value: {}
   required: false
-  description: "The name of the fields in Logz.io for which you would like to search
-    the URL\\Domain values\nMultiple fields is available by using comma-separated "
+  description: "The name of the fields in Logz.io for which you would like to search\
+    \ the URL\\Domain values\nMultiple fields is available by using comma-separated "
 - key: earliest_time
   value: {}
   required: false
@@ -3516,3 +3543,6 @@ outputs:
 - contextPath: Logzio.DetectedExternalHosts
   description: External host names detected based on the fields in your search.
   type: string
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
