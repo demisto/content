@@ -79,4 +79,4 @@ ip,url,email | ip,url,email | Optional |
 
 ## Playbook Image
 ---
-![PCAP Analysis](Insert the link to your image here)
+![PCAP Analysis](https://raw.githubusercontent.com/demisto/content/bcca716ea174ff2dc7716db18d86872b1aab05c4/Packs/PcapAnalysis/doc_files/PCAP_Analysis.png)
