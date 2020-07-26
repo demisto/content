@@ -82,7 +82,7 @@ class TestConf(object):
         for integration in tested_integrations:
             try:
                 int_path = id_set__get_integration_file_path(id_set, integration)
-                pack = tools.get_pack_name(int_path)
+                pack = tools.get_pack_name(str(int_path))
                 if pack:
                     packs.add(pack)
             except TypeError as e:

@@ -124,9 +124,7 @@ references:
         echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
         git config diff.renameLimit 6000
 
-        if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
-          pip3 install git+https://github.com/demisto/demisto-sdk@master
-        fi
+        pip3 install git+https://github.com/demisto/demisto-sdk@adding-option-to-ignore-missing-file
 
         echo "========== Build Parameters =========="
         set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH="
@@ -139,7 +137,7 @@ references:
       name: Create Content Artifacts
       when: always
       command: |
-        demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS
+        demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS --suffix _4_1
         # create zip with contents of content_new.zip and content_test.zip for use in updating content on instances
         cp "$CIRCLE_ARTIFACTS/content_new.zip" "$CIRCLE_ARTIFACTS/all_content.zip"
         unzip -q "$CIRCLE_ARTIFACTS/content_test.zip" -d "test_content_dir"
@@ -189,7 +187,7 @@ references:
       name: Secrets
       when: always
       command: |
-        demisto-sdk secrets --post-commit --ignore-entropy
+        demisto-sdk secrets --post-commit --ignore-entropy --prev-ver new_freeze_4_1
 
   validate_files_and_yaml: &validate_files_and_yaml
     run:
@@ -222,25 +220,13 @@ references:
         echo "bandit py3 version: $(python3 -m bandit --version 2>&1)"
         echo "vulture py2 version: $(python2 -m vulture --version 2>&1)"
         echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
-        SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
+        SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh new_freeze_4_1)
         mkdir ./unit-tests
         if [ -n "$SHOULD_LINT_ALL" ]; then
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-          demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
+          demisto-sdk lint -p 8 -a --prev-ver 'new_freeze_4_1' -q --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
         else
-          demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
-        fi
-
-  infrastructure_testing: &infrastructure_testing
-    run:
-      name: Infrastructure testing
-      when: always
-      command: |
-        python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
-        python3 -m pytest ./Tests/Marketplace/Tests/ -v
-
-        if [ -n "${DEMISTO_SDK_NIGHTLY}" ] ; then
-          ./Tests/scripts/sdk_pylint_check.sh
+          demisto-sdk lint -p 8 -g --prev-ver 'new_freeze_4_1' -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
         fi
 
   create_id_set: &create_id_set
@@ -349,7 +335,6 @@ jobs:
             - *restore_cache
             - *add_ssh_keys
             - *prepare_environment
-            - *infrastructure_testing
             - *run_unit_testing_and_lint
             - store_test_results:
                 path: ./unit-tests
@@ -913,7 +898,6 @@ jobs:
       - *secrets
       - *validate_files_and_yaml
       - *run_unit_testing_and_lint
-      - *infrastructure_testing
       - *create_id_set
       - *build_content_descriptor
       - *common_server_documentation

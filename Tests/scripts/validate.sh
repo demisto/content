@@ -5,12 +5,12 @@ echo "CIRCLE_BRANCH: $CIRCLE_BRANCH CHECK_BACKWARD: $CHECK_BACKWARD CI: $CI DEMI
 
 if [[ $CIRCLE_BRANCH = master ]];
   then
-    demisto-sdk validate -a
+    demisto-sdk validate -a --prev-ver new_freeze_4_1
 
 elif [ "${CHECK_BACKWARD}" = "true" ] ;
   then
-     demisto-sdk validate -g --post-commit
+     demisto-sdk validate -g --post-commit --prev-ver new_freeze_4_1
 
   else
-     demisto-sdk validate -g --post-commit --no-backward-comp
+     demisto-sdk validate -g --post-commit --no-backward-comp --prev-ver new_freeze_4_1
 fi
