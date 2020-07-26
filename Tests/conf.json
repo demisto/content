@@ -742,7 +742,6 @@
         },
         {
             "playbookID": "Palo Alto Networks - Malware Remediation Test",
-            "integrations": "Cortex XDR - IR",
             "fromversion": "4.5.0"
         },
         {
