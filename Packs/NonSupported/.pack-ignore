@@ -96,3 +96,9 @@ ignore=RP102
 
 [file:reputations.json]
 ignore=RP104
+
+[file:playbook-Detonate_url_-_Generic_4_9_9.yml]
+ignore=BA101
+
+[file:NonSupported]
+ignore=PA116

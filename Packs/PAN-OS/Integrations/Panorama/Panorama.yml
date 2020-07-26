@@ -16,14 +16,6 @@ configuration:
   name: key
   required: true
   type: 4
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - display: Device group - Panorama instances only (write shared for Shared location)
   name: device_group
   required: false
@@ -36,6 +28,28 @@ configuration:
   name: template
   required: false
   type: 0
+- display: Use URL Filtering for auto enrichment
+  name: use_url_filtering
+  required: false
+  type: 8
+- display: URL Filtering Additional suspicious categories. CSV list of categories that will be considered suspicious.
+  name: additional_suspicious
+  defaultvalue: ""
+  type: 12
+  required: false
+- display: URL Filtering Additional malicious categories. CSV list of categories that will be considered malicious.
+  name: additional_malicious
+  defaultvalue: ""
+  type: 12
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Manage Palo Alto Networks Firewall and Panorama. For more information
   see Panorama documentation.
 display: Palo Alto Networks PAN-OS
@@ -199,6 +213,42 @@ script:
     description: Run any command supported in the API.
     execution: false
     name: panorama
+
+  - name: panorama-get-predefined-threats-list
+    arguments:
+     - name: target
+       description: If specified, retrieves the predefined threats from a specific firewall managed by Panorama. 
+    execution: false
+    description: Get pre-defined threats list from a Firewall or Panorama and stores as a JSON file in the context.
+    outputs:
+    - contextPath: File.Size
+      description: File size.
+      type: number
+    - contextPath: File.Name
+      description: File name.
+      type: string
+    - contextPath: File.Type
+      description: File type.
+      type: string
+    - contextPath: File.Info
+      description: File info.
+      type: string
+    - contextPath: File.Extenstion
+      description: File extension.
+      type: string
+    - contextPath: File.EntryID
+      description: FIle entryID.
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file.
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file.
+      type: string
+
   - deprecated: false
     description: Commits a configuration to Palo Alto Firewall or Panorama, but does
       not validate if the commit was successful. Committing to Panorama does not push
@@ -556,6 +606,44 @@ script:
     - contextPath: Panorama.AddressGroups.Tag
       description: Address group tags.
       type: String
+  - arguments:
+    - default: false
+      auto: PREDEFINED
+      description: Type of session reject
+      isArray: false
+      name: drop_mode
+      required: false
+      secret: false
+      predefined:
+        - drop
+        - alert
+        - block-ip
+        - reset-both
+        - reset-client
+        - reset-server
+    - default: false
+      description: Name of vulnerability profile.
+      isArray: false
+      name: vulnerability_profile
+      required: true
+      secret: false
+    - default: false
+      description: Numerical Threat ID.
+      isArray: false
+      name: threat_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Sets a vulnerability signature to block mode.
+    execution: false
+    name: panorama-block-vulnerability
+    outputs:
+    - contextPath: Panorama.Vulnerability.ID
+      description: ID of vulnerability that has been blocked/overridden.
+      type: string
+    - contextPath: Panorama.Vulnerability.NewAction
+      description: New action for vulnerability 
+      type: string
   - arguments:
     - default: false
       description: Name of address group to delete.
@@ -1174,11 +1262,11 @@ script:
       description: Device group for the Custom URL Category (Panorama instances).
       type: string
   - arguments:
-    - default: false
+    - default: true
       description: URL to check.
       isArray: true
       name: url
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Gets a URL category from URL Filtering.
@@ -1191,6 +1279,60 @@ script:
     - contextPath: Panorama.URLFilter.Category
       description: URL category.
       type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: URL.Data
+      description: The URL address.
+      type: String
+    - contextPath: URL.Category
+      description: The URL Category.
+      type: String
+  - arguments:
+    - default: true
+      description: URL to check.
+      isArray: true
+      name: url
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets a URL category from URL Filtering.
+    execution: false
+    name: url
+    outputs:
+    - contextPath: Panorama.URLFilter.URL
+      description: URL.
+      type: string
+    - contextPath: Panorama.URLFilter.Category
+      description: URL category.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: URL.Data
+      description: The URL address.
+      type: String
+    - contextPath: URL.Category
+      description: The URL Category.
+      type: String
   - arguments:
     - default: false
       description: URL to check.
@@ -3609,6 +3751,25 @@ script:
     description: Reboots the Firewall device.
     execution: false
     name: panorama-device-reboot
+  - arguments:
+    - name: ip_address
+      required: true
+      description: The IP address to perform the lookup on.
+    outputs:
+    - contextPath: Panorama.Location.IP.country_code
+      description: The IP location country code.
+      type: String
+    - contextPath: Panorama.Location.IP.country_name
+      description: TThe IP location country name.
+      type: String
+    - contextPath: Panorama.Location.IP.ip_address
+      description: The IP address.
+      type: String
+    - contextPath: Panorama.Location.IP.Status
+      description: Whether the IP address was found or not.
+      type: String
+    description: Show the IP location information.
+    name: panorama-show-location-ip
   dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: false

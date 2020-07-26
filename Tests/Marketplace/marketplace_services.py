@@ -37,34 +37,9 @@ class GCPConfig(object):
     BASE_PACK = "Base"  # base pack name
     INDEX_NAME = "index"  # main index folder name
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
-    CORE_PACKS_LIST = [BASE_PACK,
-                       "rasterize",
-                       "DemistoRESTAPI",
-                       "DemistoLocking",
-                       "ImageOCR",
-                       "WhereIsTheEgg",
-                       "FeedAutofocus",
-                       "AutoFocus",
-                       "UrlScan",
-                       "Active_Directory_Query",
-                       "FeedTAXII",
-                       "VirusTotal",
-                       "Whois",
-                       "Phishing",
-                       "CommonScripts",
-                       "CommonPlaybooks",
-                       "CommonTypes",
-                       "CommonDashboards",
-                       "CommonReports",
-                       "CommonWidgets",
-                       "TIM_Processing",
-                       "TIM_SIEM",
-                       "HelloWorld",
-                       "ExportIndicators",
-                       "Malware",
-                       "DefaultPlaybook",
-                       "CalculateTimeDifference"
-                       ]  # cores packs list
+
+    with open(os.path.join(os.path.dirname(__file__), 'core_packs_list.json'), 'r') as core_packs_list_file:
+        CORE_PACKS_LIST = json.load(core_packs_list_file)
 
 
 class Metadata(object):
@@ -140,6 +115,7 @@ class PackStatus(enum.Enum):
     FAILED_REMOVING_PACK_SKIPPED_FOLDERS = "Failed to remove pack hidden and skipped folders"
     FAILED_RELEASE_NOTES = "Failed to generate changelog.json"
     FAILED_DETECTING_MODIFIED_FILES = "Failed in detecting modified files of the pack"
+    FAILED_SEARCHING_PACK_IN_INDEX = "Failed in searching pack folder in index"
 
 
 class Pack(object):
@@ -881,7 +857,7 @@ class Pack(object):
                 PackFolders.INDICATOR_FIELDS.value: "indicatorfield",
                 PackFolders.REPORTS.value: "report",
                 PackFolders.INDICATOR_TYPES.value: "reputation",
-                PackFolders.LAYOUTS.value: "layout",
+                PackFolders.LAYOUTS.value: "layoutscontainer",
                 PackFolders.CLASSIFIERS.value: "classifier",
                 PackFolders.WIDGETS.value: "widget"
             }
@@ -987,11 +963,13 @@ class Pack(object):
                             'enhancementScriptNames': content_item.get('enhancementScriptNames', [])
                         })
                     elif current_directory == PackFolders.LAYOUTS.value:
-                        folder_collected_items.append({
-                            'typeId': content_item.get('typeId', ""),
-                            'kind': content_item.get('kind', ""),
-                            'version': 'v2' if 'tabs' in content_item.get('layout', {}) else 'v1'
-                        })
+                        layout_metadata = {
+                            'name': content_item.get('name', '')
+                        }
+                        layout_description = content_item.get('description')
+                        if layout_description is not None:
+                            layout_metadata['description'] = layout_description
+                        folder_collected_items.append(layout_metadata)
                     elif current_directory == PackFolders.CLASSIFIERS.value:
                         folder_collected_items.append({
                             'name': content_item.get('name') or content_item.get('id', ""),
@@ -1076,10 +1054,7 @@ class Pack(object):
         try:
             metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
 
-            if 'dependencies' not in user_metadata:
-                user_metadata['dependencies'] = packs_dependencies_mapping.get(
-                    self._pack_name, {}).get('dependencies', {})
-                print(f"Adding auto generated dependencies for {self._pack_name} pack")
+            self.set_pack_dependencies(user_metadata, packs_dependencies_mapping)
 
             if 'displayedImages' not in user_metadata:
                 user_metadata['displayedImages'] = packs_dependencies_mapping.get(
@@ -1108,6 +1083,25 @@ class Pack(object):
             print_error(f"Failed in formatting {self._pack_name} pack metadata. Additional info:\n{e}")
         finally:
             return task_status
+
+    def set_pack_dependencies(self, user_metadata, packs_dependencies_mapping):
+        pack_dependencies = packs_dependencies_mapping.get(self._pack_name, {}).get('dependencies', {})
+        if 'dependencies' not in user_metadata:
+            user_metadata['dependencies'] = {}
+
+        # If it is a core pack, check that no new mandatory packs (that are not core packs) were added
+        # They can be overridden in the user metadata to be not mandatory so we need to check there as well
+        if self._pack_name in GCPConfig.CORE_PACKS_LIST:
+            mandatory_dependencies = [k for k, v in pack_dependencies.items()
+                                      if v.get('mandatory', False) is True
+                                      and k not in GCPConfig.CORE_PACKS_LIST
+                                      and k not in user_metadata['dependencies'].keys()]
+            if mandatory_dependencies:
+                raise Exception(f'New mandatory dependencies {mandatory_dependencies} were '
+                                f'found in the core pack {self._pack_name}')
+
+        pack_dependencies.update(user_metadata['dependencies'])
+        user_metadata['dependencies'] = pack_dependencies
 
     def prepare_for_index_upload(self):
         """ Removes and leaves only necessary files in pack folder.
@@ -1222,6 +1216,31 @@ class Pack(object):
                     images_list.append(image_data)
 
         return images_list
+
+    def check_if_exists_in_index(self, index_folder_path):
+        """ Checks if pack is sub-folder of downloaded index.
+
+        Args:
+            index_folder_path (str): index folder full path.
+
+        Returns:
+            bool: whether the operation succeeded.
+            bool: whether pack exists in index folder.
+
+        """
+        task_status, exists_in_index = False, False
+
+        try:
+            if not os.path.exists(index_folder_path):
+                print_error(f"{GCPConfig.INDEX_NAME} does not exists.")
+                return task_status, exists_in_index
+
+            exists_in_index = os.path.exists(os.path.join(index_folder_path, self._pack_name))
+            task_status = True
+        except Exception as e:
+            print_error(f"Failed searching {self._pack_name} pack in {GCPConfig.INDEX_NAME}. Additional info:\n{e}")
+        finally:
+            return task_status, exists_in_index
 
     def upload_integration_images(self, storage_bucket):
         """ Uploads pack integrations images to gcs.

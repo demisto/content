@@ -2,7 +2,7 @@
     "name": "Common Playbooks",
     "description": "Frequently used playbooks pack.",
     "support": "xsoar",
-    "currentVersion": "1.5.0",
+    "currentVersion": "1.7.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -51,10 +51,6 @@
         "CrowdStrikeIntel": {
             "mandatory": false,
             "display_name": "CrowdStrike Falcon Intel"
-        },
-        "CalculateTimeDifference": {
-            "mandatory": true,
-            "display_name": "CalculateTimeDifference"
         },
         "Cylance_Protect": {
             "mandatory": false,
@@ -172,10 +168,6 @@
             "mandatory": false,
             "display_name": "IBM X-Force Exchange"
         },
-        "ML": {
-            "mandatory": false,
-            "display_name": "Machine Learning"
-        },
         "Symantec_Deepsight": {
             "mandatory": false,
             "display_name": "Symantec Deepsight Intelligence (Beta)"
@@ -264,6 +256,10 @@
             "mandatory": false,
             "display_name": "EWS"
         },
+        "Zimperium": {
+            "mandatory": false,
+            "display_name": "Zimperium"
+        },
         "XForceExchange": {
             "mandatory": false,
             "display_name": "IBM X-Force Exchange"
@@ -287,6 +283,18 @@
         "HybridAnalysis": {
             "mandatory": false,
             "display_name": "Hybrid Analysis"
+        },
+        "Polygon": {
+            "mandatory": false,
+            "display_name": "Polygon"
+        },
+        "FortiGate": {
+            "mandatory": false,
+            "display_name": "FortiGate"
+        },
+        "CrowdStrikeFalconX": {
+            "mandatory": false,
+            "display_name": "CrowdStrike Falcon X"
         }
     }
 }

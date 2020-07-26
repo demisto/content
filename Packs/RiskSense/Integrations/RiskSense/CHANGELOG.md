@@ -1,6 +1,12 @@
 ## [Unreleased]
--
-
+ - New Features
+    - 3 new playbooks related to CVE and ransomware exposure
+    - Helper script for ransomware exposure
+    - risksense-apply-tag command
+ - Enhancement
+    - new RiskSense branding logo
+    - minor argument name change
+    - minor context data change
 
 ## [20.4.0] - 2020-04-14
 -

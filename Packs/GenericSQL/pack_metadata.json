@@ -3,7 +3,7 @@
     "description": "Connecting ang executing sql queries in 4 Databases: MYSQL, PostgreSQL, Microsoft SQL Server and Oracle",
     "support": "xsoar",
     "serverMinVersion": "5.0.0",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
