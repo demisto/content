@@ -246,7 +246,7 @@ def params_to_filter(parameters):
     """
     Turns the parameters to filters.
     Args:
-        parameters: The parameters that should to be filters.
+        parameters: The parameters that should to be filter.
     Returns:
         The filter we built using the parameters.
     """
