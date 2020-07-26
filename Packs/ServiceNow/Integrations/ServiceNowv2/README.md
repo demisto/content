@@ -374,7 +374,9 @@ Updates the specified ticket.
 | caller | Caller system ID. | Optional | 
 | approval | Ticket approval. | Optional | 
 | additional_fields | Additional fields in the format: fieldname1=value;fieldname2=value; | Optional | 
+| input_display_value | Flag that indicates whether to set field values using the display value or the actual value. true will treat input value as the dispaly value. false treats input values as actual values. Default is false. | Optional | 
 
+For more information regarding the input_display_value Argument, please see: https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html
 
 #### Context Output
 
@@ -902,8 +904,10 @@ Updates a record in the specified ServiceNow table.
 | table_name | The name of the table to update the record in. | Required | 
 | id | The system ID of the ticket to update. | Required | 
 | fields | Fields and their values to update in the record, in the format: fieldname1=value;fieldname2=value;... | Optional | 
-| custom_fields | Custom (user defined) fields and their values to update in the record, in the format: fieldname1=value;fieldname2=value;... | Optional | 
+| custom_fields | Custom (user defined) fields and their values to update in the record, in the format: fieldname1=value;fieldname2=value;... | Optional |
+| input_display_value | Flag that indicates whether to set field values using the display value or the actual value. true will treat input value as the dispaly value. false treats input values as actual values. Default is false. | Optional | 
 
+For more information regarding the input_display_value Argument, please see: https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html
 
 #### Context Output
 
