@@ -11,7 +11,7 @@
 	"id": "Cortex XDR Port Scan",
 	"locked": false,
 	"name": "Cortex XDR Port Scan",
-	"playbookId": "Port Scan - Generic",
+	"playbookId": "Cortex XDR - Port Scan",
 	"preProcessingScript": "",
 	"readonly": false,
 	"reputationCalc": 0,
@@ -20,5 +20,6 @@
 	"version": -1,
 	"weeks": 0,
 	"weeksR": 0,
-	"fromVersion": "5.0.0"
+	"fromVersion": "5.0.0",
+	"layout": "Cortex XDR Port Scan"
 }
