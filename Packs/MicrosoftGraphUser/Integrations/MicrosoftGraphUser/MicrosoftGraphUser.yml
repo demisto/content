@@ -398,7 +398,7 @@ script:
   - arguments:
     - name: user
       required: true
-      description: The user for which to search direct reports.
+      description: The User ID or userPrincipalName of the user for which to retrieve direct reports.
     name: msgraph-direct-reports
     outputs:
     - contextPath: MSGraphUserDirectReports.Manager
@@ -437,11 +437,10 @@ script:
     - contextPath: MSGraphUserDirectReports.Reports.UserPrincipalName
       description: The user principal name (UPN) of the user. The UPN is an Internet-style login name for the user based on the Internet standard RFC 822. By convention, this should map to the user's email name. The general format is alias@domain, where domain must be present in the tenant’s collection of verified domains. This property is required when a user is created. The verified domains for the tenant can be accessed from the verifiedDomains property of organization.
       type: String
-    description: Retrieves the direct reports for a user. Direct reports are the people
-        who have that user configured as their manager.
+    description: Retrieves the direct reports for a user. Direct reports are the people who have that user configured as their manager.
   - arguments:
     - default: false
-      description: User ID or userPrincipalName
+      description: The User ID or userPrincipalName of the user for which to get the manager.
       isArray: false
       name: user
       required: true
@@ -489,7 +488,7 @@ script:
      type: Unknown
   - arguments:
     - default: false
-      description: User ID or userPrincipalName to assign a manager for.
+      description: User ID or userPrincipalName of the user to assign a manager for.
       isArray: false
       name: user
       required: true
@@ -501,10 +500,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: "Assigns a manager to the user.
-
-    Permissions:
-    - User.ReadWrite (Delegated & Application)"
+    description: "Assigns a manager to the user. Permissions: - User.ReadWrite (Delegated & Application)"
     execution: false
     name: msgraph-user-assign-manager
   dockerimage: demisto/crypto:1.0.0.7634
