@@ -10,6 +10,7 @@ def main():
     circle_aritfact = sys.argv[1]
     env_file = sys.argv[2]
     instance_role = sys.argv[3]
+    time_to_live = sys.argv[4]
     with open(env_file, 'r') as json_file:
         env_results = json.load(json_file)
 
@@ -39,13 +40,16 @@ def main():
         except subprocess.CalledProcessError as exc:
             print(exc.output)
 
-        if os.path.isfile("./Tests/is_build_passed_{}.txt".format(env["Role"].replace(' ', ''))):
-            print(f'Destroying instance {env.get("Role", "Unknown role")}')
-            rminstance = aws_functions.destroy_instance(env["Region"], env["InstanceID"])
-            if aws_functions.isError(rminstance):
-                print_error(rminstance)
+        if time_to_live:
+            print(f'Skipping - Time to live was set to {time_to_live} minutes')
         else:
-            print_warning(f'Tests failed on {env.get("Role", "Unknown role")}, keeping instance alive')
+            if os.path.isfile("./Tests/is_build_passed_{}.txt".format(env["Role"].replace(' ', ''))):
+                print(f'Destroying instance {env.get("Role", "Unknown role")}')
+                rminstance = aws_functions.destroy_instance(env["Region"], env["InstanceID"])
+                if aws_functions.isError(rminstance):
+                    print_error(rminstance)
+            else:
+                print_warning(f'Tests failed on {env.get("Role", "Unknown role")}, keeping instance alive')
 
 
 if __name__ == "__main__":
