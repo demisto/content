@@ -23,6 +23,7 @@ EMAIL_HEADERS_FIELD = 'emailheaders'
 EMAIL_ATTACHMENT_FIELD = 'attachment'
 EMBEDDING_DICT = None
 
+FETCH_DATA_VERSION = '1.0'
 '''
 Define time out functionality
 '''
@@ -1042,12 +1043,13 @@ def main():
     if is_error(incidents_query_res):
         return_error(get_error(incidents_query_res))
     incidents = json.loads(incidents_query_res[-1]['Contents'])
-
     data = extract_data_from_incidents(incidents)
     encoded_data = json.dumps(data).encode('utf-8', errors='ignore')
     compressed_data = zlib.compress(encoded_data, 4)
-    compressed_hr_data = b64encode(compressed_data)
-    return_json_entry(compressed_hr_data)
+    compressed_hr_data = b64encode(compressed_data).decode('utf-8')
+    res = {'PayloadVersion': FETCH_DATA_VERSION, 'PayloadData': compressed_hr_data}
+    return_json_entry(res)
+
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
