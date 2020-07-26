@@ -179,4 +179,5 @@ outputs:
 - contextPath: Endpoint
   description: The isolated enpoint
 tests:
-  - no test
+- No test
+toversion: 4.1.9
