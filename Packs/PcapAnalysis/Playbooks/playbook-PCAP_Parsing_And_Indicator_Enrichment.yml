@@ -2,18 +2,18 @@ id: PCAP Parsing And Indicator Enrichment
 version: -1
 fromversion: 5.0.0
 name: PCAP Parsing And Indicator Enrichment
-description: This playbook is used to parse and extract indicators within PCAP files and
-  perform enrichment on the detected indicators. Supported file types are pcap, cap,
-  pcapng. The playbook can handle one PCAP file per incident. The user inputs which
-  indicator types are to be enriched including, email, URLs, IP addresses.
-  The user can specify in the inputs which indicators are internal or that will be
-  treated as internal (not enriched). The user can also specify a specific regex pattern
-  to search for. Another option is to specify the protocol types to be printed to
-  context for data extraction. Additional inputs allow the user to provide the WPA
-  password for decrypting 802.11 (wireless) traffic and add an RSA certificate
-  to decrypt SSL traffic. To display the results within the relevant incident fields,
-  the playbook needs to run in a PCAP Analysis incident type. For handling of PCAP
-  files larger than 30 MB, refer to the PcapMinerV2 documentation.
+description: This playbook is used to parse and extract indicators within PCAP files
+  and perform enrichment on the detected indicators. Supported file types are pcap,
+  cap, pcapng. The playbook can handle one PCAP file per incident. The user inputs
+  which indicator types are to be enriched including, email, URLs, IP addresses. The
+  user can specify in the inputs which indicators are internal or that will be treated
+  as internal (not enriched). The user can also specify a specific regex pattern to
+  search for. Another option is to specify the protocol types to be printed to context
+  for data extraction. Additional inputs allow the user to provide the WPA password
+  for decrypting 802.11 (wireless) traffic and add an RSA certificate to decrypt SSL
+  traffic. To display the results within the relevant incident fields, the playbook
+  needs to run in a PCAP Analysis incident type. For handling of PCAP files larger
+  than 30 MB, refer to the PcapMinerV2 documentation.
 starttaskid: "0"
 tasks:
   "0":
@@ -128,8 +128,8 @@ tasks:
       id: f72b29e3-c2ec-45c1-86c5-2e51f2bc76be
       version: -1
       name: PCAP Miner execution
-      description: PcapMiner V2 parses pcap files by displaying all of
-        the relevant data within the file, including ip addresses, ports, flows, specific protocol
+      description: PcapMiner V2 parses pcap files by displaying all of the relevant
+        data within the file, including ip addresses, ports, flows, specific protocol
         breakdown, searching by regex, decrypting encrypted traffic, and more.
       scriptName: PcapMinerV2
       type: regular
@@ -2130,8 +2130,8 @@ inputs:
   value: {}
   required: false
   description: This input value is used to provide a python regular expression to
-    search in the the packet body. An example can be \w{10} for expressions that
-    have 10 letter words.
+    search in the the packet body. An example can be \w{10} for expressions that have
+    10 letter words.
   playbookInputQuery:
 - key: WpaPassword
   value: {}
@@ -2143,17 +2143,16 @@ inputs:
   value: {}
   required: false
   description: "This input checks which indicator types that will be extracted from\
-    \ the PCAP will be enriched. Values can be\nip\nemail\nurl\nTo provide\
-    \ more than one indicator type use comma separation such as \nip,url,email\n\
-    \n"
+    \ the PCAP will be enriched. Values can be\nip\nemail\nurl\nTo provide more than\
+    \ one indicator type use comma separation such as \nip,url,email\n\n"
   playbookInputQuery:
 - key: InternalUrlName
   value: {}
   required: false
   description: The organization's internal URL name. This is provided for the script
-    IsInternalHostName that checks if the detected URLs are internal or external
-    if the hosts contain the internal domains suffix. For example demisto.com. If
-    there is more than one domain, use comma separation such as demisto.com,paloaltonetworks.com
+    IsInternalHostName that checks if the detected URLs are internal or external if
+    the hosts contain the internal domains suffix. For example demisto.com. If there
+    is more than one domain, use comma separation such as demisto.com,paloaltonetworks.com
   playbookInputQuery:
 - key: InternalEmailDomainName
   value: {}
