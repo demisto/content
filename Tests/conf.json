@@ -2861,6 +2861,11 @@
         },
         {
             "playbookID": "IfThenElse-Test"
+        },
+        {
+            "integrations": "Imperva WAF",
+            "playbookID": "Imperva WAF - Test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
