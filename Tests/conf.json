@@ -2864,7 +2864,6 @@
         }
     ],
     "skipped_tests": {
-        "Lastline v2 - Test": "Issue 26170",
         "PAN-OS DAG Configuration Test": "Issue 60693",
         "Phishing Classifier V2 ML Test": "Issue 26066",
         "CuckooTest": "Issue 25601",
