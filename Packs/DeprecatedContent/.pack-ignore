@@ -151,7 +151,7 @@ ignore=BA101
 [file:playbook-PhishingAutomated.yml]
 ignore=BA101
 
-[file:Access_Investigation_-_Generic.yml]
+[file:Access_Investigation_-_Generic_4_5_0.yml]
 ignore=BA101
 
 [file:playbook-Search_Endpoints_By_Hash_-_Carbon_Black_Response.yml]
@@ -162,3 +162,6 @@ ignore=BA101
 
 [file:playbook-QRadar_-_Get_offense_correlations_.yml]
 ignore=BA101
+
+[file:DeprecatedContent]
+ignore=PA116
