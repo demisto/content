@@ -23,7 +23,7 @@ This script is used in the following playbooks and scripts.
 | ips | The column number that contains IP Addresses. \(First column is column 0\) |
 | domains | The column number that contains domains. \(First column is column 0\) |
 | hashes | The column number that contains file hashes. \(First column is column 0\) |
-| parseAll | parses and converts all the rows in csv into json and puts into context. |
+| parseAll | Parses and converts all of the rows in the CSV into JSON and puts them into the context. |
 | codec | The codec type used to parse the file \(some character sets are not UTF\-8 supported\) |
 
 ## Outputs
