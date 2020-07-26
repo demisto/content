@@ -2869,7 +2869,8 @@
             "fromversion": "5.0.0"
         },
         {
-            "playbookID": "IfThenElse-Test"
+            "playbookID": "IfThenElse-Test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
