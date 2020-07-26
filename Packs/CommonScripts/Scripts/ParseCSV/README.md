@@ -6,11 +6,10 @@ This script will parse a CSV file and place the unique IPs, Domains and Hashes i
 | --- | --- |
 | Script Type | python2 |
 | Tags | file, csv, Utility |
-| Demisto Version | 0.0.0 |
 
 ## Used In
 ---
-This script is used in the following playbooks and scripts:
+This script is used in the following playbooks and scripts.
 * Block IOCs from CSV - External Dynamic List
 
 ## Inputs
@@ -31,9 +30,9 @@ This script is used in the following playbooks and scripts:
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| IP.Address | IP address found in the parsed file | Unknown |
-| Domain.Name | Domain found in the parsed file | Unknown |
-| File.MD5 | MD5 found in the parsed file | Unknown |
-| File.SHA1 | SHA1 found in the parsed file | Unknown |
-| File.SHA256 | SHA256 found in the parsed file | Unknown |
-| ParseCSV.ParsedCSV | Parsed CSV in form of a JSON array | Unknown |
+| IP.Address | IP address found in the parsed file. | Unknown |
+| Domain.Name | Domain found in the parsed file. | Unknown |
+| File.MD5 | MD5 found in the parsed file. | Unknown |
+| File.SHA1 | SHA1 found in the parsed file. | Unknown |
+| File.SHA256 | SHA256 found in the parsed file. | Unknown |
+| ParseCSV.ParsedCSV | Parsed csv in the form of JSON array. | Unknown |
