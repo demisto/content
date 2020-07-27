@@ -2645,8 +2645,8 @@ def recursive_convert_to_unicode(replace_to_utf):
             return {recursive_convert_to_unicode(k): recursive_convert_to_unicode(v) for k, v in replace_to_utf.items()}
         if isinstance(replace_to_utf, list):
             return [recursive_convert_to_unicode(i) for i in replace_to_utf if i]
-        # if isinstance(replace_to_utf, str):
-        #     return unicode(replace_to_utf, encoding='utf-8', errors='ignore')
+        if isinstance(replace_to_utf, str):
+            return unicode(replace_to_utf, encoding='utf-8', errors='ignore')
         if not replace_to_utf:
             return replace_to_utf
         return replace_to_utf
@@ -3435,7 +3435,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
             file_data = file_data.decode("utf-8-sig").encode("utf-8")
 
         parser = HeaderParser()
-        headers = parser.parsestr(file_data.decode("utf-8"))
+        headers = parser.parsestr(file_data)
 
         header_list = []
         headers_map = {}  # type: dict
@@ -3462,7 +3462,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
             else:
                 headers_map[item[0]] = value
 
-        eml = message_from_string(file_data.decode("utf-8"))
+        eml = message_from_string(file_data)
         if not eml:
             raise Exception("Could not parse eml file!")
 
@@ -3483,6 +3483,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                 parts += part.get_payload()
 
             elif part.get_filename() or "attachment" in part.get("Content-Disposition", ""):
+
                 attachment_file_name = convert_to_unicode(part.get_filename())
                 if attachment_file_name is None and part.get('filename'):
                     attachment_file_name = os.path.normpath(part.get('filename'))
@@ -3663,10 +3664,6 @@ def main():
             return_error(get_error(result))
 
         file_metadata = result[0]['FileMetadata']
-        # file_metadata = {
-        #     'info': 'message/rfc822',
-        #     'type': 'RFC 822 mail text, ASCII text, with very long lines, with CRLF, LF line terminators'
-        # }
         file_type = file_metadata.get('info', '') or file_metadata.get('type', '')
 
     except Exception as ex:
