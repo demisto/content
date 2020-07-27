@@ -5,6 +5,13 @@ import json
 
 
 def mapvalues(value, input_values, mapped_values):
+    input_values = input_values.split(",")
+    mapped_values = mapped_values.split(",")
+    try:
+        value = json.loads(value)
+    except Exception:
+        pass
+
     # Convert all to string
     value = str(value) if type(value) not in [dict, list] else value
     input_values[:] = [str(x) for x in input_values]
@@ -26,8 +33,14 @@ def mapvalues(value, input_values, mapped_values):
     if type(value) == dict:
         new_dict = dict()
         for k, v in value.items():
-            key_value = f"{k}: {v}"
-            new_dict[k] = mapper[key_value] if key_value in mapper else v
+            key_value = f"{k}:{v}"
+            key_value_space = f"{k}: {v}"
+            if key_value in mapper:
+                new_dict[k] = mapper[key_value]
+            elif key_value_space in mapper:
+                new_dict[k] = mapper[key_value_space]
+            else:
+                new_dict[k] = v
         value = json.dumps(new_dict)
 
     elif type(value) == list:
@@ -43,12 +56,9 @@ def mapvalues(value, input_values, mapped_values):
 def main():
     args = demisto.args()
     value = args.get('value')
-    input_values = args.get('input_values', []).split(",")
-    mapped_values = args.get('mapped_values', []).split(",")
-    try:
-        value = json.loads(value)
-    except Exception:
-        pass
+    input_values = args.get('input_values')
+    mapped_values = args.get('mapped_values')
+
 
     value = mapvalues(value, input_values, mapped_values)
     demisto.results(value)
