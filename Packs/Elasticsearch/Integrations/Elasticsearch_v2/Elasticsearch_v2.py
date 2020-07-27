@@ -609,6 +609,10 @@ def parse_subtree(my_map):
 
 
 def get_mapping_fields_command():
+    """
+    Map a given schema fields and structure
+    return: Elasticsearch schema structure
+    """
     indexes = FETCH_INDEX.split(',')
     elastic_mapping = {}
     for index in indexes:
