@@ -1707,7 +1707,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: InternalIPAddresses
+        simple: ExternalIPAddresses
       stringify: {}
       value:
         complex:
