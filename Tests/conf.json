@@ -2571,7 +2571,8 @@
         {
             "integrations": "AlienVault Reputation Feed",
             "playbookID": "AlienVaultReputationFeed_Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "memory_threshold": 175
         },
         {
             "integrations": "BruteForceBlocker Feed",
