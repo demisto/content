@@ -2830,7 +2830,8 @@
                 "VirusTotal",
                 "WildFire-v2"
             ],
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 1200
         },
         {
             "integrations": "VirusTotal",
