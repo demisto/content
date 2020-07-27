@@ -75,7 +75,9 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: '10'
+- additionalinfo: "How many incidents will be fetched per query.\t\nCaution: high\
+    \ number could create overload. Default is 10."
+  defaultvalue: '10'
   display: Incidents fetched per query
   hidden: false
   name: limit
@@ -1934,7 +1936,7 @@ script:
     - contextPath: CDL.Logging.URL.TechnologyOfApp
       description: The networking technology used by the identified application.
       type: String
-  dockerimage: demisto/python_pancloud_v2:1.0.0.8888
+  dockerimage: demisto/python_pancloud_v2:1.0.0.10071
   feed: false
   isfetch: true
   longRunning: false
