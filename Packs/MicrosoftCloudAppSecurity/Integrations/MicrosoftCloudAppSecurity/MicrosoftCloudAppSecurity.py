@@ -271,6 +271,8 @@ def test_module(client):
         if demisto.params().get('isFetch'):
             client.list_incidents(filters={}, limit=1)
     except DemistoException as e:
+        if 'Forbidden' in str(e):
+            return 'Authorization Error: make sure API Key is correctly set.'
         return str(e)
     return 'ok'
 
