@@ -490,8 +490,8 @@ def test_blacklist_files_command_with_more_than_one_file(requests_mock):
 
     from PaloAltoNetworks_XDR import blacklist_files_command, Client
     test_data = load_test_data('test_data/blacklist_whitelist_files_success.json')
-    expected_command_result = {'PaloAltoNetworksXDR.blackList.fileHash(val.fileHash == obj.fileHash)':
-                                   test_data['multi_command_args']['hash_list']}
+    expected_command_result = {'PaloAltoNetworksXDR.blackList.fileHash(val.fileHash == obj.fileHash)': test_data[
+        'multi_command_args']['hash_list']}
     requests_mock.post(f'{XDR_URL}/public_api/v1/hash_exceptions/blacklist/', json=test_data['api_response'])
 
     client = Client(
@@ -567,8 +567,8 @@ def test_whitelist_files_command_with_more_than_one_file(requests_mock):
 
     from PaloAltoNetworks_XDR import whitelist_files_command, Client
     test_data = load_test_data('test_data/blacklist_whitelist_files_success.json')
-    expected_command_result = {'PaloAltoNetworksXDR.whiteList.fileHash(val.fileHash == obj.fileHash)':
-                                   test_data['multi_command_args']['hash_list']}
+    expected_command_result = {'PaloAltoNetworksXDR.whiteList.fileHash(val.fileHash == obj.fileHash)': test_data[
+        'multi_command_args']['hash_list']}
     requests_mock.post(f'{XDR_URL}/public_api/v1/hash_exceptions/whitelist/', json=test_data['api_response'])
 
     client = Client(
@@ -643,8 +643,8 @@ def test_quarantine_files_command(requests_mock):
     """
     from PaloAltoNetworks_XDR import quarantine_files_command, Client
     test_data = load_test_data('test_data/quarantine_files.json')
-    quarantine_files_expected_tesult = {'PaloAltoNetworksXDR.quarantineFiles.actionIds(val.actionId === obj.actionId)':
-                                            test_data['context_data']}
+    quarantine_files_expected_tesult = {
+        'PaloAltoNetworksXDR.quarantineFiles.actionIds(val.actionId === obj.actionId)': test_data['context_data']}
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/quarantine/', json=test_data['api_response'])
 
     client = Client(

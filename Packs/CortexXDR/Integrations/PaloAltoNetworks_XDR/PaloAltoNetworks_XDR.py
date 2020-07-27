@@ -1048,7 +1048,7 @@ def get_endpoints_command(client, args):
     return (
         tableToMarkdown('Endpoints', endpoints),
         {f'{INTEGRATION_CONTEXT_BRAND}.Endpoint(val.endpoint_id == obj.endpoint_id)': endpoints,
-         f'Endpoint(val.ID == obj.ID)': return_endpoint_standard_context(endpoints)},
+         'Endpoint(val.ID == obj.ID)': return_endpoint_standard_context(endpoints)},
         endpoints
     )
 
