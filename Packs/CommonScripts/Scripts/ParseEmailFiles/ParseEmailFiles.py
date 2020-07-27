@@ -2645,8 +2645,8 @@ def recursive_convert_to_unicode(replace_to_utf):
             return {recursive_convert_to_unicode(k): recursive_convert_to_unicode(v) for k, v in replace_to_utf.items()}
         if isinstance(replace_to_utf, list):
             return [recursive_convert_to_unicode(i) for i in replace_to_utf if i]
-        if isinstance(replace_to_utf, str):
-            return unicode(replace_to_utf, encoding='utf-8', errors='ignore')
+        # if isinstance(replace_to_utf, str):
+        #     return unicode(replace_to_utf, encoding='utf-8', errors='ignore')
         if not replace_to_utf:
             return replace_to_utf
         return replace_to_utf
@@ -3435,7 +3435,6 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
             file_data = file_data.decode("utf-8-sig").encode("utf-8")
 
         parser = HeaderParser()
-        # print(file_data.decode("utf-8"))
         headers = parser.parsestr(file_data.decode("utf-8"))
 
         header_list = []
@@ -3485,7 +3484,6 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
 
             elif part.get_filename() or "attachment" in part.get("Content-Disposition", ""):
                 attachment_file_name = convert_to_unicode(part.get_filename())
-                # print("Name is"+attachment_file_name)
                 if attachment_file_name is None and part.get('filename'):
                     attachment_file_name = os.path.normpath(part.get('filename'))
                     if os.path.isabs(attachment_file_name):
@@ -3547,12 +3545,19 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                     # .msg and other files (png, jpeg)
                     if part.is_multipart() and max_depth - 1 > 0:
                         # email is DSN
-                        msg = part.get_payload(1).get_payload()  # human-readable section
-                        msg_info = base64.b64decode(msg).decode('utf-8')
+                        msgs = part.get_payload()  # human-readable section
+                        i = 0
+                        for indiv_msg in msgs:
+                            msg = indiv_msg.get_payload()
+                            attachment_file_name = indiv_msg.get_filename()
+                            msg_info = base64.b64decode(msg).decode('utf-8')
+                            attached_emails.append(msg_info)
+                            if attachment_file_name is None:
+                                attachment_file_name = "unknown_file_name{}".format(i)
+                            demisto.results(fileResult(attachment_file_name, msg_info))
+                            attachment_names.append(attachment_file_name)
+                            i += 1
 
-                        attached_emails.append(msg_info)
-                        attachment_file_name = "Filename not found"
-                        demisto.results(fileResult(attachment_file_name, msg_info))
                     else:
                         file_content = part.get_payload(decode=True)
                         demisto.results(fileResult(attachment_file_name, file_content))
@@ -3573,7 +3578,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                                     outputs=None)
                             finally:
                                 os.remove(f.name)
-                attachment_names.append(attachment_file_name)
+                        attachment_names.append(attachment_file_name)
                 demisto.setContext('AttachmentName', attachment_file_name)
 
             elif part.get_content_type() == 'text/html':
@@ -3651,13 +3656,19 @@ def main():
             return_error(get_error(result))
 
         file_path = result[0]['Contents']['path']
+        # file_path = '/Users/ashamah/PycharmProjects/content_2/_Michele_Bowersox___+15592316519__has_left_you_a_1_45_seconds_VM.eml'
         file_name = result[0]['Contents']['name']
+        # file_name = '_Michele_Bowersox___+15592316519__has_left_you_a_1_45_seconds_VM.eml'
 
         result = demisto.executeCommand('getEntry', {'id': entry_id})
         if is_error(result):
             return_error(get_error(result))
 
         file_metadata = result[0]['FileMetadata']
+        # file_metadata = {
+        #     'info': 'message/rfc822',
+        #     'type': 'RFC 822 mail text, ASCII text, with very long lines, with CRLF, LF line terminators'
+        # }
         file_type = file_metadata.get('info', '') or file_metadata.get('type', '')
 
     except Exception as ex:
