@@ -616,6 +616,6 @@ inputs:
     runFromLastJobTime: true
 outputs: []
 quiet: true
-fromversion: 5.0.0
+fromversion: 5.5.0
 tests:
 - No tests (auto formatted)

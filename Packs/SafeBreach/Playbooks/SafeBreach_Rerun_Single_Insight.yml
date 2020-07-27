@@ -263,6 +263,6 @@ outputs:
   description: Time when the test was triggered.
   type: String
 quiet: true
-fromversion: 5.0.0
+fromversion: 5.5.0
 tests:
 - No tests (auto formatted)

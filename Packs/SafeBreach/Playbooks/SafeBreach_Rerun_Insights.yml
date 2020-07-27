@@ -354,6 +354,6 @@ outputs:
   description: List of all insight related SafeBreach attack ids
   type: Array
 quiet: true
-fromversion: 5.0.0
+fromversion: 5.5.0
 tests:
 - No Test
