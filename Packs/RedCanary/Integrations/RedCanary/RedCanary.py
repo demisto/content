@@ -539,24 +539,35 @@ def execute_playbook(playbook_id, detection_id):
 
 def fetch_incidents():
     last_run = demisto.getLastRun()
-    if last_run and 'time' in last_run:
+    last_incidents_ids = []
+
+    if last_run:
         last_fetch = last_run.get('time')
         last_fetch = datetime.strptime(last_fetch, TIME_FORMAT)
+        last_incidents_ids = last_run.get('last_event_ids')
     else:
+        # first time fetching
         last_fetch = parse_date_range(demisto.params().get('fetch_time', '3 days'), TIME_FORMAT)[0]
 
     LOG('iterating on detections, looking for more recent than {}'.format(last_fetch))
     incidents = []
+    new_incidents_ids = []
     for raw_detection in get_unacknowledged_detections(last_fetch, per_page=2):
         LOG('found detection #{}'.format(raw_detection['id']))
         incident = detection_to_incident(raw_detection)
-
-        incidents.append(incident)
+        # the rewJson is a string of dictionary e.g. - ('{"ID":2,"Type":5}')
+        incident_id = json.loads(incident['rawJSON']).get("ID")
+        if incident_id not in last_incidents_ids:
+            # makes sure that the incidents wasn't fetched before
+            incidents.append(incident)
+            new_incidents_ids.append(incident_id)
 
     if incidents:
         last_fetch = max([get_time_obj(incident['occurred']) for incident in incidents])  # noqa:F812
-        demisto.setLastRun({'time': get_time_str(last_fetch + timedelta(seconds=1))})
-    demisto.incidents(incidents)
+        last_run = {'time': get_time_str(last_fetch), 'last_event_ids': new_incidents_ids}
+
+    return last_run, incidents
+
 
 
 @logger
@@ -590,7 +601,9 @@ def main():
         command_func = COMMANDS.get(demisto.command())
         if command_func is not None:
             if demisto.command() == 'fetch-incidents':
-                demisto.incidents(fetch_incidents())
+                last_run, incidents = fetch_incidents()
+                demisto.incidents(incidents)
+                demisto.setLastRun(last_run)
             else:
                 demisto.results(command_func())
 
