@@ -31,6 +31,8 @@ class MicrosoftClient(BaseClient):
                  grant_type: str = CLIENT_CREDENTIALS,
                  redirect_uri: str = 'https://localhost/myapp',
                  resource: str = '',
+                 multi_resource: bool = False,
+                 resources: List[str] = None,
                  verify: bool = True,
                  self_deployed: bool = False,
                  *args, **kwargs):
@@ -44,9 +46,10 @@ class MicrosoftClient(BaseClient):
             enc_key: If self deployed it's the client secret, otherwise (oproxy) it's the encryption key
             scope: The scope of the application (only if self deployed)
             resource: The resource of the application (only if self deployed)
+            multi_resource: Where or not module uses a multiple resources (self-deployed, auth_code grant type only)
+            resources: (optional) Resources of the application (for multi-resource mode)
             verify: Demisto insecure parameter
             self_deployed: Indicates whether the integration mode is self deployed or oproxy
-
         """
         super().__init__(verify=verify, *args, **kwargs)  # type: ignore[misc]
 
@@ -74,18 +77,21 @@ class MicrosoftClient(BaseClient):
             self.resource = resource
             self.scope = scope
             self.redirect_uri = redirect_uri
+            self.multi_resource = multi_resource
+            if self.multi_resource:
+                self.resource_to_access_token = {resource: '' for resource in resources}
 
         self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
         self.verify = verify
 
-    def http_request(self, *args, resp_type='json', headers=None, return_empty_response=False, **kwargs):
+    def http_request(self, *args, resp_type='json', headers=None, return_empty_response=False, resource=None, **kwargs):
         """
         Overrides Base client request function, retrieves and adds to headers access token before sending the request.
 
         Returns:
             Response from api according to resp_type. The default is `json` (dict or list).
         """
-        token = self.get_access_token()
+        token = self.get_access_token(resource)
         default_headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json',
@@ -119,7 +125,7 @@ class MicrosoftClient(BaseClient):
         except ValueError as exception:
             raise DemistoException('Failed to parse json object from response: {}'.format(response.content), exception)
 
-    def get_access_token(self):
+    def get_access_token(self, resource):
         """
         Obtains access and refresh token from oproxy server or just a token from a self deployed app.
         Access token is used and stored in the integration context
@@ -130,9 +136,15 @@ class MicrosoftClient(BaseClient):
             str: Access token that will be added to authorization header.
         """
         integration_context = demisto.getIntegrationContext()
-        access_token = integration_context.get('access_token')
         refresh_token = integration_context.get('current_refresh_token', '')
+
+        if self.multi_resource:
+            access_token = integration_context.get(resource, {}).get('access_token')
+        else:
+            access_token = integration_context.get('access_token')
+
         valid_until = integration_context.get('valid_until')
+
         if access_token and valid_until:
             if self.epoch_seconds() < valid_until:
                 return access_token
@@ -154,7 +166,14 @@ class MicrosoftClient(BaseClient):
             'valid_until': time_now + expires_in,
         }
 
+        if self.multi_resource:
+            integration_context.update(self.resource_to_access_token)
+
         demisto.setIntegrationContext(integration_context)
+
+        if self.multi_resource:
+            return self.resource_to_access_token[resource]
+
         return access_token
 
     def _oproxy_authorize(self) -> Tuple[str, int, str]:
@@ -211,7 +230,15 @@ class MicrosoftClient(BaseClient):
 
     def _get_self_deployed_token(self, refresh_token: str = ''):
         if self.grant_type == AUTHORIZATION_CODE:
-            return self._get_self_deployed_token_auth_code(refresh_token)
+            access_token, expires_in, refresh_token = self._get_self_deployed_token_auth_code(refresh_token)
+
+            if self.multi_resource:
+                for resource in self.resource_to_access_token.keys():
+                    access_token, expires_in, refresh_token = self._get_self_deployed_token_auth_code(refresh_token,
+                                                                                                      resource)
+                    self.resource_to_access_token[resource] = access_token
+
+            return access_token, expires_in, refresh_token
         else:
             # by default, grant_type is CLIENT_CREDENTIALS
             return self._get_self_deployed_token_client_credentials()
@@ -249,7 +276,7 @@ class MicrosoftClient(BaseClient):
 
         return access_token, expires_in, ''
 
-    def _get_self_deployed_token_auth_code(self, refresh_token: str = '') -> Tuple[str, int, str]:
+    def _get_self_deployed_token_auth_code(self, refresh_token: str = '', resource: str = '') -> Tuple[str, int, str]:
         """
         Gets a token by authorizing a self deployed Azure application.
 
@@ -259,7 +286,7 @@ class MicrosoftClient(BaseClient):
         data = {
             'client_id': self.client_id,
             'client_secret': self.client_secret,
-            'resource': self.resource,
+            'resource': self.resource if not resource else resource,
             'redirect_uri': self.redirect_uri
         }
         refresh_token = refresh_token or self._get_refresh_token_from_auth_code_param()
@@ -403,18 +430,3 @@ class MicrosoftClient(BaseClient):
             demisto.error('Failed getting integration info: {}'.format(str(e)))
 
         return headers
-
-
-class MultiResourceMicrosoftClient(MicrosoftClient):
-    def __init__(self, additional_resources: List[str] = None, *args, **kwargs):
-        """
-        Microsoft Client class that supports multiple resources configuration.
-        Args:
-            additional_resources: A list of resources.
-
-        """
-        self.additional_resources = additional_resources
-        super().__init__(*args, **kwargs)  # type: ignore[misc]
-
-    def get_access_token(self):
-

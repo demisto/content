@@ -21,6 +21,9 @@ SAVED_SEARCH_HEADERS = [
     'etag', 'id', 'category', 'displayName', 'functionAlias', 'functionParameters', 'query', 'tags', 'version', 'type'
 ]
 
+LOG_ANALYTICS_RESOURCE = 'https://api.loganalytics.io'
+AZURE_MANAGEMENT_RESOURCE = 'https://management.azure.com'
+
 
 class Client:
     def __init__(self, self_deployed, refresh_token, auth_and_token_url, enc_key, redirect_uri, auth_code,
@@ -30,8 +33,7 @@ class Client:
         refresh_token = (demisto.getIntegrationContext().get('current_refresh_token') or refresh_token)
         base_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/' \
             f'{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/{workspace_name}'
-        self.ms_client = MultiResourceMicrosoftClient(
-            additional_resources=['https://management.azure.com'],
+        self.ms_client = MicrosoftClient(
             self_deployed=self_deployed,
             auth_id=auth_and_token_url,
             refresh_token=refresh_token,
@@ -43,14 +45,15 @@ class Client:
             base_url=base_url,
             verify=verify,
             proxy=proxy,
-            resource='https://api.loganalytics.io',
             scope='',
             tenant_id=tenant_id,
             auth_code=auth_code,
-            ok_codes=(200, 201, 202, 204, 400, 401, 403, 404)
+            ok_codes=(200, 201, 202, 204, 400, 401, 403, 404),
+            multi_resource=True,
+            resources=[AZURE_MANAGEMENT_RESOURCE, LOG_ANALYTICS_RESOURCE]
         )
 
-    def http_request(self, method, url_suffix=None, full_url=None, params=None, data=None):
+    def http_request(self, method, url_suffix=None, full_url=None, params=None, data=None, resource=None):
         if not params:
             params = {}
         if not full_url:
@@ -61,7 +64,8 @@ class Client:
                                           full_url=full_url,
                                           json_data=data,
                                           params=params,
-                                          resp_type='response')
+                                          resp_type='response',
+                                          resource=resource)
         res_json = res.json()
 
         if res.status_code in (400, 401, 403, 404):
@@ -143,7 +147,8 @@ def execute_query_command(client, args):
 
     remove_nulls_from_dictionary(data)
 
-    response = client.http_request('POST', full_url=full_url, data=data)
+    response = client.http_request('POST', full_url=full_url, data=data,
+                                   resource=LOG_ANALYTICS_RESOURCE)
 
     output = [format_query_table(table) for table in response]
 
@@ -160,7 +165,7 @@ def list_saved_searches_command(client, args):
     limit = min(50, int(args.get('limit')))
     url_suffix = '/savedSearches'
 
-    response = client.http_request('GET', url_suffix)
+    response = client.http_request('GET', url_suffix, resource=AZURE_MANAGEMENT_RESOURCE)
 
     from_index = min(page, len(response))
     to_index = min(from_index + limit, len(response))
