@@ -16,13 +16,13 @@ For more details about the authentication used in this integration, see <a href=
 </div>
 <div class="cl-preview-section">
 <ol>
-<li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
+<li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Microsoft Graph User.</li>
-<li>Click <strong>Add instance</strong> to create and configure a new integration instance.
+<li>Click <strong>Add instance</strong> to create and configure a new integration instance.
 <ul>
 <li>
 <strong>Name</strong>: a textual name for the integration instance.</li>
-<li><strong>Host URL (e.g., <a href="https://graph.microsoft.com/">https://graph.microsoft.com</a>)</strong></li>
+<li><strong>Host URL (e.g., <a href="https://graph.microsoft.com/">https://graph.microsoft.com</a>)</strong></li>
 <li><strong>ID you received from the admin consent</strong></li>
 <li><strong>Key you received from the admin consent</strong></li>
 <li><strong>Token you received from the admin consent</strong></li>
@@ -30,7 +30,7 @@ For more details about the authentication used in this integration, see <a href=
 <li><strong>Use system proxy settings</strong></li>
 </ul>
 </li>
-<li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
+<li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
 </ol>
 </div>
 
@@ -91,7 +91,7 @@ For more details about the authentication used in this integration, see <a href=
 </table>
 </div>
 </div>
-<p> </p>
+<p> </p>
 <div class="cl-preview-section">
 <h5 id="context-output">Context Output</h5>
 </div>
@@ -108,7 +108,7 @@ For more details about the authentication used in this integration, see <a href=
 <h5 id="human-readable-output">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p>user: <a href="mailto:%22oren@demistodev.onmicrosoft.com">"oren@demistodev.onmicrosoft.com</a>" session has been terminated successfully</p>
+<p>user: <a href="mailto:%22oren@demistodev.onmicrosoft.com">"oren@demistodev.onmicrosoft.com</a>" session has been terminated successfully</p>
 </div>
 <div class="cl-preview-section">
 <h3 id="unblock-a-user">2. Unblock a user</h3>
@@ -146,7 +146,7 @@ For more details about the authentication used in this integration, see <a href=
 </table>
 </div>
 </div>
-<p> </p>
+<p> </p>
 <div class="cl-preview-section">
 <h5 id="context-output-1">Context Output</h5>
 </div>
@@ -206,7 +206,7 @@ For more details about the authentication used in this integration, see <a href=
 </table>
 </div>
 </div>
-<p> </p>
+<p> </p>
 <div class="cl-preview-section">
 <h5 id="context-output-2">Context Output</h5>
 </div>
@@ -280,7 +280,7 @@ For more details about the authentication used in this integration, see <a href=
 </table>
 </div>
 </div>
-<p> </p>
+<p> </p>
 <div class="cl-preview-section">
 <h5 id="command-example-2">Command Example</h5>
 </div>
@@ -312,7 +312,7 @@ For more details about the authentication used in this integration, see <a href=
 <h5 id="human-readable-output-2">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<h3 id="graphdemistodev.onmicrosoft.com-data">graph@demistodev.onmicrosoft.com data</h3>
+<h3 id="graphdemistodev.onmicrosoft.com-data">graph@demistodev.onmicrosoft.com data</h3>
 </div>
 <div class="cl-preview-section">
 <div class="table-wrapper">
@@ -338,7 +338,7 @@ For more details about the authentication used in this integration, see <a href=
 </table>
 </div>
 </div>
-<p> </p>
+<p> </p>
 <div class="cl-preview-section">
 <h3 id="delete-a-user">4. Delete a user</h3>
 </div>
@@ -375,7 +375,7 @@ For more details about the authentication used in this integration, see <a href=
 </table>
 </div>
 </div>
-<p> </p>
+<p> </p>
 <div class="cl-preview-section">
 <h5 id="context-output-3">Context Output</h5>
 </div>
@@ -392,7 +392,7 @@ For more details about the authentication used in this integration, see <a href=
 <h5 id="human-readable-output-3">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p>user: "graph@demistodev.onmicrosoft.com" was deleted successfully</p>
+<p>user: "graph@demistodev.onmicrosoft.com" was deleted successfully</p>
 </div>
 <div class="cl-preview-section">
 <h3 id="create-a-user">5. Create a user</h3>
@@ -448,7 +448,7 @@ For more details about the authentication used in this integration, see <a href=
 </tr>
 <tr>
 <td style="width: 206px;">user_principal_name</td>
-<td style="width: 363px;">The user principal name, for example: foo@test.com.</td>
+<td style="width: 363px;">The user principal name, for example: foo@test.com.</td>
 <td style="width: 71px;">Required</td>
 </tr>
 <tr>
@@ -460,7 +460,7 @@ For more details about the authentication used in this integration, see <a href=
 </table>
 </div>
 </div>
-<p> </p>
+<p> </p>
 <div class="cl-preview-section">
 <h5 id="context-output-4">Context Output</h5>
 </div>
@@ -534,7 +534,7 @@ For more details about the authentication used in this integration, see <a href=
 </table>
 </div>
 </div>
-<p> </p>
+<p> </p>
 <div class="cl-preview-section">
 <h5 id="command-example-4">Command Example</h5>
 </div>
@@ -566,7 +566,7 @@ For more details about the authentication used in this integration, see <a href=
 <h5 id="human-readable-output-4">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<h3 id="graphdemistodev.onmicrosoft.com-was-created-successfully">graph@demistodev.onmicrosoft.com was created successfully:</h3>
+<h3 id="graphdemistodev.onmicrosoft.com-was-created-successfully">graph@demistodev.onmicrosoft.com was created successfully:</h3>
 </div>
 <div class="cl-preview-section">
 <div class="table-wrapper">
@@ -590,13 +590,13 @@ For more details about the authentication used in this integration, see <a href=
 </table>
 </div>
 </div>
-<p> </p>
+<p> </p>
 <div class="cl-preview-section">
 <h3 id="get-new-updated-or-deleted-user-information">6. Get new, updated, or deleted user information</h3>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
-<p>Deprecated. This command only returns a single page. Use the msgraph-user-list command instead, which gets newly created, updated, or deleted users without performing a full read of the entire user collection.</p>
+<p>Deprecated. This command only returns a single page. Use the msgraph-user-list command instead, which gets newly created, updated, or deleted users without performing a full read of the entire user collection.</p>
 </div>
 <div class="cl-preview-section">
 <h5 id="base-command-5">Base Command</h5>
@@ -627,7 +627,7 @@ For more details about the authentication used in this integration, see <a href=
 </table>
 </div>
 </div>
-<p> </p>
+<p> </p>
 <div class="cl-preview-section">
 <h5 id="context-output-5">Context Output</h5>
 </div>
@@ -701,7 +701,7 @@ For more details about the authentication used in this integration, see <a href=
 </table>
 </div>
 </div>
-<p> </p>
+<p> </p>
 <div class="cl-preview-section">
 <h5 id="command-example-5">Command Example</h5>
 </div>
@@ -766,7 +766,7 @@ For more details about the authentication used in this integration, see <a href=
 </table>
 </div>
 </div>
-<p> </p>
+<p> </p>
 <div class="cl-preview-section">
 <h3 id="get-user-object-information">7. Get user object information</h3>
 </div>
@@ -808,7 +808,7 @@ For more details about the authentication used in this integration, see <a href=
 </table>
 </div>
 </div>
-<p> </p>
+<p> </p>
 <div class="cl-preview-section">
 <h5 id="context-output-6">Context Output</h5>
 </div>
@@ -882,7 +882,7 @@ For more details about the authentication used in this integration, see <a href=
 </table>
 </div>
 </div>
-<p> </p>
+<p> </p>
 <div class="cl-preview-section">
 <h5 id="command-example-6">Command Example</h5>
 </div>
@@ -914,7 +914,7 @@ For more details about the authentication used in this integration, see <a href=
 <h5 id="human-readable-output-6">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<h3 id="graphdemistodev.onmicrosoft.com-data-1">graph@demistodev.onmicrosoft.com data</h3>
+<h3 id="graphdemistodev.onmicrosoft.com-data-1">graph@demistodev.onmicrosoft.com data</h3>
 </div>
 <div class="cl-preview-section">
 <div class="table-wrapper">
@@ -938,7 +938,7 @@ For more details about the authentication used in this integration, see <a href=
 </table>
 </div>
 </div>
-<p> </p>
+<p> </p>
 <div class="cl-preview-section">
 <h3 id="get-a-list-of-user-objects">8. Get a list of user objects</h3>
 </div>
@@ -980,7 +980,7 @@ For more details about the authentication used in this integration, see <a href=
 </table>
 </div>
 </div>
-<p> </p>
+<p> </p>
 <div class="cl-preview-section">
 <h5 id="context-output-7">Context Output</h5>
 </div>
@@ -1059,7 +1059,7 @@ For more details about the authentication used in this integration, see <a href=
 </table>
 </div>
 </div>
-<p> </p>
+<p> </p>
 <div class="cl-preview-section">
 <h5 id="command-example-7">Command Example</h5>
 </div>
@@ -1120,7 +1120,7 @@ For more details about the authentication used in this integration, see <a href=
 </table>
 </div>
 </div>
-<p> </p>
+<p> </p>
 <div class="cl-preview-section">
 <h3 id="get-direct-reports">9. Get the direct reports of a user.</h3>
 </div>
@@ -1157,7 +1157,7 @@ For more details about the authentication used in this integration, see <a href=
 </table>
 </div>
 </div>
-<p> </p>
+<p> </p>
 <div class="cl-preview-section">
 <h5 id="context-output-8">Context Output</h5>
 </div>
@@ -1236,7 +1236,7 @@ For more details about the authentication used in this integration, see <a href=
 </table>
 </div>
 </div>
-<p> </p>
+<p> </p>
 <div class="cl-preview-section">
 <h5 id="command-example-8">Command Example</h5>
 </div>
@@ -1300,7 +1300,7 @@ For more details about the authentication used in this integration, see <a href=
 </table>
 </div>
 </div>
-<p> </p>
+<p> </p>
 <div class="cl-preview-section">
 <h3 id="user-get-manager">10. Get the manager of a user.</h3>
 </div>
@@ -1330,14 +1330,14 @@ For more details about the authentication used in this integration, see <a href=
 <tbody>
 <tr>
 <td style="width: 139px;">user</td>
-<td style="width: 530px;">The User ID or userPrincipalName of the user for which to the manager.</td>
+<td style="width: 530px;">The User ID or userPrincipalName of the user for which to get the manager.</td>
 <td style="width: 71px;">Required</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-<p> </p>
+<p> </p>
 <div class="cl-preview-section">
 <h5 id="context-output-9">Context Output</h5>
 </div>
@@ -1421,7 +1421,7 @@ For more details about the authentication used in this integration, see <a href=
 </table>
 </div>
 </div>
-<p> </p>
+<p> </p>
 <div class="cl-preview-section">
 <h5 id="command-example-9">Command Example</h5>
 </div>
@@ -1483,7 +1483,7 @@ For more details about the authentication used in this integration, see <a href=
 </table>
 </div>
 </div>
-<p> </p>
+<p> </p>
 <div class="cl-preview-section">
 <h3 id="user-assign-manager">11. Assign a manager to a user.</h3>
 </div>
@@ -1525,7 +1525,7 @@ For more details about the authentication used in this integration, see <a href=
 </table>
 </div>
 </div>
-<p> </p>
+<p> </p>
 <div class="cl-preview-section">
 <h5 id="context-output-10">Context Output</h5>
 </div>
