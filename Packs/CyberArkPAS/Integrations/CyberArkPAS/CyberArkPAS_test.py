@@ -7,8 +7,8 @@ from CyberArkPAS import Client, add_user_command, get_users_command, \
 from test_data.context import ADD_USER_CONTEXT, GET_USERS_CONTEXT, \
     UPDATE_USER_CONTEXT, UPDATE_SAFE_CONTEXT, GET_LIST_SAFES_CONTEXT, GET_SAFE_BY_NAME_CONTEXT, ADD_SAFE_CONTEXT, \
     ADD_SAFE_MEMBER_CONTEXT, UPDATE_SAFE_MEMBER_CONTEXT, LIST_SAFE_MEMBER_CONTEXT, ADD_ACCOUNT_CONTEXT, \
-    UPDATE_ACCOUNT_CONTEXT, GET_LIST_ACCOUNT_CONTEXT, GET_LIST_ACCOUNT_ACTIVITIES_CONTEXT, INCIDENTS, INCIDENTS2, \
-    INCIDENTS3, INCIDENTS4
+    UPDATE_ACCOUNT_CONTEXT, GET_LIST_ACCOUNT_CONTEXT, GET_LIST_ACCOUNT_ACTIVITIES_CONTEXT, INCIDENTS, INCIDENTS_AFTER_FETCH, \
+    INCIDENTS_LIMITED_BY_MAX_SIZE, INCIDENTS_FILTERED_BY_SCORE
 from test_data.http_resonses import ADD_USER_RAW_RESPONSE, \
     UPDATE_USER_RAW_RESPONSE, GET_USERS_RAW_RESPONSE, ADD_SAFE_RAW_RESPONSE, UPDATE_SAFE_RAW_RESPONSE, \
     GET_LIST_SAFES_RAW_RESPONSE, GET_SAFE_BY_NAME_RAW_RESPONSE, ADD_SAFE_MEMBER_RAW_RESPONSE, \
@@ -186,7 +186,7 @@ def test_fetch_incidents_with_an_incident_that_was_shown_before(mocker):
     # the last run dict is the same we would have got if we run the prev test before
     last_run = {'time': 1594573600000, 'last_event_ids': '["5f0b3064e4b0ba4baf5c1113", "5f0b4320e4b0ba4baf5c2b05"]'}
     _, incidents = fetch_incidents(client, last_run, "3 days", "0", "1")
-    assert incidents == INCIDENTS2
+    assert incidents == INCIDENTS_AFTER_FETCH
 
 
 def test_fetch_incidents_with_more_incidents_than_max_size(mocker):
@@ -207,7 +207,7 @@ def test_fetch_incidents_with_more_incidents_than_max_size(mocker):
     mocker.patch.object(Client, '_http_request', return_value=GET_SECURITY_EVENTS_WITH_15_INCIDENT_RAW_RESPONSE)
     _, incidents = fetch_incidents(client, {}, "3 days", "0", max_fetch="5")
     assert len(incidents) == 5
-    assert incidents == INCIDENTS3
+    assert incidents == INCIDENTS_LIMITED_BY_MAX_SIZE
 
 
 def test_fetch_incidents_with_specific_score(mocker):
@@ -228,4 +228,4 @@ def test_fetch_incidents_with_specific_score(mocker):
     mocker.patch.object(Client, '_http_request', return_value=GET_SECURITY_EVENTS_WITH_15_INCIDENT_RAW_RESPONSE)
     _, incidents = fetch_incidents(client, {}, "3 days", score="50", max_fetch="10")
     assert len(incidents) == 3
-    assert incidents == INCIDENTS4
+    assert incidents == INCIDENTS_FILTERED_BY_SCORE

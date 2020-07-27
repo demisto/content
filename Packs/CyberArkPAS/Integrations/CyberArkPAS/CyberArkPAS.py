@@ -21,8 +21,8 @@ def parse_date_range_expire_date(date_range):
       :type date_range: ``str``
       :param date_range: The date range to be parsed (required)
 
-      :return: The parsed date range.
-      :rtype: ``(datetime.datetime, datetime.datetime)`` or ``(int, int)`` or ``(str, str)``
+      :return: The parsed date range forward in sec (and not msec)
+      :rtype: ``int``
     """
     range_split = date_range.split(' ')
     if len(range_split) != 2:
@@ -48,7 +48,7 @@ def parse_date_range_expire_date(date_range):
     elif 'year' in unit:
         end_time = start_time + timedelta(days=number * 365)
 
-    return str(int(time.mktime(end_time.timetuple()) * 1000))
+    return date_to_timestamp(end_time) / 1000
 
 
 def incident_priority_to_dbot_score(score: float) -> int:
@@ -69,7 +69,7 @@ def incident_priority_to_dbot_score(score: float) -> int:
     return 0
 
 
-def filter_by_score(events_data: list, score: int):
+def filter_by_score(events_data: list, score: int) -> list:
     if score == 0:
         return events_data
 
@@ -564,11 +564,8 @@ def test_module(
     # if there were security events in the last week
     if security_events:
         event = security_events[0]
-        if event.get("id") and event.get("type") and event.get("score"):
-            return "ok"
-        else:
-            raise Exception("Security events are not in the right format")
-    # if there were no security events in the last week but the http request seceded
+        if not event.get("id") or not event.get("type") or not event.get("score"):
+            raise Exception("Security events from CyberArk PAS are missing mandatory fields.")
     return "ok"
 
 
@@ -1302,7 +1299,7 @@ def main():
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
-    max_fetch = min('50', params.get('max_fetch', '50'))
+    max_fetch = min('200', params.get('max_fetch', '200'))
     first_fetch_time = params.get('fetch_time', '3 days').strip()
     score = params.get('score', "0")
 

@@ -587,9 +587,9 @@ INCIDENTS = [
               ' "additionalData": {"station": "17.111.13.67", "reason": "ip", "vault_user": "administrator"},'
               ' "mStatus": "OPEN"}'}]
 
-INCIDENTS2 = [{'name': 'CyberArk PAS Incident: 5f0b4e53e4b0ba4baf5c43ed.', 'occurred': '2020-07-12T17:54:27.000Z', 'severity': 1, 'rawJSON': '{"id": "5f0b4e53e4b0ba4baf5c43ed", "type": "VaultViaIrregularIp", "score": 29.414062500000004, "createTime": 1594576467000, "lastUpdateTime": 1594576467000, "audits": [{"id": "5f0b4e53e4b0ba4baf5c43eb", "type": "VAULT_LOGON", "sensorType": "VAULT", "action": "Logon", "createTime": 1594576467000, "vaultUser": "Administrator", "source": {"mOriginalAddress": "17.111.13.67", "mResolvedAddress": {"mOriginalAddress": "17.111.13.67", "mAddress": "17.111.13.67", "mHostName": "17.111.13.67", "mFqdn": "17.111.13.67.bb.netvision.net.il"}}, "cloudData": {}}], "additionalData": {"station": "17.111.13.67", "reason": "ip", "vault_user": "administrator"}, "mStatus": "OPEN"}'}]
+INCIDENTS_AFTER_FETCH = [{'name': 'CyberArk PAS Incident: 5f0b4e53e4b0ba4baf5c43ed.', 'occurred': '2020-07-12T17:54:27.000Z', 'severity': 1, 'rawJSON': '{"id": "5f0b4e53e4b0ba4baf5c43ed", "type": "VaultViaIrregularIp", "score": 29.414062500000004, "createTime": 1594576467000, "lastUpdateTime": 1594576467000, "audits": [{"id": "5f0b4e53e4b0ba4baf5c43eb", "type": "VAULT_LOGON", "sensorType": "VAULT", "action": "Logon", "createTime": 1594576467000, "vaultUser": "Administrator", "source": {"mOriginalAddress": "17.111.13.67", "mResolvedAddress": {"mOriginalAddress": "17.111.13.67", "mAddress": "17.111.13.67", "mHostName": "17.111.13.67", "mFqdn": "17.111.13.67.bb.netvision.net.il"}}, "cloudData": {}}], "additionalData": {"station": "17.111.13.67", "reason": "ip", "vault_user": "administrator"}, "mStatus": "OPEN"}'}]
 
-INCIDENTS3 =[{'name': 'CyberArk PAS Incident: 5f13f770e4b0ba4baf5ee890.',
+INCIDENTS_LIMITED_BY_MAX_SIZE =[{'name': 'CyberArk PAS Incident: 5f13f770e4b0ba4baf5ee890.',
   'occurred': '2020-07-19T07:34:08.000Z',
   'rawJSON': '{"id": "5f13f770e4b0ba4baf5ee890", "type": '
              '"VaultViaIrregularIp", "score": 27.656250000000004, '
@@ -650,7 +650,7 @@ INCIDENTS3 =[{'name': 'CyberArk PAS Incident: 5f13f770e4b0ba4baf5ee890.',
              '"ip", "vault_user": "administrator"}, "mStatus": "OPEN"}',
   'severity': 1}]
 
-INCIDENTS4 = [{'name': 'CyberArk PAS Incident: 5f13f7ade4b0ba4baf5ee9b0.',
+INCIDENTS_FILTERED_BY_SCORE = [{'name': 'CyberArk PAS Incident: 5f13f7ade4b0ba4baf5ee9b0.',
   'occurred': '2020-07-19T07:35:09.000Z',
   'rawJSON': '{"id": "5f13f7ade4b0ba4baf5ee9b0", "type": '
              '"VaultViaIrregularIp", "score": 98.65625, "createTime": '
@@ -694,4 +694,3 @@ INCIDENTS4 = [{'name': 'CyberArk PAS Incident: 5f13f7ade4b0ba4baf5ee9b0.',
              '"27_3"}], "additionalData": {"aggregation_count": 12}, '
              '"mStatus": "OPEN"}',
   'severity': 2}]
-
