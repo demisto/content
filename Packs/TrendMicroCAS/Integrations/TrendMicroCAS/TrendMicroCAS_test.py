@@ -1,49 +1,50 @@
 import pytest
 import datetime
 from TrendMicroCAS import Client, security_events_list_command, parse_date_to_isoformat, email_sweep_command,\
-    user_take_action_command, email_take_action_command, user_action_result_command, blocked_lists_get_command, blocked_lists_update_command
+    user_take_action_command, email_take_action_command, user_action_result_command, blocked_lists_get_command,\
+    blocked_lists_update_command
 import test_data.commands_raw_response as data
 from CommonServerPython import CommandResults
 
 client = Client(base_url='https://test.com', verify=False, headers={'Authorization': f'Bearer {"1243545"}'})
 
 
-# args_test_security_events_list = [
-#     {'service': 'onedrive', 'event_type': 'securityrisk'},
-#     {'service': 'onedrive', 'event_type': 'securityrisk', 'start': '1 day'},
-#     {'service': 'onedrive', 'event_type': 'securityrisk', 'start': '2020-01-01T00:00:00Z', 'end': 'now'}]
-#
-#
-# @pytest.mark.parametrize('args', args_test_security_events_list)
-# def test_security_events_list_command(mocker, args):
-#     """Tests security_events_list_command function
-#     Given
-#         1. service=onedrive and event_type=securityrisk in arguments
-#         2. service=onedrive and event_type=securityrisk and start=1 day
-#         3. service=onedrive and event_type=securityrisk and start=1 day and end=now
-#
-#     When
-#         - Calling `security_events_list_command`
-#     Then
-#         - convert the result to human readable table
-#         - create the context
-#         - validate the context data, the key, and the prefix.
-#     """
-#     mocker.patch.object(client, '_http_request', return_value=data.SECURITY_EVENTS_LIST_RESULT)
-#     args = {
-#         'service': 'onedrive',
-#         'event_type': 'securityrisk'
-#     }
-#     results: CommandResults = security_events_list_command(client, args)
-#     assert results.outputs == data.SECURITY_EVENTS_LIST_RESULT
-#     assert results.outputs_key_field == 'log_item_id'
-#     assert results.outputs_prefix == 'TrendMicroCAS.Events'
+args_test_security_events_list = [
+    {'service': 'onedrive', 'event_type': 'securityrisk'},
+    {'service': 'onedrive', 'event_type': 'securityrisk', 'start': '1 day'},
+    {'service': 'onedrive', 'event_type': 'securityrisk', 'start': '2020-01-01T00:00:00Z', 'end': '3 days'}]
+
+
+@pytest.mark.parametrize('args', args_test_security_events_list)
+def test_security_events_list_command(mocker, args):
+    """Tests security_events_list_command function
+    Given
+        1. service=onedrive and event_type=securityrisk in arguments
+        2. service=onedrive and event_type=securityrisk and start=1 day
+        3. service=onedrive and event_type=securityrisk and start=1 day and end=now
+
+    When
+        - Calling `security_events_list_command`
+    Then
+        - convert the result to human readable table
+        - create the context
+        - validate the context data, the key, and the prefix.
+    """
+    mocker.patch.object(client, '_http_request', return_value=data.SECURITY_EVENTS_LIST_RESULT)
+    args = {
+        'service': 'onedrive',
+        'event_type': 'securityrisk'
+    }
+    results: CommandResults = security_events_list_command(client, args)
+    assert results.outputs == data.SECURITY_EVENTS_LIST_OUTPUT['security_risk']
+    assert results.outputs_key_field == 'log_item_id'
+    assert results.outputs_prefix == 'TrendMicroCAS.Events'
 
 
 args_test_security_events_list = [
     {'limit': '1'},
     {'limit': '1', 'start': '12 days', 'end': '10 days'},
-    {'limit': '1', 'start': '2020-01-01', 'end': 'now'}]
+    {'limit': '1', 'start': '2020-01-01', 'end': '1 day'}]
 
 
 @pytest.mark.parametrize('args', args_test_security_events_list)
@@ -183,64 +184,3 @@ def test_blocked_lists_update_command(mocker):
     assert results.outputs == data.BLOCKED_LISTS_OUTPUT
     assert results.outputs_key_field == 'BlockedList'
     assert results.outputs_prefix == 'TrendMicroCAS.BlockedList'
-
-
-DATA_TEST_PARSE_DATE_TO_ISOFORMAT = [
-    ('08/09/10', '2010-08-09T00:00:00Z'),
-    ('08.09.10', '2010-08-09T00:00:00Z'),
-    ('08-09-10', '2010-08-09T00:00:00Z'),
-    ('9/10/11 09:45:33', '2011-09-10T09:45:33Z'),
-
-]
-
-
-@pytest.mark.parametrize('date_input, fan_result', DATA_TEST_PARSE_DATE_TO_ISOFORMAT)
-def test_parse_date_to_isoformat(date_input, fan_result):
-    """Tests parse_date_to_isoformat function
-    Given
-        1. 08/09/10
-        2. 08.09.10
-        3. 08-09-10
-        4. 9/10/11
-    When
-        - Calling `parse_date_to_isoformat function`
-    Then
-        - convert the date to isoformat string
-        - validate result are in isoformat string %Y-%m-%dT%H:%M:%SZ:
-        1. = 2010-08-09T00:00:00Z
-        2. = 2010-08-09T00:00:00Z
-        3. = 2010-08-09T00:00:00Z
-        4. = 2011-09-10T09:45:33Z
-    """
-    result = parse_date_to_isoformat(date_input, 'test')
-    assert result == fan_result
-
-
-DATA_TEST_PARSE_DATE_TO_ISOFORMAT_FREE_TEXT = [
-    '1 day',
-    '3 months',
-    '1 week and 1 day'
-]
-
-
-@pytest.mark.parametrize('date_input', DATA_TEST_PARSE_DATE_TO_ISOFORMAT_FREE_TEXT)
-def test_parse_date_to_isoformat_on_free_text(date_input):
-    """input a free text date and checks if "parse_date_to_isoformat" returns iso format string(%Y-%m-%dT%H:%M:%SZ)"""
-    """Tests parse_date_to_isoformat function
-    Given
-        free text:
-        1. 1 day
-        2. 3 months
-        3. 1 week and 1 day
-    When
-        - Calling `parse_date_to_isoformat function`
-    Then
-        - convert the date to isoformat string
-        - validate result are in isoformat string %Y-%m-%dT%H:%M:%SZ:
-    """
-    result = parse_date_to_isoformat(date_input, 'test')
-    try:
-        datetime.datetime.strptime(result, "%Y-%m-%dT%H:%M:%SZ")
-    except ValueError:
-        its_not_isoformat = True
-    assert its_not_isoformat

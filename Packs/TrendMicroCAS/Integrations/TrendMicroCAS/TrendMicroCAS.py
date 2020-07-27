@@ -7,13 +7,12 @@ import json
 import requests
 import traceback
 from typing import Any, Dict, Tuple, List, Optional, Union, cast
-import datetime
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 MAX_INCIDENTS_TO_FETCH = 500
 
 ''' CLIENT CLASS '''
@@ -24,6 +23,7 @@ class Client(BaseClient):
     Client to use in the integration. Overrides BaseClient
     makes the connection to the trendMicro server
     """
+
     def security_events_list(self, service: str, event_type: str, start=None, end=None, limit=None) -> dict:
         """
         Handle security events request.
@@ -216,33 +216,6 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def parse_date_to_isoformat(arg: str, arg_name: str):
-    """
-        Parses date_string to iso format date strings ('%Y-%m-%dT%H:%M:%SZ'). Input Can be any date that is valid or
-        'number date range unit' for Examples: (2 hours, 4 minutes, 6 month, 1 day, etc.)
-
-        Args:
-            arg (str): The date to be parsed.
-            arg_name (str): the name of the argument for error output.
-
-        Returns:
-            str: The parsed date in isoformat strings ('%Y-%m-%dT%H:%M:%SZ').
-    """
-    if arg is None:
-        return None
-
-    # we use dateparser to handle strings either in ISO8601 format, or [number] [time unit].
-    # For example: 2019-10-23T00:00:00 or "3 days", etc
-
-    date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
-    if not date:
-        return_error(f'invalid date value for: {arg_name}\n{arg} should be in the format of:'
-                     f' "2016-07-22T01:51:31.001Z." or "10 minutes"')
-
-    date = f'{date.isoformat()}Z'
-    return date
-
-
 def creates_empty_dictionary_of_last_run(list_services: list, list_event_type: list):
     last_run = {}
     for service in list_services:
@@ -257,7 +230,7 @@ def creates_empty_dictionary_of_last_run(list_services: list, list_event_type: l
 
 def test_module(client: Client, params) -> str:
     if params.get('isFetch'):
-        return fetch_incidents_command(client, params, is_test_module=True)
+        fetch_incidents_command(client, params, is_test_module=True)
     else:
         try:
             client.security_events_list(service='exchange', event_type='securityrisk')
@@ -266,11 +239,11 @@ def test_module(client: Client, params) -> str:
                 return 'Authorization Error: make sure Token Key or Service URL are correctly set'
             else:
                 raise e
-        return 'ok'
+    return 'ok'
 
 
-def fetch_incidents(client: Client, max_results: int, last_run, list_services: List[str], first_fetch_time: str,
-                    list_event_type: List[str]) -> Tuple[Dict[str, dict], List[dict], bool]:
+def fetch_incidents(client: Client, max_results: int, last_run, list_services: List[str], first_fetch_time: any,
+                    list_event_type: List[str], is_test_module: bool) -> Tuple[Dict[str, dict], List[dict]]:
     """This function retrieves new alerts every interval (default is 1 minute).
     This function has to implement the logic of making sure that incidents are
     fetched only once and no incidents are missed. By default it's invoked by
@@ -293,21 +266,25 @@ def fetch_incidents(client: Client, max_results: int, last_run, list_services: L
                     used in ``last_run`` on the next fetch.
             incidents (``List[dict]``): List of incidents that will be created in XSOAR
     """
-
-    next_run = {}
+    next_run = last_run.copy()
     incidents: List[Dict[str, Any]] = []
-    end = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    # end = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    end = parse_date_range('1 day', DATE_FORMAT)[1]
+
     quota = False
     for service in list_services:
-        next_run[service] = {}
+        if max_results <= len(incidents) or quota:
+            break
         for event_type in list_event_type:
             last_fetch_time = last_run.get(service, {}).get(event_type, {}).get('last_fetch_time', first_fetch_time)
             last_fetch_ids = last_run.get(service, {}).get(event_type, {}).get('last_fetch_ids', [])
             if max_results <= len(incidents) or quota:
-                next_run[service][event_type] = {'last_fetch_time': last_fetch_time, 'last_fetch_ids': last_fetch_ids}
-                continue
+                break
             result = {}
             try:
+                """Sends a request and calculates the limit according to
+                 the ״max_results״ less the "incident" already collected 
+                 plus the events that will return duplicate "(len(last_fetch_ids))"""
                 result = client.security_events_list(
                     service=service,
                     event_type=event_type,
@@ -318,15 +295,17 @@ def fetch_incidents(client: Client, max_results: int, last_run, list_services: L
             except Exception as e:
                 if 'Maximum allowed requests exceeded' in str(e):
                     quota = True
-                    next_run[service][event_type] = {'last_fetch_time': last_fetch_time,
-                                                     'last_fetch_ids': last_fetch_ids}
-                    # demisto.log('quota_erorr - Maximum allowed requests exceeded')
-                    continue
-            new_latest_ids = list[str]
+                    if is_test_module:
+                        return_error(
+                            'The integration was successfully configured.'
+                            ' but too many services and event_types Were selected,'
+                            ' this exceeds you user license rate limit')
+                    demisto.info('quota_error - maximum allowed requests exceeded - All incidents collected were saved')
+                    break
             security_events = result.get('security_events')
             if not security_events:
-                next_run[service][event_type] = {'last_fetch_time': last_fetch_time, 'last_fetch_ids': last_fetch_ids + new_latest_ids}
                 continue
+            new_latest_ids = []
             for event in security_events:
                 if event.get('log_item_id') not in last_fetch_ids:
                     incident_name = event.get('log_item_id')
@@ -338,28 +317,37 @@ def fetch_incidents(client: Client, max_results: int, last_run, list_services: L
                     incidents.append(incident)
                     if event.get('message').get('detection_time') == result.get('last_log_item_generation_time'):
                         new_latest_ids.append(event.get('log_item_id'))
+
             latest_created_time = result.get('last_log_item_generation_time', '')
             if latest_created_time != last_fetch_time:
-                next_run[service][event_type] = {'last_fetch_time': latest_created_time, 'last_fetch_ids': new_latest_ids}
+                next_run[service][event_type] = {'last_fetch_time': latest_created_time,
+                                                 'last_fetch_ids': new_latest_ids}
             else:
-                next_run[service][event_type] = {'last_fetch_time': last_fetch_time, 'last_fetch_ids': last_fetch_ids + new_latest_ids}
+                next_run[service][event_type] = {'last_fetch_time': last_fetch_time,
+                                                 'last_fetch_ids': last_fetch_ids + new_latest_ids}
 
-    return next_run, incidents, quota
+    return next_run, incidents
 
 
 def security_events_list_command(client, args):
-    service = args.get('service')
-    event_type = args.get('event_type')
-    start = parse_date_to_isoformat(args.get('start'), 'start')
-    end = parse_date_to_isoformat(args.get('end'), 'end')
-    limit = args.get('limit')
     next_link = args.get('next_link')
-
     if next_link:
         result = client.next_link(next_link)
+
     else:
-        if start and not end:
-            end = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        service = args.get('service')
+        event_type = args.get('event_type')
+        limit = args.get('limit')
+        start = ''
+        end = ''
+        if args.get('start'):
+            start = parse_date_range(args.get('start'), DATE_FORMAT)[0]
+        if args.get('end'):
+            end = parse_date_range(args.get('end'), DATE_FORMAT)[0]
+        elif start:
+            end = parse_date_range('1 day', DATE_FORMAT)[1]
+        print(start, end)
+
         result = client.security_events_list(service, event_type, start, end, limit)
 
     security_events = result.get('security_events')
@@ -373,45 +361,37 @@ def security_events_list_command(client, args):
             message_list.append(message)
         headers = ['log_item_id', 'detection_time', 'security_risk_name', 'affected_user', 'action', 'action_result']
         readable_output = tableToMarkdown(f'{event_type} events in {service}', message_list, headers=headers)
+
+        entry = CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='TrendMicroCAS.Events',
+            outputs_key_field='log_item_id',
+            outputs=security_events,
+            raw_response=result
+        )
         if result.get('next_link'):
             meta_data = {
                 'next_link': result.get('next_link'),
                 'traceId': result.get('traceId')
             }
-            meta_data_readable_output = tableToMarkdown('Events MetaData.', meta_data)
-            return [
-                CommandResults(
-                    readable_output=readable_output,
-                    outputs_prefix='TrendMicroCAS.Events',
-                    outputs_key_field='log_item_id',
-                    outputs=security_events,
-                    raw_response=result
-                ),
-                CommandResults(
-                    readable_output=meta_data_readable_output,
-                    outputs_prefix='TrendMicroCAS.EventsMetaData',
-                    outputs_key_field='traceId',
-                    outputs=meta_data,
-                    raw_response=result
-                ),
-            ]
+            return [entry,
+                    CommandResults(
+                        readable_output=tableToMarkdown('Events MetaData.', meta_data),
+                        outputs_prefix='TrendMicroCAS.EventsMetaData',
+                        outputs_key_field='traceId',
+                        outputs=meta_data,
+                        raw_response=result)]
         else:
-            return [
-                CommandResults(
-                    readable_output=readable_output,
-                    outputs_prefix='TrendMicroCAS.Events',
-                    outputs_key_field='log_item_id',
-                    outputs=security_events,
-                    raw_response=result
-                )
-            ]
+            return entry
 
 
 def email_sweep_command(client, args):
     mailbox = args.get('mailbox')
     lastndays = args.get('lastndays')
-    start = parse_date_to_isoformat(args.get('start'), 'start')
-    end = parse_date_to_isoformat(args.get('end'), 'end')
+    if args.get('start'):
+        start = parse_date_range(args.get('start'), DATE_FORMAT)[0]
+    if args.get('end'):
+        end = parse_date_range(args.get('end'), DATE_FORMAT)[0]
     subject = args.get('subject')
     file_sha1 = args.get('file_sha1')
     file_name = args.get('file_name')
@@ -495,8 +475,10 @@ def email_take_action_command(client, args):
 
 def user_action_result_command(client, args):
     batch_id = args.get('batch_id')
-    start = parse_date_to_isoformat(args.get('start'), 'start')
-    end = parse_date_to_isoformat(args.get('end'), 'end')
+    if args.get('start'):
+        start = parse_date_range(args.get('start'), DATE_FORMAT)[0]
+    if args.get('end'):
+        end = parse_date_range(args.get('end'), DATE_FORMAT)[0]
     limit = args.get('limit')
     result = client.action_result_query(batch_id, start, end, limit, 'accounts')
 
@@ -514,8 +496,10 @@ def user_action_result_command(client, args):
 
 def email_action_result_command(client, args):
     batch_id = args.get('batch_id')
-    start = parse_date_to_isoformat(args.get('start'), 'start')
-    end = parse_date_to_isoformat(args.get('end'), 'end')
+    if args.get('start'):
+        start = parse_date_range(args.get('start'), DATE_FORMAT)[0]
+    if args.get('end'):
+        end = parse_date_range(args.get('end'), DATE_FORMAT)[0]
     limit = args.get('limit')
     result = client.action_result_query(batch_id, start, end, limit, 'mails')
 
@@ -570,7 +554,7 @@ def blocked_lists_update_command(client, args):
 def fetch_incidents_command(client, params, is_test_module=False):
     list_services = params.get('service')
     list_event_type = params.get('event_type')
-    first_fetch_time = parse_date_to_isoformat(params.get('first_fetch', '3 days'), 'first_fetch_time')
+    first_fetch_time = parse_date_range(params.get('first_fetch', '3 days'), DATE_FORMAT)[0]
     max_results = int(params.get('max_fetch', 50))
     if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
         max_results = MAX_INCIDENTS_TO_FETCH
@@ -578,22 +562,17 @@ def fetch_incidents_command(client, params, is_test_module=False):
     last_run = demisto.getLastRun()  # getLastRun() gets the last run dict
     if not last_run:
         last_run = creates_empty_dictionary_of_last_run(list_services, list_event_type)
-
-    next_run, incidents, quota = fetch_incidents(
+    next_run, incidents = fetch_incidents(
         client=client,
         max_results=max_results,
         last_run=last_run,  # getLastRun() gets the last run dict
         list_services=list_services,
         list_event_type=list_event_type,
-        first_fetch_time=first_fetch_time
+        first_fetch_time=first_fetch_time,
+        is_test_module=is_test_module
     )
     if is_test_module:
-        if not quota:
-            return 'ok'
-        else:
-            return_error('The integration was successfully defined. but too many services and event_types Were'
-                         ' selected, which creates an "quota error" on fetch_incidents')
-
+        return
     demisto.setLastRun(next_run)
     demisto.incidents(incidents)
 
@@ -618,7 +597,6 @@ def main() -> None:
     base_url = URLS.get(params.get("serviceURL"))
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    is_fetch = params.get('isFetch')
 
     demisto.debug(f'Command being called is {demisto.command()}')
 
@@ -638,8 +616,10 @@ def main() -> None:
             return_results(email_sweep_command(client, demisto.args()))
         elif demisto.command() == 'trendmicro-cas-security-events-list':
             results = security_events_list_command(client, demisto.args())
-            for result in results:
-                return_results(result)
+            if isinstance(results, List):
+                [return_results(result) for result in results]
+            else:
+                return_results(results)
         elif demisto.command() == 'trendmicro-cas-user-take-action':
             return_results(user_take_action_command(client, demisto.args()))
         elif demisto.command() == 'trendmicro-cas-email-take-action':

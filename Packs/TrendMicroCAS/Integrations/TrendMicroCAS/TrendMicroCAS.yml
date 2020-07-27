@@ -27,7 +27,6 @@ configuration:
 - display: Service event to fetch
   name: service
   options:
-  - all
   - exchange
   - sharepoint
   - onedrive
@@ -43,7 +42,6 @@ configuration:
   hidden: false
   name: event_type
   options:
-  - all
   - securityrisk
   - virtualanalyzer
   - ransomware
