@@ -1,0 +1,54 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 6dc95f5f-f2c9-4013-8469-0c38121e9915
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: hjkhjk7777
+inputs: []
+name: hjkhjk7777
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ff9c147c-350b-410b-827c-363bcce69f27
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: ff9c147c-350b-410b-827c-363bcce69f27
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 65,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
