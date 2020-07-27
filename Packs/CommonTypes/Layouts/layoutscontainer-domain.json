@@ -523,7 +523,7 @@
 						"minH": 1,
 						"minW": 1,
 						"moved": false,
-						"name": "Tags and Sharing",
+						"name": "Tags and TLP",
 						"static": false,
 						"w": 1,
 						"x": 2,
@@ -725,7 +725,7 @@
 						"type": "reputationSources",
 						"w": 1,
 						"x": 0,
-						"y": 2
+						"y": 1
 					},
 					{
 						"displayType": "ROW",
@@ -760,7 +760,7 @@
 						"static": false,
 						"w": 1,
 						"x": 0,
-						"y": 1
+						"y": 3
 					},
 					{
 						"h": 2,
