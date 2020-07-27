@@ -1,0 +1,16 @@
+{
+    "name": "GitHubITAdmin",
+    "description": "GitHub Integration consists of a set of API endpoints that allow customers to automate provisioning of GitHub organization membership.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Shweta",
+    "url": "https://github.com/sonaaru/content.git",
+    "email": "shweta14.jain@nttdata.com",
+    "created": "2020-07-23T12:24:35Z",
+    "categories": [
+        "IT Services"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
