@@ -1,5 +1,5 @@
 GitHub Integration consists of a set of API endpoints that allow customers to automate provisioning of GitHub organization membership.
-This integration was integrated and tested with version xx of GitHub IT Admin
+This integration was integrated and tested with version v2 of GitHub IT Admin
 ## Configure GitHub IT Admin on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
