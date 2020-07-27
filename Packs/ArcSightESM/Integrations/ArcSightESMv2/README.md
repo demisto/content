@@ -49,7 +49,7 @@ Demisto is designed for an automatic response, so make sure to define conditions
 3. Click Add instance to create and configure a new integration instance.
     - **Name**: a textual name for the integration instance.
     - **Server URL (e.g. https://192.168.0.1:8443)**: The hostname or IP address of the appliance being used, for example, `https://your_arcsight_esm:port`.
-    - **Credentials and Password**: Use the username and password used to access the ArcSight ESM account.
+    - **Credentials and Password**: Use the username and password used to access the ArcSight ESM account. By default a user with the admin role will have all the necessary permissions to run all the integration commands. For a more granular authorization create custom roles review ESM documentation.
     - **Fetch Events as incidents via Query Viewer ID**: Must have Start Time and Event ID fields.
     - **Fetch Cases as incidents via Query Viewer ID**: Must have Create Time and ID fields.
     - **The maximum number of unique IDs expected to be fetched**: If unique IDs exceeds the maximum, duplicates will be fetched.
