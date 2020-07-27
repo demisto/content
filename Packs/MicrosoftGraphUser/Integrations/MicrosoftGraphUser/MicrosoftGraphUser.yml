@@ -396,7 +396,7 @@ script:
       description: A token to pass to the next list command to retrieve additional results.
       type: String
   - arguments:
-    - default: false      
+    - default: false
       description: The User ID or userPrincipalName of the user for which to retrieve direct reports.
       isArray: false
       name: user
