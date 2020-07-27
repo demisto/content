@@ -172,27 +172,27 @@ def search_records_soap_request(token, app_id, display_fields, field_id, field_n
 
 SOAP_COMMANDS = {'archer-get-reports':
                  {'soapAction': 'http://archer-tech.com/webservices/GetReports',
-                  'urlSuffix': 'rsaarcher/ws/search.asmx',
+                  'urlSuffix': 'ws/search.asmx',
                   'soapBody': get_reports_soap_request,
                   'outputPath': 'Envelope.Body.GetReportsResponse.GetReportsResult'},
                  'archer-execute-statistic-search-by-report':
                      {'soapAction': 'http://archer-tech.com/webservices/ExecuteStatisticSearchByReport',
-                      'urlSuffix': 'rsaarcher/ws/search.asmx',
+                      'urlSuffix': 'ws/search.asmx',
                       'soapBody': get_statistic_search_report_soap_request,
                       'outputPath': 'Envelope.Body.ExecuteStatisticSearchByReportResponse.ExecuteStatisticSearchByReportResult'},
                  'archer-get-search-options-by-guid':
                      {'soapAction': 'http://archer-tech.com/webservices/GetSearchOptionsByGuid',
-                      'urlSuffix': 'rsaarcher/ws/search.asmx',
+                      'urlSuffix': 'ws/search.asmx',
                       'soapBody': get_search_options_soap_request,
                       'outputPath': 'Envelope.Body.GetSearchOptionsByGuidResponse.GetSearchOptionsByGuidResult'},
                  'archer-search-records':
                      {'soapAction': 'http://archer-tech.com/webservices/ExecuteSearch',
-                      'urlSuffix': 'rsaarcher/ws/search.asmx',
+                      'urlSuffix': 'ws/search.asmx',
                       'soapBody': search_records_soap_request,
                       'outputPath': 'Envelope.Body.ExecuteSearchResponse.ExecuteSearchResult'},
                  'archer-search-records-by-report':
                      {'soapAction': 'http://archer-tech.com/webservices/SearchRecordsByReport',
-                      'urlSuffix': 'rsaarcher/ws/search.asmx',
+                      'urlSuffix': 'ws/search.asmx',
                       'soapBody': search_records_by_report_soap_request,
                       'outputPath': 'Envelope.Body.SearchRecordsByReportResponse.SearchRecordsByReportResult'}
                  }
@@ -228,7 +228,7 @@ class Client(BaseClient):
             'Password': self.password
         }
 
-        res = self._http_request('POST', '/rsaarcher/api/core/security/login', json_data=body)
+        res = self._http_request('POST', '/api/core/security/login', json_data=body)
 
         session = res.get('RequestedObject').get('SessionToken')
         REQUEST_HEADERS['Authorization'] = f'Archer session-id={session}'
@@ -238,7 +238,7 @@ class Client(BaseClient):
         headers = {'SOAPAction': 'http://archer-tech.com/webservices/CreateUserSessionFromInstance',
                    'Content-Type': 'text/xml; charset=utf-8'}
         res = self._http_request('POST'
-                                 '', 'rsaarcher/ws/general.asmx', headers=headers, data=body, resp_type='content')
+                                 '', 'ws/general.asmx', headers=headers, data=body, resp_type='content')
 
         return extract_from_xml(res, 'Envelope.Body.CreateUserSessionFromInstanceResponse.CreateUserSessionFromInstanceResult')
 
@@ -246,7 +246,7 @@ class Client(BaseClient):
         body = terminate_session_soap_request(token)
         headers = {'SOAPAction': 'http://archer-tech.com/webservices/TerminateSession',
                    'Content-Type': 'text/xml; charset=utf-8'}
-        self._http_request('POST', 'rsaarcher/ws/general.asmx', headers=headers, data=body, resp_type='content')
+        self._http_request('POST', 'ws/general.asmx', headers=headers, data=body, resp_type='content')
 
     def do_soap_request(self, command, **kwargs):
         req_data = SOAP_COMMANDS[command]
@@ -263,13 +263,13 @@ class Client(BaseClient):
             return cache[app_id]
 
         levels = []
-        all_levels_res = self.do_request('GET', f'rsaarcher/api/core/system/level/module/{app_id}')
+        all_levels_res = self.do_request('GET', f'/api/core/system/level/module/{app_id}')
         for level in all_levels_res:
             if level.get('RequestedObject') and level.get('IsSuccessful'):
                 level_id = level.get('RequestedObject').get('Id')
 
                 fields = {}
-                level_res = self.do_request('GET', f'rsaarcher/api/core/system/fielddefinition/level/{level_id}')
+                level_res = self.do_request('GET', f'/api/core/system/fielddefinition/level/{level_id}')
                 for field in level_res:
                     if field.get('RequestedObject') and field.get('IsSuccessful'):
                         field_item = field.get('RequestedObject')
@@ -289,7 +289,7 @@ class Client(BaseClient):
         return []
 
     def get_record(self, app_id, record_id):
-        res = self.do_request('GET', f'rsaarcher/api/core/content/{record_id}')
+        res = self.do_request('GET', f'/api/core/content/{record_id}')
 
         if not isinstance(res, dict):
             res = res.json()
@@ -429,7 +429,7 @@ class Client(BaseClient):
         if cache['fieldValueList'].get(field_id):
             return cache.get('fieldValueList').get(field_id)
 
-        res = self.do_request('GET', f'rsaarcher/api/core/system/fielddefinition/{field_id}')
+        res = self.do_request('GET', f'/api/core/system/fielddefinition/{field_id}')
 
         errors = get_errors_from_res(res)
         if errors:
@@ -437,7 +437,7 @@ class Client(BaseClient):
 
         if res.get('RequestedObject') and res.get('IsSuccessful'):
             list_id = res['RequestedObject']['RelatedValuesListId']
-            values_list_res = self.do_request('GET', f'rsaarcher/api/core/system/valueslistvalue/valueslist/{list_id}')
+            values_list_res = self.do_request('GET', f'/api/core/system/valueslistvalue/valueslist/{list_id}')
             if values_list_res.get('RequestedObject') and values_list_res.get('IsSuccessful'):
                 values_list = []
                 for value in values_list_res['RequestedObject'].get('Children'):
@@ -583,16 +583,16 @@ def test_module(client: Client, params) -> str:
 
         return 'ok'
 
-    return 'ok' if client.do_request('GET', 'rsaarcher/api/core/system/application') else 'Connection failed.'
+    return 'ok' if client.do_request('GET', '/api/core/system/application') else 'Connection failed.'
 
 
 def search_applications_command(client: Client, args: Dict[str, str]):
     app_id = args.get('applicationId')
     limit = args.get('limit')
-    endpoint_url = 'rsaarcher/api/core/system/application/'
+    endpoint_url = '/api/core/system/application/'
 
     if app_id:
-        endpoint_url = f'rsaarcher/api/core/system/application/{app_id}'
+        endpoint_url = f'/api/core/system/application/{app_id}'
         res = client.do_request('GET', endpoint_url)
     elif limit:
         res = client.do_request('GET', endpoint_url, params={"$top": limit})
@@ -624,7 +624,7 @@ def search_applications_command(client: Client, args: Dict[str, str]):
 def get_application_fields_command(client: Client, args: Dict[str, str]):
     app_id = args.get('applicationId')
 
-    res = client.do_request('GET', f'rsaarcher/api/core/system/fielddefinition/application/{app_id}')
+    res = client.do_request('GET', f'/api/core/system/fielddefinition/application/{app_id}')
 
     fields = []
     for field in res:
@@ -648,7 +648,7 @@ def get_application_fields_command(client: Client, args: Dict[str, str]):
 def get_field_command(client: Client, args: Dict[str, str]):
     field_id = args.get('fieldID')
 
-    res = client.do_request('GET', f'rsaarcher/api/core/system/fielddefinition/{field_id}')
+    res = client.do_request('GET', f'/api/core/system/fielddefinition/{field_id}')
 
     errors = get_errors_from_res(res)
     if errors:
@@ -675,7 +675,7 @@ def get_field_command(client: Client, args: Dict[str, str]):
 def get_mapping_by_level_command(client: Client, args: Dict[str, str]):
     level = args.get('level')
 
-    res = client.do_request('GET', f'rsaarcher/api/core/system/fielddefinition/level/{level}')
+    res = client.do_request('GET', f'/api/core/system/fielddefinition/level/{level}')
 
     items = []
     for item in res:
@@ -725,7 +725,7 @@ def create_record_command(client: Client, args: Dict[str, str]):
 
     body = {'Content': {'LevelId': level_data['level'], 'FieldContents': field_contents}}
 
-    res = client.do_request('Post', 'rsaarcher/api/core/content', data=body)
+    res = client.do_request('Post', '/api/core/content', data=body)
 
     errors = get_errors_from_res(res)
     if errors:
@@ -738,7 +738,7 @@ def create_record_command(client: Client, args: Dict[str, str]):
 
 def delete_record_command(client: Client, args: Dict[str, str]):
     record_id = args.get('contentId')
-    res = client.do_request('Delete', f'rsaarcher/api/core/content/{record_id}')
+    res = client.do_request('Delete', f'/api/core/content/{record_id}')
 
     errors = get_errors_from_res(res)
     if errors:
@@ -754,7 +754,7 @@ def update_record_command(client: Client, args: Dict[str, str]):
     field_contents = generate_field_contents(client, fields_values, level_data['mapping'])
 
     body = {'Content': {'Id': record_id, 'LevelId': level_data['level'], 'FieldContents': field_contents}}
-    res = client.do_request('Put', 'rsaarcher/api/core/content', data=body)
+    res = client.do_request('Put', '/api/core/content', data=body)
 
     errors = get_errors_from_res(res)
     if errors:
@@ -818,7 +818,7 @@ def upload_file_command(client: Client, args: Dict[str, str]):
     file_name, file_bytes = get_file(entry_id)
     body = {'AttachmentName': file_name, 'AttachmentBytes': file_bytes}
 
-    res = client.do_request('POST', 'rsaarcher/api/core/content/attachment', data=body)
+    res = client.do_request('POST', '/api/core/content/attachment', data=body)
 
     errors = get_errors_from_res(res)
     if errors:
@@ -833,7 +833,7 @@ def upload_file_command(client: Client, args: Dict[str, str]):
 
 def download_file_command(client: Client, args: Dict[str, str]):
     attachment_id = args.get('fileId')
-    res = client.do_request('GET', f'rsaarcher/api/core/content/attachment/{attachment_id}')
+    res = client.do_request('GET', f'/api/core/content/attachment/{attachment_id}')
 
     errors = get_errors_from_res(res)
     if errors:
@@ -850,9 +850,9 @@ def download_file_command(client: Client, args: Dict[str, str]):
 def list_users_command(client: Client, args: Dict[str, str]):
     user_id = args.get('userId')
     if user_id:
-        res = client.do_request('GET', f'rsaarcher/api/core/system/user/{user_id}')
+        res = client.do_request('GET', f'/api/core/system/user/{user_id}')
     else:
-        res = client.do_request('GET', 'rsaarcher/api/core/system/user')
+        res = client.do_request('GET', '/api/core/system/user')
 
     errors = get_errors_from_res(res)
     if errors:
@@ -942,7 +942,7 @@ def search_records_by_report_command(client: Client, args: Dict[str, str]):
     if raw_records.get('Records') and raw_records['Records'].get('Record'):
         level_id = raw_records['Records']['Record'][0]['@levelId']
 
-        level_res = client.do_request('GET', f'rsaarcher/api/core/system/fielddefinition/level/{level_id}')
+        level_res = client.do_request('GET', f'/api/core/system/fielddefinition/level/{level_id}')
         fields = {}
         for field in level_res:
             if field.get('RequestedObject') and field.get('IsSuccessful'):
