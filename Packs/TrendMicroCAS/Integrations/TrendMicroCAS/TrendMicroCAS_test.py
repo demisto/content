@@ -1,6 +1,6 @@
 import pytest
 import datetime
-from TrendMicroCAS import Client, security_events_list_command, parse_date_to_isoformat, email_sweep_command,\
+from TrendMicroCAS import Client, security_events_list_command, email_sweep_command,\
     user_take_action_command, email_take_action_command, user_action_result_command, blocked_lists_get_command,\
     blocked_lists_update_command
 import test_data.commands_raw_response as data
@@ -31,10 +31,6 @@ def test_security_events_list_command(mocker, args):
         - validate the context data, the key, and the prefix.
     """
     mocker.patch.object(client, '_http_request', return_value=data.SECURITY_EVENTS_LIST_RESULT)
-    args = {
-        'service': 'onedrive',
-        'event_type': 'securityrisk'
-    }
     results: CommandResults = security_events_list_command(client, args)
     assert results.outputs == data.SECURITY_EVENTS_LIST_OUTPUT['security_risk']
     assert results.outputs_key_field == 'log_item_id'

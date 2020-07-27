@@ -283,7 +283,7 @@ def fetch_incidents(client: Client, max_results: int, last_run, list_services: L
             result = {}
             try:
                 """Sends a request and calculates the limit according to
-                 the ״max_results״ less the "incident" already collected 
+                 the ״max_results״ minus the "incident" already collected 
                  plus the events that will return duplicate "(len(last_fetch_ids))"""
                 result = client.security_events_list(
                     service=service,
@@ -298,7 +298,7 @@ def fetch_incidents(client: Client, max_results: int, last_run, list_services: L
                     if is_test_module:
                         return_error(
                             'The integration was successfully configured.'
-                            ' but too many services and event_types Were selected,'
+                            ' However, too many services and event_types Were selected,'
                             ' this exceeds you user license rate limit')
                     demisto.info('quota_error - maximum allowed requests exceeded - All incidents collected were saved')
                     break
@@ -346,13 +346,12 @@ def security_events_list_command(client, args):
             end = parse_date_range(args.get('end'), DATE_FORMAT)[0]
         elif start:
             end = parse_date_range('1 day', DATE_FORMAT)[1]
-        print(start, end)
 
         result = client.security_events_list(service, event_type, start, end, limit)
 
     security_events = result.get('security_events')
     if not security_events:
-        return "no events"
+        return ["no events"]
     else:
         message_list = []
         for event in security_events:
@@ -362,27 +361,27 @@ def security_events_list_command(client, args):
         headers = ['log_item_id', 'detection_time', 'security_risk_name', 'affected_user', 'action', 'action_result']
         readable_output = tableToMarkdown(f'{event_type} events in {service}', message_list, headers=headers)
 
-        entry = CommandResults(
+        entries = []
+        entries.append(CommandResults(
             readable_output=readable_output,
             outputs_prefix='TrendMicroCAS.Events',
             outputs_key_field='log_item_id',
             outputs=security_events,
             raw_response=result
-        )
+        ))
         if result.get('next_link'):
             meta_data = {
                 'next_link': result.get('next_link'),
                 'traceId': result.get('traceId')
             }
-            return [entry,
-                    CommandResults(
-                        readable_output=tableToMarkdown('Events MetaData.', meta_data),
-                        outputs_prefix='TrendMicroCAS.EventsMetaData',
-                        outputs_key_field='traceId',
-                        outputs=meta_data,
-                        raw_response=result)]
-        else:
-            return entry
+            entries.append(CommandResults(
+                                readable_output=tableToMarkdown('Events MetaData.', meta_data),
+                                outputs_prefix='TrendMicroCAS.EventsMetaData',
+                                outputs_key_field='traceId',
+                                outputs=meta_data,
+                                raw_response=result))
+
+        return entries
 
 
 def email_sweep_command(client, args):
@@ -615,11 +614,7 @@ def main() -> None:
         elif demisto.command() == 'trendmicro-cas-email-sweep':
             return_results(email_sweep_command(client, demisto.args()))
         elif demisto.command() == 'trendmicro-cas-security-events-list':
-            results = security_events_list_command(client, demisto.args())
-            if isinstance(results, List):
-                [return_results(result) for result in results]
-            else:
-                return_results(results)
+            [return_results(result) for result in security_events_list_command(client, demisto.args())]
         elif demisto.command() == 'trendmicro-cas-user-take-action':
             return_results(user_take_action_command(client, demisto.args()))
         elif demisto.command() == 'trendmicro-cas-email-take-action':
