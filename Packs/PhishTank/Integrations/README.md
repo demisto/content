@@ -49,7 +49,7 @@ Check URL Reputation
 
 #### Human Readable Output
 ### PhishTank Database - URL Query
-#### Found matches for URL http://komonghjpl[.]000webhostapp.com
+#### Found matches for URL http://komonghjpl[.]000webhostapp[.]com
 |Key|Value|
 |---|---|
 online|yes|
