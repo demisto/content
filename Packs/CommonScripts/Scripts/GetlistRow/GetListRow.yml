@@ -1,0 +1,63 @@
+args:
+- default: false
+  description: Value to search for. If you supply a value, you need to supply the "header" argument also.
+  isArray: false
+  name: value
+  required: false
+  secret: false
+- default: false
+  description: Header to filter lines by. If you supply a header, you need to supply the "value" argument.
+  isArray: false
+  name: header
+  required: false
+  secret: false
+- default: false
+  description: The list name in which to search.
+  isArray: false
+  name: list_name
+  required: true
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'False'
+  description: If "True", parses the entire list into the context. Can be "True" or "False". Default is "False".
+  isArray: false
+  name: parse_all
+  predefined:
+  - 'True'
+  - 'False'
+  required: false
+  secret: false
+comment: Parses a list by header and value.
+commonfields:
+  id: GetListRow
+  version: -1
+enabled: true
+name: GetListRow
+outputs:
+- contextPath: GetListRow.Header
+  description: Header in which the search was performed.
+  type: String
+- contextPath: GetListRow.Value
+  description: Value to search for.
+  type: String
+- contextPath: GetListRow.ListName
+  description: The name of the list that was searched..
+  type: String
+- contextPath: GetListRow.ParseAll
+  description: If "True", the entire list was parsed into the context.
+  type: String
+- contextPath: GetListRow.Results
+  description: All parse results of the list.
+  type: UnKnown
+script: '-'
+subtype: python3
+system: false
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.8.3.9324
+runas: DBotWeakRole
+runonce: false
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0
