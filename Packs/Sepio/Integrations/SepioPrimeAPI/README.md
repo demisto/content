@@ -458,11 +458,6 @@ There is no context output for this command.
 #### Command Example
 ```!sepio-set-agent-mode mode=Free uuid=BFEBFBFF000806EAL1HF8C4003Z```
 
-#### Context Example
-```
-{}
-```
-
 #### Human Readable Output
 
 >Agent ['BFEBFBFF000806EAL1HF8C4003Z'] mode has been changed successfully to 'Free'
@@ -493,11 +488,6 @@ There is no context output for this command.
 
 #### Command Example
 ```!sepio-set-peripherals-mode mode=Approve uuid=BFEBFBFF000806EAL1HF8C4003Z vid=046D pid=C31C```
-
-#### Context Example
-```
-{}
-```
 
 #### Human Readable Output
 

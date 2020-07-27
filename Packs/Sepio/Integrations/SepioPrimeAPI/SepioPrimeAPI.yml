@@ -4,7 +4,7 @@ commonfields:
 name: Sepio
 display: Sepio
 category: Network Security
-description: Integrate with Sepio Prime
+description: Get Agent, Switches and Events from your Sepio Prime
 configuration:
 - display: Server URL (e.g. https://sepio-prime.com)
   name: url
@@ -13,7 +13,6 @@ configuration:
   required: true
 - display: Username
   name: credentials
-  defaultvalue: ""
   type: 9
   required: true
 - display: Fetch incidents
@@ -26,12 +25,10 @@ configuration:
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
   type: 8
   required: false
 - display: Initial time to start fetching incidents. In days.
@@ -39,7 +36,8 @@ configuration:
   defaultvalue: 1 Day
   type: 0
   required: true
-- display: "Alert severity to retrieve. Values are: Warning, Error, Critical"
+- display: "Alert minimum severity from which to retrieve. Values are: Warning, Error,\
+    \ Critical"
   name: min_severity
   defaultvalue: Error
   type: 15
@@ -56,7 +54,7 @@ configuration:
   options:
   - USB
   - Network
-- display: Maximum number of alerts to fetch at a time
+- display: "Maximum number of alerts to fetch at a time. Maximum: 50"
   name: max_alerts
   defaultvalue: "10"
   type: 0
@@ -339,9 +337,11 @@ script:
   - name: sepio-query-system-events
     arguments:
     - name: start_datetime
-      description: Filter results based on event timestamp.
+      description: Filter results based on event timestamp in ISO 8601 format, for
+        example 2020-03-01T18:00:00Z.
     - name: end_datetime
-      description: Filter results based on event timestamp.
+      description: Filter results based on event timestamp in ISO 8601 format, for
+        example 2020-04-01T18:00:00Z.
     - name: min_severity
       auto: PREDEFINED
       predefined:

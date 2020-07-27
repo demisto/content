@@ -17,5 +17,8 @@
     "deprecated": false,
     "useCases": [],
     "keywords": [],
-    "dependencies": {}
+    "dependencies": {},
+    "githubUser": [
+        "SepioSystems"
+    ]
 }
