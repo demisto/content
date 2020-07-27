@@ -593,7 +593,7 @@ script:
           predefined:
             - no
             - yes
-          description: "Whether risk scores for other IP addresses within the same CIDR should be fetched (only for IP intelligence). Can be "yes" or "no".'
+          description: 'Whether risk scores for other IP addresses within the same CIDR should be fetched (only for IP intelligence). Can be "yes" or "no".'
           required: true
       outputs:
         - contextPath: DBotScore.Indicator
