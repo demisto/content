@@ -35,14 +35,3 @@ The resulting output would be "2". The mapping looks up the value in the `input_
 
 The resulting output would be `{"key1": "value1", "key2": "testvalue2changed"}`. Because the `input_values` can be
 parsed as a JSON dictionary, it will match the key: value pair, but only alter the value in the pair.
-
-### Example use 3
-
-`value = 3` *(not specified by the user and is an integer)*
-
-`input_values = "1,2,3,4"`
-
-`mapped_values = "4,3,2,1"`
-
-The resulting output would be "2" (string). The mapping looks up the value in the `input_values` and returns the value in
- `mapped_values` at the same index.
