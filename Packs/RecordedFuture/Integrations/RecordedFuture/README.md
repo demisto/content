@@ -387,7 +387,7 @@ Get a quick indicator of the risk associated with a CVE.
 >### Risk Rules Triggered
 >|Criticality|Rule|Evidence|Timestamp|
 >|---|---|---|---|
->| Very Malicious | Exploited in the Wild by Recently Active Malware | 1 sighting on 1 source: Recorded Future Malware Hunting. Activity seen on 1 out of the last 28 days with 24 all-time daily sightings. Exploited in the wild by 1 malware family: <e id=K4T4te>DroidRt</e>. Last observed on May 23, 2020. Sample hash: <e id=hash:ffd0d7e6ba12ed20bc17f9ea1a1323a04cbf2e03bcaec0fa9ea574d9a7fb4881>ffd0d7e6ba12ed20bc17f9ea1a1323a04cbf2e03bcaec0fa9ea574d9a7fb4881</e>. | 2020-05-23 00:00:00 |
+>| Very Malicious | Exploited in the Wild by Recently Active Malware | 1 sighting on 1 source: Recorded Future Malware Hunting. Activity seen on 1 out of the last 28 days with 24 all-time daily sightings. Exploited in the wild by 1 malware family: DroidRt. Last observed on May 23, 2020. Sample hash: ffd0d7e6ba12ed20bc17f9ea1a1323a04cbf2e03bcaec0fa9ea574d9a7fb4881. | 2020-05-23 00:00:00 |
 
 
 ### url
