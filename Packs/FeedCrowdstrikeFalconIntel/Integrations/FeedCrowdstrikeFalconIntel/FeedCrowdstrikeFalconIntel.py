@@ -19,7 +19,7 @@ class Client(BaseClient):
         proxy(str): Use system proxy.
     """
 
-    def __init__(self, api_key, insecure, base_url):
+    def __init__(self, client_id, client_secret, insecure, base_url):
         super().__init__(base_url)
         self.api_key = api_key
         self.verify = not insecure
@@ -225,8 +225,10 @@ def fetch_indicators_command(client: Client, feed_tags: List, limit=None, offset
 def main():
     params = demisto.params()
     feed_tags = argToList(params.get('feedTags'))
-    client = Client(api_key=params.get('api_key'),
-                    insecure=params.get('insecure'))
+    client = Client(client_id=params.get('client_id'),
+                    client_secret=params.get('client_secret'),
+                    insecure=params.get('insecure'),
+                    base_url=params.get('url'))
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
