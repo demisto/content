@@ -1,3 +1,5 @@
+Note: This is a beta pack, which lets you implement and test pre-release software. Since the pack is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.
+
 The last pandemic taught us that learning to work remotely and keeping close contact with employees is utmost important in order to maintain smooth operation. Situations where employees have to work from home can happen at any time for various reasons.
 
 This pack provides the necessary configurations and checks for managing a crisis event such as communicating with employees working remotely and engaging on work or health issues, and takes the appropriate steps to ensure employee safety and wellbeing.

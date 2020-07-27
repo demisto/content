@@ -1,6 +1,6 @@
 {
     "name": "Common Types",
-    "description": "Common types pack.",
+    "description": "This Content Pack will get you up and running in no-time and provide you with the most commonly used incident & indicator fields and types.",
     "support": "xsoar",
     "currentVersion": "1.7.0",
     "author": "Cortex XSOAR",
