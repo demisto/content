@@ -742,7 +742,6 @@
         },
         {
             "playbookID": "Palo Alto Networks - Malware Remediation Test",
-            "integrations": "Palo Alto Minemeld",
             "fromversion": "4.5.0"
         },
         {
@@ -1347,7 +1346,8 @@
         {
             "integrations": "carbonblackliveresponse",
             "playbookID": "Carbon Black Live Response Test",
-            "nightly": true
+            "nightly": true,
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "urlscan.io",
@@ -2860,7 +2860,8 @@
             "fromversion": "5.0.0"
         },
         {
-            "playbookID": "IfThenElse-Test"
+            "playbookID": "IfThenElse-Test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
