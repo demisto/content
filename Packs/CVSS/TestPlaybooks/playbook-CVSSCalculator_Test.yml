@@ -15,6 +15,7 @@ tasks:
       version: -1
       name: ""
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#none#':
@@ -120,6 +121,7 @@ tasks:
       name: Complete
       type: title
       iscommand: false
+      description: ""
       brand: ""
     separatecontext: false
     view: |-
