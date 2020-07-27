@@ -31,25 +31,26 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: cafbaec2-922f-412a-807c-981143882d27
+    taskid: 996d8dac-c565-4f05-8d8f-a0f6480fe5fc
     type: regular
     task:
-      id: cafbaec2-922f-412a-807c-981143882d27
+      id: 996d8dac-c565-4f05-8d8f-a0f6480fe5fc
       version: -1
       name: logzio-search-logs
-      description: Returns logs from your Logz.io Operations account by Lucene query
-      script: Logz.io|||logzio-search-logs
+      description: Runs an Apache Lucene query on your Logz.io Operations account
+      script: '|||logzio-search-logs'
       type: regular
       iscommand: true
-      brand: Logz.io
+      brand: ""
     nexttasks:
       '#none#':
       - "6"
     scriptarguments:
       from_time: {}
       query:
-        simple: '"mcafee_epo" OR "mcafee"'
+        simple: '"sentinel_one" OR "sentinel"'
       size: {}
+      timeout: {}
       to_time: {}
     separatecontext: false
     view: |-
@@ -68,10 +69,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: fcb90b5a-cb53-4e80-8162-a29eca9fc6a1
+    taskid: 36f6593e-0004-47d7-85cb-32b141e5376c
     type: regular
     task:
-      id: fcb90b5a-cb53-4e80-8162-a29eca9fc6a1
+      id: 36f6593e-0004-47d7-85cb-32b141e5376c
       version: -1
       name: logzio-get-logs-by-rule-id
       description: Fetches the logs that triggered a security event in Logz.io Cloud
@@ -236,10 +237,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 84eec02d-a4e7-4dee-8d72-90e81a21bbc2
+    taskid: 76d46f56-e3e4-4582-8c84-9de88363f91b
     type: regular
     task:
-      id: 84eec02d-a4e7-4dee-8d72-90e81a21bbc2
+      id: 76d46f56-e3e4-4582-8c84-9de88363f91b
       version: -1
       name: FetchFromInstance
       description: Execute FetchIncident for a given instance
@@ -272,10 +273,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 01d422eb-471d-4421-85af-2117524511c2
+    taskid: f0657cc4-74ed-4090-8ffc-c159b26aa5ff
     type: condition
     task:
-      id: 01d422eb-471d-4421-85af-2117524511c2
+      id: f0657cc4-74ed-4090-8ffc-c159b26aa5ff
       version: -1
       name: Verify Outputs
       description: Prints text to war room (Markdown supported)
