@@ -41,6 +41,12 @@ The resultant query will be \(ip.addr == 192.168.1.1 or ip.addr ==  192.168.1.2\
 | ProtocolToSearch | The protocols to search for within the PCAP file. Can be a single protocol or a comma delimited list of protocols. The protocol names should be the same as searching in Wireshark. For example smb2, dns etc.  All protocols will be treated with the OR operator. |  | Optional |
 | AdvancedSearchFilter | Filter to apply on PCAP. Wireshark syntax as can be found here: https://www.wireshark.org/docs/man\-pages/wireshark\-filter.html
 This input is meant to handle more complex filters not covered by the other inputs. For example search by an attribute such as http.host, arp.dst.hw etc. |  | Optional |
+| WhichIndicatorTypeToEnrich | This input checks which indicator types that will be extracted from the PCAP will be enriched. Values can be
+ip
+email
+url
+To provide more than one indicator type use comma separation such as 
+ip,url,email | ip,url,email | Optional |
 | InternalIPRange | A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR format, separated by commas. An example of a list of ranges could be: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16. If a list of IP ranges is not provided, the list provided in the IsIPInRanges script \(the known IPv4 private address ranges\) is used by default. |  | Optional |
 | InternalUrlName | The organization's internal URL name. This is provided for the script IsInternalHostName that checks if the detected URLs are internal or external if the hosts contain the internal domains suffix. For example demisto.com. If there is more than one domain, use comma separation such as demisto.com,paloaltonetworks.com |  | Optional |
 | InternalEmailDomainName | The organization's internal email domain name. This is provided for the script IsEmailAddressInternal that checks if the detected emails are internal or external. This  input can contain a List of internal domains to check, comma separated. |  | Optional |
@@ -52,12 +58,6 @@ This setting cannot be used with the FileTypeFilter. |  | Optional |
 This setting cannot be used with the FileExtensionFilter. |  | Optional |
 | FilterType | This input is combined with the FileExtensionFilter input or the FileTypeFilter input. It specifies if the type/extensions list is inclusive or exclusive. Can be "inclusive" or "exclusive". Default is "inclusive".
 Default value is 'inclusive' | inclusive | Optional |
-| WhichIndicatorTypeToEnrich | This input checks which indicator types that will be extracted from the PCAP will be enriched. Values can be
-ip
-email
-url
-To provide more than one indicator type use comma separation such as 
-ip,url,email | ip,url,email | Optional |
 | AutoDetonateFiles | This input specifies whether to detonate files extracted from the PCAP. The default value is True, any other value will be considered as false. | True | Optional |
 
 ## Playbook Outputs
