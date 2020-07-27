@@ -1,0 +1,5 @@
+!nozomi-query query="links | where from match 192.168.10.2 | where protocol match ssh"
+!nozomi-find-assets limit=3 filter="| where level == 4"
+!nozomi-find-ip-by-mac mac='00:0c:29:22:50:26' only_nodes_confirmed='True'
+!nozomi-close-incidents-as-change ids=['fa441619-39d4-46c1-a2fb-fc3b285c0b64']
+!nozomi-close-incidents-as-security ids=['fa441619-39d4-46c1-a2fb-fc3b285c0b64']
