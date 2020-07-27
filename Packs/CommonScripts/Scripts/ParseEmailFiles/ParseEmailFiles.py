@@ -39,8 +39,8 @@ from datetime import datetime, timedelta
 from struct import unpack
 import chardet
 
-# reload(sys)
-# sys.setdefaultencoding('utf8')  # pylint: disable=no-member
+reload(sys)
+sys.setdefaultencoding('utf8')  # pylint: disable=no-member
 
 MAX_DEPTH_CONST = 3
 IS_NESTED_EML = False
