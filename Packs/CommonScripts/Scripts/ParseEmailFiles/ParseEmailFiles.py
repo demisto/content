@@ -39,8 +39,8 @@ from datetime import datetime, timedelta
 from struct import unpack
 import chardet
 
-reload(sys)
-sys.setdefaultencoding('utf8')  # pylint: disable=no-member
+# reload(sys)
+# sys.setdefaultencoding('utf8')  # pylint: disable=no-member
 
 MAX_DEPTH_CONST = 3
 IS_NESTED_EML = False
@@ -3579,7 +3579,8 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                                     outputs=None)
                             finally:
                                 os.remove(f.name)
-                        attachment_names.append(attachment_file_name)
+
+                attachment_names.append(attachment_file_name)
                 demisto.setContext('AttachmentName', attachment_file_name)
 
             elif part.get_content_type() == 'text/html':
