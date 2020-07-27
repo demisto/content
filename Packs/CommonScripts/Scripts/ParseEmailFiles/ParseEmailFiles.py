@@ -3656,9 +3656,7 @@ def main():
             return_error(get_error(result))
 
         file_path = result[0]['Contents']['path']
-        # file_path = '/Users/ashamah/PycharmProjects/content_2/_Michele_Bowersox___+15592316519__has_left_you_a_1_45_seconds_VM.eml'
         file_name = result[0]['Contents']['name']
-        # file_name = '_Michele_Bowersox___+15592316519__has_left_you_a_1_45_seconds_VM.eml'
 
         result = demisto.executeCommand('getEntry', {'id': entry_id})
         if is_error(result):
