@@ -233,7 +233,7 @@ def main():
     # Switch case
     commands = {
         'test-module': module_test_command,
-        'autofocus-daily-get-indicators': get_indicators_command
+        'crowdstrike-falcon-intel-get-indicators': get_indicators_command
     }
     try:
         if demisto.command() == 'fetch-indicators':
