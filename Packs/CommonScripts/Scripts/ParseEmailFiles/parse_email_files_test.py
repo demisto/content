@@ -173,7 +173,6 @@ def test_eml_contains_eml(mocker):
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
-    print(str(results[0]['EntryContext']['Email'][0]))
     assert results[0]['EntryContext']['Email'][0]['Subject'] == 'Fwd: test - inner attachment eml'
     assert 'ArcSight_ESM_fixes.yml' in results[0]['EntryContext']['Email'][0]['Attachments']
     assert 'test - inner attachment eml.eml' in results[0]['EntryContext']['Email'][0]['Attachments']
