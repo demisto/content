@@ -2,7 +2,7 @@
 2.	Create a user in Smartsheet
 3.	Update a user
 4.	Disable a user
-This integration was integrated and tested with version xx of Smartsheet IT Admin
+This integration was integrated and tested with version 2.0 of Smartsheet API
 ## Configure Smartsheet IT Admin on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

@@ -1,4 +1,4 @@
-# IMPORTS
+''' IMPORTS '''
 
 from CommonServerPython import *
 import smartsheet
@@ -296,13 +296,14 @@ def get_user_command(client, args):
         generic_iam_context = OutputContext(success=False, iden=user_id, errorCode=errorCode,
                                             errorMessage=errorMessage, details=res_json)
 
-    generic_iam_context_dt = "{}(val.id == obj.id && val.instanceName == obj.instanceName)".format(generic_iam_context.command)
+    generic_iam_context_dt = "{}(val.id == obj.id && val.instanceName == obj.instanceName)".format(
+        generic_iam_context.command)
 
     outputs = {
         generic_iam_context_dt: generic_iam_context.data
     }
 
-    readable_output = tableToMarkdown('Get Smartsheet User:', generic_iam_context.data)
+    readable_output = tableToMarkdown('Smartsheet user ' + str(user_id or email) + ' data:', generic_iam_context.data)
 
     return (
         readable_output,
@@ -343,12 +344,13 @@ def remove_user_command(client, args):
                                             errorCode=res_json.get('result').get('statusCode'),
                                             errorMessage=errorMessage, details=res_json)
 
-    generic_iam_context_dt = "{}(val.id == obj.id && val.instanceName == obj.instanceName)".format(generic_iam_context.command)
+    generic_iam_context_dt = "{}(val.id == obj.id && val.instanceName == obj.instanceName)".format(
+        generic_iam_context.command)
     outputs = {
         generic_iam_context_dt: generic_iam_context.data
     }
 
-    readable_output = tableToMarkdown('Remove Smartsheet User:', generic_iam_context.data)
+    readable_output = tableToMarkdown('Smartsheet user ' + str(user_id) + ' data:', generic_iam_context.data)
 
     return (
         readable_output,
@@ -398,13 +400,14 @@ def update_user_command(client, args):
                                             errorCode=res_json.get('result').get('statusCode'),
                                             errorMessage=errorMessage, details=res_json)
 
-    generic_iam_context_dt = "{}(val.id == obj.id && val.instanceName == obj.instanceName)".format(generic_iam_context.command)
+    generic_iam_context_dt = "{}(val.id == obj.id && val.instanceName == obj.instanceName)".format(
+        generic_iam_context.command)
 
     outputs = {
         generic_iam_context_dt: generic_iam_context.data
     }
 
-    readable_output = tableToMarkdown('Updated Smartsheet User:', generic_iam_context.data)
+    readable_output = tableToMarkdown('Smartsheet user ' + str(user_id) + ' data:', generic_iam_context.data)
 
     return (
         readable_output,
@@ -454,13 +457,14 @@ def create_user_command(client, args):
                                             errorCode=res_json.get('result').get('statusCode'),
                                             errorMessage=errorMessage, details=res_json)
 
-    generic_iam_context_dt = "{}(val.id == obj.id && val.instanceName == obj.instanceName)".format(generic_iam_context.command)
+    generic_iam_context_dt = "{}(val.id == obj.id && val.instanceName == obj.instanceName)".format(
+        generic_iam_context.command)
 
     outputs = {
         generic_iam_context_dt: generic_iam_context.data
     }
 
-    readable_output = tableToMarkdown('Create Smartsheet User:', generic_iam_context.data)
+    readable_output = tableToMarkdown('Smartsheet user data:', generic_iam_context.data)
 
     return (
         readable_output,
