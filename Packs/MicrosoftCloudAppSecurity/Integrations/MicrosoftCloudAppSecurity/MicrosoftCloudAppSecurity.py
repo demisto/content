@@ -278,10 +278,8 @@ def test_module(client):
 
 
 def alerts_to_human_readable(alerts):
-    if 'data' not in alerts:
-        alerts = {'data': [alerts]}
     alerts_readable_outputs = []
-    for alert in alerts['data']:
+    for alert in alerts:
         readable_output = assign_params(alert_id=alert.get('_id'), title=alert.get('title'),
                                         description=alert.get('description'),
                                         status_value=[key for key, value in STATUS_OPTIONS.items()
@@ -304,10 +302,11 @@ def list_alerts_command(client, args):
                               resolution_status=args.get('resolution_status'), username=args.get('username'))
     request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, customer_filters, arguments, alert_id)
     alerts = client.list_alerts(url_suffix, request_data)
+    alerts = alerts.get('data')
     human_readable = alerts_to_human_readable(alerts)
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='MicrosoftCloudAppSecurity.Alert',
+        outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
         outputs_key_field='alert_id',
         outputs=alerts
     )
@@ -348,10 +347,8 @@ def bulk_resolve_alert_command(client, args):
 
 
 def activities_to_human_readable(activities):
-    if 'data' not in activities:
-        activities = {'data': [activities]}
     activities_readable_outputs = []
-    for activity in activities['data']:
+    for activity in activities:
         readable_output = assign_params(activity_id=activity.get('_id'), severity=activity.get('severity'),
                                         activity_date=datetime.fromtimestamp(activity.get('timestamp') / 1000.0)
                                         .isoformat(),
@@ -364,8 +361,8 @@ def activities_to_human_readable(activities):
 
 def arrange_entity_data(activities):
     entities_data = []
-    if activities and 'data' in activities:
-        for activity in activities['data']:
+    if activities:
+        for activity in activities:
             entity_data = activity['entityData']
             if entity_data:
                 for key, value in entity_data.items():
@@ -385,6 +382,7 @@ def list_activities_command(client, args):
                               source=args.get('source'))
     request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, customer_filters, arguments, activity_id)
     activities = client.list_activities(url_suffix, request_data)
+    activities = activities.get('data')
     activities = arrange_entity_data(activities)
     human_readable = activities_to_human_readable(activities)
     return CommandResults(
@@ -396,10 +394,8 @@ def list_activities_command(client, args):
 
 
 def files_to_human_readable(files):
-    if 'data' not in files:
-        files = {'data': [files]}
     files_readable_outputs = []
-    for file in files['data']:
+    for file in files:
         readable_output = assign_params(owner_name=file.get('ownerName'), file_create_date=file.get('createdDate'),
                                         file_type=file.get('fileType'), file_name=file.get('name'),
                                         file_access_level=file.get('fileAccessLevel'), app_name=file.get('appName'),
@@ -421,6 +417,7 @@ def list_files_command(client, args):
                               extension=args.get('extension'), quarantined=args.get('quarantined'))
     request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, customer_filters, arguments, file_id)
     files = client.list_files(url_suffix, request_data)
+    files = files.get('data')
     human_readable = files_to_human_readable(files)
     return CommandResults(
         readable_output=human_readable,
@@ -431,10 +428,8 @@ def list_files_command(client, args):
 
 
 def users_accounts_to_human_readable(users_accounts):
-    if 'data' not in users_accounts:
-        users_accounts = {'data': [users_accounts]}
     users_accounts_readable_outputs = []
-    for entity in users_accounts['data']:
+    for entity in users_accounts:
         readable_output = assign_params(display_name=entity.get('displayName'), last_seen=entity.get('lastSeen'),
                                         is_admin=entity.get('isAdmin'), is_external=entity.get('isExternal'),
                                         email=entity.get('email'), username=entity.get('username'))
@@ -453,6 +448,7 @@ def list_users_accounts_command(client, args):
                               is_external=args.get('is_external'))
     request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, customer_filters, arguments)
     users_accounts = client.list_users_accounts(url_suffix, request_data)
+    users_accounts = users_accounts.get('data')
     human_readable = users_accounts_to_human_readable(users_accounts)
     return CommandResults(
         readable_output=human_readable,
