@@ -622,8 +622,6 @@ script:
       isArray: false
       name: scan_type
       predefined:
-      - Custom criteria
-      - Windows registry
       - YARA rule file
       - IOC rule file
       - Disk IOC rule file
@@ -683,8 +681,7 @@ script:
       secret: false
     - default: false
       description: Create an investigation in all agents in the servers list. If both
-        agent_guids and server_guids are empty, the termination request targets all
-        agents.
+        agent_guids and server_guids are empty, the request targets all agents.
       isArray: false
       name: server_guids
       required: false
@@ -693,19 +690,6 @@ script:
       description: The name of the investigation.
       isArray: false
       name: investigation_name
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Method used for the investigation.
-      isArray: false
-      name: scan_type
-      predefined:
-      - Custom criteria
-      - Windows registry
-      - YARA rule file
-      - IOC rule file
-      - Disk IOC rule file
       required: true
       secret: false
     - default: false
@@ -749,13 +733,13 @@ script:
     - default: false
       description: Value of registry key.
       isArray: false
-      name: registry key
+      name: registry_key
       required: true
       secret: false
     - default: false
       description: Value of registry name.
       isArray: false
-      name: registry name
+      name: registry_name
       required: true
       secret: false
     - auto: PREDEFINED
@@ -791,8 +775,7 @@ script:
       secret: false
     - default: false
       description: Create an investigation in all agents in the servers list. If both
-        agent_guids and server_guids are empty, the termination request targets all
-        agents.
+        agent_guids and server_guids are empty, the request targets all agents.
       isArray: false
       name: server_guids
       required: false
@@ -801,19 +784,6 @@ script:
       description: The name of the investigation.
       isArray: false
       name: investigation_name
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Method used for the investigation.
-      isArray: false
-      name: scan_type
-      predefined:
-      - Custom criteria
-      - Windows registry
-      - YARA rule file
-      - IOC rule file
-      - Disk IOC rule file
       required: true
       secret: false
     - default: false
@@ -858,88 +828,96 @@ script:
       description: Filter by file name - partial match
       isArray: false
       name: file_name_contains
-      required: true
+      required: false
       secret: false
     - default: false
-      description: Filter by file name - Exact match
+      description: Filter by file name - Exact match. Can be a comma separated list.
       isArray: false
       name: file_name_is
       required: false
       secret: false
     - default: false
-      description: Filter by file path - Exact match
+      description: Filter by file path - Exact match. Can be a comma separated list.
       isArray: false
       name: file_path_is
       required: false
       secret: false
     - default: false
-      description: Filter by account - partial match
+      description: Filter by account - partial match. Can be a comma separated list.
       isArray: false
       name: account_contains
       required: false
       secret: false
     - default: false
-      description: Filter by account - Exact match
+      description: Filter by account - Exact match. Can be a comma separated list.
       isArray: false
       name: account_is
       required: false
       secret: false
     - default: false
-      description: Filter by command line - partial match
+      description: Filter by command line - partial match. Can be a comma separated
+        list.
       isArray: false
       name: command_line_contains
       required: false
       secret: false
     - default: false
-      description: Filter by command line - Exact match
+      description: Filter by command line - Exact match. Can be a comma separated
+        list.
       isArray: false
       name: command_line_is
       required: false
       secret: false
     - default: false
-      description: Filter by registry key - partial match
+      description: Filter by registry key - partial match. Can be a comma separated
+        list.
       isArray: false
       name: registry_key_contains
       required: false
       secret: false
     - default: false
-      description: Filter by registry key - Exact match
+      description: Filter by registry key - Exact match. Can be a comma separated
+        list.
       isArray: false
       name: registry_key_is
       required: false
       secret: false
     - default: false
-      description: Filter by registry name - partial match
+      description: Filter by registry name - partial match. Can be a comma separated
+        list.
       isArray: false
       name: registry_name_contains
       required: false
       secret: false
     - default: false
-      description: Filter by registry name - Exact match
+      description: Filter by registry name - Exact match. Can be a comma separated
+        list.
       isArray: false
       name: registry_name_is
       required: false
       secret: false
     - default: false
-      description: Filter by registry data - partial match
+      description: Filter by registry data - partial match. Can be a comma separated
+        list.
       isArray: false
       name: registry_data_contains
       required: false
       secret: false
     - default: false
-      description: Filter by registry data - Exact match
+      description: Filter by registry data - Exact match. Can be a comma separated
+        list.
       isArray: false
       name: registry_data_is
       required: false
       secret: false
     - default: false
-      description: Filter by host name - partial match
+      description: Filter by host name - partial match. Can be a comma separated list.
       isArray: false
       name: host_name_contains
       required: false
       secret: false
     - default: false
-      description: Filter by host name - Exact match
+      description: Filter by host name - Exact match. Can be a comma separated list.
       isArray: false
       name: host_name_is
       required: false
@@ -952,7 +930,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Operator used in the investigation.
+      description: Operator used in the investigation. 'AND' - return endpoints that
+        match all the criteria specified. 'OR' - return endpoints that match one of
+        the criteria specified
       isArray: false
       name: operator
       predefined:
@@ -964,16 +944,408 @@ script:
     description: Creates a new custom live Investigation.
     execution: false
     name: trendmicro-apex-create-custom-live-investigation
-  - deprecated: false
+  - arguments:
+    - default: false
+      description: 'Json formatted agents to create the investigation in. The key
+        is the serverGuid, and the value is a list of agentGuid strings of the endpoints
+        managed by the target server. for example: {serverGuid : [agentGuid]}. If
+        both agent_guids and server_guids care empty, the request targets all agents.'
+      isArray: false
+      name: agent_guids
+      required: false
+      secret: false
+    - default: false
+      description: Create an investigation in all agents in the servers list. If both
+        agent_guids and server_guids are empty, the termination request targets all
+        agents.
+      isArray: false
+      name: server_guids
+      required: false
+      secret: false
+    - default: false
+      description: The name of the investigation.
+      isArray: false
+      name: investigation_name
+      required: true
+      secret: false
+    - default: false
+      description: Entry id of the file criteria.
+      isArray: false
+      name: entry_id
+      required: true
+      secret: false
+    - default: false
+      description: Criteria encoded in SHA1 hash format. Use the IoC bucket hash ID
+        if created by the Apex Central IoC bucket (for IoC and YARA).
+      isArray: false
+      name: criteria_hash_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Method used for the investigation.
+      isArray: false
+      name: scan_type
+      predefined:
+      - Windows registry
+      - YARA rule file
+      - IOC rule file
+      - Disk IOC rule file
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Period to be investigated. Can be 'Any' or 'Specific'. If choosing
+        the Specific type, values for time_range_end and time_range.start arguments
+        are required.
+      isArray: false
+      name: time_range_type
+      predefined:
+      - Any
+      - Specific
+      required: true
+      secret: false
+    - default: false
+      description: The time when the investigation ends.
+      isArray: false
+      name: time_range_end
+      required: false
+      secret: false
+    - default: false
+      description: The time when the investigation starts.
+      isArray: false
+      name: time_range_start
+      required: false
+      secret: false
+    - default: false
+      description: 'End date of the scheduled investigation. Specify the value in
+        ISO date format: YYYY-MM-DD.'
+      isArray: false
+      name: scheduled_investigation_end_date
+      required: true
+      secret: false
+    - default: false
+      description: 'Start date of the scheduled investigation. Specify the value in
+        ISO date format: YYYY-MM-DD.'
+      isArray: false
+      name: scheduled_investigation_start_date
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Indicates how often the schedule should repeat.
+      isArray: false
+      name: scheduled_investigation_repeat_type
+      predefined:
+      - Yearly
+      - Monthly
+      - Daily
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        Exact time when the schedule runs, specified in the following format:
+        Yearly: "Month:Date:Hour:Minute:Second", for example: "05:13:08:00:00"
+        Monthly: "DayInMonth:Hour:Minute:Second", for example: "13:08:00:00"
+        Daily: "Hour:Minute:Second", for example: "08:00:00"
+      isArray: false
+      name: scheduled_investigation_repeat_value
+      required: true
+      secret: false
+    - default: false
+      description: Local timezone of user, in UTC format
+      isArray: false
+      name: user_time_zone
+      required: true
+      secret: false
+    deprecated: false
     execution: false
     name: trendmicro-apex-create-scheduled-investigation
-  - deprecated: false
+  - arguments:
+    - default: false
+      description: Filter by file name - partial match
+      isArray: false
+      name: file_name_contains
+      required: false
+      secret: false
+    - default: false
+      description: Filter by file name - Exact match. Can be a comma separated list.
+      isArray: false
+      name: file_name_is
+      required: false
+      secret: false
+    - default: false
+      description: Filter by file path - Exact match. Can be a comma separated list.
+      isArray: false
+      name: file_path_is
+      required: false
+      secret: false
+    - default: false
+      description: Filter by account - partial match. Can be a comma separated list.
+      isArray: false
+      name: account_contains
+      required: false
+      secret: false
+    - default: false
+      description: Filter by account - Exact match. Can be a comma separated list.
+      isArray: false
+      name: account_is
+      required: false
+      secret: false
+    - default: false
+      description: Filter by command line - partial match. Can be a comma separated
+        list.
+      isArray: false
+      name: command_line_contains
+      required: false
+      secret: false
+    - default: false
+      description: Filter by command line - Exact match. Can be a comma separated
+        list.
+      isArray: false
+      name: command_line_is
+      required: false
+      secret: false
+    - default: false
+      description: Filter by registry key - partial match. Can be a comma separated
+        list.
+      isArray: false
+      name: registry_key_contains
+      required: false
+      secret: false
+    - default: false
+      description: Filter by registry key - Exact match. Can be a comma separated
+        list.
+      isArray: false
+      name: registry_key_is
+      required: false
+      secret: false
+    - default: false
+      description: Filter by registry name - partial match. Can be a comma separated
+        list.
+      isArray: false
+      name: registry_name_contains
+      required: false
+      secret: false
+    - default: false
+      description: Filter by registry name - Exact match. Can be a comma separated
+        list.
+      isArray: false
+      name: registry_name_is
+      required: false
+      secret: false
+    - default: false
+      description: Filter by registry data - partial match. Can be a comma separated
+        list.
+      isArray: false
+      name: registry_data_contains
+      required: false
+      secret: false
+    - default: false
+      description: Filter by registry data - Exact match. Can be a comma separated
+        list.
+      isArray: false
+      name: registry_data_is
+      required: false
+      secret: false
+    - default: false
+      description: Filter by host name - partial match. Can be a comma separated list.
+      isArray: false
+      name: host_name_contains
+      required: false
+      secret: false
+    - default: false
+      description: Filter by host name - Exact match. Can be a comma separated list.
+      isArray: false
+      name: host_name_is
+      required: false
+      secret: false
+    - default: false
+      description: Filter by file path - partial match
+      isArray: false
+      name: file_path_contains
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Operator used in the investigation. 'AND' - return endpoints that
+        match all the criteria specified. 'OR' - return endpoints that match one of
+        the criteria specified
+      isArray: false
+      name: operator
+      predefined:
+      - AND
+      - OR
+      required: true
+      secret: false
+    - default: false
+      description: Criteria string to show in the auditing log.
+      isArray: false
+      name: criteria_kvp
+      required: false
+      secret: false
+    - default: false
+      description: The source of criteria which used to store the record in BIF. The
+        default value is 0 (UNKNOWN).
+      isArray: false
+      name: criteria_source
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Scope of search results. For example, if the value is Three months,
+        perform assessment on data within the last 90 days only.
+      isArray: false
+      name: search_period
+      predefined:
+      - Default
+      - All
+      - One month
+      - Three months
+      - Six months
+      - Twelve months
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a new historical investigation on all Security Agents with
+      Endpoint Sensor enabled using the specified criteria, search operator, and match
+      condition
     execution: false
     name: trendmicro-apex-historical-investigation-create
-  - deprecated: false
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: Number of records to retrieve.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Page where to start retrieving records.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: The scan schedule ID of the investigation to retrieve.
+      isArray: false
+      name: scan_schedule_id
+      required: false
+      secret: false
+    - default: false
+      description: Filter the results by task name - partial match.
+      isArray: false
+      name: filter_by_task_name
+      required: false
+      secret: false
+    - default: false
+      description: Filter the results by creator name - partial match.
+      isArray: false
+      name: filter_by_creator_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter the results by scan method type.
+      isArray: false
+      name: filter_by_scan_type
+      predefined:
+      - Search Windows registry
+      - Memory scan using YARA
+      - Disk scan using OpenIOC
+      required: false
+      secret: false
+    - default: false
+      description: Filter the results by criteria name - partial match.
+      isArray: false
+      name: filter_by_criteria_name
+      required: false
+      secret: false
+    - default: false
+      description: 'The method used for the investigation. Can be comma separated
+        list. Possible values are: Windows registry,YARA rule file,IOC rule file,Disk
+        IOC rule file'
+      isArray: true
+      name: scan_type
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves a list of all investigation results.
     execution: false
     name: trendmicro-apex-investigation-result-list
-  - deprecated: false
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: Number of records to retrieve.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Page where to start retrieving records.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: The GUID of the scan summary. Can be comma separated list.
+      isArray: false
+      name: scan_summary_guid
+      required: true
+      secret: false
+    - default: false
+      description: Filter the results by endpoint name - partial match.
+      isArray: false
+      name: filter_by_endpoint_name
+      required: false
+      secret: false
+    - default: false
+      description: Filter the results by enspoint ip address - partial match.
+      isArray: false
+      name: filter_by_endpoint_ip_address
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter the results by endpoint operating system - partial match
+      isArray: false
+      name: filter_by_sendpoint_operating_system
+      predefined:
+      - Search Windows registry
+      - Memory scan using YARA
+      - Disk scan using OpenIOC
+      required: false
+      secret: false
+    - default: false
+      description: Filter the results by endpoint user name - partial match.
+      isArray: false
+      name: filter_by_endpoint_user_name
+      required: false
+      secret: false
+    - default: false
+      description: 'The method used for the investigation. Can be comma separated
+        list. Possible values are: Custom criteria,Windows registry,YARA rule file,IOC
+        rule file,Disk IOC rule file'
+      isArray: true
+      name: scan_type
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Status of investigation to query.
+      isArray: false
+      name: scan_status
+      predefined:
+      - All
+      - Matched
+      - No match
+      - Pending
+      - Unsuccessful
+      required: true
+      secret: false
+    deprecated: false
     execution: false
     name: trendmicro-apex-investigation-result-list-by-status
   dockerimage: devdemisto/pycef:1.0.0.9953
