@@ -2590,27 +2590,27 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Repository owner.
+      description: The repository owner.
       isArray: false
       name: owner
       required: true
       secret: false
     deprecated: false
-    description: Get github actions workflows usage of private repositories.
+    description: Gets the usage details of GitHub action workflows of private repositories, by repository owner.
     execution: false
     name: Github-get-github-actions-usage
     outputs:
     - contextPath: GitHub.ActionsUsage.RepositoryName
-      description: Private repository name.
+      description: The name of the private repository.
       type: String
     - contextPath: GitHub.ActionsUsage.WorkflowID
-      description: Github action workflow ID.
+      description: The workflow ID of the GitHub action.
       type: Number
     - contextPath: GitHub.ActionsUsage.WorkflowName
-      description: Github action workflow display name.
+      description: The display name of the GitHub action workflow.
       type: String
     - contextPath: GitHub.ActionsUsage.WorkflowUsage
-      description: Github action worflow usage on differenet OS.
+      description: GitHub action worflow usage on different OS.
       type: Unknown
   dockerimage: demisto/pyjwt3:1.0.0.8871
   feed: false
