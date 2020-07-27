@@ -5,9 +5,9 @@ You can either update all rules and override previous profiles, or update only r
 ## Description & Playbook Flow
 ---
 The playbook lists all of the rules (either pre-rulebase or post-rulebase). 
-If the analyst wishes to override log-forwarding profile for all rules, it updates all the rules with the given profile.
-If the analyst wishes to update only rules with missing profile, it will update only those rules.
-in the end the playbook will commit to PAN-OS (either auto commit or manual commit by the analyst)
+If the analyst wishes to override the log-forwarding profile for all rules, it updates all the rules with the given profile.
+If the analyst wishes to update only rules with missing profiles, it will update only those rules.
+In the end, the playbook will commit to PAN-OS (either auto-commit or manual commit by the analyst).
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -44,9 +44,8 @@ There are no outputs for this playbook.
 ## Known Limitations
 ---
 The log forwarding profile needs to be configured manually and provided to this playbook as an input. [link](https://docs.paloaltonetworks.com/cortex/cortex-data-lake/cortex-data-lake-getting-started/get-started-with-cortex-data-lake/forward-logs-to-cortex-data-lake)
-In the future we’ll support auto creation of Cortex Data Lake log forwarding profile
+In the future, we’ll support auto-creation of Cortex Data Lake log forwarding profiles.
 
 ## Playbook Image
 ---
 ![PAN-OS_Log_Forwarding_Setup_And_Maintenance](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PAN-OS_Log_Forwarding_Setup_And_Maintenance.png)
-
