@@ -594,6 +594,11 @@ def fetch_incidents():
 
 
 def parse_subtree(my_map):
+    """
+    param: my_map - tree element for the schema
+    return: tree elements under each branch
+    """
+    # Recursive search in order to retrieve the elements under the branches in the schema
     res = {}
     for k in my_map:
         if 'properties' in my_map[k]:
