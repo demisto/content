@@ -147,8 +147,8 @@ class MsGraphClient:
     #  Using resp_type=text to avoid parsing error.
     def assign_manager(self, user, manager):
         url = self.base_url
-        manager_ref="{}users/{}".format(url,manager)
-        body = {"@odata.id":manager_ref}
+        manager_ref = "{}users/{}".format(url, manager)
+        body = {"@odata.id": manager_ref}
         self.ms_client.http_request(
             method='PUT',
             url_suffix=f'users/{user}/manager/$ref',
@@ -290,9 +290,10 @@ def get_manager_command(client: MsGraphClient, args: Dict):
     manager_data = client.get_manager(user)
     manager_readable, manager_outputs = parse_outputs(manager_data)
     human_readable = tableToMarkdown(name=f"{user} - manager", t=manager_readable, removeNull=True)
-    outputs = {'MSGraphUserManager(val.User == obj.User)': {
-        'User': user,
-        'Manager': manager_outputs
+    outputs = {
+        'MSGraphUserManager(val.User == obj.User)': {
+            'User': user,
+            'Manager': manager_outputs
         }
     }
     return human_readable, outputs, manager_data
@@ -302,8 +303,8 @@ def assign_manager_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     manager = args.get('manager')
     client.assign_manager(user, manager)
-    human_readable = f'A manager was assigned to user "{user}". It might take several minutes for the changes to take affect across all ' \
-                     f'applications. '
+    human_readable = f'A manager was assigned to user "{user}". It might take several minutes for the changes ' \
+                     f'to take affect across all applications. '
     return human_readable, None, None
 
 
