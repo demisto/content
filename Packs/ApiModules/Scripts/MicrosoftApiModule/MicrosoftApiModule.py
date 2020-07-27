@@ -47,7 +47,7 @@ class MicrosoftClient(BaseClient):
             scope: The scope of the application (only if self deployed)
             resource: The resource of the application (only if self deployed)
             multi_resource: Where or not module uses a multiple resources (self-deployed, auth_code grant type only)
-            resources: (optional) Resources of the application (for multi-resource mode)
+            resources: Resources of the application (for multi-resource mode)
             verify: Demisto insecure parameter
             self_deployed: Indicates whether the integration mode is self deployed or oproxy
         """
@@ -78,13 +78,15 @@ class MicrosoftClient(BaseClient):
             self.scope = scope
             self.redirect_uri = redirect_uri
             self.multi_resource = multi_resource
+
             if self.multi_resource:
-                self.resource_to_access_token = {resource: '' for resource in resources}
+                self.resources = resources
+                self.resource_to_access_token = {}
 
         self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
         self.verify = verify
 
-    def http_request(self, *args, resp_type='json', headers=None, return_empty_response=False, resource=None, **kwargs):
+    def http_request(self, *args, resp_type='json', headers=None, return_empty_response=False, resource='', **kwargs):
         """
         Overrides Base client request function, retrieves and adds to headers access token before sending the request.
 
@@ -125,7 +127,7 @@ class MicrosoftClient(BaseClient):
         except ValueError as exception:
             raise DemistoException('Failed to parse json object from response: {}'.format(response.content), exception)
 
-    def get_access_token(self, resource):
+    def get_access_token(self, resource=''):
         """
         Obtains access and refresh token from oproxy server or just a token from a self deployed app.
         Access token is used and stored in the integration context
@@ -139,7 +141,7 @@ class MicrosoftClient(BaseClient):
         refresh_token = integration_context.get('current_refresh_token', '')
 
         if self.multi_resource:
-            access_token = integration_context.get(resource, {}).get('access_token')
+            access_token = integration_context.get(resource)
         else:
             access_token = integration_context.get('access_token')
 
@@ -230,15 +232,17 @@ class MicrosoftClient(BaseClient):
 
     def _get_self_deployed_token(self, refresh_token: str = ''):
         if self.grant_type == AUTHORIZATION_CODE:
-            access_token, expires_in, refresh_token = self._get_self_deployed_token_auth_code(refresh_token)
+            if not self.multi_resource:
+                return self._get_self_deployed_token_auth_code(refresh_token)
 
-            if self.multi_resource:
-                for resource in self.resource_to_access_token.keys():
+            else:
+                expires_in = ''
+                for resource in self.resources:
                     access_token, expires_in, refresh_token = self._get_self_deployed_token_auth_code(refresh_token,
                                                                                                       resource)
                     self.resource_to_access_token[resource] = access_token
 
-            return access_token, expires_in, refresh_token
+            return '', expires_in, refresh_token
         else:
             # by default, grant_type is CLIENT_CREDENTIALS
             return self._get_self_deployed_token_client_credentials()
@@ -289,6 +293,7 @@ class MicrosoftClient(BaseClient):
             'resource': self.resource if not resource else resource,
             'redirect_uri': self.redirect_uri
         }
+
         refresh_token = refresh_token or self._get_refresh_token_from_auth_code_param()
         if refresh_token:
             data['grant_type'] = REFRESH_TOKEN
@@ -296,6 +301,8 @@ class MicrosoftClient(BaseClient):
         else:
             data['grant_type'] = AUTHORIZATION_CODE
             data['code'] = self.auth_code
+
+        demisto.results(str(data))
 
         response_json: dict = {}
         try:
@@ -308,8 +315,9 @@ class MicrosoftClient(BaseClient):
             return_error(f'Error in Microsoft authorization: {str(e)}')
 
         access_token = response_json.get('access_token', '')
-        # refresh_token = response_json.get('refresh_token', '')
         expires_in = int(response_json.get('expires_in', 3595))
+        if self.multi_resource:
+            refresh_token = response_json.get('refresh_token', '')
 
         return access_token, expires_in, refresh_token
 

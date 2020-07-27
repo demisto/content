@@ -131,7 +131,7 @@ def parse_tags(tags):
 def test_connection(client, params):
     if params.get('self_deployed', False) and not params.get('auth_code'):
         return_error('You must enter an authorization code in a self-deployed configuration.')
-    client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
+    client.ms_client.get_access_token(AZURE_MANAGEMENT_RESOURCE)  # If fails, MicrosoftApiModule returns an error
     return_outputs('```✅ Success!```')
 
 
@@ -166,6 +166,7 @@ def list_saved_searches_command(client, args):
     url_suffix = '/savedSearches'
 
     response = client.http_request('GET', url_suffix, resource=AZURE_MANAGEMENT_RESOURCE)
+    response = response.get('value')
 
     from_index = min(page, len(response))
     to_index = min(from_index + limit, len(response))
@@ -192,7 +193,7 @@ def get_saved_search_by_id_command(client, args):
     saved_search_id = args.get('saved_search_id')
     url_suffix = f'/savedSearches/{saved_search_id}'
 
-    response = client.http_request('GET', url_suffix)
+    response = client.http_request('GET', url_suffix, resource=AZURE_MANAGEMENT_RESOURCE)
     output = flatten_saved_search_object(response)
 
     title = f'Saved search `{saved_search_id}` properties'
@@ -227,7 +228,7 @@ def create_or_update_saved_search_command(client, args):
 
     remove_nulls_from_dictionary(data)
 
-    response = client.http_request('PUT', url_suffix, data=data)
+    response = client.http_request('PUT', url_suffix, data=data, resource=AZURE_MANAGEMENT_RESOURCE)
     output = flatten_saved_search_object(response)
 
     title = f'Saved search `{saved_search_id}` properties'
@@ -249,7 +250,7 @@ def delete_saved_search_command(client, args):
     saved_search_id = args.get('saved_search_id')
     url_suffix = f'/savedSearches/{saved_search_id}'
 
-    client.http_request('DELETE', url_suffix)
+    client.http_request('DELETE', url_suffix, resource=AZURE_MANAGEMENT_RESOURCE)
 
     return f'Successfully deleted the saved search `{saved_search_id}`.'
 
@@ -292,7 +293,7 @@ def main():
             test_connection(client, params)
 
         elif demisto.command() in commands:
-            return_results(*commands[demisto.command()](client, demisto.args()))  # type: ignore
+            return_results(commands[demisto.command()](client, demisto.args()))  # type: ignore
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
