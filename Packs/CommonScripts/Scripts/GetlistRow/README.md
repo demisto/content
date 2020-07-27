@@ -1,4 +1,4 @@
-Parse list by header and value.
+Parses a list by header and value.
 ## Script Data
 ---
 
@@ -13,17 +13,18 @@ Parse list by header and value.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| value | Value to search for \(You also need to enter header\). |
-| header | Header to search in \(You also need to enter value\)/ |
-| list_name | The list name to search in. |
-| parse_all | Parse all the list into the context. |
+| value | Value to search for. If you supply a value, you need to supply the "header" argument also. |
+| header | Header to filter lines by. If you supply a header, you need to supply the "value" argument. |
+| list_name | The list name in which to search. |
+| parse_all | If "True", parses the entire list into the context. Can be "True" or "False". Default is "False". |
 
 ## Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| GetListRow.Result.Header | Header to search in. | String |
-| GetListRow.Result.Value | Value to search for. | String |
-| GetListRow.Result.List_Name | The list name to search in. | String |
-| GetListRow.Results.Parse_All | Parse all the list into the context. | String |
+| GetListRow.Header | Header in which the search was performed. | String |
+| GetListRow.Value | Value to search for. | String |
+| GetListRow.ListName | The name of the list that was searched.. | String |
+| GetListRow.ParseAll | If "True", the entire list was parsed into the context. | String |
+| GetListRow.Results | All parse results of the list. | UnKnown |
