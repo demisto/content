@@ -569,7 +569,6 @@ def fetch_incidents():
     return last_run, incidents
 
 
-
 @logger
 def test_integration():
     list_detections(1, 1)

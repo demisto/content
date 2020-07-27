@@ -1,16 +1,17 @@
 import demistomock as demisto
-import pytest
 import json
 import RedCanary
 
 last_run_dict = {"time": "2019-12-13T17:23:22Z", "last_event_ids": []}
-latest_time_of_occurrence_of_incidents = "2019-12-30T22:00:50Z"
+latest_time_of_occurrence_of_incidents1 = "2019-12-30T22:00:50Z"
+latest_time_of_occurrence_of_incidents2 = "2020-12-25T02:07:37Z"
 number_of_incidents = 3
+
 
 with open("./TestData/incidents.json") as f:
     data = json.load(f)
 
-with open("./TestData/incidents2.json") as f2:
+with open("TestData/incidents2.json") as f2:
     data2 = json.load(f2)
 
 
@@ -34,7 +35,7 @@ def test_fetch_when_last_run_is_time(mocker):
     last_run, incidents = RedCanary.fetch_incidents()
 
     assert len(incidents) == number_of_incidents
-    assert last_run["time"] == latest_time_of_occurrence_of_incidents
+    assert last_run["time"] == latest_time_of_occurrence_of_incidents1
 
 
 def test_get_endpoint_context():
@@ -113,7 +114,7 @@ def test_get_endpoint_context():
         'OSVersion': 'Mac OSX 10.14.6'}]
 
 
-def test_fetch_multiple_times_when_already_fetched_incident_keep_(mocker):
+def test_fetch_multiple_times_when_already_fetched_incident_keep(mocker):
     """Unit test
     Given
     - raw response of the http request
@@ -149,7 +150,7 @@ def test_fetch_multiple_times_when_already_fetched_incident_keep_(mocker):
     assert last_run["time"] == "2019-12-30T22:00:50Z"
 
 
-def test_fetch_multiple_times_when_already_fetched_incident_keep_(mocker):
+def test_fetch_multiple_times_with_new_incidents(mocker):
     """Unit test
     Given
     - raw response of the http request
@@ -180,9 +181,4 @@ def test_fetch_multiple_times_when_already_fetched_incident_keep_(mocker):
     last_run, incidents = RedCanary.fetch_incidents()
     # only one incidents is being created out of the 2 that were fetched
     assert len(incidents) == 1
-    assert last_run["time"] == "2020-12-25T02:42:43.920Z"
-
-
-
-
-
+    assert last_run["time"] == latest_time_of_occurrence_of_incidents2
