@@ -1,8 +1,8 @@
 {
     "name": "NIST",
-    "description": "This pack contains playbooks that follow the phases to handling an incident as described in the \u2018Handling an Incident\u2019 section of NIST - Computer Security Incident Handling Guide.",
+    "description": "This Content Pack helps you follow the phases in handling an incident according to the NIST computer security incident handling guidelines.",
     "support": "xsoar",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

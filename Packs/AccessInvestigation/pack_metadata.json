@@ -1,8 +1,8 @@
 {
     "name": "Access Investigation",
-    "description": "Investigates an access incident by gathering user and IP information and interacting with the user to confirm whether or not they initiated the access action.",
+    "description": "This Content Pack automates response to unauthorised access incidents and contains customer access incident views and layouts to aid investigation.",
     "support": "xsoar",
-    "currentVersion": "1.2.0",
+    "currentVersion": "1.2.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
