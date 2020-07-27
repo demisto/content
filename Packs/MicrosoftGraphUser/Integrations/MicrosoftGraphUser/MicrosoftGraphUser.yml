@@ -508,7 +508,7 @@ script:
     description: "Assigns a manager to the user. Permissions: - User.ReadWrite (Delegated & Application)"
     execution: false
     name: msgraph-user-assign-manager
-  dockerimage: demisto/crypto:1.0.0.7634
+  dockerimage: demisto/crypto:1.0.0.10043
   isfetch: false
   longRunning: false
   longRunningPort: false
