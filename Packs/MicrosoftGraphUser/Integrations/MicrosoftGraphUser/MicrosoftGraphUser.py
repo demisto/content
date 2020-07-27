@@ -351,3 +351,4 @@ from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
+    
