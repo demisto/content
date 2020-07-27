@@ -1,6 +1,5 @@
 import json
 from typing import Dict, Any
-
 import dateparser
 import demistomock as demisto
 import requests
@@ -170,6 +169,7 @@ def generate_specific_key_by_command_name(url_suffix):
 
 
 def args_or_params_to_filter(arguments, url_suffix='', args_or_params='args'):
+    service_key, instance_key, username_key = '', '', ''
     if args_or_params == 'args':
         service_key, instance_key, username_key = generate_specific_key_by_command_name(url_suffix)
     request_data: Dict[str, Any] = {}
@@ -213,9 +213,9 @@ def args_or_params_to_filter(arguments, url_suffix='', args_or_params='args'):
             filters['isExternal'] = {'eq': IS_EXTERNAL_OPTIONS[value]}
         if key == 'status':
             filters[key] = {'eq': STATUS_OPTIONS[value]}
-        if args_or_params == 'params':
-            return filters
-        request_data['filters'] = filters
+    if args_or_params == 'params':
+        return filters
+    request_data['filters'] = filters
     return request_data
 
 
@@ -302,7 +302,7 @@ def list_alerts_command(client, args):
                               resolution_status=args.get('resolution_status'), username=args.get('username'))
     request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, customer_filters, arguments, alert_id)
     alerts = client.list_alerts(url_suffix, request_data)
-    alerts = alerts.get('data')
+    alerts = arrange_alerts_by_incident_type(alerts)
     human_readable = alerts_to_human_readable(alerts)
     return CommandResults(
         readable_output=human_readable,
@@ -476,6 +476,19 @@ def get_max_result_number(max_results):
     return int(max_results)
 
 
+def arrange_alerts_by_incident_type(alerts):
+    alerts = alerts['data']
+    for alert in alerts:
+        incident_types = {}
+        for entity in alert['entities']:
+            if not incident_types.get(entity.get('type')):
+                incident_types[entity['type']] = []
+            incident_types[entity['type']].append(entity)
+        alert.update(incident_types)
+        del alert['entities']
+    return alerts
+
+
 def alerts_to_incidents_and_fetch_start_from(alerts, fetch_start_time):
     incidents = []
     for alert in alerts['data']:
@@ -499,7 +512,7 @@ def fetch_incidents(client, max_results, last_run, first_fetch, filters):
     fetch_start_time = calculate_fetch_start_time(last_fetch, first_fetch)
     filters["date"] = {"gte": fetch_start_time}
     alerts = client.list_incidents(filters, limit=max_results)
-
+    alerts = arrange_alerts_by_incident_type(alerts)
     incidents, fetch_start_time = alerts_to_incidents_and_fetch_start_from(alerts, fetch_start_time)
     next_run = {'last_fetch': fetch_start_time}
     return next_run, incidents
