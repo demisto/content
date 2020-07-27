@@ -2,11 +2,7 @@ id: Detonate File - Trend Micro Deep Discovery Analyzer Beta
 version: -1
 name: Detonate File - Trend Micro Deep Discovery Analyzer Beta
 fromversion: 4.0.0
-description: "Detonates a File using the Trend Micro Deep Discovery Analyzer sandbox.\nDeep
-  Discovery Analyzer(version 6.0.0) supports the following File Types:\nbat, cell,
-  chm, class, cmd, dll, doc, docx, exe, gul, hta, htm, html, hwp, hwpx, jar, js, jse,
-  jtd, lnk, mov, pdf, ppt, pptx, ps1, pub, rtf, slk, svg, swf, vbe, vbs, \nwsf, xls,
-  xlsx, xml"
+description: "Detonates a File using the Trend Micro Deep Discovery Analyzer sandbox.\nDeep Discovery Analyzer(version 6.0.0) supports the following File Types:\nbat, cell, chm, class, cmd, dll, doc, docx, exe, gul, hta, htm, html, hwp, hwpx, jar, js, jse, jtd, lnk, mov, pdf, ppt, pptx, ps1, pub, rtf, slk, svg, swf, vbe, vbs, \nwsf, xls, xlsx, xml"
 starttaskid: "0"
 tasks:
   "0":
@@ -450,4 +446,5 @@ outputs:
   type: string
 beta: true
 tests:
-- No Test - run "Test Playbook TrendMicroDDA" manually
+- No test
+toversion: 4.1.9

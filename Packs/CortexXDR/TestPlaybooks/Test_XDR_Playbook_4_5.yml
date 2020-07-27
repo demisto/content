@@ -1333,10 +1333,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Gets a list of endpoints, according to the passed filters. Filtering
-        by multiple fields will be concatenated using AND condition (OR is not supported).
-        Maximum result set size is 100. Offset is the zero-based number of endpoint
-        from the start of the result set (start by counting from 0).
+      description: Gets a list of endpoints, according to the passed filters. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
       id: 54fe0083-3e51-45bd-8097-db2d203b690c
       iscommand: true
       name: Get Endpoint f8a2f58846b542579c12090652e79f3d
@@ -1492,11 +1489,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Cortex XDR - IR
-      description: Gets a list of endpoints, according to the passed filters. If there
-        are no filters it will return all endpoints. Filtering by multiple fields
-        will be concatenated using AND condition (OR is not supported). Maximum result
-        set size is 100. Offset is the zero-based number of endpoint from the start
-        of the result set (start by counting from 0).
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters it will return all endpoints. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
       id: 8cb29931-71eb-428f-86c3-4ee447d07724
       iscommand: true
       name: xdr-get-endpoints
@@ -1570,4 +1563,6 @@ view: |-
     }
   }
 fromversion: 4.1.0
-toversion: 4.9.9
+toversion: 4.1.9
+tests:
+- No test

@@ -421,4 +421,5 @@ script:
   script: ''
   type: python
 tests:
-- Perch-Test
+- No test
+toversion: 4.1.9

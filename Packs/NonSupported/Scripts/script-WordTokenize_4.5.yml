@@ -2,16 +2,24 @@ commonfields:
   id: WordTokenizer
   version: -1
 name: WordTokenizer
-script: |-
+script: >-
   import nltk, re
+
   from HTMLParser import HTMLParser
+
   html_parser = HTMLParser()
 
+
   CLEAN_HTML = (demisto.args()['cleanHtml'] == 'yes')
+
   REMOVE_LINE_BREAKS = (demisto.args()['removeLineBreaks'] == 'yes')
+
   TOKENIZE_TYPE = demisto.args()['type']
+
   TEXT_ENCODE = demisto.args()['encoding']
+
   HASH_SEED = demisto.args().get('hashWordWithSeed')
+
 
   REMOVE_HTML_PATTERNS = [
       re.compile(r"(?is)<(script|style).*?>.*?(</\1>)"),
@@ -20,6 +28,7 @@ script: |-
       re.compile(r"&nbsp;"),
       re.compile(r" +")
   ]
+
   def clean_html(text):
       if not CLEAN_HTML:
           return text
@@ -52,9 +61,11 @@ script: |-
 
   text = demisto.args()['value']
 
+
   if type(text) is not list:
       text = [text]
   result = map(remove_line_breaks, map(tokenize_text, map(clean_html, text)))
+
 
   if len(result) == 1:
       result = result[0]
@@ -111,6 +122,6 @@ outputs:
 scripttarget: 0
 runonce: true
 dockerimage: demisto/nltk:1.0
-toversion: 4.5.9
+toversion: 4.1.9
 tests:
-  - WordTokenizeTest
+- No test

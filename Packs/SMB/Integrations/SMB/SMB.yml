@@ -107,18 +107,17 @@ script:
       description: EntryID of the file to send to the share.
     - name: content
       default: false
-      description: File content to send to the share. Ignored if EntryID argument
-        is specified.
+      description: File content to send to the share. Ignored if EntryID argument is specified.
     deprecated: false
     description: Uploads a file to the SMB server.
     execution: false
     name: smb-upload
-  dockerimage45: demisto/pysmb
-  dockerimage: demisto/smb:1.0.0.7685
+  dockerimage: demisto/pysmb
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python2
 tests:
-- SMB test
+- No test
+toversion: 4.1.9

@@ -241,8 +241,7 @@ tasks:
       id: 46100a3a-dc92-4c08-8098-8baff8320399
       version: -1
       name: Scan URL
-      description: Check if url is phishing and get details about the brand that is
-        being phished
+      description: Check if url is phishing and get details about the brand that is being phished
       script: '|||phish-ai-scan-url'
       type: regular
       iscommand: true
@@ -338,4 +337,5 @@ outputs:
   description: URL's Address
   type: string
 tests:
-  - Test-Detonate URL - Phish.AI
+- No test
+toversion: 4.1.9

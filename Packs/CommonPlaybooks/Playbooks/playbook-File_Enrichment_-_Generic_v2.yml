@@ -110,8 +110,7 @@ tasks:
       id: 0783a3a6-5d8b-48f1-8dee-f3f0ef62defc
       version: -1
       name: Is Cylance Protect v2 enabled?
-      description: Checks if there is an active instance of the Cylance Protect v2
-        integration enabled.
+      description: Checks if there is an active instance of the Cylance Protect v2 integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -324,4 +323,5 @@ outputs:
   description: Scan result for this hash - signature, etc.
 fromversion: 4.1.0
 tests:
-- File Enrichment - Generic v2 - Test
+- No test
+toversion: 4.1.9

@@ -12,8 +12,7 @@ configuration:
   name: auth_id
   required: true
   type: 4
-- display: Token (received from the admin consent - see Detailed Instructions (?)
-    section)
+- display: Token (received from the admin consent - see Detailed Instructions (?) section)
   name: tenant_id
   required: true
   type: 4
@@ -35,8 +34,7 @@ configuration:
   name: self_deployed
   required: false
   type: 8
-description: Unified gateway to security insights - all from a unified Microsoft Graph
-  User API.
+description: Unified gateway to security insights - all from a unified Microsoft Graph User API.
 display: Microsoft Graph User
 name: Microsoft Graph User
 script:
@@ -49,12 +47,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: "Terminates a user's session from all Office 365 applications, and
-      prevents sign in.
-
-      Permissions:
-      - User.ReadWrite (Delegated & Application)
-      "
+    description: "Terminates a user's session from all Office 365 applications, and prevents sign in.\nPermissions: - User.ReadWrite (Delegated & Application) "
     execution: false
     name: msgraph-user-terminate-session
   - arguments:
@@ -82,10 +75,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: "Updates the properties of a user object.
-
-    Permissions:
-    - User.ReadWrite (Delegated & Application)"
+    description: "Updates the properties of a user object.\nPermissions: - User.ReadWrite (Delegated & Application)"
     execution: false
     name: msgraph-user-update
     outputs:
@@ -130,11 +120,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: "Deletes an existing user.
-
-    Permissions:
-    - Directory.AccessAsUser.All (Delegated)
-    - User.ReadWrite.All (Application)"
+    description: "Deletes an existing user.\nPermissions: - Directory.AccessAsUser.All (Delegated) - User.ReadWrite.All (Application)"
     execution: true
     name: msgraph-user-delete
   - arguments:
@@ -156,8 +142,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Only needs to be specified when creating a new user account if
-        you are using a federated domain for the user's userPrincipalName (UPN) property.
+      description: Only needs to be specified when creating a new user account if you are using a federated domain for the user's userPrincipalName (UPN) property.
       isArray: false
       name: on_premises_immutable_id
       required: false
@@ -187,10 +172,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: "Creates a new user.
-
-    Permissions:
-    - User.ReadWrite.All (Delegated & Application)"
+    description: "Creates a new user.\nPermissions: - User.ReadWrite.All (Delegated & Application)"
     execution: false
     name: msgraph-user-create
     outputs:
@@ -229,20 +211,13 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: ' A CSV list of properties by which to filter the results, for
-        example: "displayName,jobTitle,mobilePhone" '
+      description: ' A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone" '
       isArray: false
       name: properties
       required: false
       secret: false
     deprecated: true
-    description: "Deprecated. This command only returns a single page.
-    Use the msgraph-user-list command instead, which gets newly created, updated, or
-    deleted users without performing a full read of the entire user collection.
-
-    Permissions:
-    - User.Read (Delegated)
-    - User.Read.All (Application)"
+    description: "Deprecated. This command only returns a single page. Use the msgraph-user-list command instead, which gets newly created, updated, or deleted users without performing a full read of the entire user collection.\nPermissions: - User.Read (Delegated) - User.Read.All (Application)"
     execution: false
     name: msgraph-user-get-delta
     outputs:
@@ -287,19 +262,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: ' A CSV list of properties by which to filter the results, for
-        example: "displayName,jobTitle,mobilePhone" '
+      description: ' A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone" '
       isArray: false
       name: properties
       required: false
       secret: false
     deprecated: false
-    description: "Retrieves the properties and relationships of a user object. For more
-      information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).
-
-      Permissions:
-    - User.Read (Delegated)
-    - User.Read.All (Application)"
+    description: "Retrieves the properties and relationships of a user object. For more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).\nPermissions: - User.Read (Delegated) - User.Read.All (Application)"
     execution: false
     name: msgraph-user-get
     outputs:
@@ -338,8 +307,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: 'A CSV list of properties by which to filter the results, for
-        example: "displayName,jobTitle,mobilePhone"'
+      description: 'A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone"'
       isArray: false
       name: properties
       required: false
@@ -351,11 +319,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: "Retrieves a list of user objects.
-
-    Permissions:
-    - User.ReadBasic.All (Delegated)
-    - User.Read.All (Application)"
+    description: "Retrieves a list of user objects.\nPermissions: - User.ReadBasic.All (Delegated) - User.Read.All (Application)"
     execution: false
     name: msgraph-user-list
     outputs:
@@ -437,8 +401,7 @@ script:
     - contextPath: MSGraphUserDirectReports.Reports.UserPrincipalName
       description: The user principal name (UPN) of the user. The UPN is an Internet-style login name for the user based on the Internet standard RFC 822. By convention, this should map to the user's email name. The general format is alias@domain, where domain must be present in the tenant’s collection of verified domains. This property is required when a user is created. The verified domains for the tenant can be accessed from the verifiedDomains property of organization.
       type: String
-    description: Retrieves the direct reports for a user. Direct reports are the people
-        who have that user configured as their manager.
+    description: Retrieves the direct reports for a user. Direct reports are the people who have that user configured as their manager.
   dockerimage: demisto/crypto:1.0.0.7634
   isfetch: false
   longRunning: false
@@ -448,4 +411,5 @@ script:
   type: python
   subtype: python3
 tests:
-- Microsoft Graph - Test
+- No test
+toversion: 4.1.9

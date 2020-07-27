@@ -1,7 +1,7 @@
 id: Extract Indicators From File - Generic v2
 version: -1
 fromversion: 4.1.0
-toversion: 4.4.9
+toversion: 4.1.9
 name: Extract Indicators From File - Generic v2
 description: |-
   Extracts indicators from a file.
@@ -170,8 +170,7 @@ tasks:
       id: 6bc85e4c-1f70-41b7-8bec-3c6410c9ad53
       version: -1
       name: Is there a text-based file?
-      description: Checks if there is a text-based file in context. Skips MSG and
-        EML files.
+      description: Checks if there is a text-based file in context. Skips MSG and EML files.
       type: condition
       iscommand: false
       brand: ""
@@ -808,8 +807,7 @@ tasks:
       id: 60827e91-7450-4f79-8e82-863488b15371
       version: -1
       name: Is Image OCR enabled?
-      description: Checks whether there is an active instance of the Image OCR integration
-        enabled.
+      description: Checks whether there is an active instance of the Image OCR integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -855,8 +853,7 @@ tasks:
       id: 19fe4f88-c55b-4f13-814c-1ad0aae31cae
       version: -1
       name: Extract text from images
-      description: Extracts text from PNG, JPEG, and GIF image files, and uses auto-extract
-        to get reputation for indicators.
+      description: Extracts text from PNG, JPEG, and GIF image files, and uses auto-extract to get reputation for indicators.
       script: '|||image-ocr-extract-text'
       type: regular
       iscommand: true
@@ -986,4 +983,4 @@ outputs:
   description: List of URLs that were extracted from the PDF file.
   type: unknown
 tests:
-  - Extract Indicators From File - Generic v2 - Test
+- No test

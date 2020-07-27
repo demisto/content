@@ -118,8 +118,7 @@ tasks:
       id: bd742f8e-48d0-4e4e-89d2-62aaa81bc6be
       version: -1
       name: Get child processes
-      description: Get information about the child processes which were spawned from
-        the parent process of the process which opened the connection.
+      description: Get information about the child processes which were spawned from the parent process of the process which opened the connection.
       script: '|||uptycs-get-process-child-processes'
       type: regular
       iscommand: true
@@ -196,8 +195,7 @@ tasks:
       id: eb3582ce-edce-4a2c-8d03-f6feb37d02cf
       version: -1
       name: Get parent event info
-      description: Get information about the parent process of the process which opened
-        the connection.
+      description: Get information about the parent process of the process which opened the connection.
       script: '|||uptycs-get-parent-event-information'
       type: regular
       iscommand: true
@@ -268,8 +266,7 @@ tasks:
       id: 7bc91cbf-3fbc-41ca-876d-2f3c8718b606
       version: -1
       name: Get parent info
-      description: Get information about the parent process of the process which opened
-        the connection.
+      description: Get information about the parent process of the process which opened the connection.
       script: '|||uptycs-get-parent-information'
       type: regular
       iscommand: true
@@ -304,8 +301,7 @@ tasks:
       id: aae7f985-ddda-4859-822a-998ace908d81
       version: -1
       name: Get child processes
-      description: Get information about the child processes which were spawned from
-        the parent process of the process which opened the connection.
+      description: Get information about the child processes which were spawned from the parent process of the process which opened the connection.
       script: '|||uptycs-get-process-child-processes'
       type: regular
       iscommand: true
@@ -435,4 +431,5 @@ outputs:
   description: time that the process was removed
   type: date
 tests:
-  - TestUptycs
+- No test
+toversion: 4.1.9

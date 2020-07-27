@@ -23,8 +23,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Trend Micro Apex central automation to manage agents and User-Defined
-  Suspicious Objects
+description: Trend Micro Apex central automation to manage agents and User-Defined Suspicious Objects
 display: Trend Micro Apex (Beta)
 name: Trend Micro Apex
 script:
@@ -44,21 +43,18 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filters the list to suspicious objects that match the specified
-        string
+      description: Filters the list to suspicious objects that match the specified string
       isArray: false
       name: content_filter
       required: false
       secret: false
     deprecated: false
-    description: Retrieve a list of User-Defined Suspicious Objects from the Apex
-      Central server.
+    description: Retrieve a list of User-Defined Suspicious Objects from the Apex Central server.
     execution: false
     name: trendmicro-apex-usdo-list
     outputs:
     - contextPath: TrendMicroApex.USDO.type
-      description: 'Indicator type of the USDO object, for example: ip, file, file_sha1,
-        url, domain.'
+      description: 'Indicator type of the USDO object, for example: ip, file, file_sha1, url, domain.'
       type: String
     - contextPath: TrendMicroApex.USDO.content
       description: Indicator content of the USDO object.
@@ -87,17 +83,14 @@ script:
       required: true
       secret: false
     - default: false
-      description: The suspicious object content for the specified type, for example
-        8.8.8.8 (for type "file", provide the binary content of the suspicious file
-        as a base64 string)
+      description: The suspicious object content for the specified type, for example 8.8.8.8 (for type "file", provide the binary content of the suspicious file as a base64 string)
       isArray: false
       name: content
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The scan action to perform on the suspicious object (The "quarantine"
-        scan action is only available for file type objects)
+      description: The scan action to perform on the suspicious object (The "quarantine" scan action is only available for file type objects)
       isArray: false
       name: scan_action
       predefined:
@@ -113,15 +106,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The UTC expiration date and time of the suspicious object, for
-        example: 2020-01-25T09:00:00Z'
+      description: 'The UTC expiration date and time of the suspicious object, for example: 2020-01-25T09:00:00Z'
       isArray: false
       name: expiration
       required: false
       secret: false
     deprecated: false
-    description: Add suspicious file, file SHA-1, IP address, domain, or URL objects
-      to the User-Defined Suspicious Object list.
+    description: Add suspicious file, file SHA-1, IP address, domain, or URL objects to the User-Defined Suspicious Object list.
     execution: false
     name: trendmicro-apex-usdo-add
   - arguments:
@@ -144,17 +135,14 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Delete suspicious file SHA-1, IP address, domain, or URL objects
-      from the User-Defined Suspicious Object list.
+    description: Delete suspicious file SHA-1, IP address, domain, or URL objects from the User-Defined Suspicious Object list.
     execution: false
     name: trendmicro-apex-usdo-delete
   - arguments:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether to allow multiple matches or not. If this parameter is
-        set to "false", and the provided parameters match multiple agents, the action
-        will be unsuccessful.
+      description: Whether to allow multiple matches or not. If this parameter is set to "false", and the provided parameters match multiple agents, the action will be unsuccessful.
       isArray: false
       name: multi_match
       predefined:
@@ -200,9 +188,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether to allow multiple matches or not. If this argument is set
-        to "false", and the provided parameters match multiple agents, the action
-        will be unsuccessful.
+      description: Whether to allow multiple matches or not. If this argument is set to "false", and the provided parameters match multiple agents, the action will be unsuccessful.
       isArray: false
       name: multi_match
       predefined:
@@ -255,3 +241,4 @@ script:
 tests:
 - No test
 beta: true
+toversion: 4.1.9

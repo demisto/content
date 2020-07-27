@@ -2,9 +2,8 @@ id: process_email_-_generic
 version: -1
 name: Process Email - Generic
 fromversion: 4.0.0
-toversion: 4.5.9
-description: Add email details to the relevant context entities and handle the case
-  where original emails are attached.
+toversion: 4.1.9
+description: Add email details to the relevant context entities and handle the case where original emails are attached.
 starttaskid: "0"
 tasks:
   "0":
@@ -40,11 +39,7 @@ tasks:
       id: f4ec5dda-65f9-465c-88f4-4319d0e57edf
       version: -1
       name: Do we have original emails attached?
-      description: Identify whether the incident includes an email message attached
-        as an eml or msg file and return the answer to playbook. Also saves the identified
-        entry ID to context for use for later. Commonly used in automated playbooks
-        that handle phishing reports sent to a special phishing mailbox set up by
-        the security team.
+      description: Identify whether the incident includes an email message attached as an eml or msg file and return the answer to playbook. Also saves the identified entry ID to context for use for later. Commonly used in automated playbooks that handle phishing reports sent to a special phishing mailbox set up by the security team.
       scriptName: IdentifyAttachedEmail
       type: condition
       iscommand: false
@@ -92,9 +87,7 @@ tasks:
       key:
         simple: Email
       value:
-        simple: '${inputs={To: val[''Email''], CC: val[''Email/cc''], From: val[''Email/from''],
-          Subject: val[''Email/subject''], Text: val[''Email/text''], HTML: val[''Email/html''],
-          Headers: val[''Email/headers''], Format: val[''Email/format'']}}'
+        simple: '${inputs={To: val[''Email''], CC: val[''Email/cc''], From: val[''Email/from''], Subject: val[''Email/subject''], Text: val[''Email/text''], HTML: val[''Email/html''], Headers: val[''Email/headers''], Format: val[''Email/format'']}}'
     reputationcalc: 2
     separatecontext: false
     view: |-
@@ -115,9 +108,7 @@ tasks:
       id: 674d0e72-c104-41f9-806b-afbaf8444bea
       version: -1
       name: Add original email attachments to context
-      description: Parses an email from an EML or MSG file and populates all relevant
-        context data to investigate the email. Also extracts indicators from the email
-        messages.
+      description: Parses an email from an EML or MSG file and populates all relevant context data to investigate the email. Also extracts indicators from the email messages.
       scriptName: ParseEmailFiles
       type: regular
       iscommand: false
@@ -282,8 +273,7 @@ tasks:
       id: 98601be8-c258-47c5-8666-0babb2f1789d
       version: -1
       name: Set incident with the Email object data
-      description: Updates Demisto incident fields using data from the email object.
-        Also extracts indicators from the email message.
+      description: Updates Demisto incident fields using data from the email object. Also extracts indicators from the email message.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -1209,4 +1199,4 @@ outputs:
   description: The File object
   type: unknown
 tests:
-  - process_email_-_generic_-_test
+- No test

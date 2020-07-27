@@ -442,8 +442,7 @@ outputs:
   description: ist of network connections done by the analysis subject
   type: string
 - contextPath: Lastline.Submission.DownloadedFiles
-  description: List of files that were downloaded using the Microsoft Windows file-download
-    API functions. Each element is a tuple of file-origin URL and a File element.
+  description: List of files that were downloaded using the Microsoft Windows file-download API functions. Each element is a tuple of file-origin URL and a File element.
   type: string
 - contextPath: Lastline.Submission.UUID
   description: ID of the submission
@@ -485,4 +484,5 @@ outputs:
   description: Lastline submission object
   type: unknown
 tests:
-- Detonate URL - Generic Test
+- No test
+toversion: 4.1.9

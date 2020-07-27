@@ -42,4 +42,5 @@ dependson:
   - servicenow-query-table
 runonce: false
 tests:
-  - No test - Hibernating instance
+- No test
+toversion: 4.1.9

@@ -579,8 +579,7 @@ tasks:
       fields:
         simple: SrcIP,IPSIDAlertID,DstIP
       filters:
-        simple: '[{  "type": "EsmFieldFilter",  "field": {"name": "SrcIP"},  "operator":
-          "EQUALS",   "values": [{  "type": "EsmBasicValue",    "value": "199.203.151.209"  }]  }]'
+        simple: '[{  "type": "EsmFieldFilter",  "field": {"name": "SrcIP"},  "operator": "EQUALS",   "values": [{  "type": "EsmBasicValue",    "value": "199.203.151.209"  }]  }]'
       maxWait: {}
       queryType: {}
       timeRange:
@@ -951,3 +950,6 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.1.9
+tests:
+- No test

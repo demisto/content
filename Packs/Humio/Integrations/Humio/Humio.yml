@@ -354,3 +354,6 @@ script:
   isfetch: true
   runonce: false
   subtype: python3
+toversion: 4.1.9
+tests:
+- No test

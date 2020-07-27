@@ -64,8 +64,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns authentication logs associated with a user. Limited to 30
-      at a time
+    description: Returns authentication logs associated with a user. Limited to 30 at a time
     execution: false
     name: duoadmin-get-authentication-logs-by-user
     outputs:
@@ -241,4 +240,5 @@ script:
   type: python
   subtype: python2
 tests:
-- DuoAdmin API test playbook
+- No test
+toversion: 4.1.9

@@ -416,8 +416,7 @@ inputs:
   value:
     simple: "10"
   required: false
-  description: The duration after which to stop pooling and to resume the playbook
-    (in minutes)
+  description: The duration after which to stop pooling and to resume the playbook (in minutes)
 outputs:
 - contextPath: BitDam.Analysis.ID
   description: Sample ID
@@ -440,4 +439,5 @@ outputs:
   description: The actual score
   type: number
 tests:
-- Detonate File - BitDam Test
+- No test
+toversion: 4.1.9

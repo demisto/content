@@ -14,3 +14,6 @@ scripttarget: 0
 dependson: {}
 timeout: 0s
 dockerimage: demisto/crypto:1.0.0.8854
+toversion: 4.1.9
+tests:
+- No test

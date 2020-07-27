@@ -32,8 +32,7 @@ configuration:
   required: false
   type: 8
 - defaultvalue: 1 hour
-  display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
-    - Proofpoint supports maximum 1 hour fetch back
+  display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes) - Proofpoint supports maximum 1 hour fetch back
   name: fetch_time
   required: false
   type: 0
@@ -106,6 +105,7 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests
+- No test
 defaultClassifier: Cymulate
 defaultMapperIn: Cymulate-mapper
+toversion: 4.1.9

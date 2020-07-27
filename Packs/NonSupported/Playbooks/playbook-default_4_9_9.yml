@@ -2,7 +2,7 @@ id: playbook0
 version: -1
 name: Default
 fromversion: 3.5.0
-toversion: 4.9.9
+toversion: 4.1.9
 description: Default playbook, Enrich indicators in incident using one or more integrations
 starttaskid: "0"
 tasks:
@@ -282,4 +282,4 @@ inputs:
   description: Should preform enrichment on all indicators in the incident
 outputs: []
 tests:
-  - No test
+- No test

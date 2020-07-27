@@ -304,8 +304,7 @@ inputs:
   value:
     simple: "15"
   required: false
-  description: The duration after which to stop pooling and to resume the playbook
-    (in minutes)
+  description: The duration after which to stop pooling and to resume the playbook (in minutes)
 outputs:
 - contextPath: ANYRUN.Task.AnalysisDate
   description: Date and time the analysis was executed.
@@ -515,4 +514,5 @@ outputs:
   description: Task analysis status.
   type: String
 tests:
-  - Detonate File From URL - ANYRUN - Test
+- No test
+toversion: 4.1.9

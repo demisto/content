@@ -12,15 +12,13 @@ args:
   required: false
   secret: false
 - default: false
-  description: 'The start date by which to filter incidents. Date format will be the same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00
-    +0200").'
+  description: 'The start date by which to filter incidents. Date format will be the same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00 +0200").'
   isArray: false
   name: fromDate
   required: false
   secret: false
 - default: false
-  description: 'The end date by which to filter incidents. Date format will be the same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00
-    +0200").'
+  description: 'The end date by which to filter incidents. Date format will be the same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00 +0200").'
   isArray: false
   name: toDate
   required: false
@@ -55,8 +53,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: A comma-separated list of non-empty value incident field names by which
-    to filter incidents.
+  description: A comma-separated list of non-empty value incident field names by which to filter incidents.
   isArray: false
   name: NonEmptyFields
   required: false
@@ -78,9 +75,7 @@ args:
   name: populateFields
   required: false
   secret: false
-comment: Gets a list of incident objects and the associated incident outputs that
-  match the specified query and filters. The results are returned in a structured
-  data file.
+comment: Gets a list of incident objects and the associated incident outputs that match the specified query and filters. The results are returned in a structured data file.
 commonfields:
   id: GetIncidentsByQuery
   version: -1
@@ -102,4 +97,5 @@ timeout: 60µs
 type: python
 dockerimage: demisto/python:2.7.17.6981
 tests:
-- Create Phishing Classifier V2 ML Test
+- No test
+toversion: 4.1.9

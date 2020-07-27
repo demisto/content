@@ -24,8 +24,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: Which task should we close with the reply. If none then no playbook
-    tasks will be closed.
+  description: Which task should we close with the reply. If none then no playbook tasks will be closed.
   isArray: false
   name: task
   required: false
@@ -47,8 +46,7 @@ args:
   - 'false'
   required: false
   secret: false
-comment: Ask a user a question on Slack and expect a response. The response can also
-  close a task (might be conditional) in a playbook.
+comment: Ask a user a question on Slack and expect a response. The response can also close a task (might be conditional) in a playbook.
 commonfields:
   id: SlackAskUser
   version: -1
@@ -65,6 +63,6 @@ dependson:
   must:
   - slack-send
 fromversion: 3.5.0
-toversion: 4.5.0
+toversion: 4.1.9
 tests:
-  - No test - entitlement
+- No test

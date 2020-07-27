@@ -36,8 +36,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
-description: Case management that enables visibility across your tools for continual
-  IR improvement
+description: Case management that enables visibility across your tools for continual IR improvement
 display: IBM Resilient Systems
 name: IBM Resilient Systems
 script:
@@ -50,30 +49,26 @@ script:
       required: false
       secret: false
     - default: false
-      description: Created date of the incident before given date in format YYYY-MM-DDTHH:MM:SSZ,
-        e.g. 2018-05-07T10:59:07Z
+      description: Created date of the incident before given date in format YYYY-MM-DDTHH:MM:SSZ, e.g. 2018-05-07T10:59:07Z
       isArray: false
       name: date-created-before
       required: false
       secret: false
     - default: false
-      description: Created date of the incident after given date in format YYYY-MM-DDTHH:MM:SSZ,
-        e.g. 2018-05-07T10:59:07Z
+      description: Created date of the incident after given date in format YYYY-MM-DDTHH:MM:SSZ, e.g. 2018-05-07T10:59:07Z
       isArray: false
       name: date-created-after
       required: false
       secret: false
     - default: false
-      description: Created date of the incident within the last time frame (days/hours/minutes).
-        Should be given a number, along with with the timeframe argument.
+      description: Created date of the incident within the last time frame (days/hours/minutes). Should be given a number, along with with the timeframe argument.
       isArray: false
       name: date-created-within-the-last
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Time frame to search within for incident. Should be given with
-        within-the-last/due-in argument. '
+      description: 'Time frame to search within for incident. Should be given with within-the-last/due-in argument. '
       isArray: false
       name: timeframe
       predefined:
@@ -83,22 +78,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: Occurred date of the incident within the last time frame (days/hours/minutes).
-        Should be given a number, along with with the timeframe argument.
+      description: Occurred date of the incident within the last time frame (days/hours/minutes). Should be given a number, along with with the timeframe argument.
       isArray: false
       name: date-occurred-within-the-last
       required: false
       secret: false
     - default: false
-      description: Occurred date of the incident before given date in format YYYY-MM-DDTHH:MM:SSZ,
-        e.g. 2018-05-07T10:59:07Z
+      description: Occurred date of the incident before given date in format YYYY-MM-DDTHH:MM:SSZ, e.g. 2018-05-07T10:59:07Z
       isArray: false
       name: date-occurred-before
       required: false
       secret: false
     - default: false
-      description: Occurred date of the incident after given date in format YYYY-MM-DDTHH:MM:SSZ,
-        e.g. 2018-05-07T10:59:07Z
+      description: Occurred date of the incident after given date in format YYYY-MM-DDTHH:MM:SSZ, e.g. 2018-05-07T10:59:07Z
       isArray: false
       name: date-occurred-after
       required: false
@@ -157,8 +149,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Due date of the incident in given timeframe (days/hours/minutes).
-        Should be given a number, along with with the timeframe argument.
+      description: Due date of the incident in given timeframe (days/hours/minutes). Should be given a number, along with with the timeframe argument.
       isArray: false
       name: due-in
       required: false
@@ -594,3 +585,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+toversion: 4.1.9
+tests:
+- No test

@@ -2008,8 +2008,7 @@ tasks:
       id: 523c7151-11c9-4e05-89b1-4b1e967d06f4
       version: -1
       name: Search file instance using specific query args
-      description: 'Search for file instances. For more information, see the Carbon
-        Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#fileinstance'
+      description: 'Search for file instances. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#fileinstance'
       script: CarbonBlackProtectionV2|||cbp-fileInstance-search
       type: regular
       iscommand: true
@@ -2049,8 +2048,7 @@ tasks:
       id: 7d826d9c-6050-4ae6-800c-6555926d9254
       version: -1
       name: Search events using specific query arguments
-      description: 'Search for events. For more information, see the Carbon Black
-        documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#event'
+      description: 'Search for events. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#event'
       script: CarbonBlackProtectionV2|||cbp-event-search
       type: regular
       iscommand: true
@@ -2230,3 +2228,6 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.1.9
+tests:
+- No test

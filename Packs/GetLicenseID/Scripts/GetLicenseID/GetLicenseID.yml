@@ -16,3 +16,6 @@ subtype: python3
 runonce: false
 dockerimage: demisto/python3:3.8.1.6120
 runas: DBotWeakRole
+toversion: 4.1.9
+tests:
+- No test

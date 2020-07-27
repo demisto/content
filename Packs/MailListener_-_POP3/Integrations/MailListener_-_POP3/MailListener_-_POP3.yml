@@ -53,4 +53,5 @@ script:
   subtype: python2
 beta: true
 tests:
-- MailListener-POP3 - Test
+- No test
+toversion: 4.1.9

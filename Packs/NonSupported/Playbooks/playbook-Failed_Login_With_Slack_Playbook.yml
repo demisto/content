@@ -1,12 +1,10 @@
 id: Failed Login Playbook With Slack
 version: -1
 name: Failed Login Playbook With Slack
-description: Following a failed login event happening more than 3 times, ask user
-  on Slack if she attempted a login. If no, raise the incident level to high. If yes,
-  ask user if she needs a password reset and reset the password in AD.
+description: Following a failed login event happening more than 3 times, ask user on Slack if she attempted a login. If no, raise the incident level to high. If yes, ask user if she needs a password reset and reset the password in AD.
 system: true
 fromversion: 2.5.0
-toversion: 4.5.0
+toversion: 4.1.9
 starttaskid: "0"
 tasks:
   "0":
@@ -49,8 +47,7 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      message: We noticed failed-login attempts with your user ID, please confirm
-        it was your attempts
+      message: We noticed failed-login attempts with your user ID, please confirm it was your attempts
       option1: ""
       option2: ""
       task: "3"
@@ -272,4 +269,4 @@ view: |-
     }
   }
 tests:
-  - no test - manual task
+- No test

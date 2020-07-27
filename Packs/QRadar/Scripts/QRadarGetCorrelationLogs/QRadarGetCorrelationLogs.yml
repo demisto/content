@@ -75,4 +75,5 @@ dependson:
   must:
   - qradar-searches
 tests:
-- no tests
+- No test
+toversion: 4.1.9

@@ -1415,8 +1415,7 @@ tasks:
       limit: {}
       page: {}
       q:
-        simple: '"https://dashboard.signalsciences.net/api/v0/corps/demisto/sites/demisto/requests?q=from:-7d
-          tag:sqli tag:xss tag:cmdexe tag:traversal"'
+        simple: '"https://dashboard.signalsciences.net/api/v0/corps/demisto/sites/demisto/requests?q=from:-7d tag:sqli tag:xss tag:cmdexe tag:traversal"'
       siteName:
         simple: demisto
     separatecontext: false
@@ -2050,3 +2049,6 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.1.9
+tests:
+- No test

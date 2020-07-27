@@ -373,4 +373,5 @@ outputs:
 - contextPath: Cuckoo.Task.Monitor
   description: Monitor of the reported task
 tests:
-  - CuckooTest
+- No test
+toversion: 4.1.9

@@ -4,7 +4,7 @@ commonfields:
 name: jira-v2
 display: Atlassian Jira v2
 fromversion: 2.6.0
-toversion: 4.5.9
+toversion: 4.1.9
 category: Case Management
 description: Use the Jira integration to manage issues and create Demisto incidents from the projects.
 configuration:
@@ -90,10 +90,7 @@ script:
     - name: startAt
       description: The index (integer) of the first issue to return (0-based).
     - name: maxResults
-      description: The maximum number of issues to return (default is 50). The maximum
-        allowed value is dictated by the JIRA property 'jira.search.views.default.max'.
-        If you specify a value that is higher than this number, your search results
-        will be truncated.
+      description: The maximum number of issues to return (default is 50). The maximum allowed value is dictated by the JIRA property 'jira.search.views.default.max'. If you specify a value that is higher than this number, your search results will be truncated.
     - name: headers
       description: The headers to display in human readable format.
     outputs:
@@ -214,8 +211,7 @@ script:
   - name: jira-issue-add-link
     arguments:
     - name: globalId
-      description: If a globalId is provided and a remote issue link exists with that
-        globalId, the remote issue link is updated.
+      description: If a globalId is provided and a remote issue link exists with that globalId, the remote issue link is updated.
     - name: relationship
       description: ' The object relationship to issue, for example: "causes". '
     - name: url
@@ -301,4 +297,4 @@ script:
   isfetch: true
   runonce: false
 tests:
-  - Jira-v2-Test
+- No test

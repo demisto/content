@@ -517,8 +517,7 @@ inputs:
   value:
     simple: Demisto Remediation - URL EDL
   required: false
-  description: URL list from the instance context with which to override the remote
-    file.
+  description: URL list from the instance context with which to override the remote file.
   playbookInputQuery:
 - key: LogForwarding
   value: {}
@@ -563,4 +562,5 @@ inputs:
 outputs: []
 fromversion: 4.0.0
 tests:
-- block_indicators_-_generic_-_test
+- No test
+toversion: 4.1.9

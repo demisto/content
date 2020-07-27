@@ -671,8 +671,7 @@ tasks:
       id: 5e56d6fb-48ee-4760-86e7-6d756e1f4cc7
       version: -1
       name: endace-download-pcap
-      description: Download a copy of the PCAP file from EndaceProbe if PCAP file
-        size is within the threshold value defined by filesizelimit.
+      description: Download a copy of the PCAP file from EndaceProbe if PCAP file size is within the threshold value defined by filesizelimit.
       script: Endace|||endace-download-pcap
       type: regular
       iscommand: true
@@ -705,9 +704,7 @@ tasks:
       id: 70202d1e-2ff8-4768-83b4-2249e55fd85c
       version: -1
       name: endace-create-archive
-      description: Create an archive task to archive packets of interest on EndaceProbe.
-        Archived packets can later be downloaded from EndaceProbe as a PCAP file.
-        Archived Files never expire. Allowed chars are text, numbers, dash and underscore.
+      description: Create an archive task to archive packets of interest on EndaceProbe. Archived packets can later be downloaded from EndaceProbe as a PCAP file. Archived Files never expire. Allowed chars are text, numbers, dash and underscore.
       script: Endace|||endace-create-archive
       type: regular
       iscommand: true
@@ -755,3 +752,6 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.1.9
+tests:
+- No test

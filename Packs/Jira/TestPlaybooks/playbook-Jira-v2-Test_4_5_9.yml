@@ -2,7 +2,7 @@ id: Jira-v2-Test
 version: -1
 name: Jira-v2-Test
 starttaskid: "0"
-toversion: 4.5.9
+toversion: 4.1.9
 tasks:
   "0":
     id: "0"
@@ -624,3 +624,5 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+- No test

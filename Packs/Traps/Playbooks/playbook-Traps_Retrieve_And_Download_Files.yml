@@ -100,8 +100,7 @@ tasks:
       Timeout:
         simple: "5"
       dt:
-        simple: Traps.FileRetrieveResult(val.Status == 'pending' || val.Status ==
-          'in progress').OperationID
+        simple: Traps.FileRetrieveResult(val.Status == 'pending' || val.Status == 'in progress').OperationID
     separatecontext: true
     loop:
       iscommand: false
@@ -201,4 +200,5 @@ inputs:
   description: The ID of the Event.
 outputs: []
 tests:
-  - No test - Is be tested in Traps test playbook
+- No test
+toversion: 4.1.9

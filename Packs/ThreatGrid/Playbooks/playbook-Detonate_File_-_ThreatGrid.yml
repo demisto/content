@@ -2,12 +2,7 @@ id: detonate_file_-_threatgrid
 version: -1
 name: Detonate File - ThreatGrid
 fromversion: 4.0.0
-description: Detonate one or more files using the ThreatGrid integration. This playbook
-  returns relevant reports to the War Room and file reputations to the context data.
-  The detonation supports the following file types - EXE, DLL, JAR, JS, PDF, DOC,
-  DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ, GZ, BZ2, TAR, MHTML, SWF, LNK,
-  URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX, BAT, HTA, PS1, VBS, WSF, JSE, VBE,
-  CHM
+description: Detonate one or more files using the ThreatGrid integration. This playbook returns relevant reports to the War Room and file reputations to the context data. The detonation supports the following file types - EXE, DLL, JAR, JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ, GZ, BZ2, TAR, MHTML, SWF, LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX, BAT, HTA, PS1, VBS, WSF, JSE, VBE, CHM
 starttaskid: "0"
 tasks:
   "0":
@@ -238,8 +233,7 @@ tasks:
       id: 93e193f6-a438-4349-861c-f0f99b4b3997
       version: -1
       name: Is there a file to detonate?
-      description: Checks whether there's a file to detonate - if not then the detonation
-        is skipped
+      description: Checks whether there's a file to detonate - if not then the detonation is skipped
       type: condition
       iscommand: false
       brand: ""
@@ -479,8 +473,7 @@ inputs:
 - key: Private
   value: {}
   required: false
-  description: The sample is marked private if this is present, and set to any value
-    other than false.
+  description: The sample is marked private if this is present, and set to any value other than false.
 - key: Source
   value: {}
   required: false
@@ -547,4 +540,5 @@ outputs:
 - contextPath: Sample.ID
   description: The sample ID.
 tests:
-- Detonate File - Generic Test
+- No test
+toversion: 4.1.9

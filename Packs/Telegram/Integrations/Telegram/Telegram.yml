@@ -47,4 +47,5 @@ script:
   subtype: python3
 beta: true
 tests:
-  - no test
+- No test
+toversion: 4.1.9

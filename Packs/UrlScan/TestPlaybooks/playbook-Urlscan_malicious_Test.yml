@@ -99,10 +99,7 @@ tasks:
       id: aa129b6a-759b-42e1-8c01-940a6d9edb86
       version: -1
       name: Get result
-      description: Filter context keys by applying one of the various available manipulations
-        and storing in a new context key. Please notice that the resulting context
-        key will not be available automatically as an option but you can still specify
-        it.
+      description: Filter context keys by applying one of the various available manipulations and storing in a new context key. Please notice that the resulting context key will not be available automatically as an option but you can still specify it.
       type: condition
       iscommand: false
       brand: ""
@@ -203,10 +200,7 @@ tasks:
       id: 06cffd37-650e-41c4-812a-51789f03771c
       version: -1
       name: Get result
-      description: Filter context keys by applying one of the various available manipulations
-        and storing in a new context key. Please notice that the resulting context
-        key will not be available automatically as an option but you can still specify
-        it.
+      description: Filter context keys by applying one of the various available manipulations and storing in a new context key. Please notice that the resulting context key will not be available automatically as an option but you can still specify it.
       type: condition
       iscommand: false
       brand: ""
@@ -563,8 +557,7 @@ tasks:
       id: a12fc4ca-e33a-4ea6-8042-6aa94e9f9b16
       version: -1
       name: get http transactions
-      description: This script enables gives you the functionallity of getting the
-        http transactions made for a given URL using the UrlScan integration
+      description: This script enables gives you the functionallity of getting the http transactions made for a given URL using the UrlScan integration
       scriptName: UrlscanGetHttpTransactions
       type: regular
       iscommand: false
@@ -846,3 +839,6 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.1.9
+tests:
+- No test

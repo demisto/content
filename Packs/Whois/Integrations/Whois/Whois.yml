@@ -327,5 +327,6 @@ script:
   subtype: python2
 defaultEnabled: false
 tests:
-- whois_test
+- No test
 fromversion: 4.1.0
+toversion: 4.1.9

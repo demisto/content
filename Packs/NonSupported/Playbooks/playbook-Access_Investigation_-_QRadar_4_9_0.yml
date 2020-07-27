@@ -2,7 +2,7 @@ id: access_investigation_-_qradar
 version: -1
 name: Access Investigation - QRadar
 fromversion: 3.6.0
-toversion: 4.9.0
+toversion: 4.1.9
 description: |-
   This playbook uses the QRadar integration to investigate an access incident by gathering user and IP information.
 
@@ -340,4 +340,4 @@ view: |-
 inputs: []
 outputs: []
 tests:
-  - No test
+- No test

@@ -238,8 +238,7 @@ tasks:
       id: f2cb153b-d78a-486d-8a33-d6326bfeb2c0
       version: -1
       name: Submit Observed Bad Activity
-      description: Submits an observed bad endpoint to IronDefense to create Threat
-        Intelligence Rules (TIR).
+      description: Submits an observed bad endpoint to IronDefense to create Threat Intelligence Rules (TIR).
       script: '|||irondefense-report-observed-bad-activity'
       type: regular
       iscommand: true
@@ -322,3 +321,6 @@ inputs:
   required: false
   description: Should preform enrichment on all indicators in the incident
 outputs: []
+toversion: 4.1.9
+tests:
+- No test

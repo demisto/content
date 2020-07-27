@@ -105,8 +105,7 @@ tasks:
       id: 700f76bb-4e89-45c7-8c2e-c647457de847
       version: -1
       name: Verify Command Results
-      description: Verify command results from task 'frontline-get-assets (get asset
-        that does not exits)'.
+      description: Verify command results from task 'frontline-get-assets (get asset that does not exits)'.
       type: condition
       iscommand: false
       brand: ''
@@ -244,8 +243,7 @@ tasks:
       id: 2bcee246-a649-4dec-823b-e04f9e4cc884
       version: -1
       name: Verify Command Results
-      description: Verify command results from task 'frontline-get-assets (get all
-        assets)'.
+      description: Verify command results from task 'frontline-get-assets (get all assets)'.
       type: condition
       iscommand: false
       brand: ''
@@ -481,3 +479,6 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.1.9
+tests:
+- No test

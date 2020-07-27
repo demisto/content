@@ -35,8 +35,7 @@ tasks:
       id: 92cb999f-47bc-45e0-8e81-a87f161555ad
       version: -1
       name: Search Endpoints By Hash - Carbon Black Protection
-      description: Hunt for endpoint activity involving hash and domain IOCs, using
-        Carbon black Protection (Bit9).
+      description: Hunt for endpoint activity involving hash and domain IOCs, using Carbon black Protection (Bit9).
       playbookName: Search Endpoints By Hash - Carbon Black Protection
       playbookId: search_endpoints_by_hash_-_carbon_black_protection
       type: playbook
@@ -151,3 +150,6 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.1.9
+tests:
+- No test

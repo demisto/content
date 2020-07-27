@@ -3,14 +3,20 @@ commonfields:
   version: -1
 name: SplunkPySearch
 deprecated: true
-script: |-
+script: >-
   query = demisto.args()['query']
+
   rows = demisto.args()['rows']
 
+
   headers = ""
+
   query = query + ' | head ' + rows
+
   res = demisto.executeCommand('splunk-search',{'using-brand': 'splunkpy', 'query': query})
+
   contents = res[0]['Contents']
+
 
   if isError(res[0]):
       return_error("Error occured. " + str(contents))
@@ -41,3 +47,6 @@ scripttarget: 0
 dependson:
   must:
   - splunk-search
+toversion: 4.1.9
+tests:
+- No test

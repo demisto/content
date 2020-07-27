@@ -1,8 +1,7 @@
 args:
 - default: false
   defaultValue: name,details
-  description: 'Text fields to compare. Can be label name, incident fields or custom
-    fields. Comma separated value. '
+  description: 'Text fields to compare. Can be label name, incident fields or custom fields. Comma separated value. '
   isArray: false
   name: textFields
   required: true
@@ -110,4 +109,5 @@ type: python
 dockerimage: demisto/machine-learning
 runonce: false
 tests:
-- Dedup - Generic v2 - Test
+- No test
+toversion: 4.1.9

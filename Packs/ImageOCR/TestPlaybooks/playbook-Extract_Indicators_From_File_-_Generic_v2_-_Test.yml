@@ -1,7 +1,7 @@
 id: Extract Indicators From File - Generic v2 - Test
 version: -1
 fromversion: 4.1.0
-toversion: 4.4.9
+toversion: 4.1.9
 name: Extract Indicators From File - Generic v2 - Test
 description: |-
   A test playbook for extracting indicators from a file.
@@ -87,8 +87,7 @@ tasks:
       id: 36c14cb2-423d-4d53-8423-2f1a44f4875f
       version: -1
       name: Were the correct indicators extracted?
-      description: Checks whether specific indicators were extracted from each one
-        of the downloaded files.
+      description: Checks whether specific indicators were extracted from each one of the downloaded files.
       type: condition
       iscommand: false
       brand: ""
@@ -219,8 +218,7 @@ tasks:
       id: a7537367-cc86-4d5c-8179-eb9e3edbf463
       version: -1
       name: Make test fail
-      description: Causes the test playbook to fail if the correct email addresses
-        were not extracted.
+      description: Causes the test playbook to fail if the correct email addresses were not extracted.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
@@ -696,3 +694,5 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+- No test

@@ -173,4 +173,5 @@ outputs:
 - contextPath: Tanium.Question.ID
   description: The unique ID of the question object
 tests:
-  - Tanium v2 - Test
+- No test
+toversion: 4.1.9

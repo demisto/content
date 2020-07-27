@@ -648,4 +648,5 @@ outputs:
   description: File Extension
   type: string
 tests:
-  - Detonate File - SNDBOX - Test
+- No test
+toversion: 4.1.9

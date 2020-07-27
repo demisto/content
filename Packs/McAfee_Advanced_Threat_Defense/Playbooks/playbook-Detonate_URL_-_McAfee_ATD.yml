@@ -574,5 +574,5 @@ outputs:
   description: URL Malicious object
   type: unknown
 tests:
-- Test Playbook McAfee ATD
-- Detonate URL - Generic Test
+- No test
+toversion: 4.1.9

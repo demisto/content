@@ -29,12 +29,15 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     var url = params.url;
+
     var columns;
+
     if (params.columns) {
         columns = params.columns.split(',');
     }
+
 
     var sendRequest = function(args) {
 
@@ -64,6 +67,7 @@ script:
         }
         return JSON.parse(res.Body);
     };
+
 
     var createEntry = function(response) {
         var data = [];
@@ -100,6 +104,7 @@ script:
         };
     };
 
+
     var buildEC = function(data, i) {
         return {
             Addresses: data[i].Addresses,
@@ -110,6 +115,7 @@ script:
             Usernames: data[i].Usernames
         };
     };
+
 
     var addPerson = function(person) {
         var response = {
@@ -187,6 +193,7 @@ script:
         return response;
     };
 
+
     switch (command) {
         case 'test-module':
             var response = sendRequest({'first-name': 'clark', 'last-name': 'kent'});
@@ -220,15 +227,11 @@ script:
     - name: middle-name
       description: Middle name or middle initial to search
     - name: raw-name
-      description: Full name to search. Use this parameter if the accurate name parts
-        (first/middle/last) are not available, this parameter will only be used in
-        absence of first-name and last-name
+      description: Full name to search. Use this parameter if the accurate name parts (first/middle/last) are not available, this parameter will only be used in absence of first-name and last-name
     - name: country
       description: A two-letter country code to searchs
     - name: state
-      description: A United States, Canada, Great Britain or Australia state code.
-        If a US state is provided and no country specified, we’ll assume the country
-        to be US.
+      description: A United States, Canada, Great Britain or Australia state code. If a US state is provided and no country specified, we’ll assume the country to be US.
     - name: city
       description: City to search
     - name: zipcode
@@ -238,8 +241,7 @@ script:
     - name: age
       description: Age to search in String, an exact (YY) or approximate (YY-YY) age
     - name: columns
-      description: Order of columns to be displayed in results (comma seperated list
-        of values)
+      description: Order of columns to be displayed in results (comma seperated list of values)
     outputs:
     - contextPath: Account.Email.Address
       description: Email addresses
@@ -274,3 +276,6 @@ script:
       description: Online platforms usernames
     description: Searches for information regarding given email address
   runonce: false
+toversion: 4.1.9
+tests:
+- No test

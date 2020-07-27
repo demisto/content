@@ -370,4 +370,5 @@ outputs:
   type: string
 beta: true
 tests:
-- No Test - run "Test Playbook TrendMicroDDA" manually
+- No test
+toversion: 4.1.9

@@ -2,7 +2,7 @@ id: search_endpoints_by_hash_-_generic
 version: -1
 name: Search Endpoints By Hash - Generic
 fromversion: 3.5.0
-toversion: 4.4.9
+toversion: 4.1.9
 system: true
 description: Hunt using available tools
 starttaskid: "0"
@@ -266,8 +266,7 @@ tasks:
       - "12"
     scriptarguments:
       Hash:
-        simple: ${.=Object.keys(val.inputs).map(function(f) { return val.inputs[f];
-          }).reduce(function(a, b){ return a.concat(b); }, [])}
+        simple: ${.=Object.keys(val.inputs).map(function(f) { return val.inputs[f]; }).reduce(function(a, b){ return a.concat(b); }, [])}
     separatecontext: true
     loop:
       iscommand: false
@@ -326,4 +325,4 @@ outputs:
   description: The endpoint
   type: unknown
 tests:
-  - No test
+- No test

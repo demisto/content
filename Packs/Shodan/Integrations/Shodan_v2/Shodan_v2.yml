@@ -387,4 +387,5 @@ script:
   script: '-'
   type: python
 tests:
-- "Test-Shodan_v2"
+- No test
+toversion: 4.1.9

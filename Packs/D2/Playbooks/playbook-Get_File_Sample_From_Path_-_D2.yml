@@ -178,8 +178,7 @@ inputs:
   value:
     simple: Admin
   required: false
-  description: Name of the credential set from Demisto Settings -> Integrations ->
-    Credentials
+  description: Name of the credential set from Demisto Settings -> Integrations -> Credentials
 - key: Hostname
   value:
     simple: ${Endpoint.Hostname}
@@ -195,4 +194,5 @@ outputs:
   description: The file to sample.
   type: unknown
 tests:
-  - get_file_sample_from_path_-_d2_-_test
+- No test
+toversion: 4.1.9
