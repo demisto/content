@@ -1311,7 +1311,7 @@ script:
       default: false
       description: Filter the results by endpoint operating system - partial match
       isArray: false
-      name: filter_by_sendpoint_operating_system
+      name: filter_by_endpoint_operating_system
       predefined:
       - Search Windows registry
       - Memory scan using YARA
@@ -1334,6 +1334,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
+      defaultValue: All
       description: Status of investigation to query.
       isArray: false
       name: scan_status
@@ -1346,6 +1347,7 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Retrieves a list of filtered investigation results.
     execution: false
     name: trendmicro-apex-investigation-result-list-by-status
   dockerimage: devdemisto/pycef:1.0.0.9953

@@ -78,6 +78,14 @@ SCAN_TYPE_TO_NUM = {
     "Disk IOC rule file": 6
 }
 
+SCAN_STATUS_TO_NUM = {
+    "All": 1,
+    "Matched": 2,
+    "No match": 3,
+    "Pending": 4,
+    "Unsuccessful": 5
+}
+
 CUSTOM_INVESTIGATION_TYPE_TO_ID = {
     'file_name': 3,
     'file_path': 4,
@@ -753,15 +761,48 @@ class Client(BaseClient):
         # return_error(json.dumps(response, indent = 4))
         return response
 
-    def investigation_result_list_by_status(self, scan_type: str, scan_status: str, scan_summary_guid: str, limit: str = 50, offset: str = 0,
+    def create_result_list_by_status_payload(self, limit: str, offset: str, scan_type: str, scan_status: str, scan_summary_guid: str,
                                             filter_by_endpoint_name: str = '', filter_by_endpoint_ip_address: str = '',
-                                            filter_by_sendpoint_operating_system: str = '', filter_by_endpoint_user_name: str = ''):
+                                            filter_by_endpoint_operating_system: str = '', filter_by_endpoint_user_name: str = ''):
+        payload = {
+            "pagination": {
+                "limit": int(limit),
+                "offset": int(offset)
+            },
+            "scanType": [SCAN_TYPE_TO_NUM[scan_type] for scan_type in argToList(scan_type)],
+            "scanStatus": SCAN_STATUS_TO_NUM[scan_status],
+            "scanSummaryGuid": [scan_summary_guid]
 
-        payload = self.create_result_list_payload(limit, offset, scan_type, filter_by_task_name, filter_by_creator_name,
-                                                  filter_by_scan_type, filter_by_criteria_name, scan_schedule_id)
+        }
+
+        payload_filter = []
+        if filter_by_endpoint_name:
+            payload_filter.append(self.create_filter_entry(filter_by_endpoint_name, 'endpoint_name'))
+        if filter_by_endpoint_ip_address:
+            payload_filter.append(self.create_filter_entry(filter_by_endpoint_ip_address, 'endpoint_ip_address',))
+        if filter_by_endpoint_operating_system:
+            payload_filter.append(self.create_filter_entry(filter_by_endpoint_operating_system, 'endpoint_OS',))
+        if filter_by_endpoint_user_name:
+            payload_filter.append(self.create_filter_entry(filter_by_endpoint_user_name, 'endpoint_user_name'))
+
+        if payload_filter:
+            payload["filter"] = payload_filter
+
+        return payload
+
+    def investigation_result_list_by_status(self, scan_type: str, scan_status: str, scan_summary_guid: str,
+                                            limit: str = 50, offset: str = 0, filter_by_endpoint_name: str = '',
+                                            filter_by_endpoint_ip_address: str = '',
+                                            filter_by_endpoint_operating_system: str = '',
+                                            filter_by_endpoint_user_name: str = ''):
+
+        payload = self.create_result_list_by_status_payload(limit, offset, scan_type, scan_status, scan_summary_guid,
+                                                            filter_by_endpoint_name, filter_by_endpoint_ip_address,
+                                                            filter_by_endpoint_operating_system,
+                                                            filter_by_endpoint_user_name)
 
         request_data = {
-            "Url": "V1/Task/ShowScanSummaryList",
+            "Url": "V1/Task/ShowScanListByScanSummaryGuid",
             "TaskType": 4,  # For Endpoint Sensor, the value is always 4.
             "Payload": payload
         }
@@ -772,7 +813,7 @@ class Client(BaseClient):
                                                                headers='', request_body=json.dumps(request_data))}
         # return_error(json.dumps(request_data, indent=4))
         response = self._http_request("PUT", self.suffix, headers=headers, data=json.dumps(request_data))
-        # return_error(json.dumps(response, indent = 4))
+        return_error(json.dumps(response, indent = 4))
         return response
 
 # investigation_result_list
