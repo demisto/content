@@ -98,7 +98,7 @@
 						"type": "dynamicIndicator",
 						"w": 1,
 						"x": 2,
-						"y": 4
+						"y": 7
 					},
 					{
 						"columns": [
@@ -252,7 +252,7 @@
 						"type": "comments",
 						"w": 1,
 						"x": 2,
-						"y": 6
+						"y": 4
 					},
 					{
 						"columns": [

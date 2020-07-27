@@ -1,7 +1,7 @@
 {
 	"id": "emailRep",
 	"group": "indicator",
-	"name": "Email Indicator",
+	"name": "Email layout by XSOAR",
 	"description": "",
 	"version": -1,
 	"fromVersion": "6.0.0",
@@ -96,7 +96,7 @@
 						"type": "dynamicIndicator",
 						"w": 1,
 						"x": 2,
-						"y": 4
+						"y": 7
 					},
 					{
 						"columns": [
@@ -250,7 +250,7 @@
 						"type": "comments",
 						"w": 1,
 						"x": 2,
-						"y": 6
+						"y": 4
 					},
 					{
 						"columns": [

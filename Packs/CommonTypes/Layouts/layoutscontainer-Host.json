@@ -1,7 +1,7 @@
 {
 	"id": "hostRep",
 	"group": "indicator",
-	"name": "Host Indicator",
+	"name": "Host layout by XSOAR",
 	"description": "",
 	"version": -1,
 	"fromVersion": "6.0.0",
@@ -177,7 +177,7 @@
 						"type": "dynamicIndicator",
 						"w": 1,
 						"x": 2,
-						"y": 4
+						"y": 8
 					},
 					{
 						"columns": [
@@ -319,7 +319,7 @@
 						"y": 0
 					},
 					{
-						"h": 3,
+						"h": 4,
 						"i": "main-174e7bd0-3d57-11ea-9dff-c57e8949d2f9",
 						"items": null,
 						"maxW": 3,
@@ -331,7 +331,7 @@
 						"type": "comments",
 						"w": 1,
 						"x": 2,
-						"y": 6
+						"y": 4
 					},
 					{
 						"columns": [
@@ -629,7 +629,7 @@
 				"type": "custom"
 			}
 		]
-	},
+    },
 	"indicatorsQuickView": {
 		"tabs": [
 			{
