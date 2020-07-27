@@ -59,7 +59,6 @@ def main():
     input_values = args.get('input_values')
     mapped_values = args.get('mapped_values')
 
-
     value = mapvalues(value, input_values, mapped_values)
     demisto.results(value)
 
