@@ -762,7 +762,7 @@ script:
         description: 'Coma separated values of the data we want to remove from the watchlist.
         Example: "1.1.1.1,2.2.2.2". Please add the correct type of values to correct
         watchlist type.'
-    description: 'Add values from an existing watchlist. '
+    description: 'Remove values from an existing watchlist. '
   isfetch: true
   runonce: false
   script: '-'
