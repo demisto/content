@@ -299,7 +299,7 @@ def test_eml_utf_text(mocker):
     # validate our mocks are good
     assert demisto.args()['entryid'] == 'test'
     main()
-    assert demisto.results.call_count == 2
+    assert demisto.results.call_count == 1
     # call_args is tuple (args list, kwargs). we only need the first one
     results = demisto.results.call_args[0]
     assert len(results) == 1
@@ -349,7 +349,7 @@ def test_eml_utf_text_with_bom(mocker):
     # validate our mocks are good
     assert demisto.args()['entryid'] == 'test'
     main()
-    assert demisto.results.call_count == 2
+    assert demisto.results.call_count == 1
     # call_args is tuple (args list, kwargs). we only need the first one
     results = demisto.results.call_args[0]
     assert len(results) == 1
