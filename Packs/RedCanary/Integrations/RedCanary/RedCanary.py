@@ -553,12 +553,12 @@ def fetch_incidents():
     incidents = []
     new_incidents_ids = []
     for raw_detection in get_unacknowledged_detections(last_fetch, per_page=2):
-        LOG('found detection #{}'.format(raw_detection['id']))
+        LOG('found a new detection in RedCanary #{}'.format(raw_detection['id']))
         incident = detection_to_incident(raw_detection)
-        # the rewJson is a string of dictionary e.g. - ('{"ID":2,"Type":5}')
-        incident_id = json.loads(incident['rawJSON']).get("ID")
+        # the rawJson is a string of dictionary e.g. - ('{"ID":2,"Type":5}')
+        incident_id = json.loads(incident.get('rawJSON')).get("ID")
         if incident_id not in last_incidents_ids:
-            # makes sure that the incidents wasn't fetched before
+            # makes sure that the incident wasn't fetched before
             incidents.append(incident)
             new_incidents_ids.append(incident_id)
 
