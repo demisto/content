@@ -111,7 +111,7 @@ tasks:
       {
         "position": {
           "x": 630,
-          "y": 1500
+          "y": 1670
         }
       }
     note: false
@@ -357,7 +357,7 @@ tasks:
       {
         "position": {
           "x": 350,
-          "y": 1330
+          "y": 1500
         }
       }
     note: false
@@ -407,10 +407,68 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 95885bc3-5a86-4a51-8e22-f6b87e365a5f
+    taskid: 50e95fd5-f248-4f02-8556-11437e1323e8
+    type: condition
+    task:
+      id: 50e95fd5-f248-4f02-8556-11437e1323e8
+      version: -1
+      name: Is Prisma Cloud (RedLock) integration enabled?
+      description: Is Prisma Cloud (RedLock) integration enabled?
+      type: condition
+      iscommand: false
+      brand: RedLock
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "12"
+    continueonerror: true
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RedLock
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 1491bb10-b009-4dd8-8d1b-f12ff53a746a
     type: regular
     task:
-      id: 95885bc3-5a86-4a51-8e22-f6b87e365a5f
+      id: 1491bb10-b009-4dd8-8d1b-f12ff53a746a
       version: -1
       name: Dismiss Prisma Cloud alert
       description: Dismiss the alerts matching the given filter. Must provide either
@@ -459,8 +517,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 350,
-          "y": 1160
+          "x": 120,
+          "y": 1330
         }
       }
     note: false
@@ -469,6 +527,7 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
+      "11_9_#default#": 0.49,
       "2_3_#default#": 0.3,
       "2_4_yes": 0.52,
       "4_5_yes": 0.3,
@@ -482,7 +541,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1565,
+        "height": 1735,
         "width": 1400,
         "x": -390,
         "y": 0
