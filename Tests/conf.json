@@ -2862,6 +2862,10 @@
         {
             "playbookID": "IfThenElse-Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "MicrosoftCloudAppSecurity",
+            "playbookID": "MicrosoftCloudAppSecurity-Test"
         }
     ],
     "skipped_tests": {
