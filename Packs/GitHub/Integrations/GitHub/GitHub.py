@@ -1208,17 +1208,17 @@ def get_github_actions_usage():
 
             if workflow_usage:
                 usage_result.append({
-                    'workflow_name': workflow_name,
-                    'workflow_id': workflow_id,
-                    'repository': repository_name,
-                    'workflow_usage': workflow_usage
+                    'WorkflowName': workflow_name,
+                    'WorkflowID': workflow_id,
+                    'RepositoryName': repository_name,
+                    'WorkflowUsage': workflow_usage,
                 })
 
     ec = {
         'GitHub.ActionsUsage': usage_result
     }
     human_readable = tableToMarkdown('Github Actions Usage', usage_result,
-                                     headerTransform=lambda h: h.replace('_', ' ').title())
+                                     headerTransform=string_to_table_header)
 
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=usage_result)
 
@@ -1283,7 +1283,7 @@ COMMANDS = {
     'GitHub-update-pull-request': update_pull_request_command,
     'GitHub-is-pr-merged': is_pr_merged_command,
     'GitHub-create-pull-request': create_pull_request_command,
-    'Github-get-github-actions-usage': get_github_actions_usage
+    'Github-get-github-actions-usage': get_github_actions_usage,
 }
 
 '''EXECUTION'''
