@@ -396,9 +396,15 @@ script:
       description: A token to pass to the next list command to retrieve additional results.
       type: String
   - arguments:
-    - name: user
-      required: true
+    - default: false      
       description: The User ID or userPrincipalName of the user for which to retrieve direct reports.
+      isArray: false
+      name: user
+      required: true
+      secret: false
+    deprecated: false
+    description: "Retrieves the direct reports for a user. Direct reports are the people who have that user configured as their manager."
+    execution: false
     name: msgraph-direct-reports
     outputs:
     - contextPath: MSGraphUserDirectReports.Manager
@@ -437,7 +443,6 @@ script:
     - contextPath: MSGraphUserDirectReports.Reports.UserPrincipalName
       description: The user principal name (UPN) of the user. The UPN is an Internet-style login name for the user based on the Internet standard RFC 822. By convention, this should map to the user's email name. The general format is alias@domain, where domain must be present in the tenant’s collection of verified domains. This property is required when a user is created. The verified domains for the tenant can be accessed from the verifiedDomains property of organization.
       type: String
-    description: Retrieves the direct reports for a user. Direct reports are the people who have that user configured as their manager.
   - arguments:
     - default: false
       description: The User ID or userPrincipalName of the user for which to get the manager.
@@ -446,7 +451,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieves the properties from the manager of a user
+    description: "Retrieves the properties from the manager of a user"
     execution: false
     name: msgraph-user-get-manager
     outputs:
