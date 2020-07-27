@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 import json
 
 
-def mapValues(value, input_values, mapped_values):
+def mapvalues(value, input_values, mapped_values):
     # Convert all to string
     value = str(value) if type(value) not in [dict, list] else value
     input_values[:] = [str(x) for x in input_values]
@@ -50,7 +50,7 @@ def main():
     except Exception:
         pass
 
-    value = mapValues(value, input_values, mapped_values)
+    value = mapvalues(value, input_values, mapped_values)
     demisto.results(value)
 
 

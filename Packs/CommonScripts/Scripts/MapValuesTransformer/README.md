@@ -14,7 +14,7 @@ Both arguments are comma separated values. The total number of values for each i
 
 If the length of each list is not the same, the script will error.
 
-### Example use
+### Example use 1
 
 `value = "3"` *(not specified by the user)*
 
@@ -24,3 +24,14 @@ If the length of each list is not the same, the script will error.
 
 The resulting output would be "2". The mapping looks up the value in the `input_values` and returns the value in
  `mapped_values` at the same index.
+
+### Example use 2
+
+`value = {"testkey1": "testvalue1", "testkey2": "testvalue2"}` *(not specified by the user)*
+
+`input_values = "key1: value1, testkey2: testvalue2"`
+
+`mapped_values = "value1changed,testvalue2changed"`
+
+The resulting output would be `{"key1": "value1", "key2": "testvalue2changed"}`. Because the `input_values` can be
+parsed as a JSON dictionary, it will match the key: value pair, but only alter the value in the pair.
