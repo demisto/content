@@ -1,0 +1,22 @@
+{
+    "name": "QueryAI",
+    "description": "Democratizing cybersecurity with \"AI Analyst\" product, providing answers and insights from IT log data.",
+    "support": "developer",
+    "currentVersion": "1.0.0",
+    "author": "Query.AI",
+    "url": "https://github.com/query-ai",
+    "email": "app@query.ai",
+    "created": "2020-07-28T20:25:41Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence",
+        "Analytics & SIEM"
+    ],
+    "tags": [
+        "Virtual SIEM",
+        "Threat Hunting",
+        "Incident Response",
+        "Analyst Assistive-AI"
+    ],
+    "useCases": [],
+    "keywords": []
+}
