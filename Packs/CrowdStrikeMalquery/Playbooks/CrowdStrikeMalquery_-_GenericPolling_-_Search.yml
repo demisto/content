@@ -62,7 +62,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: inputs.search command
+              simple: inputs.search_command
             iscontext: true
           right:
             value:
@@ -77,7 +77,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: inputs.search command
+              simple: inputs.search_command
             iscontext: true
           right:
             value:
@@ -326,7 +326,7 @@ view: |-
     }
   }
 inputs:
-- key: search command
+- key: search_command
   value: {}
   required: true
   description: '`hunt` or `exact-search`.'
