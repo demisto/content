@@ -445,7 +445,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The User ID or userPrincipalName of the user for which to get the manager.
+      description: The User ID or userPrincipalName of the user for which to get the manager properties.
       isArray: false
       name: user
       required: true
@@ -456,10 +456,10 @@ script:
     name: msgraph-user-get-manager
     outputs:
     - contextPath: MSGraphUserManager.ID
-      description: User's ID.
+      description: User's user ID.
       type: Unknown
     - contextPath: MSGraphUserManager.Manager.ID
-      description: Managers user's ID.
+      description: Manager's user ID.
       type: Unknown
     - contextPath: MSGraphUserManager.Manager.DisplayName
       description: User's display name.
@@ -493,7 +493,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: User ID or userPrincipalName of the user to assign a manager for.
+      description: User ID or userPrincipalName of the user to which to assign a manager.
       isArray: false
       name: user
       required: true
@@ -505,7 +505,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: "Assigns a manager to the user. Permissions: - User.ReadWrite (Delegated & Application)"
+    description: "Assigns a manager to the specified user. Permissions: - User.ReadWrite (Delegated & Application)"
     execution: false
     name: msgraph-user-assign-manager
   dockerimage: demisto/crypto:1.0.0.10043
