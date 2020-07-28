@@ -514,4 +514,7 @@ script:
     description: Performs a feature availability request on a computer. Can also be
       used as a course-grained isolation status request.
   runonce: false
-sourcemoduleid: AMP
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
+
