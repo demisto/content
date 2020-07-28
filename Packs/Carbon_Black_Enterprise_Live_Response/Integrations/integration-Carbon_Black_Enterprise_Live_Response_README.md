@@ -1,7 +1,7 @@
 <!-- HTML_DOC -->
 <h2>Overview</h2>
-<p>Use the Carbon Black Enterprise Live Response integration to enable security operators to collect information and take action on remote endpoints in real time.</p>
-<p>Carbon Black Live Response Integration is configurable with both<strong> Carbon black Response (Cb Response)</strong> and <strong>Carbon Black Defense (Cb Defense)</strong>.</p>
+<p>Use the VMware Carbon Black EDR (Live Response API) integration (formerly known as Carbon Black Enterprise Live Response) to enable security operators to collect information and take action on remote endpoints in real time.</p>
+<p>VMware Carbon Black EDR (Live Response API) Integration is configurable with both<strong> VMware Carbon Black EDR (formerly known as Carbon Black Response)</strong> and <strong> VMware Carbon Black Endpoint Standard (formerly known as Carbon Black Defense)</strong>.</p>
 <h2>Use Cases</h2>
 <ul>
 <li>Upload, download, and remove files.</li>
@@ -14,7 +14,7 @@
 <li>Carbonblackliveresponse playbook</li>
 </ul>
 <h2>Prerequisites</h2>
-<p>This integration can be used on either Carbon Black Response or Carbon Black Defense<strong>.</strong></p>
+<p>This integration can be used on either VMware Carbon Black EDR (formerly known as Carbon Black Response) or VMware Carbon Black Endpoint Standard (formerly known as Carbon Black Defense)<strong>.</strong></p>
 <h3>Carbon Black Live Response</h3>
 <p>Enable the Live Response API and get an API key. Live Response is disabled by default. If you attempt to use the Live Response integration before enabling it you receive a code 412 error message.</p>
 <ol>
@@ -22,25 +22,25 @@
 <li>Restart the Carbon Black Enterprise services to activate the changes.</li>
 </ol>
 <h3>Get an API key</h3>
-<p>Each user in Carbon Black Response has a personal API key. The API key confers all rights and capabilities assigned to that user to anyone with access to that API key. Therefore, treat your API key as you would your password.</p>
+<p>Each user in VMware Carbon Black EDR has a personal API key. The API key confers all rights and capabilities assigned to that user to anyone with access to that API key. Therefore, treat your API key as you would your password.</p>
 <p>If the API Token is missing or compromised, you can reset the API key to generate a new token and revoke any previous API keys issued to a user.</p>
 <ol>
 <li>Log in to the Carbon Black console.</li>
 <li>Click the username in the upper right and select <strong>Profile info</strong>.</li>
 <li>Click <strong>API Token</strong> on the left hand side to reveal your API token. If there is no API token displayed, click <strong>Reset</strong> to create a new one.</li>
 </ol>
-<h3>Carbon Black Defense</h3>
+<h3>VMware Carbon Black Endpoint Standard</h3>
 <p>Retrieve an apiKey and connectorId from the Carbon Black environment. </p>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Connector.</strong>
 </li>
-<li>Set up a Carbon Black Defense API Connector. This gives you access to the apiKey and connectorId<strong>.</strong>
+<li>Set up a VMware API Connector. This gives you access to the apiKey and connectorId<strong>.</strong>
 </li>
 </ol>
-<h2>Configure Carbon Black Live Response on Demisto</h2>
-<p>You can set up the integration to work with either Carbon Black Response or Carbon Black Defense<strong>.</strong></p>
+<h2>Configure VMware Carbon Black EDR (Live Response API) on Demisto</h2>
+<p>You can set up the integration to work with either VMware Carbon Black EDR or VMware Carbon Black Endpoint Standard<strong>.</strong></p>
 <p>Set the required fields to suit your instance ONLY.</p>
-<h3>To set up the integration to work with Cb Response:</h3>
+<h3>To set up the integration to work with VMware Carbon Black EDR:</h3>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for carbonblackliveresponse.</li>
@@ -49,16 +49,16 @@
 <li>
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li>
-<strong>Server URL</strong>: The hostname or IP address and port of the Cb Response server used.</li>
+<strong>Server URL</strong>: The hostname or IP address and port of the VMware Carbon Black EDR server used.</li>
 <li>
-<strong>API Token (CB Response)</strong>: The Cb Response API token.</li>
+<strong>API Token (CB Response)</strong>: The VMware Carbon Black EDR API token.</li>
 </ul>
 </li>
 </ol>
 <ol start="4">
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
 </ol>
-<h3>To set up the integration to work with CB Defense:</h3>
+<h3>To set up the integration to work with VMware Carbon Black Endpoint Standard:</h3>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for carbonblackliveresponse.</li>
@@ -67,11 +67,11 @@
 <li>
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li>
-<strong>Server URL</strong>: The hostname or IP address and port of the Cb Defense server used.</li>
+<strong>Server URL</strong>: The hostname or IP address and port of the VMware Carbon Black Endpoint Standard server used.</li>
 <li>
-<strong>API Token (CB Defense)</strong>: The Cb Defense API token.</li>
+<strong>API Token (CB Defense)</strong>: The VMware Carbon Black Endpoint Standard API token.</li>
 <li>
-<strong>Connector ID (CB Defense)</strong>: The Cb Defense connector ID.</li>
+<strong>Connector ID (CB Defense)</strong>: The VMware Carbon Black Endpoint Standard connector ID.</li>
 </ul>
 </li>
 </ol>

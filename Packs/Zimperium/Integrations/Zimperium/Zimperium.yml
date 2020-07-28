@@ -1072,5 +1072,5 @@ script:
 tests:
 - Zimperium_Test
 - Test Convert file hash to corresponding hashes
-defaultMapperIn: Zimperium-mapper
-defaultClassifier: Zimperium
+defaultmapperin: Zimperium-mapper
+defaultclassifier: Zimperium
