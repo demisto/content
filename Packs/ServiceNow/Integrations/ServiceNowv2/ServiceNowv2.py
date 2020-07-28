@@ -2041,16 +2041,15 @@ def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
     :rtype: ``Dict[str, Any]``
     """
     all_mappings = GetMappingFieldsResponse()
-    incident_fields: List[dict] = client.send_request(f'table/{client.ticket_type}?sysparm_limit=1', 'GET')
+    incident_fields = client.send_request(f'table/{client.ticket_type}?sysparm_limit=1', 'GET')
 
     incident_type_scheme = SchemeTypeMapping(type_name=client.ticket_type)
     demisto.debug(f'Collecting incident mapping for incident type - "{client.ticket_type}"')
 
     ticket = incident_fields.get('result')[0]
     for field in ticket:
-        incident_field = SchemeMappingField(field)
+        incident_type_scheme.add_field(field)
 
-        incident_type_scheme.add_field(incident_field)
     all_mappings.add_scheme_type(incident_type_scheme)
 
     return all_mappings

@@ -1,6 +1,9 @@
-from ThreatConnect_v2 import calculate_freshness_time, create_context, demisto
+from ThreatConnect_v2 import calculate_freshness_time, create_context, demisto, associate_indicator_request
 from freezegun import freeze_time
 import pytest
+from requests import Response
+from threatconnect import ThreatConnect
+
 
 data_test_calculate_freshness_time = [
     (0, '2020-04-20'),
@@ -223,3 +226,19 @@ def test_create_context(indicators, expected_output, mocker):
     mocker.patch.object(demisto, 'params', return_value=params)
     output = create_context(indicators)
     assert output == expected_output, f'expected_output({indicators})\n\treturns: {output}\n\tinstead: {expected_output}'
+
+
+data_test_associate_indicator_request = [
+    ('addresses', '0.0.0.0', 'addresses/0.0.0.0'),
+    ('urls', 'http://test.com', 'urls/http%3A%2F%2Ftest.com')
+]
+
+
+@ pytest.mark.parametrize('indicator_type, indicator, expected_url', data_test_associate_indicator_request)
+def test_associate_indicator_request(indicator_type, indicator, expected_url, mocker):
+    mocker.patch.object(Response, 'json', return_value={})
+    api_request = mocker.patch.object(ThreatConnect, 'api_request', return_value=Response())
+    mocker.patch('ThreatConnect_v2.get_client', return_value=ThreatConnect())
+    associate_indicator_request(indicator_type, indicator, 'test', '0')
+    url = f'/v2/indicators/{expected_url}/groups/test/0'
+    assert api_request.call_args[0][0].request_uri == url
