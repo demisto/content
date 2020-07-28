@@ -18,9 +18,9 @@ def test_get_ml_features(mocker):
     assert featurs['glove50_1'] == -0.5
 
 
-def test_get_vocab_features(mocker):
+def test_get_ngrams_features(mocker):
     text = 'great deal no risk only for 24 hours!!! 24 hours!!!!!'
-    res = get_vocab_features(text, transform_text_to_ngrams_counter(word_tokenize(text), []))
+    res = get_ngrams_features(text, transform_text_to_ngrams_counter(word_tokenize(text), []))
     assert res['x hours'] == 2
     assert res['deal'] == 1
     assert res['risk'] == 1
@@ -28,7 +28,7 @@ def test_get_vocab_features(mocker):
 
 def test_get_vocab_features_subword(mocker):
     text = 'callable'
-    res = get_vocab_features(text, transform_text_to_ngrams_counter(word_tokenize(text), []))
+    res = get_ngrams_features(text, transform_text_to_ngrams_counter(word_tokenize(text), []))
     assert 'call' not in res
 
 

@@ -63,7 +63,7 @@ signal.signal(signal.SIGALRM, timeout_handler)
 
 
 '''
-Define vocabulary to search
+Define ngrams to search
 '''
 
 word_to_regex = {
@@ -708,18 +708,18 @@ def get_text_from_html(html):
     return text
 
 
-def get_vocab_features(text, ngrams_counter):
+def get_ngrams_features(text, ngrams_counter):
     global word_to_ngram, word_to_regex
-    vocav_features = {}
-    for word, regex in word_to_regex.items():
+    ngrams_features = {}
+    for w, regex in word_to_regex.items():
         count = len(re.findall(regex, text))
         if count > 0:
-            vocav_features[word] = count
-    for word, ngram in word_to_ngram.items():
+            ngrams_features[w] = count
+    for w, ngram in word_to_ngram.items():
         count = ngrams_counter[ngram] if ngram in ngrams_counter else 0
         if count > 0:
-            vocav_features[word] = count
-    return vocav_features
+            ngrams_features[w] = count
+    return ngrams_features
 
 
 def get_lexical_features(email_subject, email_body, email_body_word_tokenized, email_subject_word_tokenized):
@@ -994,7 +994,7 @@ def extract_features_from_incident(row):
     email_body_word_tokenized = word_tokenize(email_body)
     email_subject_word_tokenized = word_tokenize(email_subject)
     text_ngrams = transform_text_to_ngrams_counter(email_body_word_tokenized, email_subject_word_tokenized)
-    vocab_features = get_vocab_features(text, text_ngrams)
+    ngrams_features = get_ngrams_features(text, text_ngrams)
     soup = BeautifulSoup(email_html, "html.parser")
 
     lexical_features = get_lexical_features(email_subject, email_body, email_body_word_tokenized,
@@ -1007,7 +1007,7 @@ def extract_features_from_incident(row):
     attachments_features = get_attachments_features(email_attachments=email_attachments)
 
     return {
-        'vocab_features': vocab_features,
+        'ngrams_features': ngrams_features,
         'lexical_features': lexical_features,
         'characters_features': characters_features,
         'html_feature': html_feature,
@@ -1020,7 +1020,7 @@ def extract_features_from_incident(row):
 
 def extract_features_from_all_incidents(incidents_df):
     X = {  # type: ignore
-        'vocab_features': [],
+        'ngrams_features': [],
         'lexical_features': [],
         'characters_features': [],
         'html_feature': [],
