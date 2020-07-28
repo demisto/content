@@ -304,7 +304,7 @@ def assign_manager_command(client: MsGraphClient, args: Dict):
     manager = args.get('manager')
     client.assign_manager(user, manager)
     human_readable = f'A manager was assigned to user "{user}". It might take several minutes for the changes ' \
-                     f'to take affect across all applications. '
+                     'to take affect across all applications.'
     return human_readable, None, None
 
 
