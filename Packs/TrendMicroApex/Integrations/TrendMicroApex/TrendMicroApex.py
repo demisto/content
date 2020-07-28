@@ -12,6 +12,7 @@ import pycef
 import hashlib
 import time
 import json
+from datetime import datetime, timezone
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -193,12 +194,12 @@ class Client(BaseClient):
 
             return response
 
-    def udso_add_file(self, file_content_base64_string, file_name, file_scan_action, note):
+    def udso_add_file(self, file_content_base64_string, file_name, file_scan_action, note: str = ""):
         payload = {
             "file_name": file_name,
             "file_content_base64_string": file_content_base64_string,
             "file_scan_action": file_scan_action,
-            "note": note
+            "note": note if note else ""
         }
 
         headers = {
@@ -206,6 +207,9 @@ class Client(BaseClient):
             'Authorization': 'Bearer ' + self.create_jwt_token(http_method='PUT', api_path=self.suffix,
                                                                headers='', request_body=json.dumps(payload))}
         response = self._http_request("PUT", self.suffix, headers=headers, data=json.dumps(payload))
+        if response.get('result_code', '') != 1:
+            return_error(f'There has been a problem while trying to create the file: \n'
+                         f'{response.get("result_description")}')
         return response
 
     def _prodagent_command(self, action, multi_match=False, entity_id="", ip_add="", mac_add="", host="", prod=""):
@@ -242,22 +246,31 @@ class Client(BaseClient):
         action = "cmd_restore_isolated_agent"
         return self._prodagent_command(action, multi_match, entity_id, ip_add, mac_add, host, prod)
 
-    def logs_list(self, log_type, since_time=0, page_token=0):
+    def logs_list(self, log_type: str, since_time: str = '0', page_token: str = '0'):
         log_type = LOG_NAME_TO_LOG_TYPE.get(log_type)
-        if log_type in ["pattern_updated_status", "engine_updated_status"] and page_token != 0:
-            return_error("For 'Pattern Update Status' and 'Engine Update Status logs' types, \n"
+        if log_type in ["pattern_updated_status", "engine_updated_status"] and page_token != '0':
+            return_error("For 'Pattern Update Status' and 'Engine Update Status' log types, \n"
                          "the value of page_token must be '0'.")
         querystring = f'?output_format=1&page_token={page_token}&since_time={since_time}'
-        suffix = f'{self.suffix}/{log_type}{querystring}'
-        jwt_token = self.create_jwt_token(http_method='GET', api_path=suffix, headers='', request_body='')
+        request_suffix = f'{self.suffix}/{log_type}{querystring}'
+        jwt_token = self.create_jwt_token(http_method='GET', api_path=request_suffix, headers='', request_body='')
 
         headers = {
             'Authorization': 'Bearer ' + jwt_token,
             'Content-Type': 'application/json;charset=utf-8'
         }
 
-        response = self._http_request("GET", url_suffix=suffix, headers=headers)
+        response = self._http_request("GET", url_suffix=request_suffix, headers=headers)
+        return_error(json.dumps(response, indent=4))
         return response
+
+    @staticmethod
+    def convert_timestamps_to_readable(results_list):
+        for result in results_list:
+            if result.get('submitTime'):
+                result['submitTime'] = datetime.fromtimestamp(result.get('submitTime'), timezone.utc).isoformat()
+
+        return results_list
 
     @staticmethod
     def remove_unnecessary_fields_from_response(response):
@@ -430,6 +443,12 @@ class Client(BaseClient):
                 } for process_sha1 in processes_to_terminate]
         return payload_data
 
+    @staticmethod
+    def validate_response(response, error_message):
+        response_message = response.get('Data', {}).get('Message', '')
+        if response_message and response_message != 'OK':
+            return_error(f'{error_message}. Reason: \n {response_message}')
+
     def process_terminate_request(self, agent_guids: Dict = {}, server_guids: List = [], object_name: str = "",
                                   processes_to_terminate: List = [], filter_by_endpoint_name="",
                                   filter_by_endpoint_type="",
@@ -439,20 +458,18 @@ class Client(BaseClient):
                                                        filter_by_endpoint_name, filter_by_endpoint_type,
                                                        filter_by_endpoint_ip_address,
                                                        filter_by_endpoint_operating_system)
-        # return_error(payload)
         request_data = {
             "Url": "V1/Task/CreateProcessTermination",
             "TaskType": 4,  # For Endpoint Sensor, the value is always 4.
             "Payload": payload
         }
-        # return_error(json.dumps(request_data, indent =4))
-
         headers = {
             'Content-Type': 'application/json;charset=utf-8',
             'Authorization': 'Bearer ' + self.create_jwt_token(http_method='POST', api_path=self.suffix,
                                                                headers='', request_body=json.dumps(request_data))}
 
         response = self._http_request("POST", self.suffix, headers=headers, data=json.dumps(request_data))
+        self.validate_response(response, error_message='The process termination was unsuccessful')
         return response
 
     def build_investigation_payload(self, investigation_name: str, scan_type: str, time_range_type: str,
@@ -485,13 +502,18 @@ class Client(BaseClient):
         return payload
 
     @staticmethod
-    def create_file_content_criteria(entry_id, criteria_hash_id: str = ""):
+    def get_file_name_and_base_64_content(entry_id: str):
         file = demisto.getFilePath(entry_id)
         file_path = file['path']
         file_name = file['name']
         with open(file_path, 'rb') as f:
             file_content_base64_string = base64.b64encode(
                 f.read()).decode()  # the api is expecting 64based encoded file
+        return file_name, file_content_base64_string
+
+    def create_file_content_criteria(self, entry_id, criteria_hash_id: str = ""):
+
+        file_name, file_content_base64_string = self.get_file_name_and_base_64_content(entry_id)
 
         file_content_criteria = {
             "base64EncodedContent": file_content_base64_string,
@@ -512,21 +534,17 @@ class Client(BaseClient):
                                                    time_range_start, time_range_end)
 
         payload["fileContentCriteria"] = self.create_file_content_criteria(entry_id, criteria_hash_id)
-
         request_data = {
             "Url": "V1/Task/CreateScan",
             "TaskType": 4,  # For Endpoint Sensor, the value is always 4.
             "Payload": payload
         }
 
-        # return_error(json.dumps(request_data, indent=4))
         headers = {
             'Content-Type': 'application/json;charset=utf-8',
             'Authorization': 'Bearer ' + self.create_jwt_token(http_method='POST', api_path=self.suffix,
                                                                headers='', request_body=json.dumps(request_data))}
-
         response = self._http_request("POST", self.suffix, headers=headers, data=json.dumps(request_data))
-        return_error(response)
         return response
 
     @staticmethod
@@ -556,24 +574,18 @@ class Client(BaseClient):
         payload = self.build_investigation_payload(investigation_name, 'Windows registry', time_range_type, agent_guids,
                                                    server_guids, scan_schedule_guid, scan_schedule_id, time_range_start,
                                                    time_range_end)
-
         payload["registryCriteria"] = self.create_registry_criteria(registry_key, registry_name, match_option,
                                                                     registry_data)
-
         request_data = {
             "Url": "V1/Task/CreateScan",
             "TaskType": 4,  # For Endpoint Sensor, the value is always 4.
             "Payload": payload
         }
-
-        # return_error(json.dumps(request_data, indent=4))
         headers = {
             'Content-Type': 'application/json;charset=utf-8',
             'Authorization': 'Bearer ' + self.create_jwt_token(http_method='POST', api_path=self.suffix,
                                                                headers='', request_body=json.dumps(request_data))}
-
         response = self._http_request("POST", self.suffix, headers=headers, data=json.dumps(request_data))
-        return_error(response)
         return response
 
     @staticmethod
@@ -607,8 +619,7 @@ class Client(BaseClient):
         general_investigation_args = {key: value for key, value in args.items() if
                                       key in GENERAL_INVESTIGATION_ARGS}  # take all general investigation args
 
-        general_investigation_args['scan_type'] = 'Custom criteria'  # hardcoded value
-        payload = self.build_investigation_payload(**general_investigation_args)
+        payload = self.build_investigation_payload(**general_investigation_args, scan_type='Custom criteria')
 
         [args.pop(key) for key in
          general_investigation_args.keys()]  # args now contains only the special investigation args
@@ -619,12 +630,10 @@ class Client(BaseClient):
             "TaskType": 4,  # For Endpoint Sensor, the value is always 4.
             "Payload": payload
         }
-
         headers = {
             'Content-Type': 'application/json;charset=utf-8',
             'Authorization': 'Bearer ' + self.create_jwt_token(http_method='POST', api_path=self.suffix,
                                                                headers='', request_body=json.dumps(request_data))}
-
         response = self._http_request("POST", self.suffix, headers=headers, data=json.dumps(request_data))
         return response
 
@@ -664,7 +673,6 @@ class Client(BaseClient):
             "TaskType": 4,  # For Endpoint Sensor, the value is always 4.
             "Payload": payload
         }
-
         headers = {
             'Content-Type': 'application/json;charset=utf-8',
             'Authorization': 'Bearer ' + self.create_jwt_token(http_method='POST', api_path=self.suffix,
@@ -698,13 +706,13 @@ class Client(BaseClient):
             "TaskType": 4,  # For Endpoint Sensor, the value is always 4.
             "Payload": payload
         }
-
         headers = {
             'Content-Type': 'application/json;charset=utf-8',
             'Authorization': 'Bearer ' + self.create_jwt_token(http_method='POST', api_path=self.suffix,
                                                                headers='', request_body=json.dumps(request_data))}
 
         response = self._http_request("POST", self.suffix, headers=headers, data=json.dumps(request_data))
+        self.validate_response(response, error_message='The historical investigation creation was unsuccessful')
         return response
 
     def create_result_list_payload(self, limit, offset, scan_type, filter_by_task_name: str = '', filter_by_creator_name: str = '',
@@ -758,7 +766,8 @@ class Client(BaseClient):
                                                                headers='', request_body=json.dumps(request_data))}
         # return_error(json.dumps(request_data, indent=4))
         response = self._http_request("PUT", self.suffix, headers=headers, data=json.dumps(request_data))
-        # return_error(json.dumps(response, indent = 4))
+        self.validate_response(response, 'The investigation result list command was unsuccessfu')
+
         return response
 
     def create_result_list_by_status_payload(self, limit: str, offset: str, scan_type: str, scan_status: str, scan_summary_guid: str,
@@ -771,8 +780,7 @@ class Client(BaseClient):
             },
             "scanType": [SCAN_TYPE_TO_NUM[scan_type] for scan_type in argToList(scan_type)],
             "scanStatus": SCAN_STATUS_TO_NUM[scan_status],
-            "scanSummaryGuid": [scan_summary_guid]
-
+            "scanSummaryGuid": argToList(scan_summary_guid) if scan_summary_guid else []
         }
 
         payload_filter = []
@@ -790,7 +798,7 @@ class Client(BaseClient):
 
         return payload
 
-    def investigation_result_list_by_status(self, scan_type: str, scan_status: str, scan_summary_guid: str,
+    def investigation_result_list_by_status(self, scan_type: str, scan_status: str, scan_summary_guid: str = '',
                                             limit: str = 50, offset: str = 0, filter_by_endpoint_name: str = '',
                                             filter_by_endpoint_ip_address: str = '',
                                             filter_by_endpoint_operating_system: str = '',
@@ -813,10 +821,10 @@ class Client(BaseClient):
                                                                headers='', request_body=json.dumps(request_data))}
         # return_error(json.dumps(request_data, indent=4))
         response = self._http_request("PUT", self.suffix, headers=headers, data=json.dumps(request_data))
-        return_error(json.dumps(response, indent = 4))
+        if response.get('Data', {}).get('Message', '') != 'OK':
+            error_message = response.get('Data', {}).get('Message', '')
+            return_error(f'The investigation result list command was unsuccessful. Reason: \n{error_message}')
         return response
-
-# investigation_result_list
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -907,10 +915,7 @@ def prodagent_restore_command(client: Client, args):
 
 def list_logs_command(client: Client, args):
     client.suffix = '/WebApp/api/v1/logs'
-    log_type = args.get('log_type', '')
-    since_time = args.get('since_time', 0)
-    page_token = args.get('page_token', 0)
-    response = client.logs_list(log_type=log_type, since_time=since_time, page_token=page_token)
+    response = client.logs_list(**assign_params(**args))
     parsed_logs_list = []
 
     if response:
@@ -918,44 +923,25 @@ def list_logs_command(client: Client, args):
             parsed_logs_list = client.parse_cef_logs_to_dict_logs(response)
 
     readable_output = tableToMarkdown('Logs List', parsed_logs_list, removeNull=True)
-
-    # build the context
-    if parsed_logs_list:
-        response_data = response.get('Data', {})
-        response_data.pop('Logs')
-        response = {
-            'Logs': parsed_logs_list,
-            'Data': response_data
-        }
+    context = parsed_logs_list
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='TrendMicroApex.Log',
-        outputs=response,
+        outputs=context,
         raw_response=response
     )
 
 
 def udso_file_add_command(client: Client, args):
     client.suffix = '/WebApp/api/SuspiciousObjectResource/FileUDSO'
-
-    file = demisto.getFilePath(args.get('entry_id'))
-    file_path = file['path']
-    file_name = file['name']
-    with open(file_path, 'rb') as f:
-        file_content_base64_string = base64.b64encode(f.read()).decode()  # the api is expecting 64based encoded file
-
     note = args.get('note')
     file_scan_action = args.get('file_scan_action')
+    entry_id = args.get('entry_id')
 
+    file_name, file_content_base64_string = client.get_file_name_and_base_64_content(entry_id)
     response = client.udso_add_file(file_content_base64_string, file_name, file_scan_action, note)
-
-    if response.get('result_code') == 1:
-        readable_output = f'### The file "{file_name}" was added to the UDSO list successfully'
-
-    else:
-        readable_output = f'There has been a problem while trying to create the file: \n' \
-                          f'{response.get("result_description")}'
+    readable_output = f'### The file "{file_name}" was added to the UDSO list successfully'
 
     return CommandResults(
         readable_output=readable_output,
@@ -971,17 +957,19 @@ def servers_list_command(client: Client, args):
     for item in response.get('result_content'):  # parse comma separated str to list
         item['ip_address_list'] = item.get('ip_address_list', '').split(',')
 
+    context = {}
     human_readable_table = {}
     if response:
         if response.get('result_content'):
-            human_readable_table = response.get('result_content')
+            context = human_readable_table = response.get('result_content')
 
-    readable_output = tableToMarkdown('Servers List', human_readable_table, headerTransform=string_to_table_header,
-                                      removeNull=True)
+    # headers = ['Entity Id', 'Host Name', 'Product', 'Ip Address List', 'Capabilities']
+    readable_output = tableToMarkdown('Servers List', human_readable_table,
+                                      headerTransform=string_to_table_header, removeNull=True)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='TrendMicroApex.Server',
-        outputs=response,
+        outputs=context,
         outputs_key_field='entity_id',
         raw_response=response
     )
@@ -995,10 +983,11 @@ def agents_list_command(client: Client, args):
     for item in response.get('result_content'):  # parse comma separated str to list
         item['ip_address_list'] = item.get('ip_address_list', '').split(',')
 
+    context = {}
     human_readable_table = {}
     if response:
         if response.get('result_content'):
-            human_readable_table = response.get('result_content')
+            context = human_readable_table = response.get('result_content')
 
     readable_output = tableToMarkdown('Agents List', human_readable_table, headerTransform=string_to_table_header,
                                       removeNull=True)
@@ -1006,7 +995,7 @@ def agents_list_command(client: Client, args):
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='TrendMicroApex.Agent',
-        outputs=response,
+        outputs=context,
         outputs_key_field='entity_id',
         raw_response=response
     )
@@ -1019,13 +1008,12 @@ def endpoint_sensors_list_command(client: Client, args):
 
     human_readable_table = []
     if response:
-        # extract the agents entities from the response
+        # extract the sensor agents entities from the response
         content_list = response.get('Data', {}).get('Data', {}).get('content', {})
         for content_item in content_list:
             human_readable_table.append(content_item.get('content', {}).get('agentEntity')[0])
 
     readable_output = tableToMarkdown('Security Agents with Endpoint Sensor enabled', human_readable_table,
-                                      headerTransform=string_to_table_header,
                                       removeNull=True)
 
     return CommandResults(
@@ -1042,12 +1030,7 @@ def process_terminate_command(client: Client, args):
     response = client.process_terminate_request(**assign_params(**args))
 
     if response:
-        if response.get('Data', {}).get('Message', '') == 'OK':
-            readable_output = 'The process teminated succesfully.'
-
-        else:
-            error_message = response.get('Data', {}).get('Message', '')
-            return_error(f'The process termination was unsuccessful. Reason: \n {error_message}')
+        readable_output = 'The process terminated successfully.'
 
     return CommandResults(
         readable_output=readable_output,
@@ -1109,16 +1092,13 @@ def create_scheduled_investigation(client: Client, args):
 def create_historical_investigation(client: Client, args):
     client.suffix = '/WebApp/OSCE_iES/OsceIes/ApiEntry'
     response = client.create_historical_investigation(args)
-
     context = response
     if response:
-        if response.get('Data', {}).get('Message', '') == 'OK':
-            task_id = response.get('Data', {}).get('Data', '').get('taskId')
-            readable_output = f'### The historical investigation was created successfully with task id: {task_id}'
-            context = client.remove_unnecessary_fields_from_response(response)
-        else:
-            error_message = response.get('Data', {}).get('Message', '')
-            return_error(f'The historical investigation creation was unsuccessful. Reason: \n {error_message}')
+        context = response.get('Data', {}).get('Data', {})
+
+        headers = ['taskId', 'serverName', 'serverGuid']
+        readable_output = tableToMarkdown('The historical investigation was created successfully',
+                                          context, headers=headers, removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1132,26 +1112,22 @@ def create_historical_investigation(client: Client, args):
 def investigation_result_list_command(client: Client, args):
     client.suffix = '/WebApp/OSCE_iES/OsceIes/ApiEntry'
     response = client.investigation_result_list(**assign_params(**args))
-
     context = response
     if response:
-        if response.get('Data', {}).get('Message', '') == 'OK':
-            content_list = response.get('Data', {}).get('Data', {}).get('content', [])
-            if content_list:
-                results_list = content_list[0].get('content', {}).get('scanSummaryEntity')
-                # return_error(results_list)
-                headers = ['name', 'scanSummaryId', 'scanSummaryGuid', 'submitTime', 'serverGuidList', 'creator']
-                readable_output = tableToMarkdown('Investigation result list:', results_list, headers=headers)
-                context = results_list
-        else:
-            error_message = response.get('Data', {}).get('Message', '')
-            return_error(f'The investigation result list command was unsuccessful. Reason: \n {error_message}')
+        content_list = response.get('Data', {}).get('Data', {}).get('content', [])
+        if content_list:
+            results_list = content_list[0].get('content', {}).get('scanSummaryEntity')
+            if results_list:
+                context = results_list = client.convert_timestamps_to_readable(results_list)
+
+            headers = ['name', 'scanSummaryId', 'scanSummaryGuid', 'submitTime', 'serverGuidList', 'creator']
+            readable_output = tableToMarkdown('Investigation result list:', results_list, headers=headers)
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='TrendMicroApex.InvestigationResult',
         outputs=context,
-        outputs_key_field='taskId',
+        outputs_key_field='scanSummaryGuid',
         raw_response=response
     )
 
@@ -1165,22 +1141,27 @@ def investigation_result_list_by_status_command(client: Client, args):
         if response.get('Data', {}).get('Message', '') == 'OK':
             content_list = response.get('Data', {}).get('Data', {}).get('content', [])
             if content_list:
-                results_list = content_list[0].get('content', {}).get('scanSummaryEntity')
-                # return_error(results_list)
-                headers = ['name', 'scanSummaryId', 'scanSummaryGuid', 'submitTime', 'serverGuidList', 'creator']
+                results_list = content_list[0].get('content', {}).get('scanEntity', [])
+
+                if results_list:
+                    for result in results_list:
+                        if result.get('submitTime'):
+                            result['submitTime'] = datetime.fromtimestamp(result.get('submitTime'),
+                                                                          timezone.utc).isoformat()
+
+                headers = ['name', 'scanSummaryGuid', 'submitTime', 'agentGuid', 'serverGuid', 'creator']
                 readable_output = tableToMarkdown('Investigation result list:', results_list, headers=headers)
                 context = results_list
-        else:
-            error_message = response.get('Data', {}).get('Message', '')
-            return_error(f'The investigation result list command was unsuccessful. Reason: \n {error_message}')
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='TrendMicroApex.InvestigationResult',
+        outputs_prefix='TrendMicroApex.InvestigationResultByStatus',
         outputs=context,
-        outputs_key_field='taskId',
+        outputs_key_field='scanSummaryGuid',
         raw_response=response
     )
+
+
 # def fetch_incidents(client: Client, last_run: Dict[str, int],
 #                     first_fetch_time: Optional[int], log_types: List[str]) -> Tuple[Dict[str, int], List[dict]]:
 #
@@ -1228,6 +1209,8 @@ def investigation_result_list_by_status_command(client: Client, args):
 #     # Save the next_run as a dict with the last_fetch key to be stored
 #     next_run = {'last_fetch': latest_created_time}
 #     return next_run, incidents
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 

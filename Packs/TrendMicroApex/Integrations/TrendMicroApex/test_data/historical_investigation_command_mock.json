@@ -1,0 +1,31 @@
+{
+    "Data": {
+        "Code": 0,
+        "CodeType": 1,
+        "Message": "OK",
+        "Data": {
+            "taskId": "F950A553-426E-475B-B727-D0ACF88FEAB7",
+            "lastContentId": "",
+            "hasMore": false,
+            "serverName": "Apex One as a Service",
+            "serverGuid": "B220EB61-6240-44B4-9B94-4AC3F22E6A62",
+            "content": []
+        },
+        "TimeZone": -7
+    },
+    "Meta": {
+        "result": 1,
+        "errorCode": 0,
+        "errorMessgae": "Success"
+    },
+    "PermissionCtrl": {
+        "permission": "255",
+        "elements": null
+    },
+    "FeatureCtrl": {
+        "mode": "0"
+    },
+    "SystemCtrl": {
+        "TmcmSoDist_Role": "none"
+    }
+}

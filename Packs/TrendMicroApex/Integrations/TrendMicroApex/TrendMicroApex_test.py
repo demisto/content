@@ -26,6 +26,8 @@ MOCK_ADD_FILE = load_test_data('./test_data/add_file_command_mock.json')
 MOCK_SERVERS_LIST = load_test_data('./test_data/servers_list_command_mock.json')
 MOCK_AGENTS_LIST = load_test_data('./test_data/agent_list_command_mock.json')
 MOCK_SENSORS_LIST = load_test_data('./test_data/sensors_list_command_mock.json')
+MOCK_HISTORICAL_INVESTIGATION = load_test_data('./test_data/historical_investigation_command_mock.json')
+MOCK_RESULT_LIST = load_test_data('./test_data/result_list_command_mock.json')
 
 
 def test_list_logs_command(requests_mock, mocker):
@@ -103,10 +105,10 @@ def test_servers_list_command(requests_mock, mocker):
 
     response = servers_list_command(client, {})
 
-    result_content = response.outputs.get('result_content')
-    assert result_content
-    assert len(result_content) == 3
-    assert isinstance(result_content[0].get('ip_address_list'), list)  # Check that the list parse was successful
+    output = response.outputs
+    assert output
+    assert len(output) == 3
+    assert isinstance(output[0].get('ip_address_list'), list)  # Check that the list parse was successful
     assert response.outputs_prefix == 'TrendMicroApex.Server'
 
 
@@ -127,10 +129,10 @@ def test_agents_list_command(requests_mock, mocker):
 
     response = agents_list_command(client, {})
 
-    result_content = response.outputs.get('result_content')
-    assert result_content
-    assert len(result_content) == 1
-    assert isinstance(result_content[0].get('ip_address_list'), list)  # Check that the list parse was successful
+    outputs = response.outputs
+    assert outputs
+    assert len(outputs) == 1
+    assert isinstance(outputs[0].get('ip_address_list'), list)  # Check that the list parse was successful
     assert response.outputs_prefix == 'TrendMicroApex.Agent'
 
 
@@ -175,3 +177,86 @@ def test_endpoint_sensors_list_command(requests_mock, mocker):
 
     assert agents_list == mock_output
     assert response.outputs_prefix == 'TrendMicroApex.EndpointSensorSecurityAgent'
+
+
+def test_create_historical_investigation(requests_mock, mocker):
+    """ Unit test
+    Given
+        - create_historical_investigation command
+    When
+        - mock the server response to http_request.
+        - mock the response to the create_jwt_token method.
+
+    Then
+        Validate the content of the CommandResult
+    """
+    from TrendMicroApex import create_historical_investigation
+    requests_mock.post(f'{MOCK_URL}/WebApp/OSCE_iES/OsceIes/ApiEntry', json=MOCK_HISTORICAL_INVESTIGATION)
+    mocker.patch.object(client, 'create_jwt_token', return_value="fake_token")
+    args = {
+        'operator': 'OR'
+    }
+    response = create_historical_investigation(client, args)
+
+    outputs = response.outputs
+    assert outputs
+    assert outputs.get('taskId')
+    assert 'Meta' not in outputs  # check that unnecessary fields was removed from the response
+    assert 'The historical investigation was created successfully' in response.readable_output
+    assert response.outputs_prefix == 'TrendMicroApex.HistoricalInvestigation'
+
+
+def test_investigation_result_list_command(requests_mock, mocker):
+    """ Unit test
+    Given
+        - investigation_result_list_command command
+    When
+        - mock the server response to http_request.
+        - mock the response to the create_jwt_token method.
+
+    Then
+        Validate the content of the CommandResult
+    """
+    from TrendMicroApex import investigation_result_list_command
+    requests_mock.put(f'{MOCK_URL}/WebApp/OSCE_iES/OsceIes/ApiEntry', json=MOCK_RESULT_LIST)
+    mocker.patch.object(client, 'create_jwt_token', return_value="fake_token")
+    args = {
+        'scan_type': 'YARA rule file'
+    }
+    response = investigation_result_list_command(client, args)
+
+    outputs = response.outputs
+    assert outputs
+    assert len(outputs) == 2
+    assert 'Meta' not in outputs  # check that unnecessary fields was removed from the response
+    assert 'Investigation result list' in response.readable_output
+    assert outputs[0].get('submitTime') == '2020-07-26T17:02:03+00:00'  # check that time values were parsed
+    assert response.outputs_prefix == 'TrendMicroApex.InvestigationResult'
+
+
+def test_investigation_result_list_command(requests_mock, mocker):
+    """ Unit test
+    Given
+        - investigation_result_list_command command
+    When
+        - mock the server response to http_request.
+        - mock the response to the create_jwt_token method.
+
+    Then
+        Validate the content of the CommandResult
+    """
+    from TrendMicroApex import investigation_result_list_command
+    requests_mock.put(f'{MOCK_URL}/WebApp/OSCE_iES/OsceIes/ApiEntry', json=MOCK_RESULT_LIST)
+    mocker.patch.object(client, 'create_jwt_token', return_value="fake_token")
+    args = {
+        'scan_type': 'YARA rule file'
+    }
+    response = investigation_result_list_command(client, args)
+
+    outputs = response.outputs
+    assert outputs
+    assert len(outputs) == 2
+    assert 'Meta' not in outputs  # check that unnecessary fields was removed from the response
+    assert 'Investigation result list' in response.readable_output
+    assert outputs[0].get('submitTime') == '2020-07-26T17:02:03+00:00'  # check that time values were parsed
+    assert response.outputs_prefix == 'TrendMicroApex.InvestigationResult'

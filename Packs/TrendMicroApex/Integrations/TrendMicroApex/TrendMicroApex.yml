@@ -346,7 +346,7 @@ script:
       description: Additional information.
       isArray: false
       name: note
-      required: true
+      required: false
       secret: false
     - default: false
       description: The entry id of the file to upload.
@@ -1263,6 +1263,7 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: All
       description: 'The method used for the investigation. Can be comma separated
         list. Possible values are: Windows registry,YARA rule file,IOC rule file,Disk
         IOC rule file'
@@ -1293,7 +1294,7 @@ script:
       description: The GUID of the scan summary. Can be comma separated list.
       isArray: false
       name: scan_summary_guid
-      required: true
+      required: false
       secret: false
     - default: false
       description: Filter the results by endpoint name - partial match.

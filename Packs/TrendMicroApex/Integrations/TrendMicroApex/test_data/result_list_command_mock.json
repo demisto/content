@@ -1,0 +1,113 @@
+{
+    "Data": {
+        "Code": 0,
+        "CodeType": 1,
+        "Message": "OK",
+        "Data": {
+            "taskId": "",
+            "lastContentId": "",
+            "hasMore": false,
+            "serverGuid": "",
+            "serverName": "",
+            "content": [
+                {
+                    "statusCode": 0,
+                    "message": "Success",
+                    "content": {
+                        "scanSummaryEntity": [
+                            {
+                                "scanSummaryId": 2,
+                                "scanSummaryGuid": "80e5f8b4-3419-455d-99ce-9699ead90781",
+                                "status": 3,
+                                "statusForUI": 3,
+                                "scanType": 2,
+                                "submitTime": 1595782923,
+                                "finishTime": 1595869443,
+                                "specificAgentType": 1,
+                                "progressInfo": {
+                                    "safeCount": 0,
+                                    "riskCount": 0,
+                                    "pendingCount": 0,
+                                    "timeoutCount": 1,
+                                    "noneCount": 0,
+                                    "processingCount": 0,
+                                    "errorCount": 0,
+                                    "abortCount": 0,
+                                    "connectionFailCount": 0
+                                },
+                                "name": "Test2",
+                                "agentCount": 1,
+                                "matchedAgentCount": 0,
+                                "serverGuidList": [
+                                    "B220EB61-6240-44B4-9B94-4AC3F22E6A62"
+                                ],
+                                "creator": "Demisto-PANW",
+                                "scanCriteriaEntity": {
+                                    "criteriaId": 1,
+                                    "criteriaName": "test.yar",
+                                    "criteriaContent": ""
+                                },
+                                "errorServers": "[]"
+                            },
+                            {
+                                "scanSummaryId": 1,
+                                "scanSummaryGuid": "5023de82-464e-4694-91a3-f27a48b42ba4",
+                                "status": 3,
+                                "statusForUI": 3,
+                                "scanType": 2,
+                                "submitTime": 1595772877,
+                                "finishTime": 1595859303,
+                                "specificAgentType": 1,
+                                "progressInfo": {
+                                    "safeCount": 0,
+                                    "riskCount": 0,
+                                    "pendingCount": 0,
+                                    "timeoutCount": 1,
+                                    "noneCount": 0,
+                                    "processingCount": 0,
+                                    "errorCount": 0,
+                                    "abortCount": 0,
+                                    "connectionFailCount": 0
+                                },
+                                "name": "Test",
+                                "agentCount": 1,
+                                "matchedAgentCount": 0,
+                                "serverGuidList": [
+                                    "B220EB61-6240-44B4-9B94-4AC3F22E6A62"
+                                ],
+                                "creator": "Demisto-PANW",
+                                "scanCriteriaEntity": {
+                                    "criteriaId": 1,
+                                    "criteriaName": "test.yar",
+                                    "criteriaContent": ""
+                                },
+                                "errorServers": "[]"
+                            }
+                        ],
+                        "pagination": {
+                            "offset": 0,
+                            "limit": 50,
+                            "total": 2
+                        }
+                    }
+                }
+            ]
+        },
+        "TimeZone": -7
+    },
+    "Meta": {
+        "result": 1,
+        "errorCode": 0,
+        "errorMessgae": "Success"
+    },
+    "PermissionCtrl": {
+        "permission": "255",
+        "elements": null
+    },
+    "FeatureCtrl": {
+        "mode": "0"
+    },
+    "SystemCtrl": {
+        "TmcmSoDist_Role": "none"
+    }
+}
