@@ -51,25 +51,21 @@ echo "Finished copying public bucket successfully."
 
 echo "Updating modified content packs in the bucket ..."
 
-#if [ ! -n "${NIGHTLY}" ]; then
-#  CONTENT_PACKS_TO_INSTALL_FILE="./Tests/content_packs_to_install.txt"
-#  if [ ! -f $CONTENT_PACKS_TO_INSTALL_FILE ]; then
-#    echo "Could not find file $CONTENT_PACKS_TO_INSTALL_FILE."
-#  else
-#    CONTENT_PACKS_TO_INSTALL=$(paste -sd, $CONTENT_PACKS_TO_INSTALL_FILE)
-#    if [[ -z "$CONTENT_PACKS_TO_INSTALL" ]]; then
-#      echo "Did not get content packs to update in the bucket."
-#    else
-#      echo "Updating the following content packs: $CONTENT_PACKS_TO_INSTALL ..."
-#      python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $CIRCLE_ARTIFACTS/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -pb $GCS_BUILD_BUCKET -s $KF -n $GITHUB_RUN_NUMBER -p $CONTENT_PACKS_TO_INSTALL -o -sb $TARGET_PATH -k $PACK_SIGN_KEY -rt false --id_set_path $ID_SET -pr True
-#      echo "Finished updating content packs successfully."
-#    fi
-#  fi
-#else
-#  echo "Updating all content packs for nightly build..."
-#  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $CIRCLE_ARTIFACTS/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -pb $GCS_BUILD_BUCKET -s $KF -n $GITHUB_RUN_NUMBER -sb $TARGET_PATH -k $PACK_SIGN_KEY -rt false --id_set_path $ID_SET -pr True -o
-#  echo "Finished updating content packs successfully."
-#fi
+
+CONTENT_PACKS_TO_INSTALL_FILE="./Tests/content_packs_to_install.txt"
+if [ ! -f $CONTENT_PACKS_TO_INSTALL_FILE ]; then
+  echo "Could not find file $CONTENT_PACKS_TO_INSTALL_FILE."
+else
+  CONTENT_PACKS_TO_INSTALL=$(paste -sd, $CONTENT_PACKS_TO_INSTALL_FILE)
+  if [[ -z "$CONTENT_PACKS_TO_INSTALL" ]]; then
+    echo "Did not get content packs to update in the bucket."
+  else
+    echo "Updating the following content packs: $CONTENT_PACKS_TO_INSTALL ..."
+    python3 ./Tests/Marketplace/upload_packs.py -b $GCS_TESTING_BUCKET -pb $GCS_PRIVATE_TESTING_BUCKET -a $PACK_ARTIFACTS -d $CIRCLE_ARTIFACTS/packs_dependencies.json -e $EXTRACT_FOLDER -s $KF -n $GITHUB_RUN_NUMBER -p $CONTENT_PACKS_TO_INSTALL -sb $PUBLIC_TARGET_PATH -k $PACK_SIGN_KEY -rt false --id_set_path $ID_SET -pr True -o
+    echo "Finished updating content packs successfully."
+  fi
+fi
+
 
 #echo "Normalizing images paths to build bucket ..."
 #python3 ./Tests/Marketplace/normalize_gcs_paths.py -sb $TARGET_PATH -b $GCS_BUILD_BUCKET -s $KF
