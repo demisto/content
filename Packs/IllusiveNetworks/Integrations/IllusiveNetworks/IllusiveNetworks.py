@@ -616,7 +616,7 @@ def get_incidents_command(client: Client, args: dict) -> Tuple:
 
 
 def get_event_incident_id_command(client: Client, args: dict) -> Tuple:
-    event_id = int(args.get("event_id"))
+    event_id = int(args.get("event_id", None))
     status = "Done"
     try:
         incident = client.get_event_incident_id(event_id)

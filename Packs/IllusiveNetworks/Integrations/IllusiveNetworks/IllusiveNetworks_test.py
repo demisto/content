@@ -119,7 +119,7 @@ def test_get_event_incident_id_command(requests_mock):
     _, outputs, _ = get_event_incident_id_command(client, args)
 
     assert outputs == {'Illusive.Event(val.eventId == obj.eventId)':
-                       [{'eventId': '1234', 'incidentId': {'EventId': '1234', 'IncidentId': '1'},
+                       [{'eventId': 1234, 'incidentId': {'EventId': '1234', 'IncidentId': '1'},
                         'status': 'Done'}]}
 
 
