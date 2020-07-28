@@ -1,3 +1,6 @@
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
 from datetime import timezone
 import secrets
 import string
@@ -6,7 +9,8 @@ from typing import Any, Dict
 import dateparser
 import urllib3
 import traceback
-from CommonServerPython import *
+from operator import itemgetter
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -33,6 +37,21 @@ XDR_INCIDENT_FIELDS = {
     "manual_severity": {"description": "Incident severity assigned by the user. "
                                        "This does not affect the calculated severity low medium high",
                         "xsoar_field_name": "severity"},
+}
+
+XDR_RESOLVED_STATUS_TO_XSOAR = {
+    'resolved_threat_handled': 'Resolved',
+    'resolved_known_issue': 'Other',
+    'resolved_duplicate_incident': 'Duplicate',
+    'resolved_false_positive': 'False Positive',
+    'resloved_other': 'Other'
+}
+
+XSOAR_RESOLVED_STATUS_TO_XDR = {
+    'Resolved': 'resolved_threat_handled',
+    'Other': 'resloved_other',
+    'Duplicate': 'resolved_duplicate_incident',
+    'False Positive': 'resolved_false_positive'
 }
 
 
@@ -1618,6 +1637,29 @@ def endpoint_scan_command(client, args):
     )
 
 
+def sort_all_lists_incident_fields(incident_data):
+    """Sorting all lists fields in an incident - without this, elements may shift which results in false
+    identification of changed fields"""
+    if incident_data.get('hosts', []):
+        incident_data['hosts'] = sorted(incident_data.get('hosts', []))
+
+    if incident_data.get('users', []):
+        incident_data['users'] = sorted(incident_data.get('users', []))
+
+    if incident_data.get('incident_sources', []):
+        incident_data['incident_sources'] = sorted(incident_data.get('incident_sources', []))
+
+    if incident_data.get('alerts', []):
+        incident_data['alerts'] = sorted(incident_data.get('alerts', []), key=itemgetter('alert_id'))
+
+    if incident_data.get('file_artifacts', []):
+        incident_data['file_artifacts'] = sorted(incident_data.get('file_artifacts', []), key=itemgetter('file_name'))
+
+    if incident_data.get('network_artifacts', []):
+        incident_data['network_artifacts'] = sorted(incident_data.get('network_artifacts', []),
+                                                    key=itemgetter('network_domain'))
+
+
 def get_mapping_fields_command():
     xdr_incident_type_scheme = SchemeTypeMapping(type_name=XDR_INCIDENT_TYPE_NAME)
     for field in XDR_INCIDENT_FIELDS:
@@ -1637,13 +1679,38 @@ def get_remote_data_command(client, args):
                   f"modified time: {int(incident_data.get('modification_time'))}\n"
                   f"update time:   {arg_to_timestamp(remote_args.last_update, 'last_update')}")
 
-    incident_data['severity'] = incident_data['severity']
+    sort_all_lists_incident_fields(incident_data)
+
+    # handle unasignment:
+    if incident_data.get('assigned_user_mail') is None:
+        incident_data['assigned_user_mail'] = ''
+        incident_data['assigned_user_pretty_name'] = ''
+
+    # handle closed issue in XDR
+    closing_entry = []
+    if incident_data.get('status') in XDR_RESOLVED_STATUS_TO_XSOAR:
+        demisto.debug(f"Closing XDR issue {remote_args.remote_incident_id}")
+        closing_entry = [{
+            'Type': EntryType.NOTE,
+            'Contents': {
+                'dbotIncidentClose': True,
+                'closeReason': XDR_RESOLVED_STATUS_TO_XSOAR.get(incident_data.get("status")),
+                'closeNotes': incident_data.get('resolve_comment')
+            },
+            'ContentsFormat': EntryFormat.JSON
+        }]
+        incident_data['closeReason'] = XDR_RESOLVED_STATUS_TO_XSOAR.get(incident_data.get("status"))
+        incident_data['closeNotes'] = incident_data.get('resolve_comment')
+
+        if incident_data.get('status') == 'resolved_known_issue':
+            closing_entry['Contents']['closeNotes'] = 'Known Issue.\n' + incident_data['closeNotes']
+
     if arg_to_timestamp(current_modified_time, 'modification_time') > \
             arg_to_timestamp(remote_args.last_update, 'last_update'):
         demisto.debug(f"Updating XDR incident {remote_args.remote_incident_id}")
         return GetRemoteDataResponse(
             mirrored_object=incident_data,
-            entries=[]
+            entries=closing_entry
         )
 
     else:
@@ -1651,7 +1718,7 @@ def get_remote_data_command(client, args):
         return {}
 
 
-def get_update_args(delta):
+def get_update_args(delta, inc_status):
     """Change the updated field names from XSOAR name to XDR name"""
     update_args = {}
     for field in XDR_INCIDENT_FIELDS:
@@ -1676,6 +1743,12 @@ def get_update_args(delta):
         update_args['assigned_user_mail'] = None
         update_args['assigned_user_pretty_name'] = None
 
+    # handle close issue in XSOAR
+    if inc_status == 2:
+        demisto.debug("Closing Remote XDR incident")
+        update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get(delta.get('closeReason'))
+        update_args['resolve_comment'] = delta.get('closeNotes')
+
     return update_args
 
 
@@ -1684,7 +1757,7 @@ def update_remote_system_command(client, args):
     if remote_args.delta and remote_args.incident_changed:
         demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update XDR '
                       f'incident {remote_args.remote_incident_id}')
-        update_args = get_update_args(remote_args.delta)
+        update_args = get_update_args(remote_args.delta, remote_args.inc_status)
 
         update_args['incident_id'] = remote_args.remote_incident_id
         demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}] to XDR\n')
@@ -1713,6 +1786,8 @@ def fetch_incidents(client, first_fetch_time, last_run: dict = None):
         incident_id = raw_incident.get('incident_id')
         incident_data = get_incident_extra_data_command(client, {"incident_id": incident_id,
                                                                  "alerts_limit": 1000})[2].get('incident')
+
+        sort_all_lists_incident_fields(incident_data)
 
         description = raw_incident.get('description')
         occurred = timestamp_to_datestring(raw_incident['creation_time'], TIME_FORMAT + 'Z')
