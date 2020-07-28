@@ -136,20 +136,6 @@
                         "version": 0
                     },
                     {
-                        "fieldId": "incident_niststage",
-                        "id": "",
-                        "isVisible": true,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "version": 0
-                    },
-                    {
-                        "fieldId": "incident_sansstage",
-                        "id": "",
-                        "isVisible": true,
-                        "modified": "0001-01-01T00:00:00Z",
-                        "version": 0
-                    },
-                    {
                         "fieldId": "incident_urlsslverification",
                         "id": "",
                         "isVisible": true,
@@ -174,5 +160,6 @@
     },
     "typeId": "Employee Health Check",
     "version": -1,
-	"fromVersion": "5.5.0"
+	"fromVersion": "5.5.0",
+    "toVersion": "5.9.9"
 }

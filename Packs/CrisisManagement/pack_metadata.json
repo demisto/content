@@ -1,8 +1,8 @@
 {
     "name": "Crisis Management",
-    "description": "Note: This is a beta pack, which lets you implement and test pre-release software. Since the pack is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.",
+    "description": "This Content Pack helps you automate data collection and crisis event communications such as monitoring remote employee health and safety well being.",
     "support": "xsoar",
-    "currentVersion": "1.1.2",
+    "currentVersion": "1.2.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,14 +10,39 @@
         "Case Management"
     ],
     "tags": [
-        "Crisis",
         "Pandemic",
-        "Remote Work",
+        "Crisis",
         "COVID-19"
     ],
     "created": "2020-05-06T08:54:47Z",
     "useCases": [
         "Crisis Management"
     ],
-    "keywords": []
+    "keywords": [],
+    "dependencies": {
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "NIST": {
+            "mandatory": false,
+            "display_name": "NIST"
+        },
+        "Phishing": {
+            "mandatory": true,
+            "display_name": "Phishing"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "SANS": {
+            "mandatory": false,
+            "display_name": "SANS"
+        },
+        "MicrosoftGraphUser": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph User"
+        }
+    }
 }

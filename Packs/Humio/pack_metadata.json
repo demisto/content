@@ -10,11 +10,12 @@
         "Analytics & SIEM"
     ],
     "tags": [
-        "humio",
-        "log-management",
-        "siem"
+        "Log-management"
     ],
     "created": "2020-04-30T15:56:44Z",
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "githubUser": [
+        "KGausel"
+    ]
 }
