@@ -701,4 +701,4 @@ outputs:
   type: string
 fromversion: 5.0.0
 tests:
-- - No test
+- No test
