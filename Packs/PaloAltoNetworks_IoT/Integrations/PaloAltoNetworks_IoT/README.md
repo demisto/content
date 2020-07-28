@@ -1,9 +1,9 @@
 
-This integration lets you import **Palo Alto Networks IoT** alerts and vulnerabiilties into Palo Alto Networks XSOAR.
+This integration lets you import **Palo Alto Networks IoT** alerts and vulnerabilities into Palo Alto Networks XSOAR.
 
 ## Use Cases
 
-- Fetch Palo Alto Networks IoT alerts and vulnerabiilties
+- Fetch Palo Alto Networks IoT alerts and vulnerabilities
 - Fetch a device details by using a device ID
 - You can create new playbooks, or extend the default ones, to analyze alerts and vulnerabilities, enrich the incident by having the device details and assign the incidents to different parties based on the Category and Profile of the device.
 
