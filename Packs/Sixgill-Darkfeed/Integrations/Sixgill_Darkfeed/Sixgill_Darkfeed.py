@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
 
-from typing import Dict, List, Any, Callable
+from typing import Dict, List, Set, Any, Callable
 from collections import OrderedDict
 import traceback
 import requests
@@ -170,6 +170,10 @@ def stix2_to_demisto_indicator(stix2obj: Dict[str, Any], log):
 
     if all(ioc.get("type") == FeedIndicatorType.File for ioc in indicators):
         temp_indicator = indicators[0].copy()
+
+        if hashes["sha256"] is not None:
+            temp_indicator["value"] = hashes["sha256"]
+
         temp_indicator["fields"].update({hash_k: hash_v for hash_k, hash_v in hashes.items() if hash_v is not None})
         indicators = [temp_indicator]
 
@@ -219,11 +223,16 @@ def get_indicators_command(client: SixgillFeedClient, args):
 def fetch_indicators_command(client: SixgillFeedClient, limit: int = 0, get_indicators_mode: bool = False):
     bundle = client.get_bundle()
     indicators_to_create: List = []
+    indicator_values_set: Set = set()
 
     for stix_indicator in bundle.get("objects"):
         if is_indicator(stix_indicator):
             demisto_indicators = stix2_to_demisto_indicator(stix_indicator, demisto)
-            indicators_to_create.extend(demisto_indicators)
+
+            for indicator in demisto_indicators:
+                if indicator.get("value") not in indicator_values_set:
+                    indicator_values_set.add(indicator.get("value"))
+                    indicators_to_create.append(indicator)
 
         if get_indicators_mode and len(indicators_to_create) == limit:
             break

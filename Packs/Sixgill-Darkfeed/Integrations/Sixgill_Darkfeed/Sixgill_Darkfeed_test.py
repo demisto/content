@@ -163,7 +163,7 @@ iocs_bundle = [{"id": "bundle--716fd67b-ba74-44db-8d4c-2efde05ddbaa",
                 "type": "bundle"}
                ]
 
-expected_ioc_output = [{'value': '8f8ff6b696859c3afe7936c345b098bd', 'type': 'File',
+expected_ioc_output = [{'value': '9cd46027d63c36e53f4347d43554336c2ea050d38be3ff9a608cb94cca6ab74b', 'type': 'File',
                         'rawJSON': {'created': '2020-01-09T07:31:16.708Z',
                                     'description': 'Shell access to this domain is being sold on dark web markets',
                                     'id': 'indicator--7fc19d6d-2d58-45d6-a410-85554b12aea9', 'kill_chain_phases':
@@ -375,7 +375,7 @@ expected_ioc_output = [{'value': '8f8ff6b696859c3afe7936c345b098bd', 'type': 'Fi
                                                          'dark web markets',
                                    'sixgillvirustotaldetectionrate': None, 'sixgillvirustotalurl': None,
                                    'sixgillmitreattcktactic': None, 'sixgillmitreattcktechnique': None}, 'score': 3},
-                       {'value': '2f4e41ea7006099f365942349b05a269', 'type': 'File',
+                       {'value': 'a925164d6c0c479967b3d9870267a03adf65e8145', 'type': 'File',
                         'rawJSON': {'created': '2020-01-09T07:31:16.834Z',
                                     'description': 'Shell access to this domain is being sold on dark web markets',
                                     'id': 'indicator--85d3d87b-76ed-4cab-b709-a43dfbdc5d8d', 'kill_chain_phases': [{
