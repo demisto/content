@@ -277,17 +277,24 @@ def test_module(client):
     return 'ok'
 
 
-def alerts_to_human_readable(alerts):
-    alerts_readable_outputs = []
-    for alert in alerts:
-        readable_output = assign_params(alert_id=alert.get('_id'), title=alert.get('title'),
-                                        description=alert.get('description'),
-                                        status_value=[key for key, value in STATUS_OPTIONS.items()
-                                                      if alert.get('statusValue') == value],
-                                        severity_value=[key for key, value in SEVERITY_OPTIONS.items()
-                                                        if alert.get('severityValue') == value],
-                                        alert_date=datetime.fromtimestamp(alert.get('timestamp') / 1000.0).isoformat())
-        alerts_readable_outputs.append(readable_output)
+def alert_to_human_readable(alert):
+    readable_output = assign_params(alert_id=alert.get('_id'), title=alert.get('title'),
+                                    description=alert.get('description'),
+                                    status_value=[key for key, value in STATUS_OPTIONS.items()
+                                                  if alert.get('statusValue') == value],
+                                    severity_value=[key for key, value in SEVERITY_OPTIONS.items()
+                                                    if alert.get('severityValue') == value],
+                                    alert_date=datetime.fromtimestamp(alert.get('timestamp') / 1000.0).isoformat())
+    return readable_output
+
+
+def alerts_to_human_readable(alerts, alert_id):
+    if not alert_id:
+        alerts_readable_outputs = []
+        for alert in alerts:
+            alerts_readable_outputs.append(alert_to_human_readable(alert))
+    else:
+        alerts_readable_outputs = alert_to_human_readable(alerts)
     headers = ['alert_id', 'alert_date', 'title', 'description', 'status_value', 'severity_value']
     human_readable = tableToMarkdown('Results', alerts_readable_outputs, headers, removeNull=True)
     return human_readable
@@ -303,7 +310,7 @@ def list_alerts_command(client, args):
     request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, customer_filters, arguments, alert_id)
     alerts = client.list_alerts(url_suffix, request_data)
     alerts = arrange_alerts_by_incident_type(alerts)
-    human_readable = alerts_to_human_readable(alerts)
+    human_readable = alerts_to_human_readable(alerts, alert_id)
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
@@ -359,16 +366,20 @@ def activities_to_human_readable(activities):
     return human_readable
 
 
-def arrange_entity_data(activities):
+def arrange_entity_data(activity):
     entities_data = []
+    if 'entityData' in activity.keys():
+        entity_data = activity['entityData']
+        for key, value in entity_data.items():
+            if value:
+                entities_data.append(value)
+        activity['entityData'] = entities_data
+
+
+def arrange_entities_data(activities):
     if activities:
         for activity in activities:
-            entity_data = activity['entityData']
-            if entity_data:
-                for key, value in entity_data.items():
-                    if value:
-                        entities_data.append(value)
-                activity['entityData'] = entities_data
+
     return activities
 
 
@@ -382,8 +393,9 @@ def list_activities_command(client, args):
                               source=args.get('source'))
     request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, customer_filters, arguments, activity_id)
     activities = client.list_activities(url_suffix, request_data)
-    activities = activities.get('data')
-    activities = arrange_entity_data(activities)
+    if activities.get('data'):
+        activities = activities.get('data')
+    activities = arrange_entities_data(activities)
     human_readable = activities_to_human_readable(activities)
     return CommandResults(
         readable_output=human_readable,
@@ -476,16 +488,23 @@ def get_max_result_number(max_results):
     return int(max_results)
 
 
+def arrange_alert_by_incident_type(alert):
+    incident_types = {}
+    for entity in alert['entities']:
+        if not entity['type'] in incident_types.keys():
+            incident_types[entity['type']] = []
+        incident_types[entity['type']].append(entity)
+    alert.update(incident_types)
+    del alert['entities']
+
+
 def arrange_alerts_by_incident_type(alerts):
-    alerts = alerts['data']
-    for alert in alerts:
-        incident_types = {}
-        for entity in alert['entities']:
-            if not incident_types.get(entity.get('type')):
-                incident_types[entity['type']] = []
-            incident_types[entity['type']].append(entity)
-        alert.update(incident_types)
-        del alert['entities']
+    if 'data' in alerts.keys():
+        alerts = alerts['data']
+        for alert in alerts:
+            arrange_alert_by_incident_type(alert)
+    else:
+        arrange_alert_by_incident_type(alerts)
     return alerts
 
 
