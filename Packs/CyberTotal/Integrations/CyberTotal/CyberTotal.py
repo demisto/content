@@ -94,7 +94,7 @@ class Client(BaseClient):
             "permalink": permalink,
             "positive_detections": 0,
             "resource": url,
-            "scan_date": dateparser.parse(scan_time).strftime("%Y-%m-%d %H:%M:%S"),
+            "scan_date": scan_time,
             "task_id": task_id,
             "detection_engines": 0,
             "detection_ratio": "0/0"
