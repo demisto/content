@@ -234,14 +234,15 @@ Command executed
 Command executed
 
 ## Troubleshooting
+
 ### General Test Connection Error
-If you receive an error which is not clear during the **Test** of the integration instance, you will be able to get detailed logs buy following:
-* Save the configured instance even though the **Test** doesn't work.
-* Run in the playground the `!sql-command` with `debug-mode=true`. For example:
+In cases where you receive an error that is not clear when you **Test** the integration instance you can get detailed logs.
+1. Save the configured instance even though the **Test** doesn't work.
+2. In the playground, run the `!sql-command` with `debug-mode=true`. For example:
   ```
   !sql-command query="some simple query" debug-mode=true
   ```
-* A log file will be produced to the Playground. Examine the log file for further details why the integration is failing.
+A log file will be generated in the Playground. Examine the log file for further details that explain why the integration is failing.
 
 ### SQL Server
 When configuring *SQL Server*, if you receive an error of the form:
