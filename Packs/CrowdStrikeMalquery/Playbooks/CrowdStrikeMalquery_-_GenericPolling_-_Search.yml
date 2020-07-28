@@ -2,7 +2,7 @@ id: CrowdStrikeMalquery - Search
 version: -1
 name: CrowdStrikeMalquery - Search
 description: |-
-  Use this playbook as a sub-playbook to query the contents of binary files,
+  Use this playbook as a sub-playbook to query the contents of binary files.
   This playbook implements polling by continuously running the `get-request` command until the operation completes.
   The remote action should have the following structure:
 
@@ -106,7 +106,7 @@ tasks:
         \ can be filtered based on criteria such as file type, file size and first\
         \ seen date. Using hunt is a two-step process: Schedule a YARA-based\
         \ search with hunt, which returns a request ID. Provide that request ID to\
-        \ the cs-malquery-get-request to retrieve results."
+        \ cs-malquery-get-request to retrieve results."
       script: '|||cs-malquery-hunt'
       type: regular
       iscommand: true
@@ -153,11 +153,11 @@ tasks:
       version: -1
       name: Exact search
       description: "Use exact-search to search Falcon MalQuery for a combination of\
-        \ hex patterns and strings in order to identify samples based upon file content\
+        \ hex patterns and strings to identify samples based upon file content\
         \ at byte level granularity. You can filter results on criteria such as file\
-        \ type, file size and first seen date. Using exact-search is a two-step process:\
+        \ type, file size, and first seen date. Using exact-search is a two-step process:\
         \ \0Search MalQuery with exact-search, which returns a request ID. \0Provide\
-        \ that request ID to the cs-malquery-get-request to retrieve results."
+        \ that request ID to cs-malquery-get-request to retrieve results."
       script: '|||cs-malquery-exact-search'
       type: regular
       iscommand: true
@@ -408,7 +408,7 @@ outputs:
 - contextPath: Malquery.File.filetype
   description: File type.
 - contextPath: Malquery.File.first_seen
-  description: Date when the File was first seen.
+  description: Date when the file was first seen.
 - contextPath: Malquery.File.label
   description: File label.
 - contextPath: Malquery.File.md5
