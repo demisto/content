@@ -16,6 +16,9 @@ from base64 import b64encode
 from nltk import ngrams
 from datetime import datetime
 
+
+MIN_TEXT_LENGTH = 20
+
 MODIFIED_QUERY_TIMEFORMAT = '%Y-%m-%d %H:%M:%S'
 CREATED_FIELD_TIMEFORMAT  = '%Y-%m-%dT%H:%M:%S%z'
 EMAIL_BODY_FIELD = 'emailbody'
@@ -983,6 +986,8 @@ def extract_features_from_incident(row):
         email_subject = ''
     email_body, email_subject = email_body.strip().lower(), email_subject.strip().lower()
     text = email_subject + ' ' + email_body
+    if len(text) < MIN_TEXT_LENGTH:
+        raise ValueError('Text length is shorter than allowed minimum of: {}'.format(MIN_TEXT_LENGTH))
     email_body_word_tokenized = word_tokenize(email_body)
     email_subject_word_tokenized = word_tokenize(email_subject)
     text_ngrams = transform_text_to_ngrams_counter(email_body_word_tokenized, email_subject_word_tokenized)
