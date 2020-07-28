@@ -54,8 +54,13 @@ XDR_INCIDENT_FIELDS = [
 
 
 def compare_incident_in_demisto_vs_xdr_context(incident_in_demisto, xdr_incident_in_context, incident_id, fields_mapping):
-    modified_in_demisto = parser.parse(incident_in_demisto.get("modified")).timestamp() * 1000
-    modified_in_xdr_in_context = int(xdr_incident_in_context.get("modification_time"))
+    modified_in_demisto = parser.parse(incident_in_demisto.get("modified")).timestamp()
+    modified_in_xdr_in_context = int(xdr_incident_in_context.get("modification_time")) // 1000
+    debug_modified = assign_params(
+        modified_in_demisto=modified_in_demisto,
+        modified_in_xdr_in_context=modified_in_xdr_in_context
+    )
+    print_debug_msg(str(debug_modified), '_modified_time_fields')
 
     incident_in_demisto_was_modified = False
 
@@ -235,6 +240,14 @@ def xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_ru
         xdr_incident_from_previous_run,
         incident_id, fields_mapping)
 
+    debug_compare_results = assign_params(
+        incident_in_demisto=incident_in_demisto,
+        xdr_incident_from_previous_run=xdr_incident_from_previous_run,
+        incident_id=incident_id,
+        fields_mapping=fields_mapping
+    )
+    print_debug_msg(str(debug_compare_results), '_compare_results')
+
     if incident_in_demisto_was_modified:
         # update xdr and finish the script
         demisto.debug("the incident in demisto was modified, updating the incident in xdr accordingly. ")
@@ -324,6 +337,10 @@ def xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_ru
         return latest_incident_in_xdr
 
 
+def print_debug_msg(msg, name=''):
+    demisto.debug(f'XDRSyncScript_DEBUG_MSG{name}: {msg}')
+
+
 def main(args):
     fields_mapping = {}
     for xdr_field in XDR_INCIDENT_FIELDS:
@@ -364,6 +381,18 @@ def main(args):
         demisto.setContext('XDRSyncScriptTaskID', '')
 
     try:
+        debug_args = assign_params(
+            incident_id=incident_id,
+            fields_mapping=fields_mapping,
+            xdr_incident_from_previous_run=xdr_incident_from_previous_run,
+            first_run=first_run,
+            xdr_alerts_field=xdr_alerts_field,
+            xdr_file_artifacts_field=xdr_file_artifacts_field,
+            xdr_network_artifacts_field=xdr_network_artifacts_field,
+            incident_in_demisto=incident_in_demisto,
+            verbose=verbose
+        )
+        print_debug_msg(str(debug_args), '_xdr_incident_sync_args')
         latest_incident_in_xdr = xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_run,
                                                    first_run, xdr_alerts_field, xdr_file_artifacts_field,
                                                    xdr_network_artifacts_field, incident_in_demisto, verbose)
