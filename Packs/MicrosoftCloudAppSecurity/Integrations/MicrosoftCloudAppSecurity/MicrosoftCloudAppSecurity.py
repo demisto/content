@@ -407,7 +407,6 @@ def list_activities_command(client, args):
         activities = activities.get('data')
     activities = arrange_entities_data(activities, activity_id)
     human_readable = activities_to_human_readable(activities, activity_id)
-    return_error(activities)
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='MicrosoftCloudAppSecurity.Activities',
@@ -458,13 +457,20 @@ def list_files_command(client, args):
     )
 
 
-def users_accounts_to_human_readable(users_accounts):
-    users_accounts_readable_outputs = []
-    for entity in users_accounts:
-        readable_output = assign_params(display_name=entity.get('displayName'), last_seen=entity.get('lastSeen'),
-                                        is_admin=entity.get('isAdmin'), is_external=entity.get('isExternal'),
-                                        email=entity.get('email'), username=entity.get('username'))
-        users_accounts_readable_outputs.append(readable_output)
+def user_account_to_human_readable(entity):
+    readable_output = assign_params(display_name=entity.get('displayName'), last_seen=entity.get('lastSeen'),
+                                    is_admin=entity.get('isAdmin'), is_external=entity.get('isExternal'),
+                                    email=entity.get('email'), username=entity.get('username'))
+    return readable_output
+
+
+def users_accounts_to_human_readable(users_accounts, username):
+    if not username:
+        users_accounts_readable_outputs = []
+        for entity in users_accounts:
+            users_accounts_readable_outputs.append(user_account_to_human_readable(entity))
+    else:
+        users_accounts_readable_outputs = user_account_to_human_readable(users_accounts)
     headers = ['display_name', 'last_seen', 'is_admin', 'is_external', 'email', 'username']
     human_readable = tableToMarkdown('Results', users_accounts_readable_outputs, headers, removeNull=True)
     return human_readable
@@ -481,7 +487,9 @@ def list_users_accounts_command(client, args):
     users_accounts = client.list_users_accounts(url_suffix, request_data)
     if users_accounts.get('data'):
         users_accounts = users_accounts.get('data')
-    human_readable = users_accounts_to_human_readable(users_accounts)
+    if args.get('username'):
+        users_accounts = users_accounts[0]
+    human_readable = users_accounts_to_human_readable(users_accounts, args.get('username'))
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='MicrosoftCloudAppSecurity.UsersAccounts',

@@ -87,8 +87,7 @@ def test_list_alerts_command(requests_mock):
     requests_mock.get('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/5f06d71dba4289d0602ba5ac',
                       json=ALERT_BY_ID_DATA)
     res = list_alerts_command(client_mocker, {'alert_id': '5f06d71dba4289d0602ba5ac'})
-    context = res.to_context().get('EntryContext')
-    assert context.get('MicrosoftCloudAppSecurity.Alerts(val.alert_id == obj.alert_id)') == ALERT_BY_ID_DATA
+    assert res.outputs == ALERT_BY_ID_DATA_CONTEXT
 
 
 def test_list_activities_command(requests_mock):
@@ -97,9 +96,7 @@ def test_list_activities_command(requests_mock):
                       '97134000_15600_97ee2049-893e-4c9d-a312-08d82b46faf7',
                       json=ACTIVITIES_BY_ID_DATA)
     res = list_activities_command(client_mocker, {'activity_id': '97134000_15600_97ee2049-893e-4c9d-a312-08d82b46faf7'})
-    context = res.to_context().get('EntryContext')
-    assert ACTIVITIES_BY_ID_DATA == context.get('MicrosoftCloudAppSecurity.Activities'
-                                                '(val.activity_id == obj.activity_id)')
+    assert res.outputs == ACTIVITIES_BY_ID_DATA_CONTEXT
 
 
 def test_list_files_command(requests_mock):
@@ -118,10 +115,51 @@ def test_list_users_accounts_command(requests_mock):
     res = list_users_accounts_command(client_mocker,
                                       {'username': '{ "id": "7e14f6a3-185d-49e3-85e8-40a33d90dc90",'
                                                    ' "saas": 11161, "inst": 0 }'})
-    context = res.to_context().get('EntryContext')
-    assert ENTITIES_BY_USERNAME_DATA == context.get('MicrosoftCloudAppSecurity.UsersAccounts'
-                                                    '(val.username == obj.username)')
+    assert ENTITIES_BY_USERNAME_DATA_CONTEXT == res.outputs
 
+
+ALERT_BY_ID_DATA_CONTEXT = {
+    'URL': 'https://demistodev.portal.cloudappsecurity.com/#/alerts/5f06d71dba4289d0602ba5ac',
+    '_id': '5f06d71dba4289d0602ba5ac',
+    'account': [{'em': 'dev@demistodev.onmicrosoft.com',
+                 'entityType': 2,
+                'id': '2827c1e7-edb6-4529-b50d-25984e968637',
+                 'inst': 0,
+                 'label': 'demisto dev',
+                 'pa': 'dev@demistodev.onmicrosoft.com',
+                 'saas': 11161,
+                 'type': 'account'}],
+    'comment': 'null',
+    'contextId': 'ebac1a16-81bf-449b-8d43-5732c3c1d999',
+    'description': "File policy 'block png files' was matched by 'image (2).png'",
+    'file': [{'id': 'd10230e2-52db-4ec8-815b-c5484524d078|501f6179-e6f9-457c-9892-1590dee07ede',
+               'label': 'image (2).png',
+               'type': 'file'}],
+    'handledByUser': 'null',
+    'idValue': 15728642,
+    'isSystemAlert': False,
+    'policy': {'id': '5f01dce13de79160fbec4150',
+               'label': 'block png files',
+               'policyType': 'FILE',
+               'type': 'policyRule'},
+    'policyRule': [{'id': '5f01dce13de79160fbec4150',
+                    'label': 'block png files',
+                    'policyType': 'FILE',
+                    'type': 'policyRule'}],
+    'resolveTime': '2020-07-12T07:48:40.975Z',
+    'service': [{'id': 15600,
+                'label': 'Microsoft OneDrive for Business',
+                 'type': 'service'}],
+    'severityValue': 0,
+    'statusValue': 1,
+    'stories': [0],
+    'threatScore': 19,
+    'timestamp': 1594283802753,
+    'title': 'block png files',
+    'user': [{'id': 'dev@demistodev.onmicrosoft.com',
+              'label': 'dev@demistodev.onmicrosoft.com',
+              'type': 'user'}]
+}
 
 ALERT_BY_ID_DATA = {
     "_id": "5f06d71dba4289d0602ba5ac",
@@ -181,6 +219,142 @@ ALERT_BY_ID_DATA = {
     "resolveTime": "2020-07-12T07:48:40.975Z",
     "URL": "https://demistodev.portal.cloudappsecurity.com/#/alerts/5f06d71dba4289d0602ba5ac"
 }
+
+ACTIVITIES_BY_ID_DATA_CONTEXT = {
+    '_id': '97134000_15600_97ee2049-893e-4c9d-a312-08d82b46faf7',
+    'aadTenantId': 'ebac1a16-81bf-449b-8d43-5732c3c1d999',
+    'appId': 15600,
+    'appName': 'Microsoft OneDrive for Business',
+    'classifications': [],
+    'collected': {'o365': {'blobCreated': '2020-07-18T18:21:10.6170000Z',
+                  'blobId': '20200718182019454009710$20200718182110617003525$audit_sharepoint$Audit_SharePoint$emea0029'
+                           }},
+    'confidenceLevel': 20,
+    'created': 1595096586840,
+    'createdRaw': 1595096586840,
+    'description': 'FilePreviewed',
+    'description_id': 'EVENT_DESCRIPTION_BASIC_EVENT',
+    'description_metadata': {'colon': '',
+                             'dash': '',
+                             'operation_name': 'FilePreviewed',
+                             'target_object': ''},
+    'device': {'clientIP': '8.8.8.8',
+               'countryCode': 'IL',
+               'userAgent': 'OneDriveMpc-Transform_Thumbnail/1.0'},
+    'entityData': [{'displayName': 'Avishai Brandeis',
+                    'id': {'id': 'avishai@demistodev.onmicrosoft.com',
+                           'inst': 0,
+                           'saas': 11161},
+                    'resolved': True},
+                    {'displayName': 'Avishai Brandeis',
+                     'id': {'id': '3fa9f28b-eb0e-463a-ba7b-8089fe9991e2',
+                            'inst': 0,
+                            'saas': 11161},
+                     'resolved': True}],
+    'eventRouting': {'auditing': True, 'lograbber': True, 'scubaUnpacker': False},
+    'eventType': 233580,
+    'eventTypeName': 'EVENT_CATEGORY_UNSPECIFIED',
+    'eventTypeValue': 'EVENT_O365_ONEDRIVE_GENERIC',
+    'genericEventType': 'ENUM_ACTIVITY_GENERIC_TYPE_BASIC',
+    'instantiation': 1595096584556,
+    'instantiationRaw': 1595096584556,
+    'internals': {'otherIPs': ['8.8.8.8']},
+    'location': {'anonymousProxy': False,
+                 'category': 0,
+                 'categoryValue': 'NONE',
+                 'city': 'Tel Aviv',
+                 'countryCode': 'IL',
+                 'isSatelliteProvider': False,
+                 'latitude': 32.0679,
+                 'longitude': 34.7604,
+                 'organizationSearchable': 'Cellcom Group',
+                 'region': 'Tel Aviv',
+                 'regionCode': 'TA'},
+    'lograbberService': {'gediEvent': True, 'o365EventGrabber': True},
+    'mainInfo': {'eventObjects': [{'id': 'cac4b654-5fcf-44f0-818e-479cf8ae42ac',
+                 'name': 'https://demistodev-my.sharepoint.com/personal/avishai_demistodev_onmicrosoft_com/',
+                                   'objType': 1,
+                                   'role': 3,
+                                   'serviceObjectType': 'OneDrive Site Collection',
+                                   'tags': []},
+                                  {'id': 'avishai@demistodev.onmicrosoft.com',
+                                   'instanceId': 0,
+                                   'link': -162371649,
+                                   'name': 'Avishai Brandeis',
+                                   'objType': 21,
+                                   'resolved': True,
+                                   'role': 4,
+                                   'saasId': 11161,
+                                   'tags': []},
+                                  {'id': '3fa9f28b-eb0e-463a-ba7b-8089fe9991e2',
+                                   'instanceId': 0,
+                                   'link': -162371649,
+                                   'name': 'Avishai Brandeis',
+                                   'objType': 23,
+                                   'resolved': True,
+                                   'role': 4,
+                                   'saasId': 11161,
+                                   'tags': ['5f01dbbc68df27c17aa6ca81']}],
+                 'prettyOperationName': 'FilePreviewed',
+                 'rawOperationName': 'FilePreviewed',
+                 'type': 'basic'},
+    'rawDataJson': {'ApplicationId': '4345a7b9-9a63-4910-a426-35363201d503',
+                    'ClientIP': '8.8.8.8',
+                    'CorrelationId': '3055679f-0048-2000-2b2a-29e5b1098433',
+                    'CreationTime': '2020-07-18T18:18:33.0000000Z',
+                    'DoNotDistributeEvent': True,
+                    'EventSource': 'SharePoint',
+                    'Id': '97ee2049-893e-4c9d-a312-08d82b46faf7',
+                    'ItemType': 'File',
+                    'ListId': '0d2a8402-c671-43cd-b8ec-b49882d43e08',
+                    'ListItemUniqueId': '141133f2-6710-4f65-9c3b-c840a8d71483',
+
+                    'ObjectId': 'https://demistodev-my.sharepoint.com/personal/avishai_demistodev_onmicrosoft_com/Documents/iban '
+                             'example.docx',
+                    'Operation': 'FilePreviewed',
+                    'OrganizationId': 'ebac1a16-81bf-449b-8d43-5732c3c1d999',
+                    'RecordType': 6,
+                    'Site': 'cac4b654-5fcf-44f0-818e-479cf8ae42ac',
+                    'SiteUrl': 'https://demistodev-my.sharepoint.com/personal/avishai_demistodev_onmicrosoft_com/',
+                    'SourceFileExtension': 'docx',
+                    'SourceFileName': 'iban example.docx',
+                    'SourceRelativeUrl': 'Documents',
+                    'UserAgent': 'OneDriveMpc-Transform_Thumbnail/1.0',
+                    'UserId': 'avishai@demistodev.onmicrosoft.com',
+                    'UserKey': '11111',
+                    'UserType': 0,
+                    'Version': 1,
+                    'WebId': '8a6420f5-3cde-4d37-911c-ce86af6d3910',
+                    'Workload': 'OneDrive'},
+    'resolvedActor': {'id': '3fa9f28b-eb0e-463a-ba7b-8089fe9991e2',
+                        'instanceId': '0',
+                        'name': 'Avishai Brandeis',
+                        'objType': '23',
+                        'resolved': True,
+                        'role': '4',
+                        'saasId': '11161',
+                        'tags': ['5f01dbbc68df27c17aa6ca81']},
+    'saasId': 15600,
+    'severity': 'INFO',
+    'source': 2,
+    'srcAppId': 11161,
+    'tenantId': 97134000,
+    'timestamp': 1595096313000,
+    'timestampRaw': 1595096313000,
+    'uid': '97134000_15600_97ee2049-893e-4c9d-a312-08d82b46faf7',
+    'user': {'userName': 'avishai@demistodev.onmicrosoft.com',
+             'userTags': ['5f01dbbc68df27c17aa6ca81']},
+    'userAgent': {'browser': 'MICROSOFT_ONEDRIVE_FOR_BUSINESS',
+                  'deviceType': 'OTHER',
+                  'family': 'MICROSOFT_ONEDRIVE_FOR_BUSINESS',
+                  'name': 'Microsoft OneDrive for Business',
+                  'nativeBrowser': True,
+                  'operatingSystem': {'family': 'Unknown', 'name': 'Unknown'},
+                  'os': 'OTHER',
+                  'tags': ['000000000000000000000000'],
+                  'type': 'Application',
+                  'typeName': 'Application'}
+    }
 
 ACTIVITIES_BY_ID_DATA = {
     "_id": "97134000_15600_97ee2049-893e-4c9d-a312-08d82b46faf7",
@@ -557,6 +731,49 @@ FILES_BY_ID_DATA = {
     "fileTypeDisplay": "File"
 }
 
+ENTITIES_BY_USERNAME_DATA_CONTEXT = {
+      '_id': '5f01dc3d229037823e3b9e92',
+      'actions': [],
+      'appData': {'appId': 11161,
+                  'instance': 0,
+                  'name': 'Office 365',
+                  'saas': 11161},
+      'displayName': 'MS Graph Groups',
+      'domain': None,
+      'email': None,
+      'id': '7e14f6a3-185d-49e3-85e8-40a33d90dc90',
+      'idType': 17,
+      'identifiers': [],
+      'ii': '11161|0|7e14f6a3-185d-49e3-85e8-40a33d90dc90',
+      'isAdmin': False,
+      'isExternal': True,
+      'isFake': False,
+      'lastSeen': '2020-07-19T06:59:24Z',
+      'organization': None,
+      'role': None,
+      'scoreTrends': None,
+      'sctime': None,
+      'sid': None,
+      'status': 2,
+      'subApps': [],
+      'threatScore': None,
+      'type': 1,
+      'userGroups': [{'_id': '5e6fa9ade2367fc6340f487e',
+                      'description': 'App-initiated',
+                      'id': '0000003b0000000000000000',
+                      'name': 'Application (Cloud App Security)',
+                      'usersCount': 562},
+                     {'_id': '5e6fa9ace2367fc6340f4864',
+                      'description': 'Either a user who is not a member of any of '
+                                     'the managed domains you configured in '
+                                     'General settings or a third-party app',
+                      'id': '000000200000000000000000',
+                      'name': 'External users',
+                      'usersCount': 106}],
+      'username': '{"id": "7e14f6a3-185d-49e3-85e8-40a33d90dc90", "saas": 11161, '
+                  '"inst": 0}'
+}
+
 ENTITIES_BY_USERNAME_DATA = {
     "data": [
         {
@@ -577,8 +794,9 @@ ENTITIES_BY_USERNAME_DATA = {
                     "_id": "5e6fa9ace2367fc6340f4864",
                     "id": "000000200000000000000000",
                     "name": "External users",
-                    "description": "Either a user who is not a member of any of the managed domains you configured in "
-                                   "General settings or a third-party app",
+                    "description": 'Either a user who is not a member of any of '
+                                   'the managed domains you configured in '
+                                   'General settings or a third-party app',
                     "usersCount": 106
                 }
             ],
