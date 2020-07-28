@@ -1,12 +1,12 @@
 {
     "name": "PiHole",
-    "description": "PiHole",
+    "description": "Integration with PiHole",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "created": "2020-07-21T16:45:57Z",
+    "created": "2020-07-28T13:04:51Z",
     "categories": [
         "IT Services"
     ],

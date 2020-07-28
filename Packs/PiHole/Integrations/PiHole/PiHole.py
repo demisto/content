@@ -1,3 +1,6 @@
+import demistomock as demisto
+from CommonServerPython import *
+
 ''' IMPORTS '''
 
 import requests
@@ -30,10 +33,10 @@ class Client:
 
 def results_return(command, thingtoreturn):
     results = CommandResults(
-        outputs_prefix='PiHole.'+str(command),
+        outputs_prefix='PiHole.' + str(command),
         outputs_key_field='',
         outputs=thingtoreturn
-        )
+    )
     return_results(results)
 
 
