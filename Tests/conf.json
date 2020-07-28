@@ -2571,7 +2571,8 @@
         {
             "integrations": "AlienVault Reputation Feed",
             "playbookID": "AlienVaultReputationFeed_Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "memory_threshold": 175
         },
         {
             "integrations": "BruteForceBlocker Feed",
@@ -2860,7 +2861,12 @@
             "fromversion": "5.0.0"
         },
         {
-            "playbookID": "IfThenElse-Test"
+            "playbookID": "IncreaseIncidentSeverity-Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "IfThenElse-Test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
@@ -2921,7 +2927,6 @@
         "Keylight v2 - Test": "Issue 26462",
         "AutoFocus V2 test": "Issue 26464",
         "HybridAnalysis-Test": "Issue 26599",
-        "Logzio - Test": "Issue 26729",
         "Tenable.io test": "Issue 26727",
         "Tenable.io Scan Test": "Issue 26727",
         "URL Enrichment - Generic v2 - Test": "Issue 26463",
@@ -3212,7 +3217,7 @@
         "Cortex Data Lake"
     ],
     "docker_thresholds": {
-
+        
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
