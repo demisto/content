@@ -223,57 +223,57 @@ For more details about the authentication used in this integration, see <a href=
 <tbody>
 <tr>
 <td style="width: 334px;">MSGraphUser.ID</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s ID.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MSGraphUser.DisplayName</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s display name.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MSGraphUser.GivenName</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s given name.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MSGraphUser.BusinessPhones</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s business phone numbers.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MSGraphUser.JobTitle</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s job title.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MSGraphUser.Mail</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s mail address.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MSGraphUser.MobilePhone</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s mobile phone number.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MSGraphUser.OfficeLocation</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s office location.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MSGraphUser.PreferredLanguage</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s preferred language.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MSGraphUser.Surname</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s surname.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MSGraphUser.UserPrincipalName</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s principal name.</td>
 </tr>
 </tbody>
@@ -477,57 +477,57 @@ For more details about the authentication used in this integration, see <a href=
 <tbody>
 <tr>
 <td style="width: 332px;">MSGraphUser.ID</td>
-<td style="width: 86px;">unknown</td>
+<td style="width: 86px;">String</td>
 <td style="width: 322px;">User’s ID.</td>
 </tr>
 <tr>
 <td style="width: 332px;">MSGraphUser.DisplayName</td>
-<td style="width: 86px;">unknown</td>
+<td style="width: 86px;">String</td>
 <td style="width: 322px;">User’s display name.</td>
 </tr>
 <tr>
 <td style="width: 332px;">MSGraphUser.GivenName</td>
-<td style="width: 86px;">unknown</td>
+<td style="width: 86px;">String</td>
 <td style="width: 322px;">User’s given name.</td>
 </tr>
 <tr>
 <td style="width: 332px;">MSGraphUser.BusinessPhones</td>
-<td style="width: 86px;">unknown</td>
+<td style="width: 86px;">String</td>
 <td style="width: 322px;">User’s business phone numbers.</td>
 </tr>
 <tr>
 <td style="width: 332px;">MSGraphUser.JobTitle</td>
-<td style="width: 86px;">unknown</td>
+<td style="width: 86px;">String</td>
 <td style="width: 322px;">User’s job title.</td>
 </tr>
 <tr>
 <td style="width: 332px;">MSGraphUser.Mail</td>
-<td style="width: 86px;">unknown</td>
+<td style="width: 86px;">String</td>
 <td style="width: 322px;">User’s mail address.</td>
 </tr>
 <tr>
 <td style="width: 332px;">MSGraphUser.MobilePhone</td>
-<td style="width: 86px;">unknown</td>
+<td style="width: 86px;">String</td>
 <td style="width: 322px;">User’s mobile phone number.</td>
 </tr>
 <tr>
 <td style="width: 332px;">MSGraphUser.OfficeLocation</td>
-<td style="width: 86px;">unknown</td>
+<td style="width: 86px;">String</td>
 <td style="width: 322px;">User’s office location.</td>
 </tr>
 <tr>
 <td style="width: 332px;">MSGraphUser.PreferredLanguage</td>
-<td style="width: 86px;">unknown</td>
+<td style="width: 86px;">String</td>
 <td style="width: 322px;">User’s preferred language.</td>
 </tr>
 <tr>
 <td style="width: 332px;">MSGraphUser.Surname</td>
-<td style="width: 86px;">unknown</td>
+<td style="width: 86px;">String</td>
 <td style="width: 322px;">User’s surname.</td>
 </tr>
 <tr>
 <td style="width: 332px;">MSGraphUser.UserPrincipalName</td>
-<td style="width: 86px;">unknown</td>
+<td style="width: 86px;">String</td>
 <td style="width: 322px;">User’s principal name.</td>
 </tr>
 </tbody>
@@ -644,57 +644,57 @@ For more details about the authentication used in this integration, see <a href=
 <tbody>
 <tr>
 <td style="width: 334px;">MSGraphUser.ID</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s ID.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MSGraphUser.DisplayName</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s display name.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MSGraphUser.GivenName</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s given name.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MSGraphUser.BusinessPhones</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s business phone numbers.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MSGraphUser.JobTitle</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s job title.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MSGraphUser.Mail</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s mail address.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MSGraphUser.MobilePhone</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s mobile phone.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MSGraphUser.OfficeLocation</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s office location.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MSGraphUser.PreferredLanguage</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s preferred language.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MSGraphUser.Surname</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s surname.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MSGraphUser.UserPrincipalName</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s principal name.</td>
 </tr>
 </tbody>
@@ -825,57 +825,57 @@ For more details about the authentication used in this integration, see <a href=
 <tbody>
 <tr>
 <td style="width: 334px;">MSGraphUser.ID</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s ID.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MSGraphUser.DisplayName</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s display name.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MSGraphUser.GivenName</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s given name.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MSGraphUser.BusinessPhones</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s business phone numbers.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MSGraphUser.JobTitle</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s job title.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MSGraphUser.Mail</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s mail address.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MSGraphUser.MobilePhone</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s mobile phone number.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MSGraphUser.OfficeLocation</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s office location.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MSGraphUser.PreferredLanguage</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s preferred language.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MSGraphUser.Surname</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s surname.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MSGraphUser.UserPrincipalName</td>
-<td style="width: 84px;">unknown</td>
+<td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s principal name.</td>
 </tr>
 </tbody>
@@ -997,57 +997,57 @@ For more details about the authentication used in this integration, see <a href=
 <tbody>
 <tr>
 <td style="width: 323px;">MSGraphUser.ID</td>
-<td style="width: 95px;">unknown</td>
+<td style="width: 95px;">String</td>
 <td style="width: 322px;">User’s ID.</td>
 </tr>
 <tr>
 <td style="width: 323px;">MSGraphUser.DisplayName</td>
-<td style="width: 95px;">unknown</td>
+<td style="width: 95px;">String</td>
 <td style="width: 322px;">User’s display name.</td>
 </tr>
 <tr>
 <td style="width: 323px;">MSGraphUser.GivenName</td>
-<td style="width: 95px;">unknown</td>
+<td style="width: 95px;">String</td>
 <td style="width: 322px;">User’s given name.</td>
 </tr>
 <tr>
 <td style="width: 323px;">MSGraphUser.BusinessPhones</td>
-<td style="width: 95px;">unknown</td>
+<td style="width: 95px;">String</td>
 <td style="width: 322px;">User’s business phone numbers.</td>
 </tr>
 <tr>
 <td style="width: 323px;">MSGraphUser.JobTitle</td>
-<td style="width: 95px;">unknown</td>
+<td style="width: 95px;">String</td>
 <td style="width: 322px;">User’s job title.</td>
 </tr>
 <tr>
 <td style="width: 323px;">MSGraphUser.Mail</td>
-<td style="width: 95px;">unknown</td>
+<td style="width: 95px;">String</td>
 <td style="width: 322px;">User’s mail address.</td>
 </tr>
 <tr>
 <td style="width: 323px;">MSGraphUser.MobilePhone</td>
-<td style="width: 95px;">unknown</td>
+<td style="width: 95px;">String</td>
 <td style="width: 322px;">User’s mobile phone number.</td>
 </tr>
 <tr>
 <td style="width: 323px;">MSGraphUser.OfficeLocation</td>
-<td style="width: 95px;">unknown</td>
+<td style="width: 95px;">String</td>
 <td style="width: 322px;">User’s office location.</td>
 </tr>
 <tr>
 <td style="width: 323px;">MSGraphUser.PreferredLanguage</td>
-<td style="width: 95px;">unknown</td>
+<td style="width: 95px;">String</td>
 <td style="width: 322px;">User’s preferred language.</td>
 </tr>
 <tr>
 <td style="width: 323px;">MSGraphUser.Surname</td>
-<td style="width: 95px;">unknown</td>
+<td style="width: 95px;">String</td>
 <td style="width: 322px;">User’s surname.</td>
 </tr>
 <tr>
 <td style="width: 323px;">MSGraphUser.UserPrincipalName</td>
-<td style="width: 95px;">unknown</td>
+<td style="width: 95px;">String</td>
 <td style="width: 322px;">User’s principal name.</td>
 </tr>
 <tr>
@@ -1199,27 +1199,27 @@ For more details about the authentication used in this integration, see <a href=
 </tr>
 <tr>
 <td style="width: 323px;">MSGraphUserDirectReports.Reports.JobTitle</td>
-<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">String</td>
 <td style="width: 323px;">The user&#39;s job title.</td>
 </tr>
 <tr>
 <td style="width: 323px;">MSGraphUserDirectReports.Reports.Mail</td>
-<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">String</td>
 <td style="width: 323px;">The email address of the user.</td>
 </tr>
 <tr>
 <td style="width: 323px;">MSGraphUserDirectReports.Reports.MobilePhone</td>
-<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">String</td>
 <td style="width: 323px;">The primary cellular telephone number for the user.</td>
 </tr>
 <tr>
 <td style="width: 323px;">MSGraphUserDirectReports.Reports.OfficeLocation</td>
-<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">String</td>
 <td style="width: 323px;">The office location in the user&#39;s place of business.</td>
 </tr>
 <tr>
 <td style="width: 323px;">MSGraphUserDirectReports.Reports.PreferredLanguage</td>
-<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">String</td>
 <td style="width: 323px;">The preferred language for the user. Should follow ISO 639-1 Code; for example: en-US.</td>
 </tr>
 <tr>
@@ -1354,67 +1354,67 @@ For more details about the authentication used in this integration, see <a href=
 <tbody>
 <tr>
 <td style="width: 323px;">MSGraphUserManager.ID</td>
-<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">String</td>
 <td style="width: 323px;">User&#39;s ID.</td>
 </tr>
 <tr>
 <td style="width: 323px;">MSGraphUserManager.Manager.ID</td>
-<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">String</td>
 <td style="width: 323px;">Managers user&#39;s ID.</td>
 </tr>
 <tr>
 <td style="width: 323px;">MSGraphUserManager.Manager.DisplayName</td>
-<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">String</td>
 <td style="width: 323px;">User&#39;s display name.</td>
 </tr>
 <tr>
 <td style="width: 323px;">MSGraphUserManager.Manager.GivenName</td>
-<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">String</td>
 <td style="width: 323px;">User&#39;s given name.</td>
 </tr>
 <tr>
 <td style="width: 323px;">MSGraphUserManager.Manager.BusinessPhones</td>
-<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">String</td>
 <td style="width: 323px;">User&#39;s business phone numbers.</td>
 </tr>
 <tr>
 <td style="width: 323px;">MSGraphUserManager.Manager.JobTitle</td>
-<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">String</td>
 <td style="width: 323px;">User&#39;s job title.</td>
 </tr>
 <tr>
 <td style="width: 323px;">MSGraphUserManager.Manager.Mail</td>
-<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">String</td>
 <td style="width: 323px;">User&#39;s mail address.</td>
 </tr>
 <tr>
 <td style="width: 323px;">MSGraphUserManager.Manager.MobilePhone</td>
-<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">String</td>
 <td style="width: 323px;">User&#39;s mobile phone number.</td>
 </tr>
 <tr>
 <td style="width: 323px;">MSGraphUserManager.Manager.OfficeLocation</td>
-<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">String</td>
 <td style="width: 323px;">User&#39;s office location.</td>
 </tr>
 <tr>
 <td style="width: 323px;">MSGraphUserManager.Manager.PreferredLanguage</td>
-<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">String</td>
 <td style="width: 323px;">User&#39;s preferred language.</td>
 </tr>
 <tr>
 <td style="width: 323px;">MSGraphUserManager.Manager.Surname</td>
-<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">String</td>
 <td style="width: 323px;">User&#39;s surname.</td>
 </tr>
 <tr>
 <td style="width: 323px;">MSGraphUserManager.Manager.UserPrincipalName</td>
-<td style="width: 323px;">Unknown</td>
+<td style="width: 323px;">String</td>
 <td style="width: 323px;">User&#39;s principal name.</td>
 </tr>
 <tr>
 <td style="width: 323px;">MSGraphUserManager.Manager.@Odata.Type</td>
-<td style="width: 323px;">unknown</td>
+<td style="width: 323px;">String</td>
 <td style="width: 323px;">A string value that can be used to classify user types in your directory, such as &quot;Member&quot; and &quot;Guest&quot;.</td>
 </tr>
 </tbody>
