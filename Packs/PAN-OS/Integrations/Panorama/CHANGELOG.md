@@ -1,5 +1,5 @@
 ## [Unreleased]
-- POST request parameterss are now passed through body and not through the URI.
+- POST request parameters are now passed through body and not through the URI.
 
 ## [20.5.2] - 2020-05-26
 - Added the option to list predefined applications in PAN-OS 9.X in the ***panorama-get-applications*** command using the argument *predefined*.
