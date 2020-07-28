@@ -50,7 +50,6 @@ references:
       TIME_TO_LIVE_PARAMETER: << pipeline.parameters.time_to_live >>
       NIGHTLY_PARAMETER: << pipeline.parameters.nightly >>
       INSTANCE_TESTS_PARAMETER: << pipeline.parameters.instance_tests >>
-      DEMISTO_SDK_NIGHTLY_PARAMETER: << pipeline.parameters.demisto_sdk_nightly >>
 
   container_config: &container_config
     docker:
@@ -457,49 +456,46 @@ jobs:
             fi
       - *collect_test_list_and_content_packs
       - *calculate_packs_dependencies
-      - unless:
-          condition: << pipeline.parameters.demisto_sdk_nightly >>
-          steps:
-            - run:
-                name: Store Artifacts to GCS
-                command: ./Tests/scripts/upload_artifacts.sh
-                when: always
-            - run:
-                name: Create Instance
-                when: on_success
-                command: |
-                  [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=180
-                  if ./Tests/scripts/is_ami.sh ;
-                    then
-                      if [ -n "${NIGHTLY}" ] ;
-                        then
-                          export IFRA_ENV_TYPE=Nightly # disable-secrets-detection
-                      elif [ -n "${INSTANCE_TESTS}" ] ;
-                        then
-                          export IFRA_ENV_TYPE="Demisto PreGA" # disable-secrets-detection
-                      elif [ -n "${CONTRIB_BRANCH}" ] ;
-                        then
-                          export IFRA_ENV_TYPE="Demisto Marketplace" # disable-secrets-detection
-                      else
-                        export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
-                      fi
-                      python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile ./env_results.json
+      - run:
+          name: Store Artifacts to GCS
+          command: ./Tests/scripts/upload_artifacts.sh
+          when: always
+      - run:
+          name: Create Instance
+          when: on_success
+          command: |
+            [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=180
+            if ./Tests/scripts/is_ami.sh ;
+              then
+                if [ -n "${NIGHTLY}" ] ;
+                  then
+                    export IFRA_ENV_TYPE=Nightly # disable-secrets-detection
+                elif [ -n "${INSTANCE_TESTS}" ] ;
+                  then
+                    export IFRA_ENV_TYPE="Demisto PreGA" # disable-secrets-detection
+                elif [ -n "${CONTRIB_BRANCH}" ] ;
+                  then
+                    export IFRA_ENV_TYPE="Demisto Marketplace" # disable-secrets-detection
+                else
+                  export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
+                fi
+                python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile ./env_results.json
 
-                    else
-                      . ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
-                      python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -custombuild true -circleurl $SERVER_DOWNLOAD_LINK -circleToken $SERVER_CI_TOKEN -timetolive $TTL -outfile ./env_results.json
-                  fi
-            - run:
-                name: Setup Instance
-                when: on_success
-                command: |
-                  if ./Tests/scripts/is_ami.sh ;
-                    then
-                      python3 ./Tests/scripts/run_content_installation.py
-                    else
-                      ./Tests/lastest_server_build_scripts/run_installer_on_instance.sh
-                  fi
-            - *store_artifacts
+              else
+                . ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
+                python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -custombuild true -circleurl $SERVER_DOWNLOAD_LINK -circleToken $SERVER_CI_TOKEN -timetolive $TTL -outfile ./env_results.json
+            fi
+      - run:
+          name: Setup Instance
+          when: on_success
+          command: |
+            if ./Tests/scripts/is_ami.sh ;
+              then
+                python3 ./Tests/scripts/run_content_installation.py
+              else
+                ./Tests/lastest_server_build_scripts/run_installer_on_instance.sh
+            fi
+      - *store_artifacts
       - *persist_to_workspace
   Server 4_1:
     <<: *container_config
@@ -511,7 +507,6 @@ jobs:
             or:
               - << pipeline.parameters.instance_tests >>
               - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
               - << pipeline.parameters.nightly >>
               - << pipeline.parameters.non_ami_run >>
           steps:
@@ -525,7 +520,6 @@ jobs:
             or:
               - << pipeline.parameters.instance_tests >>
               - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
               - << pipeline.parameters.nightly >>
               - << pipeline.parameters.non_ami_run >>
           steps:
