@@ -49,7 +49,7 @@
 	"columns": [
 		{
 			"key": "value",
-			"displayName": "value",
+			"displayName": "Value",
 			"type": "shortText",
 			"required": false,
 			"script": "",
@@ -61,7 +61,7 @@
 		},
 		{
 			"key": "type",
-			"displayName": "type",
+			"displayName": "Type",
 			"type": "shortText",
 			"required": false,
 			"script": "",
@@ -73,7 +73,7 @@
 		},
 		{
 			"key": "description",
-			"displayName": "description",
+			"displayName": "Description",
 			"type": "shortText",
 			"required": false,
 			"script": "",

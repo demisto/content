@@ -55,7 +55,7 @@
 								"width": 80
 							}
 						],
-						"h": 2,
+						"h": 4,
 						"i": "default-main-relatedIncidents",
 						"moved": false,
 						"name": "Related Incidents",
@@ -391,7 +391,7 @@
 						"type": "comments",
 						"w": 1,
 						"x": 2,
-						"y": 4
+						"y": 6
 					},
 					{
 						"columns": [
@@ -523,14 +523,13 @@
 						"minH": 1,
 						"minW": 1,
 						"moved": false,
-						"name": "Tags and TLP",
+						"name": "Tags  and Sharing",
 						"static": false,
 						"w": 1,
 						"x": 2,
 						"y": 1
 					},
 					{
-						"description": "By Virus Total",
 						"h": 2,
 						"i": "default-main-07ce5650-a9b1-11ea-8355-9d16c102e609",
 						"items": null,
@@ -545,7 +544,7 @@
 						"type": "dynamicIndicator",
 						"w": 1,
 						"x": 2,
-						"y": 9
+						"y": 11
 					},
 					{
 						"displayType": "ROW",
@@ -652,6 +651,33 @@
 						"w": 1,
 						"x": 2,
 						"y": 3
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "default-main-81412390-d0d6-11ea-937a-6f8841d9fed1",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "feedrelatedindicators",
+								"height": 22,
+								"id": "8bf54ff0-d0d6-11ea-937a-6f8841d9fed1",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Feed Related Indicators",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 4
 					}
 				],
 				"type": "custom"
@@ -697,7 +723,7 @@
 				"type": "custom"
 			}
 		]
-	},
+    },
 	"indicatorsQuickView": {
 		"tabs": [
 			{
