@@ -16,8 +16,8 @@ from base64 import b64encode
 from nltk import ngrams
 from datetime import datetime
 
-MODIFIED_TIMEFORMAT = '%Y-%m-%d %H:%M:%S'
-
+MODIFIED_QUERY_TIMEFORMAT = '%Y-%m-%d %H:%M:%S'
+CREATED_FIELD_TIMEFORMAT  = '%Y-%m-%dT%H:%M:%S%z'
 EMAIL_BODY_FIELD = 'emailbody'
 EMAIL_SUBJECT_FIELD = 'emailsubject'
 EMAIL_HTML_FIELD = 'emailbodyhtml'
@@ -625,7 +625,11 @@ LABEL_FIELDS_BLACKLIST = set(['CustomFields', 'ShardID', 'account', 'activated',
                               'rawPhase', 'rawType', 'reason', 'remediationsla', 'reminder', 'roles', 'runStatus',
                               'severity', 'sla', 'sortValues', 'sourceBrand', 'sourceInstance',
                               'status', 'timetoassignment', 'type', 'urlsslverification', 'version'])
-LABEL_VALUES_KEYWORDS = ['spam', 'malicious', 'legit', 'false', 'positive', 'phishing', 'fraud', 'internal', 'test']
+LABEL_VALUES_KEYWORDS = ['spam', 'malicious', 'legit', 'false', 'positive', 'phishing', 'fraud', 'internal', 'test',
+                         'fp', 'tp', 'resolve', 'credentials', 'spear', 'malware', 'whaling', 'catphishing',
+                         'catfishing', 'social', 'sextortion', 'blackmail', 'spyware', 'adware']
+LABEL_FIELD_KEYWORDS = ['classifi', 'type', 'resolution', 'reason', 'category', 'disposition', 'severity', 'malicious',
+                        'tag', 'close']
 
 '''
 Define html tags to count
@@ -667,7 +671,7 @@ def find_label_fields_candidates(incidents_df):
 
     candidate_to_values = {col: incidents_df[col].unique() for col in candidates}
     candidate_to_values = {col: values for col, values in candidate_to_values.items() if
-                           all(isinstance(v, str) for v in values)}
+                           sum(not isinstance(v, str) for v in values) <= 1}
 
     # filter columns by unique values count
     candidate_to_values = {col: values for col, values in candidate_to_values.items() if 0 < len(values) < 15}
@@ -677,6 +681,8 @@ def find_label_fields_candidates(incidents_df):
         for v in values:
             if any(w in v for w in LABEL_VALUES_KEYWORDS):
                 candidate_to_score[col] += 1
+        if any(w in col.lower() for w in LABEL_FIELD_KEYWORDS):
+            candidate_to_score[col] += 1
     return [k for k, v in sorted(candidate_to_score.items(), key=lambda item: item[1], reverse=True)]
 
 
@@ -807,7 +813,7 @@ def get_avg_embedding_vector_for_text(tokenized_text, embedding_dict, size, pref
     return res
 
 
-def get_embbedding_features(tokenized_text):
+def get_embedding_features(tokenized_text):
     global EMBEDDING_DICT_GLOVE_50
     if EMBEDDING_DICT_GLOVE_50 is None:
         load_embedding_dicts()
@@ -987,7 +993,7 @@ def extract_features_from_incident(row):
                                             email_subject_word_tokenized)
     characters_features = get_characters_features(text)
     html_feature = get_html_features(soup)
-    ml_features = get_embbedding_features(email_body_word_tokenized + email_subject_word_tokenized)
+    ml_features = get_embedding_features(email_body_word_tokenized + email_subject_word_tokenized)
     headers_features = get_headers_features(email_headers)
     url_feautres = get_url_features(email_body=email_body, email_html=email_html, soup=soup)
     attachments_features = get_attachments_features(email_attachments=email_attachments)
@@ -1037,7 +1043,13 @@ def extract_features_from_all_incidents(incidents_df):
 
 def extract_data_from_incidents(incidents):
     incidents_df = pd.DataFrame(incidents)
-    label_fields = find_label_fields_candidates(incidents_df)
+    if 'created' in incidents_df:
+        incidents_df['created'] = incidents_df['created'].apply(lambda x: datetime.strptime(x, CREATED_FIELD_TIMEFORMAT))
+        incidents_df.sort_values(by='created', inplace=True, ascending=False)
+        incidents_df_for_finding_labels_fields_candidates = incidents_df.head(500)
+    else:
+        incidents_df_for_finding_labels_fields_candidates = incidents_df
+    label_fields = find_label_fields_candidates(incidents_df_for_finding_labels_fields_candidates)
     y = []
     for i, label in enumerate(label_fields):
         y.append({'field_name': label,
@@ -1072,7 +1084,7 @@ def get_args_based_on_last_execution():
         return {'limit': MAX_INCIDENTS_TO_FETCH_FIRST_EXECUTION}
     else:
         last_execution_datetime = datetime.strptime(lst[0]['Contents'], DATETIME_FORMAT)
-        query = 'modified:>="{}"'.format(datetime.strftime(last_execution_datetime, MODIFIED_TIMEFORMAT))
+        query = 'modified:>="{}"'.format(datetime.strftime(last_execution_datetime, MODIFIED_QUERY_TIMEFORMAT))
         max_incidents_to_fetch = MAX_INCIDENTS_TO_FETCH_PERIODIC_EXECUTION
         return {'limit': max_incidents_to_fetch,
                 'query': query}
