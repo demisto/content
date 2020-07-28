@@ -6,7 +6,6 @@ verify that the integration is behaving as expected during CI/CD pipeline.
 """
 
 import json
-import io
 
 
 def util_load_json(path):
