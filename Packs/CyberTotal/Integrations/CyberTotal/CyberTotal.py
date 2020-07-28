@@ -38,7 +38,7 @@ class Client(BaseClient):
         scan_time = str(cybertotal_result['scan_time'])
         permalink = cybertotal_result['url']
         url_path = urlparse(permalink).path
-        (rp_left, rp_match, task_id) = url_path.rpartition('/')
+        (_, _, task_id) = url_path.rpartition('/')
 
         result = {
             "permalink": permalink,
