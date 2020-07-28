@@ -1,8 +1,8 @@
 {
     "name": "Brute Force",
-    "description": "Investigates a \"Brute Force\" incident by gathering user and IP information, calculating the incident severity based on the gathered information and information received from the user, and performs remediation.",
+    "description": "This Content Pack helps you automate the repetitive tasks associated with Brute Force incidents. Custom incident views and layouts aid investigation.",
     "support": "xsoar",
-    "currentVersion": "1.2.0",
+    "currentVersion": "1.2.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
