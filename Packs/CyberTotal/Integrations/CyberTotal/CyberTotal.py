@@ -86,7 +86,7 @@ class Client(BaseClient):
         )
         if 'task_state' in cybertotal_result:
             return {'task_state': cybertotal_result['task_state'], 'message': 'this search is in progress, try again later...'}
-        scan_time = str(cybertotal_result['scan_time'])
+        scan_time = datetime.fromtimestamp(cybertotal_result['scan_time'], timezone.utc).isoformat()
         permalink = cybertotal_result['url']
         url_path = urlparse(permalink).path
         (rp_left, rp_match, task_id) = url_path.rpartition('/')
