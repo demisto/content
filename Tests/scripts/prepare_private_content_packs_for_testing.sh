@@ -61,7 +61,7 @@ else
     echo "Did not get content packs to update in the bucket."
   else
     echo "Updating the following content packs: $CONTENT_PACKS_TO_INSTALL ..."
-    python3 ./Tests/Marketplace/upload_packs.py -b $GCS_TESTING_BUCKET -pb $GCS_PRIVATE_TESTING_BUCKET -a $PACK_ARTIFACTS -d $CIRCLE_ARTIFACTS/packs_dependencies.json -e $EXTRACT_FOLDER -s $KF -n $GITHUB_RUN_NUMBER -p $CONTENT_PACKS_TO_INSTALL -sb $PUBLIC_TARGET_PATH -k $PACK_SIGN_KEY -rt false --id_set_path $ID_SET -pr True -o
+    python3 ./Tests/Marketplace/upload_packs.py -b $GCS_TESTING_BUCKET -pb $GCS_PRIVATE_TESTING_BUCKET -a $PACK_ARTIFACTS -d $CIRCLE_ARTIFACTS/packs_dependencies.json -e $EXTRACT_FOLDER -s $KF -n $GITHUB_RUN_NUMBER -p $NEW_PACK_NAME -sb $PUBLIC_TARGET_PATH -k $PACK_SIGN_KEY -rt false --id_set_path $ID_SET -pr True -o
     echo "Finished updating content packs successfully."
   fi
 fi
