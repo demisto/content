@@ -15,6 +15,7 @@ import zlib
 from base64 import b64encode
 from nltk import ngrams
 from datetime import datetime
+
 MODIFIED_TIMEFORMAT = '%Y-%m-%d %H:%M:%S'
 
 EMAIL_BODY_FIELD = 'emailbody'
@@ -22,7 +23,14 @@ EMAIL_SUBJECT_FIELD = 'emailsubject'
 EMAIL_HTML_FIELD = 'emailbodyhtml'
 EMAIL_HEADERS_FIELD = 'emailheaders'
 EMAIL_ATTACHMENT_FIELD = 'attachment'
-EMBEDDING_DICT = None
+
+GLOVE_50_PATH = '/var/glove_50_top_20k.p'
+GLOVE_100_PATH = '/var/glove_100_top_20k.p'
+FASTTEXT_PATH = '/var/fasttext_top_20k.p'
+
+EMBEDDING_DICT_GLOVE_50 = None
+EMBEDDING_DICT_GLOVE_100 = None
+EMBEDDING_DICT_FASTTEXT = None
 
 FETCH_DATA_VERSION = '1.0'
 LAST_EXECUTION_LIST_NAME = 'FETCH_DATA_ML_LAST_EXECUTION'
@@ -779,18 +787,34 @@ def get_html_features(soup):
     return html_counter
 
 
-def get_ml_features(tokenized_text):
-    global EMBEDDING_DICT
-    if EMBEDDING_DICT is None:
-        with open('/var/glove_top_20k.p', 'rb') as file:
-            EMBEDDING_DICT = pickle.load(file)
-    vectors = [EMBEDDING_DICT[w] for w in tokenized_text if w in EMBEDDING_DICT]
+def load_embedding_dicts():
+    global EMBEDDING_DICT_GLOVE_50, EMBEDDING_DICT_GLOVE_50, EMBEDDING_DICT_GLOVE_100, EMBEDDING_DICT_FASTTEXT
+    with open(GLOVE_50_PATH, 'rb') as file:
+        EMBEDDING_DICT_GLOVE_50 = pickle.load(file)
+    with open(GLOVE_100_PATH, 'rb') as file:
+        EMBEDDING_DICT_GLOVE_100 = pickle.load(file)
+    with open(FASTTEXT_PATH, 'rb') as file:
+        EMBEDDING_DICT_FASTTEXT = pickle.load(file)
+
+
+def get_avg_embedding_vector_for_text(tokenized_text, embedding_dict, size, prefix):
+    vectors = [embedding_dict[w] for w in tokenized_text if w in embedding_dict]
     if len(vectors) == 0:
-        mean_vector = np.zeros(50)
+        mean_vector = np.zeros(size)
     else:
         mean_vector = np.mean(vectors, axis=0)
-    res = {'glove_avg_{}'.format(i): mean_vector[i].item() for i in range(len(mean_vector))}
+    res = {'{}_{}'.format(prefix, str(i)): mean_vector[i].item() for i in range(len(mean_vector))}
     return res
+
+
+def get_embbedding_features(tokenized_text):
+    global EMBEDDING_DICT_GLOVE_50
+    if EMBEDDING_DICT_GLOVE_50 is None:
+        load_embedding_dicts()
+    res_glove_50 = get_avg_embedding_vector_for_text(tokenized_text, EMBEDDING_DICT_GLOVE_50, 50, 'glove50')
+    res_glove_100 = get_avg_embedding_vector_for_text(tokenized_text, EMBEDDING_DICT_GLOVE_100, 100, 'glove100')
+    res_fasttext = get_avg_embedding_vector_for_text(tokenized_text, EMBEDDING_DICT_FASTTEXT, 300, 'fasttext')
+    return {**res_glove_50, **res_glove_100, **res_fasttext }
 
 
 def get_header_value(email_headers, header_name, index=0, ignore_case=False):
@@ -963,7 +987,7 @@ def extract_features_from_incident(row):
                                             email_subject_word_tokenized)
     characters_features = get_characters_features(text)
     html_feature = get_html_features(soup)
-    ml_features = get_ml_features(email_body_word_tokenized + email_subject_word_tokenized)
+    ml_features = get_embbedding_features(email_body_word_tokenized + email_subject_word_tokenized)
     headers_features = get_headers_features(email_headers)
     url_feautres = get_url_features(email_body=email_body, email_html=email_html, soup=soup)
     attachments_features = get_attachments_features(email_attachments=email_attachments)
@@ -1055,10 +1079,10 @@ def get_args_based_on_last_execution():
 
 
 def update_last_execution_time():
-    demisto.results('here')
     execution_datetime_str = datetime.strftime(datetime.now(), DATETIME_FORMAT)
     res = demisto.executeCommand("createList", {"listName": LAST_EXECUTION_LIST_NAME, "listData": execution_datetime_str})
     demisto.results(res)
+
 
 def main():
     incidents_query_args = demisto.args()

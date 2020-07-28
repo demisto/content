@@ -220,7 +220,7 @@ def test_attachments_features_2():
 def test_whole_preprocessing(mocker):
     import cProfile
     debug = False
-    glove_path = './glove_top_20.p'
+    glove_path = './glove_50_top_10.p'
     with open(glove_path, 'rb') as file:
         glove_data = file.read()
     mock_read = mocker.mock_open(read_data=glove_data)
