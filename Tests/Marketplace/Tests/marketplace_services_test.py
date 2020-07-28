@@ -177,6 +177,8 @@ class TestHelperFunctions:
                              [
                                  (["some data", "some other data"], False, ["some data", "some other data"]),
                                  (["some data", "some other data"], True, ["Some Data", "Some Other Data"]),
+                                 (["HIPAA Breach Notification"], True, ["HIPAA Breach Notification"]),
+                                 (["INPUT IS ALREADY UPPERCASE"], True, ["INPUT IS ALREADY UPPERCASE"]),
                                  ([], False, []),
                                  ([], True, []),
                                  ("", False, []),
