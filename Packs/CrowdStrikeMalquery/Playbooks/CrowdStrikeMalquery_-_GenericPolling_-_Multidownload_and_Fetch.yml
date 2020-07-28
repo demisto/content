@@ -3,19 +3,19 @@ version: -1
 name: CrowdStrikeMalquery - Multidownload and Fetch
 description: |-
   Schedule samples for download. Using samples-multidownload is a
-        three-step process: 1. Schedule the download with samples-multidownload, which
-        returns a request ID. 2. Provide that request ID to the cs-malquery-get-request,
-        in order to check the status of the operation. 3. When the request status is
-        “done”, use cs-malquery-sample-fetch to download the results as a password-protected
-        archive
-  Use this playbook as a sub-playbook to schedule samples for download.
-  This playbook implements polling by continuously running the `get-request` command until the operation completes.
-  Once the request status is done the sub-playbook runs cs-malquery-sample-fetch.
+      three-step process: 1. Schedule the download with samples-multidownload, which
+      returns a request ID. 2. Provide that request ID to the cs-malquery-get-request,
+      in order to check the status of the operation. 3. When the request status is
+      “done”, use cs-malquery-sample-fetch to download the results as a password-protected
+      archive
+      Use this playbook as a sub-playbook to schedule samples for download.
+      This playbook implements polling by continuously running the `get-request` command until the operation completes.
+      Once the request status is done the sub-playbook runs cs-malquery-sample-fetch.
 
-  The remote action should have the following structure:
-  1. Initiate the operation - insert the sample SHA256 ids.
-  2. Poll to check if the operation completed.
-  3. Get the results of the operation.
+      The remote action should have the following structure:
+      1. Initiate the operation - insert the sample SHA256 ids.
+      2. Poll to check if the operation completed.
+      3. Get the results of the operation.
 starttaskid: "0"
 tasks:
   "0":
