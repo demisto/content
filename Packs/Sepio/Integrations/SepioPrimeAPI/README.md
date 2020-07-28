@@ -1,5 +1,6 @@
-Integrate with Sepio Prime
-This integration was integrated and tested with version 20.07.22.0958 of Sepio
+#### Get Agent, Switches and Events from your Sepio Prime
+#### This integration was integrated and tested with version 20.07.22.0958 of Sepio Prime
+
 ## Configure Sepio on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

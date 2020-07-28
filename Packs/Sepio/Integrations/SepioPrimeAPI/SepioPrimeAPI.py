@@ -604,8 +604,11 @@ def validate_fetch_data_max_result(user_results, max_results, arg_name):
     """ Validate and handle cases where the limit of result requested from Sepio Prime API
     is exceeding or not positive value
 
+    :type user_results: ``int``
+    :param user_results: maximum results value
+
     :type max_results: ``int``
-    :param max_results: max results value to validate
+    :param max_results: maximum allowed value for results count
 
     :type arg_name: ``str``
     :param arg_name: argument name for error message
@@ -702,7 +705,7 @@ def empty_get_result_to_readable_result(readable_output_markdown):
     """Creates readable output for empty reults
 
     :type readable_output_markdown: ``str``
-    :param name: the readable output markdown
+    :param readable_output_markdown: the readable output markdown
 
     :return:
         returns an ``[Dict[str, any]`` with result object
