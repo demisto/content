@@ -29,7 +29,7 @@ class Client(BaseClient):
 
         cybertotal_result = self._http_request(
             method='GET',
-            url_suffix='/_api/search/ip/basic/{}'.format(ip)
+            url_suffix=f'/_api/search/ip/basic/{ip}'
         )
         if 'task_state' in cybertotal_result:
             return {'task_state': cybertotal_result['task_state'], 'message': 'this search is in progress, try again later...'}
