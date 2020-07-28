@@ -24,4 +24,5 @@ dependson:
   - OSQueryBasicQuery
 timeout: 0s
 toversion: 4.1.9
-
+tests:
+  - No test
