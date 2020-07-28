@@ -1,4 +1,4 @@
-Optionally increases the incident severity to the new value, but only if greater than the existing severity.
+Optionally increases the incident severity to the new value if it is greater than the existing severity.
 ## Script Data
 ---
 
@@ -13,7 +13,7 @@ Optionally increases the incident severity to the new value, but only if greater
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| severity | The incident severity to increase the incident to. |
+| severity | The incident severity to increase the incident to. Can be "Unknown", "Informational", "Low", "Medium", "High", "Critical", "0", "0.5", "1", "2", "3", or "4".|
 
 ## Outputs
 ---
