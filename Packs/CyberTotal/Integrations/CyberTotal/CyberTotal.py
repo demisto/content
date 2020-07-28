@@ -134,7 +134,7 @@ class Client(BaseClient):
 
         cybertotal_result = self._http_request(
             method='GET',
-            url_suffix='/_api/search/hash/basic/{}'.format(_hash)
+            url_suffix=f'/_api/search/hash/basic/{_hash}'
         )
         if 'task_state' in cybertotal_result:
             return {'task_state': cybertotal_result['task_state'], 'message': 'this search is in progress, try again later...'}
