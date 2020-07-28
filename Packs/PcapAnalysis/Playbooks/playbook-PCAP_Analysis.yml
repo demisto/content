@@ -1,11 +1,9 @@
 id: PCAP Analysis
 version: -1
 name: PCAP Analysis
-description: 'This playbook leverages all of the PCAP miner and PCAP file extractor related
-  sub playbooks capabilities including: * Search for specific values in a PCAP file
-  * Parse and enrich detected indicators found by the search such as IP addresses,
-  URLs, email addresses and domains. * Carve (extract) files found in the http, smb
-  and other protocols and perform enrichment and detonation.'
+description: 'This playbook leverages all of the PCAP miner and PCAP file extractor sub playbook capabilities, including: 
+* Search for specific values in a PCAP file * Parse and enrich detected indicators such as IP addresses, URLs, email addresses and domains found by the search . 
+* Carve (extract) files found in the http, smb and other protocols and perform enrichment and detonation.'
 starttaskid: "0"
 tasks:
   "0":
@@ -48,8 +46,8 @@ tasks:
         are pcap, cap, pcapng. The playbook can handle one PCAP file per incident.
         The user inputs which indicator types are to be enriched including, email,
         URLs, IP addresses. The user can specify in the inputs which indicators are
-        internal or that will be treated as internal (not enriched). The user can
-        also specify a specific regex pattern to search for. Another option is to
+        internal or should be treated as internal (not enriched). The user can
+        also specify a regex pattern to search for. Another option is to
         specify the protocol types to be printed to context for data extraction. Additional
         inputs allow the user to provide the WPA password for decrypting 802.11 (wireless)
         traffic and add an RSA certificate to decrypt SSL traffic. To display the
