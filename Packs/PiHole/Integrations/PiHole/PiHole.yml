@@ -6,7 +6,7 @@ display: PiHole
 category: IT Services
 description: Pi-hole is a network-level advertisement and Internet tracker blocking application which acts as a DNS sinkhole and optionally a DHCP server, intended for use on a private network.
 configuration:
-- display: Server URL (e.g. http://pihole.yourcompany.org)
+- display: Server URL
   name: url
   type: 0
   required: true
@@ -109,7 +109,7 @@ script:
     arguments: []
     outputs:
     - contextPath: PiHole.Enable
-      description: 'Enabled '
+      description: 'Show if Enabled was ok.'
       type: String
     description: Enable Pi-hole ad blocking
     execution: true
