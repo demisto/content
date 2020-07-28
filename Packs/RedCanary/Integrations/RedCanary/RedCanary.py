@@ -537,8 +537,7 @@ def execute_playbook(playbook_id, detection_id):
     return res
 
 
-def fetch_incidents():
-    last_run = demisto.getLastRun()
+def fetch_incidents(last_run):
     last_incidents_ids = []
 
     if last_run:
@@ -600,7 +599,8 @@ def main():
         command_func = COMMANDS.get(demisto.command())
         if command_func is not None:
             if demisto.command() == 'fetch-incidents':
-                last_run, incidents = fetch_incidents()
+                initial_last_run = demisto.getLastRun()
+                last_run, incidents = fetch_incidents(initial_last_run)
                 demisto.incidents(incidents)
                 demisto.setLastRun(last_run)
             else:

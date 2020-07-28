@@ -27,12 +27,12 @@ def test_fetch_when_last_run_is_time(mocker):
     """
     mocker.patch.object(demisto, "incidents")
     mocker.patch.object(demisto, "setLastRun")
-    mocker.patch.object(demisto, "getLastRun", return_value=last_run_dict)
+    mocker.patch.object(demisto, "getLastRun")
     mocker.patch.object(
         RedCanary, "get_unacknowledged_detections", return_value=data["data"]
     )
     mocker.patch.object(RedCanary, "get_full_timeline", return_value=None)
-    last_run, incidents = RedCanary.fetch_incidents()
+    last_run, incidents = RedCanary.fetch_incidents(last_run_dict)
 
     assert len(incidents) == number_of_incidents
     assert last_run["time"] == latest_time_of_occurrence_of_incidents1
@@ -128,24 +128,22 @@ def test_fetch_multiple_times_when_already_fetched_incident_keep(mocker):
     mocker.patch.object(demisto, "incidents")
     mocker.patch.object(demisto, "setLastRun")
 
-    mocker.patch.object(demisto, "getLastRun", return_value=last_run_dict)
+    mocker.patch.object(demisto, "getLastRun")
     mocker.patch.object(RedCanary, "get_unacknowledged_detections", return_value=data["data"])
     mocker.patch.object(RedCanary, "get_full_timeline", return_value=None)
 
     # fetching for the first time
-    last_run, incidents = RedCanary.fetch_incidents()
+    last_run, incidents = RedCanary.fetch_incidents(last_run_dict)
     assert len(incidents) == 3
     assert last_run["time"] == "2019-12-30T22:00:50Z"
 
     # fetching for the second time
-    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
-    last_run, incidents = RedCanary.fetch_incidents()
+    last_run, incidents = RedCanary.fetch_incidents(last_run)
     assert len(incidents) == 0
     assert last_run["time"] == "2019-12-30T22:00:50Z"
 
     # fetching for the third time
-    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
-    last_run, incidents = RedCanary.fetch_incidents()
+    last_run, incidents = RedCanary.fetch_incidents(last_run)
     assert len(incidents) == 0
     assert last_run["time"] == "2019-12-30T22:00:50Z"
 
@@ -166,19 +164,18 @@ def test_fetch_multiple_times_with_new_incidents(mocker):
     mocker.patch.object(demisto, "incidents")
     mocker.patch.object(demisto, "setLastRun")
 
-    mocker.patch.object(demisto, "getLastRun", return_value=last_run_dict)
+    mocker.patch.object(demisto, "getLastRun")
     mocker.patch.object(RedCanary, "get_unacknowledged_detections", return_value=data["data"])
     mocker.patch.object(RedCanary, "get_full_timeline", return_value=None)
 
     # fetching for the first time
-    last_run, incidents = RedCanary.fetch_incidents()
+    last_run, incidents = RedCanary.fetch_incidents(last_run_dict)
     assert len(incidents) == 3
     assert last_run["time"] == "2019-12-30T22:00:50Z"
 
     # fetching for the second time
-    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
     mocker.patch.object(RedCanary, "get_unacknowledged_detections", return_value=data2["data"])
-    last_run, incidents = RedCanary.fetch_incidents()
+    last_run, incidents = RedCanary.fetch_incidents(last_run)
     # only one incidents is being created out of the 2 that were fetched
     assert len(incidents) == 1
     assert last_run["time"] == latest_time_of_occurrence_of_incidents2
