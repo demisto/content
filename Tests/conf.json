@@ -2817,9 +2817,8 @@
         },
         {
             "playbookID": "PCAP File Carving Test",
-            "instance_names": "virus_total_general",
             "integrations": [
-                "VirusTotal",
+                "Maltiverse",
                 "WildFire-v2"
             ],
             "fromversion": "5.0.0"
