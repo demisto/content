@@ -46,6 +46,13 @@ script:
       name: offset
       required: false
       secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
     deprecated: false
     description: Show all host objects
     execution: false
@@ -66,6 +73,13 @@ script:
       isArray: false
       name: identifier
       required: true
+      secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: false
       secret: false
     deprecated: false
     description: get all data of a given host
@@ -125,6 +139,13 @@ script:
       description: Collection of group identifiers.
       isArray: false
       name: groups
+      required: false
+      secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
       required: false
       secret: false
     deprecated: false
@@ -215,6 +236,13 @@ script:
       name: groups
       required: false
       secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
     deprecated: false
     description: update host changes
     execution: false
@@ -263,6 +291,13 @@ script:
       name: identifier
       required: true
       secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
     deprecated: false
     description: delete host
     execution: false
@@ -286,6 +321,13 @@ script:
       name: offset
       required: false
       secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
     deprecated: false
     description: Show a list of all groups
     execution: false
@@ -306,6 +348,13 @@ script:
       isArray: false
       name: identifier
       required: true
+      secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: false
       secret: false
     deprecated: false
     description: Get all data of a given group
@@ -345,6 +394,13 @@ script:
       isArray: false
       name: name
       required: true
+      secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: false
       secret: false
     deprecated: false
     description: add a group
@@ -414,6 +470,13 @@ script:
       name: ignore_errors
       required: false
       secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
     deprecated: false
     description: update group object
     execution: false
@@ -453,6 +516,13 @@ script:
       name: identifier
       required: true
       secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
     deprecated: false
     description: delete a group object
     execution: false
@@ -474,6 +544,13 @@ script:
       description: Number of the results to initially skip.
       isArray: false
       name: offset
+      required: false
+      secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
       required: false
       secret: false
     deprecated: false
@@ -529,6 +606,13 @@ script:
       description: Apply changes ignoring errors.
       isArray: false
       name: ignore_errors
+      required: false
+      secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
       required: false
       secret: false
     deprecated: false
@@ -626,6 +710,13 @@ script:
       name: groups
       required: false
       secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
     deprecated: false
     description: Update an address range object
     execution: false
@@ -674,6 +765,13 @@ script:
       name: identifier
       required: true
       secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
     deprecated: false
     description: Delete a given address range
     execution: false
@@ -697,6 +795,13 @@ script:
       name: offset
       required: false
       secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
     deprecated: false
     description: List all threat indicators
     execution: false
@@ -717,6 +822,13 @@ script:
       isArray: false
       name: identifier
       required: true
+      secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: false
       secret: false
     deprecated: false
     description: Get data for a given list indicator
@@ -764,6 +876,13 @@ script:
       name: observables
       required: true
       secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
     deprecated: false
     description: Add a threat indicator
     execution: false
@@ -795,6 +914,13 @@ script:
       description: Comments string.
       isArray: false
       name: comments
+      required: false
+      secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
       required: false
       secret: false
     deprecated: false
@@ -839,6 +965,13 @@ script:
       name: identifier
       required: true
       secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
     deprecated: false
     description: Get all date of a given address range object
     execution: false
@@ -875,6 +1008,13 @@ script:
       name: identifier
       required: true
       secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
     deprecated: false
     description: delete threat indicator
     execution: false
@@ -905,8 +1045,16 @@ script:
       name: offset
       required: false
       secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
     deprecated: false
-    description: Shows the entire Access Rules layer
+    description: Shows the entire Access Rules layer. This layer is divided into sections.
+      An Access Rule may be within a section, or independent of a section.
     execution: false
     name: checkpoint-access-rule-list
     outputs:
@@ -933,6 +1081,13 @@ script:
       description: Rule name.
       isArray: false
       name: name
+      required: false
+      secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
       required: false
       secret: false
     deprecated: false
@@ -1024,6 +1179,13 @@ script:
       name: ignore_errors
       required: false
       secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
     deprecated: false
     description: Edit existing access rule using object name or uid.
     execution: false
@@ -1087,6 +1249,13 @@ script:
       name: layer
       required: false
       secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
     deprecated: false
     description: Delete access rule
     execution: false
@@ -1108,6 +1277,13 @@ script:
       description: Number of the results to initially skip
       isArray: false
       name: offset
+      required: false
+      secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
       required: false
       secret: false
     deprecated: false
@@ -1146,6 +1322,13 @@ script:
       isArray: false
       name: identifier
       required: true
+      secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: false
       secret: false
     deprecated: false
     description: Add application site
@@ -1230,10 +1413,17 @@ script:
       name: url_list
       required: false
       secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
     deprecated: false
     description: "Edit existing application using object name or uid. \nIt's impossible\
-      \ to set 'application-signature' when the application was initialized with 'url-list'\
-      \ and vice-verse."
+      \ to set  'application-signature' when the application was initialized with\
+      \ 'url-list' and vice-verse."
     execution: false
     name: checkpoint-application-site-update
     outputs:
@@ -1271,6 +1461,13 @@ script:
       name: identifier
       required: true
       secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
     deprecated: false
     description: Delete existing application site object using object name or uid.
     execution: false
@@ -1279,7 +1476,15 @@ script:
     - contextPath: CheckPoint.application-site.message
       description: Operation status.
       type: String
-  - deprecated: false
+  - arguments:
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
+    deprecated: false
     description: publish changes
     execution: false
     name: checkpoint-publish
@@ -1304,6 +1509,13 @@ script:
       name: access
       required: false
       secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
     deprecated: false
     description: Intsalling policy
     execution: false
@@ -1319,6 +1531,13 @@ script:
       name: policy_package
       required: true
       secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
     deprecated: false
     description: Verifies the policy of the selected package.
     execution: false
@@ -1333,6 +1552,13 @@ script:
       isArray: false
       name: task_id
       required: true
+      secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: false
       secret: false
     deprecated: false
     description: Show task progress and details.
@@ -1354,6 +1580,133 @@ script:
     - contextPath: CheckPoint.show-task.suppressed
       description: Indicates if the task is suppressed
       type: Boolean
+  - arguments:
+    - default: false
+      defaultValue: '600'
+      description: Session expiration timeout in seconds. Default 600 seconds. Session
+        timeout range is between 600 to 3600 seconds.
+      isArray: false
+      name: session_timeout
+      required: false
+      secret: false
+    deprecated: false
+    description: Login to CheckPoint and get the session id
+    execution: false
+    name: checkpoint-login-and-get-session-id
+    outputs:
+    - contextPath: CheckPoint.session-id
+      description: Session ID
+      type: String
+  - arguments:
+    - default: false
+      description: Session ID to logout from
+      isArray: false
+      name: session_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Logout from a given session
+    execution: false
+    name: checkpoint-logout
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The maximal number of returned results
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Number of the results to initially skip
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
+    deprecated: false
+    description: List all packages.
+    execution: false
+    name: checkpoint-packages-list
+    outputs:
+    - contextPath: CheckPoint.packages.name
+      description: Name of the package
+      type: String
+    - contextPath: CheckPoint.packages.uid
+      description: UID of the package
+      type: String
+    - contextPath: CheckPoint.packages.type
+      description: Type of the package
+      type: String
+    - contextPath: CheckPoint.packages.domain-name
+      description: Domain name
+      type: String
+    - contextPath: CheckPoint.packages.domain-uid
+      description: Domain uid
+      type: String
+    - contextPath: CheckPoint.packages.domain-type
+      description: Domain type
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The maximal number of returned results
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Number of the results to initially skip
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve all gateways and servers
+    execution: false
+    name: checkpoint-gateways-list
+    outputs:
+    - contextPath: CheckPoint.gateways.name
+      description: Gateway name
+      type: String
+    - contextPath: CheckPoint.gateways.uid
+      description: Gateway uid
+      type: String
+    - contextPath: CheckPoint.gateways.type
+      description: Gateway type
+      type: String
+    - contextPath: CheckPoint.gateways.version
+      description: Gateway vesion
+      type: String
+    - contextPath: CheckPoint.gateways.network-security-blades
+      description: Gateway network security blades
+      type: String
+    - contextPath: CheckPoint.gateways.management-blades
+      description: Gateway management blades
+      type: String
+    - contextPath: CheckPoint.gateways.domain-name
+      description: Domain name
+      type: String
+    - contextPath: CheckPoint.gateways.domain-uid
+      description: Domain UID
+      type: String
+    - contextPath: CheckPoint.gateways.domain-type
+      description: Doamin type
+      type: String
   dockerimage: demisto/python3:3.8.2.6981
   feed: false
   isfetch: false

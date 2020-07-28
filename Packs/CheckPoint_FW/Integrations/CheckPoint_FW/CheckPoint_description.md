@@ -13,12 +13,8 @@ Manage Application site
 Publish changes
 Install policy
 Verify policy
-Playbooks
 
-Block IP Playbook
-UnBlock IP Playbook
-Install Policy Playbook
-Create policy backup and get status Playbook
+
 How to configure the integration:
 
 In the Smart Console, enable the web api: Management & Setting → Blades → Management API, Advanced Setting → All IP address

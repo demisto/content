@@ -1,39 +1,41 @@
-!checkpoint-host-list
-!checkpoint-host-get identifier=test_host
-!checkpoint-host-update identifier=test_host
-!checkpoint-host-delete identifier=test_host
-!checkpoint-host-add name=host_test ip_address=8.8.8.8
+!checkpoint-host-list session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
+!checkpoint-host-get identifier=host_test session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
+!checkpoint-host-update identifier=host_test session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
+!checkpoint-host-delete identifier=host_test session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
+!checkpoint-host-add name=test_host ip_address=8.8.8.8 session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
 
-!checkpoint-group-list
-!checkpoint-group-get identifier=test_group
-!checkpoint-group-update identifier=test_group
-!checkpoint-group-delete identifier=test_group
-!checkpoint-group-add name=test_group_2
+!checkpoint-group-list session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
+!checkpoint-group-get identifier=test_group session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
+!checkpoint-group-update identifier=test_group session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
+!checkpoint-group-delete identifier=test_group session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
+!checkpoint-group-add name=test_group_2 session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
 
-!checkpoint-address-range-list 
-!checkpoint-address-range-get identifier=address_range_test
-!checkpoint-address-range-update identifier=address_range_test layer=Network
-!checkpoint-address-range-delete identifier=address_range_test
-!checkpoint-address-range-add name=address_range_test_2 ip_address_first=8.8.8.8 ip_address_last=9.9.9.9
+!checkpoint-address-range-list session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
+!checkpoint-address-range-get identifier=address_range_test session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
+!checkpoint-address-range-update identifier=address_range_test layer=Network session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
+!checkpoint-address-range-delete identifier=address_range_test session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
+!checkpoint-address-range-add name=address_range_test_2 ip_address_first=8.8.8.8 ip_address_last=9.9.9.9 session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
 
-!checkpoint-access-rule-list identifier=test_access_rule
-!checkpoint-access-rule-update identifier=test_access_rule
-!checkpoint-access-rule-delete identifier=test_access_rule
-!checkpoint-access-rule-add name=test_access_rule_2 layer=Network position=top
+!checkpoint-access-rule-list identifier=Network session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
+!checkpoint-access-rule-update identifier=test_access_rule layer=Network session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
+!checkpoint-access-rule-delete identifier=test_access_rule layer=Network session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
+!checkpoint-access-rule-add name=test_access_rule_5 layer=Network position=top session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
 
-!checkpoint-application-site-list limit=5
-!checkpoint-application-site-update identifier=test_application_site
-!checkpoint-application-site-delete name=test_application_site
-!checkpoint-application-site-add name=test_application_site_2 primary_category='Test Category' url-list='www.stackoverflow.com'
+!checkpoint-application-site-list limit=5 session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
+!checkpoint-application-site-update identifier=test_application_site session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
+!checkpoint-application-site-delete identifier=test_application_site session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
+!checkpoint-application-site-add name=test_application_site_2 primary_category='Test Category' identifier=[www.qmasters.com] session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
 
-!checkpoint-threat-indicator-list
-!checkpoint-threat-indicator-get identifier=Threat_test1
-!checkpoint-threat-indicator-update identifier=Threat_test1
-!checkpoint-threat-indicator-delete identifier=Threat_test1
-!checkpoint-threat-indicator-add name=threat_test2 observables=observables
+!checkpoint-threat-indicator-list limit=5 session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
+!checkpoint-threat-indicator-get identifier=threat_test session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
+!checkpoint-threat-indicator-update identifier=threat_test session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
+!checkpoint-threat-indicator-delete identifier=threat_test session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
+!checkpoint-threat-indicator-add name=threat_test2 observables=[] session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
 
+!checkpoint-packages-list session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
+!checkpoint-gateways-list session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
 
-!checkpoint-publish
-!checkpoint-install-policy policy_package=standard targets=LAN-TEST
-!checkpoint-policy-verify policy_package=standard
-!checkpoint-show-task task_id=01234567-89ab-cdef-8462-535e125c3879
+!checkpoint-publish session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
+!checkpoint-install-policy policy_package=standard targets=test-gw session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
+!checkpoint-policy-verify policy_package=standard session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
+!checkpoint-show-task task_id=01234567-89ab-cdef-802d-cc117e483dba session_id=RwBtCVHua8LcL__ROV1z6opDbdVLf6aqozL5Sk5CZOM
