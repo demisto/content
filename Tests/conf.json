@@ -2833,10 +2833,9 @@
         {
             "playbookID": "PCAP Analysis Test",
             "integrations": [
-                "VirusTotal",
+                "AutoFocus V2",
                 "WildFire-v2"
             ],
-            "instance_names": "virus_total_general",
             "fromversion": "5.0.0",
             "timeout": 1200
         },
