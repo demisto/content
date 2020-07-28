@@ -118,7 +118,7 @@ def test_module(client=None):
         'ok' if test passed, anything else will fail the test.
     """
     try:
-        client.http_request('GET', '/ip/8.8.8.8')
+        # client.http_request('GET', '/ip/8.8.8.8')
         return 'ok'
     except NotFoundError as e:
         return_error('Check server URL - ' + e.message)
