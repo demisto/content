@@ -517,7 +517,7 @@ def get_max_result_number(max_results):
 
 
 def arrange_alert_by_incident_type(alert):
-    incident_types = {}
+    incident_types: Dict[str, Any] = {}
     for entity in alert['entities']:
         if not entity['type'] in incident_types.keys():
             incident_types[entity['type']] = []

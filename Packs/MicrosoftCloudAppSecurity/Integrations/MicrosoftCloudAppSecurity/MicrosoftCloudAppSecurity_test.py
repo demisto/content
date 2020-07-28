@@ -246,11 +246,11 @@ ACTIVITIES_BY_ID_DATA_CONTEXT = {
                            'inst': 0,
                            'saas': 11161},
                     'resolved': True},
-                    {'displayName': 'Avishai Brandeis',
-                     'id': {'id': '3fa9f28b-eb0e-463a-ba7b-8089fe9991e2',
-                            'inst': 0,
-                            'saas': 11161},
-                     'resolved': True}],
+                   {'displayName': 'Avishai Brandeis',
+                    'id': {'id': '3fa9f28b-eb0e-463a-ba7b-8089fe9991e2',
+                           'inst': 0,
+                           'saas': 11161},
+                    'resolved': True}],
     'eventRouting': {'auditing': True, 'lograbber': True, 'scubaUnpacker': False},
     'eventType': 233580,
     'eventTypeName': 'EVENT_CATEGORY_UNSPECIFIED',
@@ -309,8 +309,9 @@ ACTIVITIES_BY_ID_DATA_CONTEXT = {
                     'ListId': '0d2a8402-c671-43cd-b8ec-b49882d43e08',
                     'ListItemUniqueId': '141133f2-6710-4f65-9c3b-c840a8d71483',
 
-                    'ObjectId': 'https://demistodev-my.sharepoint.com/personal/avishai_demistodev_onmicrosoft_com/Documents/iban '
-                             'example.docx',
+                    'ObjectId':
+                    'https://demistodev-my.sharepoint.com/personal/avishai_demistodev_onmicrosoft_com/Documents/iban '
+                    'example.docx',
                     'Operation': 'FilePreviewed',
                     'OrganizationId': 'ebac1a16-81bf-449b-8d43-5732c3c1d999',
                     'RecordType': 6,
@@ -354,7 +355,7 @@ ACTIVITIES_BY_ID_DATA_CONTEXT = {
                   'tags': ['000000000000000000000000'],
                   'type': 'Application',
                   'typeName': 'Application'}
-    }
+}
 
 ACTIVITIES_BY_ID_DATA = {
     "_id": "97134000_15600_97ee2049-893e-4c9d-a312-08d82b46faf7",
@@ -732,46 +733,46 @@ FILES_BY_ID_DATA = {
 }
 
 ENTITIES_BY_USERNAME_DATA_CONTEXT = {
-      '_id': '5f01dc3d229037823e3b9e92',
-      'actions': [],
-      'appData': {'appId': 11161,
-                  'instance': 0,
-                  'name': 'Office 365',
-                  'saas': 11161},
-      'displayName': 'MS Graph Groups',
-      'domain': None,
-      'email': None,
-      'id': '7e14f6a3-185d-49e3-85e8-40a33d90dc90',
-      'idType': 17,
-      'identifiers': [],
-      'ii': '11161|0|7e14f6a3-185d-49e3-85e8-40a33d90dc90',
-      'isAdmin': False,
-      'isExternal': True,
-      'isFake': False,
-      'lastSeen': '2020-07-19T06:59:24Z',
-      'organization': None,
-      'role': None,
-      'scoreTrends': None,
-      'sctime': None,
-      'sid': None,
-      'status': 2,
-      'subApps': [],
-      'threatScore': None,
-      'type': 1,
-      'userGroups': [{'_id': '5e6fa9ade2367fc6340f487e',
-                      'description': 'App-initiated',
-                      'id': '0000003b0000000000000000',
-                      'name': 'Application (Cloud App Security)',
-                      'usersCount': 562},
-                     {'_id': '5e6fa9ace2367fc6340f4864',
-                      'description': 'Either a user who is not a member of any of '
-                                     'the managed domains you configured in '
-                                     'General settings or a third-party app',
-                      'id': '000000200000000000000000',
-                      'name': 'External users',
-                      'usersCount': 106}],
-      'username': '{"id": "7e14f6a3-185d-49e3-85e8-40a33d90dc90", "saas": 11161, '
-                  '"inst": 0}'
+    '_id': '5f01dc3d229037823e3b9e92',
+    'actions': [],
+    'appData': {'appId': 11161,
+                'instance': 0,
+                'name': 'Office 365',
+                'saas': 11161},
+    'displayName': 'MS Graph Groups',
+    'domain': None,
+    'email': None,
+    'id': '7e14f6a3-185d-49e3-85e8-40a33d90dc90',
+    'idType': 17,
+    'identifiers': [],
+    'ii': '11161|0|7e14f6a3-185d-49e3-85e8-40a33d90dc90',
+    'isAdmin': False,
+    'isExternal': True,
+    'isFake': False,
+    'lastSeen': '2020-07-19T06:59:24Z',
+    'organization': None,
+    'role': None,
+    'scoreTrends': None,
+    'sctime': None,
+    'sid': None,
+    'status': 2,
+    'subApps': [],
+    'threatScore': None,
+    'type': 1,
+    'userGroups': [{'_id': '5e6fa9ade2367fc6340f487e',
+                   'description': 'App-initiated',
+                    'id': '0000003b0000000000000000',
+                    'name': 'Application (Cloud App Security)',
+                    'usersCount': 562},
+                   {'_id': '5e6fa9ace2367fc6340f4864',
+                   'description': 'Either a user who is not a member of any of '
+                                  'the managed domains you configured in '
+                                  'General settings or a third-party app',
+                    'id': '000000200000000000000000',
+                    'name': 'External users',
+                    'usersCount': 106}],
+    'username': '{"id": "7e14f6a3-185d-49e3-85e8-40a33d90dc90", "saas": 11161, '
+                '"inst": 0}'
 }
 
 ENTITIES_BY_USERNAME_DATA = {
