@@ -167,20 +167,86 @@ script:
     - contextPath: MicrosoftCloudAppSecurity.Alerts.timestamp
       description: Alert date
       type: Date
-    - contextPath: MicrosoftCloudAppSecurity.Alerts.entities.id
-      description: Alert entities id
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.policyRule.id
+      description: Alerts policyRule id
       type: Number
-    - contextPath: MicrosoftCloudAppSecurity.Alerts.entities.label
-      description: Alert entities label
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.policyRule.label
+      description: Alerts policyRule label
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.Alerts.entities.type
-      description: Alert entities type
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.policyRule.type
+      description: Alerts policyRule type
       type: String
-    - contextPath: MicrosoftCloudAppSecurity.Alerts.entities.inst
-      description: Alert entities instance
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.policyRule.policyType
+      description: Alerts policyRule policyType
+      type: String
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.service.id
+      description: Alerts service id
       type: Number
-    - contextPath: MicrosoftCloudAppSecurity.Alerts.entities.saas
-      description: Alert entities saas
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.service.label
+      description: Alerts service label
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.service.type
+      description: Alerts service type
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.file.id
+      description: Alerts file id
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.file.label
+      description: Alerts file label
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.file.type
+      description: Alerts file type
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.user.id
+      description: Alerts user id
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.user.label
+      description: Alerts user label
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.user.type
+      description: Alerts user type
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.country.id
+      description: Alerts country id
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.country.label
+      description: Alerts country label
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.country.type
+      description: Alerts country type
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.ip.id
+      description: Alerts ip id
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.ip.label
+      description: Alerts ip label
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.ip.type
+      description: Alerts ip type
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.ip.triggeredAlert
+      description: Alerts ip triggeredAlert
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.account.id
+      description: Alerts account id
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.account.label
+      description: Alerts account label
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.account.type
+      description: Alerts account type
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.account.inst
+      description: Alerts account inst
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.account.saas
+      description: Alerts account saas
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.account.pa
+      description: Alerts account pa
+      type: Number
+    - contextPath: MicrosoftCloudAppSecurity.Alerts.account.entityType
+      description: Alerts account entityType
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Alerts.title
       description: Alert title

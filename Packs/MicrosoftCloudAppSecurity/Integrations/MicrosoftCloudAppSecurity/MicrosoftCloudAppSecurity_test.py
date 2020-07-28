@@ -88,7 +88,7 @@ def test_list_alerts_command(requests_mock):
                       json=ALERT_BY_ID_DATA)
     res = list_alerts_command(client_mocker, {'alert_id': '5f06d71dba4289d0602ba5ac'})
     context = res.to_context().get('EntryContext')
-    assert context.get('MicrosoftCloudAppSecurity.Alert(val.alert_id == obj.alert_id)') == ALERT_BY_ID_DATA
+    assert context.get('MicrosoftCloudAppSecurity.Alerts(val.alert_id == obj.alert_id)') == ALERT_BY_ID_DATA
 
 
 def test_list_activities_command(requests_mock):

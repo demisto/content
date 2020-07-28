@@ -353,14 +353,21 @@ def bulk_resolve_alert_command(client, args):
     )
 
 
-def activities_to_human_readable(activities):
-    activities_readable_outputs = []
-    for activity in activities:
-        readable_output = assign_params(activity_id=activity.get('_id'), severity=activity.get('severity'),
-                                        activity_date=datetime.fromtimestamp(activity.get('timestamp') / 1000.0)
-                                        .isoformat(),
-                                        app_name=activity.get('appName'), description=activity.get('description'))
-        activities_readable_outputs.append(readable_output)
+def activity_to_human_readable(activity):
+    readable_output = assign_params(activity_id=activity.get('_id'), severity=activity.get('severity'),
+                                    activity_date=datetime.fromtimestamp(activity.get('timestamp') / 1000.0)
+                                    .isoformat(),
+                                    app_name=activity.get('appName'), description=activity.get('description'))
+    return readable_output
+
+
+def activities_to_human_readable(activities, activity_id):
+    if not activity_id:
+        activities_readable_outputs = []
+        for activity in activities:
+            activities_readable_outputs.append(activity_to_human_readable(activity))
+    else:
+        activities_readable_outputs = (activity_to_human_readable(activities))
     headers = ['activity_id', 'activity_date', 'app_name', 'description', 'severity']
     human_readable = tableToMarkdown('Results', activities_readable_outputs, headers, removeNull=True)
     return human_readable
@@ -370,16 +377,19 @@ def arrange_entity_data(activity):
     entities_data = []
     if 'entityData' in activity.keys():
         entity_data = activity['entityData']
-        for key, value in entity_data.items():
-            if value:
-                entities_data.append(value)
-        activity['entityData'] = entities_data
+        if entity_data:
+            for key, value in entity_data.items():
+                if value:
+                    entities_data.append(value)
+            activity['entityData'] = entities_data
 
 
-def arrange_entities_data(activities):
-    if activities:
+def arrange_entities_data(activities, activity_id):
+    if not activity_id:
         for activity in activities:
-
+            arrange_entity_data(activity)
+    else:
+        arrange_entity_data(activities)
     return activities
 
 
@@ -393,10 +403,11 @@ def list_activities_command(client, args):
                               source=args.get('source'))
     request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, customer_filters, arguments, activity_id)
     activities = client.list_activities(url_suffix, request_data)
-    if activities.get('data'):
+    if activities.get('data'):  # more than one activity
         activities = activities.get('data')
-    activities = arrange_entities_data(activities)
-    human_readable = activities_to_human_readable(activities)
+    activities = arrange_entities_data(activities, activity_id)
+    human_readable = activities_to_human_readable(activities, activity_id)
+    return_error(activities)
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='MicrosoftCloudAppSecurity.Activities',
@@ -405,14 +416,21 @@ def list_activities_command(client, args):
     )
 
 
-def files_to_human_readable(files):
-    files_readable_outputs = []
-    for file in files:
-        readable_output = assign_params(owner_name=file.get('ownerName'), file_create_date=file.get('createdDate'),
-                                        file_type=file.get('fileType'), file_name=file.get('name'),
-                                        file_access_level=file.get('fileAccessLevel'), app_name=file.get('appName'),
-                                        file_status=file.get('fileStatus'))
-        files_readable_outputs.append(readable_output)
+def file_to_human_readable(file):
+    readable_output = assign_params(owner_name=file.get('ownerName'), file_create_date=file.get('createdDate'),
+                                    file_type=file.get('fileType'), file_name=file.get('name'),
+                                    file_access_level=file.get('fileAccessLevel'), app_name=file.get('appName'),
+                                    file_status=file.get('fileStatus'))
+    return readable_output
+
+
+def files_to_human_readable(files, file_id):
+    if not file_id:
+        files_readable_outputs = []
+        for file in files:
+            files_readable_outputs.append(file_to_human_readable(file))
+    else:
+        files_readable_outputs = file_to_human_readable(files)
     headers = ['owner_name', 'file_create_date', 'file_type', 'file_name', 'file_access_level', 'file_status',
                'app_name']
     human_readable = tableToMarkdown('Results', files_readable_outputs, headers, removeNull=True)
@@ -429,8 +447,9 @@ def list_files_command(client, args):
                               extension=args.get('extension'), quarantined=args.get('quarantined'))
     request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, customer_filters, arguments, file_id)
     files = client.list_files(url_suffix, request_data)
-    files = files.get('data')
-    human_readable = files_to_human_readable(files)
+    if files.get('data'):
+        files = files.get('data')
+    human_readable = files_to_human_readable(files, file_id)
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='MicrosoftCloudAppSecurity.Files',
@@ -460,7 +479,8 @@ def list_users_accounts_command(client, args):
                               is_external=args.get('is_external'))
     request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, customer_filters, arguments)
     users_accounts = client.list_users_accounts(url_suffix, request_data)
-    users_accounts = users_accounts.get('data')
+    if users_accounts.get('data'):
+        users_accounts = users_accounts.get('data')
     human_readable = users_accounts_to_human_readable(users_accounts)
     return CommandResults(
         readable_output=human_readable,
