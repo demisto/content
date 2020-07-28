@@ -2247,4 +2247,4 @@ outputs:
   description: A list of destination UDP ports that were found in the PCAP.
   type: String
 tests:
-- PCAP Parsing And Indicator Enrichment Test
+- No test

@@ -1551,4 +1551,4 @@ outputs:
   description: The filter used for querying the PCAP file.
   type: string
 tests:
-- PCAP Search test
+- - No test
