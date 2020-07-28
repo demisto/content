@@ -117,7 +117,7 @@ script:
                 context = {'Domain': {'Name': res.response.record_source, 'Whois': changeKeys(toCamelCase, res.response.parsed_whois)}};
             }
         } else {
-            var md += "Could not find any results. Please make sure the queried domain exists";
+            md += "Could not find any results. Please make sure the queried domain exists";
         }
 
         return {
@@ -248,7 +248,8 @@ script:
               address.domain_names.forEach(function(domain){
                   md += '* ' + domain + '\n';
                   context.Domain.push({'Name': domain, 'DNS' : {'Address' : address.ip_address}});
-              })};
+              });
+            }
         });
 
         return {
