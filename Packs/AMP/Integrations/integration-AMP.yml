@@ -1,7 +1,6 @@
 commonfields:
   id: AMP
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: AMP
 display: AMP
 category: Endpoint
