@@ -140,8 +140,8 @@ class Client(BaseClient):
             "expiryDate": expiry_date,
             "vaultAuthorization": vault_authorization,
             "enableUser": enable_user == "true",
-            "changePassOnNextLogon": change_password_on_the_next_logon == "true",
-            "passwordNeverExpires": password_never_expires == "true",
+            "changePassOnNextLogon": change_password_on_the_next_logon == "true",  # guardrails-disable-line
+            "passwordNeverExpires": password_never_expires == "true",  # guardrails-disable-line
             "distinguishedName": distinguished_name,
             "description": description,
             "internet":
@@ -179,11 +179,11 @@ class Client(BaseClient):
         url_suffix = f"/PasswordVault/api/Users/{user_id}"
         body = {
             "enableUser": enable_user == "true",
-            "changePassOnNextLogon": change_password_on_the_next_logon == "true",
+            "changePassOnNextLogon": change_password_on_the_next_logon == "true",  # guardrails-disable-line
             "expiryDate": expiry_date,
             "unAuthorizedInterfaces": non_authorized_interfaces,
             "authenticationMethod": ["AuthTypePass"],
-            "passwordNeverExpires": password_never_expires == "true",
+            "passwordNeverExpires": password_never_expires == "true",  # guardrails-disable-line
             "distinguishedName": distinguished_name,
             "description": description,
             "internet": {
