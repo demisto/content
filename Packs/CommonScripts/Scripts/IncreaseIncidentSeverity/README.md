@@ -6,7 +6,7 @@ Optionally increases the incident severity to the new value if it is greater tha
 | --- | --- |
 | Script Type | javascript |
 | Tags |  |
-| Demisto Version | 5.0.0 |
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
 ---
