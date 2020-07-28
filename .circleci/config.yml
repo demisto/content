@@ -18,9 +18,6 @@ parameters:
   instance_tests:
     type: string
     default: ""
-  demisto_sdk_nightly:
-    type: string
-    default: ""
   mem_check:
     type: string
     default: ""
@@ -613,17 +610,4 @@ workflows:
           requires:
             - Create Instances
           context: nightly_env
-
-  sdk_nightly:
-    triggers:
-      - schedule:
-          # should trigger every day at 12 AM UTC (3 AM Israel Time)
-          cron: "0 0 * * *"
-          filters:
-            branches:
-              only:
-                - master
-    jobs:
-      - Demisto SDK Nightly:
-          context: sdk_nightly_env
 
