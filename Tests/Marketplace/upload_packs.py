@@ -871,7 +871,7 @@ def main():
     if is_private_build:
         delete_public_packs_from_index(index_folder_path)
         upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs,
-                                current_commit_hash, index_generation, is_private)
+                                current_commit_hash, index_generation, is_private_build)
 
     else:
         upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs,
