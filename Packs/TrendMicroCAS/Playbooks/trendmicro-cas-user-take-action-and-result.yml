@@ -1,6 +1,7 @@
 id: TrendMicro CAS - User take action and the result
 version: -1
 name: TrendMicro CAS - User take action and the result
+description: This playbook runs the "trendmicro-cas-user-take-action" command and waits for the result from the "trendmicro-cas-user-action-result-query" command.
 starttaskid: "0"
 tasks:
   "0":

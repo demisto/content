@@ -6,7 +6,7 @@ from CommonServerPython import *
 import json
 import requests
 import traceback
-from typing import Any, Dict, Tuple, List, Optional, Union, cast
+from typing import Any, Dict, Tuple, List
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -216,14 +216,14 @@ class Client(BaseClient):
 
 
 def parse_date_to_isoformat(arg: str, arg_name: str):
-    """	
-        Parses date_string to iso format date strings ('%Y-%m-%dT%H:%M:%SZ'). Input Can be any date that is valid or	
-        'number date range unit' for Examples: (2 hours, 4 minutes, 6 month, 1 day, etc.)	
-        Args:	
-            arg (str): The date to be parsed.	
-            arg_name (str): the name of the argument for error output.	
-        Returns:	
-            str: The parsed date in isoformat strings ('%Y-%m-%dT%H:%M:%SZ').	
+    """
+        Parses date_string to iso format date strings ('%Y-%m-%dT%H:%M:%SZ'). Input Can be any date that is valid or
+        'number date range unit' for Examples: (2 hours, 4 minutes, 6 month, 1 day, etc.)
+        Args:
+            arg (str): The date to be parsed.
+            arg_name (str): the name of the argument for error output.
+        Returns:
+            str: The parsed date in isoformat strings ('%Y-%m-%dT%H:%M:%SZ').
     """
     if arg is None:
         return None
@@ -233,7 +233,7 @@ def parse_date_to_isoformat(arg: str, arg_name: str):
 
     date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
     if not date:
-        return_error(f'invalid date value for: {arg_name}\n{arg} should be in the format of:'	
+        return_error(f'invalid date value for: {arg_name}\n{arg} should be in the format of:'
                      f' "2016-07-22T01:51:31.001Z." or "10 minutes"')
 
     date = f'{date.isoformat()}Z'
@@ -241,12 +241,7 @@ def parse_date_to_isoformat(arg: str, arg_name: str):
 
 
 def creates_empty_dictionary_of_last_run(list_services: list, list_event_type: list):
-    last_run = {Dict[str, dict]}
-    for service in list_services:
-        last_run[service] = {}
-        for event_type in list_event_type:
-            last_run[service][event_type] = {}
-    return last_run
+    return {service: {event_type: {} for event_type in list_event_type} for service in list_services}
 
 
 ''' COMMAND FUNCTIONS '''
@@ -266,7 +261,7 @@ def test_module(client: Client, params) -> str:
     return 'ok'
 
 
-def fetch_incidents(client: Client, max_results: int, last_run, list_services: List[str], first_fetch_time: any,
+def fetch_incidents(client: Client, max_results: int, last_run, list_services: List[str], first_fetch_time: str,
                     list_event_type: List[str], is_test_module: bool) -> Tuple[Dict[str, dict], List[dict]]:
     """This function retrieves new alerts every interval (default is 1 minute).
     This function has to implement the logic of making sure that incidents are
@@ -281,13 +276,14 @@ def fetch_incidents(client: Client, max_results: int, last_run, list_services: L
             from last fetch
         first_fetch_time (str): If last_run is None (first time we are fetching), it contains
             the date in iso format on when to start fetching incidents
-        ist_services (str): list services of the alerts to search for. Options are: 'exchange,sharepoint,onedrive,dropbox,box,googledrive,gmail,teams'
-        list_event_type (str): list types of events to search for. Options are: securityrisk, virtualanalyze, ransomware, dlp
+        ist_services (str): list services of the alerts to search for.
+            Options are: 'exchange,sharepoint,onedrive,dropbox,box,googledrive,gmail,teams'
+        list_event_type (str): list types of events to search for.
+            Options are: securityrisk, virtualanalyze, ransomware, dlp
 
-    :return:
+    return:
         Tuple[Dict[str, int], List[dict]]: A tuple containing two elements:
-            next_run (``Dict[str, dict]``): Contains the timestamp that will be
-                    used in ``last_run`` on the next fetch.
+            next_run (``Dict[str, dict]``): Contains the timestamp that will be used in ``last_run`` on the next fetch.
             incidents (``List[dict]``): List of incidents that will be created in XSOAR
     """
     next_run = last_run.copy()
@@ -306,7 +302,7 @@ def fetch_incidents(client: Client, max_results: int, last_run, list_services: L
             result = {}
             try:
                 """Sends a request and calculates the limit according to
-                 the ״max_results״ minus the "incident" already collected 
+                 the ״max_results״ minus the "incident" already collected
                  plus the events that will return duplicate "(len(last_fetch_ids))"""
                 result = client.security_events_list(
                     service=service,
@@ -394,11 +390,11 @@ def security_events_list_command(client, args):
                 'traceId': result.get('traceId')
             }
             entries.append(CommandResults(
-                                readable_output=tableToMarkdown('Events MetaData.', meta_data),
-                                outputs_prefix='TrendMicroCAS.EventsMetaData',
-                                outputs_key_field='traceId',
-                                outputs=meta_data,
-                                raw_response=result))
+                readable_output=tableToMarkdown('Events MetaData.', meta_data),
+                outputs_prefix='TrendMicroCAS.EventsMetaData',
+                outputs_key_field='traceId',
+                outputs=meta_data,
+                raw_response=result))
 
         return entries
 
