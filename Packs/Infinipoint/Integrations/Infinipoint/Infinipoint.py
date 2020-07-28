@@ -299,7 +299,6 @@ def fetch_incidents(client, last_run: Dict[str, int], first_fetch_time: Optional
 
     alerts = infinipoint_command(client, args, COMMANDS_CONFIG['infinipoint-get-events'])
 
-    # if not isinstance(alerts, None):
     if alerts:
         for alert in alerts.outputs:
             if alert.get("subscription") in subscription:
