@@ -2124,12 +2124,14 @@ inputs:
     \ one indicator type use comma separation such as \nip,url,email\n\n"
   playbookInputQuery:
 - key: InternalUrlName
-  value: {}
+  value:
+    simple: localhost
   required: false
   description: The organization's internal URL name. This is provided for the script
     IsInternalHostName that checks if the detected URLs are internal or external if
     the hosts contain the internal domains suffix. For example demisto.com. If there
-    is more than one domain, use comma separation such as demisto.com,paloaltonetworks.com
+    is more than one domain, use comma separation such as demisto.com,paloaltonetworks.com.
+    The default value will be localhost.
   playbookInputQuery:
 - key: InternalEmailDomainName
   value: {}
@@ -2247,4 +2249,4 @@ outputs:
   description: A list of destination UDP ports that were found in the PCAP.
   type: String
 tests:
-- No test
+- PCAP Parsing And Indicator Enrichment Test
