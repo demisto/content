@@ -1,11 +1,11 @@
 {
     "name": "PiHole",
     "description": "PiHole",
-    "support": "developer",
+    "support": "xsoar",
     "currentVersion": "1.0.0",
-    "author": "Harri Ruuttila",
-    "url": "",
-    "email": "harri@ruuttila.com",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
     "created": "2020-07-21T16:45:57Z",
     "categories": [
         "IT Services"

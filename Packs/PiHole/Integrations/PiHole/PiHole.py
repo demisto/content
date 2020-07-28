@@ -1,15 +1,9 @@
-import demistomock as demisto
-from CommonServerPython import *
-
 ''' IMPORTS '''
 
 import requests
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
-
-''' CONSTANTS '''
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
 class Client:
@@ -35,15 +29,12 @@ class Client:
 
 
 def results_return(command, thingtoreturn):
-    finaldata = {'PiHole': {command: thingtoreturn}}
-    return demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': thingtoreturn,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(command, thingtoreturn, removeNull=True),
-        'EntryContext': finaldata
-    })
+    results = CommandResults(
+        outputs_prefix='PiHole.'+str(command),
+        outputs_key_field='',
+        outputs=thingtoreturn
+        )
+    return_results(results)
 
 
 def test_module(client):
@@ -56,7 +47,7 @@ def test_module(client):
     if result:
         return 'ok'
     else:
-        return 'Test failed ' + result
+        return 'Test failed ' + str(result)
 
 
 def get_data(client, suffix, command):
@@ -100,11 +91,11 @@ def main():
         elif demisto.command() == 'pihole-get-overtimedata10mins':
             get_data(client, '?overTimeData10mins', 'OverTimeData10mins')
         elif demisto.command() == 'pihole-get-topitems':
-            entries = int(demisto.args().get('entries'))
-            get_data(client, '?topItems=' + str(entries), 'TopItems')
+            limit = int(demisto.args().get('limit'))
+            get_data(client, '?topItems=' + str(limit), 'TopItems')
         elif demisto.command() == 'pihole-get-topclients':
-            entries = int(demisto.args().get('entries'))
-            get_data(client, '?topClients=' + str(entries), 'TopClients')
+            limit = int(demisto.args().get('limit'))
+            get_data(client, '?topClients=' + str(limit), 'TopClients')
         elif demisto.command() == 'pihole-get-topclientsblocked':
             get_data(client, '?topClientsblocked', 'TopClientsBlocked')
         elif demisto.command() == 'pihole-get-forward-destinations':
