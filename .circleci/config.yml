@@ -588,25 +588,6 @@ workflows:
           requires:
             - Create Instances
 
-  instances_testing:
-    # for details of triggered builds see https://circleci.com/docs/2.0/workflows/#nightly-example
-    # for details of cron syntax see https://www.unix.com/man-page/POSIX/1posix/crontab/ disable-secrets-detection
-    triggers:
-      - schedule:
-          # should trigger every day at 2 AM UTC (5 AM Israel Time)
-          cron: "0 2 * * *"
-          filters:
-            branches:
-              only:
-                - master
-    jobs:
-      - Create Instances:
-          context: instances_test_env
-      - Instance Test:
-          context: instances_test_env
-          requires:
-            - Create Instances
-
   nightly:
     triggers:
       - schedule:
@@ -628,7 +609,7 @@ workflows:
       - Run Validations:
           requires:
             - Setup Environment
-      - Server 6_0:
+      - Server 4_1:
           requires:
             - Create Instances
           context: nightly_env
