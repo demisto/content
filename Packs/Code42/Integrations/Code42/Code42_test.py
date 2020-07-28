@@ -1480,7 +1480,7 @@ def test_alert_get_command(code42_alerts_mock):
     assert cmd_res.raw_response["ruleId"] == "4576576e-13cb-4f88-be3a-ee77739de649"
     assert cmd_res.outputs == [MOCK_CODE42_ALERT_CONTEXT[0]]
     assert cmd_res.outputs_prefix == "Code42.SecurityAlert"
-    assert cmd_res.outputs_key_field == "ID"
+    assert cmd_res.outputs_key_field == ["ID"]
 
 
 def test_alert_resolve_command(code42_alerts_mock):
@@ -1489,7 +1489,7 @@ def test_alert_resolve_command(code42_alerts_mock):
     assert cmd_res.raw_response["ruleId"] == "4576576e-13cb-4f88-be3a-ee77739de649"
     assert cmd_res.outputs == [MOCK_CODE42_ALERT_CONTEXT[0]]
     assert cmd_res.outputs_prefix == "Code42.SecurityAlert"
-    assert cmd_res.outputs_key_field == "ID"
+    assert cmd_res.outputs_key_field == ["ID"]
 
 
 def test_departingemployee_add_command(code42_sdk_mock):
@@ -1502,7 +1502,7 @@ def test_departingemployee_add_command(code42_sdk_mock):
     add_func = code42_sdk_mock.detectionlists.departing_employee.add
     assert cmd_res.raw_response == _TEST_USER_ID
     assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
-    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs_key_field == ["UserID"]
     assert cmd_res.outputs["DepartureDate"] == date
     assert cmd_res.outputs["Note"] == note
     assert cmd_res.outputs["Username"] == _TEST_USERNAME
@@ -1517,7 +1517,7 @@ def test_departingemployee_remove_command(code42_sdk_mock):
     cmd_res = departingemployee_remove_command(client, {"username": _TEST_USERNAME})
     assert cmd_res.raw_response == _TEST_USER_ID
     assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
-    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs_key_field == ["UserID"]
     assert cmd_res.outputs["Username"] == _TEST_USERNAME
     assert cmd_res.outputs["UserID"] == _TEST_USER_ID
     assert cmd_res.outputs["CaseID"] == _TEST_USER_ID
@@ -1529,7 +1529,7 @@ def test_departingemployee_get_all_command(code42_departing_employee_mock):
     cmd_res = departingemployee_get_all_command(client, {})
     expected_raw_response = json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)["items"]
     assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
-    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs_key_field == ["UserID"]
     assert cmd_res.raw_response == json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)["items"]
     # Tests outputs
     assert_departingemployee_outputs_match_response(cmd_res.outputs, expected_raw_response)
@@ -1550,7 +1550,7 @@ def test_departingemployee_get_all_command_gets_employees_from_multiple_pages(
     client = create_client(code42_departing_employee_mock)
     cmd_res = departingemployee_get_all_command(client, {})
     assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
-    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs_key_field == ["UserID"]
 
     # Expect to have employees from 3 pages in the result
     expected_page = json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)["items"]
@@ -1591,7 +1591,7 @@ def test_departingemployee_get_all_command_when_no_employees(
     client = create_client(code42_departing_employee_mock)
     cmd_res = departingemployee_get_all_command(client, {})
     assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
-    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs_key_field == ["UserID"]
     assert cmd_res.raw_response == {}
     assert cmd_res.outputs == {"Results": []}
     assert code42_departing_employee_mock.detectionlists.departing_employee.get_all.call_count == 1
@@ -1606,7 +1606,7 @@ def test_departingemployee_get_command(code42_departing_employee_get_mock):
     get_func.assert_called_once_with(_TEST_USER_ID)
     assert cmd_res.raw_response == _TEST_USERNAME
     assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
-    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs_key_field == ["UserID"]
     expected = json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)["items"][0]
     assert_departingemployee_outputs_match_response([cmd_res.outputs], [expected])
 
@@ -1620,7 +1620,7 @@ def test_highriskemployee_get_command(code42_high_risk_employee_get_mock):
     get_func.assert_called_once_with(_TEST_USER_ID)
     assert cmd_res.raw_response == _TEST_USERNAME
     assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
-    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs_key_field == ["UserID"]
     expected = json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"][0]
     assert_detection_list_outputs_match_response_items([cmd_res.outputs], [expected])
 
@@ -1648,7 +1648,7 @@ def test_highriskemployee_remove_command(code42_sdk_mock):
     cmd_res = highriskemployee_remove_command(client, {"username": _TEST_USERNAME})
     assert cmd_res.raw_response == _TEST_USER_ID
     assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
-    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs_key_field == ["UserID"]
     assert cmd_res.outputs["UserID"] == _TEST_USER_ID
     assert cmd_res.outputs["Username"] == _TEST_USERNAME
     code42_sdk_mock.detectionlists.high_risk_employee.remove.assert_called_once_with(_TEST_USER_ID)
@@ -1658,7 +1658,7 @@ def test_highriskemployee_get_all_command(code42_high_risk_employee_mock):
     client = create_client(code42_high_risk_employee_mock)
     cmd_res = highriskemployee_get_all_command(client, {})
     expected_response = json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"]
-    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs_key_field == ["UserID"]
     assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
     assert cmd_res.raw_response == expected_response
     assert code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.call_count == 1
@@ -1682,7 +1682,7 @@ def test_highriskemployee_get_all_command_gets_employees_from_multiple_pages(
     cmd_res = highriskemployee_get_all_command(client, {"username": _TEST_USERNAME})
     expected_response = json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"] * 3
     assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
-    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs_key_field == ["UserID"]
     assert cmd_res.raw_response == expected_response
     assert_detection_list_outputs_match_response_items(cmd_res.outputs, expected_response)
 
@@ -1697,7 +1697,7 @@ def test_highriskemployee_get_all_command_when_given_risk_tags_only_gets_employe
     )
     expected_response = [json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"][0]]
     assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
-    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs_key_field == ["UserID"]
     assert cmd_res.raw_response == expected_response
     assert code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.call_count == 1
     assert_detection_list_outputs_match_response_items(cmd_res.outputs, expected_response)
@@ -1734,7 +1734,7 @@ def test_highriskemployee_get_all_command_when_no_employees(code42_high_risk_emp
         {"risktags": "PERFORMANCE_CONCERNS,SUSPICIOUS_SYSTEM_ACTIVITY,POOR_SECURITY_PRACTICES"},
     )
     assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
-    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs_key_field == ["UserID"]
     assert cmd_res.outputs == {"Results": []}
     assert cmd_res.raw_response == {}
     assert code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.call_count == 1
@@ -1748,7 +1748,7 @@ def test_highriskemployee_add_risk_tags_command(code42_sdk_mock):
     )
     assert cmd_res.raw_response == _TEST_USER_ID
     assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
-    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs_key_field == ["UserID"]
     assert cmd_res.outputs["UserID"] == _TEST_USER_ID
     assert cmd_res.outputs["Username"] == _TEST_USERNAME
     assert cmd_res.outputs["RiskTags"] == tags
@@ -1764,7 +1764,7 @@ def test_highriskemployee_remove_risk_tags_command(code42_sdk_mock):
     )
     assert cmd_res.raw_response == _TEST_USER_ID
     assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
-    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs_key_field == ["UserID"]
     assert cmd_res.outputs["UserID"] == _TEST_USER_ID
     assert cmd_res.outputs["Username"] == _TEST_USERNAME
     assert cmd_res.outputs["RiskTags"] == "FLIGHT_RISK,CONTRACT_EMPLOYEE"
@@ -1780,7 +1780,7 @@ def test_legalhold_add_user_command(code42_legal_hold_mock):
     )
     assert cmd_res.raw_response == json.loads(MOCK_ADD_TO_MATTER_RESPONSE)
     assert cmd_res.outputs_prefix == "Code42.LegalHold"
-    assert cmd_res.outputs_key_field == "MatterID"
+    assert cmd_res.outputs_key_field == ["MatterID"]
     assert cmd_res.outputs["UserID"] == _TEST_USER_ID
     assert cmd_res.outputs["MatterName"] == "Patent Lawsuit"
     assert cmd_res.outputs["MatterID"] == "645576513911664484"
@@ -1794,7 +1794,7 @@ def test_legalhold_remove_user_command(code42_legal_hold_mock):
         client, {"username": _TEST_USERNAME, "mattername": "Patent Lawsuit"}
     )
     assert cmd_res.outputs_prefix == "Code42.LegalHold"
-    assert cmd_res.outputs_key_field == "MatterID"
+    assert cmd_res.outputs_key_field == ["MatterID"]
     assert cmd_res.outputs["UserID"] == _TEST_USER_ID
     assert cmd_res.outputs["MatterName"] == "Patent Lawsuit"
     assert cmd_res.outputs["MatterID"] == "645576513911664484"
@@ -1812,7 +1812,7 @@ def test_user_create_command(code42_users_mock):
         },
     )
     assert cmd_res.outputs_prefix == "Code42.User"
-    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs_key_field == ["UserID"]
     assert cmd_res.raw_response == json.loads(MOCK_CREATE_USER_RESPONSE)
     assert cmd_res.outputs["UserID"] == "960849588659999999"
     assert cmd_res.outputs["Username"] == "new.user@example.com"
@@ -1879,7 +1879,7 @@ def test_security_data_search_command(code42_file_events_mock):
     file_res = cmd_res[1]
 
     assert code42_res.outputs_prefix == "Code42.SecurityData"
-    assert code42_res.outputs_key_field == "EventID"
+    assert code42_res.outputs_key_field == ["EventID"]
     assert file_res.outputs_prefix == "File"
 
     actual_query = code42_file_events_mock.securitydata.search_file_events.call_args[0][0]
@@ -2106,7 +2106,7 @@ def test_security_data_search_command_searches_exposure_exists_when_all_is_speci
     file_res = cmd_res[1]
 
     assert code42_res.outputs_prefix == "Code42.SecurityData"
-    assert code42_res.outputs_key_field == "EventID"
+    assert code42_res.outputs_key_field == ["EventID"]
     assert file_res.outputs_prefix == "File"
 
     actual_query = code42_file_events_mock.securitydata.search_file_events.call_args[0][0]
@@ -2139,7 +2139,7 @@ def test_security_data_search_command_searches_exposure_exists_when_no_exposure_
     file_res = cmd_res[1]
 
     assert code42_res.outputs_prefix == "Code42.SecurityData"
-    assert code42_res.outputs_key_field == "EventID"
+    assert code42_res.outputs_key_field == ["EventID"]
     assert file_res.outputs_prefix == "File"
 
     actual_query = code42_file_events_mock.securitydata.search_file_events.call_args[0][0]
