@@ -2602,7 +2602,7 @@ class CommandResults:
         elif isinstance(outputs_key_field, list):
             self.outputs_key_field = outputs_key_field
         elif outputs_key_field is None:
-            self.outputs_key_field = None
+            self.outputs_key_field = ''
         else:
             raise TypeError('outputs_key_field must be of type str or list')
 
@@ -2647,10 +2647,13 @@ class CommandResults:
             else:
                 outputs = self.outputs  # type: ignore[assignment]
 
+        content_format = EntryFormat.JSON
+        if isinstance(raw_response, STRING_TYPES) or isinstance(raw_response, int):
+            content_format = EntryFormat.TEXT
 
         return_entry = {
             'Type': EntryType.NOTE,
-            'ContentsFormat': EntryFormat.JSON,
+            'ContentsFormat': content_format,
             'Contents': raw_response,
             'HumanReadable': human_readable,
             'EntryContext': outputs
