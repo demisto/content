@@ -12,7 +12,6 @@ from typing import Any, Dict, Tuple, List, Optional, Union, cast
 requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 MAX_INCIDENTS_TO_FETCH = 500
 
 ''' CLIENT CLASS '''
@@ -216,8 +215,33 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
+def parse_date_to_isoformat(arg: str, arg_name: str):
+    """	
+        Parses date_string to iso format date strings ('%Y-%m-%dT%H:%M:%SZ'). Input Can be any date that is valid or	
+        'number date range unit' for Examples: (2 hours, 4 minutes, 6 month, 1 day, etc.)	
+        Args:	
+            arg (str): The date to be parsed.	
+            arg_name (str): the name of the argument for error output.	
+        Returns:	
+            str: The parsed date in isoformat strings ('%Y-%m-%dT%H:%M:%SZ').	
+    """
+    if arg is None:
+        return None
+
+    # we use dateparser to handle strings either in ISO8601 format, or [number] [time unit].
+    # For example: 2019-10-23T00:00:00 or "3 days", etc
+
+    date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+    if not date:
+        return_error(f'invalid date value for: {arg_name}\n{arg} should be in the format of:'	
+                     f' "2016-07-22T01:51:31.001Z." or "10 minutes"')
+
+    date = f'{date.isoformat()}Z'
+    return date
+
+
 def creates_empty_dictionary_of_last_run(list_services: list, list_event_type: list):
-    last_run = {}
+    last_run = {Dict[str, dict]}
     for service in list_services:
         last_run[service] = {}
         for event_type in list_event_type:
@@ -268,8 +292,7 @@ def fetch_incidents(client: Client, max_results: int, last_run, list_services: L
     """
     next_run = last_run.copy()
     incidents: List[Dict[str, Any]] = []
-    # end = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    end = parse_date_range('1 day', DATE_FORMAT)[1]
+    end = parse_date_to_isoformat('now', 'end')
 
     quota = False
     for service in list_services:
@@ -338,14 +361,10 @@ def security_events_list_command(client, args):
         service = args.get('service')
         event_type = args.get('event_type')
         limit = args.get('limit')
-        start = ''
-        end = ''
-        if args.get('start'):
-            start = parse_date_range(args.get('start'), DATE_FORMAT)[0]
-        if args.get('end'):
-            end = parse_date_range(args.get('end'), DATE_FORMAT)[0]
-        elif start:
-            end = parse_date_range('1 day', DATE_FORMAT)[1]
+        start = parse_date_to_isoformat(args.get('start'), 'start')
+        end = parse_date_to_isoformat(args.get('end'), 'end')
+        if start and not end:
+            end = parse_date_to_isoformat('now', 'end')
 
         result = client.security_events_list(service, event_type, start, end, limit)
 
@@ -387,10 +406,8 @@ def security_events_list_command(client, args):
 def email_sweep_command(client, args):
     mailbox = args.get('mailbox')
     lastndays = args.get('lastndays')
-    if args.get('start'):
-        start = parse_date_range(args.get('start'), DATE_FORMAT)[0]
-    if args.get('end'):
-        end = parse_date_range(args.get('end'), DATE_FORMAT)[0]
+    start = parse_date_to_isoformat(args.get('start'), 'start')
+    end = parse_date_to_isoformat(args.get('end'), 'end')
     subject = args.get('subject')
     file_sha1 = args.get('file_sha1')
     file_name = args.get('file_name')
@@ -474,10 +491,8 @@ def email_take_action_command(client, args):
 
 def user_action_result_command(client, args):
     batch_id = args.get('batch_id')
-    if args.get('start'):
-        start = parse_date_range(args.get('start'), DATE_FORMAT)[0]
-    if args.get('end'):
-        end = parse_date_range(args.get('end'), DATE_FORMAT)[0]
+    start = parse_date_to_isoformat(args.get('start'), 'start')
+    end = parse_date_to_isoformat(args.get('end'), 'end')
     limit = args.get('limit')
     result = client.action_result_query(batch_id, start, end, limit, 'accounts')
 
@@ -495,10 +510,8 @@ def user_action_result_command(client, args):
 
 def email_action_result_command(client, args):
     batch_id = args.get('batch_id')
-    if args.get('start'):
-        start = parse_date_range(args.get('start'), DATE_FORMAT)[0]
-    if args.get('end'):
-        end = parse_date_range(args.get('end'), DATE_FORMAT)[0]
+    start = parse_date_to_isoformat(args.get('start'), 'start')
+    end = parse_date_to_isoformat(args.get('end'), 'end')
     limit = args.get('limit')
     result = client.action_result_query(batch_id, start, end, limit, 'mails')
 
@@ -553,7 +566,7 @@ def blocked_lists_update_command(client, args):
 def fetch_incidents_command(client, params, is_test_module=False):
     list_services = params.get('service')
     list_event_type = params.get('event_type')
-    first_fetch_time = parse_date_range(params.get('first_fetch', '3 days'), DATE_FORMAT)[0]
+    first_fetch_time = parse_date_to_isoformat(params.get('first_fetch', '3 days'), 'first_fetch_time')
     max_results = int(params.get('max_fetch', 50))
     if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
         max_results = MAX_INCIDENTS_TO_FETCH
