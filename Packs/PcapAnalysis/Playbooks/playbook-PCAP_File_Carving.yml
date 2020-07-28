@@ -7,7 +7,7 @@ description: This playbook is used to carve (extract) files from within PCAP fil
   Additional inputs allow the user to provide the WPA password for decrypting 802.11
   (wireless) traffic and adding an RSA certificate to decrypt SSL traffic. Additional
   options enable you to filter the files to extract according to the file extension
-  or the file actual type (MIME) and limit the amount of files to extract. Another
+  or the actual file  type (MIME), and limit the amount of files to extract. Another
   feature enables you to specify a filter to create a new smaller PCAP file. To display
   the results within the relevant incident fields, the playbook needs to run in a
   PCAP Analysis incident type. For handling of PCAP files larger than 30 MB, refer
@@ -113,8 +113,8 @@ tasks:
       version: -1
       name: Create new PCAP file with filter
       description: |-
-        PcapMIner V2 allows to parse PCAP files by displaying the all of the relevant data within including ip addresses, ports, flows, specific protocol breakdown, searching by regex, decrypting encrypted  traffic and more.
-        This automation takes about a minute to process 20,000 packets (which is approximately 10MB). If you want to mine large files you can either:
+        PcapMIner V2 allows you to parse PCAP files by displaying all of the relevant data within ip addresses, ports, flows, specific protocol breakdown, searching by regex, decrypting encrypted, traffic and more.
+        This automation takes about a minute to process 20,000 packets (which is approximately 10MB). If you want to mine larger files you can either:
         a) Use the `pcap_filter` parameter to filter your PCAP file and thus make is smaller.
         b) Copy the automation and change the `default timeout` parameter to match your needs.
       scriptName: PcapMinerV2
