@@ -1,6 +1,3 @@
-import demistomock as demisto
-from CommonServerPython import *
-
 from email import message_from_string
 from email.header import decode_header
 import base64
@@ -43,7 +40,7 @@ reload(sys)
 sys.setdefaultencoding('utf8')  # pylint: disable=no-member
 
 MAX_DEPTH_CONST = 3
-IS_NESTED_EML = False
+#IS_NESTED_EML = False
 
 """
 https://github.com/vikramarsid/msg_parser
@@ -3418,9 +3415,10 @@ def unfold(s):
     return re.sub(r'[ \t]*[\r\n][ \t\r\n]*', ' ', s).strip(' ')
 
 
-def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, max_depth=3, bom=False):
+def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, max_depth=3, is_nested=False):
     global ENCODINGS_TYPES
-    global IS_NESTED_EML
+    #global IS_NESTED_EML
+
 
     if max_depth == 0:
         return None, []
@@ -3430,9 +3428,6 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
         file_data = emlFile.read()
         if b64:
             file_data = b64decode(file_data)
-        if bom:
-            # decode bytes taking into account BOM and re-encode to utf-8
-            file_data = file_data.decode("utf-8-sig").encode("utf-8")
 
         parser = HeaderParser()
         headers = parser.parsestr(file_data)
@@ -3528,10 +3523,10 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                         try:
                             f.write(file_content)
                             f.close()
-                            IS_NESTED_EML = True
+                            #IS_NESTED_EML = True
                             inner_eml, inner_attached_emails = handle_eml(file_path=f.name,
                                                                           file_name=attachment_file_name,
-                                                                          max_depth=max_depth - 1)
+                                                                          max_depth=max_depth - 1, is_nested=True)
                             attached_emails.append(inner_eml)
                             attached_emails.extend(inner_attached_emails)
                             # if we are outter email is a singed attachment it is a wrapper and we don't return the output of
@@ -3585,7 +3580,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
         # 1. it is a wrapper and we can ignore the outer "email"
         # 2. it is not a wrapper and will not get into recursion, therefore we need the second condition
         if 'multipart/signed' not in eml.get_content_type()\
-                or ('multipart/signed' in eml.get_content_type() and IS_NESTED_EML is False):
+                or ('multipart/signed' in eml.get_content_type() and is_nested is False):
             email_data = {
                 'To': extract_address_eml(eml, 'to'),
                 'CC': extract_address_eml(eml, 'cc'),
@@ -3600,7 +3595,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                 'Format': eml.get_content_type(),
                 'Depth': MAX_DEPTH_CONST - max_depth
             }
-
+        #IS_NESTED_EML = False
         return email_data, attached_emails
 
 
