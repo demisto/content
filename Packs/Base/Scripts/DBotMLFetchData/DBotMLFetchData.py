@@ -765,12 +765,11 @@ def get_characters_features(text):
 
 
 def get_url_features(email_body, email_html, soup):
-    http_regex = r'http://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
-    https_regex = r'https://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
-    http_urls = re.findall(http_regex, email_body)
-    https_urls = re.findall(https_regex, email_body)
+    url_regex = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
+                r'(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
     embedded_urls = [a['href'] for a in soup.findAll('a')]
-    all_urls = http_urls + https_urls + embedded_urls
+    plain_urls = re.findall(url_regex, email_body)
+    all_urls = plain_urls + embedded_urls
     all_urls_lengths = [len(u) for u in all_urls]
     average_url_length = 0 if len(all_urls) == 0 else sum(all_urls_lengths) / len(all_urls)
     min_url_length = 0 if len(all_urls_lengths) == 0 else min(all_urls_lengths)
@@ -778,8 +777,8 @@ def get_url_features(email_body, email_html, soup):
     shortened_urls_count = len([u for u in all_urls if any(shortened_u in u for shortened_u in SHORTENED_DOMAINS)])
     drive_count = len([u for u in all_urls if any(drive in u for drive in DRIVE_URL_KEYWORDS)])
     return {
-        'http_urls_count': len(http_urls),
-        'https_urls_count': len(https_urls),
+        'http_urls_count': sum(url.startswith('http') and not url.startswith('https') for url in plain_urls),
+        'https_urls_count': sum(url.startswith('https')for url in plain_urls),
         'embedded_urls_count': len(embedded_urls),
         'all_urls_count': len(all_urls),
         'average_url_length': average_url_length,
@@ -1089,7 +1088,7 @@ def return_json_entry(obj):
 
 def get_args_based_on_last_execution():
     lst = demisto.executeCommand('getList', {'listName': LAST_EXECUTION_LIST_NAME})
-    if isError(lst[0]):  # if first execution
+    if isError(lst):  # if first execution
         return {'limit': MAX_INCIDENTS_TO_FETCH_FIRST_EXECUTION}
     else:
         last_execution_datetime = datetime.strptime(lst[0]['Contents'], DATETIME_FORMAT)

@@ -63,7 +63,7 @@ def test_get_characters_features(mocker):
 
 
 def test_get_url_features(mocker):
-    email_body = 'https://www.a.com/ https://www.b.com/ http://www.c.com/vcvc/vcvc/vc/b'   # disable-secrets-detection
+    email_body = 'https://www.a.com https://www.b.com http://www.c.com/vcvc/vcvc/vc/b'   # disable-secrets-detection
     embedded_url = 'https://www.w3schools.com'   # disable-secrets-detection
     all_urls = email_body.split() + [embedded_url]
     email_html = '<a href="{}">Visit W3Schools</a>'.format(embedded_url)
@@ -221,7 +221,7 @@ def test_attachments_features_2():
 
 def test_whole_preprocessing(mocker):
     import cProfile
-    debug = True
+    debug = False
     glove_path = './glove_50_top_10.p'
     with open(glove_path, 'rb') as file:
         glove_data = file.read()
