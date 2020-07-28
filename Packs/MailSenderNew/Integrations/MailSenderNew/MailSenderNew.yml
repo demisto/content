@@ -17,7 +17,7 @@ configuration:
   required: false
   type: 9
 - defaultvalue: noreply@demisto.com
-  display: Sender address
+  display: Sender name
   name: from
   required: true
   type: 0
