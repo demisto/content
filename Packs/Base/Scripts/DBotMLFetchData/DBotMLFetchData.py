@@ -16,6 +16,7 @@ from base64 import b64encode
 from nltk import ngrams
 from datetime import datetime
 
+CHARACTERS_TO_COUNT = list(string.printable) + ['$', '€', '£', '¥', '₪', '₽']
 
 MIN_TEXT_LENGTH = 20
 
@@ -755,7 +756,7 @@ def get_lexical_features(email_subject, email_body, email_body_word_tokenized, e
 
 def get_characters_features(text):
     characters_count = {}
-    for c in string.printable:
+    for c in CHARACTERS_TO_COUNT:
         if c in ['[', ']', '<']:
             continue
         count = text.count(c)
