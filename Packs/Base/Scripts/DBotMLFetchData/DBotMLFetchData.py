@@ -14,7 +14,8 @@ import numpy as np
 import zlib
 from base64 import b64encode
 from nltk import ngrams
-
+from datetime import datetime
+MODIFIED_TIMEFORMAT = '%Y-%m-%d %H:%M:%S'
 
 EMAIL_BODY_FIELD = 'emailbody'
 EMAIL_SUBJECT_FIELD = 'emailsubject'
@@ -24,6 +25,10 @@ EMAIL_ATTACHMENT_FIELD = 'attachment'
 EMBEDDING_DICT = None
 
 FETCH_DATA_VERSION = '1.0'
+LAST_EXECUTION_LIST_NAME = 'FETCH_DATA_ML_LAST_EXECUTION'
+MAX_INCIDENTS_TO_FETCH_PERIODIC_EXECUTION = 500
+MAX_INCIDENTS_TO_FETCH_FIRST_EXECUTION = 3000
+DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 '''
 Define time out functionality
 '''
@@ -1037,8 +1042,28 @@ def return_json_entry(obj):
     demisto.results(entry)
 
 
+def get_args_based_on_last_execution():
+    lst = demisto.executeCommand('getList', {'listName': LAST_EXECUTION_LIST_NAME})
+    if isError(lst[0]):  # if first execution
+        return {'limit': MAX_INCIDENTS_TO_FETCH_FIRST_EXECUTION}
+    else:
+        last_execution_datetime = datetime.strptime(lst[0]['Contents'], DATETIME_FORMAT)
+        query = 'modified:>="{}"'.format(datetime.strftime(last_execution_datetime, MODIFIED_TIMEFORMAT))
+        max_incidents_to_fetch = MAX_INCIDENTS_TO_FETCH_PERIODIC_EXECUTION
+        return {'limit': max_incidents_to_fetch,
+                'query': query}
+
+
+def update_last_execution_time():
+    demisto.results('here')
+    execution_datetime_str = datetime.strftime(datetime.now(), DATETIME_FORMAT)
+    res = demisto.executeCommand("createList", {"listName": LAST_EXECUTION_LIST_NAME, "listData": execution_datetime_str})
+    demisto.results(res)
+
 def main():
     incidents_query_args = demisto.args()
+    args = get_args_based_on_last_execution()
+    incidents_query_args.update(args)
     incidents_query_res = demisto.executeCommand('GetIncidentsByQuery', incidents_query_args)
     if is_error(incidents_query_res):
         return_error(get_error(incidents_query_res))
@@ -1049,6 +1074,7 @@ def main():
     compressed_hr_data = b64encode(compressed_data).decode('utf-8')
     res = {'PayloadVersion': FETCH_DATA_VERSION, 'PayloadData': compressed_hr_data}
     return_json_entry(res)
+    update_last_execution_time()
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
