@@ -175,7 +175,7 @@ def iot_get_device(client, args):
     result = client.get_device(device_id)
 
     return CommandResults(
-        outputs_prefix='device',
+        outputs_prefix='PaloAltoNetworksIoT.device',
         outputs_key_field='deviceid',
         outputs=result
     )

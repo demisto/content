@@ -31,7 +31,7 @@ def get_raci(args):
     config = get_iot_config(iot_config_list_name)
     if config is None:
         return CommandResults(
-            outputs_prefix='raci',
+            outputs_prefix='PaloAltoNetworksIoT.raci',
             outputs_key_field="",
             outputs=None
         )
@@ -136,7 +136,7 @@ def get_raci(args):
         result['i_email'] = None
 
     return CommandResults(
-        outputs_prefix='raci',
+        outputs_prefix='PaloAltoNetworksIoT.raci',
         outputs_key_field="",
         outputs=result
     )

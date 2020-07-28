@@ -69,113 +69,113 @@ script:
     description: IoT get device command - get a single device details
     execution: false
     outputs:
-    - contextPath: device
+    - contextPath: PaloAltoNetworksIoT.device
       description: A device details
       type: unknown
-    - contextPath: device.hostname
+    - contextPath: PaloAltoNetworksIoT.device.hostname
       description: 'The hostname of the device'
       type: String
-    - contextPath: device.ip_address
+    - contextPath: PaloAltoNetworksIoT.device.ip_address
       description: 'The IP address of the device'
       type: String
-    - contextPath: device.profile_type
+    - contextPath: PaloAltoNetworksIoT.device.profile_type
       description: 'The device profile type: Non_IoT vs IoT'
       type: String
-    - contextPath: device.profile_vertical
+    - contextPath: PaloAltoNetworksIoT.device.profile_vertical
       description: 'The device profile vertical'
       type: String
-    - contextPath: device.category
+    - contextPath: PaloAltoNetworksIoT.device.category
       description: 'The device category'
       type: String
-    - contextPath: device.profile
+    - contextPath: PaloAltoNetworksIoT.device.profile
       description: 'The device profile'
       type: String
-    - contextPath: device.last_activity
+    - contextPath: PaloAltoNetworksIoT.device.last_activity
       description: 'The last activity timestamp of the device'
       type: Date
-    - contextPath: device.long_description
+    - contextPath: PaloAltoNetworksIoT.device.long_description
       description: 'The long description of the device'
       type: String
-    - contextPath: device.vlan
+    - contextPath: PaloAltoNetworksIoT.device.vlan
       description: 'The device VLAN ID'
       type: Number
-    - contextPath: device.site_name
+    - contextPath: PaloAltoNetworksIoT.device.site_name
       description: 'The site which the device is in'
       type: String
-    - contextPath: device.risk_score
+    - contextPath: PaloAltoNetworksIoT.device.risk_score
       description: 'The device risk score'
       type: Number
-    - contextPath: device.risk_level
+    - contextPath: PaloAltoNetworksIoT.device.risk_level
       description: 'The device risk level: Low, Medium, High, Critical'
       type: String
-    - contextPath: device.subnet
+    - contextPath: PaloAltoNetworksIoT.device.subnet
       description: 'The device subnet'
       type: String
-    - contextPath: device.first_seen_date
+    - contextPath: PaloAltoNetworksIoT.device.first_seen_date
       description: 'The first seen date of the device'
       type: Date
-    - contextPath: device.confidence_score
+    - contextPath: PaloAltoNetworksIoT.device.confidence_score
       description: 'The device confidence score'
       type: Number
-    - contextPath: device.deviceid
+    - contextPath: PaloAltoNetworksIoT.device.deviceid
       description: 'The device ID'
       type: Date
-    - contextPath: device.location
+    - contextPath: PaloAltoNetworksIoT.device.location
       description: 'The device location'
       type: String
-    - contextPath: device.vendor
+    - contextPath: PaloAltoNetworksIoT.device.vendor
       description: 'The device vendor'
       type: String
-    - contextPath: device.model
+    - contextPath: PaloAltoNetworksIoT.device.model
       description: 'The device model'
       type: String
-    - contextPath: device.description
+    - contextPath: PaloAltoNetworksIoT.device.description
       description: 'The device description'
       type: String
-    - contextPath: device.asset_tag
+    - contextPath: PaloAltoNetworksIoT.device.asset_tag
       description: 'The device asset tag (e.g. a sticky label at the bottom of the
         device)'
       type: String
-    - contextPath: device.os_group
+    - contextPath: PaloAltoNetworksIoT.device.os_group
       description: 'The device OS group'
       type: String
-    - contextPath: device.Serial_Number
+    - contextPath: PaloAltoNetworksIoT.device.Serial_Number
       description: 'The device serial number'
       type: String
-    - contextPath: device.DHCP
+    - contextPath: PaloAltoNetworksIoT.device.DHCP
       description: 'Whether the device is in DHCP model: Yes, No'
       type: String
-    - contextPath: device.wire_or_wireless
+    - contextPath: PaloAltoNetworksIoT.device.wire_or_wireless
       description: 'Is the device wired or wireless'
       type: String
-    - contextPath: device.department
+    - contextPath: PaloAltoNetworksIoT.device.department
       description: 'The device department'
       type: String
-    - contextPath: device.Switch_Port
+    - contextPath: PaloAltoNetworksIoT.device.Switch_Port
       description: 'The port of the switch this device is connected to'
       type: Number
-    - contextPath: device.Switch_Name
+    - contextPath: PaloAltoNetworksIoT.device.Switch_Name
       description: 'The name of the switch this device is connected to'
       type: String
-    - contextPath: device.Switch_IP
+    - contextPath: PaloAltoNetworksIoT.device.Switch_IP
       description: 'The IP of the switch this device is connected to'
       type: String
-    - contextPath: device.Access_Point_IP
+    - contextPath: PaloAltoNetworksIoT.device.Access_Point_IP
       description: 'The IP of the access point this device is connected to'
       type: String
-    - contextPath: device.Access_Point_Name
+    - contextPath: PaloAltoNetworksIoT.device.Access_Point_Name
       description: 'The name of the access point this device is connected to'
       type: String
-    - contextPath: device.SSID
+    - contextPath: PaloAltoNetworksIoT.device.SSID
       description: 'The SSID of the wireless network this device is connected to'
       type: String
-    - contextPath: device.MAC
+    - contextPath: PaloAltoNetworksIoT.device.MAC
       description: 'The device MAC address'
       type: Date
-    - contextPath: device.display_tags
+    - contextPath: PaloAltoNetworksIoT.device.display_tags
       description: 'The user tags of the device'
       type: String
-    - contextPath: device.mac_address
+    - contextPath: PaloAltoNetworksIoT.device.mac_address
       description: 'The device MAC address'
       type: String
   - name: iot-security-list-devices
@@ -282,7 +282,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.7.4.2245
+  dockerimage: demisto/python3:3.8.3.9324
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

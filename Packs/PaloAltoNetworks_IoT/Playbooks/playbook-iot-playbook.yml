@@ -141,15 +141,15 @@ tasks:
       alert_name:
         simple: ${incident.name}
       category:
-        simple: ${device.category}
+        simple: ${PaloAltoNetworksIoT.device.category}
       model:
-        simple: ${device.model}
+        simple: ${PaloAltoNetworksIoT.device.model}
       profile:
-        simple: ${device.profile}
+        simple: ${PaloAltoNetworksIoT.device.profile}
       raw_type:
         simple: ${incident.rawType}
       vendor:
-        simple: ${device.vendor}
+        simple: ${PaloAltoNetworksIoT.device.vendor}
     separatecontext: false
     view: |-
       {

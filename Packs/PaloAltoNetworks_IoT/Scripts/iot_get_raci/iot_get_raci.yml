@@ -49,7 +49,7 @@ commonfields:
 enabled: false
 name: iot-security-get-raci
 outputs:
-- contextPath: raci
+- contextPath: PaloAltoNetworksIoT.raci
   description: The RACI model of the IoT incident
   type: unknown
 script: '-'
@@ -59,4 +59,4 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.7.4.2245
+dockerimage: demisto/python3:3.8.3.9324
