@@ -870,8 +870,8 @@ def main():
     # finished iteration over content packs
     if is_private_build:
         delete_public_packs_from_index(index_folder_path)
-        # upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs,
-        #                         current_commit_hash, index_generation, is_private)
+        upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs,
+                                current_commit_hash, index_generation, is_private)
 
     else:
         upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs,
