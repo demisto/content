@@ -2825,8 +2825,9 @@
         },
         {
             "playbookID": "PCAP Analysis Test",
+            "instance_names": "virus_total_general",
             "integrations": [
-                "Maltiverse",
+                "virus_total_general",
                 "WildFire-v2"
             ],
             "fromversion": "5.0.0",
