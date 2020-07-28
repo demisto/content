@@ -2827,7 +2827,7 @@
             "playbookID": "PCAP Analysis Test",
             "instance_names": "virus_total_general",
             "integrations": [
-                "virus_total_general",
+                "VirusTotal",
                 "WildFire-v2"
             ],
             "fromversion": "5.0.0",
