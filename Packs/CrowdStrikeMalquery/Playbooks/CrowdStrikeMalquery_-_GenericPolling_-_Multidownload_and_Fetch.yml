@@ -8,12 +8,12 @@ description: |-
         in order to check the status of the operation. 3. When the request status is
         “done”, use cs-malquery-sample-fetch to download the results as a password-protected
         archive
-  Use this playbook as a sub-playbook to schedule samples for download,
+  Use this playbook as a sub-playbook to schedule samples for download.
   This playbook implements polling by continuously running the `get-request` command until the operation completes.
-  Once the request status is done the sub-playbook would run cs-malquery-sample-fetch.
+  Once the request status is done the sub-playbook runs cs-malquery-sample-fetch.
 
   The remote action should have the following structure:
-  1. Initiate the operation - insert the samples SHA256 ids.
+  1. Initiate the operation - insert the sample SHA256 ids.
   2. Poll to check if the operation completed.
   3. Get the results of the operation.
 starttaskid: "0"
@@ -58,7 +58,7 @@ tasks:
         which returns a request ID. 2. Provide that request ID to the cs-malquery-get-request,
         in order to check the status of the operation. 3. When the request status
         is “done”, use cs-malquery-sample-fetch to download the results as a password-protected
-        archive. The password to extract results from the archive: infected''    '
+        archive. The password to extract results from the archive is: 'infected''    '
       script: '|||cs-malquery-samples-multidownload'
       type: regular
       iscommand: true
@@ -139,9 +139,9 @@ tasks:
       id: c0c04f0c-df4e-444c-82e7-fae4afedfec5
       version: -1
       name: Fetch samples
-      description: Fetch a zip archive with password infected containing the samples.
+      description: Fetch a zip archive containing the samples.
         Call this once the cs-malquery-samples-multidownload request has finished
-        processing
+        processing. The password for the archive is 'infected'.
       script: '|||cs-malquery-sample-fetch'
       type: regular
       iscommand: true
@@ -210,11 +210,11 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: File.SHA256
-  description: SHA256 hash of the file.
+  description: SHA256 hash.
 - contextPath: File.SHA1
-  description: SHA1 hash of the file.
+  description: SHA1 hash.
 - contextPath: File.SHA512
-  description: SHA512 hash of the file.
+  description: SHA512 hash.
 - contextPath: File.Name
   description: Name of the file.
 - contextPath: File.EntryID
@@ -224,7 +224,7 @@ outputs:
 - contextPath: File.Type
   description: Type of the file.
 - contextPath: File.MD5
-  description: MD5 hash of the file.
+  description: MD5 hash.
 fromversion: 5.0.0
 tests:
 - No test
