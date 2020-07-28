@@ -58,7 +58,7 @@ tasks:
         which returns a request ID. 2. Provide that request ID to the cs-malquery-get-request,
         in order to check the status of the operation. 3. When the request status
         is “done”, use cs-malquery-sample-fetch to download the results as a password-protected
-        archive. The password to extract results from the archive is: 'infected''    '
+        archive. The password to extract results from the archive is: "infected"'
       script: '|||cs-malquery-samples-multidownload'
       type: regular
       iscommand: true
