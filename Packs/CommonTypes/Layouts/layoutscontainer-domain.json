@@ -1,7 +1,7 @@
 {
     "id": "domainRepUnified",
     "group": "indicator",
-    "name": "Domain Indicator",
+    "name": "Domain layout by XSOAR",
     "description": "",
     "version": -1,
     "fromVersion": "6.0.0",

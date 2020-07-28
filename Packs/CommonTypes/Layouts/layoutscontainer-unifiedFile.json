@@ -1,7 +1,7 @@
 {
     "id": "unifiedFileRep",
     "group": "indicator",
-    "name": "File Indicator",
+    "name": "File layout by XSOAR",
     "description": "",
     "version": -1,
     "fromVersion": "6.0.0",

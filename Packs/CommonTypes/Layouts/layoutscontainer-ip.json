@@ -1,7 +1,7 @@
 {
     "id": "ipRep",
     "group": "indicator",
-    "name": "IP Indicator",
+    "name": "IP layout by XSOAR",
     "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
