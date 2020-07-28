@@ -40,6 +40,9 @@ LAST_EXECUTION_LIST_NAME = 'FETCH_DATA_ML_LAST_EXECUTION'
 MAX_INCIDENTS_TO_FETCH_PERIODIC_EXECUTION = 500
 MAX_INCIDENTS_TO_FETCH_FIRST_EXECUTION = 3000
 DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
+
+IMG_FORMATS = ['.jpeg', '.gif', '.bmp', '.png' '.jfif', '.tiff', '.eps', '.indd', '.jpg']
+
 '''
 Define time out functionality
 '''
@@ -942,7 +945,8 @@ def get_attachments_features(email_attachments):
     res['avg_attachment_name_length'] = float(sum(all_attachments_names_lengths)) / len(  # type: ignore
         all_attachments_names_lengths) if len(all_attachments_names_lengths) > 0 else 0  # type: ignore
     res['image_extension'] = 0
-    for image_format in ['.jepg', '.gif', '.bmp', '.png']:
+    res['raw_extensions'] = [name.split('.')[-1] for name in all_attachments_names]
+    for image_format in IMG_FORMATS:
         res['image_extension'] += sum([name.endswith(image_format) for name in all_attachments_names])
     res['txt_extension'] = sum([name.endswith('.txt') for name in all_attachments_names])
     res['exe_extension'] = sum([name.endswith('.exe') for name in all_attachments_names])

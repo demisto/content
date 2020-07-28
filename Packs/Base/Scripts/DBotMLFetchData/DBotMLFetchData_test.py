@@ -188,6 +188,7 @@ def test_attachments_features():
     assert res['pdf_extension'] == 1
     assert res['disk_img_extension'] == 0
     assert res['other_executables_extension'] == 0
+    assert all(extension in res['raw_extensions'] for extension in ['txt', 'pdf'])
 
 
 def test_attachments_features_2():
@@ -215,6 +216,7 @@ def test_attachments_features_2():
     assert res['pdf_extension'] == 0
     assert res['disk_img_extension'] == 0
     assert res['office_extension'] == 1
+    assert all(extension in res['raw_extensions'] for extension in ['zip', 'xls'])
 
 
 def test_whole_preprocessing(mocker):
