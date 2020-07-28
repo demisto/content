@@ -179,7 +179,7 @@
 						"type": "dynamicIndicator",
 						"w": 1,
 						"x": 2,
-						"y": 8
+						"y": 10
 					},
 					{
 						"columns": [
@@ -221,7 +221,7 @@
 							}
 						],
 						"displayType": "ROW",
-						"h": 2,
+						"h": 4,
 						"hideName": false,
 						"i": "main-374a4120-ac5d-11e9-82f1-b168a5ac3417",
 						"isVisible": true,
@@ -333,7 +333,7 @@
 						"type": "comments",
 						"w": 1,
 						"x": 2,
-						"y": 4
+						"y": 6
 					},
 					{
 						"columns": [
@@ -586,6 +586,33 @@
 						"w": 1,
 						"x": 2,
 						"y": 3
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "main-55900050-d0da-11ea-937a-6f8841d9fed1",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "feedrelatedindicators",
+								"height": 22,
+								"id": "5bc27520-d0da-11ea-937a-6f8841d9fed1",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Feed Related Indicators",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 4
 					}
 				],
 				"type": "custom"
