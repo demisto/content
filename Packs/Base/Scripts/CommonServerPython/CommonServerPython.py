@@ -2565,9 +2565,10 @@ class CommandResults:
     :param outputs_prefix: should be identical to the prefix in the yml contextPath in yml file. for example:
             CortexXDR.Incident
 
-    :type outputs_key_field: ``str``
+    :type outputs_key_field: ``str`` or ``list[str]``
     :param outputs_key_field: primary key field in the main object. If the command returns Incidents, and of the
-            properties of Incident is incident_id, then outputs_key_field='incident_id'
+            properties of Incident is incident_id, then outputs_key_field='incident_id'. If object has multiple
+            unique keys, then list of strings is supported outputs_key_field=['id1', 'id2']
 
     :type outputs: ``list`` or ``dict``
     :param outputs: the data to be returned and will be set to context
@@ -2588,14 +2589,23 @@ class CommandResults:
     """
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
                  raw_response=None):
-        # type: (str, str, object, list, str, object) -> None
+        # type: (str, object, object, list, str, object) -> None
         if raw_response is None:
             raw_response = outputs
 
         self.indicators = indicators
 
         self.outputs_prefix = outputs_prefix
-        self.outputs_key_field = outputs_key_field
+
+        if isinstance(outputs_key_field, STRING_TYPES):
+            self.outputs_key_field = [outputs_key_field]
+        elif isinstance(outputs_key_field, list):
+            self.outputs_key_field = outputs_key_field
+        elif outputs_key_field is None:
+            self.outputs_key_field = None
+        else:
+            raise TypeError('outputs_key_field must be of type str or list')
+
         self.outputs = outputs
 
         self.raw_response = raw_response
@@ -2628,13 +2638,15 @@ class CommandResults:
                 human_readable = tableToMarkdown('Results', self.outputs)
             if self.outputs_prefix and self.outputs_key_field:
                 # if both prefix and key field provided then create DT key
-                outputs_key = '{0}(val.{1} == obj.{1})'.format(self.outputs_prefix, self.outputs_key_field)
+                formatted_outputs_key = ' && '.join(['val.{0} == obj.{0}'.format(key_field) for key_field in self.outputs_key_field])
+                outputs_key = '{0}({1})'.format(self.outputs_prefix, formatted_outputs_key)
                 outputs[outputs_key] = self.outputs
             elif self.outputs_prefix:
                 outputs_key = '{}'.format(self.outputs_prefix)
                 outputs[outputs_key] = self.outputs
             else:
                 outputs = self.outputs  # type: ignore[assignment]
+
 
         return_entry = {
             'Type': EntryType.NOTE,
