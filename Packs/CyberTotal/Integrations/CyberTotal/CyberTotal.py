@@ -12,7 +12,6 @@ from CommonServerPython import *
 requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 ''' CLIENT CLASS '''
 
 
