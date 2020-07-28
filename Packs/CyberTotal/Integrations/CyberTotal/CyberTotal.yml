@@ -71,7 +71,7 @@ script:
       defaultValue: "10"
     outputs:
     - contextPath: CyberTotal.IP.scan_date
-      description: 'Scan date format: YYYY-MM-DD HH:mm:SS '
+      description: 'Scan date format: ISO 8601'
       type: date
     - contextPath: CyberTotal.IP.resource
       description: ' The scan target sent to CyberTotal.'
@@ -147,7 +147,7 @@ script:
       defaultValue: "10"
     outputs:
     - contextPath: CyberTotal.File.scan_date
-      description: 'Scan date format: YYYY-MM-DD HH:mm:SS'
+      description: 'Scan date format: ISO 8601'
       type: date
     - contextPath: CyberTotal.File.resource
       description: The scan target sent to CyberTotal.
@@ -243,7 +243,7 @@ script:
       defaultValue: "10"
     outputs:
     - contextPath: CyberTotal.Domain.scan_date
-      description: 'Scan date format: YYYY-MM-DD HH:mm:SS '
+      description: 'Scan date format: ISO 8601'
       type: date
     - contextPath: CyberTotal.Domain.resource
       description: The scan target sent to CyberTotal.
@@ -316,7 +316,7 @@ script:
       defaultValue: "10"
     outputs:
     - contextPath: CyberTotal.URL.scan_date
-      description: 'Scan date format: YYYY-MM-DD HH:mm:SS '
+      description: 'Scan date format: ISO 8601'
       type: date
     - contextPath: CyberTotal.URL.resource
       description: The scan target sent to CyberTotal.
@@ -387,7 +387,7 @@ script:
       isArray: true
     outputs:
     - contextPath: CyberTotal.WHOIS-IP.scan_date
-      description: 'Scan date format: YYYY-MM-DD HH:mm:SS '
+      description: 'Scan date format: ISO 8601'
       type: date
     - contextPath: CyberTotal.WHOIS-IP.task_id
       description: The unique id of each scan in CyberTotal.
@@ -402,10 +402,10 @@ script:
       description: The link of this whois report in CyberTotal.
       type: string
     - contextPath: CyberTotal.WHOIS-IP.createdAt
-      description: 'Create date format: YYYY-MM-DD HH:mm:SS '
+      description: 'Create date format: ISO 8601'
       type: date
     - contextPath: CyberTotal.WHOIS-IP.updatedAt
-      description: 'Update date format: YYYY-MM-DD HH:mm:SS '
+      description: 'Update date format: ISO 8601'
       type: date
     - contextPath: CyberTotal.WHOIS-IP.status
       description: Status of this IP
@@ -432,13 +432,19 @@ script:
       description: The phone number of registrar
       type: string
     - contextPath: CyberTotal.WHOIS-IP.registrarCreatedAt
-      description: 'Registrar create date format: YYYY-MM-DD HH:mm:SS '
+      description: 'Registrar create date format: ISO 8601'
       type: date
     - contextPath: CyberTotal.WHOIS-IP.registrarUpdatedAt
-      description: 'Registrar update date format: YYYY-MM-DD HH:mm:SS '
+      description: 'Registrar update date format: ISO 8601'
       type: date
     - contextPath: CyberTotal.WHOIS-IP.registrarExpiresAt
-      description: 'Registrar expire date format: YYYY-MM-DD HH:mm:SS '
+      description: 'Registrar expire date format: ISO 8601'
+      type: date
+    - contextPath: CyberTotal.WHOIS-IP.auditCreatedAt
+      description: 'Registrar update date format: ISO 8601'
+      type: date
+    - contextPath: CyberTotal.WHOIS-IP.auditUpdatedAt
+      description: 'Registrar expire date format: ISO 8601'
       type: date
     - contextPath: CyberTotal.WHOIS-IP.registrant.name
       description: The name of registrant
@@ -540,7 +546,7 @@ script:
       isArray: true
     outputs:
     - contextPath: CyberTotal.WHOIS-URL.scan_date
-      description: 'Scan date format: YYYY-MM-DD HH:mm:SS '
+      description: 'Scan date format: ISO 8601'
       type: date
     - contextPath: CyberTotal.WHOIS-URL.task_id
       description: The unique id of each scan in CyberTotal.
@@ -555,10 +561,10 @@ script:
       description: The link of this whois report in CyberTotal.
       type: string
     - contextPath: CyberTotal.WHOIS-URL.createdAt
-      description: 'Create date format: YYYY-MM-DD HH:mm:SS '
+      description: 'Create date format: ISO 8601'
       type: date
     - contextPath: CyberTotal.WHOIS-URL.updatedAt
-      description: 'Update date format: YYYY-MM-DD HH:mm:SS '
+      description: 'Update date format: ISO 8601'
       type: date
     - contextPath: CyberTotal.WHOIS-URL.status
       description: Status of this IP
@@ -585,13 +591,19 @@ script:
       description: The phone number of registrar
       type: string
     - contextPath: CyberTotal.WHOIS-URL.registrarCreatedAt
-      description: 'Registrar create date format: YYYY-MM-DD HH:mm:SS '
+      description: 'Registrar create date format: ISO 8601'
       type: date
     - contextPath: CyberTotal.WHOIS-URL.registrarUpdatedAt
-      description: 'Registrar update date format: YYYY-MM-DD HH:mm:SS '
+      description: 'Registrar update date format: ISO 8601'
       type: date
     - contextPath: CyberTotal.WHOIS-URL.registrarExpiresAt
-      description: 'Registrar expire date format: YYYY-MM-DD HH:mm:SS '
+      description: 'Registrar expire date format: ISO 8601'
+      type: date
+    - contextPath: CyberTotal.WHOIS-URL.auditCreatedAt
+      description: 'Registrar update date format: ISO 8601'
+      type: date
+    - contextPath: CyberTotal.WHOIS-URL.auditUpdatedAt
+      description: 'Registrar expire date format: ISO 8601'
       type: date
     - contextPath: CyberTotal.WHOIS-URL.registrant.name
       description: The name of registrant
@@ -693,7 +705,7 @@ script:
       isArray: true
     outputs:
     - contextPath: CyberTotal.WHOIS-Domain.scan_date
-      description: 'Scan date format: YYYY-MM-DD HH:mm:SS '
+      description: 'Scan date format: ISO 8601'
       type: date
     - contextPath: CyberTotal.WHOIS-Domain.task_id
       description: The unique id of each scan in CyberTotal.
@@ -708,10 +720,10 @@ script:
       description: The link of this whois report in CyberTotal.
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.createdAt
-      description: 'Create date format: YYYY-MM-DD HH:mm:SS '
+      description: 'Create date format: ISO 8601'
       type: date
     - contextPath: CyberTotal.WHOIS-Domain.updatedAt
-      description: 'Update date format: YYYY-MM-DD HH:mm:SS '
+      description: 'Update date format: ISO 8601'
       type: date
     - contextPath: CyberTotal.WHOIS-Domain.status
       description: Status of this Domain
@@ -738,13 +750,19 @@ script:
       description: The phone number of registrar
       type: string
     - contextPath: CyberTotal.WHOIS-Domain.registrarCreatedAt
-      description: 'Registrar create date format: YYYY-MM-DD HH:mm:SS '
+      description: 'Registrar create date format: ISO 8601'
       type: date
     - contextPath: CyberTotal.WHOIS-Domain.registrarUpdatedAt
-      description: 'Registrar update date format: YYYY-MM-DD HH:mm:SS '
+      description: 'Registrar update date format: ISO 8601'
       type: date
     - contextPath: CyberTotal.WHOIS-Domain.registrarExpiresAt
-      description: 'Registrar expire date format: YYYY-MM-DD HH:mm:SS '
+      description: 'Registrar expire date format: ISO 8601'
+      type: date
+    - contextPath: CyberTotal.WHOIS-Domain.auditCreatedAt
+      description: 'Registrar update date format: ISO 8601'
+      type: date
+    - contextPath: CyberTotal.WHOIS-Domain.auditUpdatedAt
+      description: 'Registrar expire date format: ISO 8601'
       type: date
     - contextPath: CyberTotal.WHOIS-Domain.registrant.name
       description: The name of registrant

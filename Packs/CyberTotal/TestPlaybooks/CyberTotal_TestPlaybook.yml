@@ -1,5 +1,5 @@
 id: CyberTotal_TestPlaybook
-version: 20
+version: 30
 name: CyberTotal_TestPlaybook
 starttaskid: "0"
 tasks:
@@ -31,10 +31,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 29bbfd5e-e35c-4e4f-8645-6ddbfb85bab0
+    taskid: 44aea95d-716c-4d3f-802b-632b3a7cb610
     type: regular
     task:
-      id: 29bbfd5e-e35c-4e4f-8645-6ddbfb85bab0
+      id: 44aea95d-716c-4d3f-802b-632b3a7cb610
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -45,11 +45,10 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      all: {}
+      all:
+        simple: "yes"
       index: {}
-      key:
-        complex:
-          root: CyberTotal
+      key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
@@ -67,10 +66,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 67198cbe-507b-4ee1-8859-829f8b4f9429
+    taskid: 6e04db45-15d2-4928-8dfa-e98a46738bae
     type: regular
     task:
-      id: 67198cbe-507b-4ee1-8859-829f8b4f9429
+      id: 6e04db45-15d2-4928-8dfa-e98a46738bae
       version: -1
       name: ip
       description: Return IP information and reputation
@@ -83,9 +82,7 @@ tasks:
       - "3"
     scriptarguments:
       ip:
-        complex:
-          root: IP
-          accessor: Address
+        simple: 1.1.1.1
       threshold: {}
     separatecontext: false
     view: |-
@@ -102,10 +99,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 79b34dac-eedd-4e3c-89da-86d7b75372bf
+    taskid: dcf51e8f-6759-4bf4-8187-0ea62fad4f16
     type: condition
     task:
-      id: 79b34dac-eedd-4e3c-89da-86d7b75372bf
+      id: dcf51e8f-6759-4bf4-8187-0ea62fad4f16
       version: -1
       name: Verify Outputs
       type: condition
@@ -173,6 +170,14 @@ tasks:
             value:
               simple: CyberTotal.IP.message
             iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+          right:
+            value:
+              simple: 1.1.1.1
     view: |-
       {
         "position": {
@@ -187,10 +192,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 87297b8d-ae5d-4c5e-8822-dade1823ed9f
+    taskid: 3a0cf1ee-fbc6-4fb8-872f-54cac0bd38bb
     type: regular
     task:
-      id: 87297b8d-ae5d-4c5e-8822-dade1823ed9f
+      id: 3a0cf1ee-fbc6-4fb8-872f-54cac0bd38bb
       version: -1
       name: file
       description: Return file's information and reputation
@@ -203,9 +208,7 @@ tasks:
       - "5"
     scriptarguments:
       file:
-        complex:
-          root: File
-          accessor: MD5
+        simple: 7DF0B5CBDA6936D8BB6EA38F0DBC4F5D
       hash:
         complex:
           root: File
@@ -226,10 +229,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 4c8b4daa-09eb-4dc1-8b79-26147d6af04d
+    taskid: 2e0977fc-fd9d-4c8d-822a-2370a75f06ac
     type: condition
     task:
-      id: 4c8b4daa-09eb-4dc1-8b79-26147d6af04d
+      id: 2e0977fc-fd9d-4c8d-822a-2370a75f06ac
       version: -1
       name: Verify Outputs
       type: condition
@@ -297,6 +300,14 @@ tasks:
             value:
               simple: CyberTotal.File.message
             iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+          right:
+            value:
+              simple: 7DF0B5CBDA6936D8BB6EA38F0DBC4F5D
     view: |-
       {
         "position": {
@@ -311,10 +322,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: cb8cf98a-0f95-466c-84dc-a445639f97f7
+    taskid: 13337e7c-65cd-4a74-85ad-87f10d81401e
     type: regular
     task:
-      id: cb8cf98a-0f95-466c-84dc-a445639f97f7
+      id: 13337e7c-65cd-4a74-85ad-87f10d81401e
       version: -1
       name: domain
       description: Return domain  information and reputation
@@ -327,9 +338,7 @@ tasks:
       - "7"
     scriptarguments:
       domain:
-        complex:
-          root: Domain
-          accessor: Name
+        simple: abc.com
       threshold: {}
     separatecontext: false
     view: |-
@@ -346,10 +355,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: cb1eac60-cf39-44ad-81e3-1d5bd48dba3f
+    taskid: 94240611-b3ee-4e17-83f8-962295bca51f
     type: condition
     task:
-      id: cb1eac60-cf39-44ad-81e3-1d5bd48dba3f
+      id: 94240611-b3ee-4e17-83f8-962295bca51f
       version: -1
       name: Verify Outputs
       type: condition
@@ -412,6 +421,14 @@ tasks:
             value:
               simple: CyberTotal.Domain.message
             iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+          right:
+            value:
+              simple: abc.com
     view: |-
       {
         "position": {
@@ -426,10 +443,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 9c051b10-cd2b-4023-82ca-79aa437f913a
+    taskid: d31532aa-8279-4ec1-81a1-f682aeb3fd86
     type: regular
     task:
-      id: 9c051b10-cd2b-4023-82ca-79aa437f913a
+      id: d31532aa-8279-4ec1-81a1-f682aeb3fd86
       version: -1
       name: url
       description: Return domain information and reputation
@@ -443,9 +460,7 @@ tasks:
     scriptarguments:
       threshold: {}
       url:
-        complex:
-          root: URL
-          accessor: Data
+        simple: http://abc.com
     separatecontext: false
     view: |-
       {
@@ -461,10 +476,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 874a3013-ca04-4af0-871b-fc6feb5a6b15
+    taskid: 0ae5d999-d3e2-47f9-8527-ac866b028efb
     type: condition
     task:
-      id: 874a3013-ca04-4af0-871b-fc6feb5a6b15
+      id: 0ae5d999-d3e2-47f9-8527-ac866b028efb
       version: -1
       name: Verify Outputs
       type: condition
@@ -532,6 +547,16 @@ tasks:
             value:
               simple: CyberTotal.URL.message
             iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: URL
+                accessor: Data
+            iscontext: true
+          right:
+            value:
+              simple: http://abc.com
     view: |-
       {
         "position": {
@@ -546,10 +571,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: f489bae9-c130-4faf-8c7e-b36e11ed7283
+    taskid: 011377da-5337-4e33-88c7-95e5f1baafa7
     type: regular
     task:
-      id: f489bae9-c130-4faf-8c7e-b36e11ed7283
+      id: 011377da-5337-4e33-88c7-95e5f1baafa7
       version: -1
       name: cybertotal-ip-whois
       description: Return ip whois information
@@ -562,9 +587,7 @@ tasks:
       - "11"
     scriptarguments:
       ip:
-        complex:
-          root: IP
-          accessor: Address
+        simple: 162.253.177.9
     separatecontext: false
     view: |-
       {
@@ -580,10 +603,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: d7854db1-33d7-42dc-8713-d4139203f5b7
+    taskid: 26a337a1-4970-4eba-8a0c-caeefc5044e7
     type: condition
     task:
-      id: d7854db1-33d7-42dc-8713-d4139203f5b7
+      id: 26a337a1-4970-4eba-8a0c-caeefc5044e7
       version: -1
       name: Verify Outputs
       type: condition
@@ -606,11 +629,14 @@ tasks:
             value:
               simple: CyberTotal.WHOIS-IP.task_id
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isEqualString
           left:
             value:
               simple: CyberTotal.WHOIS-IP.resource
             iscontext: true
+          right:
+            value:
+              simple: 162.253.177.9
       - - operator: isNotEmpty
           left:
             value:
@@ -635,10 +661,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: be9c2d80-834b-4e8d-8524-e3829e7ad75a
+    taskid: 9cc5dab9-67d9-4eb0-8d42-c15dd5670222
     type: regular
     task:
-      id: be9c2d80-834b-4e8d-8524-e3829e7ad75a
+      id: 9cc5dab9-67d9-4eb0-8d42-c15dd5670222
       version: -1
       name: cybertotal-url-whois
       description: Return url whois information
@@ -651,9 +677,7 @@ tasks:
       - "13"
     scriptarguments:
       url:
-        complex:
-          root: URL
-          accessor: Data
+        simple: http://abc.com
     separatecontext: false
     view: |-
       {
@@ -669,10 +693,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: f3f13754-fb03-4b9f-8c7e-bfa9a3d6b323
+    taskid: a5ade94f-5053-4243-834e-09b9dc04ecd0
     type: condition
     task:
-      id: f3f13754-fb03-4b9f-8c7e-bfa9a3d6b323
+      id: a5ade94f-5053-4243-834e-09b9dc04ecd0
       version: -1
       name: Verify Outputs
       type: condition
@@ -695,11 +719,14 @@ tasks:
             value:
               simple: CyberTotal.WHOIS-URL.task_id
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isEqualString
           left:
             value:
               simple: CyberTotal.WHOIS-URL.resource
             iscontext: true
+          right:
+            value:
+              simple: http://abc.com
       - - operator: isNotEmpty
           left:
             value:
@@ -724,10 +751,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: b0a72e44-8dd0-4b59-85c0-07788c530209
+    taskid: bde9c91a-433b-40bc-8a04-00c6a9d8e0d9
     type: regular
     task:
-      id: b0a72e44-8dd0-4b59-85c0-07788c530209
+      id: bde9c91a-433b-40bc-8a04-00c6a9d8e0d9
       version: -1
       name: cybertotal-domain-whois
       description: Return domain whois information
@@ -740,9 +767,7 @@ tasks:
       - "15"
     scriptarguments:
       domain:
-        complex:
-          root: Domain
-          accessor: Name
+        simple: abc.com
     separatecontext: false
     view: |-
       {
@@ -758,10 +783,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: bb0919f6-cb69-4494-8898-6b71153b3e73
+    taskid: 6597107d-7710-4c65-8819-69775273c3d6
     type: condition
     task:
-      id: bb0919f6-cb69-4494-8898-6b71153b3e73
+      id: 6597107d-7710-4c65-8819-69775273c3d6
       version: -1
       name: Verify Outputs
       type: condition
@@ -784,11 +809,14 @@ tasks:
             value:
               simple: CyberTotal.WHOIS-Domain.task_id
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isEqualString
           left:
             value:
               simple: CyberTotal.WHOIS-Domain.resource
             iscontext: true
+          right:
+            value:
+              simple: abc.com
       - - operator: isNotEmpty
           left:
             value:

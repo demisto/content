@@ -1,6 +1,7 @@
 import traceback
 from typing import Any, Dict, List
 from urllib.parse import urlparse
+from datetime import timezone
 
 import dateparser
 import requests
@@ -16,6 +17,43 @@ requests.packages.urllib3.disable_warnings()
 
 
 class Client(BaseClient):
+
+    def parse_reputation(self, cybertotal_result: dict, resource: str) -> Dict[str, Any]:
+        scan_time = datetime.fromtimestamp(cybertotal_result['scan_time'], timezone.utc).isoformat()
+        permalink = cybertotal_result['url']
+        url_path = urlparse(permalink).path
+        (_, _, task_id) = url_path.rpartition('/')
+
+        result = {
+            "permalink": permalink,
+            "resource": resource,
+            "positive_detections": 0,
+            "detection_engines": 0,
+            "scan_date": scan_time,
+            "task_id": task_id,
+            "detection_ratio": "0/0"
+        }
+
+        if 'basic' not in cybertotal_result:
+            result["message"] = "search success with no basic in cybertotal result"
+            return result
+        positive_detections = 0
+        detection_engines = 0
+        if 'reputation' in cybertotal_result['basic']:
+            if 'avVenders' in cybertotal_result['basic']['reputation']:
+                detection_engines = len(cybertotal_result['basic']['reputation']['avVenders'])
+                for avVender in cybertotal_result['basic']['reputation']['avVenders']:
+                    if avVender['detected']:
+                        positive_detections = positive_detections + 1
+        result['positive_detections'] = positive_detections
+        result['detection_engines'] = detection_engines
+        result['detection_ratio'] = str(positive_detections) + '/' + str(detection_engines)
+        result['message'] = 'search success'
+        if 'score' in cybertotal_result['basic']:
+            result['severity'] = cybertotal_result['basic']['score'].get('severity', -1)
+            result['confidence'] = cybertotal_result['basic']['score'].get('confidence', -1)
+            result['threat'] = cybertotal_result['basic']['score'].get('threat', '')
+        return result
 
     def get_ip_reputation(self, ip: str) -> Dict[str, Any]:
         """Gets the IP reputation using the '/_api/search/ip/basic' API endpoint
@@ -34,41 +72,7 @@ class Client(BaseClient):
         if 'task_state' in cybertotal_result:
             return {'task_state': cybertotal_result['task_state'], 'message': 'this search is in progress, try again later...'}
 
-        scan_time = str(cybertotal_result['scan_time'])
-        permalink = cybertotal_result['url']
-        url_path = urlparse(permalink).path
-        (_, _, task_id) = url_path.rpartition('/')
-
-        result = {
-            "permalink": permalink,
-            "resource": ip,
-            "positive_detections": 0,
-            "detection_engines": 0,
-            "scan_date": dateparser.parse(scan_time).strftime("%Y-%m-%d %H:%M:%S"),
-            "task_id": task_id,
-            "detection_ratio": "0/0"
-        }
-
-        if 'basic' not in cybertotal_result:
-            result["message"] = "search success with no basic in cybertotal result"
-            return result
-        positive_detections = 0
-        detection_engines = 0
-        if 'reputation' in cybertotal_result['basic']:
-            if 'avVenders' in cybertotal_result['basic']['reputation']:
-                detection_engines = len(cybertotal_result['basic']['reputation']['avVenders'])
-                for avVender in cybertotal_result['basic']['reputation']['avVenders']:
-                    if avVender['detected']:
-                        positive_detections = positive_detections + 1
-        result['positive_detections'] = positive_detections
-        result['detection_engines'] = detection_engines
-        result['detection_ratio'] = str(positive_detections) + '/' + str(detection_engines)
-        result['message'] = 'search success'
-        if 'score' in cybertotal_result['basic']:
-            result['severity'] = cybertotal_result['basic']['score'].get('severity', -1)
-            result['confidence'] = cybertotal_result['basic']['score'].get('confidence', -1)
-            result['threat'] = cybertotal_result['basic']['score'].get('threat', '')
-        return result
+        return self.parse_reputation(cybertotal_result, ip)
 
     def get_url_reputation(self, url: str) -> Dict[str, Any]:
         """Gets the URL reputation using the '/_api/search/url/basic' API endpoint
@@ -86,40 +90,8 @@ class Client(BaseClient):
         )
         if 'task_state' in cybertotal_result:
             return {'task_state': cybertotal_result['task_state'], 'message': 'this search is in progress, try again later...'}
-        scan_time = datetime.fromtimestamp(cybertotal_result['scan_time'], timezone.utc).isoformat()
-        permalink = cybertotal_result['url']
-        url_path = urlparse(permalink).path
-        (rp_left, rp_match, task_id) = url_path.rpartition('/')
-        result = {
-            "permalink": permalink,
-            "positive_detections": 0,
-            "resource": url,
-            "scan_date": scan_time,
-            "task_id": task_id,
-            "detection_engines": 0,
-            "detection_ratio": "0/0"
-        }
-        if 'basic' not in cybertotal_result:
-            result["message"] = "search success with no basic in cybertotal result"
-            return result
 
-        positive_detections = 0
-        detection_engines = 0
-        if 'reputation' in cybertotal_result['basic']:
-            if 'avVenders' in cybertotal_result['basic']['reputation']:
-                detection_engines = len(cybertotal_result['basic']['reputation']['avVenders'])
-                for avVender in cybertotal_result['basic']['reputation']['avVenders']:
-                    if avVender['detected']:
-                        positive_detections = positive_detections + 1
-        result['detection_engines'] = detection_engines
-        result['positive_detections'] = positive_detections
-        result['detection_ratio'] = str(positive_detections) + '/' + str(detection_engines)
-        result['message'] = 'search success'
-        if 'score' in cybertotal_result['basic']:
-            result['severity'] = cybertotal_result['basic']['score'].get('severity', -1)
-            result['confidence'] = cybertotal_result['basic']['score'].get('confidence', -1)
-            result['threat'] = cybertotal_result['basic']['score'].get('threat', '')
-        return result
+        return self.parse_reputation(cybertotal_result, url)
 
     def get_file_reputation(self, _hash: str) -> Dict[str, Any]:
         """Gets the File reputation using the '/_api/search/hash/basic' API endpoint
@@ -138,23 +110,8 @@ class Client(BaseClient):
         if 'task_state' in cybertotal_result:
             return {'task_state': cybertotal_result['task_state'], 'message': 'this search is in progress, try again later...'}
 
-        scan_time = str(cybertotal_result['scan_time'])
-        permalink = cybertotal_result['url']
-        url_path = urlparse(permalink).path
-        (rp_left, rp_match, task_id) = url_path.rpartition('/')
+        result = self.parse_reputation(cybertotal_result, _hash)
 
-        result = {
-            "permalink": permalink,
-            "positive_detections": 0,
-            "resource": _hash,
-            "scan_date": dateparser.parse(scan_time).strftime("%Y-%m-%d %H:%M:%S"),
-            "task_id": task_id,
-            "detection_engines": 0,
-            "detection_ratio": "0/0"
-        }
-        if 'basic' not in cybertotal_result:
-            result["message"] = "search success with no basic in cybertotal result"
-            return result
         if 'BasicInfo' not in cybertotal_result['basic']:
             result["message"] = "search success with no BasicInfo in cybertotal result"
             return result
@@ -168,23 +125,6 @@ class Client(BaseClient):
         result['name'] = basic.get('display_name', '')
         if type(result['name']) is list:
             result['name'] = ', '.join(result['name'])
-
-        positive_detections = 0
-        detection_engines = 0
-        if 'reputation' in cybertotal_result['basic']:
-            if 'avVenders' in cybertotal_result['basic']['reputation']:
-                detection_engines = len(cybertotal_result['basic']['reputation']['avVenders'])
-                for avVender in cybertotal_result['basic']['reputation']['avVenders']:
-                    if avVender['detected']:
-                        positive_detections = positive_detections + 1
-        result['detection_engines'] = detection_engines
-        result['positive_detections'] = positive_detections
-        result['detection_ratio'] = str(positive_detections) + '/' + str(detection_engines)
-        result['message'] = "search success"
-        if 'score' in cybertotal_result['basic']:
-            result['severity'] = cybertotal_result['basic']['score'].get('severity', -1)
-            result['confidence'] = cybertotal_result['basic']['score'].get('confidence', -1)
-            result['threat'] = cybertotal_result['basic']['score'].get('threat', '')
         return result
 
     def get_domain_reputation(self, domain: str) -> Dict[str, Any]:
@@ -204,40 +144,38 @@ class Client(BaseClient):
         if 'task_state' in cybertotal_result:
             return {'task_state': cybertotal_result['task_state'], 'message': 'this search is in progress, try again later...'}
 
-        scan_time = str(cybertotal_result['scan_time'])
+        return self.parse_reputation(cybertotal_result, domain)
+
+    def parse_whois(self, cybertotal_result: dict, resource: str) -> Dict[str, Any]:
+        scan_time = datetime.fromtimestamp(cybertotal_result['scan_time'], timezone.utc).isoformat()
         permalink = cybertotal_result['url']
         url_path = urlparse(permalink).path
-        (rp_left, rp_match, task_id) = url_path.rpartition('/')
+        (_, _, task_id) = url_path.rpartition('/')
 
-        result = {
-            "permalink": permalink,
-            "positive_detections": 0,
-            "resource": domain,
-            "scan_date": dateparser.parse(scan_time).strftime("%Y-%m-%d %H:%M:%S"),
-            "task_id": task_id,
-            "detection_engines": 0,
-            "detection_ratio": "0/0"
-        }
-        if 'basic' not in cybertotal_result:
-            result["message"] = "search success with no basic in cybertotal result"
-            return result
-
-        positive_detections = 0
-        detection_engines = 0
-        if 'reputation' in cybertotal_result['basic']:
-            if 'avVenders' in cybertotal_result['basic']['reputation']:
-                detection_engines = len(cybertotal_result['basic']['reputation']['avVenders'])
-                for avVender in cybertotal_result['basic']['reputation']['avVenders']:
-                    if avVender['detected']:
-                        positive_detections = positive_detections + 1
-        result['detection_engines'] = detection_engines
-        result['positive_detections'] = positive_detections
-        result['detection_ratio'] = str(positive_detections) + '/' + str(detection_engines)
+        result = dict()
+        if 'whois' in cybertotal_result:
+            if len(cybertotal_result['whois']) > 0:
+                result = cybertotal_result['whois'].pop(0)
+        result['permalink'] = permalink,
+        result['resource'] = resource,
+        result['scan_date'] = dateparser.parse(scan_time).strftime("%Y-%m-%d %H:%M:%S"),
+        result['task_id'] = task_id
         result['message'] = "search success"
-        if 'score' in cybertotal_result['basic']:
-            result['severity'] = cybertotal_result['basic']['score'].get('severity', -1)
-            result['confidence'] = cybertotal_result['basic']['score'].get('confidence', -1)
-            result['threat'] = cybertotal_result['basic']['score'].get('threat', '')
+        if 'createdAt' in result:
+            result['createdAt'] = datetime.fromtimestamp(result['createdAt'], timezone.utc).isoformat()
+        if 'updatedAt' in result:
+            result['updatedAt'] = datetime.fromtimestamp(result['updatedAt'], timezone.utc).isoformat()
+        if 'registrarCreatedAt' in result:
+            result['registrarCreatedAt'] = datetime.fromtimestamp(result['registrarCreatedAt'], timezone.utc).isoformat()
+        if 'registrarUpdatedAt' in result:
+            result['registrarUpdatedAt'] = datetime.fromtimestamp(result['registrarUpdatedAt'], timezone.utc).isoformat()
+        if 'registrarExpiresAt' in result:
+            result['registrarExpiresAt'] = datetime.fromtimestamp(result['registrarExpiresAt'], timezone.utc).isoformat()
+        if 'auditCreatedAt' in result:
+            result['auditCreatedAt'] = datetime.fromtimestamp(result['auditCreatedAt'], timezone.utc).isoformat()
+        if 'auditUpdatedAt' in result:
+            result['auditUpdatedAt'] = datetime.fromtimestamp(result['auditUpdatedAt'], timezone.utc).isoformat()
+
         return result
 
     def get_ip_whois(self, ip: str) -> Dict[str, Any]:
@@ -256,21 +194,8 @@ class Client(BaseClient):
         )
         if 'task_state' in cybertotal_result:
             return {'task_state': cybertotal_result['task_state'], 'message': 'this search is in progress, try again later...'}
-        scan_time = str(cybertotal_result['scan_time'])
-        permalink = cybertotal_result['url']
-        url_path = urlparse(permalink).path
-        (rp_left, rp_match, task_id) = url_path.rpartition('/')
 
-        result = dict()
-        if 'whois' in cybertotal_result:
-            if len(cybertotal_result['whois']) > 0:
-                result = cybertotal_result['whois'].pop(0)
-        result['permalink'] = permalink,
-        result['resource'] = ip,
-        result['scan_date'] = dateparser.parse(scan_time).strftime("%Y-%m-%d %H:%M:%S"),
-        result['task_id'] = task_id
-        result["message"] = "search success"
-        return result
+        return self.parse_whois(cybertotal_result, ip)
 
     def get_url_whois(self, url: str) -> Dict[str, Any]:
         """Gets the URL-whois information using the '/_api/search/url/whois' API endpoint
@@ -288,22 +213,8 @@ class Client(BaseClient):
         )
         if 'task_state' in cybertotal_result:
             return {'task_state': cybertotal_result['task_state'], 'message': 'this search is in progress, try again later...'}
-        scan_time = str(cybertotal_result['scan_time'])
-        permalink = cybertotal_result['url']
-        url_path = urlparse(permalink).path
-        (rp_left, rp_match, task_id) = url_path.rpartition('/')
 
-        result = dict()
-        if 'whois' in cybertotal_result:
-            if len(cybertotal_result['whois']) > 0:
-                result = cybertotal_result['whois'].pop(0)
-
-        result['permalink'] = permalink,
-        result['resource'] = url,
-        result['scan_date'] = dateparser.parse(scan_time).strftime("%Y-%m-%d %H:%M:%S"),
-        result['task_id'] = task_id
-        result["message"] = "search success"
-        return result
+        return self.parse_whois(cybertotal_result, url)
 
     def get_domain_whois(self, domain: str) -> Dict[str, Any]:
         """Gets the Domain-whois information using the '/_api/search/domain/whois' API endpoint
@@ -321,22 +232,8 @@ class Client(BaseClient):
         )
         if 'task_state' in cybertotal_result:
             return {'task_state': cybertotal_result['task_state'], 'message': 'this search is in progress, try again later...'}
-        scan_time = str(cybertotal_result['scan_time'])
-        permalink = cybertotal_result['url']
-        url_path = urlparse(permalink).path
-        (rp_left, rp_match, task_id) = url_path.rpartition('/')
 
-        result = dict()
-        if 'whois' in cybertotal_result:
-            if len(cybertotal_result['whois']) > 0:
-                result = cybertotal_result['whois'].pop(0)
-
-        result['permalink'] = permalink,
-        result['resource'] = domain,
-        result['scan_date'] = dateparser.parse(scan_time).strftime("%Y-%m-%d %H:%M:%S"),
-        result['task_id'] = task_id
-        result["message"] = "search success"
-        return result
+        return self.parse_whois(cybertotal_result, domain)
 
 
 def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int) -> CommandResults:
@@ -772,6 +669,36 @@ def domain_whois_command(client: Client, args: Dict[str, Any]) -> CommandResults
     )
 
 
+def test_module(client: Client) -> str:
+    """Tests API connectivity and authentication'
+    Returning 'ok' indicates that the integration works like it is supposed to.
+    Connection to the service is successful.
+    Raises exceptions if something goes wrong.
+    :type client: ``Client``
+    :param Client: CyberTotal client to use
+    :return: 'ok' if test passed, anything else will fail the test.
+    :rtype: ``str``
+    """
+
+    # INTEGRATION DEVELOPER TIP
+    # Client class should raise the exceptions, but if the test fails
+    # the exception text is printed to the Cortex XSOAR UI.
+    # If you have some specific errors you want to capture (i.e. auth failure)
+    # you should catch the exception here and return a string with a more
+    # readable output (for example return 'Authentication Error, API Key
+    # invalid').
+    # Cortex XSOAR will print everything you return different than 'ok' as
+    # an error
+    try:
+        client.get_domain_reputation('abc.com')
+    except DemistoException as e:
+        if 'Forbidden' in str(e):
+            return 'Authorization Error: make sure API Key is correctly set'
+        else:
+            raise e
+    return 'ok'
+
+
 def main() -> None:
 
     verify_certificate = not demisto.params().get('insecure', False)
@@ -793,9 +720,8 @@ def main() -> None:
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            # result = test_module(client, first_fetch_time)
-            # return_results(result)
-            pass
+            result = test_module(client)
+            return_results(result)
 
         elif demisto.command() == 'ip':
             default_threshold = int(demisto.params().get('threshold_ip', '10'))
@@ -822,8 +748,6 @@ def main() -> None:
         elif demisto.command() == 'cybertotal-domain-whois':
             return_results(domain_whois_command(client, demisto.args()))
 
-        # elif demisto.command() == 'whois':
-        #     return_results(whois_command(client, demisto.args(), wait_inprogress_interval))
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
