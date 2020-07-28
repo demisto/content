@@ -272,3 +272,5 @@ outputs:
 - contextPath: Tufin.AppConnection.Comment
   description: Connection comment
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

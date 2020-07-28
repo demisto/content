@@ -293,3 +293,5 @@ outputs:
 - contextPath: Tufin.Policysearch.NumberRulesFound
   description: Number of rules found via search
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
