@@ -548,7 +548,7 @@ Collect forensics on a specified host and retrieve the forensics timeline
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Illusive.Event.eventId | String | The created event ID of the operation  | 
+| Illusive.Event.eventId | Number | The created event ID of the operation  | 
 
 
 
@@ -635,8 +635,8 @@ Retrieve the incident ID of an event
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Illusive.Event.incidentId | String | The Incident ID | 
-| Illusive.Event.eventId | String | The given event ID | 
+| Illusive.Event.incidentId | Number | The Incident ID | 
+| Illusive.Event.eventId | Number | The given event ID | 
 | Illusive.Event.status | String | The status command \( Done, InProgress\) | 
 
 
