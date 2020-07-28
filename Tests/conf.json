@@ -2812,6 +2812,19 @@
             "fromversion": "5.5.0"
         },
         {
+            "playbookID": "PCAP Search test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "PCAP File Carving Test",
+            "instance_names": "virus_total_general",
+            "integrations": [
+                "VirusTotal",
+                "WildFire-v2"
+            ],
+            "fromversion": "5.0.0"
+        },
+        {
             "playbookID": "PCAP Analysis Test",
             "instance_names": "virus_total_general",
             "integrations": [
@@ -2820,6 +2833,12 @@
             ],
             "fromversion": "5.0.0",
             "timeout": 1200
+        },
+        {
+            "integrations": "VirusTotal",
+            "instance_names": "virus_total_general",
+            "playbookID": "PCAP Parsing And Indicator Enrichment Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Workday",
@@ -2857,6 +2876,9 @@
         }
     ],
     "skipped_tests": {
+        "PCAP File Carving Test": "Merged with PCAP Analysis Test",
+        "PCAP Parsing And Indicator Enrichment Test": "Merged with PCAP Analysis Test",
+        "PCAP Search test": "Merged with PCAP Analysis Test",
         "PAN-OS DAG Configuration Test": "Issue 60693",
         "Phishing Classifier V2 ML Test": "Issue 26066",
         "CuckooTest": "Issue 25601",
