@@ -139,11 +139,11 @@ def test_extract_from_xml():
 
 
 def test_get_level_by_app_id(requests_mock):
-    requests_mock.post(BASE_URL + 'rsaarcher/api/core/security/login',
+    requests_mock.post(BASE_URL + 'api/core/security/login',
                        json={'RequestedObject': {'SessionToken': 'session-id'}})
 
-    requests_mock.get(BASE_URL + 'rsaarcher/api/core/system/level/module/1', json=GET_LEVEL_RES)
-    requests_mock.get(BASE_URL + 'rsaarcher/api/core/system/fielddefinition/level/123', json=FIELD_DEFINITION_RES)
+    requests_mock.get(BASE_URL + 'api/core/system/level/module/1', json=GET_LEVEL_RES)
+    requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/level/123', json=FIELD_DEFINITION_RES)
     client = Client(BASE_URL, '', '', '', '')
 
     levels = client.get_level_by_app_id('1')
@@ -162,9 +162,9 @@ def test_get_errors_from_res():
 
 
 def test_get_record_failed(requests_mock):
-    requests_mock.post(BASE_URL + 'rsaarcher/api/core/security/login',
+    requests_mock.post(BASE_URL + 'api/core/security/login',
                        json={'RequestedObject': {'SessionToken': 'session-id'}})
-    requests_mock.get(BASE_URL + 'rsaarcher/api/core/content/1010', json=GET_RECORD_RES_failed)
+    requests_mock.get(BASE_URL + 'api/core/content/1010', json=GET_RECORD_RES_failed)
     client = Client(BASE_URL, '', '', '', '')
     record, res, errors = client.get_record(75, 1010)
     assert errors == 'No resource found.'
@@ -173,11 +173,11 @@ def test_get_record_failed(requests_mock):
 
 
 def test_get_record_success(requests_mock):
-    requests_mock.post(BASE_URL + 'rsaarcher/api/core/security/login',
+    requests_mock.post(BASE_URL + 'api/core/security/login',
                        json={'RequestedObject': {'SessionToken': 'session-id'}})
-    requests_mock.get(BASE_URL + 'rsaarcher/api/core/content/1010', json=GET_RECORD_RES_SUCCESS)
-    requests_mock.get(BASE_URL + 'rsaarcher/api/core/system/level/module/1', json=GET_LEVEL_RES)
-    requests_mock.get(BASE_URL + 'rsaarcher/api/core/system/fielddefinition/level/123', json=FIELD_DEFINITION_RES)
+    requests_mock.get(BASE_URL + 'api/core/content/1010', json=GET_RECORD_RES_SUCCESS)
+    requests_mock.get(BASE_URL + 'api/core/system/level/module/1', json=GET_LEVEL_RES)
+    requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/level/123', json=FIELD_DEFINITION_RES)
     client = Client(BASE_URL, '', '', '', '')
     record, res, errors = client.get_record(1, 1010)
     assert errors is None
@@ -194,13 +194,13 @@ def test_record_to_incident():
 
 
 def test_search_records(requests_mock):
-    requests_mock.post(BASE_URL + 'rsaarcher/api/core/security/login',
+    requests_mock.post(BASE_URL + 'api/core/security/login',
                        json={'RequestedObject': {'SessionToken': 'session-id'}})
-    requests_mock.post(BASE_URL + 'rsaarcher/ws/general.asmx', text=GET_TOKEN_SOAP)
+    requests_mock.post(BASE_URL + 'ws/general.asmx', text=GET_TOKEN_SOAP)
 
-    requests_mock.get(BASE_URL + 'rsaarcher/api/core/system/level/module/1', json=GET_LEVEL_RES)
-    requests_mock.get(BASE_URL + 'rsaarcher/api/core/system/fielddefinition/level/123', json=FIELD_DEFINITION_RES)
-    requests_mock.post(BASE_URL + 'rsaarcher/ws/search.asmx', text=SEARCH_RECORDS_RES)
+    requests_mock.get(BASE_URL + 'api/core/system/level/module/1', json=GET_LEVEL_RES)
+    requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/level/123', json=FIELD_DEFINITION_RES)
+    requests_mock.post(BASE_URL + 'ws/search.asmx', text=SEARCH_RECORDS_RES)
     client = Client(BASE_URL, '', '', '', '')
     records, raw_res = client.search_records(1, ['External Links', 'Device Name'])
     assert raw_res
@@ -214,10 +214,10 @@ def test_get_field_value_list(requests_mock):
     cache['fieldValueList'] = {}
     demisto.setIntegrationContext(cache)
 
-    requests_mock.post(BASE_URL + 'rsaarcher/api/core/security/login',
+    requests_mock.post(BASE_URL + 'api/core/security/login',
                        json={'RequestedObject': {'SessionToken': 'session-id'}})
-    requests_mock.get(BASE_URL + 'rsaarcher/api/core/system/fielddefinition/304', json=GET_FIElD_DEFINITION_RES)
-    requests_mock.get(BASE_URL + 'rsaarcher/api/core/system/valueslistvalue/valueslist/62', json=VALUE_LIST_RES)
+    requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/304', json=GET_FIElD_DEFINITION_RES)
+    requests_mock.get(BASE_URL + 'api/core/system/valueslistvalue/valueslist/62', json=VALUE_LIST_RES)
     client = Client(BASE_URL, '', '', '', '')
     field_data = client.get_field_value_list(304)
     assert VALUE_LIST_FIELD_DATA == field_data
@@ -235,10 +235,10 @@ def test_generate_field_value_values_list_input(requests_mock):
     cache['fieldValueList'] = {}
     demisto.setIntegrationContext(cache)
 
-    requests_mock.post(BASE_URL + 'rsaarcher/api/core/security/login',
+    requests_mock.post(BASE_URL + 'api/core/security/login',
                        json={'RequestedObject': {'SessionToken': 'session-id'}})
-    requests_mock.get(BASE_URL + 'rsaarcher/api/core/system/fielddefinition/304', json=GET_FIElD_DEFINITION_RES)
-    requests_mock.get(BASE_URL + 'rsaarcher/api/core/system/valueslistvalue/valueslist/62', json=VALUE_LIST_RES)
+    requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/304', json=GET_FIElD_DEFINITION_RES)
+    requests_mock.get(BASE_URL + 'api/core/system/valueslistvalue/valueslist/62', json=VALUE_LIST_RES)
 
     client = Client(BASE_URL, '', '', '', '')
     field_key, field_value = generate_field_value(client, "", {'Type': 4, 'FieldId': 304}, ["High"])
