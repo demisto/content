@@ -13,9 +13,9 @@ def test_get_ml_features(mocker):
     mocker.patch.object(pickle, 'load', return_value=dummy_word_to_vec)
 
     text = ['hello', 'world']
-    featurs = get_ml_features(text)
-    assert featurs['glove_avg_0'] == 1.5
-    assert featurs['glove_avg_1'] == -0.5
+    featurs = get_embedding_features(text)
+    assert featurs['glove50_0'] == 1.5
+    assert featurs['glove50_1'] == -0.5
 
 
 def test_get_vocab_features(mocker):
@@ -219,7 +219,7 @@ def test_attachments_features_2():
 
 def test_whole_preprocessing(mocker):
     import cProfile
-    debug = False
+    debug = True
     glove_path = './glove_50_top_10.p'
     with open(glove_path, 'rb') as file:
         glove_data = file.read()
@@ -233,8 +233,8 @@ def test_whole_preprocessing(mocker):
     prof = cProfile.Profile()
     data = prof.runcall(extract_data_from_incidents, incidents=incidents)
     if debug:
-        prof.print_stats(sort='cumtime')
         with open('output.txt', 'w') as file:
             json.dump(data, fp=file, indent=4)
+        prof.print_stats(sort='cumtime')
 
 # disable-secrets-detection-end
