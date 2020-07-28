@@ -381,7 +381,6 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
             ip_message_list.append({'ip': ip})
             continue
 
-        score = 0
         reputation = int(ip_data.get('positive_detections', 0))
         if reputation == 0:
             score = Common.DBotScore.NONE  # unknown
