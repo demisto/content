@@ -6,7 +6,7 @@ Optionally increases the incident severity to the new value if it is greater tha
 | --- | --- |
 | Script Type | javascript |
 | Tags |  |
-| Demisto Version | 5.5.0 |
+| Demisto Version | 5.0.0 |
 
 ## Inputs
 ---
@@ -23,10 +23,6 @@ There are no outputs for this script.
 ## Script Example
 ```!IncreaseIncidentSeverity severity=High```
 
-## Context Example
-```
-{}
-```
 
 ## Human Readable Output
 Severity increased to 3
