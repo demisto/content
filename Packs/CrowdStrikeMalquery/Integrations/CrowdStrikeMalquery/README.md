@@ -1,5 +1,5 @@
-Use the MalQuery Integration to query the contents of over a half-billion binary files, both clean and malicious, that are part of Falcon MalQuery's corpus.
-This integration was integrated and tested with version xx of CrowdStrikeMalquery
+Use the MalQuery Integration to query the contents of clean and malicious binary files, which forms part of Falcon's search engine.
+This integration was integrated and tested with version 1.0 of CrowdStrikeMalquery
 ## Configure CrowdStrikeMalquery on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -20,10 +20,7 @@ You can execute these commands from the Demisto CLI, as part of an automation, o
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cs-malquery-exact-search
 ***
-Use exact-search to search Falcon MalQuery for a combination of hex patterns and strings in order to identify samples based upon file content at byte level granularity. You can filter results on criteria such as file type, file size and first seen date.
-<br/>Using exact-search is a two-step process:
-1. Search MalQuery with exact-search, which returns a request ID.
-2. Provide that request ID to the cs-malquery-get-request to retrieve results.
+Searches Falcon MalQuery for a combination of hex patterns and strings to identify malware samples based upon file content, which returns a request ID. Use the request ID in the cs-malquery-get-request command to   retrieve results. You can filter results based on criteria such as file type, file size and first seen date.
 
 
 #### Base Command
@@ -33,16 +30,16 @@ Use exact-search to search Falcon MalQuery for a combination of hex patterns and
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hex | Hex pattern to search. e.g. deadbeef0102 (for bytes de, ad, be, ef, 01, 02). | Optional | 
-| ascii | ASCII pattern to search. e.g. CrowdStrike. | Optional | 
-| wide | Wide string pattern to search. e.g. CrowdStrike. | Optional | 
-| limit | Maximum number of results to be returned. | Optional | 
-| max_size | Maximum file size. The value can be specified either in bytes or in multiples of KB/MB/GB. e.g. 128000, 1.3 KB, 8mb. | Optional | 
-| min_size | Minimum file size. e.g. 128000, 1.3 KB, 8mb. | Optional | 
-| max_date | Limit results to files first seen before this date. The format is YYYY/MM/DD - 2018/01/31. | Optional | 
-| min_date | Limit results to files first seen after this date. The format is YYYY/MM/DD - 2018/01/31. | Optional | 
-| filter_filetypes | Limit results to files of certain types such as EMAIL, PCAP, PDF, PE32. Full list can be found in the documentation. Comma separated values. | Optional | 
-| filter_meta | Specify a subset of metadata fields to return in the results. Possible values - sha256, md5, type, size, first_seen, label, family. Comma separated values. | Optional | 
+| hex | The hex pattern to search. For example, deadbeef0102 (for bytes de, ad, be, ef, 01, 02). | Optional | 
+| ascii | The ASCII pattern to search. For example, CrowdStrike. | Optional | 
+| wide | The wide string pattern to search. For example, CrowdStrike. | Optional | 
+| limit | The maximum number of results to be returned. Default is 100. | Optional | 
+| max_size | The maximum file size. The value can be specified either in bytes or in multiples of KB/MB/GB. For example, 128000, 1.3 KB, 8mb. | Optional | 
+| min_size | The minimum file size. The value can be specified either in bytes or in multiples of KB/MB/GB. For example, 128000, 1.3 KB, 8mb. | Optional | 
+| max_date | Limits results to files first seen before this date. The format is YYYY/MM/DD. For example, 2018/01/31. | Optional | 
+| min_date | Limits results to files first seen after this date. The format is YYYY/MM/DD. For example, 2018/01/31. | Optional | 
+| filter_filetypes | Limits results to certain file types such as EMAIL, PCAP, PDF, PE32. Comma separated values. For a full list of file types, see the MalQuery API documentation. | Optional | 
+| filter_meta | Specifies a subset of metadata fields to return in the results. Possible values - sha256, md5, type, size, first_seen, label, family. Comma separated values. | Optional | 
 
 
 #### Context Output
@@ -74,10 +71,7 @@ Use exact-search to search Falcon MalQuery for a combination of hex patterns and
 
 ### cs-malquery-hunt
 ***
-Use hunt to schedule a YARA-based search for execution. Results can be filtered based on criteria such as file type, file size and first seen date.
-<br/>Using hunt is a two-step process:
-1. Schedule a YARA-based search with hunt, which returns a request ID.
-2. Provide that request ID to the cs-malquery-get-request to retrieve results.
+Schedules a YARA rule-based search for execution, which returns a request ID. Use the request ID in the cs-malquery-get-request command to retrieve results. You can filter based on criteria such as file type, file size and first seen date.
 
 
 #### Base Command
@@ -87,15 +81,15 @@ Use hunt to schedule a YARA-based search for execution. Results can be filtered 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| yara_rule | A YARA rule that defines your search. | Optional | 
-| yar_file_entry_id | A YAR file entry ID that contains the YARA rule which defines your search. Only one Yara rule is allowed per request. | Optional | 
-| limit | Maximum number of results to be returned. | Optional | 
-| max_size | Maximum file size. The value can be specified either in bytes or in multiples of KB/MB/GB. e.g. 128000, 1.3 KB, 8mb. | Optional | 
-| min_size | Minimum file size. e.g. 128000, 1.3 KB, 8mb. | Optional | 
-| max_date | Limit results to files first seen before this date. The format is YYYY/MM/DD - 2018/01/31. | Optional | 
-| min_date | Limit results to files first seen after this date. The format is YYYY/MM/DD - 2018/01/31. | Optional | 
-| filter_filetypes | Limit results to files of certain types such as EMAIL, PCAP, PDF, PE32. Full list can be found in the documentation. Comma separated values. | Optional | 
-| filter_meta | Specify a subset of metadata fields to return in the results. Possible values - sha256, md5, type, size, first_seen, label, family. Comma separated values. | Optional | 
+| yara_rule | The YARA rule to search. | Optional | 
+| yar_file_entry_id | A YAR file entry ID that contains the YARA rule to search. Only one Yara rule per request. | Optional | 
+| limit | The maximum number of results to be returned. | Optional | 
+| max_size | The maximum file size. The value can be specified either in bytes or in multiples of KB/MB/GB. For example, 128000, 1.3 KB, 8mb. | Optional | 
+| min_size | The minimum file size. For example, 128000, 1.3 KB, 8mb. | Optional | 
+| max_date | Limits results to files first seen before this date. The format is YYYY/MM/DD. For example, 2018/01/31. | Optional | 
+| min_date | Limits results to files first seen after this date. The format is YYYY/MM/DD. For example, 2018/01/31. | Optional | 
+| filter_filetypes | Limits results to files of certain types such as EMAIL, PCAP, PDF, PE32. Comma separated values. For a full list of types, see the MalQuery API documentation. | Optional | 
+| filter_meta | Specifies a subset of metadata fields to return in the results. Possible values - sha256, md5, type, size, first_seen, label, family. Comma separated values. | Optional | 
 
 
 #### Context Output
@@ -127,7 +121,7 @@ Use hunt to schedule a YARA-based search for execution. Results can be filtered 
 
 ### cs-malquery-fuzzy-search
 ***
-Search Falcon MalQuery quickly, but with more potential for false positives. Search for a combination of hex patterns and strings in order to identify samples based upon file content at byte level granularity.
+Searches Falcon MalQuery quickly. Uses partial matching, but with more potential for false positives. Search for a combination of hex patterns and strings to identify samples based upon file content.
 
 
 #### Base Command
@@ -137,25 +131,25 @@ Search Falcon MalQuery quickly, but with more potential for false positives. Sea
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hex | Hex pattern to search. e.g. deadbeef0102 (for bytes de, ad, be, ef, 01, 02). | Optional | 
-| ascii | ASCII pattern to search. e.g. CrowdStrike. | Optional | 
-| wide | Wide string pattern to search. e.g. CrowdStrike. | Optional | 
-| limit | Maximum number of results to be returned. | Optional | 
-| filter_meta | Specify a subset of metadata fields to return in the results. Possible values - sha256, md5, type, size, first_seen, label, family. Comma separated values. | Optional | 
+| hex | The hex pattern to search. For example, deadbeef0102 (for bytes de, ad, be, ef, 01, 02). | Optional | 
+| ascii | The ASCII pattern to search. For example, CrowdStrike. | Optional | 
+| wide | The wide string pattern to search. For example, CrowdStrike. | Optional | 
+| limit | The maximum number of results to be returned. Default is 100. | Optional | 
+| filter_meta | Specifies a subset of metadata fields to return in the results. Possible values - sha256, md5, type, size, first_seen, label, family. Comma separated values. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Malquery.File.family | String | File family. | 
-| Malquery.File.filesize | String | File size. | 
-| Malquery.File.filetype | String | File type. | 
-| Malquery.File.first_seen | String | Date when the file was first seen. | 
-| Malquery.File.label | String | File label. | 
-| Malquery.File.md5 | String | File MD5. | 
-| Malquery.File.sha1 | String | File SHA1. | 
-| Malquery.File.sha256 | String | File SHA256. | 
+| Malquery.File.family | String | The malware family of the file. For example, StoneDrill. | 
+| Malquery.File.filesize | String | The size of the file. | 
+| Malquery.File.filetype | String | The type of the file. | 
+| Malquery.File.first_seen | String | The date when the file was first seen. | 
+| Malquery.File.label | String | The label of the file. For example, Malware. | 
+| Malquery.File.md5 | String | The MD5 of the file. | 
+| Malquery.File.sha1 | String | The SHA1 of the file. | 
+| Malquery.File.sha256 | String | The SHA256 of the file. | 
 
 
 #### Command Example
@@ -210,8 +204,7 @@ Search Falcon MalQuery quickly, but with more potential for false positives. Sea
 
 ### cs-malquery-get-request
 ***
-Check the status and results of an asynchronous request, such as hunt or exact-search.
-Supports a single request id at this time.
+Checks the status and results of an asynchronous request, such as hunt or exact-search.  Supports a single request ID.
 
 
 #### Base Command
@@ -221,7 +214,7 @@ Supports a single request id at this time.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| request_id | Identifier of a MalQuery request. | Required | 
+| request_id | The identifier of a MalQuery request. | Required | 
 
 
 #### Context Output
@@ -229,15 +222,15 @@ Supports a single request id at this time.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Malquery.Request_ID | String | The request ID. | 
-| Malquery.Status | String | The request status. | 
-| Malquery.File.family | String | File family. | 
-| Malquery.File.filesize | String | File size. | 
-| Malquery.File.filetype | String | File type. | 
-| Malquery.File.first_seen | String | Date when the file was first seen. | 
-| Malquery.File.label | String | File label. | 
-| Malquery.File.md5 | String | File MD5. | 
-| Malquery.File.sha1 | String | File SHA1. | 
-| Malquery.File.sha256 | String | File SHA256. | 
+| Malquery.Status | String | The status of the request. | 
+| Malquery.File.family | String | The malware family of the file. For example, StoneDrill. | 
+| Malquery.File.filesize | String | The size of the file. | 
+| Malquery.File.filetype | String | The type of the file. For example, PE32. | 
+| Malquery.File.first_seen | String | The date when the file was first seen. | 
+| Malquery.File.label | String | The label of the file. For example, malware. | 
+| Malquery.File.md5 | String | The file MD5. | 
+| Malquery.File.sha1 | String | The file SHA1. | 
+| Malquery.File.sha256 | String | The file SHA256. | 
 
 
 #### Command Example
@@ -323,7 +316,7 @@ Supports a single request id at this time.
 
 ### cs-malquery-get-ratelimit
 ***
-Get information about search and download quotas in your environment.
+Returns information about search and download quotas in your environment.
 
 
 #### Base Command
@@ -338,12 +331,12 @@ Get information about search and download quotas in your environment.
 | Malquery.Quota.download_count | number | How many downloads were executed in the last month. | 
 | Malquery.Quota.monitor_count | number | How many monitors were created in the last month. | 
 | Malquery.Quota.hunt_limit | number | Total hunt limit per month. | 
-| Malquery.Quota.download_limit | number | Total download limit per month. | 
-| Malquery.Quota.monitor_limit | number | Total monitor limit per month. | 
-| Malquery.Quota.refresh_time | string | Time when the limits are refreshed. ISO 8601 format. | 
-| Malquery.Quota.days_left | number | Days left until the limits are refreshed. | 
-| Malquery.Quota.hunt_counts.userid | String | Download counts per user. | 
-| Malquery.Quota.hunt_counts.counter | number | Download counts per user. | 
+| Malquery.Quota.download_limit | number | The total download limit per month. | 
+| Malquery.Quota.monitor_limit | number | The total monitor limit per month. | 
+| Malquery.Quota.refresh_time | string | The time when the limits are refreshed. ISO 8601 format. | 
+| Malquery.Quota.days_left | number | The days left until the limits are refreshed. | 
+| Malquery.Quota.hunt_counts.userid | String | The download counts per user. | 
+| Malquery.Quota.hunt_counts.counter | number | The download counts per user. | 
 
 
 #### Command Example
@@ -353,27 +346,27 @@ Get information about search and download quotas in your environment.
 ```
 {
     "Malquery": {
-        "Quota_Data": {
-            "days_left": 0,
-            "download_count": 50,
+        "Quota": {
+            "days_left": 3,
+            "download_count": 28,
             "download_counts": [
                 {
-                    "counter": 50,
+                    "counter": 28,
                     "userid": ""
                 }
             ],
             "download_limit": 50,
-            "hunt_count": 49,
+            "hunt_count": 83,
             "hunt_counts": [
                 {
-                    "counter": 49,
+                    "counter": 83,
                     "userid": ""
                 }
             ],
             "hunt_limit": 100,
             "monitor_count": 0,
             "monitor_limit": 10,
-            "refresh_time": "2020-07-01T00:00:00Z"
+            "refresh_time": "2020-08-01T00:00:00Z"
         }
     }
 }
@@ -381,15 +374,15 @@ Get information about search and download quotas in your environment.
 
 #### Human Readable Output
 
+>### Quota Data
+>|hunt_count|download_count|monitor_count|hunt_limit|download_limit|monitor_limit|refresh_time|days_left|
+>|---|---|---|---|---|---|---|---|
+>| 83 | 28 | 0 | 100 | 50 | 10 | 2020-08-01T00:00:00Z | 3 |
 
 
 ### cs-malquery-samples-multidownload
 ***
-Schedule samples for download.
-<br/>Using samples-multidownload is a three-step process:
-1. Schedule the download with samples-multidownload, which returns a request ID.
-2. Provide that request ID to the cs-malquery-get-request, in order to check the status of the operation.
-3. When the request status is “done”, use cs-malquery-sample-fetch to download the results as a password-protected archive. The password to extract results from the archive: infected'    
+Schedule samples for download, which returns a request ID. Use the request ID in the cs-malquery-get-request, to check the status of the operation. When the request status is “done”, use the cs-malquery-sample-fetch to download the results as a password-protected archive. The password to extract results from the archive: infected' 
 
 
 #### Base Command
@@ -399,7 +392,7 @@ Schedule samples for download.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| samples | Hex pattern to search. e.g. deadbeef0102 (for bytes de, ad, be, ef, 01, 02). | Required | 
+| samples | Sample sha256 IDs. Comma separated values. | Required | 
 
 
 #### Context Output
@@ -433,7 +426,7 @@ Schedule samples for download.
 
 ### cs-malquery-file-download
 ***
-Download a file indexed by MalQuery. Specify the file using its SHA256. Only one file is supported at this time.
+Download a file indexed by MalQuery. Specify the file using its SHA256. Only one file is supported.
 
 
 #### Base Command
@@ -443,20 +436,20 @@ Download a file indexed by MalQuery. Specify the file using its SHA256. Only one
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_id | The file SHA256. | Required | 
+| file_id | The SHA256 file. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.SHA256 | String | SHA256 hash of the file. | 
-| File.SHA1 | String | SHA1 hash of the file. | 
-| File.SHA512 | String | SHA512 hash of the file. | 
-| File.Name | String | Name of the file. | 
-| File.EntryID | String | Entry ID. | 
-| File.Info | String | File info. | 
-| File.Type | String | Type of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA512 | String | The SHA512 hash of the file. | 
+| File.Name | String | The name of the file. | 
+| File.EntryID | String | The Entry ID. | 
+| File.Info | String | Information about the file. | 
+| File.Type | String | The type of the file. | 
 | File.MD5 | String | MD5 hash of the file. | 
 
 
@@ -467,7 +460,7 @@ Download a file indexed by MalQuery. Specify the file using its SHA256. Only one
 ```
 {
     "File": {
-        "EntryID": "3610@904ba2df-a395-4270-8a6b-e9b8d614911e",
+        "EntryID": "3993@904ba2df-a395-4270-8a6b-e9b8d614911e",
         "Info": "application/x-dosexec",
         "MD5": "c6a6a731f341ced1d93b61bc7628721d",
         "Name": "d77cf874521ee7d4bb7f54bd8cef3d60ec24d267cf2d502f819880f0819f5766",
@@ -485,7 +478,7 @@ Download a file indexed by MalQuery. Specify the file using its SHA256. Only one
 
 ### cs-malquery-sample-fetch
 ***
-Fetch a zip archive with password infected containing the samples. Call this once the cs-malquery-samples-multidownload request has finished processing
+Fetches a zip archive file using the password, "infected" containing the samples. Use this after the cs-malquery-samples-multidownload request has finished processing.
 
 
 #### Base Command
@@ -500,7 +493,17 @@ Fetch a zip archive with password infected containing the samples. Call this onc
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.SHA256 | String | THe SHA256 hash of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA512 | String | The SHA512 hash of the file. | 
+| File.Name | String | The name of the file. | 
+| File.EntryID | String | The entry ID. | 
+| File.Info | String | Information about the file. | 
+| File.Type | String | The type of the file. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+
 
 #### Command Example
 ```!cs-malquery-sample-fetch request_id=93b55373-3b69-43cb-6ea1-2870a44e1c1e```
@@ -529,7 +532,7 @@ There is no context output for this command.
 
 ### file
 ***
-Retrieve indexed files metadata by their hash.
+Retrieves indexed files metadata by their hash.
 
 
 #### Base Command
@@ -539,7 +542,7 @@ Retrieve indexed files metadata by their hash.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | The files SHA256. Comma separated values. | Required | 
+| file | The SHA256 of the files. Comma separated values. | Required | 
 
 
 #### Context Output
@@ -550,14 +553,14 @@ Retrieve indexed files metadata by their hash.
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | File.Vendor | String | The vendor used to calculate the score. | 
-| Malquery.File.family | String | File family. | 
-| Malquery.File.filesize | String | File size. | 
-| Malquery.File.filetype | String | File type. | 
-| Malquery.File.first_seen | String | Date when the file was first seen. | 
-| Malquery.File.label | String | File label. | 
-| Malquery.File.md5 | String | File MD5. | 
-| Malquery.File.sha1 | String | File SHA1. | 
-| Malquery.File.sha256 | String | File SHA256. | 
+| Malquery.File.family | String | The malware family of the file. For example, StoneDrill. | 
+| Malquery.File.filesize | String | The size of the file. | 
+| Malquery.File.filetype | String | The type of the file. | 
+| Malquery.File.first_seen | String | The date when the file was first seen. | 
+| Malquery.File.label | String | The label of the file. | 
+| Malquery.File.md5 | String | The MD5 hash of the file. | 
+| Malquery.File.sha1 | String | The SHA1 hash of the file. | 
+| Malquery.File.sha256 | String | The SHA256 hash of the file. | 
 
 
 #### Command Example
