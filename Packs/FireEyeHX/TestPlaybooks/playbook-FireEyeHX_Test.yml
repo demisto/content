@@ -1,6 +1,5 @@
 id: FireEye HX Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: FireEye HX Test
 starttaskid: "0"
 tasks:
@@ -527,3 +526,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0
