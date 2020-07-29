@@ -1,5 +1,6 @@
 RSA Security Analytics is a distributed and modular system that enables highly flexible deployment architectures that scale with the needs of the organization. Security Analytics allows administrators to collect two types of data from the network infrastructure, packet data and log data.
-This integration was developed using an unofficial API, and is not compatible with RSA NetWitness v11 and onwards.
+This integraitons should work with RSA Netwitness older than v11. For versions v11 and above use the integration RSA NetWitness v11.1.
+
 ## Configure RSA NetWitness Security Analytics on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
