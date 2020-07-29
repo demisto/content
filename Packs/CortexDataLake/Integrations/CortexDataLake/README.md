@@ -8,10 +8,10 @@ This integration was integrated and tested with version 2 of Cortex Data Lake
 
 ---
 
-## Configure Cortex Data Lake on Demisto
+## Configure Cortex Data Lake on Cortex XSOAR
 ---
 
-1. Go to the [HUB](https://apps.paloaltonetworks.com/apps) and select the `Demisto v2` app
+1. Go to the [HUB](https://apps.paloaltonetworks.com/apps) and select the `Cortex XSOAR` app
 2. In the War Room, run the command `!GetLicenseID` to get the `license ID`.
 3. Go to __Settings__ > __ABOUT__ > __License__ to get the `Customer Name`.
 4. Insert the `license ID` and the `Customer Name` in the required fields and complete the authentication process in order to get the __Authentication Token__  __Registration ID__ __Encryption Key__
@@ -46,7 +46,7 @@ Fetches Firewall threat logs as incidents
 ---
 ## Commands
 
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. cdl-query-logs
 2. cdl-get-critical-threat-logs
