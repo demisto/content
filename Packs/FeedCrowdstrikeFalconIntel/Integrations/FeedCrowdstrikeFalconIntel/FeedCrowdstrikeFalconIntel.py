@@ -205,7 +205,7 @@ def main():
                                                                        feed_tags)  # type: ignore
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
-        raise Exception(f'Error in AutoFocusFeed Daily Integration [{e}]')
+        raise Exception(f'Error in Crowdstrike falcon intel  Integration [{e}]')
 
 
 if __name__ == '__builtin__' or __name__ == 'builtins':

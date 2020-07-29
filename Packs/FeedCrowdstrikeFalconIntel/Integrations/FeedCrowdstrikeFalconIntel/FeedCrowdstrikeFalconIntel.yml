@@ -12,10 +12,6 @@ configuration:
   name: client_id
   required: true
   type: 4
-- display: The Crowdstrike api client_secret
-  name: client_secret
-  required: true
-  type: 4
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
   defaultvalue: Bad
@@ -122,7 +118,7 @@ script:
     deprecated: false
     description: Gets indicators from Crowdstrike Falcon Intel Feed.
     execution: false
-    name: Crowdstrike-Falcon-Intel-get-indicators
+    name: crowdstrike-falcon-intel-get-indicators
   dockerimage: demisto/python3:3.8.3.9324
   feed: true
   isfetch: false

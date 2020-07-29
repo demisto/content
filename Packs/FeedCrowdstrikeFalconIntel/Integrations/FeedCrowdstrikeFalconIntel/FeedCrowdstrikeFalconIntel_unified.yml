@@ -122,7 +122,7 @@ script:
     deprecated: false
     description: Gets indicators from Crowdstrike Falcon Intel Feed.
     execution: false
-    name: Crowdstrike-Falcon-Intel-get-indicators
+    name: crowdstrike-falcon-intel-get-indicators
   dockerimage: demisto/python3:3.8.3.9324
   feed: true
   isfetch: false
@@ -139,98 +139,63 @@ script:
 
 
     class Client(BaseClient):
-        """Client for AutoFocus Feed - gets indicator lists from Daily threat feeds
 
-        Attributes:
-            api_key(str): The API key for AutoFocus.
-            insecure(bool): Use SSH on http request.
-            proxy(str): Use system proxy.
-        """
+        def __init__(self, params):
+            self.client_id = params.get('client_id')
+            self.client_secret = params.get('client_secret')
+            super().__init__(base_url="https://api.crowdstrike.com/", verify=not params.get('insecure', False),
+                             ok_codes=tuple(), proxy=params.get('proxy', False))
+            self._token = self._generate_token()
+            self._headers = {'Authorization': 'Bearer ' + self._token}
 
-        def __init__(self, api_key, insecure, base_url):
-            super().__init__(base_url)
-            self.api_key = api_key
-            self.verify = not insecure
-            handle_proxy()
+        @staticmethod
+        def _error_handler(error_entry: dict) -> str:
+            errors = error_entry.get("errors", [])
+            return '\n' + '\n'.join(f"{error['code']}: {error['message']}" for error in errors)
 
-        def daily_http_request(self) -> list:
-            """The HTTP request for daily feeds.
-            Returns:
-                list. A list of indicators fetched from the feed.
+        def http_request(self, method, url_suffix, full_url=None, headers=None, json_data=None, params=None, data=None,
+                         files=None, timeout=10, ok_codes=None, return_empty_response=False, auth=None):
+
+            return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
+                                         json_data=json_data, params=params, data=data, files=files, timeout=timeout,
+                                         ok_codes=ok_codes, return_empty_response=return_empty_response, auth=auth)
+
+        def _generate_token(self) -> str:
+            """Generate an Access token using the user name and password
+            :return: valid token
             """
-            headers = {
-                "apiKey": self.api_key,
-                'Content-Type': "application/json"
+            body = {
+                'client_id': self.client_id,
+                'client_secret': self.client_secret
             }
+            token_res = self.http_request('POST', '/oauth2/token', data=body, auth=(self.client_id, self.client_secret))
+            return token_res.get('access_token')
 
-            res = requests.request(
-                method="GET",
-                url='https://autofocus.paloaltonetworks.com/api/v1.0/output/threatFeedResult',
-                verify=self.verify,
-                headers=headers
-            )
-            res.raise_for_status()
-            indicator_list = res.text.split('\n')
-            return indicator_list
+        def check_quota_status(self) -> dict:
+            url_suffix = "/intel/combined/actors/v1"
+            return self.http_request('GET', url_suffix)
 
-        def get_ip_type(self, indicator):
-            """
-            Indicates the correct IP of the given indicator.
-            Args:
-                indicator: (str) Will be checked according to it the type will be returned.
-            Returns:
-                Indicator Type of the given value.
-            """
-            if re.match(ipv4cidrRegex, indicator):
-                return FeedIndicatorType.CIDR
+        # def daily_http_request(self) -> list:
+        #     """The HTTP request for daily feeds.
+        #     Returns:
+        #         list. A list of indicators fetched from the feed.
+        #     """
+        #     headers = {
+        #         "apiKey": self.api_key,
+        #         'Content-Type': "application/json"
+        #     }
+        #
+        #     res = requests.request(
+        #         method="GET",
+        #         url='https://autofocus.paloaltonetworks.com/api/v1.0/output/threatFeedResult',
+        #         verify=self.verify,
+        #         headers=headers
+        #     )
+        #     res.raise_for_status()
+        #     indicator_list = res.text.split('\n')
+        #     return indicator_list
 
-            elif re.match(ipv6cidrRegex, indicator):
-                return FeedIndicatorType.IPv6CIDR
-
-            elif re.match(ipv4Regex, indicator):
-                return FeedIndicatorType.IP
-
-            elif re.match(ipv6Regex, indicator):
-                return FeedIndicatorType.IPv6
-
-            else:
-                return None
-
-        def find_indicator_type(self, indicator):
-            """Infer the type of the indicator.
-            Args:
-                indicator(str): The indicator whose type we want to check.
-            Returns:
-                str. The type of the indicator.
-            """
-
-            # trying to catch X.X.X.X:portNum
-            if ':' in indicator and '/' not in indicator:
-                sub_indicator = indicator.split(':', 1)[0]
-                ip_type = self.get_ip_type(sub_indicator)
-                if ip_type:
-                    return ip_type
-
-            ip_type = self.get_ip_type(indicator)
-            if ip_type:
-                # catch URLs of type X.X.X.X/path/url or X.X.X.X:portNum/path/url
-                if '/' in indicator and (ip_type not in [FeedIndicatorType.IPv6CIDR, FeedIndicatorType.CIDR]):
-                    return FeedIndicatorType.URL
-
-                else:
-                    return ip_type
-
-            elif re.match(sha256Regex, indicator):
-                return FeedIndicatorType.File
-
-            # in AutoFocus, URLs include a path while domains do not - so '/' is a good sign for us to catch URLs.
-            elif '/' in indicator:
-                return FeedIndicatorType.URL
-
-            else:
-                return FeedIndicatorType.Domain
-
-        def create_indicators_from_response(self, response: list, feed_tags: list) -> list:
+        def create_indicators_from_response(self, response, feed_tags: list) -> list:
             """
             Creates a list of indicators from a given response
             Args:
@@ -240,26 +205,21 @@ script:
                 List of indicators with the correct indicator type.
             """
             parsed_indicators = []  # type:List
-
-            for indicator in response:
-                if indicator:
-                    indicator_type = self.find_indicator_type(indicator)
-
-                    # catch ip of the form X.X.X.X:portNum and extract the IP without the port.
-                    if indicator_type in [FeedIndicatorType.IP, FeedIndicatorType.CIDR,
-                                          FeedIndicatorType.IPv6CIDR, FeedIndicatorType.IPv6] and ":" in indicator:
-                        indicator = indicator.split(":", 1)[0]
-
-                    parsed_indicators.append({
-                        "type": indicator_type,
-                        "value": indicator,
+            indicator = {}
+            for actor in response['resources']:
+                if actor:
+                    indicator = {
+                        "type": 'Actor',
+                        "value": actor['name'],
                         "rawJSON": {
-                            'value': indicator,
-                            'type': indicator_type,
-                            'service': 'Daily Threat Feed'
+                            'type': 'Actor',
+                            'value': actor['name'],
+                            'service': 'List Actors Feed'
                         },
                         'fields': {'service': 'Daily Threat Feed', 'tags': feed_tags}
-                    })
+                    }
+                    indicator['rawJSON'].update(actor)
+                parsed_indicators.append(indicator)
 
             return parsed_indicators
 
@@ -268,7 +228,7 @@ script:
             Returns:
                 list. A list of JSON objects representing indicators fetched from a feed.
             """
-            response = self.daily_http_request()
+            response = self.check_quota_status()
             parsed_indicators = self.create_indicators_from_response(response, feed_tags)  # list of dict of indicators
 
             # for get_indicator_command only
@@ -321,12 +281,12 @@ script:
                 'fields': indicator.get('fields'),
             })
 
-        human_readable = tableToMarkdown("Indicators from AutoFocus:", hr_indicators,
+        human_readable = tableToMarkdown("Indicators from Crowdstrike:", hr_indicators,
                                          headers=['Value', 'Type', 'rawJSON', 'fields'], removeNull=True)
 
         if args.get('limit'):
             human_readable = human_readable + f"\nTo bring the next batch of indicators " \
-                                              f"run:\n!autofocus-daily-get-indicators " \
+                                              f"run:\n!crowdstrike-falcon-intel-get-indicators " \
                                               f"limit={args.get('limit')} " \
                                               f"offset={int(str(args.get('limit'))) + int(str(args.get('offset')))}"
 
@@ -339,7 +299,7 @@ script:
         Args:
             client(Client): AutoFocus Feed client.
             feed_tags: The indicator tags
-            limit: limit the amount of incidators fetched.
+            limit: limit the amount of indicators fetched.
             offset: the index of the first index to fetch.
 
         Returns:
@@ -353,15 +313,14 @@ script:
     def main():
         params = demisto.params()
         feed_tags = argToList(params.get('feedTags'))
-        client = Client(api_key=params.get('api_key'),
-                        insecure=params.get('insecure'))
+        client = Client(params)
 
         command = demisto.command()
         demisto.info(f'Command being called is {command}')
         # Switch case
         commands = {
             'test-module': module_test_command,
-            'autofocus-daily-get-indicators': get_indicators_command
+            'crowdstrike-falcon-intel-get-indicators': get_indicators_command
         }
         try:
             if demisto.command() == 'fetch-indicators':
@@ -374,7 +333,7 @@ script:
                                                                            feed_tags)  # type: ignore
                 return_outputs(readable_output, outputs, raw_response)
         except Exception as e:
-            raise Exception(f'Error in AutoFocusFeed Daily Integration [{e}]')
+            raise Exception(f'Error in Crowdstrike falcon intel  Integration [{e}]')
 
 
     if __name__ == '__builtin__' or __name__ == 'builtins':
