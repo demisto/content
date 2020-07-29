@@ -9,34 +9,19 @@ import requests
 requests.packages.urllib3.disable_warnings()
 
 
-class Client:
-    def __init__(self, base_url, verify, proxies, auth):
-        self.base_url = base_url
-        self.verify = verify
-        self.proxies = proxies
-        self.auth = '&auth=' + auth
-
-    def http_request(self, method, url_suffix):
-        server = self.base_url + url_suffix + self.auth
-        res = requests.request(
-            method,
-            server,
-            verify=self.verify,
-            proxies=self.proxies
-        )
-        try:
-            return res.json()
-        except ValueError:
-            data = {'Info': res.text}
-            return data
-
-
 def results_return(command, thingtoreturn):
-    results = CommandResults(
-        outputs_prefix='PiHole.' + str(command),
-        outputs_key_field='',
-        outputs=thingtoreturn
-    )
+    if command == 'RecentBlocked':
+        results = CommandResults(
+            outputs_prefix='PiHole.' + str(command),
+            outputs_key_field='',
+            outputs={'Data': thingtoreturn}
+        )
+    else:
+        results = CommandResults(
+            outputs_prefix='PiHole.' + str(command),
+            outputs_key_field='',
+            outputs=thingtoreturn
+        )
     return_results(results)
 
 
@@ -45,16 +30,13 @@ def test_module(client):
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
     Returns:
         'ok' if test passed, anything else will fail the test.
+    Test function gets the base url and if it responds the the test succeeds. No Auth needed.
     """
-    result = client.http_request('GET', '')
+    result = client._http_request('GET', '')
     if result:
         return 'ok'
     else:
         return 'Test failed ' + str(result)
-
-
-def get_data(client, suffix, command):
-    results_return(command, client.http_request('GET', suffix))
 
 
 def main():
@@ -62,6 +44,7 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     token = demisto.params().get('token')
+    authtoken = '&auth=' + str(token)
 
     # get the service API url
     base_url = urljoin(demisto.params()['url'], '/admin/api.php')
@@ -72,11 +55,11 @@ def main():
 
     LOG(f'Command being called is {demisto.command()}')
     try:
-        client = Client(
+        client = BaseClient(
             base_url=base_url,
             verify=verify_certificate,
-            proxies=proxy,
-            auth=token)
+            proxy=proxy
+        )
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
@@ -84,57 +67,58 @@ def main():
             demisto.results(result)
 
         elif demisto.command() == 'pihole-get-version':
-            get_data(client, '?version', 'Version')
+            results_return('Version', client._http_request('GET', '?version' + str(authtoken)))
         elif demisto.command() == 'pihole-get-versions':
-            get_data(client, '?versions', 'Versions')
+            results_return('Versions', client._http_request('GET', '?versions' + str(authtoken)))
         elif demisto.command() == 'pihole-get-type':
-            get_data(client, '?type', 'Type')
+            results_return('Type', client._http_request('GET', '?type' + str(authtoken)))
         elif demisto.command() == 'pihole-get-summaryraw':
-            get_data(client, '?summaryRaw', 'SummaryRaw')
+            results_return('SummaryRaw', client._http_request('GET', '?summaryRaw' + str(authtoken)))
         elif demisto.command() == 'pihole-get-overtimedata10mins':
-            get_data(client, '?overTimeData10mins', 'OverTimeData10mins')
+            results_return('OverTimeData10mins', client._http_request('GET', '?overTimeData10mins' + str(authtoken)))
         elif demisto.command() == 'pihole-get-topitems':
             limit = int(demisto.args().get('limit'))
-            get_data(client, '?topItems=' + str(limit), 'TopItems')
+            results_return('TopItems', client._http_request('GET', '?topItems=' + str(limit) + str(authtoken)))
         elif demisto.command() == 'pihole-get-topclients':
             limit = int(demisto.args().get('limit'))
-            get_data(client, '?topClients=' + str(limit), 'TopClients')
+            results_return('TopClients', client._http_request('GET', '?topClients=' + str(limit) + str(authtoken)))
         elif demisto.command() == 'pihole-get-topclientsblocked':
-            get_data(client, '?topClientsblocked', 'TopClientsBlocked')
+            results_return('TopClientsBlocked', client._http_request('GET', '?topClientsblocked' + str(authtoken)))
         elif demisto.command() == 'pihole-get-forward-destinations':
-            get_data(client, '?getForwardDestinations', 'ForwardDestinations')
+            results_return('ForwardDestinations', client._http_request('GET', '?getForwardDestinations' + str(authtoken)))
         elif demisto.command() == 'pihole-get-query-types':
-            get_data(client, '?getQueryTypes', 'QueryTypes')
+            results_return('QueryTypes', client._http_request('GET', '?getQueryTypes' + str(authtoken)))
         elif demisto.command() == 'pihole-get-all-queries':
-            get_data(client, '?getAllQueries', 'AllQueries')
+            results_return('AllQueries', client._http_request('GET', '?getAllQueries' + str(authtoken)))
         elif demisto.command() == 'pihole-get-overTimeDataQueryTypes':
-            get_data(client, '?overTimeDataQueryTypes', 'overTimeDataQueryTypes')
+            results_return('OverTimeDataQueryTypes', client._http_request('GET', '?overTimeDataQueryTypes' + str(authtoken)))
         elif demisto.command() == 'pihole-get-cache-info':
-            get_data(client, '?getCacheInfo', 'CacheInfo')
+            results_return('CacheInfo', client._http_request('GET', '?getCacheInfo' + str(authtoken)))
         elif demisto.command() == 'pihole-get-client-names':
-            get_data(client, '?getClientNames', 'ClientNames')
+            results_return('ClientNames', client._http_request('GET', '?getClientNames' + str(authtoken)))
         elif demisto.command() == 'pihole-get-over-time-data-clients':
-            get_data(client, '?overTimeDataClients', 'OverTimeDataClients')
+            results_return('OverTimeDataClients', client._http_request('GET', '?overTimeDataClients' + str(authtoken)))
         elif demisto.command() == 'pihole-get-recent-blocked':
-            get_data(client, '?recentBlocked', 'RecentBlocked')
+            results_return('RecentBlocked', client._http_request('GET', '?recentBlocked' + str(authtoken), resp_type='text'))
         elif demisto.command() == 'pihole-status':
-            get_data(client, '?status', 'Status')
+            results_return('Status', client._http_request('GET', '?status' + str(authtoken)))
         elif demisto.command() == 'pihole-enable':
-            get_data(client, '?enable', 'Enable')
+            results_return('Enable', client._http_request('GET', '?enable' + str(authtoken)))
         elif demisto.command() == 'pihole-disable':
             seconds = int(demisto.args().get('time'))
             if seconds == 0:
-                get_data(client, '?disable', 'Disable')
+                results_return('Disable', client._http_request('GET', '?disable' + str(authtoken)))
             else:
-                get_data(client, '?disable=' + str(seconds), 'DisabledFor' + str(seconds))
+                results_return('Disable', client._http_request('GET', '?disable=' + str(seconds) + str(authtoken)))
         elif demisto.command() == 'pihole-get-list':
-            list = demisto.args().get('list')
-            get_data(client, '?list=' + str(list), 'Lists')
+            usedlist = demisto.args().get('list')
+            results_return('Lists', client._http_request('GET', '?list=' + str(usedlist) + str(authtoken)))
         elif demisto.command() == 'pihole-list-management':
             domain = demisto.args().get('domain')
             action = demisto.args().get('action')
-            list = demisto.args().get('list')
-            get_data(client, '?list=' + str(list) + '&' + str(action) + '=' + str(domain), 'List')
+            usedlist = demisto.args().get('list')
+            results_return('List', client._http_request('GET', '?list=' + str(usedlist)
+                                                        + '&' + str(action) + '=' + str(domain) + str(authtoken)))
 
     # Log exceptions
     except Exception as e:

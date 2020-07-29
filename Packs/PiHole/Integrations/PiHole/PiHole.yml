@@ -158,7 +158,7 @@ script:
   - name: pihole-get-overTimeDataQueryTypes
     arguments: []
     outputs:
-    - contextPath: PiHole.overTimeDataQueryTypes
+    - contextPath: PiHole.OverTimeDataQueryTypes
       description: Over time query types
       type: string
     description: Get data over time per query types
@@ -187,6 +187,7 @@ script:
       - sub
       description: add or sub
     - name: list
+      required: true
       auto: PREDEFINED
       predefined:
       - white
