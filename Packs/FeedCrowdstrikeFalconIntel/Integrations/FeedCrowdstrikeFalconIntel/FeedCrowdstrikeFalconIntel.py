@@ -11,39 +11,61 @@ requests.packages.urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    """Client for AutoFocus Feed - gets indicator lists from Daily threat feeds
 
-    Attributes:
-        api_key(str): The API key for AutoFocus.
-        insecure(bool): Use SSH on http request.
-        proxy(str): Use system proxy.
-    """
+    def __init__(self, params):
+        self.client_id = params.get('client_id')
+        self.client_secret = params.get('client_secret')
+        super().__init__(base_url="https://api.crowdstrike.com/", verify=not params.get('insecure', False),
+                         ok_codes=tuple(), proxy=params.get('proxy', False))
+        self._token = self._generate_token()
+        self._headers = {'Authorization': 'Bearer ' + self._token}
 
-    def __init__(self, client_id, client_secret, insecure, base_url):
-        super().__init__(base_url)
-        self.api_key = api_key
-        self.verify = not insecure
-        handle_proxy()
+    @staticmethod
+    def _error_handler(error_entry: dict) -> str:
+        errors = error_entry.get("errors", [])
+        return '\n' + '\n'.join(f"{error['code']}: {error['message']}" for error in errors)
 
-    def daily_http_request(self) -> list:
-        """The HTTP request for daily feeds.
-        Returns:
-            list. A list of indicators fetched from the feed.
+    def http_request(self, method, url_suffix, full_url=None, headers=None, json_data=None, params=None, data=None,
+                     files=None, timeout=10, ok_codes=None, return_empty_response=False, auth=None):
+
+        return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
+                                     json_data=json_data, params=params, data=data, files=files, timeout=timeout,
+                                     ok_codes=ok_codes, return_empty_response=return_empty_response, auth=auth)
+
+    def _generate_token(self) -> str:
+        """Generate an Access token using the user name and password
+        :return: valid token
         """
-        headers = {
-            "apiKey": self.api_key,
-            'Content-Type': "application/json"
+        body = {
+            'client_id': self.client_id,
+            'client_secret': self.client_secret
         }
+        token_res = self.http_request('POST', '/oauth2/token', data=body, auth=(self.client_id, self.client_secret))
+        return token_res.get('access_token')
 
-        res = requests.request(
-            method="GET",
-            url='https://autofocus.paloaltonetworks.com/api/v1.0/output/threatFeedResult',
-            verify=self.verify,
-            headers=headers
-        )
-        res.raise_for_status()
-        indicator_list = res.text.split('\n')
-        return indicator_list
+    def check_quota_status(self) -> dict:
+        url_suffix = "/intel/combined/actors/v1"
+        return self.http_request('GET', url_suffix)
+
+    # def daily_http_request(self) -> list:
+    #     """The HTTP request for daily feeds.
+    #     Returns:
+    #         list. A list of indicators fetched from the feed.
+    #     """
+    #     headers = {
+    #         "apiKey": self.api_key,
+    #         'Content-Type': "application/json"
+    #     }
+    #
+    #     res = requests.request(
+    #         method="GET",
+    #         url='https://autofocus.paloaltonetworks.com/api/v1.0/output/threatFeedResult',
+    #         verify=self.verify,
+    #         headers=headers
+    #     )
+    #     res.raise_for_status()
+    #     indicator_list = res.text.split('\n')
+    #     return indicator_list
 
     def create_indicators_from_response(self, response, feed_tags: list) -> list:
         """
@@ -78,7 +100,7 @@ class Client(BaseClient):
         Returns:
             list. A list of JSON objects representing indicators fetched from a feed.
         """
-        response = self.daily_http_request()
+        response = self.check_quota_status()
         parsed_indicators = self.create_indicators_from_response(response, feed_tags)  # list of dict of indicators
 
         # for get_indicator_command only
@@ -163,10 +185,7 @@ def fetch_indicators_command(client: Client, feed_tags: List, limit=None, offset
 def main():
     params = demisto.params()
     feed_tags = argToList(params.get('feedTags'))
-    client = Client(client_id=params.get('client_id'),
-                    client_secret=params.get('client_secret'),
-                    insecure=params.get('insecure'),
-                    base_url=params.get('url'))
+    client = Client(params)
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
