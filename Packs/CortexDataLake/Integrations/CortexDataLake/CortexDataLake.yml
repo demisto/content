@@ -108,7 +108,7 @@ script:
       description: |-
         A free-text SQL query. For example, query="SELECT * FROM `firewall.traffic`".
         There are multiple tables in Loggings, for example: threat, traffic, and so on.
-        Refer to the Cortex Logging service schema reference for the full list.'
+        Refer to the Cortex Logging service schema reference for the full list.
       isArray: false
       name: query
       required: false
