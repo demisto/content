@@ -628,55 +628,6 @@ def print_packs_summary(packs_list):
         sys.exit(1)
 
 
-def option_handler():
-    """Validates and parses script arguments.
-
-    Returns:
-        Namespace: Parsed arguments object.
-
-    """
-    parser = argparse.ArgumentParser(description="Store packs in cloud storage.")
-    # disable-secrets-detection-start
-    parser.add_argument('-a', '--artifacts_path', help="The full path of packs artifacts", required=True)
-    parser.add_argument('-e', '--extract_path', help="Full path of folder to extract wanted packs", required=True)
-    parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
-    parser.add_argument('-s', '--service_account',
-                        help=("Path to gcloud service account, is for circleCI usage. "
-                              "For local development use your personal account and "
-                              "authenticate using Google Cloud SDK by running: "
-                              "`gcloud auth application-default login` and leave this parameter blank. "
-                              "For more information go to: "
-                              "https://googleapis.dev/python/google-api-core/latest/auth.html"),
-                        required=False)
-    parser.add_argument('-i', '--id_set_path', help="The full path of id_set.json", required=False)
-    parser.add_argument('-d', '--pack_dependencies', help="Full path to pack dependencies json file.", required=False)
-    parser.add_argument('-p', '--pack_names',
-                        help=("Target packs to upload to gcs. Optional values are: `All`, "
-                              "`Modified` or csv list of packs "
-                              "Default is set to `All`"),
-                        required=False, default="All")
-    parser.add_argument('-n', '--ci_build_number',
-                        help="CircleCi build number (will be used as hash revision at index file)", required=False,
-                        default=str(uuid.uuid4()))
-    parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
-                        default=False, action='store_true', required=False)
-    parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
-                        required=False)
-    parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
-    parser.add_argument('-sb', '--storage_base_path', help="Storage base path of the directory to upload to.",
-                        required=False)
-    parser.add_argument('-rt', '--remove_test_playbooks', type=str2bool,
-                        help='Should remove test playbooks from content packs or not.', default=True)
-    parser.add_argument('-enc', '--encrypt_pack', type=str2bool,
-                        help='Should encrypt pack or not.', default=False)
-    parser.add_argument('-ek', '--encryption_key', type=str,
-                        help='The encryption key for the pack, if it should be encrypted.', default='')
-    parser.add_argument('-pr', '--is_private', type=str2bool,
-                        help='The encryption key for the pack, if it should be encrypted.', default=False)
-    # disable-secrets-detection-end
-    return parser.parse_args()
-
-
 def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, index_folder_path,
                                        packs_dependencies_mapping,
                                        private_storage_bucket=None, content_repo=None, current_commit_hash='',
@@ -800,6 +751,55 @@ def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, inde
         return
 
     pack.status = PackStatus.SUCCESS.name
+
+
+def option_handler():
+    """Validates and parses script arguments.
+
+    Returns:
+        Namespace: Parsed arguments object.
+
+    """
+    parser = argparse.ArgumentParser(description="Store packs in cloud storage.")
+    # disable-secrets-detection-start
+    parser.add_argument('-a', '--artifacts_path', help="The full path of packs artifacts", required=True)
+    parser.add_argument('-e', '--extract_path', help="Full path of folder to extract wanted packs", required=True)
+    parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
+    parser.add_argument('-s', '--service_account',
+                        help=("Path to gcloud service account, is for circleCI usage. "
+                              "For local development use your personal account and "
+                              "authenticate using Google Cloud SDK by running: "
+                              "`gcloud auth application-default login` and leave this parameter blank. "
+                              "For more information go to: "
+                              "https://googleapis.dev/python/google-api-core/latest/auth.html"),
+                        required=False)
+    parser.add_argument('-i', '--id_set_path', help="The full path of id_set.json", required=False)
+    parser.add_argument('-d', '--pack_dependencies', help="Full path to pack dependencies json file.", required=False)
+    parser.add_argument('-p', '--pack_names',
+                        help=("Target packs to upload to gcs. Optional values are: `All`, "
+                              "`Modified` or csv list of packs "
+                              "Default is set to `All`"),
+                        required=False, default="All")
+    parser.add_argument('-n', '--ci_build_number',
+                        help="CircleCi build number (will be used as hash revision at index file)", required=False,
+                        default=str(uuid.uuid4()))
+    parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
+                        default=False, action='store_true', required=False)
+    parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
+                        required=False)
+    parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
+    parser.add_argument('-sb', '--storage_base_path', help="Storage base path of the directory to upload to.",
+                        required=False)
+    parser.add_argument('-rt', '--remove_test_playbooks', type=str2bool,
+                        help='Should remove test playbooks from content packs or not.', default=True)
+    parser.add_argument('-enc', '--encrypt_pack', type=str2bool,
+                        help='Should encrypt pack or not.', default=False)
+    parser.add_argument('-ek', '--encryption_key', type=str,
+                        help='The encryption key for the pack, if it should be encrypted.', default='')
+    parser.add_argument('-pr', '--is_private', type=str2bool,
+                        help='The encryption key for the pack, if it should be encrypted.', default=False)
+    # disable-secrets-detection-end
+    return parser.parse_args()
 
 
 def main():
