@@ -23,7 +23,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 50
         }
       }
@@ -46,12 +46,12 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - "11"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 195
         }
       }
@@ -84,7 +84,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 340
+          "y": 515
         }
       }
     note: false
@@ -112,7 +112,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 515
+          "y": 690
         }
       }
     note: false
@@ -135,7 +135,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "10"
     scriptarguments:
       alert_name:
         simple: ${incident.name}
@@ -154,7 +154,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 835
+          "y": 1010
         }
       }
     note: false
@@ -178,8 +178,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1535
+          "x": 162.5,
+          "y": 1885
         }
       }
     note: false
@@ -217,7 +217,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 660
+          "y": 835
         }
       }
     note: false
@@ -251,8 +251,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1010
+          "x": 50,
+          "y": 1360
         }
       }
     note: false
@@ -287,8 +287,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 1185
+          "x": 162.5,
+          "y": 1535
         }
       }
     note: false
@@ -322,8 +322,127 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1360
+          "x": 162.5,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 6009c81d-2e7e-40ed-855b-e2ae2602cfac
+    type: condition
+    task:
+      id: 6009c81d-2e7e-40ed-855b-e2ae2602cfac
+      version: -1
+      name: Is ServiceNow v2 enabled and create ServiceNow ticket?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ServiceNow v2
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+      - - operator: isTrue
+          left:
+            value:
+              simple: inputs.CreateServiceNowTicket
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 56eb6d5f-4d68-45c2-81a9-2bbad47d32eb
+    type: condition
+    task:
+      id: 56eb6d5f-4d68-45c2-81a9-2bbad47d32eb
+      version: -1
+      name: Is Palo Alto Networks IoT Enabled?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Palo Alto Networks IoT
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 340
         }
       }
     note: false
@@ -336,8 +455,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1550,
-        "width": 605,
+        "height": 1900,
+        "width": 492.5,
         "x": 50,
         "y": 50
       }
@@ -350,8 +469,21 @@ inputs:
   required: false
   description: The list name defined in the XSOAR Lists for the RACI and ServiceNow
     calculation
-  playbookInputQuery:
-outputs: []
+  playbookInputQuery: null
+- key: CreateServiceNowTicket
+  value:
+    simple: "false"
+  required: false
+  description: True if a ServiceNow ticket should be created based on the RACI calculation
+  playbookInputQuery: null
+outputs:
+- contextPath: PaloAltoNetworksIoT
+  description: This path will have field "device" for the device details and "raci"
+    if the command "iot-security-get-raci" has output.
+  type: string
+- contextPath: ServiceNow.Record
+  description: The ServiceNow record after creating the ServiceNow ticket.
+  type: string
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
