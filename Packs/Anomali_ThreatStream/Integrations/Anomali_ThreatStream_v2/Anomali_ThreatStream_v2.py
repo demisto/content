@@ -627,6 +627,67 @@ def import_ioc_with_approval(import_type, import_value, confidence="50", classif
         return_outputs("The data was not imported. Check if valid arguments were passed", None)
 
 
+def import_ioc_without_approval(import_type, import_value, confidence="50", classification="Private",
+                                threat_type="exploit", severity="low", ip_mapping=False, domain_mapping=False,
+                                url_mapping=False, email_mapping=False, md5_mapping=False, tags=None):
+    """
+        Imports indicators data to ThreatStream.
+        The data can be imported using one of three import_types: data-text (plain-text),
+        file-id of uploaded file to war room or URL.
+    """
+    if not tags:
+        tags = ''
+    ip_mapping = ip_mapping == 'yes'
+    domain_mapping = domain_mapping == 'yes'
+    url_mapping = url_mapping == 'yes'
+    email_mapping = email_mapping == 'yes'
+    md5_mapping = md5_mapping == 'yes'
+
+    files = None
+    uploaded_file = None
+    data = {
+        'confidence': confidence,
+        'classification': classification,
+        'ip_mapping': ip_mapping,
+        'domain_mapping': domain_mapping,
+        'url_mapping': url_mapping,
+        'email_mapping': email_mapping,
+        'md5_mapping': md5_mapping,
+        'threat_type': threat_type,
+        'severity': severity,
+        'tags': tags
+    }
+
+    if import_type == 'file-id':
+        try:
+            # import_value will be entry id of uploaded file to war room
+            file_info = demisto.getFilePath(import_value)
+        except Exception:
+            return_error(F"Entry {import_value} does not contain a file.")
+
+        uploaded_file = open(file_info['path'], 'rb')
+        files = {'file': (file_info['name'], uploaded_file)}
+        params = build_params()
+    else:
+        if import_value == 'url':
+            params = build_params(url=import_value)
+        else:
+            params = build_params(datatext=import_value)
+
+    # in case import_type is not file-id, http_requests will receive None as files
+    res = http_request("PATCH", "v1/intelligence", params=params, data=data, files=files)
+    # closing the opened file if exist
+    if uploaded_file:
+        uploaded_file.close()
+    # checking that response contains success key
+    if res.get('success', False):
+        imported_id = res.get('import_session_id', '')
+        ec = {'ThreatStream.Import.ImportID': imported_id}
+        return_outputs(F"The data was imported successfully. The ID of imported job is: {imported_id}", ec, res)
+    else:
+        return_outputs("The data was not imported. Check if valid arguments were passed", None)
+
+
 def get_model_list(model, limit="50"):
     """
         Returns list of Threat Model that was specified. By default limit is set to 50 results.
@@ -897,6 +958,8 @@ def main():
             get_passive_dns(**args)
         elif command == 'threatstream-import-indicator-with-approval':
             import_ioc_with_approval(**args)
+        elif command == 'threatstream-import-indicator-without-approval':
+            import_ioc_without_approval(**args)
         elif command == 'threatstream-get-model-list':
             get_model_list(**args)
         elif command == 'threatstream-get-model-description':
