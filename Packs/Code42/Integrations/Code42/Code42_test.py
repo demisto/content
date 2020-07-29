@@ -802,8 +802,8 @@ MOCK_OBSERVATION_QUERIES = [
                 "filterClause": "AND",
                 "filters": [
                     {"operator": "IS_NOT", "term": "exposure", "value": "IsPublic"},
-                    {"operator": "IS_NOT", "term": "exposure", "value": "SharedViaLink"},
                     {"operator": "IS_NOT", "term": "exposure", "value": "OutsideTrustedDomains"},
+                    {"operator": "IS_NOT", "term": "exposure", "value": "SharedViaLink"},
                 ],
             },
         ],
