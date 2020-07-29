@@ -1054,17 +1054,15 @@ def build_mail_object(raw_response: Union[dict, list], user_id: str, get_body: b
         return None
 
     mails_list = list()
-    if isinstance(raw_response, list):
+    if isinstance(raw_response, list):  # response from list_emails_command
         for page in raw_response:
-            # raw_response can be a list containing multiple pages or one response
-            # if value in page, we got
+            # raw_response can be a list containing multiple pages or one page
+            # if value is not empty, there are emails in the page
             value = page.get('value')
             if value:
                 for mail in value:
                     mails_list.append(build_mail(mail))
-            else:
-                mails_list.append(build_mail(page))
-    elif isinstance(raw_response, dict):
+    elif isinstance(raw_response, dict):  # response from get_message_command
         return build_mail(raw_response)
     return mails_list
 
@@ -1107,14 +1105,18 @@ def list_mails_command(client: MsGraphClient, args):
 
     raw_response = client.list_mails(user_id, folder_id=folder_id, search=search, odata=odata)
     mail_context = build_mail_object(raw_response, user_id)
-    entry_context = {'MSGraphMail(val.ID === obj.ID)': mail_context}
+    entry_context = {}
+    if mail_context:
+        entry_context = {'MSGraphMail(val.ID === obj.ID)': mail_context}
 
-    # human_readable builder
-    human_readable = tableToMarkdown(
-        f'### Total of {len(mail_context)} of mails received',
-        mail_context,
-        headers=['Subject', 'From', 'SendTime']
-    )
+        # human_readable builder
+        human_readable = tableToMarkdown(
+            f'### Total of {len(mail_context)} of mails received',
+            mail_context,
+            headers=['Subject', 'From', 'SendTime']
+        )
+    else:
+        human_readable = '### No mails were found'
     return_outputs(human_readable, entry_context, raw_response)
 
 
@@ -1157,6 +1159,7 @@ def get_message_command(client: MsGraphClient, args):
     get_body = args.get('get_body') == 'true'
     odata = args.get('odata')
     raw_response = client.get_message(user_id, message_id, folder_id, odata=odata)
+    demisto.debug(f'\n\n\n\n\nGET_MESSAGE_RAW_RESPONSE: {raw_response}\n\n\n\n\n')
     mail_context = build_mail_object(raw_response, user_id=user_id, get_body=get_body)
     entry_context = {'MSGraphMail(val.ID === obj.ID)': mail_context}
     human_readable = tableToMarkdown(
