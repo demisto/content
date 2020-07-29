@@ -27,7 +27,7 @@ import pytz
 urllib3.disable_warnings()
 
 EPOCH = datetime.utcfromtimestamp(0).replace(tzinfo=pytz.UTC)
-INTEGRATION_NAME = 'TAXII1'
+INTEGRATION_NAME = 'TAXII11'
 
 
 class AddressObject(object):

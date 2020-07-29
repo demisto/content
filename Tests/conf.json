@@ -3185,7 +3185,8 @@
         "syslog": "syslog",
         "MongoDB Log": "Our instance not using SSL",
         "MongoDB Key Value Store": "Our instance not using SSL",
-        "GoogleKubernetesEngine": "SDK"
+        "GoogleKubernetesEngine": "SDK",
+        "TAXIIFeed": "testing"
     },
     "parallel_integrations": [
         "SNDBOX",
@@ -3235,7 +3236,7 @@
         "Cortex Data Lake"
     ],
     "docker_thresholds": {
-        
+
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
