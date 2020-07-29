@@ -137,6 +137,11 @@ configuration:
   - Bad
   required: false
   type: 18
+- additionalinfo: Supports comma-separated values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
 description: SafeBreach automatically executes thousands of breach methods from its
   extensive and growing Hacker’s Playbook™ to validate security control effectiveness.  Simulations
   are automatically correlated with network, endpoint, and SIEM solutions providing
