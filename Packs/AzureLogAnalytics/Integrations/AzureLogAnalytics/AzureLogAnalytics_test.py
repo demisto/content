@@ -1,4 +1,4 @@
-from .AzureLogAnalytics import Client, execute_query_command, list_saved_searches_command, parse_tags
+from AzureLogAnalytics import Client, execute_query_command, list_saved_searches_command, parse_tags
 
 MOCKED_SAVED_SEARCHES_OUTPUT = {
     'value': [

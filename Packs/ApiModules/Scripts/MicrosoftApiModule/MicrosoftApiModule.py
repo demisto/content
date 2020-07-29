@@ -153,7 +153,12 @@ class MicrosoftClient(BaseClient):
 
         auth_type = self.auth_type
         if auth_type == OPROXY_AUTH_TYPE:
-            access_token, expires_in, refresh_token = self._oproxy_authorize()
+            if not self.multi_resource:
+                access_token, expires_in, refresh_token = self._oproxy_authorize()
+            else:
+                for resource in self.resources:
+                    access_token, expires_in, refresh_token = self._oproxy_authorize(resource)
+                    self.resource_to_access_token[resource] = access_token
         else:
             access_token, expires_in, refresh_token = self._get_self_deployed_token(refresh_token)
         time_now = self.epoch_seconds()
@@ -178,7 +183,7 @@ class MicrosoftClient(BaseClient):
 
         return access_token
 
-    def _oproxy_authorize(self) -> Tuple[str, int, str]:
+    def _oproxy_authorize(self, resource='') -> Tuple[str, int, str]:
         """
         Gets a token by authorizing with oproxy.
 
@@ -187,14 +192,18 @@ class MicrosoftClient(BaseClient):
         """
         content = self.refresh_token or self.tenant_id
         headers = self._add_info_headers()
+        json = {
+            'app_name': self.app_name,
+            'registration_id': self.auth_id,
+            'encrypted_token': self.get_encrypted(content, self.enc_key)
+        }
+        if resource:
+            json['resource'] = resource
+
         oproxy_response = requests.post(
             self.token_retrieval_url,
             headers=headers,
-            json={
-                'app_name': self.app_name,
-                'registration_id': self.auth_id,
-                'encrypted_token': self.get_encrypted(content, self.enc_key)
-            },
+            json=json,
             verify=self.verify
         )
 

@@ -319,7 +319,7 @@ def main():
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
-from Packs.ApiModules.MicrosoftApiModule import *  # noqa: E402
+from MicrosoftApiModule import *  # noqa: E402
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
