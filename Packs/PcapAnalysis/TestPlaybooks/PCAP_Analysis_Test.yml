@@ -101,8 +101,7 @@ tasks:
       FileTypeFilter: {}
       FilterType:
         simple: inclusive
-      IPAddressToSearch:
-        simple: 10.251.0.0/16
+      IPAddressToSearch: {}
       InternalEmailDomainName: {}
       InternalIPRange: {}
       InternalUrlName: {}
@@ -144,7 +143,8 @@ tasks:
                 value:
                   simple: pcapng
           accessor: EntryID
-      ProtocolToSearch: {}
+      ProtocolToSearch:
+        simple: smb,smb2
       QueryOperator:
         simple: and
       RegexToSearch: {}
