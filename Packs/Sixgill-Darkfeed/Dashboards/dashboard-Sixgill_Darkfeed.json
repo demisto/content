@@ -895,7 +895,7 @@
             }
         }
     ],
-    "fromVersion": "5.0.0",
+    "fromVersion": "5.5.0",
     "description": "",
     "isPredefined": true
 }
