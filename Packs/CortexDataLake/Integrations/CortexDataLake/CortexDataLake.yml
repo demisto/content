@@ -104,18 +104,18 @@ script:
   commands:
   - arguments:
     - default: false
-      defaultValue: SELECT * FROM `firewall.traffic` limit 10
-      description: 'A free-text SQL query. For example, query="SELECT * FROM `firewall.traffic`
-        limit 10". There are multiple tables in Loggings, for example: threat, traffic,
-        and so on. Refer to the Cortex Logging service schema reference for the full
-        list.'
+      defaultValue: SELECT * FROM `firewall.traffic`
+      description: |-
+        A free-text SQL query. For example, query="SELECT * FROM `firewall.traffic`".
+        There are multiple tables in Loggings, for example: threat, traffic, and so on.
+        Refer to the Cortex Logging service schema reference for the full list.'
       isArray: false
       name: query
       required: false
       secret: false
     - default: false
-      defaultValue: '100'
-      description: The number of logs to return.
+      defaultValue: '10'
+      description: The number of logs to return. Default is 10.
       isArray: false
       name: limit
       required: false
@@ -1506,7 +1506,7 @@ script:
     - contextPath: CDL.Logging.Threat.SourcePort
       description: Source port utilized by the session.
       type: Number
-  dockerimage: demisto/python_pancloud_v2:1.0.0.8888
+  dockerimage: demisto/python_pancloud_v2:1.0.0.10071
   feed: false
   isfetch: true
   longRunning: false
